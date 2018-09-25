@@ -5,8 +5,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
-import '../../layouts/home-assistant-main.js';
-import '../../layouts/ha-init-page.js';
+import '../home-assistant-main.js';
+import '../ha-init-page.js';
 import '../../resources/ha-style.js';
 import registerServiceWorker from '../../util/register-service-worker.js';
 

@@ -70,8 +70,8 @@ class HaPickThemeRow extends
   }
 
   _compHasThemes(hass) {
-    return hass.themes && hass.themes.themes &&
-      Object.keys(hass.themes.themes).length;
+    return hass.themes && hass.themes.themes
+      && Object.keys(hass.themes.themes).length;
   }
 
   ready() {

@@ -38,8 +38,8 @@ class HuiEntitiesToggle extends PolymerElement {
   }
 
   _computeToggleEntities(hass, entityIds) {
-    return entityIds.filter(entityId => (entityId in hass.states &&
-      DOMAINS_TOGGLE.has(entityId.split('.', 1)[0])));
+    return entityIds.filter(entityId => (entityId in hass.states
+      && DOMAINS_TOGGLE.has(entityId.split('.', 1)[0])));
   }
 
   _computeIsChecked(hass, entityIds) {

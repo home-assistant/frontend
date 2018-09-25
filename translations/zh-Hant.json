@@ -545,6 +545,32 @@
                     "error_no_theme": "無主題可使用。",
                     "link_promo": "關於此主題",
                     "dropdown_label": "主題"
+                },
+                "refresh_tokens": {
+                    "header": "更新密鑰",
+                    "description": "每一個更新密鑰標示為一次登錄活動。當點選登出時，更新密鑰將會自動移除。目前你的帳號已啟用之更新密鑰如下。",
+                    "token_title": "{clientId}更新密鑰",
+                    "created_at": "於{date}創建",
+                    "confirm_delete": "確定要刪除{name}更新密鑰嗎？",
+                    "delete_failed": "刪除更新密鑰失敗。",
+                    "last_used": "上次使用：於{date}、位置{location}",
+                    "not_used": "從未使用過",
+                    "current_token_tooltip": "無法刪除目前更新密鑰"
+                },
+                "long_lived_access_tokens": {
+                    "header": "永久有效存取密鑰",
+                    "description": "創建長效存取密鑰，可供運用腳本與 Home Assistant 物件進行互動。每個密鑰於創建後，有效期為十年。目前已啟用之永久有效密鑰如下。",
+                    "learn_auth_requests": "學習如何進行驗證請求。",
+                    "created_at": "於{date}創建",
+                    "confirm_delete": "確定要刪除{name}存取密鑰嗎？",
+                    "delete_failed": "刪除存取密鑰失敗。",
+                    "create": "創建密鑰",
+                    "create_failed": "創建存取密鑰失敗。",
+                    "prompt_name": "名稱？",
+                    "prompt_copy_token": "複製存取密鑰，將不會再次顯示。",
+                    "empty_state": "尚未創建永久有效存取密鑰。",
+                    "last_used": "上次使用：於{date}、位置{location}",
+                    "not_used": "從未使用過"
                 }
             },
             "page-authorize": {

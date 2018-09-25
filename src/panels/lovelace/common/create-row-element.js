@@ -7,6 +7,7 @@ import '../entity-rows/hui-input-number-entity-row.js';
 import '../entity-rows/hui-input-select-entity-row.js';
 import '../entity-rows/hui-input-text-entity-row.js';
 import '../entity-rows/hui-lock-entity-row.js';
+import '../entity-rows/hui-media-player-entity-row.js';
 import '../entity-rows/hui-scene-entity-row.js';
 import '../entity-rows/hui-script-entity-row.js';
 import '../entity-rows/hui-text-entity-row.js';
@@ -36,6 +37,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   input_select: 'input-select',
   input_text: 'input-text',
   light: 'toggle',
+  media_player: 'media-player',
   lock: 'lock',
   scene: 'scene',
   script: 'script',
@@ -43,6 +45,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   switch: 'toggle',
   vacuum: 'toggle'
 };
+const TIMEOUT = 2000;
 
 function _createElement(tag, config) {
   const element = document.createElement(tag);
@@ -60,6 +63,11 @@ function _createElement(tag, config) {
 
 function _createErrorElement(error, config) {
   return _createElement('hui-error-card', createErrorCardConfig(error, config));
+}
+
+function _hideErrorElement(element) {
+  element.style.display = 'None';
+  return window.setTimeout(() => { element.style.display = ''; }, TIMEOUT);
 }
 
 export default function createRowElement(config) {
@@ -81,9 +89,12 @@ export default function createRowElement(config) {
       return _createElement(tag, config);
     }
     const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
+    const timer = _hideErrorElement(element);
 
-    customElements.whenDefined(tag)
-      .then(() => fireEvent(element, 'rebuild-view'));
+    customElements.whenDefined(tag).then(() => {
+      clearTimeout(timer);
+      fireEvent(element, 'rebuild-view');
+    });
 
     return element;
   }

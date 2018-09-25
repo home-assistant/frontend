@@ -62,8 +62,7 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
         type: Object,
         value: {
           component: 'ha-form-customize',
-          computeSelectCaption: stateObj =>
-            computeStateName(stateObj) + ' (' + computeStateDomain(stateObj) + ')'
+          computeSelectCaption: stateObj => computeStateName(stateObj) + ' (' + computeStateDomain(stateObj) + ')'
         }
       },
     };

@@ -52,12 +52,11 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
         <template is="dom-if" if="[[_loading]]">
           <paper-spinner active></paper-spinner>
         </template>
-        <template is="dom-if" if="[[!_loading]]">
-          <paper-icon-button
-            on-click='openDeleteDialog'
-            icon='hass:delete'
-          ></paper-icon-button>
-        </template>
+        <paper-icon-button
+          id='delicon'
+          on-click='openDeleteDialog'
+          icon='hass:delete'
+        ></paper-icon-button>
         </div>
       </h2>
       <div id="transcribe"></div>
@@ -94,34 +93,40 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
 
   showDialog({ hass, message }) {
     this.hass = hass;
-    this._loading = true;
     this._errorMsg = null;
     this._currentMessage = message;
     this._opened = true;
     this.$.transcribe.innerText = message.message;
     const platform = message.platform;
     const mp3 = this.$.mp3;
-    mp3.src = null;
-    const url = `/api/mailbox/media/${platform}/${message.sha}`;
-    this.hass.fetchWithAuth(url)
-      .then((response) => {
-        if (response.ok) {
-          return response.blob();
-        }
-        return Promise.reject({
-          status: response.status,
-          statusText: response.statusText
+    if (platform.has_media) {
+      mp3.style.display = '';
+      this._showLoading(true);
+      mp3.src = null;
+      const url = `/api/mailbox/media/${platform.name}/${message.sha}`;
+      this.hass.fetchWithAuth(url)
+        .then((response) => {
+          if (response.ok) {
+            return response.blob();
+          }
+          return Promise.reject({
+            status: response.status,
+            statusText: response.statusText
+          });
+        })
+        .then((blob) => {
+          this._showLoading(false);
+          mp3.src = window.URL.createObjectURL(blob);
+          mp3.play();
+        })
+        .catch((err) => {
+          this._showLoading(false);
+          this._errorMsg = `Error loading audio: ${err.statusText}`;
         });
-      })
-      .then((blob) => {
-        this._loading = false;
-        mp3.src = window.URL.createObjectURL(blob);
-        mp3.play();
-      })
-      .catch((err) => {
-        this._loading = false;
-        this._errorMsg = `Error loading audio: ${err.statusText}`;
-      });
+    } else {
+      mp3.style.display = 'none';
+      this._showLoading(false);
+    }
   }
 
   openDeleteDialog() {
@@ -132,7 +137,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
 
   deleteSelected() {
     const msg = this._currentMessage;
-    this.hass.callApi('DELETE', `mailbox/delete/${msg.platform}/${msg.sha}`);
+    this.hass.callApi('DELETE', `mailbox/delete/${msg.platform.name}/${msg.sha}`);
     this._dialogDone();
   }
 
@@ -152,6 +157,18 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     // programmatically
     if (!ev.detail.value) {
       this._dialogDone();
+    }
+  }
+
+  _showLoading(displayed) {
+    const delicon = this.$.delicon;
+    if (displayed) {
+      this._loading = true;
+      delicon.style.display = 'none';
+    } else {
+      const platform = this._currentMessage.platform;
+      this._loading = false;
+      delicon.style.display = platform.can_delete ? '' : 'none';
     }
   }
 }

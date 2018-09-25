@@ -6,7 +6,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../components/ha-icon.js';
+import './ha-icon.js';
 
 import '../util/hass-translation.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
@@ -47,7 +47,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
       }
 
       paper-listbox {
-        padding-bottom: 0;
+        padding: 0;
       }
 
       paper-listbox > a {
@@ -59,15 +59,37 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
         };
       }
 
+      paper-icon-item {
+        margin: 8px;
+        padding-left: 9px;
+        border-radius: 4px;
+        --paper-item-min-height: 40px;
+      }
+
+      .iron-selected paper-icon-item:before {
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+        content: "";
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
+        transition: opacity 15ms linear;
+        will-change: opacity;
+      }
+
+      .iron-selected paper-icon-item[pressed]:before {
+        opacity: 0.37;
+      }
+
       paper-icon-item span {
         @apply --sidebar-text;
       }
 
       a.iron-selected {
-        --paper-icon-item: {
-          background-color: var(--sidebar-selected-background-color, var(--paper-grey-200));
-        };
-
         --paper-item-icon: {
           color: var(--sidebar-selected-icon-color);
         };
@@ -129,7 +151,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
     </app-toolbar>
 
     <paper-listbox attr-for-selected="data-panel" selected="[[hass.panelUrl]]">
-      <a href='[[_computeUrl(defaultPage)]]' data-panel$="[[defaultPage]]">
+      <a href='[[_computeUrl(defaultPage)]]' data-panel$="[[defaultPage]]" tabindex="-1">
         <paper-icon-item>
           <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
           <span class="item-text">[[localize('panel.states')]]</span>
@@ -137,7 +159,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
       </a>
 
       <template is="dom-repeat" items="[[panels]]">
-        <a href='[[_computeUrl(item.url_path)]]' data-panel$='[[item.url_path]]'>
+        <a href='[[_computeUrl(item.url_path)]]' data-panel$='[[item.url_path]]' tabindex="-1">
           <paper-icon-item>
             <ha-icon slot="item-icon" icon="[[item.icon]]"></ha-icon>
             <span class="item-text">[[_computePanelName(localize, item)]]</span>
@@ -159,14 +181,14 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
       <div class="subheader">[[localize('ui.sidebar.developer_tools')]]</div>
 
       <div class="dev-tools layout horizontal justified">
-        <a href="/dev-service">
+        <a href="/dev-service" tabindex="-1">
           <paper-icon-button
             icon="hass:remote"
             alt="[[localize('panel.dev-services')]]"
             title="[[localize('panel.dev-services')]]"
           ></paper-icon-button>
         </a>
-        <a href="/dev-state">
+        <a href="/dev-state" tabindex="-1">
           <paper-icon-button
             icon="hass:code-tags"
             alt="[[localize('panel.dev-states')]]"
@@ -174,7 +196,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
           ></paper-icon-button>
         </a>
-        <a href="/dev-event">
+        <a href="/dev-event" tabindex="-1">
           <paper-icon-button
             icon="hass:radio-tower"
             alt="[[localize('panel.dev-events')]]"
@@ -182,7 +204,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
           ></paper-icon-button>
         </a>
-        <a href="/dev-template">
+        <a href="/dev-template" tabindex="-1">
           <paper-icon-button
             icon="hass:file-xml"
             alt="[[localize('panel.dev-templates')]]"
@@ -191,7 +213,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
           ></paper-icon-button>
           </a>
         <template is="dom-if" if="[[_mqttLoaded(hass)]]">
-          <a href="/dev-mqtt">
+          <a href="/dev-mqtt" tabindex="-1">
             <paper-icon-button
               icon="hass:altimeter"
               alt="[[localize('panel.dev-mqtt')]]"
@@ -200,7 +222,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
             ></paper-icon-button>
           </a>
         </template>
-        <a href="/dev-info">
+        <a href="/dev-info" tabindex="-1">
           <paper-icon-button
             icon="hass:information-outline"
             alt="[[localize('panel.dev-info')]]"
@@ -283,9 +305,9 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
       if (aBuiltIn && bBuiltIn) {
         return sortValue[a.component_name] - sortValue[b.component_name];
-      } else if (aBuiltIn) {
+      } if (aBuiltIn) {
         return -1;
-      } else if (bBuiltIn) {
+      } if (bBuiltIn) {
         return 1;
       }
       // both not built in, sort by title

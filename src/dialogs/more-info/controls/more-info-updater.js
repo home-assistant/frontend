@@ -25,8 +25,8 @@ class MoreInfoUpdater extends PolymerElement {
   }
 
   computeReleaseNotes(stateObj) {
-    return (stateObj.attributes.release_notes ||
-            'https://www.home-assistant.io/docs/installation/updating/');
+    return (stateObj.attributes.release_notes
+            || 'https://www.home-assistant.io/docs/installation/updating/');
   }
 }
 

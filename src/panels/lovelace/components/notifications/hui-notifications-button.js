@@ -5,8 +5,6 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeNotifications from '../../common/compute-notifications.js';
-
 import EventsMixin from '../../../../mixins/events-mixin.js';
 
 /*
@@ -36,16 +34,19 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
       }
     </style>
     <paper-icon-button icon="hass:bell" on-click="_clicked"></paper-icon-button>
-    <span class="indicator" hidden$="[[!_hasNotifications(hass.states)]]"></span>
+    <span class="indicator" hidden$="[[!_hasNotifications(notifications)]]"></span>
     `;
   }
 
   static get properties() {
     return {
-      hass: Object,
       notificationsOpen: {
         type: Boolean,
         notify: true
+      },
+      notifications: {
+        type: Array,
+        value: []
       }
     };
   }
@@ -54,8 +55,8 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
     this.notificationsOpen = true;
   }
 
-  _hasNotifications(states) {
-    return computeNotifications(states).length > 0;
+  _hasNotifications(notifications) {
+    return notifications.length > 0;
   }
 }
 customElements.define('hui-notifications-button', HuiNotificationsButton);

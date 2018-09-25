@@ -1,0 +1,142 @@
+import '@polymer/paper-item/paper-icon-item.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-card/paper-card.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../layouts/hass-subpage.js';
+
+import EventsMixin from '../../../mixins/events-mixin.js';
+import computeStateName from '../../../common/entity/compute_state_name.js';
+import '../../../components/entity/state-badge.js';
+import compare from '../../../common/string/compare.js';
+
+function computeEntityName(hass, entity) {
+  if (entity.name) return entity.name;
+  const state = hass.states[entity.entity_id];
+  return state ? computeStateName(state) : null;
+}
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaDeviceCard extends EventsMixin(PolymerElement) {
+  static get template() {
+    return html`
+    <style>
+      paper-card {
+        display: block;
+        padding-bottom: 8px;
+      }
+      .device-row {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 8px;
+      }
+      .device {
+        width: 30%;
+      }
+      .device .name {
+        font-weight: bold;
+      }
+      .device .model,
+      .device .manuf {
+        color: var(--secondary-text-color);
+      }
+      .extra-info {
+        margin-top: 8px;
+      }
+      paper-icon-item {
+        cursor: pointer;
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+      .manuf,
+      .entity-id {
+        color: var(--secondary-text-color);
+      }
+    </style>
+    <paper-card heading='[[device.name]]'>
+      <div class='card-content'>
+      <!-- <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1> -->
+        <div class='info'>
+          <div class='model'>[[device.model]]</div>
+          <div class='manuf'>by [[device.manufacturer]]</div>
+        </div>
+        <template is='dom-if' if='[[device.hub_device_id]]'>
+          <div class='extra-info'>
+            Connected via
+            <span class='hub'>[[_computeDeviceName(devices, device.hub_device_id)]]</span>
+          </div>
+        </template>
+        <template is='dom-if' if='[[device.sw_version]]'>
+          <div class='extra-info'>
+            Firmware: [[device.sw_version]]
+          </div>
+        </template>
+      </div>
+
+      <template is='dom-repeat' items='[[_computeDeviceEntities(hass, device, entities)]]' as='entity'>
+        <paper-icon-item on-click='_openMoreInfo'>
+          <state-badge
+            state-obj="[[_computeStateObj(entity, hass)]]"
+            slot='item-icon'
+          ></state-badge>
+          <paper-item-body>
+            <div class='name'>[[_computeEntityName(entity, hass)]]</div>
+            <div class='secondary entity-id'>[[entity.entity_id]]</div>
+          </paper-item-body>
+        </paper-icon-item>
+      </template>
+    </paper-card>
+
+    `;
+  }
+
+  static get properties() {
+    return {
+      device: Object,
+      devices: Array,
+      entities: Array,
+      hass: Object,
+      _childDevices: {
+        type: Array,
+        computed: '_computeChildDevices(device, devices)',
+      }
+    };
+  }
+
+  _computeChildDevices(device, devices) {
+    return devices
+      .filter(dev => dev.hub_device_id === device.id)
+      .sort((dev1, dev2) => compare(dev1.name, dev2.name));
+  }
+
+  _computeDeviceEntities(hass, device, entities) {
+    return entities
+      .filter(entity => entity.device_id === device.id)
+      .sort((ent1, ent2) => compare(
+        computeEntityName(hass, ent1) || `zzz${ent1.entity_id}`,
+        computeEntityName(hass, ent2) || `zzz${ent2.entity_id}`
+      ));
+  }
+
+  _computeStateObj(entity, hass) {
+    return hass.states[entity.entity_id];
+  }
+
+  _computeEntityName(entity, hass) {
+    return computeEntityName(hass, entity) || '(entity unavailable)';
+  }
+
+  _computeDeviceName(devices, deviceId) {
+    const device = devices.find(dev => dev.id === deviceId);
+    return device ? device.name : '(device unavailable)';
+  }
+
+  _openMoreInfo(ev) {
+    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
+  }
+}
+
+customElements.define('ha-device-card', HaDeviceCard);

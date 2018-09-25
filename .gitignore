@@ -21,6 +21,9 @@ lib
 bin
 dist
 
+# vscode
+.vscode
+
 # Secrets
 .lokalise_token
 yarn-error.log

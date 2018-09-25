@@ -16,6 +16,7 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
       }
       .card-content {
         height: 200px;
+        color: var(--primary-text-color);
       }
       @media screen and (max-width: 830px) {
         paper-card {

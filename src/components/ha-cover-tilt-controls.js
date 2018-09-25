@@ -37,25 +37,31 @@ class HaCoverTiltControls extends PolymerElement {
       },
     };
   }
+
   computeEntityObj(hass, stateObj) {
     return new CoverEntity(hass, stateObj);
   }
+
   computeOpenDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
     return entityObj.isFullyOpenTilt && !assumedState;
   }
+
   computeClosedDisabled(stateObj, entityObj) {
     var assumedState = (stateObj.attributes.assumed_state === true);
     return entityObj.isFullyClosedTilt && !assumedState;
   }
+
   onOpenTiltTap(ev) {
     ev.stopPropagation();
     this.entityObj.openCoverTilt();
   }
+
   onCloseTiltTap(ev) {
     ev.stopPropagation();
     this.entityObj.closeCoverTilt();
   }
+
   onStopTiltTap(ev) {
     ev.stopPropagation();
     this.entityObj.stopCoverTilt();

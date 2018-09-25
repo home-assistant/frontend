@@ -231,6 +231,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                service="refresh_entity"
                hidden$="[[!showHelp]]">
              </ha-service-description>
+             <paper-button on-click="_entityMoreInfo">Entity Information</paper-button>
            </div>
            <div class="form-group">
              <paper-checkbox checked="{{entityIgnored}}" class="form-control">
@@ -252,18 +253,6 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                service-data="[[computePollIntensityServiceData(entityPollingIntensity)]]">
                Save
              </ha-call-service-button>
-           </div>
-           <div class="content">
-             <div class="card-actions">
-               <paper-button toggles="" raised="" noink="" active="{{entityInfoActive}}">Entity Attributes</paper-button>
-             </div>
-             <template is="dom-if" if="{{entityInfoActive}}">
-               <template is="dom-repeat" items="[[selectedEntityAttrs]]" as="state">
-                 <div class="node-info">
-                   <span>[[state]]</span>
-                 </div>
-               </template>
-             </template>
            </div>
 
            </template>
@@ -356,17 +345,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         computed: 'computeEntities(selectedNode)',
       },
 
-      entityInfoActive: Boolean,
-
       selectedEntity: {
         type: Number,
         value: -1,
         observer: 'selectedEntityChanged',
-      },
-
-      selectedEntityAttrs: {
-        type: Array,
-        computed: 'computeSelectedEntityAttrs(selectedEntity)'
       },
 
       values: {
@@ -439,10 +421,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         if (ent.attributes.node_id === undefined) {
           return false;
         }
-        return (!ent.attributes.hidden &&
-                'node_id' in ent.attributes &&
-                ent.attributes.node_id === nodeid &&
-                (!(ent.entity_id).match('zwave[.]')));
+        return (!ent.attributes.hidden
+                && 'node_id' in ent.attributes
+                && ent.attributes.node_id === nodeid
+                && (!(ent.entity_id).match('zwave[.]')));
       })
       .sort(sortByName);
   }
@@ -505,20 +487,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
       });
   }
 
-  computeSelectedEntityAttrs(selectedEntity) {
-    if (selectedEntity === -1) return 'No entity selected';
-    const entityAttrs = this.entities[selectedEntity].attributes;
-    const att = [];
-    Object.keys(entityAttrs).forEach((key) => {
-      att.push(key + ': ' + entityAttrs[key]);
-    });
-    return att.sort();
-  }
-
   computeSelectCaption(stateObj) {
-    return computeStateName(stateObj) + ' (Node:' +
-      stateObj.attributes.node_id + ' ' +
-      stateObj.attributes.query_stage + ')';
+    return computeStateName(stateObj) + ' (Node:'
+      + stateObj.attributes.node_id + ' '
+      + stateObj.attributes.query_stage + ')';
   }
 
   computeSelectCaptionEnt(stateObj) {
@@ -561,6 +533,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _nodeMoreInfo() {
     this.fire('hass-more-info', { entityId: this.nodes[this.selectedNode].entity_id });
+  }
+
+  _entityMoreInfo() {
+    this.fire('hass-more-info', { entityId: this.entities[this.selectedEntity].entity_id });
   }
 
   _saveEntity() {

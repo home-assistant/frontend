@@ -41,8 +41,8 @@ const CARD_TYPES = new Set([
   'vertical-stack',
   'weather-forecast'
 ]);
-
 const CUSTOM_TYPE_PREFIX = 'custom:';
+const TIMEOUT = 2000;
 
 function _createElement(tag, config) {
   const element = document.createElement(tag);
@@ -62,23 +62,24 @@ function _createErrorElement(error, config) {
 }
 
 export default function createCardElement(config) {
-  let tag;
-
   if (!config || typeof config !== 'object' || !config.type) {
     return _createErrorElement('No card type configured.', config);
   }
 
   if (config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    tag = config.type.substr(CUSTOM_TYPE_PREFIX.length);
+    const tag = config.type.substr(CUSTOM_TYPE_PREFIX.length);
 
     if (customElements.get(tag)) {
       return _createElement(tag, config);
     }
-
     const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
+    element.style.display = 'None';
+    const timer = window.setTimeout(() => { element.style.display = ''; }, TIMEOUT);
 
-    customElements.whenDefined(tag)
-      .then(() => fireEvent(element, 'rebuild-view'));
+    customElements.whenDefined(tag).then(() => {
+      clearTimeout(timer);
+      fireEvent(element, 'rebuild-view');
+    });
 
     return element;
   }

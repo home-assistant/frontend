@@ -40,4 +40,3 @@ class HaTextarea extends PolymerElement {
 }
 
 customElements.define('ha-textarea', HaTextarea);
-

@@ -73,8 +73,8 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
           const node = walker.currentNode;
 
           // Open external links in a new window
-          if (node.tagName === 'A' &&
-              node.host !== document.location.host) {
+          if (node.tagName === 'A'
+              && node.host !== document.location.host) {
             node.target = '_blank';
 
           // Fire a resize event when images loaded to notify content resized

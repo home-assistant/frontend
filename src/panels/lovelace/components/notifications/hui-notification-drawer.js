@@ -7,8 +7,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hui-notification-item.js';
 
-import computeNotifications from '../../common/compute-notifications.js';
-
 import EventsMixin from '../../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../../mixins/localize-mixin.js';
 
@@ -105,16 +103,16 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
         <paper-icon-button icon="hass:chevron-right" on-click="_closeDrawer"></paper-icon-button>
       </app-toolbar>
       <div class="notifications">
-        <template is="dom-if" if="[[!_empty(_entities)]]">
-          <dom-repeat items="[[_entities]]">
+        <template is="dom-if" if="[[!_empty(notifications)]]">
+          <dom-repeat items="[[notifications]]">
             <template>
               <div class="notification">
-                <hui-notification-item hass="[[hass]]" state-obj="[[item]]"></hui-notification-item>
+                <hui-notification-item hass="[[hass]]" notification="[[item]]"></hui-notification-item>
               </div>
             </template>
           </dom-repeat>
         </template>
-        <template is="dom-if" if="[[_empty(_entities)]]">
+        <template is="dom-if" if="[[_empty(notifications)]]">
           <div class="empty">[[localize('ui.notification_drawer.empty')]]<div>
         </template>
       </div>
@@ -125,10 +123,6 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
   static get properties() {
     return {
       hass: Object,
-      _entities: {
-        type: Array,
-        computed: '_getEntities(hass.states, hidden)'
-      },
       narrow: {
         type: Boolean,
         reflectToAttribute: true
@@ -142,12 +136,12 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
         type: Boolean,
         value: true,
         reflectToAttribute: true
+      },
+      notifications: {
+        type: Array,
+        value: []
       }
     };
-  }
-
-  _getEntities(states, hidden) {
-    return (states && !hidden) ? computeNotifications(states) : [];
   }
 
   _closeDrawer(ev) {
@@ -155,8 +149,8 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
     this.open = false;
   }
 
-  _empty(entities) {
-    return entities.length === 0;
+  _empty(notifications) {
+    return notifications.length === 0;
   }
 
   _openChanged(open) {

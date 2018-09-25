@@ -20,6 +20,10 @@ class HaForm extends EventsMixin(PolymerElement) {
       .error {
         color: red;
       }
+      paper-checkbox {
+        display: inline-block;
+        padding: 22px 0;
+      }
     </style>
     <template is="dom-if" if="[[_isArray(schema)]]" restamp="">
       <template is="dom-if" if="[[error.base]]">
@@ -96,7 +100,9 @@ class HaForm extends EventsMixin(PolymerElement) {
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;boolean&quot;)]]" restamp="">
-        <paper-checkbox checked="{{data}}">[[computeLabel(schema)]]</paper-checkbox>
+        <div>
+          <paper-checkbox checked="{{data}}">[[computeLabel(schema)]]</paper-checkbox>
+        </div>
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;select&quot;)]]" restamp="">

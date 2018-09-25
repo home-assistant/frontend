@@ -72,9 +72,11 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
       },
     };
   }
+
   temperatureStateInFlux(inFlux) {
     this.$.target_temperature.classList.toggle('in-flux', inFlux);
   }
+
   incrementValue() {
     const newval = this.value + this.step;
     if (this.value < this.max) {
@@ -94,6 +96,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
       this.value = this.max;
     }
   }
+
   decrementValue() {
     const newval = this.value - this.step;
     if (this.value > this.min) {
@@ -106,6 +109,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
       this.value = this.min;
     }
   }
+
   valueChanged() {
     // when the last_changed timestamp is changed,
     // trigger a potential event fire in

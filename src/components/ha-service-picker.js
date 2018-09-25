@@ -34,7 +34,7 @@ class HaServicePicker extends LocalizeMixin(PolymerElement) {
     if (!hass) {
       this._services = [];
       return;
-    } else if (oldHass && hass.services === oldHass.services) {
+    } if (oldHass && hass.services === oldHass.services) {
       return;
     }
     const result = [];

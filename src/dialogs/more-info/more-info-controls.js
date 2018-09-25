@@ -55,8 +55,12 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
       }
     }
 
+    paper-dialog-scrollable {
+      padding-bottom: 16px;
+    }
+
     :host([domain=camera]) paper-dialog-scrollable {
-      margin: 0 -24px -5px;
+      margin: 0 -24px -21px;
     }
   </style>
 
@@ -74,7 +78,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
   <paper-dialog-scrollable dialog-element="[[dialogElement]]">
     <template is="dom-if" if="[[_computeShowHistoryComponent(hass, stateObj)]]" restamp="">
       <ha-state-history-data hass="[[hass]]" filter-type="recent-entity" entity-id="[[stateObj.entity_id]]" data="{{_stateHistory}}" is-loading="{{_stateHistoryLoading}}" cache-config="[[_cacheConfig]]"></ha-state-history-data>
-      <state-history-charts hass="[[hass]]" history-data="[[_stateHistory]]" is-loading-data="[[_stateHistoryLoading]]" up-to-now no-single="[[large]]"></state-history-charts>
+      <state-history-charts hass="[[hass]]" history-data="[[_stateHistory]]" is-loading-data="[[_stateHistoryLoading]]" up-to-now></state-history-charts>
     </template>
     <more-info-content state-obj="[[stateObj]]" hass="[[hass]]"></more-info-content>
   </paper-dialog-scrollable>
@@ -128,9 +132,9 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
   }
 
   _computeShowHistoryComponent(hass, stateObj) {
-    return hass && stateObj &&
-      isComponentLoaded(hass, 'history') &&
-      !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
+    return hass && stateObj
+      && isComponentLoaded(hass, 'history')
+      && !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
   }
 
   _computeDomain(stateObj) {

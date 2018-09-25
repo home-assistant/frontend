@@ -214,8 +214,8 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     var attr;
     var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, '');
     try {
-      attr = attrRaw ?
-        JSON.parse(attrRaw) : {};
+      attr = attrRaw
+        ? JSON.parse(attrRaw) : {};
     } catch (err) {
       /* eslint-disable no-alert */
       alert('Error parsing JSON: ' + err);
@@ -261,7 +261,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
             if (key.includes(keyFilter) && !multiMode) {
               return true; // in single mode we're already satisfied with this match
-            } else if (!key.includes(keyFilter) && multiMode) {
+            } if (!key.includes(keyFilter) && multiMode) {
               continue;
             }
 

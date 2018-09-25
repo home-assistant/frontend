@@ -5,18 +5,18 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../layouts/hass-error-screen.js';
 
-import './automation/ha-config-automation.js';
-import './cloud/ha-config-cloud.js';
-import './config-entries/ha-config-entries.js';
-import './core/ha-config-core.js';
-import './customize/ha-config-customize.js';
-import './dashboard/ha-config-dashboard.js';
-import './script/ha-config-script.js';
-import './users/ha-config-users.js';
-import './zwave/ha-config-zwave.js';
-
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
 import NavigateMixin from '../../mixins/navigate-mixin.js';
+
+import(/* webpackChunkName: "panel-config-automation" */ './automation/ha-config-automation.js');
+import(/* webpackChunkName: "panel-config-cloud" */ './cloud/ha-config-cloud.js');
+import(/* webpackChunkName: "panel-config-config" */ './config-entries/ha-config-entries.js');
+import(/* webpackChunkName: "panel-config-core" */ './core/ha-config-core.js');
+import(/* webpackChunkName: "panel-config-customize" */ './customize/ha-config-customize.js');
+import(/* webpackChunkName: "panel-config-dashboard" */ './dashboard/ha-config-dashboard.js');
+import(/* webpackChunkName: "panel-config-script" */ './script/ha-config-script.js');
+import(/* webpackChunkName: "panel-config-users" */ './users/ha-config-users.js');
+import(/* webpackChunkName: "panel-config-zwave" */ './zwave/ha-config-zwave.js');
 
 /*
  * @appliesMixin NavigateMixin
@@ -49,7 +49,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
         route='[[route]]'
         hass='[[hass]]'
         is-wide='[[isWide]]'
-        account='[[account]]'
+        cloud-status='[[_cloudStatus]]'
       ></ha-config-cloud>
     </template>
 
@@ -58,7 +58,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
         page-name='dashboard'
         hass='[[hass]]'
         is-wide='[[isWide]]'
-        account='[[account]]'
+        cloud-status='[[_cloudStatus]]'
         narrow='[[narrow]]'
         show-menu='[[showMenu]]'
       ></ha-config-dashboard>
@@ -100,6 +100,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
 
     <template is="dom-if" if='[[_equals(_routeData.page, "integrations")]]' restamp>
       <ha-config-entries
+        route='[[route]]'
         page-name='integrations'
         hass='[[hass]]'
         is-wide='[[isWide]]'
@@ -121,7 +122,10 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
       hass: Object,
       narrow: Boolean,
       showMenu: Boolean,
-      account: Object,
+      _cloudStatus: {
+        type: Object,
+        value: null,
+      },
 
       route: {
         type: Object,
@@ -143,11 +147,19 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
   ready() {
     super.ready();
     if (isComponentLoaded(this.hass, 'cloud')) {
-      this.hass.callApi('get', 'cloud/account').then((account) => { this.account = account; });
+      this._updateCloudStatus();
     }
-    this.addEventListener('ha-account-refreshed', (ev) => {
-      this.account = ev.detail.account;
-    });
+    this.addEventListener(
+      'ha-refresh-cloud-status', () => this._updateCloudStatus()
+    );
+  }
+
+  async _updateCloudStatus() {
+    this._cloudStatus = await this.hass.callWS({ type: 'cloud/status' });
+
+    if (this._cloudStatus.cloud === 'connecting') {
+      setTimeout(() => this._updateCloudStatus(), 5000);
+    }
   }
 
   computeIsWide(showMenu, wideSidebar, wide) {

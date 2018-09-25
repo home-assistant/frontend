@@ -133,15 +133,15 @@ class HaStateLabelBadge extends
       case 'alarm_control_panel':
         if (state.state === 'pending') {
           return 'hass:clock-fast';
-        } else if (state.state === 'armed_away') {
+        } if (state.state === 'armed_away') {
           return 'hass:nature';
-        } else if (state.state === 'armed_home') {
+        } if (state.state === 'armed_home') {
           return 'hass:home-variant';
-        } else if (state.state === 'armed_night') {
+        } if (state.state === 'armed_night') {
           return 'hass:weather-night';
-        } else if (state.state === 'armed_custom_bypass') {
+        } if (state.state === 'armed_custom_bypass') {
           return 'hass:security-home';
-        } else if (state.state === 'triggered') {
+        } if (state.state === 'triggered') {
           return 'hass:alert-circle';
         }
         // state == 'disarmed'
@@ -151,8 +151,8 @@ class HaStateLabelBadge extends
       case 'updater':
         return stateIcon(state);
       case 'sun':
-        return state.state === 'above_horizon' ?
-          domainIcon(domain) : 'hass:brightness-3';
+        return state.state === 'above_horizon'
+          ? domainIcon(domain) : 'hass:brightness-3';
       case 'timer':
         return state.state === 'active' ? 'hass:timer' : 'hass:timer-off';
       default:
@@ -166,8 +166,8 @@ class HaStateLabelBadge extends
 
   computeLabel(localize, state, _timerTimeRemaining) {
     const domain = computeStateDomain(state);
-    if (state.state === 'unavailable' ||
-        ['device_tracker', 'alarm_control_panel'].includes(domain)) {
+    if (state.state === 'unavailable'
+        || ['device_tracker', 'alarm_control_panel'].includes(domain)) {
       // Localize the state with a special state_badge namespace, which has variations of
       // the state translations that are truncated to fit within the badge label. Translations
       // are only added for device_tracker and alarm_control_panel.

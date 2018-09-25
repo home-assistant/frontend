@@ -17,6 +17,7 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
       }
       .card-content {
         height: 200px;
+        color: var(--primary-text-color);
       }
       @media screen and (max-width: 830px) {
         paper-card {
@@ -145,8 +146,8 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
   _showHardware() {
     this.hass.callApi('get', 'hassio/hardware/info')
       .then(
-        resp => this._objectToMarkdown(resp.data)
-        , () => 'Error getting hardware info'
+        resp => this._objectToMarkdown(resp.data),
+        () => 'Error getting hardware info'
       ).then((content) => {
         this.fire('hassio-markdown-dialog', {
           title: 'Hardware',

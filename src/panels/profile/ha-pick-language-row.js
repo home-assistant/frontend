@@ -53,6 +53,7 @@ class HaPickLanguageRow extends
       },
     };
   }
+
   static get observers() { return ['setLanguageSelection(language)']; }
 
   computeLanguages(hass) {

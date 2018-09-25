@@ -58,6 +58,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           state-image="[[_config.state_image]]"
           camera-image="[[_getCameraImage(_config)]]"
           entity="[[_config.entity]]"
+          aspect-ratio="[[_config.aspect_ratio]]"
         ></hui-image>
         <template is="dom-if" if="[[_showNameAndState(_config)]]">
           <div class="footer both">
@@ -101,8 +102,8 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
 
     this._entityDomain = computeDomain(config.entity);
-    if (this._entityDomain !== 'camera' &&
-        (!config.image && !config.state_image && !config.camera_image)) {
+    if (this._entityDomain !== 'camera'
+        && (!config.image && !config.state_image && !config.camera_image)) {
       throw new Error('No image source configured.');
     }
 
@@ -115,8 +116,8 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     const stateObj = hass.states[entityId];
 
     // Nothing changed
-    if ((!stateObj && this._oldState === UNAVAILABLE) ||
-        (stateObj && stateObj.state === this._oldState)) {
+    if ((!stateObj && this._oldState === UNAVAILABLE)
+        || (stateObj && stateObj.state === this._oldState)) {
       return;
     }
 

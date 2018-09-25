@@ -78,6 +78,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
           state-image="[[_config.state_image]]"
           camera-image="[[_config.camera_image]]"
           entity="[[_config.entity]]"
+          aspect-ratio="[[_config.aspect_ratio]]"
         ></hui-image>
         <div class="box">
           <template is="dom-if" if="[[_config.title]]">
@@ -122,9 +123,9 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   setConfig(config) {
-    if (!config || !config.entities || !Array.isArray(config.entities) ||
-      !(config.image || config.camera_image || config.state_image) ||
-      (config.state_image && !config.entity)) {
+    if (!config || !config.entities || !Array.isArray(config.entities)
+      || !(config.image || config.camera_image || config.state_image)
+      || (config.state_image && !config.entity)) {
       throw new Error('Invalid card configuration');
     }
     const entities = processConfigEntities(config.entities);

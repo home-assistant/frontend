@@ -545,6 +545,32 @@
                     "error_no_theme": "Aucun thème disponible.",
                     "link_promo": "En savoir plus sur les thèmes",
                     "dropdown_label": "Thème"
+                },
+                "refresh_tokens": {
+                    "header": "Actualiser les jetons",
+                    "description": "Chaque jeton d'actualisation représente une session de connexion. Les jetons d'actualisation seront automatiquement supprimés lorsque vous cliquez sur Déconnexion. Les jetons d'actualisation suivants sont actuellement actifs pour votre compte.",
+                    "token_title": "Actualiser le jeton de {clientId}",
+                    "created_at": "Créé le {date}",
+                    "confirm_delete": "Êtes-vous sûr de vouloir supprimer le jeton d'actualisation de {name} ?",
+                    "delete_failed": "Impossible de supprimer le jeton d'actualisation",
+                    "last_used": "Dernière utilisation le {date} à partir de {location}",
+                    "not_used": "N'a jamais été utilisé",
+                    "current_token_tooltip": "Impossible de supprimer le jeton d'actualisation actuel"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Jetons d'accès de longue durée",
+                    "description": "Créez des jetons d'accès de longue durée pour permettre à vos scripts d'interagir avec votre instance de Home Assistant. Chaque jeton sera valable 10 ans à compter de sa création. Les jetons d'accès longue durée suivants sont actuellement actifs.",
+                    "learn_auth_requests": "Apprenez comment faire des demandes authentifiées.",
+                    "created_at": "Créé le {date}",
+                    "confirm_delete": "Êtes-vous sûr de vouloir supprimer le jeton d'accès de {name} ?",
+                    "delete_failed": "Impossible de supprimer le jeton d'accès.",
+                    "create": "Créer un jeton",
+                    "create_failed": "Impossible de créer le jeton d'accès.",
+                    "prompt_name": "Nom ?",
+                    "prompt_copy_token": "Copiez votre jeton d'accès. Il ne sera plus affiché à nouveau.",
+                    "empty_state": "Vous n'avez pas encore de jetons d'accès longue durée.",
+                    "last_used": "Dernière utilisation le {date} à partir de {location}",
+                    "not_used": "N'a jamais été utilisé"
                 }
             },
             "page-authorize": {

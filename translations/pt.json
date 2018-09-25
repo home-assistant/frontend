@@ -545,12 +545,38 @@
                     "error_no_theme": "Não há temas disponíveis.",
                     "link_promo": "Saiba mais sobre temas",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "",
+                    "description": "Cada \"refresh token\" representa a uma sessão de utilizador. Os \"refresh tokens\" serão automáticamente removidos quando clicar sair. Os seguintes \"refresh tokens\" estão activos para a sua conta.",
+                    "token_title": "Atualizar o token de {clientId}",
+                    "created_at": "Criado a {date}",
+                    "confirm_delete": "Tem certeza de que deseja apagar o \"refresh token\" de {name} ?",
+                    "delete_failed": "Falha ao apagar o \"refresh token\"",
+                    "last_used": "Última utilização a {date} em {location}",
+                    "not_used": "Nunca foi utilizado",
+                    "current_token_tooltip": "Não é possível eliminar o \"refresh token\" actual"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Tokens de acesso de longa duração",
+                    "description": "Crie tokens de acesso de longa duração para permitir que os seus scripts possam interagir com a sua instancia do Home Assistant. Cada token será válido durante 10 anos após criação. Os seguintes tokens de acesso de longa duração estão actualmente activos.",
+                    "learn_auth_requests": "Aprenda a fazer pedidos autenticados.",
+                    "created_at": "Criado a {date}",
+                    "confirm_delete": "Tem certeza de que deseja apagar o token de acesso de {name} ?",
+                    "delete_failed": "Falha ao criar o token de acesso.",
+                    "create": "Criar Token",
+                    "create_failed": "Falha ao criar o token de acesso.",
+                    "prompt_name": "Nome?",
+                    "prompt_copy_token": "Copie seu token de acesso. Não será mostrado novamente.",
+                    "empty_state": "Ainda não tem um token de longa duração",
+                    "last_used": "Última utilização a {date} em {location}",
+                    "not_used": "Nunca foi utilizado"
                 }
             },
             "page-authorize": {
                 "initializing": "A inicializar",
                 "authorizing_client": "Você está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
-                "logging_in_with": "Fazendo login com **{authProviderName}**.",
+                "logging_in_with": "Iniciar a sessão com **{authProviderName}**.",
                 "pick_auth_provider": "Ou faça login com",
                 "abort_intro": "Login abortado",
                 "form": {

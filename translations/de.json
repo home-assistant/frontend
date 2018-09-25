@@ -545,6 +545,32 @@
                     "error_no_theme": "Keine Themen verfügbar.",
                     "link_promo": "Erfahre mehr über Themen",
                     "dropdown_label": "Thema"
+                },
+                "refresh_tokens": {
+                    "header": "Aktualisierungs-Tokens",
+                    "description": "Jedes Aktualisierungstoken stellt eine Anmeldesitzung dar. Aktualisierungstoken werden automatisch entfernt, wenn du auf Abmelden klickst. Die folgenden Aktualisierungstoken sind derzeit für dein Konto aktiv.",
+                    "token_title": "Aktualisierungs-Token für {clientId}",
+                    "created_at": "Erstellt am {date}",
+                    "confirm_delete": "Möchtest du das Aktualisierungstoken für {name} wirklich löschen?",
+                    "delete_failed": "Fehler beim Löschen des Aktualisierungs-Token.",
+                    "last_used": "Zuletzt verwendet am {date} in {location}",
+                    "not_used": "Wurde noch nie benutzt",
+                    "current_token_tooltip": "Aktueller Refresh-Token konnte nicht gelöscht werden"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Langlebige Zugangs-Token",
+                    "description": "Erstelle langlebige Zugriffstoken, damit deine Skripte mit deiner Home Assistant-Instanz interagieren können. Jedes Token ist ab der Erstellung für 10 Jahre gültig. Die folgenden langlebigen Zugriffstoken sind derzeit aktiv.",
+                    "learn_auth_requests": "Erfahre, wie du authentifizierte Anfragen stellen kannst.",
+                    "created_at": "Erstellt am {date}",
+                    "confirm_delete": "Möchtest du den Zugriffs-Token für {name} wirklich löschen?",
+                    "delete_failed": "Fehler beim Löschen des Zugriffs-Tokens.",
+                    "create": "Token erstellen",
+                    "create_failed": "Das Zugriffs-Token konnte nicht erstellt werden.",
+                    "prompt_name": "Name?",
+                    "prompt_copy_token": "Kopiere deinen Zugangs-Token. Er wird nicht wieder angezeigt werden.",
+                    "empty_state": "Du hast noch keine langlebigen Zugangs-Token.",
+                    "last_used": "Zuletzt verwendet am {date} in {location}",
+                    "not_used": "Wurde noch nie benutzt"
                 }
             },
             "page-authorize": {
@@ -747,9 +773,9 @@
             },
             "vacuum": {
                 "actions": {
-                    "resume_cleaning": "Fortsetzen der Reinigung",
+                    "resume_cleaning": "Reinigung fortsetzen",
                     "return_to_base": "Zurück zur Dockingstation",
-                    "start_cleaning": "Beginn der Reinigung",
+                    "start_cleaning": "Reinigung starten",
                     "turn_on": "Einschalten",
                     "turn_off": "Ausschalten"
                 }
