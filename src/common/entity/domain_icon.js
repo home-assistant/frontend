@@ -6,6 +6,7 @@
 import { DEFAULT_DOMAIN_ICON } from '../const.js';
 
 const fixedIcons = {
+  alert: 'hass:alert',
   automation: 'hass:playlist-play',
   calendar: 'hass:calendar',
   camera: 'hass:video',
