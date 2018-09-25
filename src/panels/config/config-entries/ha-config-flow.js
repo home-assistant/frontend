@@ -279,10 +279,10 @@ class HaConfigFlow extends
   _computeStepDescription(localize, step) {
     const args = [];
     if (step.type === 'form') {
-      args.push(`component.${step.handler}.config.step.${step.step_id}.description`)
+      args.push(`component.${step.handler}.config.step.${step.step_id}.description`);
     } else if (step.type === 'abort') {
       args.push(`component.${step.handler}.config.abort.${step.reason}`);
-    } else  if (step.type === 'create_entry') {
+    } else if (step.type === 'create_entry') {
       args.push(`component.${step.handler}.config.create_entry.${step.description || 'default'}`);
     }
 
