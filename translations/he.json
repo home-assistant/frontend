@@ -548,24 +548,86 @@
                 },
                 "refresh_tokens": {
                     "header": "רענן אסימונים",
-                    "not_used": "לא היה בשימוש"
+                    "description": "כל אסימון רענון מייצג הפעלת התחברות. אסימוני רענון יוסרו באופן אוטומטי כאשר תלחץ על יציאה. אסימוני הרענון הבאים פעילים כעת עבור חשבונך.",
+                    "token_title": "אסימון רענון עבור {clientId}",
+                    "created_at": "נוצר בתאריך {date}",
+                    "confirm_delete": "האם אתה בטוח שברצונך למחוק את אסימון הרענון עבור {name} ",
+                    "delete_failed": "מחיקת אסימון הרענון נכשלה.",
+                    "last_used": "נעשה שימוש לאחרונה ב {date} מ{location}",
+                    "not_used": "לא היה בשימוש",
+                    "current_token_tooltip": "לא ניתן למחוק את אסימון הרענון הנוכחי"
                 },
                 "long_lived_access_tokens": {
+                    "header": "אסימוני גישה ארוכים חיים",
+                    "description": "צור אסימוני גישה ארוכי טווח כדי לאפשר לסקריפטים שלך כדי לקיים אינטראקציה עם Home Assistant.\nאסימונים אלו פועלים כיום:",
+                    "learn_auth_requests": "למד כיצד לבצע בקשות מאומתות.",
+                    "created_at": "נוצר בתאריך {date}",
+                    "confirm_delete": "האם אתה בטוח שברצונך למחוק את אסימון הגישה עבור {name} ?",
+                    "delete_failed": "מחיקת אסימון הגישה נכשלה.",
                     "create": "צור אסימון",
-                    "prompt_name": "שֵׁם?"
+                    "create_failed": "יצירת אסימון הגישה נכשלה.",
+                    "prompt_name": "שֵׁם?",
+                    "prompt_copy_token": "העתק את אסימון הגישה שלך. הוא לא יוצג שוב.",
+                    "empty_state": "אין לך עדיין אסימוני גישה ארוכים.",
+                    "last_used": "נעשה שימוש לאחרונה {date} מ{location}",
+                    "not_used": "לא היה בשימוש\n"
                 }
             },
             "page-authorize": {
                 "initializing": "מאתחל",
+                "authorizing_client": "אתה עומד לתת גישה ל{clientId} עבור הHome Assistant שלך.",
+                "logging_in_with": "מתחבר  ** {authProviderName} **.",
+                "pick_auth_provider": "או התחבר עם",
+                "abort_intro": "הכניסה בוטלה",
                 "form": {
+                    "working": "אנא המתן",
+                    "unknown_error": "משהו השתבש",
                     "providers": {
                         "homeassistant": {
                             "step": {
                                 "init": {
                                     "data": {
+                                        "username": "שם משתמש",
                                         "password": "סיסמה"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "קוד אימות דו "
+                                    },
+                                    "description": "פתח את ** {mfa_module_name} ** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
                                 }
+                            },
+                            "error": {
+                                "invalid_auth": "שם משתמש או סיסמה לא חוקיים",
+                                "invalid_code": "קוד אימות לא חוקי"
+                            },
+                            "abort": {
+                                "login_expired": "פג תוקף הפעילות באתר, היכנס שוב."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": " סיסמת הAPI."
+                                    },
+                                    "description": "הזן את סיסמת הAPI שלך תחת http בקונפיגורציה:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "קוד אימות דו שלבי"
+                                    },
+                                    "description": "פתח את ** {mfa_module_name} ** במכשיר שלך כדי להציג את קוד האימות הדו שלבי ולאמת את הזהות שלך:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "סיסמת API לא חוקית",
+                                "invalid_code": "קוד אימות לא חוקי"
+                            },
+                            "abort": {
+                                "no_api_password_set": "לא הגדרת את סיסמת הAPI.",
+                                "login_expired": "פג תוקף הפעילות, היכנס שוב."
                             }
                         },
                         "trusted_networks": {
@@ -573,14 +635,19 @@
                                 "init": {
                                     "data": {
                                         "user": "מִשׁתַמֵשׁ"
-                                    }
+                                    },
+                                    "description": "בחר משתמש שאליו ברצונך להתחבר:"
                                 }
+                            },
+                            "abort": {
+                                "not_whitelisted": "המחשב שלך אינו רשום ברשימת ההיתרים."
                             }
                         }
                     }
                 }
             },
             "page-onboarding": {
+                "intro": "האם אתה מוכן לעורר את הבית שלך, להחזיר את הפרטיות שלך ולהצטרף לקהילה של tinkerers ברחבי העולם?",
                 "user": {
                     "intro": "בואו נתחיל על ידי יצירת חשבון משתמש.",
                     "required_field": "נדרש",
@@ -588,6 +655,10 @@
                         "name": "שם",
                         "username": "שם משתמש",
                         "password": "סיסמה"
+                    },
+                    "create_account": "צור חשבון",
+                    "error": {
+                        "required_fields": "מלא את כל השדות הדרושים"
                     }
                 }
             }
@@ -754,6 +825,11 @@
             "ask": "האם ברצונך לשמור את ההתחברות הזו?",
             "decline": "לא תודה",
             "confirm": "שמור התחברות"
+        },
+        "notification_drawer": {
+            "click_to_configure": "לחץ על הלחצן כדי להגדיר {entity}",
+            "empty": "אין התראות",
+            "title": "התראות"
         }
     },
     "domain": {
