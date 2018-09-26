@@ -546,7 +546,29 @@
                     "link_promo": "Läs mer om teman",
                     "dropdown_label": "Tema"
                 },
+                "refresh_tokens": {
+                    "header": "Uppdatera tokens",
+                    "description": "Varje uppdateringstoken representerar en inloggningssession. Uppdateringstokens kommer automatiskt att raderas när du loggar ut. Följande uppdateringstokens är för närvarande aktiva för ditt konto.",
+                    "token_title": "Uppdatera token för {clientId}",
+                    "created_at": "Skapades den {date}",
+                    "confirm_delete": "Är du säker på att du vill radera uppdateringstoken för {name} ?",
+                    "delete_failed": "Kunde inte radera uppdateringstoken.",
+                    "last_used": "Senast använt den {date} från {location}",
+                    "not_used": "Har aldrig använts",
+                    "current_token_tooltip": "Det går inte att radera nuvarande uppdateringstoken"
+                },
                 "long_lived_access_tokens": {
+                    "header": "Långlivade åtkomsttoken",
+                    "description": "Skapa långlivade åtkomsttokens för att låta dina skript interagera med din hemassistentenhet. Varje token kommer att vara giltig i 10 år från skapandet. Följande långlivade åtkomsttoken är för närvarande aktiva.",
+                    "learn_auth_requests": "Lär dig hur du gör autentiserade förfrågningar.",
+                    "created_at": "Skapades den {date}",
+                    "confirm_delete": "Är du säker du vill radera åtkomsttoken för {namn}?",
+                    "delete_failed": "Det gick inte att ta bort åtkomsttoken.",
+                    "create": "Skapa token",
+                    "create_failed": "Det gick inte att skapa åtkomsttoken.",
+                    "prompt_name": "Namn?",
+                    "prompt_copy_token": "Kopiera din åtkomsttoken. Den kommer inte att visas igen.",
+                    "empty_state": "Du har än så länge inga långlivade åtkomsttokens.",
                     "last_used": "Användes senast den {date} från {location} ",
                     "not_used": "Har aldrig använts"
                 }
