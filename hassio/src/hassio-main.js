@@ -93,6 +93,7 @@ class HassioMain extends NavigateMixin(PolymerElement) {
     if (route.path === '' && route.prefix === '/hassio') {
       this.navigate('/hassio/dashboard', true);
     }
+    this.fire('iron-resize');
   }
 
   equalsAddon(page) {
