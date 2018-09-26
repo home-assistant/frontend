@@ -43,10 +43,10 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
       on-click='_removeEntry'
     ></paper-icon-button>
     <div class='content'>
-      <template is='dom-if' if='[[!configEntryDevices.length]]'>
+      <template is='dom-if' if='[[_computeIsEmpty(_configEntryDevices, _noDeviceEntities)]]'>
         <p>This integration has no devices.</p>
       </template>
-      <template is='dom-repeat' items='[[configEntryDevices]]' as='device'>
+      <template is='dom-repeat' items='[[_configEntryDevices]]' as='device'>
         <ha-device-card
           hass='[[hass]]'
           devices='[[devices]]'
@@ -54,10 +54,10 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
           entities='[[entities]]'
         ></ha-device-card>
       </template>
-      <template is='dom-if' if='[[noDeviceEntities.length]]'>
+      <template is='dom-if' if='[[_noDeviceEntities.length]]'>
         <ha-ce-entities-card
           heading='Entities without devices'
-          entities='[[noDeviceEntities]]'
+          entities='[[_noDeviceEntities]]'
           hass='[[hass]]'
         ></ha-ce-entities-card>
       </template>
@@ -75,7 +75,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
         value: null,
       },
 
-      configEntryDevices: {
+      _configEntryDevices: {
         type: Array,
         computed: '_computeConfigEntryDevices(configEntry, devices)'
       },
@@ -84,7 +84,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
        * All entity registry entries for this config entry that do not belong
        * to a device.
        */
-      noDeviceEntities: {
+      _noDeviceEntities: {
         type: Array,
         computed: '_computeNoDeviceEntities(configEntry, entities)',
       },
@@ -117,6 +117,10 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
   _computeNoDeviceEntities(configEntry, entities) {
     if (!entities) return [];
     return entities.filter(ent => !ent.device_id && ent.config_entry_id === configEntry.entry_id);
+  }
+
+  _computeIsEmpty(configEntryDevices, noDeviceEntities) {
+    return configEntryDevices.length === 0 && noDeviceEntities.length === 0;
   }
 
   _removeEntry() {
