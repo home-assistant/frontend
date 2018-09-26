@@ -6,6 +6,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../layouts/hass-error-screen.js';
 
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 import NavigateMixin from '../../mixins/navigate-mixin.js';
 
 import(/* webpackChunkName: "panel-config-automation" */ './automation/ha-config-automation.js');
@@ -19,9 +20,10 @@ import(/* webpackChunkName: "panel-config-users" */ './users/ha-config-users.js'
 import(/* webpackChunkName: "panel-config-zwave" */ './zwave/ha-config-zwave.js');
 
 /*
+ * @appliesMixin EventsMixin
  * @appliesMixin NavigateMixin
  */
-class HaPanelConfig extends NavigateMixin(PolymerElement) {
+class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <app-route
@@ -170,6 +172,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
     if (route.path === '' && route.prefix === '/config') {
       this.navigate('/config/dashboard', true);
     }
+    this.fire('iron-resize');
   }
 
   _equals(a, b) {
