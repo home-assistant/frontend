@@ -18,7 +18,7 @@
     "state": {
         "default": {
             "off": "wyłączony",
-            "on": "Włączony",
+            "on": "włączony",
             "unknown": "nieznany",
             "unavailable": "niedostępny"
         },
@@ -41,7 +41,7 @@
         "binary_sensor": {
             "default": {
                 "off": "wyłączony",
-                "on": "Włączony"
+                "on": "włączony"
             },
             "moisture": {
                 "off": "sucho",
@@ -88,7 +88,7 @@
                 "on": "rozładowana"
             },
             "problem": {
-                "off": "OK",
+                "off": "ok",
                 "on": "problem"
             },
             "connectivity": {
@@ -116,13 +116,13 @@
                 "on": "otwarte"
             },
             "lock": {
-                "off": "Zamknięty",
-                "on": "Otwarty"
+                "off": "zamknięty",
+                "on": "otwarty"
             }
         },
         "calendar": {
             "off": "wyłączony",
-            "on": "Włączony"
+            "on": "włączony"
         },
         "camera": {
             "recording": "nagrywanie",
@@ -131,7 +131,7 @@
         },
         "climate": {
             "off": "wyłączony",
-            "on": "Włączony",
+            "on": "włączony",
             "heat": "ogrzewanie",
             "cool": "chłodzenie",
             "idle": "nieaktywny",
@@ -150,9 +150,9 @@
             "configured": "skonfigurowany"
         },
         "cover": {
-            "open": "Otwarta",
+            "open": "otwarta",
             "opening": "otwieranie",
-            "closed": "Zamknięta",
+            "closed": "zamknięta",
             "closing": "zamykanie",
             "stopped": "zatrzymany"
         },
@@ -162,7 +162,7 @@
         },
         "fan": {
             "off": "wyłączony",
-            "on": "Włączony"
+            "on": "włączony"
         },
         "group": {
             "off": "wyłączony",
@@ -176,12 +176,12 @@
             "stopped": "zatrzymany",
             "locked": "zablokowany",
             "unlocked": "odblokowany",
-            "ok": "OK",
+            "ok": "ok",
             "problem": "problem"
         },
         "input_boolean": {
             "off": "wyłączony",
-            "on": "Włączony"
+            "on": "włączony"
         },
         "light": {
             "off": "wyłączony",
@@ -193,49 +193,49 @@
         },
         "media_player": {
             "off": "wyłączony",
-            "on": "Włączony",
+            "on": "włączony",
             "playing": "odtwarzanie",
             "paused": "pauza",
             "idle": "nieaktywny",
             "standby": "tryb czuwania"
         },
         "plant": {
-            "ok": "OK",
+            "ok": "ok",
             "problem": "problem"
         },
         "remote": {
             "off": "wyłączony",
-            "on": "Włączony"
+            "on": "włączony"
         },
         "scene": {
             "scening": "sceny"
         },
         "script": {
             "off": "wyłączony",
-            "on": "Włączony"
+            "on": "włączony"
         },
         "sensor": {
             "off": "wyłączony",
-            "on": "Włączony"
+            "on": "włączony"
         },
         "sun": {
-            "above_horizon": "Powyżej horyzontu",
-            "below_horizon": "Poniżej horyzontu"
+            "above_horizon": "powyżej horyzontu",
+            "below_horizon": "poniżej horyzontu"
         },
         "switch": {
-            "off": "Wyłączony",
-            "on": "Włączony"
+            "off": "wyłączony",
+            "on": "włączony"
         },
         "zwave": {
             "default": {
-                "initializing": "Inicjalizacja",
-                "dead": "Nieaktywny",
-                "sleeping": "Uśpiony",
-                "ready": "Gotowy"
+                "initializing": "inicjalizacja",
+                "dead": "martwy",
+                "sleeping": "uśpiony",
+                "ready": "gotowy"
             },
             "query_stage": {
                 "initializing": "inicjalizacja ({query_stage})",
-                "dead": "Nieaktywny ({query_stage})"
+                "dead": "martwy ({query_stage})"
             }
         },
         "weather": {

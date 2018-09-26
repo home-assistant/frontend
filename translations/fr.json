@@ -824,7 +824,7 @@
         "auth_store": {
             "ask": "Voulez-vous enregistrer cette connexion?",
             "decline": "Non merci",
-            "confirm": "Enregistrer la connexion"
+            "confirm": "Connexion automatique"
         },
         "notification_drawer": {
             "click_to_configure": "Cliquez sur le bouton pour configurer {entity}",
