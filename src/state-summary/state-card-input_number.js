@@ -1,12 +1,12 @@
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-slider/paper-slider.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
+import '../components/ha-slider';
 
 class StateCardInputNumber extends mixinBehaviors([
   IronResizableBehavior
@@ -15,7 +15,7 @@ class StateCardInputNumber extends mixinBehaviors([
     return html`
     <style include="iron-flex iron-flex-alignment"></style>
     <style>
-      paper-slider {
+      ha-slider {
         margin-left: auto;
       }
       .state {
@@ -28,7 +28,7 @@ class StateCardInputNumber extends mixinBehaviors([
       .sliderstate {
           min-width: 45px;
       }
-      paper-slider[hidden] {
+      ha-slider[hidden] {
         display: none !important;
       }
       paper-input {
@@ -39,7 +39,7 @@ class StateCardInputNumber extends mixinBehaviors([
 
     <div class="horizontal justified layout" id="input_number_card">
       ${this.stateInfoTemplate}
-      <paper-slider min="[[min]]" max="[[max]]" value="{{value}}" step="[[step]]" hidden="[[hiddenslider]]" pin="" on-change="selectedValueChanged" on-click="stopPropagation" id="slider" ignore-bar-touch="">
+      <ha-slider min="[[min]]" max="[[max]]" value="{{value}}" step="[[step]]" hidden="[[hiddenslider]]" pin="" on-change="selectedValueChanged" on-click="stopPropagation" id="slider" ignore-bar-touch="">
       </paper-slider>
       <paper-input no-label-float="" auto-validate="" pattern="[0-9]+([\\.][0-9]+)?" step="[[step]]" min="[[min]]" max="[[max]]" value="{{value}}" type="number" on-change="selectedValueChanged" on-click="stopPropagation" hidden="[[hiddenbox]]">
       </paper-input>
