@@ -151,7 +151,8 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.operationIndex = -1;
     if (this.stateObj.attributes.operation_list) {
       this.operationIndex = this.stateObj.attributes.operation_list.indexOf(
-        this.stateObj.attributes.operation_mode);
+        this.stateObj.attributes.operation_mode
+      );
     }
   }
 
