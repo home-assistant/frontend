@@ -84,7 +84,7 @@ export default function domainIcon(domain, state) {
         case 'initializing':
           return 'hass:timer-sand';
         default:
-          return 'hass:nfc';
+          return 'hass:z-wave';
       }
 
     default:
