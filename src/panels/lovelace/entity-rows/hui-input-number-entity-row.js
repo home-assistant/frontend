@@ -1,11 +1,11 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-slider/paper-slider.js';
 import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 
 import '../components/hui-generic-entity-row.js';
+import '../../../components/ha-slider';
 
 class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], PolymerElement) {
   static get template() {
@@ -44,7 +44,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
       <div>
         <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'slider')]]">
           <div class="flex">
-            <paper-slider
+            <ha-slider
               min="[[_min]]"
               max="[[_max]]"
               value="{{_value}}"
@@ -52,7 +52,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
               pin
               on-change="_selectedValueChanged"
               ignore-bar-touch
-            ></paper-slider>
+            ></ha-slider>
             <span class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</span>
           </div>
         </template>
