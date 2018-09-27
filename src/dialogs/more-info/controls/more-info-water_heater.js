@@ -150,7 +150,8 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // force polymer to recognize selected item change (to update actual label)
     this.operationIndex = -1;
     if (this.stateObj.attributes.operation_list) {
-      this.operationIndex = this.stateObj.attributes.operation_list.indexOf(this.stateObj.attributes.operation_mode);
+      this.operationIndex = this.stateObj.attributes.operation_list.indexOf(
+        this.stateObj.attributes.operation_mode);
     }
   }
 
@@ -169,7 +170,8 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   supportsTemperature(stateObj) {
-    return (stateObj.attributes.supported_features & 1) !== 0 && typeof stateObj.attributes.temperature === 'number';
+    return (stateObj.attributes.supported_features & 1) !== 0
+            && typeof stateObj.attributes.temperature === 'number';
   }
 
   supportsOperationMode(stateObj) {
