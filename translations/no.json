@@ -12,7 +12,7 @@
         "dev-events": "Hendelser",
         "dev-templates": "Maler",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info",
+        "dev-info": "Informasjon",
         "calendar": "Kalender"
     },
     "state": {
