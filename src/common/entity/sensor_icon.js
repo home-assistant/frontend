@@ -6,6 +6,7 @@ const fixedDeviceClassIcons = {
   humidity: 'hass:water-percent',
   illuminance: 'hass:brightness-5',
   temperature: 'hass:thermometer',
+  pressure: 'hass:gauge'
 };
 
 export default function sensorIcon(state) {
