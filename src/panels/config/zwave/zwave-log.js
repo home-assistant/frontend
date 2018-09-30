@@ -2,6 +2,8 @@ import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-dialog/paper-dialog.js';
+import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
@@ -39,6 +41,12 @@ class OzwLog extends PolymerElement {
           <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>   
           <paper-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</paper-button>
       </paper-card>
+      <paper-dialog id="pwaDialog">
+        <h2>OpenZwave internal logfile</h2>
+        <paper-dialog-scrollable>
+          <pre>[[_ozwLogs]]</pre>
+        <paper-dialog-scrollable>
+      </paper-dialog>
     </ha-config-section>
 `;
   }
@@ -78,9 +86,12 @@ class OzwLog extends PolymerElement {
   async _openLogWindow() {
     const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
     this.setProperties({ _ozwLogs: info });
-    const ozwWindow = window.open('', 'OpenZwave internal log', 'toolbar');
-    ozwWindow.document.title = 'OpenZwave internal logfile';
-    ozwWindow.document.body.innerText = this._ozwLogs;
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      this.$.pwaDialog.open();
+      return -1;
+    }
+    const ozwWindow = open('', 'ozwLog', 'toolbar');
+    ozwWindow.document.body.innerHTML = `<pre>${this._ozwLogs}</pre>`;
     return ozwWindow;
   }
 
@@ -91,7 +102,10 @@ class OzwLog extends PolymerElement {
     } else {
       const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
       this.setProperties({ _ozwLogs: info });
-      ozwWindow.document.body.innerText = this._ozwLogs;
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        return;
+      }
+      ozwWindow.document.body.innerHTML = `<pre>${this._ozwLogs}</pre>`;
     }
   }
 
