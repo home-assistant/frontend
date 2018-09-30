@@ -86,7 +86,7 @@ class OzwLog extends PolymerElement {
   async _openLogWindow() {
     const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
     this.setProperties({ _ozwLogs: info });
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (this._isPwa()) {
       this.$.pwaDialog.open();
       return -1;
     }
@@ -96,13 +96,13 @@ class OzwLog extends PolymerElement {
   }
 
   async _refreshLog(ozwWindow) {
-    if (ozwWindow.closed === true || this.$.pwaDialog.opened === false) {
+    if (ozwWindow.closed === true || (this._isPwa() && this.$.pwaDialog.opened === false)) {
       clearInterval(this._intervalId);
       this.setProperties({ _intervalId: null });
     } else {
       const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
       this.setProperties({ _ozwLogs: info });
-      if (window.matchMedia('(display-mode: standalone)').matches) {
+      if (this._isPwa()) {
         return;
       }
       ozwWindow.document.body.innerHTML = `<pre>${this._ozwLogs}</pre>`;
@@ -113,6 +113,10 @@ class OzwLog extends PolymerElement {
     if (this._numLogLines !== '0') {
       this.setProperties({ _completeLog: false });
     } else { this.setProperties({ _completeLog: true }); }
+  }
+
+  _isPwa() {
+    return (window.matchMedia('(display-mode: standalone)').matches);
   }
 }
 customElements.define('ozw-log', OzwLog);
