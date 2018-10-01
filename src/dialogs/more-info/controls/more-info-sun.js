@@ -4,9 +4,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-relative-time.js';
 
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import formatTime from '../../../common/datetime/format_time.js';
 
-class MoreInfoSun extends PolymerElement {
+class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex iron-flex-alignment"></style>
@@ -64,7 +65,7 @@ class MoreInfoSun extends PolymerElement {
   }
 
   itemValue(type) {
-    return formatTime(this.itemDate(type));
+    return formatTime(this.itemDate(type), this.language);
   }
 }
 
