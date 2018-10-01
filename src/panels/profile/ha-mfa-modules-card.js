@@ -105,7 +105,9 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   _disable(ev) {
     if (!confirm(this.localize(
       'ui.panel.profile.mfa.confirm_disable',
-      'name', ev.model.module.name))) return;
+      'name', ev.model.module.name))) {
+      return;
+    }
 
     const mfaModuleId = ev.model.module.id;
 
