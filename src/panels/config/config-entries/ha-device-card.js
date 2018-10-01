@@ -7,6 +7,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../layouts/hass-subpage.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import '../../../components/entity/state-badge.js';
 import compare from '../../../common/string/compare.js';
@@ -20,7 +21,7 @@ function computeEntityName(hass, entity) {
 /*
  * @appliesMixin EventsMixin
  */
-class HaDeviceCard extends EventsMixin(PolymerElement) {
+class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -61,17 +62,19 @@ class HaDeviceCard extends EventsMixin(PolymerElement) {
       <!-- <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1> -->
         <div class='info'>
           <div class='model'>[[device.model]]</div>
-          <div class='manuf'>by [[device.manufacturer]]</div>
+          <div class='manuf'>
+            [[localize('ui.panel.config.integrations.config_entry.manuf', 'manufacturer', device.manufacturer)]]
+          </div>
         </div>
         <template is='dom-if' if='[[device.hub_device_id]]'>
           <div class='extra-info'>
-            Connected via
+            [[localize('ui.panel.config.integrations.config_entry.hub')]]
             <span class='hub'>[[_computeDeviceName(devices, device.hub_device_id)]]</span>
           </div>
         </template>
         <template is='dom-if' if='[[device.sw_version]]'>
           <div class='extra-info'>
-            Firmware: [[device.sw_version]]
+            [[localize('ui.panel.config.integrations.config_entry.firmware', 'version', device.sw_version)]]
           </div>
         </template>
       </div>
@@ -126,12 +129,14 @@ class HaDeviceCard extends EventsMixin(PolymerElement) {
   }
 
   _computeEntityName(entity, hass) {
-    return computeEntityName(hass, entity) || '(entity unavailable)';
+    return computeEntityName(hass, entity)
+        || this.localize('ui.panel.config.integrations.config_entry.entity_unavailable');
   }
 
   _computeDeviceName(devices, deviceId) {
     const device = devices.find(dev => dev.id === deviceId);
-    return device ? device.name : '(device unavailable)';
+    return device ? device.name
+        : this.localize('ui.panel.config.integrations.config_entry.device_unavailable');
   }
 
   _openMoreInfo(ev) {

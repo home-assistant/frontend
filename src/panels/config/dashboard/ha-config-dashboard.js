@@ -40,7 +40,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
       <app-header slot="header" fixed="">
         <app-toolbar>
           <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-          <div main-title="">[[localize('panel.configuration')]]</div>
+          <div main-title="">[[localize('panel.config')]]</div>
         </app-toolbar>
       </app-header>
 
@@ -54,12 +54,16 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
               <a href='/config/cloud' tabindex="-1">
                 <paper-item on-click="_navigate">
                   <paper-item-body two-line="">
-                    Home Assistant Cloud
+                    [[localize('ui.panel.config.cloud.caption')]]
                     <template is="dom-if" if="[[cloudStatus.logged_in]]">
-                      <div secondary="">Logged in as [[cloudStatus.email]]</div>
+                      <div secondary="">
+                        [[localize('ui.panel.config.cloud.description_login', 'email', cloudStatus.email)]]
+                      </div>
                     </template>
                     <template is="dom-if" if="[[!cloudStatus.logged_in]]">
-                      <div secondary="">Not logged in</div>
+                      <div secondary="">
+                        [[localize('ui.panel.config.cloud.description_not_login')]]
+                      </div>
                     </template>
                   </paper-item-body>
                   <iron-icon icon="hass:chevron-right"></iron-icon>
@@ -72,8 +76,10 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
             <a href='/config/integrations/dashboard' tabindex="-1">
               <paper-item>
                 <paper-item-body two-line>
-                  Integrations
-                  <div secondary>Manage connected devices and services</div>
+                  [[localize('ui.panel.config.integrations.caption')]]
+                  <div secondary>
+                    [[localize('ui.panel.config.integrations.description')]]
+                  </div>
                 </paper-item-body>
                 <iron-icon icon="hass:chevron-right"></iron-icon>
               </paper-item>
