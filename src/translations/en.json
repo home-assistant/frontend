@@ -51,7 +51,8 @@
     "dev-events": "Events",
     "dev-templates": "Templates",
     "dev-mqtt": "MQTT",
-    "dev-info": "Info"
+    "dev-info": "Info",
+    "profile": "Profile"
   },
   "state": {
     "default": {
@@ -728,6 +729,9 @@
         "delete_button": "Delete"
       },
       "profile": {
+        "current_user": "You are currently logged in as {fullName}.",
+        "is_owner": "You are an owner.",
+        "logout": "Log out",
         "push_notifications": {
           "header": "Push Notifications",
           "description": "Send notifications to this device.",
@@ -746,6 +750,27 @@
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme"
+        },
+        "change_password": {
+          "header": "Change Password",
+          "current_password": "Current Password",
+          "new_password": "New Password",
+          "confirm_new_password": "Confirm New Password",
+          "error_required": "Required",
+          "submit": "Submit"
+        },
+        "mfa": {
+          "header": "Multi-factor Authentication Modules",
+          "disable": "Disable",
+          "enable": "Enable",
+          "confirm_disable": "Are you sure you want to disable {name}?"
+        },
+        "mfa_setup": {
+          "title_aborted": "Aborted",
+          "title_success": "Success!",
+          "step_done": "Setup done for {step}",
+          "close": "Close",
+          "submit": "Submit"
         },
         "refresh_tokens": {
           "header": "Refresh Tokens",
