@@ -31,7 +31,8 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     'battery',
     'humidity',
     'illuminance',
-    'temperature'
+    'temperature',
+    'pressure'
   ],
 };
 
