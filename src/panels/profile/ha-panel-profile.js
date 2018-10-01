@@ -12,6 +12,7 @@ import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 import './ha-change-password-card.js';
 import './ha-mfa-modules-card.js';
@@ -24,8 +25,9 @@ import './ha-push-notifications-row.js';
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPanelProfile extends EventsMixin(PolymerElement) {
+class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">
@@ -51,15 +53,15 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Profile</div>
+          <div main-title>[[localize('panel.profile')]]</div>
         </app-toolbar>
       </app-header>
 
       <div class='content'>
         <paper-card heading='[[hass.user.name]]'>
           <div class='card-content'>
-            You are currently logged in as [[hass.user.name]].
-            <template is='dom-if' if='[[hass.user.is_owner]]'>You are an owner.</template>
+            [[localize('ui.panel.profile.current_user', 'fullName', hass.user.name)]]
+            <template is='dom-if' if='[[hass.user.is_owner]]'>[[localize('ui.panel.profile.is_owner')]]</template>
           </div>
 
           <ha-pick-language-row
@@ -79,7 +81,7 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
             <paper-button
               class='warning'
               on-click='_handleLogOut'
-            >Log out</paper-button>
+            >[[localize('ui.panel.profile.logout')]]</paper-button>
           </div>
         </paper-card>
 
