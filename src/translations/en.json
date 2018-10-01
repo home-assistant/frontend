@@ -765,6 +765,13 @@
           "enable": "Enable",
           "confirm_disable": "Are you sure you want to disable {name}?"
         },
+        "mfa_setup": {
+          "title_aborted": "Aborted",
+          "title_success": "Success!",
+          "step_done": "Setup done for {step}",
+          "close": "Close",
+          "submit": "Submit"
+        },
         "refresh_tokens": {
           "header": "Refresh Tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
