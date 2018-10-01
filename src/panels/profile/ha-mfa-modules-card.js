@@ -41,7 +41,7 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         margin-right: -.57em;
       }
     </style>
-    <paper-card heading="Multi-factor Authentication Modules">
+    <paper-card heading="[[localize('ui.panel.profile.mfa.header')]]">
       <template is="dom-repeat" items="[[mfaModules]]" as="module">
         <paper-item>
           <paper-item-body two-line="">
@@ -49,10 +49,14 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <div secondary="">[[module.id]]</div>
           </paper-item-body>
           <template is="dom-if" if="[[module.enabled]]">
-            <paper-button on-click="_disable">Disable</paper-button>
+            <paper-button
+              on-click="_disable"
+            >[[localize('ui.panel.profile.mfa.disable')]]</paper-button>
           </template>
           <template is="dom-if" if="[[!module.enabled]]">
-            <paper-button on-click="_enable">Enable</paper-button>
+            <paper-button
+              on-click="_enable"
+            >[[localize('ui.panel.profile.mfa.enable')]]</paper-button>
           </template>
         </paper-item>
       </template>
@@ -99,7 +103,9 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _disable(ev) {
-    if (!confirm(`Are you sure you want to disable ${ev.model.module.name}?`)) return;
+    if (!confirm(this.localize(
+      'ui.panel.profile.mfa.confirm_disable',
+      'name', ev.model.module.name))) return;
 
     const mfaModuleId = ev.model.module.id;
 
