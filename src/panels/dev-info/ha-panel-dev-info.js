@@ -18,10 +18,11 @@ import formatDateTime from '../../common/datetime/format_date_time.js';
 import formatTime from '../../common/datetime/format_time.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 let registeredDialog = false;
 
-class HaPanelDevInfo extends EventsMixin(PolymerElement) {
+class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-positioning ha-style">
@@ -342,7 +343,7 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
     const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
 
     return dateTimeDay < today
-      ? formatDateTime(dateTime) : formatTime(dateTime);
+      ? formatDateTime(dateTime, this.language) : formatTime(dateTime, this.language);
   }
 
   openLog(event) {

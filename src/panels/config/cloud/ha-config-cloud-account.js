@@ -13,11 +13,13 @@ import '../ha-config-section.js';
 
 import formatDateTime from '../../../common/datetime/format_date_time.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
+class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -199,7 +201,7 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
     return subInfo === null
       ? 'Fetching subscription…'
       : subInfo.human_description.replace(
-        '{periodEnd}', formatDateTime(new Date(subInfo.subscription.current_period_end * 1000))
+        '{periodEnd}', formatDateTime(new Date(subInfo.subscription.current_period_end * 1000), this.language)
       );
   }
 
