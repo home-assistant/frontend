@@ -716,8 +716,8 @@
             "manuf": "by {manufacturer}",
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
-            "device_unavailable": "(device unavailable)",
-            "entity_unavailable": "(entity unavailable)"
+            "device_unavailable": "device unavailable",
+            "entity_unavailable": "entity unavailable"
           }
         },
         "users": {
