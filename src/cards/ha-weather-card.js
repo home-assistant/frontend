@@ -129,11 +129,11 @@ class HaWeatherCard extends
               <template is="dom-repeat" items="[[forecast]]">
                 <div>
                   <div class="weekday">[[computeDate(item.datetime)]]<br>
-                    <template is="dom-if" if="[[!item.templow]]">
+                    <template is="dom-if" if="[[!_showValue(item.templow)]]">
                       [[computeTime(item.datetime)]]
                     </template>
                   </div>
-                  <template is="dom-if" if="[[item.condition]]">
+                  <template is="dom-if" if="[[_showValue(item.condition)]]">
                     <div class="icon">
                       <ha-icon icon="[[getWeatherIcon(item.condition)]]"></ha-icon>
                     </div>
