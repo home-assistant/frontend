@@ -130,13 +130,13 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeEntityName(entity, hass) {
     return computeEntityName(hass, entity)
-        || this.localize('ui.panel.config.integrations.config_entry.entity_unavailable');
+        || `(${this.localize('ui.panel.config.integrations.config_entry.entity_unavailable')})`;
   }
 
   _computeDeviceName(devices, deviceId) {
     const device = devices.find(dev => dev.id === deviceId);
     return device ? device.name
-      : this.localize('ui.panel.config.integrations.config_entry.device_unavailable');
+      : `(${this.localize('ui.panel.config.integrations.config_entry.device_unavailable')})`;
   }
 
   _openMoreInfo(ev) {

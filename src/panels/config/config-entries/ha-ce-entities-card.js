@@ -64,7 +64,7 @@ class HaCeEntitiesCard extends EventsMixin(PolymerElement) {
 
   _computeEntityName(entity, hass) {
     return computeEntityName(hass, entity)
-        || this.localize('ui.panel.config.integrations.config_entry.entity_unavailable');
+        || `(${this.localize('ui.panel.config.integrations.config_entry.entity_unavailable')})`;
   }
 
   _openMoreInfo(ev) {
