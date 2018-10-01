@@ -2,11 +2,13 @@ import '@polymer/polymer/lib/utils/debounce.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
 import './entity/ha-chart-base.js';
 
 import formatDateTime from '../common/datetime/format_date_time';
 
-class StateHistoryChartTimeline extends PolymerElement {
+class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -151,8 +153,8 @@ class StateHistoryChartTimeline extends PolymerElement {
     const formatTooltipLabel = function (item, data) {
       const values = data.datasets[item.datasetIndex].data[item.index];
 
-      const start = formatDateTime(values[0]);
-      const end = formatDateTime(values[1]);
+      const start = formatDateTime(values[0], this.language);
+      const end = formatDateTime(values[1], this.language);
       const state = values[2];
 
       return [state, start, end];
