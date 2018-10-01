@@ -48,10 +48,10 @@ class HaMfaModuleSetupFlow extends
     <paper-dialog id="dialog" with-backdrop="" opened="{{_opened}}" on-opened-changed="_openedChanged">
       <h2>
         <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          Aborted
+          [[localize('ui.panel.profile.mfa_setup.title_aborted')]]
         </template>
         <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          Success!
+          [[localize('ui.panel.profile.mfa_setup.title_success')]]
         </template>
         <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
           [[_computeStepTitle(localize, _step)]]
@@ -70,7 +70,7 @@ class HaMfaModuleSetupFlow extends
           </template>
 
           <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-            <p>Setup done for [[_step.title]]</p>
+            <p>[[localize('ui.panel.profile.mfa_setup.step_done', 'step', _step.title)]]</p>
           </template>
 
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
@@ -90,17 +90,23 @@ class HaMfaModuleSetupFlow extends
       </paper-dialog-scrollable>
       <div class="buttons">
         <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          <paper-button on-click="_flowDone">Close</paper-button>
+          <paper-button
+            on-click="_flowDone"
+          >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button>
         </template>
         <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          <paper-button on-click="_flowDone">Close</paper-button>
+          <paper-button
+            on-click="_flowDone"
+          >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button>
         </template>
         <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
           <template is="dom-if" if="[[_loading]]">
             <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
           </template>
           <template is="dom-if" if="[[!_loading]]">
-            <paper-button on-click="_submitStep">Submit</paper-button>
+            <paper-button
+              on-click="_submitStep"
+            >[[localize('ui.panel.profile.mfa_setup.submit')]]</paper-button>
           </template>
         </template>
       </div>
