@@ -26,11 +26,12 @@ class StateBadge extends PolymerElement {
     }
 
     /* Color the icon if light or sun is on */
-    ha-icon[data-domain=light][data-state=on],
-    ha-icon[data-domain=switch][data-state=on],
     ha-icon[data-domain=binary_sensor][data-state=on],
     ha-icon[data-domain=fan][data-state=on],
-    ha-icon[data-domain=sun][data-state=above_horizon] {
+    ha-icon[data-domain=input_boolean][data-state=on],
+    ha-icon[data-domain=light][data-state=on],
+    ha-icon[data-domain=sun][data-state=above_horizon],
+    ha-icon[data-domain=switch][data-state=on] {
       color: var(--paper-item-icon-active-color, #FDD835);
     }
 
