@@ -129,7 +129,7 @@ class HuiGenericEntityRow extends PolymerElement {
     return a === b;
   }
 
-  _isAttribute(secInfo, stateObj) {
+  _isAttribute(secInfo) {
     return secInfo.startsWith('attribute(') && secInfo.endsWith(')');
   }
 
