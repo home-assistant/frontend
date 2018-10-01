@@ -5,9 +5,14 @@ import '@polymer/paper-card/paper-card.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import LocalizeMixin from '../../mixins/localize-mixin.js';
+
 import '../../resources/ha-style.js';
 
-class HaChangePasswordCard extends PolymerElement {
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">
@@ -29,7 +34,7 @@ class HaChangePasswordCard extends PolymerElement {
       }
     </style>
     <div>
-      <paper-card heading="Change Password">
+      <paper-card heading="[[localize('ui.panel.profile.change_password.header')]]">
         <div class="card-content">
           <template is="dom-if" if="[[_errorMsg]]">
             <div class='error'>[[_errorMsg]]</div>
@@ -38,30 +43,30 @@ class HaChangePasswordCard extends PolymerElement {
             <div class="status">[[_statusMsg]]</div>
           </template>
           <paper-input
-            class='currentPassword'
-            label='Current Password'
-            type='password'
-            value='{{_currentPassword}}'
+            class="currentPassword"
+            label="[[localize('ui.panel.profile.change_password.current_password')]]"
+            type="password"
+            value="{{_currentPassword}}"
             required
             auto-validate
-            error-message='Required'
+            error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
           ></paper-input>
-          <template is='dom-if' if='[[_currentPassword]]'>
+          <template is="dom-if" if="[[_currentPassword]]">
             <paper-input
-              label='New Password'
-              type='password'
-              value='{{_password1}}'
+              label="[[localize('ui.panel.profile.change_password.new_password')]]"
+              type="password"
+              value="{{_password1}}"
               required
               auto-validate
-              error-message='Required'
+              error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
             ></paper-input>
             <paper-input
-              label='Confirm New Password'
-              type='password'
-              value='{{_password2}}'
+              label="[[localize('ui.panel.profile.change_password.confirm_new_password')]]"
+              type="password"
+              value="{{_password2}}"
               required
               auto-validate
-              error-message='Required'
+              error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
             ></paper-input>
           </template>
         </div>
@@ -70,7 +75,9 @@ class HaChangePasswordCard extends PolymerElement {
             <div><paper-spinner active></paper-spinner></div>
           </template>
           <template is="dom-if" if="[[!_loading]]">
-            <paper-button on-click="_changePassword">Submit</paper-button>
+            <paper-button
+              on-click="_changePassword"
+            >[[localize('ui.panel.profile.change_password.submit')]]</paper-button>
           </template>
         </div>
       </paper-card>
