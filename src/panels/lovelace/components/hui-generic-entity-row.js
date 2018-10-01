@@ -98,8 +98,8 @@ class HuiGenericEntityRow extends PolymerElement {
                 datetime="[[_stateObj.last_changed]]"
               ></ha-relative-time>
             </template>
-            <template is="dom-if" if="[[_isStateAttribute(config.secondary_info, _stateObj)]]">
-              [[_stateObj.attributes[config.secondary_info]]]
+            <template is="dom-if" if="[[_isAttribute(config.secondary_info)]]">
+              [[_getAttribute(config.secondary_info, _stateObj)]]
             </template>
           </template>
           <template is="dom-if" if="[[!showSecondary]">
@@ -129,8 +129,13 @@ class HuiGenericEntityRow extends PolymerElement {
     return a === b;
   }
 
-  _isStateAttribute(attribute, stateObj) {
-    return attribute in stateObj.attributes;
+  _isAttribute(secInfo, stateObj) {
+    return secInfo.startsWith('attribute(') && secInfo.endsWith(')');
+  }
+  
+  _getAttribute(secInfo, stateObj) {
+    const attr = secInfo.slice(10, -1);
+    return stateObj.attributes[attr];
   }
 
   _computeStateObj(states, entityId) {
