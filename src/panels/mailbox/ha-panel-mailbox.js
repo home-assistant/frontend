@@ -200,7 +200,7 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
       const platformItems = [];
       const arrayLength = values.length;
       for (let i = 0; i < arrayLength; i++) {
-        const datetime = formatDateTime(new Date(values[i].info.origtime * 1000));
+        const datetime = formatDateTime(new Date(values[i].info.origtime * 1000), this.language);
         platformItems.push({
           timestamp: datetime,
           caller: values[i].info.callerid,
