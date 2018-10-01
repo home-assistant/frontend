@@ -93,7 +93,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   <div class$="[[computeClassNames(stateObj)]]">
 
     <div class="control brightness">
-      <ha-labeled-slider caption="[[localize('ui.card.light.brightness')]]" icon="hass:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged"></ha-labeled-slider>
+      <ha-labeled-slider caption="[[localize('ui.card.light.brightness')]]" icon="hass:brightness-5" min="1" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged"></ha-labeled-slider>
     </div>
 
     <div class="control color_temp">
@@ -221,16 +221,10 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
     if (isNaN(bri)) return;
 
-    if (bri === 0) {
-      this.hass.callService('light', 'turn_off', {
-        entity_id: this.stateObj.entity_id,
-      });
-    } else {
-      this.hass.callService('light', 'turn_on', {
-        entity_id: this.stateObj.entity_id,
-        brightness: bri,
-      });
-    }
+    this.hass.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entity_id,
+      brightness: bri,
+    });
   }
 
   ctSliderChanged(ev) {
