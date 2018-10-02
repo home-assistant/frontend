@@ -24,7 +24,22 @@ export default class StateTrigger extends Component {
   render({ trigger, hass, localize }) {
     const { entity_id, to } = trigger;
     const trgFrom = trigger.from;
-    const trgFor = trigger.for;
+    let trgFor = trigger.for;
+
+    if (trgFor.hours || trgFor.minutes || trgFor.seconds) {
+      // If the trigger was defined using the yaml dict syntax, convert it to
+      // the equivalent string format
+      let {
+        hours = 0,
+        minutes = 0,
+        seconds = 0,
+      } = trgFor;
+      hours = hours.toString();
+      minutes = minutes.toString().padStart(2, '0');
+      seconds = seconds.toString().padStart(2, '0');
+
+      trgFor = `${hours}:${minutes}:${seconds}`;
+    }
     return (
       <div>
         <ha-entity-picker
