@@ -104,7 +104,7 @@ class Lovelace extends PolymerElement {
 
   async _fetchConfig() {
     try {
-      const conf = await this.hass.callWS({ type: 'frontend/lovelace_config' });
+      const conf = await this.hass.callWS({ type: 'lovelace/config' });
       this.setProperties({
         _config: conf,
         _state: 'loaded',
