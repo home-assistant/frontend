@@ -13,7 +13,8 @@
         "dev-templates": "Шаблони",
         "dev-mqtt": "MQTT",
         "dev-info": "Інформація",
-        "calendar": "Календар"
+        "calendar": "Календар",
+        "profile": "Профіль"
     },
     "state": {
         "default": {
@@ -224,6 +225,18 @@
                 "initializing": "Ініціалізація ({query_stage})",
                 "dead": "Неробоча ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Ясно, ніч",
+            "cloudy": "Хмарно",
+            "lightning-rainy": "Блискавка, дощ",
+            "partlycloudy": "Невелика хмарність",
+            "rainy": "Дощова",
+            "snowy": "Сніжно",
+            "snowy-rainy": "Сніг, дощ",
+            "sunny": "Сонячно",
+            "windy": "Вітряно",
+            "windy-variant": "Вітряно"
         }
     },
     "state_badge": {
@@ -339,10 +352,29 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "users": {
+                    "caption": "Користувачі",
+                    "description": "Управління користувачами",
+                    "picker": {
+                        "title": "Користувачі"
+                    },
+                    "editor": {
+                        "rename_user": "Перейменувати користувача",
+                        "change_password": "Змінити пароль",
+                        "activate_user": "Активувати користувача",
+                        "deactivate_user": "Деактивувати користувача",
+                        "delete_user": "Видалити користувача"
+                    }
                 }
             },
             "profile": {
                 "push_notifications": {
+                    "header": "Push-Повідомлення",
+                    "description": "Надіслати сповіщення на цей пристрій.",
+                    "error_load_platform": "Налаштувати notify.html5.",
+                    "error_use_https": "Потрібно ввімкнути SSL для інтерфейсу.",
+                    "push_notifications": "Push-повідомлення",
                     "link_promo": "Дізнатися більше"
                 },
                 "language": {
@@ -355,11 +387,13 @@
                     "error_no_theme": "Немає доступних тем.",
                     "link_promo": "Дізнайтеся про теми",
                     "dropdown_label": "Тема"
-                }
+                },
+                "current_user": "В даний час ви увійшли як {fullName}."
             },
             "page-authorize": {
                 "initializing": "Ініціалізація",
                 "pick_auth_provider": "Або увійти з",
+                "abort_intro": "Логін скасовано",
                 "form": {
                     "working": "Будь ласка, зачекайте",
                     "unknown_error": "Щось пішло не так",
@@ -379,7 +413,11 @@
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Неправильне ім'я користувача або пароль"
+                                "invalid_auth": "Неправильне ім'я користувача або пароль",
+                                "invalid_code": "Невірний код автентифікації "
+                            },
+                            "abort": {
+                                "login_expired": "Сесія закінчилася, увійдіть знову."
                             }
                         },
                         "legacy_api_password": {
@@ -387,7 +425,8 @@
                                 "init": {
                                     "data": {
                                         "password": "Пароль API"
-                                    }
+                                    },
+                                    "description": "Будь ласка, введіть пароль API в ваш http конфіг:"
                                 }
                             },
                             "error": {
@@ -414,6 +453,11 @@
             },
             "page-onboarding": {
                 "user": {
+                    "required_field": "Необхідні",
+                    "data": {
+                        "username": "Імя користувача",
+                        "password": "Пароль"
+                    },
                     "create_account": "Створити обліковий запис",
                     "error": {
                         "required_fields": "Заповніть усі необхідні поля"
@@ -443,16 +487,29 @@
                 "attributes": {
                     "air_pressure": "Тиск повітря",
                     "humidity": "Вологість",
-                    "temperature": "Температура"
+                    "temperature": "Температура",
+                    "visibility": "Видимість",
+                    "wind_speed": "Швидкість вітру"
                 }
             },
             "automation": {
                 "last_triggered": "Спрацьовано",
                 "trigger": "Тригер"
             },
+            "cover": {
+                "position": "Положення",
+                "tilt_position": "Положення нахилу "
+            },
+            "fan": {
+                "speed": "Швидкість",
+                "oscillate": "Коливатися",
+                "direction": "Напрямок"
+            },
             "light": {
                 "brightness": "Яскравість",
-                "color_temperature": "Температура кольору"
+                "color_temperature": "Температура кольору",
+                "white_value": "Значення білого",
+                "effect": "Ефект"
             },
             "media_player": {
                 "text_to_speak": "Текст для відтворення",
@@ -468,6 +525,10 @@
                 "fan_mode": "Режим вентилятора",
                 "swing_mode": "Режим гойдання",
                 "away_mode": "Режим відсутності"
+            },
+            "lock": {
+                "lock": "Блокувати",
+                "unlock": "Розблокувати"
             }
         },
         "components": {
@@ -521,6 +582,7 @@
         }
     },
     "domain": {
+        "alarm_control_panel": "Панель керування сигналізацією",
         "automation": "Автоматизація",
         "binary_sensor": "Бінарний датчик",
         "calendar": "Календар",
@@ -534,6 +596,7 @@
         "group": "Група",
         "light": "Освітлення",
         "lock": "Замок",
+        "mailbox": "Поштова скринька",
         "media_player": "Медіа плеєр",
         "notify": "Повідомлення",
         "plant": "Рослини",

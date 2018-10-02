@@ -13,7 +13,8 @@
         "dev-templates": "Plantilles",
         "dev-mqtt": "MQTT",
         "dev-info": "Informació",
-        "calendar": "Calendari"
+        "calendar": "Calendari",
+        "profile": "Perfil"
     },
     "state": {
         "default": {
@@ -571,6 +572,30 @@
                     "empty_state": "Encara no tens testimonis d'autenticaciós d'accés de llarga durada.",
                     "last_used": "Darrer ús el {date} des de {location}",
                     "not_used": "Mai no s'ha utilitzat"
+                },
+                "current_user": "Heu iniciat la sessió com a {fullName}.",
+                "is_owner": "Sou propietari.",
+                "logout": "Tancar sessió",
+                "change_password": {
+                    "header": "Canvi de contrasenya",
+                    "current_password": "Contrasenya actual",
+                    "new_password": "Contrasenya nova",
+                    "confirm_new_password": "Confirmar contrasenya nova",
+                    "error_required": "Obligatori",
+                    "submit": "Enviar"
+                },
+                "mfa": {
+                    "header": "Mòduls d'autenticació amb múltiples passos",
+                    "disable": "Desactiva",
+                    "enable": "Activa",
+                    "confirm_disable": "Esteu segur que voleu desactivar {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "S'ha avortat",
+                    "title_success": "Correcte!",
+                    "step_done": "Configuració feta per a {step}",
+                    "close": "Tanca",
+                    "submit": "Enviar"
                 }
             },
             "page-authorize": {

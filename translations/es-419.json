@@ -545,6 +545,32 @@
                     "error_no_theme": "No hay temas disponibles.",
                     "link_promo": "Más información sobre los temas",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Actualizar tokens",
+                    "description": "Cada token de actualización representa una sesión de inicio de sesión. Los tokens de actualización se eliminarán automáticamente cuando haga clic en cerrar sesión. Los siguientes tokens de actualización están actualmente activos para su cuenta.",
+                    "token_title": "Actualizar token para {clientId}",
+                    "created_at": "Creado en {date}",
+                    "confirm_delete": "¿Estás seguro de que deseas eliminar el token de actualización de {name}?",
+                    "delete_failed": "No se pudo eliminar el token de actualización.",
+                    "last_used": "Utilizado por última vez en {date} desde {location}.",
+                    "not_used": "Nunca se ha utilizado",
+                    "current_token_tooltip": "No se puede eliminar el token de actualización actual"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Tokens de acceso de larga duración",
+                    "description": "Cree tokens de acceso de larga duración para permitir que sus secuencias de comandos interactúen con la instancia de su Home Assistant. Cada token tendrá una validez de 10 años a partir de su creación. Los siguientes tokens de acceso de larga duración están activos actualmente.",
+                    "learn_auth_requests": "Aprenda a realizar solicitudes autenticadas.",
+                    "created_at": "Creado en {date}",
+                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {name}?",
+                    "delete_failed": "No se pudo eliminar el token de acceso.",
+                    "create": "Crear Token",
+                    "create_failed": "No se pudo crear el token de acceso.",
+                    "prompt_name": "¿Nombre?",
+                    "prompt_copy_token": "Copia tu token de acceso. No se volverá a mostrar",
+                    "empty_state": "Aún no tienes tokens de acceso de larga duración.",
+                    "last_used": "Utilizado por última vez en {fecha} desde {localización}.",
+                    "not_used": "Nunca se ha utilizado"
                 }
             },
             "page-authorize": {
