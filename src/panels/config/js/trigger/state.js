@@ -45,7 +45,12 @@ export default class StateTrigger extends Component {
           value={to}
           onvalue-changed={this.onChange}
         />
-        {trgFor && <pre>For: {JSON.stringify(trgFor, null, 2)}</pre>}
+        <paper-input
+          label={localize('ui.panel.config.automation.editor.triggers.type.state.for')}
+          name="for"
+          value={trgFor}
+          onvalue-changed={this.onChange}
+        />
       </div>
     );
   }
