@@ -600,7 +600,10 @@
                 },
                 "time": {
                   "label": "Time",
-                  "at": "At"
+                  "at": "At",
+                  "hours": "Hours",
+                  "minutes": "Minutes",
+                  "seconds": "Seconds"
                 },
                 "zone": {
                   "label": "Zone",
