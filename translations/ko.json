@@ -13,7 +13,8 @@
         "dev-templates": "템플릿",
         "dev-mqtt": "MQTT",
         "dev-info": "정보",
-        "calendar": "캘린더"
+        "calendar": "캘린더",
+        "profile": "프로필"
     },
     "state": {
         "default": {
@@ -553,14 +554,14 @@
                     "created_at": "{date} 에 생성 됨",
                     "confirm_delete": "{name} 의 리프레시 토큰을 삭제 하시겠습니까?",
                     "delete_failed": "리프레시 토큰을 삭제할 수 없습니다.",
-                    "last_used": "{date}에  {location} 에서 마지막으로 사용됨",
+                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
                     "not_used": "사용된 적이 없음",
                     "current_token_tooltip": "현재 리프레시 토큰을 삭제할 수 없음"
                 },
                 "long_lived_access_tokens": {
                     "header": "장기 액세스 토큰",
                     "description": "스크립트가 Home Assistant 인스턴스와 상호 작용할 수 있도록 장기 액세스 토큰을 생성하세요. 각 토큰은 생성 후 10년 동안 유효합니다. 현재 활성 상태인 장기 액세스 토큰은 다음과 같습니다.",
-                    "learn_auth_requests": "인증된 요청을 생성하는 방법에 대해 알아 보세요.",
+                    "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아 보세요.",
                     "created_at": "{date} 에 생성 됨",
                     "confirm_delete": "{name} 의 액세스 토큰을 삭제 하시겠습니까?",
                     "delete_failed": "액세스 토큰을 삭제할 수 없습니다.",
@@ -569,8 +570,32 @@
                     "prompt_name": "토큰 이름을 지어 주세요.",
                     "prompt_copy_token": "Ctrl + C 를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
                     "empty_state": "장기 액세스 토큰이 없습니다.",
-                    "last_used": "{date}에  {location} 에서 마지막으로 사용됨",
+                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
                     "not_used": "사용된 적이 없음"
+                },
+                "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
+                "is_owner": "관리자 계정 입니다.",
+                "logout": "로그 아웃",
+                "change_password": {
+                    "header": "비밀번호 변경",
+                    "current_password": "현재 비밀번호",
+                    "new_password": "새 비밀번호",
+                    "confirm_new_password": "새 비밀번호 확인",
+                    "error_required": "필수 요소",
+                    "submit": "변경 하기"
+                },
+                "mfa": {
+                    "header": "다단계 인증 모듈",
+                    "disable": "비활성화",
+                    "enable": "활성화",
+                    "confirm_disable": "{name} 을(를) 비활성화 하시겠습니까?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "취소됨",
+                    "title_success": "성공!",
+                    "step_done": "{step} 설정 완료",
+                    "close": "닫기",
+                    "submit": "구성 하기"
                 }
             },
             "page-authorize": {
