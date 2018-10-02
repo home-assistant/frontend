@@ -21,6 +21,7 @@ export const DOMAINS_WITH_CARD = [
   'script',
   'timer',
   'vacuum',
+  'water_heater',
   'weblink',
 ];
 
@@ -43,6 +44,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   'sun',
   'updater',
   'vacuum',
+  'water_heater',
   'weather'
 ];
 
