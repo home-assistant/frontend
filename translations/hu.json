@@ -13,7 +13,8 @@
         "dev-templates": "Sablonok",
         "dev-mqtt": "MQTT",
         "dev-info": "Infó",
-        "calendar": "Naptár"
+        "calendar": "Naptár",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -551,7 +552,7 @@
                     "description": "Minden frissítési token egy bejelentkezési munkamenetet képvisel. A frissítési tokenek automatikusan eltávolításra kerülnek, amikor a kijelentkezésre kattintasz. Jelenleg a következő frissítési tokenek aktívak a fiókodban.",
                     "token_title": "{clientId} frissítési tokenje",
                     "created_at": "Létrehozva: {date}",
-                    "confirm_delete": "Biztosan törlöd {name} frissítési tokenjét?",
+                    "confirm_delete": "Biztosan törölni szeretnéd {name} frissítési tokenjét?",
                     "delete_failed": "Nem sikerült törölni a frissítési tokent.",
                     "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt",
@@ -562,7 +563,7 @@
                     "description": "Hosszú életű hozzáférési tokenek létrehozásával engedélyezheted a szkriptjeid számára, hogy csatlakozzanak a Home Assistant példányodhoz. Minden token 10 évig érvényes a létrehozástól számítva. Jelenleg a következő hosszú életű hozzáférési tokenek aktívak.",
                     "learn_auth_requests": "Tudj meg többet a hitelesített kérelmek létrehozásáról.",
                     "created_at": "Létrehozva: {date}",
-                    "confirm_delete": "Biztosan törlöd {name} hozzáférési tokenjét?",
+                    "confirm_delete": "Biztosan törölni szeretnéd {name} hozzáférési tokenjét?",
                     "delete_failed": "Nem sikerült törölni a hozzáférési tokent.",
                     "create": "Token Létrehozása",
                     "create_failed": "Nem sikerült létrehozni a hozzáférési tokent.",
@@ -571,6 +572,30 @@
                     "empty_state": "Még nincsenek hosszú életű hozzáférési tokenjeid.",
                     "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt"
+                },
+                "current_user": "Jelenleg bejelentkezve mint {fullName}.",
+                "is_owner": "Tulajdonos vagy.",
+                "logout": "Kijelentkezés",
+                "change_password": {
+                    "header": "Jelszó Módosítása",
+                    "current_password": "Jelenlegi Jelszó",
+                    "new_password": "Új Jelszó",
+                    "confirm_new_password": "Új Jelszó Megerősítése",
+                    "error_required": "Szükséges",
+                    "submit": "Küldés"
+                },
+                "mfa": {
+                    "header": "Többfaktoros Hitelesítési Modulok",
+                    "disable": "Letilt",
+                    "enable": "Engedélyez",
+                    "confirm_disable": "Biztosan le szeretnéd tiltani {name}-t?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Megszakítva",
+                    "title_success": "Siker!",
+                    "step_done": "Beállítás kész {step}",
+                    "close": "Bezárás",
+                    "submit": "Küldés"
                 }
             },
             "page-authorize": {
@@ -603,7 +628,7 @@
                                 "invalid_code": "Érvénytelen hitelesítési kód"
                             },
                             "abort": {
-                                "login_expired": "A munkamenet lejárt, jelentkezz be újra."
+                                "login_expired": "A munkamenet lejárt, kérlek, jelentkezz be újra."
                             }
                         },
                         "legacy_api_password": {
@@ -627,7 +652,7 @@
                             },
                             "abort": {
                                 "no_api_password_set": "Nincs megadva API jelszó a konfigurációban.",
-                                "login_expired": "A munkamenet lejárt, jelentkezz be újra."
+                                "login_expired": "A munkamenet lejárt, kérlek, jelentkezz be újra."
                             }
                         },
                         "trusted_networks": {

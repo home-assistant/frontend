@@ -13,7 +13,8 @@
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -571,6 +572,30 @@
                     "empty_state": "Du hast noch keine langlebigen Zugangs-Token.",
                     "last_used": "Zuletzt verwendet am {date} in {location}",
                     "not_used": "Wurde noch nie benutzt"
+                },
+                "current_user": "Du bist derzeit als {fullName} angemeldet.",
+                "is_owner": "Du bist der Besitzer",
+                "logout": "Abmelden",
+                "change_password": {
+                    "header": "Passwort ändern",
+                    "current_password": "Aktuelles Passwort",
+                    "new_password": "Neues Passwort",
+                    "confirm_new_password": "Neues Passwort Bestätigen",
+                    "error_required": "Erforderlich",
+                    "submit": "Absenden"
+                },
+                "mfa": {
+                    "header": "2-Faktor-Authentifizierung Module",
+                    "disable": "Deaktivieren",
+                    "enable": "Aktivieren",
+                    "confirm_disable": "Möchtest du {name} wirklich deaktivieren?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abgebrochen",
+                    "title_success": "Erfolgreich!",
+                    "step_done": "Setup für {step} abgeschlossen",
+                    "close": "Schließen",
+                    "submit": "Absenden"
                 }
             },
             "page-authorize": {

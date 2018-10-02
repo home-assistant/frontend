@@ -13,7 +13,8 @@
         "dev-templates": "Maler",
         "dev-mqtt": "MQTT",
         "dev-info": "Informasjon",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -571,6 +572,30 @@
                     "empty_state": "Du har ingen langvarige tilgangstokener ennå.",
                     "last_used": "Sist brukt den {date} fra {location}",
                     "not_used": "Har aldri blitt brukt"
+                },
+                "current_user": "Du er logget inn som {fullName}.",
+                "is_owner": "Du er en eier.",
+                "logout": "Logg ut",
+                "change_password": {
+                    "header": "Endre passord",
+                    "current_password": "Nåværende passord",
+                    "new_password": "Nytt passord",
+                    "confirm_new_password": "Bekreft nytt passord",
+                    "error_required": "Kreves",
+                    "submit": "Send inn"
+                },
+                "mfa": {
+                    "header": "Multifaktorautentisering moduler",
+                    "disable": "Deaktiver",
+                    "enable": "Aktiver",
+                    "confirm_disable": "Er du sikker på at du vil deaktivere {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Avbrutt",
+                    "title_success": "Suksess!",
+                    "step_done": "Oppsett fullført for {step}",
+                    "close": "Lukk",
+                    "submit": "Send inn"
                 }
             },
             "page-authorize": {

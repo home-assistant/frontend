@@ -27,21 +27,51 @@
                 "on": "Slapjš"
             },
             "safety": {
-                "off": "Drošs",
-                "on": "Nedrošs"
+                "off": "Droši",
+                "on": "Nedroši"
             },
             "presence": {
-                "off": "nav mājās",
-                "on": "mājās"
+                "off": "Prom",
+                "on": "Mājās"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problēma"
+            },
+            "connectivity": {
+                "off": "Atvienots",
+                "on": "Pieslēdzies"
+            },
+            "cold": {
+                "off": "Normāls",
+                "on": "Auksts"
+            },
+            "door": {
+                "off": "Aizvērtas",
+                "on": "Atvērtas"
+            },
+            "garage_door": {
+                "off": "Aizvērtas",
+                "on": "Atvērtas"
+            },
+            "heat": {
+                "off": "Normāls",
+                "on": "Karsts"
+            },
+            "window": {
+                "off": "Aizvērts",
+                "on": "Atvērts"
             }
         },
         "camera": {
             "recording": "Ieraksta",
-            "streaming": "Straumē"
+            "streaming": "Straumē",
+            "idle": "Dīkstāve"
         },
         "climate": {
-            "heat": "Sildīt",
-            "cool": "Dzesēt",
+            "heat": "Sildīšana",
+            "cool": "Dzesēšana",
+            "idle": "Dīkstāve",
             "auto": "Auto",
             "dry": "Sauss",
             "fan_only": "Tikai ventilators",
@@ -52,7 +82,7 @@
         },
         "configurator": {
             "configure": "Konfigurēt",
-            "configured": "Konfigurēts"
+            "configured": "Nokonfigurēts"
         },
         "cover": {
             "open": "Atvērts",
@@ -62,6 +92,14 @@
         "device_tracker": {
             "home": "Mājās",
             "not_home": "Prom"
+        },
+        "group": {
+            "home": "Mājās",
+            "not_home": "Prombūtnē"
+        },
+        "light": {
+            "off": "Izslēgta",
+            "on": "Ieslēgta"
         },
         "media_player": {
             "off": "Izslēgts",
@@ -75,9 +113,17 @@
             "ok": "Labi",
             "problem": "Problēma"
         },
+        "script": {
+            "off": "Atspējots",
+            "on": "Iespējots"
+        },
         "sun": {
             "above_horizon": "Virs horizonta",
             "below_horizon": "Zem horizonta"
+        },
+        "switch": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts"
         },
         "weather": {
             "clear-night": "Skaidrs, nakts",

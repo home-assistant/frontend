@@ -13,7 +13,8 @@
         "dev-templates": "Szablony",
         "dev-mqtt": "MQTT",
         "dev-info": "Informacje",
-        "calendar": "Kalendarz"
+        "calendar": "Kalendarz",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -571,6 +572,30 @@
                     "empty_state": "Nie masz jeszcze żadnych żadnych tokenów.",
                     "last_used": "Ostatnio używany {date} z {location}",
                     "not_used": "Nigdy nie był używany"
+                },
+                "current_user": "Jesteś obecnie zalogowany jako {fullName}.",
+                "is_owner": "Jesteś właścicielem.",
+                "logout": "Wyloguj",
+                "change_password": {
+                    "header": "Zmień hasło",
+                    "current_password": "Bieżące hasło",
+                    "new_password": "Nowe hasło",
+                    "confirm_new_password": "Potwierdź nowe hasło",
+                    "error_required": "Wymagane",
+                    "submit": "Zatwierdź"
+                },
+                "mfa": {
+                    "header": "Moduły uwierzytelniania wieloskładnikowego",
+                    "disable": "Wyłącz",
+                    "enable": "Włącz",
+                    "confirm_disable": "Jesteś pewny, że chcesz wyłączyć {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Przerwano",
+                    "title_success": "Powodzenie!",
+                    "step_done": "Konfiguracja wykonana dla {step}",
+                    "close": "Zamknij",
+                    "submit": "Zatwierdź"
                 }
             },
             "page-authorize": {

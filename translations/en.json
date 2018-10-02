@@ -13,7 +13,8 @@
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Calendar"
+        "calendar": "Calendar",
+        "profile": "Profile"
     },
     "state": {
         "default": {
@@ -571,6 +572,30 @@
                     "empty_state": "You have no long-lived access tokens yet.",
                     "last_used": "Last used at {date} from {location}",
                     "not_used": "Has never been used"
+                },
+                "current_user": "You are currently logged in as {fullName}.",
+                "is_owner": "You are an owner.",
+                "logout": "Log out",
+                "change_password": {
+                    "header": "Change Password",
+                    "current_password": "Current Password",
+                    "new_password": "New Password",
+                    "confirm_new_password": "Confirm New Password",
+                    "error_required": "Required",
+                    "submit": "Submit"
+                },
+                "mfa": {
+                    "header": "Multi-factor Authentication Modules",
+                    "disable": "Disable",
+                    "enable": "Enable",
+                    "confirm_disable": "Are you sure you want to disable {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Aborted",
+                    "title_success": "Success!",
+                    "step_done": "Setup done for {step}",
+                    "close": "Close",
+                    "submit": "Submit"
                 }
             },
             "page-authorize": {
