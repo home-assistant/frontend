@@ -39,6 +39,7 @@ const fixedIcons = {
   timer: 'hass:timer',
   updater: 'hass:cloud-upload',
   vacuum: 'hass:robot-vacuum',
+  water_heater: 'hass:thermometer',
   weblink: 'hass:open-in-new',
 };
 

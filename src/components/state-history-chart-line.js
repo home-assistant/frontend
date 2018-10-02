@@ -137,7 +137,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
         });
       }
 
-      if (domain === 'thermostat' || domain === 'climate') {
+      if (domain === 'thermostat' || domain === 'climate' || domain === 'water_heater') {
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
 

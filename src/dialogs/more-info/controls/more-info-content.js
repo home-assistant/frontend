@@ -18,6 +18,7 @@ import './more-info-script.js';
 import './more-info-sun.js';
 import './more-info-updater.js';
 import './more-info-vacuum.js';
+import './more-info-water_heater.js';
 import './more-info-weather.js';
 
 import stateMoreInfoType from '../../../common/entity/state_more_info_type.js';
