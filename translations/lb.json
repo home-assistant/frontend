@@ -13,7 +13,8 @@
         "dev-templates": "Modeller",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalenner"
+        "calendar": "Kalenner",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -571,6 +572,30 @@
                     "empty_state": "Nie posiadasz jeszcze długoterminowych tokenów dostępu.",
                     "last_used": "Ostatnio użyty {date} z miejsca {location}",
                     "not_used": "Nigdy nie został użyty"
+                },
+                "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
+                "is_owner": "Dir sidd Proprietär.",
+                "logout": "Ausloggen",
+                "change_password": {
+                    "header": "Passwuert änneren",
+                    "current_password": "Aktuellt Passwuert",
+                    "new_password": "Neit Passwuert",
+                    "confirm_new_password": "Neit Passwuert confirméieren",
+                    "error_required": "Obligatoresch",
+                    "submit": "Ofschécken"
+                },
+                "mfa": {
+                    "header": "Multi-Faktor Authentifikatioun's Module",
+                    "disable": "Desaktivéieren",
+                    "enable": "Aktivéieren",
+                    "confirm_disable": "Sécher fir {name} ze desaktivéieren?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Ofgebrach",
+                    "title_success": "Succès!",
+                    "step_done": "Konfiguratioun ofgeschloss fir {step}",
+                    "close": "Zoumaachen",
+                    "submit": "Ofschécken"
                 }
             },
             "page-authorize": {

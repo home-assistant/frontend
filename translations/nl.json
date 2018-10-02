@@ -13,7 +13,8 @@
         "dev-templates": "Sjablonen",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profiel"
     },
     "state": {
         "default": {
@@ -554,7 +555,7 @@
                     "confirm_delete": "Weet u zeker dat u de toegangstoken voor {name} wilt verwijderen?",
                     "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
-                    "not_used": "Is nooit gebruikt",
+                    "not_used": "Is nog nooit gebruikt",
                     "current_token_tooltip": "Kan huidige verversingstoken niet verwijderen"
                 },
                 "long_lived_access_tokens": {
@@ -570,7 +571,7 @@
                     "prompt_copy_token": "Kopieer je toegangstoken. Het wordt niet meer getoond.",
                     "empty_state": "Je hebt nog geen langdurige toegangstokens.",
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
-                    "not_used": "Is nooit gebruikt"
+                    "not_used": "Is nog nooit gebruikt"
                 }
             },
             "page-authorize": {
