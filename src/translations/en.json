@@ -568,6 +568,7 @@
                 "state": {
                   "label": "State",
                   "from": "From",
+                  "for": "For",
                   "to": "To"
                 },
                 "homeassistant": {
