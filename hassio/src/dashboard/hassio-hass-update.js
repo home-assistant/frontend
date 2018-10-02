@@ -19,6 +19,9 @@ class HassioHassUpdate extends PolymerElement {
         color: var(--google-red-500);
         margin-top: 16px;
       }
+      a {
+        color: var(--primary-color);
+      }
     </style>
     <template is="dom-if" if="[[computeUpdateAvailable(hassInfo)]]">
       <div class="content">
