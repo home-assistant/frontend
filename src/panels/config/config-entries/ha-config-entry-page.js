@@ -10,9 +10,10 @@ import compare from '../../../common/string/compare.js';
 import './ha-device-card.js';
 import './ha-ce-entities-card.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
-class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
+class HaConfigEntryPage extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerElement))) {
   static get template() {
     return html`
   <style>
@@ -44,7 +45,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
     ></paper-icon-button>
     <div class='content'>
       <template is='dom-if' if='[[_computeIsEmpty(_configEntryDevices, _noDeviceEntities)]]'>
-        <p>This integration has no devices.</p>
+        <p>[[localize('ui.panel.config.integrations.config_entry.no_devices')]]</p>
       </template>
       <template is='dom-repeat' items='[[_configEntryDevices]]' as='device'>
         <ha-device-card
@@ -56,7 +57,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
       </template>
       <template is='dom-if' if='[[_noDeviceEntities.length]]'>
         <ha-ce-entities-card
-          heading='Entities without devices'
+          heading="[[localize('ui.panel.config.integrations.config_entry.no_device')]]"
           entities='[[_noDeviceEntities]]'
           hass='[[hass]]'
         ></ha-ce-entities-card>
@@ -124,7 +125,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _removeEntry() {
-    if (!confirm('Are you sure you want to delete this integration?')) return;
+    if (!confirm(this.localize('ui.panel.config.integrations.config_entry.delete_confirm'))) return;
 
     const entryId = this.configEntry.entry_id;
 
@@ -132,7 +133,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
       .then((result) => {
         this.fire('hass-reload-entries');
         if (result.require_restart) {
-          alert('Restart Home Assistant to finish removing this integration');
+          alert(this.localize('ui.panel.config.integrations.config_entry.restart_confirm'));
         }
         this.navigate('/config/integrations/dashboard', true);
       });
