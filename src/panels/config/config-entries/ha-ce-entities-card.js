@@ -19,7 +19,7 @@ function computeEntityName(hass, entity) {
 /*
  * @appliesMixin EventsMixin
  */
-class HaDeviceCard extends EventsMixin(PolymerElement) {
+class HaCeEntitiesCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -63,7 +63,8 @@ class HaDeviceCard extends EventsMixin(PolymerElement) {
   }
 
   _computeEntityName(entity, hass) {
-    return computeEntityName(hass, entity) || '(entity unavailable)';
+    return computeEntityName(hass, entity)
+        || `(${this.localize('ui.panel.config.integrations.config_entry.entity_unavailable')})`;
   }
 
   _openMoreInfo(ev) {
@@ -71,4 +72,4 @@ class HaDeviceCard extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-ce-entities-card', HaDeviceCard);
+customElements.define('ha-ce-entities-card', HaCeEntitiesCard);
