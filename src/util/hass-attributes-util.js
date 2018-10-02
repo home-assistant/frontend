@@ -81,7 +81,7 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = hassAttributeUtil.LOGIC_STATE_ATTRIBU
   hidden: { type: 'boolean', description: 'Hide from UI' },
   assumed_state: {
     type: 'boolean',
-    domains: ['switch', 'light', 'cover', 'climate', 'fan', 'group']
+    domains: ['switch', 'light', 'cover', 'climate', 'fan', 'group', 'water_heater']
   },
   initial_state: {
     type: 'string',
