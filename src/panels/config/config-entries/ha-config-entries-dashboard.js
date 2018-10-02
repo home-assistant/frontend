@@ -50,17 +50,19 @@ class HaConfigManagerDashboard extends
     }
   </style>
 
-  <hass-subpage header="Integrations">
+  <hass-subpage header="[[localize('ui.panel.config.integrations.caption')]]">
     <template is="dom-if" if="[[progress.length]]">
       <ha-config-section>
-        <span slot="header">Discovered</span>
+        <span slot="header">[[localize('ui.panel.config.integrations.discovered')]]</span>
         <paper-card>
           <template is="dom-repeat" items="[[progress]]">
             <div class="config-entry-row">
               <paper-item-body>
                 [[_computeIntegrationTitle(localize, item.handler)]]
               </paper-item-body>
-              <paper-button on-click="_continueFlow">Configure</paper-button>
+              <paper-button
+                on-click="_continueFlow"
+              >[[localize('ui.panel.config.integrations.configure')]]</paper-button>
             </div>
           </template>
         </paper-card>
@@ -68,12 +70,12 @@ class HaConfigManagerDashboard extends
     </template>
 
     <ha-config-section class='configured'>
-      <span slot="header">Configured</span>
+      <span slot="header">[[localize('ui.panel.config.integrations.configured')]]</span>
       <paper-card>
         <template is="dom-if" if="[[!entries.length]]">
           <div class="config-entry-row">
             <paper-item-body two-line>
-              <div>Nothing configured yet</div>
+              <div>[[localize('ui.panel.config.integrations.none')]]</div>
             </paper-item-body>
           </div>
         </template>
@@ -99,14 +101,16 @@ class HaConfigManagerDashboard extends
     </ha-config-section>
 
     <ha-config-section>
-      <span slot="header">Set up a new integration</span>
+      <span slot="header">[[localize('ui.panel.config.integrations.new')]]</span>
       <paper-card>
         <template is="dom-repeat" items="[[handlers]]">
           <div class="config-entry-row">
             <paper-item-body>
               [[_computeIntegrationTitle(localize, item)]]
             </paper-item-body>
-            <paper-button on-click="_createFlow">Configure</paper-button>
+            <paper-button
+              on-click="_createFlow"
+            >[[localize('ui.panel.config.integrations.configure')]]</paper-button>
           </div>
         </template>
       </paper-card>
