@@ -13,7 +13,8 @@
         "dev-templates": "Mallid",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profiil"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "Olek",
                                     "from": "Algväärtus",
-                                    "to": "Lõppväärtus"
+                                    "to": "Lõppväärtus",
+                                    "for": "Jaoks"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -470,7 +472,7 @@
                         },
                         "actions": {
                             "header": "Tegevused",
-                            "introduction": "Tegevused on need, mida Home Assistant teeb kui päästik käivitab automatiseeringu.\n\n[Lisateave tegevustest.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Tegevused on need, mida Home Assistant teeb kui päästik käivitab automatiseeringu.\n\n[Lisateave tegevustest.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Lisa toiming",
                             "duplicate": "Paljunda",
                             "delete": "Kustuta",
@@ -524,6 +526,31 @@
                         "deactivate_user": "Deaktiveeri kasutaja",
                         "delete_user": "Kustuta kasutaja"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant pilv",
+                    "description_login": "Sisse logitud kui {email}",
+                    "description_not_login": "Pole sisse logitud"
+                },
+                "integrations": {
+                    "caption": "Sidumised",
+                    "description": "Halda ühendatud seadmeid ja teenuseid",
+                    "discovered": "Leitud",
+                    "configured": "Seadistatud",
+                    "new": "Loo uus sidumine",
+                    "configure": "Seadista",
+                    "none": "Midagi pole veel seadistatud",
+                    "config_entry": {
+                        "no_devices": "See sidumine ei hõlma ühtegi seadet",
+                        "no_device": "Üksused ilma seadmeteta",
+                        "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
+                        "restart_confirm": "Selle sidumise lõplikuks eemaldamiseks taaskäivita Home Assistant",
+                        "manuf": "{manufacturer}",
+                        "hub": "Ühendatud",
+                        "firmware": "Püsivara: {version}",
+                        "device_unavailable": "seade pole saadaval",
+                        "entity_unavailable": "üksus pole saadaval"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +598,30 @@
                     "empty_state": "Sul pole veel pikaajalisi juurdepääsutõendeid.",
                     "last_used": "Viimati kasutatud {date} asukohast {location}",
                     "not_used": "Pole kunagi kasutatud"
+                },
+                "current_user": "Oled praegu sisse logitud kui {fullName}.",
+                "is_owner": "Oled omanik.",
+                "logout": "Logi välja",
+                "change_password": {
+                    "header": "Muuda salasõna",
+                    "current_password": "Praegune salasõna",
+                    "new_password": "Uus salasõna",
+                    "confirm_new_password": "Kinnita uut salasõna",
+                    "error_required": "Nõutav",
+                    "submit": "Esita"
+                },
+                "mfa": {
+                    "header": "Kaheastmelise autentimise moodulid",
+                    "disable": "Keela",
+                    "enable": "Luba",
+                    "confirm_disable": "Oled kindel, et soovid keelata kasutaja {nimi}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Katkestatud",
+                    "title_success": "Korras!",
+                    "step_done": "Seadistamine tehtud {step} jaoks",
+                    "close": "Sulge",
+                    "submit": "Esita"
                 }
             },
             "page-authorize": {
@@ -779,6 +830,13 @@
                     "turn_on": "Lülita sisse",
                     "turn_off": "Lülita välja"
                 }
+            },
+            "water_heater": {
+                "currently": "Hetkel",
+                "on_off": "Sees \/ väljas",
+                "target_temperature": "Soovitud temperatuur",
+                "operation": "Töörežiim",
+                "away_mode": "Eemalolekurežiim"
             }
         },
         "components": {

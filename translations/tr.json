@@ -316,7 +316,16 @@
                 },
                 "automation": {
                     "caption": "Otomasyon",
-                    "description": "Otomasyonları oluşturun ve düzenleyin"
+                    "description": "Otomasyonları oluşturun ve düzenleyin",
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "state": {
+                                    "for": "İçin"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Senaryo",
@@ -325,6 +334,39 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave ağınızı yönetin"
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "{email} olarak oturum açtınız",
+                    "description_not_login": "Oturum açmadınız"
+                },
+                "integrations": {
+                    "caption": "Entegrasyonlar",
+                    "description": "Bağlı cihazları ve hizmetleri yönetin",
+                    "discovered": "Bulundu",
+                    "configured": "Yapılandırılmış",
+                    "new": "Yeni bir entegrasyon kur",
+                    "configure": "Yapılandır",
+                    "none": "Henüz hiçbir şey yapılandırılmamış",
+                    "config_entry": {
+                        "no_devices": "Bu entegrasyona ait hiçbir cihaz yok",
+                        "no_device": "Cihaza ait olmayan cisimler",
+                        "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
+                        "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
+                        "manuf": "üretici: {manufacturer}",
+                        "hub": "Şununla bağlı:",
+                        "firmware": "Aygıt yazılımı: {version}",
+                        "device_unavailable": "cihaz kullanılamıyor",
+                        "entity_unavailable": "cisim kullanılamıyor"
+                    }
+                }
+            },
+            "profile": {
+                "mfa_setup": {
+                    "title_aborted": "İptal edildi",
+                    "title_success": "Başarılı!",
+                    "close": "Kapat",
+                    "submit": "Gönder"
                 }
             }
         },
@@ -352,6 +394,13 @@
             },
             "persistent_notification": {
                 "dismiss": "Kapat"
+            },
+            "water_heater": {
+                "currently": "Güncel olarak",
+                "on_off": "Açık \/ kapalı",
+                "target_temperature": "hedef sıcaklık",
+                "operation": "İşlem",
+                "away_mode": "Dışarıda modu"
             }
         }
     },
