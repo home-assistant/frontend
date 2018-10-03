@@ -60,10 +60,11 @@ class HaLogbookData extends PolymerElement {
 
     this._setIsLoading(true);
 
-    this.getDate(this.filterDate, this.filterPeriod, this.filterEntity).then(function (logbookEntries) {
-      this._setEntries(logbookEntries);
-      this._setIsLoading(false);
-    }.bind(this));
+    this.getDate(this.filterDate, this.filterPeriod, this.filterEntity)
+      .then(function (logbookEntries) {
+        this._setEntries(logbookEntries);
+        this._setIsLoading(false);
+      }.bind(this));
   }
 
   getDate(date, period, entityId) {
@@ -85,7 +86,8 @@ class HaLogbookData extends PolymerElement {
       });
     }
 
-    return DATA_CACHE[period][date][entityId] = this._getFromServer(date, period, entityId);
+    DATA_CACHE[period][date][entityId] = this._getFromServer(date, period, entityId);
+    return DATA_CACHE[period][date][entityId];
   }
 
   _getFromServer(date, period, entityId) {

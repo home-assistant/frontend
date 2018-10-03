@@ -225,7 +225,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   }
 
   _entityPicked(ev) {
-    this._setEntityId(ev.target.value)
+    this._setEntityId(ev.target.value);
   }
 
   refreshLogbook() {
