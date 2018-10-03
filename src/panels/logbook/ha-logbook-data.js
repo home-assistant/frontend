@@ -1,7 +1,8 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-var DATE_CACHE = {};
+var DATA_CACHE = {};
 var ALL_ENTITIES = '*';
+var DEFAULT_PERIOD = 1;
 
 class HaLogbookData extends PolymerElement {
   static get properties() {
@@ -13,12 +14,17 @@ class HaLogbookData extends PolymerElement {
 
       filterDate: {
         type: String,
-        observer: 'filterDateChanged',
+        observer: 'filterDataChanged',
+      },
+
+      filterPeriod: {
+        type: Number,
+        observer: 'filterDataChanged',
       },
 
       filterEntity: {
         type: String,
-        observer: 'filterEntityChanged',
+        observer: 'filterDataChanged',
       },
 
       isLoading: {
@@ -39,57 +45,53 @@ class HaLogbookData extends PolymerElement {
 
   hassChanged(newHass, oldHass) {
     if (!oldHass && this.filterDate) {
-      this.filterDateChanged(this.filterDate);
+      this.updateData();
     }
   }
 
-  filterEntityChanged(filterEntity) {
-    if (filterEntity) {
-      this.updateData(this.filterDate, filterEntity);
-    } else {
-      this.filterEntity = ALL_ENTITIES;
+  filterDataChanged(newValue, oldValue) {
+    if (oldValue !== undefined) {
+      this.updateData();
     }
   }
 
-  filterDateChanged(filterDate) {
-    this.updateData(filterDate, this.filterEntity);
-  }
-
-  updateData(filterDate, filterEntity) {
+  updateData() {
     if (!this.hass) return;
 
     this._setIsLoading(true);
 
-    this.getDate(filterDate, filterEntity).then(function (logbookEntries) {
+    this.getDate(this.filterDate, this.filterPeriod, this.filterEntity).then(function (logbookEntries) {
       this._setEntries(logbookEntries);
       this._setIsLoading(false);
     }.bind(this));
   }
 
-  getDate(date, entityId) {
-    if (!DATE_CACHE[date]) {
-      DATE_CACHE[date] = [];
+  getDate(date, period, entityId) {
+    if (!period) period = DEFAULT_PERIOD;
+    if (!entityId) entityId = ALL_ENTITIES;
+
+    if (!DATA_CACHE[period]) DATA_CACHE[period] = [];
+    if (!DATA_CACHE[period][date]) DATA_CACHE[period][date] = [];
+
+    if (DATA_CACHE[period][date][entityId]) {
+      return DATA_CACHE[period][date][entityId];
     }
 
-    if (DATE_CACHE[date][entityId]) {
-      return DATE_CACHE[date][entityId];
-    }
-
-    if (entityId !== ALL_ENTITIES && DATE_CACHE[date][ALL_ENTITIES]) {
-      return DATE_CACHE[date][ALL_ENTITIES].then(function (entities) {
+    if (entityId !== ALL_ENTITIES && DATA_CACHE[period][date][ALL_ENTITIES]) {
+      return DATA_CACHE[period][date][ALL_ENTITIES].then(function (entities) {
         return entities.filter(function (entity) {
           return entity.entity_id === entityId;
         });
       });
     }
 
-    return DATE_CACHE[date][entityId] = this._getDate(date, entityId);
+    return DATA_CACHE[period][date][entityId] = this._getFromServer(date, period, entityId);
   }
 
-  _getDate(date, entityId) {
-    var url = 'logbook/' + date;
+  _getFromServer(date, period, entityId) {
+    let url = 'logbook/' + date + '?period=' + period;
     if (entityId !== ALL_ENTITIES) {
-      url += '/' + entityId;
+      url += '&entity=' + entityId;
     }
 
     return this.hass.callApi('GET', url).then(
@@ -104,8 +106,8 @@ class HaLogbookData extends PolymerElement {
   }
 
   refreshLogbook() {
-    DATE_CACHE[this.filterDate] = [];
-    this.updateData(this.filterDate, this.filterEntity);
+    DATA_CACHE[this.filterPeriod][this.filterDate] = [];
+    this.updateData();
   }
 }
 

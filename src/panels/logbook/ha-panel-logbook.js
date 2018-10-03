@@ -66,7 +66,8 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
       is-loading='{{isLoading}}'
       entries='{{entries}}'
       filter-date='[[_computeFilterDate(_currentDate)]]'
-      filter-entity='{{entityId}}'
+      filter-period='[[_computeFilterDays(_periodIndex)]]'
+      filter-entity='[[entityId]]'
     ></ha-logbook-data>
 
     <app-header-layout has-scrolling-region>
@@ -96,6 +97,21 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
           disabled='[[isLoading]]'
           required
         ></vaadin-date-picker>
+
+        <paper-dropdown-menu
+          label-float
+          label="[[localize('ui.panel.logbook.period')]]"
+          disabled='[[isLoading]]'
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            selected="{{_periodIndex}}"
+          >
+            <paper-item>[[localize('ui.duration.day', 'count', 1)]]</paper-item>
+            <paper-item>[[localize('ui.duration.day', 'count', 3)]]</paper-item>
+            <paper-item>[[localize('ui.duration.week', 'count', 1)]]</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
 
         <ha-entity-picker
           hass="[[hass]]"
@@ -138,6 +154,11 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         }
       },
 
+      _periodIndex: {
+        type: Number,
+        value: 0,
+      },
+
       _entityId: {
         type: String,
         value: '',
@@ -177,6 +198,16 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     var parts = _currentDate.split('-');
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]).toISOString();
+  }
+
+  _computeFilterDays(periodIndex) {
+    switch (periodIndex) {
+      case 1:
+        return 3;
+      case 2:
+        return 7;
+      default: return 1;
+    }
   }
 
   _entityPicked(ev) {

@@ -5,7 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../components/domain-icon.js';
 
 
-import formatTime from '../../common/datetime/format_time.js';
+import formatDateTime from '../../common/datetime/format_date_time.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
 /*
@@ -25,8 +25,8 @@ class HaLogbook extends EventsMixin(PolymerElement) {
         line-height: 2em;
       }
 
-      .time {
-        width: 55px;
+      .date {
+        width: 130px;
         font-size: .8em;
         color: var(--secondary-text-color);
       }
@@ -51,7 +51,7 @@ class HaLogbook extends EventsMixin(PolymerElement) {
 
     <template is="dom-repeat" items="[[entries]]">
       <div class="horizontal layout entry">
-        <div class="time">[[_formatTime(item.when)]]</div>
+        <div class="date">[[_formatDateTime(item.when)]]</div>
         <domain-icon domain="[[item.domain]]" class="icon"></domain-icon>
         <div class="message" flex="">
           <template is="dom-if" if="[[!item.entity_id]]">
@@ -81,8 +81,8 @@ class HaLogbook extends EventsMixin(PolymerElement) {
     };
   }
 
-  _formatTime(date) {
-    return formatTime(new Date(date), this.language);
+  _formatDateTime(date) {
+    return formatDateTime(new Date(date), this.language);
   }
 
   entityClicked(ev) {
