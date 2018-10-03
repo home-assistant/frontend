@@ -524,6 +524,22 @@
                         "deactivate_user": "Dezactivați utilizatorul",
                         "delete_user": "Ștergeți utilizatorul"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Logat ca {email}",
+                    "description_not_login": "Nu sunteți conectat (ă)"
+                },
+                "integrations": {
+                    "description": "Gestionați dispozitivele și serviciile conectate",
+                    "configured": "Configurat",
+                    "none": "Nimic nu a fost configurat încă",
+                    "config_entry": {
+                        "delete_confirm": "Sigur doriți să ștergeți această integrare?",
+                        "restart_confirm": "Reporniți Home Assistant pentru a termina eliminarea acestei integrări",
+                        "hub": "Conectat prin",
+                        "device_unavailable": "dispozitiv indisponibil"
+                    }
                 }
             },
             "profile": {
@@ -569,8 +585,17 @@
                     "prompt_name": "Nume?",
                     "prompt_copy_token": "Copia token-ul de acces. Acesta nu va fi afișat din nou.",
                     "empty_state": "Nu aveți tokenuri de acces de lungă durată deocamdata",
-                    "last_used": "Ultima utilizate la {data} din {locaţie}",
+                    "last_used": "Ultima utilizare la {data} din {locaţie}",
                     "not_used": "Nu a fost utilizat niciodata"
+                },
+                "current_user": "În prezent sunteți conectat ca {fullName} .",
+                "is_owner": "Sunteți proprietar.",
+                "mfa": {
+                    "confirm_disable": "Sigur doriți să dezactivați {name} ?"
+                },
+                "mfa_setup": {
+                    "title_success": "Succes!",
+                    "close": "Închide"
                 }
             },
             "page-authorize": {
@@ -779,6 +804,10 @@
                     "turn_on": "Porniți",
                     "turn_off": "Opriți"
                 }
+            },
+            "water_heater": {
+                "on_off": "Pornit \/ Oprit",
+                "target_temperature": "Temperatura țintă"
             }
         },
         "components": {

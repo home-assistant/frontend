@@ -13,7 +13,8 @@
         "dev-templates": "模板",
         "dev-mqtt": "MQTT",
         "dev-info": "信息",
-        "calendar": "日历"
+        "calendar": "日历",
+        "profile": "用户资料"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "状态",
                                     "from": "从",
-                                    "to": "变为"
+                                    "to": "变为",
+                                    "for": "为"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +526,31 @@
                         "deactivate_user": "停用用户",
                         "delete_user": "删除用户"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "登录为 {email}",
+                    "description_not_login": "未登录"
+                },
+                "integrations": {
+                    "caption": "集成",
+                    "description": "管理连接的设备和服务",
+                    "discovered": "已发现",
+                    "configured": "已配置",
+                    "new": "设置一个新的集成",
+                    "configure": "配置",
+                    "none": "尚未配置任何集成",
+                    "config_entry": {
+                        "no_devices": "此集成没有设备。",
+                        "no_device": "无设备关联的实体",
+                        "delete_confirm": "您确定要删除此集成吗？",
+                        "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
+                        "manuf": "by {manufacturer}",
+                        "hub": "链接于",
+                        "firmware": "固件： {version}",
+                        "device_unavailable": "设备不可用",
+                        "entity_unavailable": "实体不可用"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +598,30 @@
                     "empty_state": "您还没有长期访问令牌。",
                     "last_used": "上次使用于 {date} 来自 {location}",
                     "not_used": "从未使用过"
+                },
+                "current_user": "您目前以 {fullName} 的身份登录。",
+                "is_owner": "您拥有所有者权限。",
+                "logout": "退出",
+                "change_password": {
+                    "header": "更改密码",
+                    "current_password": "当前密码",
+                    "new_password": "新密码",
+                    "confirm_new_password": "确认新密码",
+                    "error_required": "必填",
+                    "submit": "提交"
+                },
+                "mfa": {
+                    "header": "多因素身份验证模块",
+                    "disable": "禁用",
+                    "enable": "启用",
+                    "confirm_disable": "您确定要禁用 {name} 吗？"
+                },
+                "mfa_setup": {
+                    "title_aborted": "中止",
+                    "title_success": "成功！",
+                    "step_done": "{step} 设置完成",
+                    "close": "关闭",
+                    "submit": "提交"
                 }
             },
             "page-authorize": {
@@ -779,6 +830,13 @@
                     "turn_on": "打开",
                     "turn_off": "关闭"
                 }
+            },
+            "water_heater": {
+                "currently": "当前",
+                "on_off": "开\/关",
+                "target_temperature": "设定温度",
+                "operation": "操作",
+                "away_mode": "离开模式"
             }
         },
         "components": {
