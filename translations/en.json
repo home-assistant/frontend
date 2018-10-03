@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "State",
                                     "from": "From",
-                                    "to": "To"
+                                    "to": "To",
+                                    "for": "For"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +525,31 @@
                         "activate_user": "Activate user",
                         "deactivate_user": "Deactivate user",
                         "delete_user": "Delete user"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Logged in as {email}",
+                    "description_not_login": "Not logged in"
+                },
+                "integrations": {
+                    "caption": "Integrations",
+                    "description": "Manage connected devices and services",
+                    "discovered": "Discovered",
+                    "configured": "Configured",
+                    "new": "Set up a new integration",
+                    "configure": "Configure",
+                    "none": "Nothing configured yet",
+                    "config_entry": {
+                        "no_devices": "This integration has no devices.",
+                        "no_device": "Entities without devices",
+                        "delete_confirm": "Are you sure you want to delete this integration?",
+                        "restart_confirm": "Restart Home Assistant to finish removing this integration",
+                        "manuf": "by {manufacturer}",
+                        "hub": "Connected via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "device unavailable",
+                        "entity_unavailable": "entity unavailable"
                     }
                 }
             },
@@ -804,6 +830,13 @@
                     "turn_on": "Turn on",
                     "turn_off": "Turn off"
                 }
+            },
+            "water_heater": {
+                "currently": "Currently",
+                "on_off": "On \/ off",
+                "target_temperature": "Target temperature",
+                "operation": "Operation",
+                "away_mode": "Away mode"
             }
         },
         "components": {

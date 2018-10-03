@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "상태",
                                     "from": "이전",
-                                    "to": "이후"
+                                    "to": "이후",
+                                    "for": "의"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -514,7 +515,7 @@
                 },
                 "users": {
                     "caption": "사용자",
-                    "description": "사용자 관리",
+                    "description": "사용자를 관리합니다",
                     "picker": {
                         "title": "사용자"
                     },
@@ -524,6 +525,31 @@
                         "activate_user": "사용자 활성화",
                         "deactivate_user": "사용자 비활성화",
                         "delete_user": "사용자 삭제"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "{email} 로 로그인 되어있습니다",
+                    "description_not_login": "로그인이 되어있지 않습니다"
+                },
+                "integrations": {
+                    "caption": "통합 구성요소",
+                    "description": "연결된 기기 및 서비스를 관리합니다",
+                    "discovered": "발견된 구성요소",
+                    "configured": "설정된 구성요소",
+                    "new": "새로운 통합 구성요소 설정",
+                    "configure": "설정 하기",
+                    "none": "설정된 구성요소가 없습니다",
+                    "config_entry": {
+                        "no_devices": "이 통합 구성요소에는 장치가 없습니다.",
+                        "no_device": "장치가 없는 구성요소",
+                        "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
+                        "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 를 재시작합니다",
+                        "manuf": "{manufacturer} 제조",
+                        "hub": "연결 경유 대상",
+                        "firmware": "펌웨어: {version}",
+                        "device_unavailable": "기기 사용불가",
+                        "entity_unavailable": "구성요소 사용불가"
                     }
                 }
             },
@@ -804,6 +830,13 @@
                     "turn_on": "끄기",
                     "turn_off": "켜기"
                 }
+            },
+            "water_heater": {
+                "currently": "현재 온도",
+                "on_off": "켜기 \/ 끄기",
+                "target_temperature": "희망 온도",
+                "operation": "운전",
+                "away_mode": "외출 모드"
             }
         },
         "components": {
