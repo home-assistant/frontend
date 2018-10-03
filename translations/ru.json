@@ -13,7 +13,8 @@
         "dev-templates": "Шаблоны",
         "dev-mqtt": "MQTT",
         "dev-info": "Информация",
-        "calendar": "Календарь"
+        "calendar": "Календарь",
+        "profile": "Профиль"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "Состояние",
                                     "from": "С",
-                                    "to": "На"
+                                    "to": "На",
+                                    "for": "Для"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +526,31 @@
                         "deactivate_user": "Деактивировать пользователя",
                         "delete_user": "Удалить пользователя"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Вы вошли как {email}",
+                    "description_not_login": "Вход не выполнен"
+                },
+                "integrations": {
+                    "caption": "Интеграции",
+                    "description": "Управляйте подключенными устройствами и службами",
+                    "discovered": "Обнаружено",
+                    "configured": "Настроено",
+                    "new": "Создать новую интеграцию",
+                    "configure": "Настроить",
+                    "none": "Пока ничего не настроено",
+                    "config_entry": {
+                        "no_devices": "Эта интеграция не имеет устройств.",
+                        "no_device": "Объекты без устройств",
+                        "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
+                        "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
+                        "manuf": "от {manufacturer}",
+                        "hub": "Подключено через",
+                        "firmware": "Прошивка: {version}",
+                        "device_unavailable": "устройство недоступно",
+                        "entity_unavailable": "объект недоступен"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +598,30 @@
                     "empty_state": "У вас еще нет долгосрочных токенов доступа.",
                     "last_used": "Последнее использование {date} из {location}",
                     "not_used": "Никогда не использовался"
+                },
+                "current_user": "Вы вошли в систему как {fullName}.",
+                "is_owner": "Вы являетесь владельцем.",
+                "logout": "Выйти",
+                "change_password": {
+                    "header": "Изменить пароль",
+                    "current_password": "Текущий пароль",
+                    "new_password": "Новый пароль",
+                    "confirm_new_password": "Подтвердите новый пароль",
+                    "error_required": "Обязательное поле",
+                    "submit": "Подтвердить"
+                },
+                "mfa": {
+                    "header": "Модули многофакторной аутентификации",
+                    "disable": "Отключить",
+                    "enable": "Включить",
+                    "confirm_disable": "Вы уверены, что хотите отключить {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Отменено",
+                    "title_success": "Выполнено успешно!",
+                    "step_done": "Настройка выполнена для {step}",
+                    "close": "Закрыть",
+                    "submit": "Подтвердить"
                 }
             },
             "page-authorize": {
@@ -757,7 +808,7 @@
             },
             "climate": {
                 "currently": "Сейчас",
-                "on_off": "Вкл \/ выкл",
+                "on_off": "Вкл \/ Выкл",
                 "target_temperature": "Заданная температура",
                 "target_humidity": "Заданная влажность",
                 "operation": "Операция",
@@ -779,6 +830,13 @@
                     "turn_on": "Включить",
                     "turn_off": "Выключить"
                 }
+            },
+            "water_heater": {
+                "currently": "Сейчас",
+                "on_off": "Вкл \/ Выкл",
+                "target_temperature": "Заданная температура",
+                "operation": "Операция",
+                "away_mode": "Режим ожидания"
             }
         },
         "components": {
