@@ -9,6 +9,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 import '../../components/ha-menu-button.js';
+import '../../components/entity/ha-entity-picker.js';
 import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
 
@@ -22,6 +23,11 @@ import LocalizeMixin from '../../mixins/localize-mixin.js';
  * @appliesMixin LocalizeMixin
  */
 class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
+  constructor() {
+    super();
+    this.entityPicked = this._entityPicked.bind(this);
+  }
+
   static get template() {
     return html`
     <style include="ha-style">
@@ -31,8 +37,9 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
     paper-spinner {
       position: absolute;
-      top: 15px;
-      left: 186px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
 
     vaadin-date-picker {
@@ -41,6 +48,12 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
       }
       margin-bottom: 24px;
       max-width: 200px;
+    }
+
+    ha-entity-picker {
+      display: inline-block;
+      width: 100%;
+      max-width: 400px;
     }
 
     [hidden] {
@@ -53,6 +66,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
       is-loading='{{isLoading}}'
       entries='{{entries}}'
       filter-date='[[_computeFilterDate(_currentDate)]]'
+      filter-entity='{{entityId}}'
     ></ha-logbook-data>
 
     <app-header-layout has-scrolling-region>
@@ -82,6 +96,14 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
           disabled='[[isLoading]]'
           required
         ></vaadin-date-picker>
+
+        <ha-entity-picker
+          hass="[[hass]]"
+          value="{{_entityId}}"
+          label="[[localize('ui.components.entity.entity-picker.entity')]]"
+          disabled='[[isLoading]]'
+          onChange="{{entityPicked}}"
+        ></ha-entity-picker>
 
 
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
@@ -116,6 +138,17 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         }
       },
 
+      _entityId: {
+        type: String,
+        value: '',
+      },
+
+      entityId: {
+        type: String,
+        value: '',
+        readOnly: true,
+      },
+
       isLoading: {
         type: Boolean,
       },
@@ -144,6 +177,10 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     var parts = _currentDate.split('-');
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]).toISOString();
+  }
+
+  _entityPicked(ev) {
+    this._setEntityId(ev.target.value)
   }
 
   refreshLogbook() {
