@@ -57,7 +57,7 @@ class HuiInputTextEntityRow extends PolymerElement {
   }
 
   _stateObjChanged(stateObj) {
-    this._value = stateObj.state;
+    this._value = stateObj && stateObj.state;
   }
 
   _selectedValueChanged() {

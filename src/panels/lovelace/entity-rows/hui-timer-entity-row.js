@@ -73,6 +73,8 @@ class HuiTimerEntityRow extends PolymerElement {
   }
 
   _computeDisplay(stateObj, time) {
+    if (!stateObj) return null;
+
     if (stateObj.state === 'idle' || time === 0) return stateObj.state;
 
     let display = secondsToDuration(time);
