@@ -74,6 +74,7 @@ class HuiConditionalCard extends PolymerElement {
       return false;
     });
     root.classList.toggle('hidden', !visible);
+    this.style.setProperty('margin', (!visible) ? '0' : null);
   }
 }
 customElements.define('hui-conditional-card', HuiConditionalCard);
