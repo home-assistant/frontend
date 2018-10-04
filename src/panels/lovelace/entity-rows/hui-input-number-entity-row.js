@@ -125,7 +125,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
   }
 
   _hiddenState() {
-    if (!this.$ || this._stateObj.attributes.mode !== 'slider') return;
+    if (!this.$ || !this._stateObj || this._stateObj.attributes.mode !== 'slider') return;
     const width = this.$.input_number_card.offsetWidth;
     const stateEl = this.shadowRoot.querySelector('.state');
     if (!stateEl) return;
@@ -133,6 +133,8 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
   }
 
   _stateObjChanged(stateObj, oldStateObj) {
+    if (!stateObj) return;
+
     this.setProperties({
       _min: Number(stateObj.attributes.min),
       _max: Number(stateObj.attributes.max),

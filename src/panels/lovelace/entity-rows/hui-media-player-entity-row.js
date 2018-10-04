@@ -89,6 +89,8 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _computeControlIcon(stateObj) {
+    if (!stateObj) return null;
+
     if (stateObj.state !== 'playing') {
       return stateObj.attributes.supported_features & SUPPORTS_PLAY ? 'hass:play' : '';
     }
