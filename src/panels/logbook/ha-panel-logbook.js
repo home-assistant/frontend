@@ -23,11 +23,6 @@ import LocalizeMixin from '../../mixins/localize-mixin.js';
  * @appliesMixin LocalizeMixin
  */
 class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
-  constructor() {
-    super();
-    this.entityPicked = this._entityPicked.bind(this);
-  }
-
   static get template() {
     return html`
     <style include="ha-style">
@@ -132,7 +127,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
             value="{{_entityId}}"
             label="[[localize('ui.components.entity.entity-picker.entity')]]"
             disabled='[[isLoading]]'
-            onChange="{{entityPicked}}"
+            on-change='_entityPicked'
           ></ha-entity-picker>
         </div>
 

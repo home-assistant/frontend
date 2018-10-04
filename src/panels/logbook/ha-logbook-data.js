@@ -2,7 +2,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 var DATA_CACHE = {};
 var ALL_ENTITIES = '*';
-var DEFAULT_PERIOD = 1;
 
 class HaLogbookData extends PolymerElement {
   static get properties() {
@@ -61,14 +60,13 @@ class HaLogbookData extends PolymerElement {
     this._setIsLoading(true);
 
     this.getDate(this.filterDate, this.filterPeriod, this.filterEntity)
-      .then(function (logbookEntries) {
+      .then((logbookEntries) => {
         this._setEntries(logbookEntries);
         this._setIsLoading(false);
-      }.bind(this));
+      });
   }
 
   getDate(date, period, entityId) {
-    if (!period) period = DEFAULT_PERIOD;
     if (!entityId) entityId = ALL_ENTITIES;
 
     if (!DATA_CACHE[period]) DATA_CACHE[period] = [];

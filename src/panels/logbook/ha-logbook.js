@@ -5,7 +5,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../components/domain-icon.js';
 
 
-import formatDateTime from '../../common/datetime/format_date_time.js';
+import formatTime from '../../common/datetime/format_time.js';
+import formatDate from '../../common/datetime/format_date.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
 /*
@@ -25,8 +26,8 @@ class HaLogbook extends EventsMixin(PolymerElement) {
         line-height: 2em;
       }
 
-      .date {
-        width: 130px;
+      .time {
+        width: 55px;
         font-size: .8em;
         color: var(--secondary-text-color);
       }
@@ -50,8 +51,12 @@ class HaLogbook extends EventsMixin(PolymerElement) {
     </template>
 
     <template is="dom-repeat" items="[[entries]]">
+      <template is="dom-if" if="[[_needHeader(index)]]">
+        <h4 class="date">[[_formatDate(item.when)]]</h4>
+      </template>
+
       <div class="horizontal layout entry">
-        <div class="date">[[_formatDateTime(item.when)]]</div>
+        <div class="time">[[_formatTime(item.when)]]</div>
         <domain-icon domain="[[item.domain]]" class="icon"></domain-icon>
         <div class="message" flex="">
           <template is="dom-if" if="[[!item.entity_id]]">
@@ -81,8 +86,19 @@ class HaLogbook extends EventsMixin(PolymerElement) {
     };
   }
 
-  _formatDateTime(date) {
-    return formatDateTime(new Date(date), this.language);
+  _formatTime(date) {
+    return formatTime(new Date(date), this.language);
+  }
+
+  _formatDate(date) {
+    return formatDate(new Date(date), this.language);
+  }
+
+  _needHeader(index) {
+    if (!index) return true;
+    let current = this.entries[index],
+        previous = this.entries[index - 1];
+    return current.when.substr(0, 10) !== previous.when.substr(0, 10);
   }
 
   entityClicked(ev) {
