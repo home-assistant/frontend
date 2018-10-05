@@ -13,7 +13,8 @@
         "dev-templates": "Modelos",
         "dev-mqtt": "MQTT",
         "dev-info": "Informações",
-        "calendar": "Calendário"
+        "calendar": "Calendário",
+        "profile": "Perfil"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "Estado",
                                     "from": "De",
-                                    "to": "Para"
+                                    "to": "Para",
+                                    "for": "Durante"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +526,21 @@
                         "deactivate_user": "Desactivar utilizador",
                         "delete_user": "Apagar utilizador"
                     }
+                },
+                "cloud": {
+                    "caption": "",
+                    "description_login": "Ligado como {email}",
+                    "description_not_login": "Não está ligado"
+                },
+                "integrations": {
+                    "caption": "Integrações",
+                    "description": "Gerir dispositivos e serviços ligados",
+                    "new": "Configurar uma nova integração",
+                    "none": "Nada configurado ainda",
+                    "config_entry": {
+                        "no_devices": "Esta integração não possui dispositivos.",
+                        "no_device": "Entidades sem dispositivos"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +588,30 @@
                     "empty_state": "Ainda não tem um token de longa duração",
                     "last_used": "Última utilização a {date} em {location}",
                     "not_used": "Nunca foi utilizado"
+                },
+                "current_user": "Esta actualmente ligado como {fullName}",
+                "is_owner": "Você é o proprietário.",
+                "logout": "Sair",
+                "change_password": {
+                    "header": "Alterar palavra-passe",
+                    "current_password": "Palavra-passe actual",
+                    "new_password": "Nova palavra-passe",
+                    "confirm_new_password": "Confirmar nova palavra-passe",
+                    "error_required": "Obrigatório",
+                    "submit": "Enviar"
+                },
+                "mfa": {
+                    "header": "Módulos de autenticação por multíplos-factores",
+                    "disable": "Desactivar",
+                    "enable": "Activar",
+                    "confirm_disable": "Tem certeza de que deseja desativar {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abortado",
+                    "title_success": "Sucesso!",
+                    "step_done": "Configuração concluida para {step}",
+                    "close": "Fechar",
+                    "submit": "Enviar"
                 }
             },
             "page-authorize": {
@@ -779,6 +820,9 @@
                     "turn_on": "Ligar",
                     "turn_off": "Desligar"
                 }
+            },
+            "water_heater": {
+                "away_mode": "Modo ausente"
             }
         },
         "components": {

@@ -33,7 +33,7 @@
             "arming": "Schakelt in",
             "disarming": "Schakelt uit",
             "triggered": "Geactiveerd",
-            "armed_custom_bypass": "Gedeeltelijk actief"
+            "armed_custom_bypass": "Ingeschakeld met overbrugging(en)"
         },
         "automation": {
             "off": "Uit",
@@ -250,7 +250,7 @@
             "pouring": "Gieten",
             "rainy": "Regenachtig",
             "snowy": "Sneeuwachtig",
-            "snowy-rainy": "Sneeuwachtig, regenachtig",
+            "snowy-rainy": "Sneeuw-, regenachtig",
             "sunny": "Zonnig",
             "windy": "Winderig",
             "windy-variant": "Winderig"
@@ -274,11 +274,11 @@
         "alarm_control_panel": {
             "armed": "Actief",
             "disarmed": "Uit",
-            "armed_home": "Ingeschakeld",
+            "armed_home": "Actief",
             "armed_away": "Ingeschakeld",
             "armed_night": "Ingeschakeld",
             "pending": "Wacht",
-            "arming": "Aan",
+            "arming": "Activeren",
             "disarming": "Uitschakelen",
             "triggered": "Gaat af",
             "armed_custom_bypass": "Ingeschakeld"
@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "Staat",
                                     "from": "Van",
-                                    "to": "Aan"
+                                    "to": "Aan",
+                                    "for": "Voor"
                                 },
                                 "homeassistant": {
                                     "label": "",
@@ -471,11 +472,11 @@
                         },
                         "actions": {
                             "header": "Acties",
-                            "introduction": "De acties zijn wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd. \n\n [Leer meer over acties.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "De acties zijn wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd. \n\n [Lees meer over acties.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Actie toevoegen",
                             "duplicate": "Dupliceer",
-                            "delete": "Verwijder",
-                            "delete_confirm": "Wil je echt verwijderen?",
+                            "delete": "Verwijderen",
+                            "delete_confirm": "Wil je dit echt verwijderen?",
                             "unsupported_action": "Niet-ondersteunde actie: {action}",
                             "type_select": "Type actie",
                             "type": {
@@ -519,11 +520,36 @@
                         "title": "Gebruikers"
                     },
                     "editor": {
-                        "rename_user": "De naam van gebruiker wijzigen",
+                        "rename_user": "Naam wijzigen",
                         "change_password": "Wachtwoord wijzigen",
                         "activate_user": "Activeer gebruiker",
                         "deactivate_user": "Deactiveer gebruiker",
                         "delete_user": "Verwijder gebruiker"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistent Cloud",
+                    "description_login": "Ingelogd als {email}",
+                    "description_not_login": "Niet ingelogd"
+                },
+                "integrations": {
+                    "caption": "Integraties",
+                    "description": "Beheer verbonden apparaten en services",
+                    "discovered": "Ontdekt",
+                    "configured": "Geconfigureerd",
+                    "new": "Stel een nieuwe integratie in",
+                    "configure": "Configureer",
+                    "none": "Er is nog niets geconfigureerd",
+                    "config_entry": {
+                        "no_devices": "Deze integratie heeft geen apparaten.",
+                        "no_device": "Entiteiten zonder apparaten",
+                        "delete_confirm": "Weet u zeker dat u deze integratie wilt verwijderen?",
+                        "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
+                        "manuf": "door {fabrikant}",
+                        "hub": "Verbonden via",
+                        "firmware": "Firmware: {versie}",
+                        "device_unavailable": "apparaat niet beschikbaar",
+                        "entity_unavailable": "entiteit niet beschikbaar"
                     }
                 }
             },
@@ -534,7 +560,7 @@
                     "error_load_platform": "Configureer notify.html5.",
                     "error_use_https": "Vereist SSL voor de frontend",
                     "push_notifications": "Push-meldingen",
-                    "link_promo": "Kom meer te weten"
+                    "link_promo": "Meer informatie"
                 },
                 "language": {
                     "header": "Taal",
@@ -560,8 +586,8 @@
                 },
                 "long_lived_access_tokens": {
                     "header": "Toegangtokens met lange levensduur",
-                    "description": "Maak toegangstokens met een lange levensduur zodat uw scripts kunnen communiceren met uw Home Assistant instantie. Elk token is tien jaar geldig vanaf creatiedatum. De volgende langlevende toegangstokens zijn momenteel actief.",
-                    "learn_auth_requests": "Leer hoe u geverifieerde verzoeken kunt indienen.",
+                    "description": "Maak toegangstokens met een lange levensduur zodat uw scripts kunnen communiceren met uw Home Assistant instantie. Elk token is tien jaar geldig vanaf geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
+                    "learn_auth_requests": "Kom te weten hoe u geverifieerde verzoeken kunt maken",
                     "created_at": "Gemaakt op {date}",
                     "confirm_delete": "Weet u zeker dat u de toegangstoken voor {name} wilt verwijderen?",
                     "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
@@ -572,6 +598,30 @@
                     "empty_state": "Je hebt nog geen langdurige toegangstokens.",
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
                     "not_used": "Is nog nooit gebruikt"
+                },
+                "current_user": "U bent momenteel ingelogd als {fullName}.",
+                "is_owner": "U bent eigenaar.",
+                "logout": "Uitloggen",
+                "change_password": {
+                    "header": "Wachtwoord wijzigen",
+                    "current_password": "Huidige wachtwoord",
+                    "new_password": "Nieuw wachtwoord",
+                    "confirm_new_password": "Bevestig nieuw wachtwoord",
+                    "error_required": "Verplicht",
+                    "submit": "Verzenden"
+                },
+                "mfa": {
+                    "header": "Twee-factor-authenticatie modules",
+                    "disable": "Uitschakelen",
+                    "enable": "Inschakelen",
+                    "confirm_disable": "Weet u zeker dat u {naam} wilt uitschakelen?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Afgebroken",
+                    "title_success": "Gelukt!",
+                    "step_done": "Instellen voltooid voor {step}",
+                    "close": "Sluiten",
+                    "submit": "Verzenden"
                 }
             },
             "page-authorize": {
@@ -723,17 +773,17 @@
                     "wnw": "WNW",
                     "wsw": "WZW"
                 },
-                "forecast": "Weersvoorspelling"
+                "forecast": "Verwachting"
             },
             "alarm_control_panel": {
                 "code": "Code",
                 "clear_code": "Wis",
-                "disarm": "Uitgeschakeld",
-                "arm_home": "Ingeschakeld thuis",
-                "arm_away": "Ingeschakeld afwezig"
+                "disarm": "Uitschakelen",
+                "arm_home": "Inschakelen thuis",
+                "arm_away": "Inschakelen afwezig"
             },
             "automation": {
-                "last_triggered": "Voor het laatst uitgevoerd",
+                "last_triggered": "Laatst uitgevoerd",
                 "trigger": "Uitvoeren"
             },
             "cover": {
@@ -765,7 +815,7 @@
                 "fan_mode": "Ventilatormodus",
                 "swing_mode": "Swingmodus",
                 "away_mode": "Afwezigheidsmodus",
-                "aux_heat": "Aux warmte"
+                "aux_heat": "Extra warmte"
             },
             "lock": {
                 "code": "Code",
@@ -774,12 +824,19 @@
             },
             "vacuum": {
                 "actions": {
-                    "resume_cleaning": "Hervat reinigen",
+                    "resume_cleaning": "Hervat schoonmaak",
                     "return_to_base": "Keer terug naar dock",
-                    "start_cleaning": "Start reinigen",
+                    "start_cleaning": "Begin schoonmaak",
                     "turn_on": "Inschakelen",
                     "turn_off": "Uitschakelen"
                 }
+            },
+            "water_heater": {
+                "currently": "Momenteel",
+                "on_off": "Aan \/ uit",
+                "target_temperature": "Gewenste temperatuur",
+                "operation": "Werking",
+                "away_mode": "Afwezigheidsmodus"
             }
         },
         "components": {
@@ -813,7 +870,7 @@
             "entity_turned_off": "{entity} uitgeschakeld.",
             "service_called": "Service {service} aangeroepen",
             "service_call_failed": "Kan service {service} niet aanroepen",
-            "connection_lost": "Verbinding verbroken. Bezig met verbinden..."
+            "connection_lost": "Verbinding verbroken. Opnieuw verbinden..."
         },
         "dialogs": {
             "more_info_settings": {
@@ -824,7 +881,7 @@
         },
         "auth_store": {
             "ask": "Wilt u de inloggegevens opslaan?",
-            "decline": "Nee dank u",
+            "decline": "Nee, bedankt",
             "confirm": "Bewaar inloggegevens"
         },
         "notification_drawer": {

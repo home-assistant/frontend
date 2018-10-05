@@ -13,7 +13,8 @@
         "dev-templates": "Plantillas",
         "dev-mqtt": "",
         "dev-info": "Información",
-        "calendar": "Calendario"
+        "calendar": "Calendario",
+        "profile": "Perfil"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "Estado",
                                     "from": "De",
-                                    "to": "A"
+                                    "to": "A",
+                                    "for": "Por"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +526,31 @@
                         "deactivate_user": "Desactivar usuario",
                         "delete_user": "Eliminar usuario"
                     }
+                },
+                "cloud": {
+                    "caption": "Nube Home Assistant",
+                    "description_login": "Ha iniciado sesión como {email}",
+                    "description_not_login": "No ha iniciado sesión"
+                },
+                "integrations": {
+                    "caption": "Integraciones",
+                    "description": "Administrar dispositivos y servicios conectados",
+                    "discovered": "Descubierto",
+                    "configured": "Configurado",
+                    "new": "Configurar una nueva integración.",
+                    "configure": "Configurar",
+                    "none": "No hay nada configurado",
+                    "config_entry": {
+                        "no_devices": "Esta integración no tiene dispositivos.",
+                        "no_device": "Entidades sin dispositivos",
+                        "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
+                        "restart_confirm": "Reinicie Home Assistant para terminar de eliminar esta integración.",
+                        "manuf": "por {manufacturer}",
+                        "hub": "Conectado a través de",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "dispositivo no disponible",
+                        "entity_unavailable": "entidad no disponible"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +598,30 @@
                     "empty_state": "Aún no tienes tokens de acceso de larga duración.",
                     "last_used": "Utilizado por última vez en {fecha} desde {localización}.",
                     "not_used": "Nunca se ha utilizado"
+                },
+                "current_user": "Actualmente estás conectado como {fullName} .",
+                "is_owner": "Eres propietario.",
+                "logout": "Cerrar sesión",
+                "change_password": {
+                    "header": "Cambiar contraseña",
+                    "current_password": "Contraseña actual",
+                    "new_password": "Nueva contraseña",
+                    "confirm_new_password": "Confirmar nueva contraseña",
+                    "error_required": "Necesario",
+                    "submit": "Enviar"
+                },
+                "mfa": {
+                    "header": "Módulos de autenticación multifactor",
+                    "disable": "Deshabilitar",
+                    "enable": "Habilitar",
+                    "confirm_disable": "¿Estás seguro de que deseas deshabilitar {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abortado",
+                    "title_success": "¡Éxito!",
+                    "step_done": "Configuración realizada para {step}",
+                    "close": "Cerrar",
+                    "submit": "Enviar"
                 }
             },
             "page-authorize": {
@@ -779,6 +830,13 @@
                     "turn_on": "Encender",
                     "turn_off": "Apagar"
                 }
+            },
+            "water_heater": {
+                "currently": "Actualmente",
+                "on_off": "Encendido \/ Apagado",
+                "target_temperature": "Temperatura deseada",
+                "operation": "Operación",
+                "away_mode": "Modo ausente"
             }
         },
         "components": {

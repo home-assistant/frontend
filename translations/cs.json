@@ -524,6 +524,26 @@
                         "deactivate_user": "Deaktivovat uživatele",
                         "delete_user": "Odstranit uživatele"
                     }
+                },
+                "integrations": {
+                    "caption": "Integrace",
+                    "description": "Spravovat připojená zařízení a služby",
+                    "discovered": "Objeveno",
+                    "configured": "Zkonfigurováno",
+                    "new": "Nastavte novou integraci",
+                    "configure": "Konfigurovat",
+                    "none": "Zatím nic nezkonfigurováno",
+                    "config_entry": {
+                        "no_devices": "Tato integrace nemá žádná zařízení.",
+                        "no_device": "Entity bez zařízení",
+                        "delete_confirm": "Opravdu že chcete odstranit tuto integraci?",
+                        "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
+                        "manuf": "od {manufacturer}",
+                        "hub": "Připojeno přes",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "zařízení není k dispozici",
+                        "entity_unavailable": "entita není k dispozici"
+                    }
                 }
             },
             "profile": {
@@ -771,6 +791,13 @@
                     "turn_on": "Zapnout",
                     "turn_off": "Vypnout"
                 }
+            },
+            "water_heater": {
+                "currently": "Momentálně",
+                "on_off": "Zapnout \/ vypnout",
+                "target_temperature": "Cílová teplota",
+                "operation": "Provoz",
+                "away_mode": "Prázdninový režim"
             }
         },
         "components": {
