@@ -381,7 +381,7 @@
                                     "label": "Estat",
                                     "from": "Des de",
                                     "to": "A",
-                                    "for": "Per"
+                                    "for": "Durant"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",

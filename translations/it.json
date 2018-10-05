@@ -13,7 +13,8 @@
         "dev-templates": "Modelli",
         "dev-mqtt": "MQTT",
         "dev-info": "Informazioni",
-        "calendar": "Calendario"
+        "calendar": "Calendario",
+        "profile": "Profilo"
     },
     "state": {
         "default": {
@@ -524,6 +525,16 @@
                         "deactivate_user": "Disattiva utente",
                         "delete_user": "Elimina utente"
                     }
+                },
+                "cloud": {
+                    "description_not_login": "Accesso non effettuato"
+                },
+                "integrations": {
+                    "caption": "integrazioni",
+                    "description": "Gestisci dispositivi e servizi connessi",
+                    "configured": "Configura",
+                    "new": "Configura una nuova integrazione",
+                    "configure": "Configura"
                 }
             },
             "profile": {
@@ -545,6 +556,17 @@
                     "error_no_theme": "Nessun tema disponibile.",
                     "link_promo": "Per saperne di più sui temi",
                     "dropdown_label": "Tema"
+                },
+                "current_user": "Sei attualmente connesso come {fullName} .",
+                "change_password": {
+                    "header": "Cambia password",
+                    "submit": "Invia"
+                },
+                "mfa": {
+                    "enable": "Abilita"
+                },
+                "mfa_setup": {
+                    "submit": "Invia"
                 }
             },
             "page-authorize": {
@@ -790,7 +812,7 @@
         },
         "dialogs": {
             "more_info_settings": {
-                "save": "Salve",
+                "save": "Salva",
                 "name": "Nome",
                 "entity_id": "ID Entità"
             }

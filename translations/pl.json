@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "Stan",
                                     "from": "Od",
-                                    "to": "Do"
+                                    "to": "Do",
+                                    "for": "Przez"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +525,31 @@
                         "activate_user": "Aktywuj użytkownika",
                         "deactivate_user": "Dezaktywuj użytkownika",
                         "delete_user": "Usuń użytkownika"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Zalogowany jako {email}",
+                    "description_not_login": "Nie zalogowany"
+                },
+                "integrations": {
+                    "caption": "Integracje",
+                    "description": "Zarządzanie podłączonymi urządzeniami i usługami",
+                    "discovered": "Znaleziony",
+                    "configured": "Skonfigurowane",
+                    "new": "Konfiguruj nową integrację",
+                    "configure": "Konfiguruj",
+                    "none": "Nic jeszcze nie zostało skonfigurowane",
+                    "config_entry": {
+                        "no_devices": "Ta integracja nie ma żadnych urządzeń.",
+                        "no_device": "Obiekty bez urządzeń",
+                        "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
+                        "restart_confirm": "Zrestartuj Home Assistant, aby zakończyć usuwanie tej integracji",
+                        "manuf": "przez: {manufacturer}",
+                        "hub": "Połączony przez",
+                        "firmware": "Oprogramowanie: {version}",
+                        "device_unavailable": "urządzenie niedostępne",
+                        "entity_unavailable": "obiekt niedostępny"
                     }
                 }
             },
@@ -804,6 +830,13 @@
                     "turn_on": "Włącz",
                     "turn_off": "Wyłącz"
                 }
+            },
+            "water_heater": {
+                "currently": "Aktualny",
+                "on_off": "Wł. \/ wył.",
+                "target_temperature": "Temperatura docelowa",
+                "operation": "Tryb działania",
+                "away_mode": "Tryb poza domem"
             }
         },
         "components": {

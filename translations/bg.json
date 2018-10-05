@@ -13,7 +13,8 @@
         "dev-templates": "Шаблони",
         "dev-mqtt": "MQTT",
         "dev-info": "Информация",
-        "calendar": "Календар"
+        "calendar": "Календар",
+        "profile": "Профил"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "Състояние",
                                     "from": "От",
-                                    "to": "Във"
+                                    "to": "Във",
+                                    "for": "За период от"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +526,31 @@
                         "deactivate_user": "Деактивиране на потребителя",
                         "delete_user": "Изтриване на потребител"
                     }
+                },
+                "cloud": {
+                    "caption": "HomeHome Assistant Cloud",
+                    "description_login": "Влезли сте като {email}",
+                    "description_not_login": "Не сте влезли"
+                },
+                "integrations": {
+                    "caption": "Интеграции",
+                    "description": "Управление на свързани устройства и услуги",
+                    "discovered": "Открит",
+                    "configured": "Конфигуриран",
+                    "new": "Настройте нова интеграция",
+                    "configure": "Конфигуриране",
+                    "none": "Нищо не е конфигурирано към момента",
+                    "config_entry": {
+                        "no_devices": "Тази интеграция няма устройства.",
+                        "no_device": "Обекти без устройства",
+                        "delete_confirm": "Сигурни ли сте, че искате да изтриете интеграцията?",
+                        "restart_confirm": "Рестартирайте Home Assistant за да завършите премахването на интеграцията",
+                        "manuf": "от {manufacturer}",
+                        "hub": "Свързан чрез",
+                        "firmware": "Фърмуер: {version}",
+                        "device_unavailable": "Устройството е недостъпно",
+                        "entity_unavailable": "Недостъпен"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +598,30 @@
                     "empty_state": "Все още нямате дългосрочни кодове за достъп.",
                     "last_used": "Последно използван на {date} от {location}",
                     "not_used": "Никога не е бил използван"
+                },
+                "current_user": "В момента сте влезли като {fullName}.",
+                "is_owner": "Вие сте собственик.",
+                "logout": "Изход",
+                "change_password": {
+                    "header": "Смяна на парола ",
+                    "current_password": "Настояща парола",
+                    "new_password": "Нова парола",
+                    "confirm_new_password": "Потвърждение на новата парола",
+                    "error_required": "Задължително",
+                    "submit": "Изпращане"
+                },
+                "mfa": {
+                    "header": "Модули за много-факторна аутентикация",
+                    "disable": "Деактивиране",
+                    "enable": "Активиране",
+                    "confirm_disable": "Сигурни ли сте, че искате да деактивирате {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Преустановено",
+                    "title_success": "Успех!",
+                    "step_done": "Настройката е извършена за {step}",
+                    "close": "Затвори",
+                    "submit": "Изпращане"
                 }
             },
             "page-authorize": {
@@ -779,6 +830,13 @@
                     "turn_on": "Включи",
                     "turn_off": "Изключи"
                 }
+            },
+            "water_heater": {
+                "currently": "В момента",
+                "on_off": "Вкл. \/ Изкл.",
+                "target_temperature": "Желана температура",
+                "operation": "Режим",
+                "away_mode": "Режим на отсъствие"
             }
         },
         "components": {

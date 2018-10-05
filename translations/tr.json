@@ -12,7 +12,8 @@
         "dev-events": "Olaylar",
         "dev-templates": "Taslaklar",
         "dev-mqtt": "MQTT",
-        "dev-info": "Bilgi"
+        "dev-info": "Bilgi",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -362,9 +363,28 @@
                 }
             },
             "profile": {
+                "long_lived_access_tokens": {
+                    "not_used": "Hiç kullanılmamış"
+                },
+                "logout": "Çıkış yap",
+                "change_password": {
+                    "header": "Parolayı Değiştir",
+                    "current_password": "Güncel Parola",
+                    "new_password": "Yeni Parolayı",
+                    "confirm_new_password": "Yeni Parolayı Onaylayın",
+                    "error_required": "Gerekli",
+                    "submit": "Gönder"
+                },
+                "mfa": {
+                    "header": "Çoklu-faktör Kimlik Doğrulama Modülleri",
+                    "disable": "Devre dışı bırak",
+                    "enable": "Etkinleştir",
+                    "confirm_disable": "{name} adlı öğeyi devre dışı bırakmak istediğinizden emin misiniz?"
+                },
                 "mfa_setup": {
                     "title_aborted": "İptal edildi",
                     "title_success": "Başarılı!",
+                    "step_done": "Kurulumun {step} adımı tamamlandı",
                     "close": "Kapat",
                     "submit": "Gönder"
                 }
