@@ -142,6 +142,21 @@ const CONFIGS = [
     - light.kitchen_lights
     `
   },
+  {
+    heading: 'Primary theme',
+    config: `
+- type: glance
+  theming: primary
+  entities:
+    - device_tracker.demo_paulus
+    - media_player.living_room
+    - sun.sun
+    - cover.kitchen_window
+    - light.kitchen_lights
+    - lock.kitchen_door
+    - light.ceiling_lights
+    `
+  },
 ];
 
 class DemoPicEntity extends PolymerElement {
