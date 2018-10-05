@@ -96,8 +96,8 @@ class HaLogbook extends EventsMixin(PolymerElement) {
 
   _needHeader(change, index) {
     if (!index) return true;
-    let current = this.get('when', change.base[index]),
-        previous = this.get('when', change.base[index - 1]);
+    const current = this.get('when', change.base[index]);
+    const previous = this.get('when', change.base[index - 1]);
     return current && previous && current.substr(0, 10) !== previous.substr(0, 10);
   }
 
