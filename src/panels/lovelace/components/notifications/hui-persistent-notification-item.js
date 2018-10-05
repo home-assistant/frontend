@@ -1,5 +1,6 @@
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-tooltip/paper-tooltip.js';
 
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -17,9 +18,8 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
   static get template() {
     return html`
     <style>
-      ha-relative-time {
+      #time {
         color: var(--secondary-text-color);
-        display: block;
         margin-top: 6px;
         text-align: right;
       }
@@ -29,10 +29,14 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
       
       <ha-markdown content="[[notification.message]]"></ha-markdown>
       
-      <ha-relative-time
-        hass="[[hass]]"
-        datetime="[[notification.created_at]]"
-      ></ha-relative-time>
+      <div id="time">
+        <ha-relative-time
+          id="notificationTime"
+          hass="[[hass]]"
+          datetime="[[notification.created_at]]"
+        ></ha-relative-time>
+        <paper-tooltip for="notificationTime">[[_computeTooltip(hass, notification)]]</paper-tooltip>
+      </div>
 
       <paper-button
         slot="actions"
@@ -58,6 +62,15 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
 
   _computeTitle(notification) {
     return notification.title || notification.notification_id;
+  }
+
+  _computeTooltip(hass, notification) {
+    if (!hass || !notification) return null;
+
+    const d = new Date(notification.created_at);
+    return d.toLocaleDateString(hass.language, {
+      year: 'numeric', month: 'short', day: 'numeric', minute: 'numeric', hour: 'numeric'
+    });
   }
 }
 customElements.define(
