@@ -13,13 +13,31 @@ export default class TimeTrigger extends Component {
 
   /* eslint-disable camelcase */
   render({ trigger, localize }) {
-    const { at } = trigger;
+    const { at, hours, minutes, seconds } = trigger;
     return (
       <div>
         <paper-input
           label={localize('ui.panel.config.automation.editor.triggers.type.time.at')}
           name="at"
           value={at}
+          onvalue-changed={this.onChange}
+        />
+        <paper-input
+          label={localize('ui.panel.config.automation.editor.triggers.type.time.hours')}
+          name="hours"
+          value={hours}
+          onvalue-changed={this.onChange}
+        />
+        <paper-input
+          label={localize('ui.panel.config.automation.editor.triggers.type.time.minutes')}
+          name="minutes"
+          value={minutes}
+          onvalue-changed={this.onChange}
+        />
+        <paper-input
+          label={localize('ui.panel.config.automation.editor.triggers.type.time.seconds')}
+          name="seconds"
+          value={seconds}
           onvalue-changed={this.onChange}
         />
       </div>
