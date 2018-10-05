@@ -19,9 +19,11 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
     return html`
     <style>
       #time {
-        color: var(--secondary-text-color);
         margin-top: 6px;
         text-align: right;
+      }
+      ha-relative-time {
+        color: var(--secondary-text-color);
       }
     </style>
     <hui-notification-item-template>
