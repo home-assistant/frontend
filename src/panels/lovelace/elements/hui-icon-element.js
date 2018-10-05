@@ -13,13 +13,13 @@ class HuiIconElement extends ElementClickMixin(PolymerElement) {
     return html`
       <style>
         :host {
-          cursor: pointer; 
-        } 
+          cursor: pointer;
+        }
       </style>
-      <ha-icon 
+      <ha-icon
         icon="[[_config.icon]]"
         title$="[[computeTooltip(hass, _config)]]"
-      ></ha-icon> 
+      ></ha-icon>
     `;
   }
 
@@ -32,9 +32,7 @@ class HuiIconElement extends ElementClickMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.addEventListener("click", () =>
-      this.handleClick(this.hass, this._config)
-    );
+    this.registerMouse(this._config);
   }
 
   setConfig(config) {
