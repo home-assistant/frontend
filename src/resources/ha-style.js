@@ -4,6 +4,7 @@ import '@polymer/polymer/polymer-legacy.js';
 const documentContainer = document.createElement('template');
 documentContainer.setAttribute('style', 'display: none;');
 
+// https://material.io/tools/color/#!/?view.left=0&view.right=0&primary.color=03a9f4&secondary.color=FBC02D
 documentContainer.innerHTML = `<custom-style>
   <style>
     /*
@@ -25,9 +26,9 @@ documentContainer.innerHTML = `<custom-style>
 
       /* main interface colors */
       --primary-color: #03a9f4;
-      --dark-primary-color: #0288d1;
-      --light-primary-color: #b3e5fC;
-      --accent-color: #ff9800;
+      --dark-primary-color: #007ac1;
+      --light-primary-color: #67daff;
+      --accent-color: #fbc02d;
       --divider-color: rgba(0, 0, 0, .12);
 
       /* states and badges */
@@ -118,6 +119,10 @@ documentContainer.innerHTML = `<custom-style>
       --paper-slider-secondary-color: var(--slider-secondary-color);
       --paper-slider-container-color: var(--slider-bar-color);
       --ha-paper-slider-pin-font-size: 15px;
+
+      /* mdc mapping: https://material.io/develop/web/docs/theming/ */
+      --mdc-theme-primary: var(--primary-color);
+      --mdc-theme-secondary: var(--primary-color);
     }
   </style>
 

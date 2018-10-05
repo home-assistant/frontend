@@ -1,7 +1,7 @@
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
+import '@material/mwc-switch';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
@@ -64,10 +64,10 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
       a {
         color: var(--primary-color);
       }
-      paper-card > paper-toggle-button {
+      paper-card > mwc-switch {
         position: absolute;
-        right: 8px;
-        top: 16px;
+        right: 16px;
+        top: 18px;
       }
     </style>
     <hass-subpage header="Home Assistant Cloud">
@@ -116,10 +116,10 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </div>
 
           <paper-card heading="Alexa">
-            <paper-toggle-button
+            <mwc-switch
               checked='[[cloudStatus.alexa_enabled]]'
               on-change='_alexaChanged'
-            ></paper-toggle-button>
+            ></mwc-switch>
             <div class="card-content">
               With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.
               <ul>
@@ -137,10 +137,10 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </paper-card>
 
           <paper-card heading="Google Assistant">
-            <paper-toggle-button
+            <mwc-switch
               checked='[[cloudStatus.google_enabled]]'
               on-change='_googleChanged'
-            ></paper-toggle-button>
+            ></mwc-switch>
             <div class="card-content">
               With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.
               <ul>

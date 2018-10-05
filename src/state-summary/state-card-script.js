@@ -14,8 +14,13 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 class StateCardScript extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
     <style>
+      :host {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
       paper-button {
         color: var(--primary-color);
         font-weight: 500;
@@ -29,15 +34,13 @@ class StateCardScript extends LocalizeMixin(PolymerElement) {
       }
     </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <template is="dom-if" if="[[stateObj.attributes.can_cancel]]">
-        <ha-entity-toggle state-obj="[[stateObj]]" hass="[[hass]]"></ha-entity-toggle>
-      </template>
-      <template is="dom-if" if="[[!stateObj.attributes.can_cancel]]">
-        <paper-button on-click="fireScript">[[localize('ui.card.script.execute')]]</paper-button>
-      </template>
-    </div>
+    ${this.stateInfoTemplate}
+    <template is="dom-if" if="[[stateObj.attributes.can_cancel]]">
+      <ha-entity-toggle state-obj="[[stateObj]]" hass="[[hass]]"></ha-entity-toggle>
+    </template>
+    <template is="dom-if" if="[[!stateObj.attributes.can_cancel]]">
+      <paper-button on-click="fireScript">[[localize('ui.card.script.execute')]]</paper-button>
+    </template>
 `;
   }
 
