@@ -51,7 +51,7 @@ class HaLogbook extends EventsMixin(PolymerElement) {
     </template>
 
     <template is="dom-repeat" items="[[entries]]">
-      <template is="dom-if" if="[[_needHeader(index)]]">
+      <template is="dom-if" if="{{_needHeader(entries.*, index)}}">
         <h4 class="date">[[_formatDate(item.when)]]</h4>
       </template>
 
@@ -94,11 +94,11 @@ class HaLogbook extends EventsMixin(PolymerElement) {
     return formatDate(new Date(date), this.language);
   }
 
-  _needHeader(index) {
+  _needHeader(change, index) {
     if (!index) return true;
-    let current = this.entries[index],
-        previous = this.entries[index - 1];
-    return current.when.substr(0, 10) !== previous.when.substr(0, 10);
+    let current = this.get('when', change.base[index]),
+        previous = this.get('when', change.base[index - 1]);
+    return current && previous && current.substr(0, 10) !== previous.substr(0, 10);
   }
 
   entityClicked(ev) {

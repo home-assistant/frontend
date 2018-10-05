@@ -1,7 +1,7 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-var DATA_CACHE = {};
-var ALL_ENTITIES = '*';
+const DATA_CACHE = {};
+const ALL_ENTITIES = '*';
 
 class HaLogbookData extends PolymerElement {
   static get properties() {
