@@ -1,4 +1,4 @@
-FROM node:8.9-alpine
+FROM node:8.11.1-alpine
 
 # install yarn
 ENV PATH /root/.yarn/bin:$PATH
