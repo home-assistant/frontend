@@ -381,7 +381,7 @@
                                     "label": "状态",
                                     "from": "从",
                                     "to": "变为",
-                                    "for": "为"
+                                    "for": "持续"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",

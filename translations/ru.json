@@ -381,7 +381,7 @@
                                     "label": "Состояние",
                                     "from": "С",
                                     "to": "На",
-                                    "for": "Для"
+                                    "for": "В течение"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
