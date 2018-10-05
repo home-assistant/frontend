@@ -525,6 +525,30 @@
                         "deactivate_user": "Felhasználó inaktiválása",
                         "delete_user": "Felhasználó törlése"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Felhő",
+                    "description_login": "Bejelentkezve mint {e-mail}",
+                    "description_not_login": "Nincs bejelentkezve"
+                },
+                "integrations": {
+                    "caption": "Integrációk",
+                    "description": "Csatlakoztatott eszközök és szolgáltatások kezelése",
+                    "discovered": "Felfedezett",
+                    "configured": "Konfigurált",
+                    "new": "Új integráció beállítása",
+                    "configure": "Beállítás",
+                    "none": "Még semmi sincs beállítva",
+                    "config_entry": {
+                        "no_devices": "Ez az integráció nem rendelkezik eszközökkel.",
+                        "no_device": "Entitások eszközök nélkül",
+                        "delete_confirm": "Biztosan törölni szeretnéd ezt az integrációt?",
+                        "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
+                        "hub": "Csatlakoztatva",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "eszköz nem érhető el",
+                        "entity_unavailable": "entitás nem érhető el"
+                    }
                 }
             },
             "profile": {
@@ -804,6 +828,13 @@
                     "turn_on": "Bekapcsolás",
                     "turn_off": "Kikapcsolás"
                 }
+            },
+            "water_heater": {
+                "currently": "Jelenleg",
+                "on_off": "Be \/ ki",
+                "target_temperature": "Kívánt hőmérséklet",
+                "operation": "Üzemmód",
+                "away_mode": "Távoli mód"
             }
         },
         "components": {
@@ -884,7 +915,7 @@
         "notify": "Értesít",
         "plant": "Növény",
         "proximity": "Közelség",
-        "remote": "Távoli",
+        "remote": "Távirányítás",
         "scene": "Jelenet",
         "script": "Szkript",
         "sensor": "Érzékelő",
