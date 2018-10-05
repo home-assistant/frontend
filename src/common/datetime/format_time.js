@@ -11,11 +11,10 @@ function toLocaleTimeStringSupportsOptions() {
 }
 
 export default (toLocaleTimeStringSupportsOptions()
-  ? function (dateObj, locales) {
-    return dateObj.toLocaleTimeString(
-      locales,
-      { hour: 'numeric', minute: '2-digit' }
-    );
-  } : function (dateObj, locales) { // eslint-disable-line no-unused-vars
-    return fecha.format(dateObj, 'shortTime');
-  });
+  ? (dateObj, locales) =>
+      dateObj.toLocaleTimeString(locales, {
+        hour: "numeric",
+        minute: "2-digit"
+      })
+  : // eslint-disable-next-line no-unused-vars
+    (dateObj, locales) => fecha.format(dateObj, "shortTime"));

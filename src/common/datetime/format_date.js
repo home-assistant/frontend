@@ -11,11 +11,11 @@ function toLocaleDateStringSupportsOptions() {
 }
 
 export default (toLocaleDateStringSupportsOptions()
-  ? function (dateObj, locales) {
-    return dateObj.toLocaleDateString(
-      locales,
-      { year: 'numeric', month: 'long', day: 'numeric' },
-    );
-  } : function (dateObj, locales) { // eslint-disable-line no-unused-vars
-    return fecha.format(dateObj, 'mediumDate');
-  });
+  ? (dateObj, locales) =>
+      dateObj.toLocaleDateString(locales, {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      })
+  : // eslint-disable-next-line no-unused-vars
+    (dateObj, locales) => fecha.format(dateObj, "mediumDate"));
