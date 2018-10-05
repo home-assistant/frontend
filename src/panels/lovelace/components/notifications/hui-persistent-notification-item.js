@@ -18,9 +18,10 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
   static get template() {
     return html`
     <style>
-      #time {
+      .time {
+        display: flex;
+        justify-content: flex-end;
         margin-top: 6px;
-        text-align: right;
       }
       ha-relative-time {
         color: var(--secondary-text-color);
@@ -31,13 +32,14 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
       
       <ha-markdown content="[[notification.message]]"></ha-markdown>
       
-      <div id="time">
-        <ha-relative-time
-          id="notificationTime"
-          hass="[[hass]]"
-          datetime="[[notification.created_at]]"
-        ></ha-relative-time>
-        <paper-tooltip for="notificationTime">[[_computeTooltip(hass, notification)]]</paper-tooltip>
+      <div class="time">
+        <span>
+          <ha-relative-time
+            hass="[[hass]]"
+            datetime="[[notification.created_at]]"
+          ></ha-relative-time>
+          <paper-tooltip>[[_computeTooltip(hass, notification)]]</paper-tooltip>
+        </span>
       </div>
 
       <paper-button
