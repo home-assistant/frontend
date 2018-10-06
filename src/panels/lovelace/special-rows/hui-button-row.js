@@ -6,26 +6,25 @@ class HuiButtonRow extends PolymerElement {
   static get template() {
     return html`
 ${this.styleTemplate}
-${this.rowsTemplate}
+${this.buttonsTemplate}
     `;
   }
 
-  static get rowsTemplate() {
+  static get buttonsTemplate() {
     return html`
-<template is="dom-repeat" items="[[buttons]]" as="row">
     <div class="flex-box">
-        <template is="dom-repeat" items="[[row]]">
+        <template is="dom-repeat" items="[[buttons]]" as="button">
             <paper-button on-click="handleButton">
-                <template is="dom-if" if="{{item.icon}}">
-                    <ha-icon icon="[[item.icon]]" class$="[[getClass(item.icon_color)]]"><ha-icon>
+                <template is="dom-if" if="{{button.icon}}">
+                    <ha-icon icon="[[button.icon]]" class$="[[getClass(button.icon_color)]]"><ha-icon>
                 </template>
                 <template is="dom-else">
-                    <ha-state-icon state="[[item.state]]""><ha-state-icon>
+                    <ha-state-icon state="[[button.state]]""><ha-state-icon>
                 </template>
-                {{item.name}}
+                {{button.name}}
             </paper-button>
         </template>
-</template>
+    </div>
 `;
   }
 
@@ -115,11 +114,8 @@ ${this.rowsTemplate}
     if (config.buttons.length <= 0) {
       throw new Error('at least one button required');
     }
-    if (!Array.isArray(config.buttons[0])) {
-      config.buttons = [config.buttons];
-    }
 
-    this.buttons = config.buttons.map(row => row.map((button) => {
+    this.buttons = config.buttons.map((button) => {
       if (typeof button === 'string') {
         return this.makeButtonFromEntity(button);
       }
@@ -135,13 +131,13 @@ ${this.rowsTemplate}
       if (!button.service_data) button.service_data = {};
       if (!button.name) throw new Error('name required');
       return button;
-    }));
+    });
   }
 
   set hass(hass) {
     this._hass = hass;
 
-    this.buttons = this.buttons.map(row => row.map((button) => {
+    this.buttons = this.buttons.map((button) => {
       const state = hass.states[button.service_data.entity_id];
       if (state) {
         button.state = state;
@@ -154,11 +150,11 @@ ${this.rowsTemplate}
         return button;
       }
       return button;
-    }));
+    });
   }
 
   handleButton(evt) {
-    const button = evt.model.get('item');
+    const button = evt.model.get('button');
     const svc = button.service.split('.');
     this._hass.callService(svc[0], svc[1], button.service_data);
   }
