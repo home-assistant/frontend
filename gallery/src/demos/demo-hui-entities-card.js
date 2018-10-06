@@ -64,6 +64,13 @@ const ENTITIES = [
     unit_of_measurement: 'dB',
     friendly_name: 'Allowed Noise',
     icon: 'mdi:bell-ring'
+  }),
+  getEntity('media_player', 'living_room', 'playing', {
+    media_content_type: 'tvshow',
+    media_title: 'Chapter 1',
+    media_series_title: 'House of Cards',
+    app_name: 'Netflix',
+    supported_features: 1
   })
 ];
 
@@ -165,6 +172,21 @@ const CONFIGS = [
       service: light.toggle
       service_data:
         entity_id: light.bed_light
+    - type: button
+      buttons:
+        - light.bed_light
+        - name: Kitchen
+          entity: light.kitchen
+          icon: mdi:fridge
+    - type: button
+      buttons:
+        - name: Event Trigger
+          service: events.user_defined_event
+        - name: Set Media Source
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.living_room
+            source: Netflix
     - type: divider
     - type: divider
       style:
