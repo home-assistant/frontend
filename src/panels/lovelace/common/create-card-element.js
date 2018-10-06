@@ -18,6 +18,7 @@ import '../cards/hui-picture-glance-card';
 import '../cards/hui-plant-status-card.js';
 import '../cards/hui-vertical-stack-card.js';
 import '../cards/hui-weather-forecast-card';
+import '../cards/hui-gauge-card.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
@@ -39,7 +40,8 @@ const CARD_TYPES = new Set([
   'picture-glance',
   'plant-status',
   'vertical-stack',
-  'weather-forecast'
+  'weather-forecast',
+  'gauge'
 ]);
 const CUSTOM_TYPE_PREFIX = 'custom:';
 const TIMEOUT = 2000;
