@@ -16,6 +16,7 @@ import '../cards/hui-picture-elements-card';
 import '../cards/hui-picture-entity-card';
 import '../cards/hui-picture-glance-card';
 import '../cards/hui-plant-status-card.js';
+import '../cards/hui-sensor-graph-card.js';
 import '../cards/hui-vertical-stack-card.js';
 import '../cards/hui-weather-forecast-card';
 
@@ -38,6 +39,7 @@ const CARD_TYPES = new Set([
   'picture-entity',
   'picture-glance',
   'plant-status',
+  'sensor-graph',
   'vertical-stack',
   'weather-forecast'
 ]);
