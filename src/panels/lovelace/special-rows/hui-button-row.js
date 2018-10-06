@@ -109,6 +109,7 @@ ${this.buttonsTemplate}
       case 'light':
       case 'switch':
       case 'script':
+      case 'group':
         service = 'toggle';
         break;
       case 'media_player':
@@ -118,7 +119,7 @@ ${this.buttonsTemplate}
         service = 'turn_on';
         break;
       default:
-        throw new Error(`cannot use ${entity} without a specifig action config`);
+        throw new Error(`cannot use ${entity} without a specifying a service and service_data`);
     }
     return {
       service: `${domain}.${service}`,
