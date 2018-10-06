@@ -2,6 +2,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-button/paper-button.js';
 
+import computeStateName from '../../../common/entity/compute_state_name.js';
+
 class HuiButtonRow extends PolymerElement {
   static get template() {
     return html`
@@ -145,9 +147,8 @@ ${this.buttonsTemplate}
       if (button.name) return button;
       if (button.icon) return button;
 
-      if (state && state.attributes && state.attributes.friendly_name) {
-        button.name = state.attributes.friendly_name;
-        return button;
+      if (state) {
+        button.name = computeStateName(state);
       }
       return button;
     });
