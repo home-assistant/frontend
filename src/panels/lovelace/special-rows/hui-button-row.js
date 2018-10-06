@@ -16,6 +16,12 @@ ${this.buttonsTemplate}
     return html`
     <div class="flex-box">
         <template is="dom-repeat" items="[[buttons]]" as="button">
+            <template is="dom-if" if="[[button.not_found]]">
+                <div class="not-found">
+                  Entity not available: [[button.service_data.entity_id]]
+                </div>
+            </template>
+            <template is="dom-if" if="[[!button.not_found]]">
                 <paper-button on-click="handleButton">
                     <template is="dom-if" if="{{showIcon(button)}}">
                         <ha-icon icon="[[button.icon]]" class$="[[getClass(button.icon_color)]]"></ha-icon>
@@ -27,6 +33,7 @@ ${this.buttonsTemplate}
                     </template>
                     {{button.name}}
                 </paper-button>
+            </template>
         </template>
     </div>
 `;
@@ -61,6 +68,12 @@ ${this.buttonsTemplate}
  }
  .icon-grey {
      color: var(--paper-grey-200);
+ }
+ .not-found {
+   flex: 1;
+   background-color: yellow;
+   padding: 8px;
+   margin: 8px;
  }
 </style>
     `;
@@ -111,7 +124,8 @@ ${this.buttonsTemplate}
       service: `${domain}.${service}`,
       service_data: {
         entity_id: entity
-      }
+      },
+      generated: true
     };
   }
 
@@ -153,6 +167,9 @@ ${this.buttonsTemplate}
       const state = hass.states[button.service_data.entity_id];
       if (state) {
         button.state = state;
+      } else if (button.generated) {
+        button.not_found = true;
+        return button;
       }
       if (button.name) return button;
       if (button.icon) return button;
