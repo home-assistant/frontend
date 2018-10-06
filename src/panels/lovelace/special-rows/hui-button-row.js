@@ -16,15 +16,17 @@ ${this.buttonsTemplate}
     return html`
     <div class="flex-box">
         <template is="dom-repeat" items="[[buttons]]" as="button">
-            <paper-button on-click="handleButton">
-                <template is="dom-if" if="{{button.icon}}">
-                    <ha-icon icon="[[button.icon]]" class$="[[getClass(button.icon_color)]]"><ha-icon>
-                </template>
-                <template is="dom-else">
-                    <ha-state-icon state="[[button.state]]""><ha-state-icon>
-                </template>
-                {{button.name}}
-            </paper-button>
+                <paper-button on-click="handleButton">
+                    <template is="dom-if" if="{{showIcon(button)}}">
+                        <ha-icon icon="[[button.icon]]" class$="[[getClass(button.icon_color)]]"></ha-icon>
+                    </template>
+                    <template is="dom-if" if="{{ showStateBadge(button) }}">
+                      <state-badge
+                        state-obj="[[button.state]]"
+                        override-icon="[[button.icon]]"></state-badge>
+                    </template>
+                    {{button.name}}
+                </paper-button>
         </template>
     </div>
 `;
@@ -76,6 +78,14 @@ ${this.buttonsTemplate}
   getClass(color) {
     if (!color) return 'icon-default';
     return `icon-${color}`;
+  }
+
+  showStateBadge(button) {
+    return button.state && !button.no_icon && !this.showIcon(button);
+  }
+
+  showIcon(button) {
+    return (!button.state && button.icon) || (button.icon && button.icon_color);
   }
 
   makeButtonFromEntity(entity) {
