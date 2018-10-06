@@ -8,7 +8,7 @@ const CONFIGS = [
     heading: 'Basic example',
     config: `
 - type: gauge
-  entity: climate.ecobee
+  entity: climate.ecobee.current_temperature
     `
   },
   {
@@ -16,14 +16,14 @@ const CONFIGS = [
     config: `
 - type: gauge
   title: Temperature
-  entity: climate.ecobee
+  entity: climate.ecobee.current_temperature
     `
   },
   {
     heading: 'Custom Unit of Measurement',
     config: `
 - type: gauge
-  entity: climate.ecobee
+  entity: climate.ecobee.current_temperature
   unit_of_measurement: Degrees
     `
   },
@@ -31,7 +31,7 @@ const CONFIGS = [
     heading: 'Setting Severity Levels',
     config: `
 - type: gauge
-  entity: climate.ecobee
+  entity: climate.ecobee.current_temperature
   severity:
     red: 32
     green: 0
@@ -42,7 +42,7 @@ const CONFIGS = [
     heading: 'Setting Min and Max Values',
     config: `
 - type: gauge
-  entity: climate.ecobee
+  entity: climate.ecobee.current_temperature
   min: 0
   max: 38
     `
