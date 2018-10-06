@@ -172,11 +172,27 @@ const CONFIGS = [
       service: light.toggle
       service_data:
         entity_id: light.bed_light
+    - type: divider
+    - type: divider
+      style:
+        height: 30px
+        margin: 4px 0
+        background: center / contain url("/images/divider.png") no-repeat
     - type: button
       buttons:
         - light.bed_light
+        - light.non_existing
+    - type: button
+      buttons:
+        - scene.romantic_lights
+        - entity: scene.romantic_lights
+          icon_color: red
+          icon: mdi:lamp
+    - type: button
+      buttons:
+        - group.kitchen
         - name: Kitchen
-          entity: light.kitchen
+          entity: group.kitchen
           icon: mdi:fridge
     - type: button
       buttons:
@@ -187,12 +203,14 @@ const CONFIGS = [
           service_data:
             entity_id: media_player.living_room
             source: Netflix
-    - type: divider
-    - type: divider
-      style:
-        height: 30px
-        margin: 4px 0
-        background: center / contain url("/images/divider.png") no-repeat
+    - type: button
+      buttons:
+        - name: Set Media Source (No Icon Override)
+          service: media_player.select_source
+          no_icon: true
+          service_data:
+            entity_id: media_player.living_room
+            source: Netflix
     `
   },
 ];
