@@ -8,7 +8,7 @@ import stateIcon from '../../../common/entity/state_icon.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 
-class HuiSensorGraphCard extends EventsMixin(LitElement) {
+class HuiSensorCard extends EventsMixin(LitElement) {
   set hass(hass) {
     this._hass = hass;
     const entity = hass.states[this._config.entity];
@@ -275,4 +275,4 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
   }
 }
 
-customElements.define('hui-sensor-graph-card', HuiSensorGraphCard);
+customElements.define('hui-sensor-card', HuiSensorCard);
