@@ -33,13 +33,17 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
     }
 
     const cardConfig = Object.assign({
-      icon: config.icon || false,
-      hours_to_show: Number(config.hours_to_show) || 24,
-      accuracy: Number(config.accuracy) || 10,
-      height: Number(config.height) || 100,
-      line_width: Number(config.line_width) || 5,
-      line_color: config.line_color || 'var(--accent-color)'
+      icon: false,
+      hours_to_show: 24,
+      accuracy: 10,
+      height: 100,
+      line_width: 5,
+      line_color: 'var(--accent-color)'
     }, config);
+    cardConfig.hours_to_show = Number(cardConfig.hours_to_show);
+    cardConfig.accuracy = Number(cardConfig.accuracy);
+    cardConfig.height = Number(cardConfig.height);
+    cardConfig.line_width = Number(cardConfig.line_width);
 
     this.config = cardConfig;
   }
