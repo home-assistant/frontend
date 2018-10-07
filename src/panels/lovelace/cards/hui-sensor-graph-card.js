@@ -11,9 +11,9 @@ import EventsMixin from '../../../mixins/events-mixin.js';
 class HuiSensorGraphCard extends EventsMixin(LitElement) {
   set hass(hass) {
     this._hass = hass;
-    const entity = hass.states[this.config.entity];
-    if (entity && this.entity !== entity) {
-      this.entity = entity;
+    const entity = hass.states[this._config.entity];
+    if (entity && this._entity !== entity) {
+      this._entity = entity;
       this._getHistory();
     }
   }
@@ -21,9 +21,9 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
   static get properties() {
     return {
       _hass: { },
-      config: { },
-      entity: { },
-      line: String
+      _config: { },
+      _entity: { },
+      _line: String
     };
   }
 
@@ -45,39 +45,39 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
     cardConfig.height = Number(cardConfig.height);
     cardConfig.line_width = Number(cardConfig.line_width);
 
-    this.config = cardConfig;
+    this._config = cardConfig;
   }
 
   shouldUpdate(changedProps) {
     const change = (
-      changedProps.has('entity')
-      || changedProps.has('line')
+      changedProps.has('_entity')
+      || changedProps.has('_line')
     );
     return change;
   }
 
-  render({ config, entity, line } = this) {
+  render({ _config, _entity, _line } = this) {
     return html`
       ${this._style()}
       <ha-card @click='${e => this._handleClick(e)}'>
         <div class='flex'>
           <div class='icon'>
-            <ha-icon icon='${this._computeIcon(entity)}'></ha-icon>
+            <ha-icon icon=${this._computeIcon(_entity)}></ha-icon>
           </div>
           <div class='header'>
-            <span class='name'>${this._computeName(entity)}</span>
+            <span class='name'>${this._computeName(_entity)}</span>
           </div>
         </div>
         <div class='flex info'>
-          <span id='value'>${entity.state}</span>
-          <span id='measurement'>${this._computeUom(entity)}</span>
+          <span id='value'>${_entity.state}</span>
+          <span id='measurement'>${this._computeUom(_entity)}</span>
         </div>
         <div class='graph'>
           <div>
-            ${line ? svg`
-            <svg width='100%' height='100%' viewBox='0 0 500 ${this.config.height}'>
-              <path d=${line} fill='none' stroke=${config.line_color}
-                stroke-width=${config.line_width}
+            ${_line ? svg`
+            <svg width='100%' height='100%' viewBox='0 0 500 ${_config.height}'>
+              <path d=${_line} fill='none' stroke=${_config.line_color}
+                stroke-width=${_config.line_width}
                 stroke-linecap='round' stroke-linejoin='round' />
             </svg>` : ''}
           </div>
@@ -86,19 +86,19 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
   }
 
   _handleClick() {
-    this.fire('hass-more-info', { entityId: this.config.entity });
+    this.fire('hass-more-info', { entityId: this._config.entity });
   }
 
   _computeIcon(item) {
-    return this.config.icon || stateIcon(item);
+    return this._config.icon || stateIcon(item);
   }
 
   _computeName(item) {
-    return this.config.name || computeStateName(item);
+    return this._config.name || computeStateName(item);
   }
 
   _computeUom(item) {
-    return this.config.unit || item.attributes.unit_of_measurement;
+    return this._config.unit || item.attributes.unit_of_measurement;
   }
 
   _getGraph(items, width, height) {
@@ -112,7 +112,7 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
   }
 
   _calcCoordinates(values, width, height) {
-    const margin = this.config.line_width;
+    const margin = this._config.line_width;
     width -= margin * 2;
     height -= margin * 2;
     const min = Math.floor(Math.min.apply(null, values) * 0.95);
@@ -162,20 +162,20 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
   async _getHistory() {
     const endTime = new Date();
     const startTime = new Date();
-    startTime.setHours(endTime.getHours() - this.config.hours_to_show);
-    const stateHistory = await this._fetchRecent(this.config.entity, startTime, endTime);
+    startTime.setHours(endTime.getHours() - this._config.hours_to_show);
+    const stateHistory = await this._fetchRecent(this._config.entity, startTime, endTime);
     const history = stateHistory[0];
     const valArray = [history[history.length - 1]];
 
     let pos = history.length - 1;
-    const accuracy = (this.config.accuracy) <= pos ? this.config.accuracy : pos;
+    const accuracy = (this._config.accuracy) <= pos ? this._config.accuracy : pos;
     let increment = Math.ceil(history.length / accuracy);
     increment = (increment <= 0) ? 1 : increment;
     for (let i = accuracy; i >= 2; i--) {
       pos -= increment;
       valArray.unshift(pos >= 0 ? history[pos] : history[0]);
     }
-    this.line = this._getGraph(valArray, 500, this.config.height);
+    this._line = this._getGraph(valArray, 500, this._config.height);
   }
 
   async _fetchRecent(entityId, startTime, endTime) {
