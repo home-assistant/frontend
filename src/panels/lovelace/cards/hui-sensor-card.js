@@ -59,10 +59,10 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   render({ _config, _entity, _line } = this) {
     return html`
       ${this._style()}
-      <ha-card @click='${e => this._handleClick(e)}'>
+      <ha-card @click=${this._handleClick}>
         <div class='flex'>
           <div class='icon'>
-            <ha-icon icon=${this._computeIcon(_entity)}></ha-icon>
+            <ha-icon .icon=${this._computeIcon(_entity)}></ha-icon>
           </div>
           <div class='header'>
             <span class='name'>${this._computeName(_entity)}</span>
