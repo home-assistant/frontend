@@ -66,11 +66,11 @@
             },
             "sound": {
                 "off": "Klar",
-                "on": "Oppdaget"
+                "on": "Aktivert"
             },
             "vibration": {
                 "off": "Klar",
-                "on": "Oppdaget"
+                "on": "Aktivert"
             },
             "opening": {
                 "off": "Lukket",
@@ -247,7 +247,7 @@
             "lightning": "Lyn",
             "lightning-rainy": "Lyn, regnfull",
             "partlycloudy": "Delvis skyet",
-            "pouring": "Kraftig regn",
+            "pouring": "Kraftig nedbør",
             "rainy": "Regnfull",
             "snowy": "Snø",
             "snowy-rainy": "Sludd",
@@ -274,14 +274,14 @@
         "alarm_control_panel": {
             "armed": "Påslått",
             "disarmed": "Deaktiver",
-            "armed_home": "Påslått",
-            "armed_away": "Påslått",
-            "armed_night": "Påslått",
+            "armed_home": "Aktivert",
+            "armed_away": "Aktivert",
+            "armed_night": "Aktivert",
             "pending": "Venter",
             "arming": "Slår på",
             "disarming": "Slå av",
             "triggered": "Utløs",
-            "armed_custom_bypass": "Påslått"
+            "armed_custom_bypass": "Aktivert"
         },
         "device_tracker": {
             "home": "Hjemme",
@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "Tilstand",
                                     "from": "Fra",
-                                    "to": "Til"
+                                    "to": "Til",
+                                    "for": "Fra"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -418,7 +419,7 @@
                                     "label": "Sone",
                                     "entity": "Enhet med posisjon",
                                     "zone": "Sone",
-                                    "event": "Hendelse",
+                                    "event": "Hendelse:",
                                     "enter": "Ankommer",
                                     "leave": "Forlater"
                                 }
@@ -442,7 +443,7 @@
                                     "label": "Numerisk tilstand",
                                     "above": "Over",
                                     "below": "Under",
-                                    "value_template": "Verdi mal (valgfritt)"
+                                    "value_template": "Verdi mal (valgfri)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -525,12 +526,37 @@
                         "deactivate_user": "Deaktiver bruker",
                         "delete_user": "Slett bruker"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Logget inn som {email}",
+                    "description_not_login": "Ikke logget på"
+                },
+                "integrations": {
+                    "caption": "Integrasjoner",
+                    "description": "Administrer tilkoblede enheter og tjenester",
+                    "discovered": "Oppdaget",
+                    "configured": "Konfigurert",
+                    "new": "Sett opp en ny integrasjon",
+                    "configure": "Konfigurer",
+                    "none": "Ikke konfigurert enda",
+                    "config_entry": {
+                        "no_devices": "Denne integrasjonen har ingen enheter.",
+                        "no_device": "Enheten mangler input",
+                        "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
+                        "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
+                        "manuf": "av {manufacturer}",
+                        "hub": "Tilkoblet via",
+                        "firmware": "Fastvare: {version}",
+                        "device_unavailable": "enheten er utilgjengelig",
+                        "entity_unavailable": "enhet utilgjengelig"
+                    }
                 }
             },
             "profile": {
                 "push_notifications": {
                     "header": "Push varslinger",
-                    "description": "Send varslinger til denne enheten",
+                    "description": "Send notifikasjoner til denne enheten",
                     "error_load_platform": "Konfigurer notify.html5.",
                     "error_use_https": "Krever SSL aktivert for grensesnitt.",
                     "push_notifications": "Push varslinger",
@@ -581,7 +607,7 @@
                     "current_password": "Nåværende passord",
                     "new_password": "Nytt passord",
                     "confirm_new_password": "Bekreft nytt passord",
-                    "error_required": "Kreves",
+                    "error_required": "Nødvendig",
                     "submit": "Send inn"
                 },
                 "mfa": {
@@ -766,7 +792,7 @@
             },
             "fan": {
                 "speed": "Hastighet",
-                "oscillate": "Svinge",
+                "oscillate": "Vandring",
                 "direction": "Retning"
             },
             "light": {
@@ -804,6 +830,13 @@
                     "turn_on": "Slå på",
                     "turn_off": "Slå av"
                 }
+            },
+            "water_heater": {
+                "currently": "Temperatur nå",
+                "on_off": "På \/ Av",
+                "target_temperature": "Ønsket temperatur",
+                "operation": "Drift",
+                "away_mode": "Bortemodus"
             }
         },
         "components": {

@@ -7,9 +7,14 @@
         "history": "Vēsture",
         "mailbox": "Pastkaste",
         "shopping_list": "Iepirkumu saraksts",
+        "dev-services": "Pakalpojumi",
+        "dev-states": "Stāvokļi",
+        "dev-events": "Notikumi",
+        "dev-templates": "Veidnes",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalendārs"
+        "calendar": "Kalendārs",
+        "profile": "Profils"
     },
     "state": {
         "default": {
@@ -19,12 +24,57 @@
             "unavailable": "Nepieejams"
         },
         "alarm_control_panel": {
-            "pending": "Gaida"
+            "armed": "Pieslēgts",
+            "disarmed": "Atslēgts",
+            "armed_home": "Pieslēgts mājās",
+            "armed_away": "Pieslēgts uz prombūtni",
+            "armed_night": "Pieslēgts uz nakti",
+            "pending": "Gaida",
+            "arming": "Pieslēdzu",
+            "disarming": "Atslēdzu",
+            "triggered": "Aktivizēts",
+            "armed_custom_bypass": "Pieslēgts pielāgots apvedceļš"
+        },
+        "automation": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts"
         },
         "binary_sensor": {
+            "default": {
+                "off": "Izslēgts",
+                "on": "Ieslēgts"
+            },
             "moisture": {
                 "off": "Sauss",
                 "on": "Slapjš"
+            },
+            "gas": {
+                "off": "Tīrs",
+                "on": "Sajusta"
+            },
+            "motion": {
+                "off": "Tīrs",
+                "on": "Sajusta"
+            },
+            "occupancy": {
+                "off": "Brīvs",
+                "on": "Aizņemts"
+            },
+            "smoke": {
+                "off": "Tīrs",
+                "on": "Sajusta"
+            },
+            "sound": {
+                "off": "Tīrs",
+                "on": "Sajusts"
+            },
+            "vibration": {
+                "off": "Tīrs",
+                "on": "Sajusts"
+            },
+            "opening": {
+                "off": "Aizvērts",
+                "on": "Atvērts"
             },
             "safety": {
                 "off": "Droši",
@@ -33,6 +83,10 @@
             "presence": {
                 "off": "Prom",
                 "on": "Mājās"
+            },
+            "battery": {
+                "off": "Normāls",
+                "on": "Zems"
             },
             "problem": {
                 "off": "OK",
@@ -61,7 +115,15 @@
             "window": {
                 "off": "Aizvērts",
                 "on": "Atvērts"
+            },
+            "lock": {
+                "off": "Slēgts",
+                "on": "Atslēgts"
             }
+        },
+        "calendar": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts"
         },
         "camera": {
             "recording": "Ieraksta",
@@ -69,6 +131,8 @@
             "idle": "Dīkstāve"
         },
         "climate": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts",
             "heat": "Sildīšana",
             "cool": "Dzesēšana",
             "idle": "Dīkstāve",
@@ -76,6 +140,8 @@
             "dry": "Sauss",
             "fan_only": "Tikai ventilators",
             "eco": "Eko",
+            "electric": "Elektriska",
+            "performance": "Veiktspēja",
             "high_demand": "Augsts pieprasījums",
             "heat_pump": "Siltumsūknis",
             "gas": "Gāze"
@@ -86,20 +152,45 @@
         },
         "cover": {
             "open": "Atvērts",
-            "closed": "Aizvērts",
+            "opening": "Atveras",
+            "closed": "Slēgts",
+            "closing": "Slēdzas",
             "stopped": "Apturēts"
         },
         "device_tracker": {
             "home": "Mājās",
             "not_home": "Prom"
         },
+        "fan": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts"
+        },
         "group": {
+            "off": "Izslēgta",
+            "on": "Ieslēgta",
             "home": "Mājās",
-            "not_home": "Prombūtnē"
+            "not_home": "Prombūtnē",
+            "open": "Atvērta",
+            "opening": "Atveras",
+            "closed": "Slēgta",
+            "closing": "Slēdzas",
+            "stopped": "Apturēta",
+            "locked": "Bloķēta",
+            "unlocked": "Atbloķēta",
+            "ok": "OK",
+            "problem": "Problēma"
+        },
+        "input_boolean": {
+            "off": "Izslēgta",
+            "on": "Ieslēgta"
         },
         "light": {
             "off": "Izslēgta",
             "on": "Ieslēgta"
+        },
+        "lock": {
+            "locked": "Aizslēgts",
+            "unlocked": "Atslēgts"
         },
         "media_player": {
             "off": "Izslēgts",
@@ -113,9 +204,20 @@
             "ok": "Labi",
             "problem": "Problēma"
         },
+        "remote": {
+            "off": "Izslēgta",
+            "on": "Ieslēgts"
+        },
+        "scene": {
+            "scening": "Ainas radīšana"
+        },
         "script": {
-            "off": "Atspējots",
-            "on": "Iespējots"
+            "off": "Izslēgts",
+            "on": "Ieslēgts"
+        },
+        "sensor": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts"
         },
         "sun": {
             "above_horizon": "Virs horizonta",
@@ -125,10 +227,23 @@
             "off": "Izslēgts",
             "on": "Ieslēgts"
         },
+        "zwave": {
+            "default": {
+                "initializing": "Inicializē",
+                "dead": "Beigta",
+                "sleeping": "Guļ",
+                "ready": "Gatavs"
+            },
+            "query_stage": {
+                "initializing": "Inicializē ({query_stage})",
+                "dead": "Beigta ({query_stage})"
+            }
+        },
         "weather": {
             "clear-night": "Skaidrs, nakts",
             "cloudy": "Mākoņains",
             "fog": "Migla",
+            "hail": "Krusa",
             "lightning": "Zibens",
             "lightning-rainy": "Zibens, lietus",
             "partlycloudy": "Daļēji apmācies",
@@ -156,28 +271,30 @@
             "unknown": "Nez",
             "unavailable": "Nepie"
         },
+        "alarm_control_panel": {
+            "armed": "Pieslēgta",
+            "disarmed": "Atslēgt",
+            "armed_home": "Piesl.",
+            "armed_away": "Piesl.",
+            "armed_night": "Piesl.",
+            "pending": "Gaida",
+            "arming": "Pieslēdz",
+            "disarming": "Atslēgt",
+            "triggered": "Trig",
+            "armed_custom_bypass": "Pieslēgts"
+        },
         "device_tracker": {
-            "home": "mājās",
-            "not_home": "ārpus mājām"
+            "home": "Mājās",
+            "not_home": "Prom"
         }
     },
     "ui": {
-        "sidebar": {
-            "log_out": "Iziet",
-            "developer_tools": "Izstrādātāju rīki"
-        },
-        "common": {
-            "loading": "Ielāde",
-            "cancel": "Atcelt"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}",
-            "week": "{count} {count, plural,\n  one {nedēļa}\n  other {nedēļas}\n}",
-            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekundes}\n}",
-            "minute": "{count} {count, plural,\n  one {minūte}\n  other {minūtes}\n}",
-            "hour": "{count} {count, plural,\n  one {stunda}\n  other {stundas}\n}"
-        },
         "panel": {
+            "shopping-list": {
+                "clear_completed": "Noņemt izpildītos",
+                "add_item": "Pievienot vienumu",
+                "microphone_tip": "Pieskarieties mikrofonam augšējā labajā stūrī un sakiet \"Pievienojiet konfektes manam iepirkumu sarakstam\""
+            },
             "history": {
                 "showing_entries": "Rāda ierakstus par",
                 "period": "Periods"
@@ -231,14 +348,209 @@
                 },
                 "automation": {
                     "caption": "Automatizācija",
-                    "description": "Veidojiet un rediģējiet automatizācijas"
+                    "description": "Veidojiet un rediģējiet automatizācijas",
+                    "picker": {
+                        "header": "Automatizāciju redaktors",
+                        "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, izlasiet [norādījumus] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
+                        "pick_automation": "Izvēlieties automatizāciju kuru rediģēt",
+                        "no_automations": "Mēs nevarējām atrast rediģējamas automatizācijas",
+                        "add_automation": "Pievienot automatizāciju"
+                    },
+                    "editor": {
+                        "introduction": "Lietojiet automatizācijas, lai ienestu dzīvību Jūsu mājās",
+                        "default_name": "Jauna Automatizācija",
+                        "save": "Saglabāt",
+                        "unsaved_confirm": "Jums ir nesaglabātas izmaiņas. Vai tiešām vēlaties pamest?",
+                        "alias": "Nosaukums",
+                        "triggers": {
+                            "header": "Trigeri",
+                            "introduction": "Trigeri ir tas, kas sāk automatizācijas noteikuma apstrādi. Vienam noteikumam ir iespējams norādīt vairākus trigerus. Kad trigeris sāk, Home Assistant apstiprina nosacījumus, ja tādi ir, un izsauc darbību. \n\n [Uzziniet vairāk par trigeriem.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Pievienot trigeri",
+                            "duplicate": "Dublicēt",
+                            "delete": "Dzēst",
+                            "delete_confirm": "Vai tiešām vēlaties dzēst?",
+                            "unsupported_platform": "Neatbalstīta platforma: {platform}",
+                            "type_select": "Trigera veids",
+                            "type": {
+                                "event": {
+                                    "label": "Notikums",
+                                    "event_type": "Notikuma tips",
+                                    "event_data": "Notikuma dati"
+                                },
+                                "state": {
+                                    "label": "Stāvoklis",
+                                    "from": "No",
+                                    "to": "Uz",
+                                    "for": "Uz"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Notikums:",
+                                    "start": "Sākt",
+                                    "shutdown": "Izslēgt"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Temats",
+                                    "payload": "Vērtība (pēc izvēles)"
+                                },
+                                "numeric_state": {
+                                    "label": "Skaitliskais stāvoklis",
+                                    "above": "Virs",
+                                    "below": "Zem",
+                                    "value_template": "Vērtības veidne (nav obligāta)"
+                                },
+                                "sun": {
+                                    "label": "Saule",
+                                    "event": "Notikums:",
+                                    "sunrise": "Saullēkts",
+                                    "sunset": "Saulriets",
+                                    "offset": "Nobīde (pēc izvēles)"
+                                },
+                                "template": {
+                                    "label": "Veidne",
+                                    "value_template": "Vērtības veidne"
+                                },
+                                "time": {
+                                    "label": "Laiks",
+                                    "at": "Pie"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Vienība ar atrašanās vietu",
+                                    "zone": "Zona",
+                                    "event": "Notikums:",
+                                    "enter": "Ieiet",
+                                    "leave": "Iziet"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Nosacījumi",
+                            "introduction": "Nosacījumi ir automatizācijas noteikuma izvēles daļa, un to var izmantot, lai novērstu darbību rašanos. Nosacījumi izskatās ļoti līdzīgi trigeriem, taču tie ir ļoti atšķirīgi. Trigeri izskatīs notikumus, kas notiek sistēmā, bet nosacījums tikai aplūko, kā sistēma šobrīd izskatās. Trigeri var novērot, ka slēdzis tiek ieslēgts. Nosacījums var redzēt tikai to, vai slēdzis pašlaik ir ieslēgts vai izslēgts. \n\n [Uzziniet vairāk par nosacījumiem.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Pievienot nosacījumu",
+                            "duplicate": "Duplicēt",
+                            "delete": "Dzēst",
+                            "delete_confirm": "Vai tiešām vēlaties dzēst?",
+                            "unsupported_condition": "Neatbalstīts nosacījums: {condition}",
+                            "type_select": "Nosacījuma tips",
+                            "type": {
+                                "state": {
+                                    "label": "Stāvoklis",
+                                    "state": "Stāvoklis"
+                                },
+                                "numeric_state": {
+                                    "label": "Skaitliskais stāvoklis",
+                                    "above": "Virs",
+                                    "below": "Zem",
+                                    "value_template": "Vērtības veidne (neobligāti)"
+                                },
+                                "sun": {
+                                    "label": "Saule",
+                                    "before": "Pirms:",
+                                    "after": "Pēc:",
+                                    "before_offset": "Pirms nobīdes (neobligāti)",
+                                    "after_offset": "Pēc nobīdes (neobligāti)",
+                                    "sunrise": "Saullēkts",
+                                    "sunset": "Saulriets"
+                                },
+                                "template": {
+                                    "label": "Veidne",
+                                    "value_template": "Vērtības veidne"
+                                },
+                                "time": {
+                                    "label": "Laiks",
+                                    "after": "Pēc",
+                                    "before": "Pirms"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Vienība ar atrašanos vietu",
+                                    "zone": "Zona"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Darbības",
+                            "introduction": "Darbības ir tādas, kādas Home Assistant veiks, kad tiks aktivizēta automatizācija. \n\n [Uzziniet vairāk par darbībām.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Pievienot darbību",
+                            "duplicate": "Dublicēt",
+                            "delete": "Dzēst",
+                            "delete_confirm": "Vai tiešām vēlaties dzēst?",
+                            "unsupported_action": "Neatbalstīta darbība: {action}",
+                            "type_select": "Darbības tips",
+                            "type": {
+                                "service": {
+                                    "label": "Izsaukt pakalpojumu",
+                                    "service_data": "Pakalpojuma dati"
+                                },
+                                "delay": {
+                                    "label": "Atlikt",
+                                    "delay": "Atlikt"
+                                },
+                                "wait_template": {
+                                    "label": "Pagaidīt",
+                                    "wait_template": "Pagaidīt Veidne",
+                                    "timeout": "Taimauts (pēc izvēles)"
+                                },
+                                "condition": {
+                                    "label": "Nosacījums"
+                                },
+                                "event": {
+                                    "label": "Palaist notikumu:",
+                                    "event": "Notikums:",
+                                    "service_data": "Pakalpojuma dati"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skripti",
                     "description": "Veidojiet un rediģējiet skriptus"
                 },
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "description": "Pārvaldiet Z-Wave tīklu"
+                },
+                "users": {
+                    "caption": "Lietotāji",
+                    "description": "Pārvaldīt lietotājus",
+                    "picker": {
+                        "title": "Lietotāji"
+                    },
+                    "editor": {
+                        "rename_user": "Pārdēvēt lietotāju",
+                        "change_password": "Mainīt paroli",
+                        "activate_user": "Aktivizēt lietotāju",
+                        "deactivate_user": "Deaktivizēt lietotāju",
+                        "delete_user": "Dzēst lietotāju"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Pieteikts kā {email}",
+                    "description_not_login": "Neesat pieteicies"
+                },
+                "integrations": {
+                    "caption": "Integrācijas",
+                    "description": "Pārvaldīt pieslēgtās ierīces un pakalpojumus",
+                    "discovered": "Atklāts",
+                    "configured": "Konfigurēts",
+                    "new": "Izveidot jaunu integrāciju",
+                    "configure": "Konfigurēt",
+                    "none": "Nekas vēl nav konfigurēts",
+                    "config_entry": {
+                        "no_devices": "Šai integrācijai nav ierīču.",
+                        "no_device": "Vienības, bez ierīcēm",
+                        "delete_confirm": "Vai tiešām vēlaties dzēst šo integrāciju?",
+                        "restart_confirm": "Restartēt Home Assistant, lai pabeigtu šīs integrācijas noņemšanu",
+                        "manuf": "{manufacturer}",
+                        "hub": "Savienots ar",
+                        "firmware": "Programmaparatūras: {versija}",
+                        "device_unavailable": "ierīce nav pieejama",
+                        "entity_unavailable": "vienība nav pieejama"
+                    }
                 }
             },
             "profile": {
@@ -246,6 +558,7 @@
                     "header": "Pašpiegādes paziņojumi",
                     "description": "Sūtīt paziņojumus uz šo ierīci.",
                     "error_load_platform": "Konfigurēt notify.html5.",
+                    "error_use_https": "Nepieciešama SSL iespējošana priekšpusei.",
                     "push_notifications": "Pašpiegādes paziņojumi",
                     "link_promo": "Uzziniet vairāk"
                 },
@@ -259,8 +572,162 @@
                     "error_no_theme": "Nav pieejams neviens motīvs",
                     "link_promo": "Uzziniet par tēmām",
                     "dropdown_label": "Motīvs"
+                },
+                "refresh_tokens": {
+                    "header": "Atsvaidzināšanas pilnvaras",
+                    "description": "Katra atsvaidzināšanas pilvara pārstāv pieteikšanās sesiju. Atsvaidzināšanas pilvaras tiks automātiski noņemtas, kad Jūs izrakstīsieties. Šāda atsvaidzināšanas pilvaras ir pašreiz aktīvas Jūsu kontā.",
+                    "token_title": "{clientId} atsvaidzināšanas pilnvara",
+                    "created_at": "Izveidots {date}",
+                    "confirm_delete": "Vai tiešām vēlaties dzēst piekļuves pilnvaru {name}?",
+                    "delete_failed": "Neizdevās dzēst atsvaidzināšanas pilnvaru.",
+                    "last_used": "Pēdējoreiz izmantots {date} no {location}",
+                    "not_used": "Nekad nav izmantots",
+                    "current_token_tooltip": "Nevar izdzēst pašreizējo atsvaidzināšanas pilnvaru"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Ilgtermiņas piekļuves pilnvaras",
+                    "description": "Izveidojiet ilgtermiņa piekļuves pilnvaras, lai ļautu jūsu skriptiem mijiedarboties ar jūsu Home Assistant instanci. Katra pilnvara būs derīga 10 gadus pēc tās radīšanas. Pašlaik ir aktīvi šādas ilgstošas piekļuves pilvaras.",
+                    "learn_auth_requests": "Uzziniet, kā veikt autentificētus pieprasījumus.",
+                    "created_at": "Izveidots {date}",
+                    "confirm_delete": "Vai tiešām vēlaties dzēst piekļuves pilnvaru {name}?",
+                    "delete_failed": "Neizdevās dzēst piekļuves pilnvaru.",
+                    "create": "Izveidot pilnvaru",
+                    "create_failed": "Neizdevās izveidot piekļuves pilnvaru.",
+                    "prompt_name": "Vārds?",
+                    "prompt_copy_token": "Kopējiet savu piekļuves pilnvaru. Tas vairs netiks rādīts.",
+                    "empty_state": "Jums vēl nav ilgtermiņa piekļuves pilnvaru.",
+                    "last_used": "Pēdējoreiz izmantots {date} no {location}",
+                    "not_used": "Nekad nav izmantots"
+                },
+                "current_user": "Jūs šobrīd esat pieteicies kā {fullName}.",
+                "is_owner": "Jūs esat īpašnieks.",
+                "logout": "Atteikties",
+                "change_password": {
+                    "header": "Mainīt paroli",
+                    "current_password": "Pašreizējā parole",
+                    "new_password": "Jauna parole",
+                    "confirm_new_password": "Apstipriniet jauno paroli",
+                    "error_required": "Obligāts",
+                    "submit": "Iesniegt"
+                },
+                "mfa": {
+                    "header": "Daudzfaktoru autentifikācijas moduļi",
+                    "disable": "Atspējot",
+                    "enable": "Iespējot",
+                    "confirm_disable": "Vai tiešām vēlaties atspējot {name}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Priekšlaikus pārtraukta",
+                    "title_success": "Veiksmīgi!",
+                    "step_done": "Iestatīšana ir pabeigta {step}",
+                    "close": "Aizvērt",
+                    "submit": "Iesniegt"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Inicializēšana",
+                "authorizing_client": "Jūs gatavojaties piešķirt {clientId} piekļuvi jūsu Home Assistant.",
+                "logging_in_with": "Pieteikšanās ar ** {authProviderName} **.",
+                "pick_auth_provider": "Vai pieteikties, izmantojot",
+                "abort_intro": "Pieteikšanās priekšlaikus pārtraukta",
+                "form": {
+                    "working": "Lūdzu uzgaidiet",
+                    "unknown_error": "Kaut kas nogāja greizi",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Lietotājvārds",
+                                        "password": "Parole"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Divu faktoru autentifikācijas kods"
+                                    },
+                                    "description": "Savā ierīcē atveriet ** {mfa_module_name} **, lai skatītu divu faktoru autentifikācijas kodu un verificētu savu identitāti:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nederīgs lietotājvārds vai parole",
+                                "invalid_code": "Nederīgs autentifikācijas kods"
+                            },
+                            "abort": {
+                                "login_expired": "Sesija beidzās, lūdzu, piesakieties vēlreiz."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API parole"
+                                    },
+                                    "description": "Lūdzu, ievadiet API paroli savā http config:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Divu faktoru autentifikācijas kods"
+                                    },
+                                    "description": "Savā ierīcē atveriet ** {mfa_module_name} **, lai skatītu divu faktoru autentifikācijas kodu un verificētu savu identitāti:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nederīga API parole",
+                                "invalid_code": "Nederīgs autentifikācijas kods"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Jums nav konfigurēta API parole.",
+                                "login_expired": "Sesija beigusies, lūdzu piesakaties vēlreiz."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Lietotājs"
+                                    },
+                                    "description": "Lūdzu, atlasiet lietotāju, kuru vēlaties pieteikties kā:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Jūsu dators nav iekļauts baltajā sarakstā."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Vai esat gatavs pamodināt savu māju, atgūt savu konfidencialitāti un pievienoties pasaules mēroga kopienai?",
+                "user": {
+                    "intro": "Sāksim ar lietotāja konta izveidi.",
+                    "required_field": "Obligāts",
+                    "data": {
+                        "name": "Vārds",
+                        "username": "Lietotājvārds",
+                        "password": "Parole"
+                    },
+                    "create_account": "Izveidot Kontu",
+                    "error": {
+                        "required_fields": "Aizpildiet visus obligātos laukus"
+                    }
                 }
             }
+        },
+        "sidebar": {
+            "log_out": "Iziet",
+            "developer_tools": "Izstrādātāju rīki"
+        },
+        "common": {
+            "loading": "Ielāde",
+            "cancel": "Atcelt"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}",
+            "week": "{count} {count, plural,\n  one {nedēļa}\n  other {nedēļas}\n}",
+            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekundes}\n}",
+            "minute": "{count} {count, plural,\n  one {minūte}\n  other {minūtes}\n}",
+            "hour": "{count} {count, plural,\n  one {stunda}\n  other {stundas}\n}"
         },
         "login-form": {
             "password": "Parole",
@@ -273,6 +740,12 @@
             },
             "persistent_notification": {
                 "dismiss": "Aizvērt"
+            },
+            "scene": {
+                "activate": "Aktivizēt"
+            },
+            "script": {
+                "execute": "Izpildīt"
             },
             "weather": {
                 "attributes": {
@@ -303,7 +776,11 @@
                 "forecast": "Prognoze"
             },
             "alarm_control_panel": {
-                "code": "Kods"
+                "code": "Kods",
+                "clear_code": "Dzēst",
+                "disarm": "Atslēgt",
+                "arm_home": "Pieslēgt mājas",
+                "arm_away": "Pieslēgt prombūtni"
             },
             "automation": {
                 "last_triggered": "Pēdējais izsaukums",
@@ -324,13 +801,26 @@
                 "white_value": "Baltā vērtība",
                 "effect": "Efekts"
             },
+            "media_player": {
+                "text_to_speak": "Teksts, ko teikt",
+                "source": "Avots",
+                "sound_mode": "Skaņas režīms"
+            },
+            "climate": {
+                "currently": "Pašlaik",
+                "on_off": "Ieslēgts \/ Izslēgts",
+                "target_temperature": "Mērķa temperatūra",
+                "target_humidity": "Mērķa mitrums",
+                "operation": "Darbība",
+                "fan_mode": "Ventilatora režīms",
+                "swing_mode": "Šūpošanas režīms",
+                "away_mode": "Prombūtnes režīms",
+                "aux_heat": "Ārējais sildītājs"
+            },
             "lock": {
                 "code": "Kods",
                 "lock": "Aizslēgt",
                 "unlock": "Atslēgt"
-            },
-            "media_player": {
-                "source": "Avots"
             },
             "vacuum": {
                 "actions": {
@@ -340,9 +830,24 @@
                     "turn_on": "Izslēgt",
                     "turn_off": "Ieslēgt"
                 }
+            },
+            "water_heater": {
+                "currently": "Pašlaik",
+                "on_off": "Ieslēgts \/ Izslēgts",
+                "target_temperature": "Mērķa temperatūra",
+                "operation": "Darbība",
+                "away_mode": "Prombūtnes režīms"
             }
         },
         "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Vienība"
+                }
+            },
+            "service-picker": {
+                "service": "Pakalpojums"
+            },
             "relative_time": {
                 "past": "{time} atpakaļ",
                 "future": "Pēc {time}",
@@ -366,6 +871,23 @@
             "service_called": "Serviss {service} izsaukts.",
             "service_call_failed": "Neizdevās izsaukt servisu {service}.",
             "connection_lost": "Savienojums zaudēts. Atkārtota savienošanās ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Saglabāt",
+                "name": "Vārds",
+                "entity_id": "Vienības ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Vai vēlaties saglabāt šo pieteikšanos?",
+            "decline": "Nē paldies",
+            "confirm": "Saglabāt pieteikšanos"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Noklikšķiniet uz pogas, lai konfigurētu {entity}",
+            "empty": "Nav paziņojumu",
+            "title": "Paziņojumi"
         }
     },
     "domain": {
@@ -377,14 +899,24 @@
         "climate": "Klimats",
         "configurator": "Konfigurētājs",
         "conversation": "Saruna",
+        "cover": "Nosegi",
         "device_tracker": "Ierīču izsekotājs",
         "fan": "Ventilators",
+        "history_graph": "Vēstures grafiks",
         "group": "Grupa",
+        "image_processing": "Attēlu apstrāde",
+        "input_boolean": "Ieejas boolean",
+        "input_datetime": "Ievades datuma laiks",
+        "input_select": "Ievades izvēle",
+        "input_number": "Ievades numurs",
+        "input_text": "Ievades teksts",
         "light": "Gaisma",
         "lock": "Slēdzene",
         "mailbox": "Pastkastīte",
         "media_player": "Multivides atskaņotājs",
         "notify": "Paziņot",
+        "plant": "Augs",
+        "proximity": "Tuvums",
         "remote": "Tālvadība",
         "scene": "Sižets",
         "script": "Skripts",
@@ -392,6 +924,7 @@
         "sun": "Saule",
         "switch": "Slēdzis",
         "updater": "Atjauninātājs",
+        "weblink": "Weblink",
         "zwave": "Z-Wave",
         "vacuum": "Putekļsūcējs"
     },
