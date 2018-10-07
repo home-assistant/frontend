@@ -48,7 +48,16 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
   }
 
   sortAddons(a, b) {
-    return a.name < b.name ? -1 : 1;
+    var addonA = a.name.toUpperCase();
+    var addonB = b.name.toUpperCase();
+
+    if (addonA < addonB) {
+      return -1;
+    } else if (addonA > addonB) {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   computeIcon(addon) {
