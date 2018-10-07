@@ -32,14 +32,16 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
       throw new Error('Specify an entity from within the sensor domain.');
     }
 
-    config.icon = config.icon || false;
-    config.hours_to_show = config.hours_to_show || 24;
-    config.accuracy = Number(config.accuracy) || 10;
-    config.height = Number(config.height) || 100;
-    config.line_color = config.line_color || 'var(--accent-color)';
-    config.line_width = Number(config.line_width) || 5;
+    const cardConfig = Object.assign({
+      icon: config.icon || false,
+      hours_to_show: Number(config.hours_to_show) || 24,
+      accuracy: Number(config.accuracy) || 10,
+      height: Number(config.height) || 100,
+      line_width: Number(config.line_width) || 5,
+      line_color: config.line_color || 'var(--accent-color)'
+    }, config);
 
-    this.config = config;
+    this.config = cardConfig;
   }
 
   shouldUpdate(changedProps) {
