@@ -1,4 +1,4 @@
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html, svg } from '@polymer/lit-element';
 
 import '../../../components/ha-card.js';
 import '../../../components/ha-icon.js';
@@ -70,7 +70,7 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
         </div>
         <div class='graph'>
           <div>
-            ${line ? html`
+            ${line ? svg`
             <svg width='100%' height='100%' viewBox='0 0 500 ${this.config.height}'>
               <path d=${line} fill='none' stroke=${config.line_color}
                 stroke-width=${config.line_width}
