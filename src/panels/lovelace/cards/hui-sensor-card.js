@@ -14,7 +14,9 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const entity = hass.states[this._config.entity];
     if (entity && this._entity !== entity) {
       this._entity = entity;
-      this._getHistory();
+      if (this._config.graph !== 'none' && entity.attributes.unit_of_measurement) {
+        this._getHistory();
+      }
     }
   }
 
