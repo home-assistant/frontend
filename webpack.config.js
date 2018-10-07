@@ -59,7 +59,7 @@ function createConfig(isProdBuild, latestBuild) {
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.m?js$/,
           use: {
             loader: 'babel-loader',
             options: {
