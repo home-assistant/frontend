@@ -20,9 +20,9 @@ class HuiSensorGraphCard extends EventsMixin(LitElement) {
 
   static get properties() {
     return {
-      _hass: Object,
-      config: Object,
-      entity: Object,
+      _hass: { },
+      config: { },
+      entity: { },
       line: String
     };
   }
