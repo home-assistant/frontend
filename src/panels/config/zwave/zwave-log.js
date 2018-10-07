@@ -6,11 +6,14 @@ import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 import isPwa from '../../../common/config/is_pwa.js';
 
 import '../ha-config-section.js';
 
-class OzwLog extends PolymerElement {
+let registeredDialog = false;
+
+class OzwLog extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -42,12 +45,6 @@ class OzwLog extends PolymerElement {
           <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>   
           <paper-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</paper-button>
       </paper-card>
-      <paper-dialog id="pwaDialog">
-        <h2>OpenZwave internal logfile</h2>
-        <paper-dialog-scrollable>
-          <pre>[[_ozwLogs]]</pre>
-        <paper-dialog-scrollable>
-      </paper-dialog>
     </ha-config-section>
 `;
   }
@@ -75,6 +72,11 @@ class OzwLog extends PolymerElement {
       },
 
       _intervalId: String,
+
+      _pwaDialogClosed: {
+        type: Boolean,
+        value: true
+      }
     };
   }
 
@@ -88,7 +90,7 @@ class OzwLog extends PolymerElement {
     const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
     this.setProperties({ _ozwLogs: info });
     if (isPwa()) {
-      this.$.pwaDialog.open();
+      this._showOzwlogDialog();
       return -1;
     }
     const ozwWindow = open('', 'ozwLog', 'toolbar');
@@ -97,13 +99,16 @@ class OzwLog extends PolymerElement {
   }
 
   async _refreshLog(ozwWindow) {
-    if (ozwWindow.closed === true || (isPwa() && this.$.pwaDialog.opened === false)) {
+    if (ozwWindow.closed === true || (isPwa() && this._pwaDialogClosed === true)) {
       clearInterval(this._intervalId);
+      console.log('Clearing');
       this.setProperties({ _intervalId: null });
     } else {
+      console.log('refreshing');
       const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
       this.setProperties({ _ozwLogs: info });
       if (isPwa()) {
+        this._showOzwlogDialog();
         return;
       }
       ozwWindow.document.body.innerHTML = `<pre>${this._ozwLogs}</pre>`;
@@ -114,6 +119,32 @@ class OzwLog extends PolymerElement {
     if (this._numLogLines !== '0') {
       this.setProperties({ _completeLog: false });
     } else { this.setProperties({ _completeLog: true }); }
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (!registeredDialog) {
+      registeredDialog = true;
+      this.fire('register-dialog', {
+        dialogShowEvent: 'show-ozwlog-dialog',
+        dialogTag: 'zwave-log-dialog',
+        dialogImport: () => import('./zwave-log-dialog.js'),
+      });
+    }
+  }
+
+  _showOzwlogDialog() {
+    console.log('_showOzwlogDialog');
+    this.fire('show-ozwlog-dialog', {
+      _ozwLog: this._ozwLogs,
+      dialogClosedCallback: () => this._dialogClosed()
+    });
+    this.setProperties({ _pwaDialogClosed: false });
+  }
+
+  _dialogClosed() {
+    console.log('callback-_dialogClosed');
+    this.setProperties({ _pwaDialogClosed: true });
   }
 }
 customElements.define('ozw-log', OzwLog);
