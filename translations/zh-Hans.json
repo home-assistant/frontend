@@ -344,7 +344,7 @@
                 },
                 "customize": {
                     "caption": "自定义",
-                    "description": "自定义设备"
+                    "description": "自定义实体"
                 },
                 "automation": {
                     "caption": "自动化",
@@ -537,7 +537,7 @@
                     "description": "管理连接的设备和服务",
                     "discovered": "已发现",
                     "configured": "已配置",
-                    "new": "设置一个新的集成",
+                    "new": "设置新集成",
                     "configure": "配置",
                     "none": "尚未配置任何集成",
                     "config_entry": {
@@ -547,7 +547,7 @@
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "manuf": "by {manufacturer}",
                         "hub": "链接于",
-                        "firmware": "固件： {version}",
+                        "firmware": "固件：{version}",
                         "device_unavailable": "设备不可用",
                         "entity_unavailable": "实体不可用"
                     }
@@ -842,7 +842,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "设备\/实体"
+                    "entity": "实体"
                 }
             },
             "service-picker": {
@@ -876,7 +876,7 @@
             "more_info_settings": {
                 "save": "保存",
                 "name": "名称",
-                "entity_id": "设备\/实体 ID"
+                "entity_id": "实体 ID"
             }
         },
         "auth_store": {
