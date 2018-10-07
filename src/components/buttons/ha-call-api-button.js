@@ -20,9 +20,6 @@ class HaCallApiButton extends LitElement {
     this.data = {};
     this.disabled = false;
     this.progress = false;
-    // Can be removed once this is merged:
-    // https://github.com/Polymer/lit-element/pull/244
-    this._buttonTapped = this._buttonTapped.bind(this);
   }
 
   static get properties() {
