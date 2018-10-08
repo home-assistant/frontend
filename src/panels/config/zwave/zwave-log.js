@@ -38,7 +38,7 @@ class OzwLog extends EventsMixin(PolymerElement) {
       <span slot="header">OZW Log</span>
       <paper-card>
         <div class="device-picker">
-          <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{_numLogLines}}">
+          <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
           </paper-input>
         </div>
         <div class="card-actions">
@@ -65,7 +65,7 @@ class OzwLog extends EventsMixin(PolymerElement) {
         value: true
       },
 
-      _numLogLines: {
+      numLogLines: {
         type: Number,
         value: 0,
         observer: '_isCompleteLog'
@@ -76,18 +76,24 @@ class OzwLog extends EventsMixin(PolymerElement) {
       _pwaDialogClosed: {
         type: Boolean,
         value: true
-      }
+      },
+
+      tail: Boolean,
+
     };
   }
 
   async _tailLog() {
+    this.setProperties({ tail: true });
     const ozwWindow = await this._openLogWindow();
-    this.setProperties({
-      _intervalId: setInterval(() => { this._refreshLog(ozwWindow); }, 1500) });
+    if (!isPwa()) {
+      this.setProperties({
+        _intervalId: setInterval(() => { this._refreshLog(ozwWindow); }, 1500) });
+    }
   }
 
   async _openLogWindow() {
-    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
+    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this.numLogLines);
     this.setProperties({ _ozwLogs: info });
     if (isPwa()) {
       this._showOzwlogDialog();
@@ -99,24 +105,18 @@ class OzwLog extends EventsMixin(PolymerElement) {
   }
 
   async _refreshLog(ozwWindow) {
-    if (ozwWindow.closed === true || (isPwa() && this._pwaDialogClosed === true)) {
+    if (ozwWindow.closed === true) {
       clearInterval(this._intervalId);
-      console.log('Clearing');
       this.setProperties({ _intervalId: null });
     } else {
-      console.log('refreshing');
-      const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
+      const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this.numLogLines);
       this.setProperties({ _ozwLogs: info });
-      if (isPwa()) {
-        this._showOzwlogDialog();
-        return;
-      }
       ozwWindow.document.body.innerHTML = `<pre>${this._ozwLogs}</pre>`;
     }
   }
 
   _isCompleteLog() {
-    if (this._numLogLines !== '0') {
+    if (this.numLogLines !== '0') {
       this.setProperties({ _completeLog: false });
     } else { this.setProperties({ _completeLog: true }); }
   }
@@ -134,17 +134,21 @@ class OzwLog extends EventsMixin(PolymerElement) {
   }
 
   _showOzwlogDialog() {
-    console.log('_showOzwlogDialog');
     this.fire('show-ozwlog-dialog', {
+      hass: this.hass,
+      _numLogLines: this.numLogLines,
       _ozwLog: this._ozwLogs,
+      _tail: this.tail,
       dialogClosedCallback: () => this._dialogClosed()
     });
     this.setProperties({ _pwaDialogClosed: false });
   }
 
   _dialogClosed() {
-    console.log('callback-_dialogClosed');
-    this.setProperties({ _pwaDialogClosed: true });
+    this.setProperties({
+      _pwaDialogClosed: true,
+      tail: false
+    });
   }
 }
 customElements.define('ozw-log', OzwLog);

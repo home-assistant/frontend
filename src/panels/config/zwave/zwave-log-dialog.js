@@ -23,6 +23,7 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
 
   static get properties() {
     return {
+      hass: Object,
       _ozwLog: String,
 
       _dialogClosedCallback: Function,
@@ -31,6 +32,12 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
+
+      _intervalId: String,
+
+      _numLogLines: {
+        type: Number
+      }
     };
   }
 
@@ -39,17 +46,27 @@ class ZwaveLogDialog extends EventsMixin(PolymerElement) {
     this.addEventListener('iron-overlay-closed', ev => this._dialogClosed(ev));
   }
 
-  showDialog({ _ozwLog, dialogClosedCallback }) {
-    console.log('showDialog');
+  showDialog({ _ozwLog, hass, _tail, _numLogLines, dialogClosedCallback }) {
+    this.hass = hass;
     this._ozwLog = _ozwLog;
     this._opened = true;
     this._dialogClosedCallback = dialogClosedCallback;
+    this._numLogLines = _numLogLines;
     setTimeout(() => this.$.pwaDialog.center(), 0);
+    if (_tail) {
+      this.setProperties({
+        _intervalId: setInterval(() => { this._refreshLog(); }, 1500) });
+    }
+  }
+
+  async _refreshLog() {
+    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
+    this.setProperties({ _ozwLog: info });
   }
 
   _dialogClosed(ev) {
-    console.log('_dialogClosed', ev.target.nodeName);
-    if (ev.target.nodeId === 'ZWAVE-LOG-DIALOG') {
+    if (ev.target.nodeName === 'ZWAVE-LOG-DIALOG') {
+      clearInterval(this._intervalId);
       this._opened = false;
       const closedEvent = true;
       this._dialogClosedCallback({ closedEvent });
