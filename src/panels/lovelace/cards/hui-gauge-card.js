@@ -50,7 +50,7 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
         .gauge-c{
           z-index: 2;
           position: absolute;
-          background-color: var(--label-badge-yellow);
+          background-color: var(--label-badge-blue);
           width: calc(var(--base-unit) * 4);
           height: calc(var(--base-unit) * 2);
           top: calc(var(--base-unit) * 2);
@@ -79,8 +79,13 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
           padding-top: calc(var(--base-unit) * 0.15);
           font-size: calc(var(--base-unit) * 0.30);
         }
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
+        }
       </style>
-      <ha-card on-click='_handleClick'>
+      <ha-card  on-click='_handleClick'>
         <div class='container'>
           <div class='gauge-a'></div>
           <div class='gauge-b'></div>
@@ -111,30 +116,41 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
   }
 
   setConfig(config) {
-    this._config = Object.assign({ min: 0, max: 100 }, config);
     if (!config || !config.entity) throw new Error('Invalid card configuration');
 
+    this._config = Object.assign({ min: 0, max: 100 }, config);
     if (this.$) this._buildConfig();
-    if (this.hass) this._hassChanged(this.hass);
   }
 
   _buildConfig() {
-    const entityStateObj = this.hass.states[this._config.entity];
-    const unitOfMeasurement = this._config.unit_of_measurement || entityStateObj.attributes.unit_of_measurement || '';
-    const root = this.shadowRoot;
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      this.$.title.textContent = 'Entity not available: ' + this._config.entity;
+      this.$.title.className = 'not-found';
+      return;
+    }
+    if (this._config.attribute) {
+      stateObj.state = stateObj.attributes[this._config.attribute];
+    }
+    if (isNaN(stateObj.state)) {
+      this.$.title.textContent = 'Entity is non-numeric: ' + this._config.entity;
+      this.$.title.className = 'not-found';
+      return;
+    }
 
-    if (!this.entityStateObj || entityStateObj.state !== this._entityState.state) {
-      root.getElementById('percent').textContent = `${entityStateObj.state} ${unitOfMeasurement}`;
-      root.getElementById('title').textContent = this._config.title;
-      const turn = this._translateTurn(entityStateObj.state, this._config) / 10;
-      root.getElementById('gauge').style.transform = `rotate(${turn}turn)`;
-      root.getElementById('gauge').style.backgroundColor = this._computeSeverity(entityStateObj.state, this._config.severity);
-      this._entityStateObj = entityStateObj;
+    const unitOfMeasurement = this._config.unit_of_measurement || stateObj.attributes.unit_of_measurement || '';
+
+    if (!this.stateObj || stateObj.state !== this._stateObj.state) {
+      this.$.percent.textContent = `${stateObj.state} ${unitOfMeasurement}`;
+      this.$.title.textContent = this._config.title;
+      const turn = this._translateTurn(stateObj.state, this._config) / 10;
+      this.$.gauge.style.transform = `rotate(${turn}turn)`;
+      this.$.gauge.style.backgroundColor = this._computeSeverity(stateObj.state, this._config.severity);
+      this._stateObj = stateObj;
     }
   }
 
-  _hassChanged(hass) {
-    this.hass = hass;
+  _hassChanged() {
     this._buildConfig();
   }
 
@@ -147,9 +163,13 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
       normal: 'var(--label-badge-blue)',
     };
     if (!sections) return severityMap.normal;
-    const sortable = [];
-    Object.keys(sections).forEach((severity) => {
-      sortable.push([severity, sections[severity]]);
+    const sectionsArray = Object.keys(sections);
+
+    const sortable = sectionsArray.map((severity) => {
+      if (severityMap[severity] != null) {
+        return [severity, sections[severity]];
+      }
+      return severityMap.normal;
     });
     sortable.sort((a, b) => a[1] - b[1]);
 
@@ -169,13 +189,9 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
     return 5 * (value - config.min) / (config.max - config.min);
   }
 
-  _computeClasses(hasHeader) {
-    return `entities ${hasHeader ? '' : 'no-header'}`;
-  }
-
   _handleClick() {
-    const entityId = this._config.entity;
-    this.fire('hass-more-info', { entityId });
+    const entity = this._config.entity;
+    this.fire('hass-more-info', { entity });
   }
 }
 
