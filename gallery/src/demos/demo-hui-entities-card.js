@@ -64,6 +64,13 @@ const ENTITIES = [
     unit_of_measurement: 'dB',
     friendly_name: 'Allowed Noise',
     icon: 'mdi:bell-ring'
+  }),
+  getEntity('media_player', 'living_room', 'playing', {
+    media_content_type: 'tvshow',
+    media_title: 'Chapter 1',
+    media_series_title: 'House of Cards',
+    app_name: 'Netflix',
+    supported_features: 1
   })
 ];
 
@@ -171,6 +178,39 @@ const CONFIGS = [
         height: 30px
         margin: 4px 0
         background: center / contain url("/images/divider.png") no-repeat
+    - type: button
+      buttons:
+        - light.bed_light
+        - light.non_existing
+    - type: button
+      buttons:
+        - scene.romantic_lights
+        - entity: scene.romantic_lights
+          icon_color: red
+          icon: mdi:lamp
+    - type: button
+      buttons:
+        - group.kitchen
+        - name: Kitchen
+          entity: group.kitchen
+          icon: mdi:fridge
+    - type: button
+      buttons:
+        - name: Event Trigger
+          service: events.user_defined_event
+        - name: Set Media Source
+          service: media_player.select_source
+          service_data:
+            entity_id: media_player.living_room
+            source: Netflix
+    - type: button
+      buttons:
+        - name: Set Media Source (No Icon Override)
+          service: media_player.select_source
+          no_icon: true
+          service_data:
+            entity_id: media_player.living_room
+            source: Netflix
     `
   },
 ];

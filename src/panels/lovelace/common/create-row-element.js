@@ -14,6 +14,7 @@ import '../entity-rows/hui-text-entity-row.js';
 import '../entity-rows/hui-timer-entity-row.js';
 import '../entity-rows/hui-toggle-entity-row.js';
 
+import '../special-rows/hui-button-row.js';
 import '../special-rows/hui-call-service-row.js';
 import '../special-rows/hui-divider-row.js';
 import '../special-rows/hui-weblink-row.js';
@@ -24,7 +25,8 @@ const CUSTOM_TYPE_PREFIX = 'custom:';
 const SPECIAL_TYPES = new Set([
   'call-service',
   'divider',
-  'weblink'
+  'weblink',
+  'button'
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   automation: 'toggle',
