@@ -15,23 +15,31 @@ ${this.buttonsTemplate}
   static get buttonsTemplate() {
     return html`
     <div class="flex-box">
-        <template is="dom-repeat" items="[[buttons]]" as="button">
-            <template is="dom-if" if="[[button.not_found]]">
+        <template is="dom-repeat"
+                  items="[[buttons]]"
+                  as="button">
+            <template is="dom-if"
+                      if="[[button.not_found]]">
                 <div class="not-found">
-                  Entity not available: [[button.service_data.entity_id]]
+                    Entity not available: [[button.service_data.entity_id]]
                 </div>
             </template>
-            <template is="dom-if" if="[[!button.not_found]]">
+            <template is="dom-if"
+                      if="[[!button.not_found]]">
                 <paper-button on-click="handleButton">
-                    <template is="dom-if" if="{{showIcon(button)}}">
-                        <ha-icon icon="[[button.icon]]" class$="[[getClass(button.icon_color)]]"></ha-icon>
+                    <template is="dom-if"
+                              if="{{showIcon(button)}}">
+                        <ha-icon
+                          icon="[[button.icon]]"
+                          class$="[[getIconClass(button.icon_color)]]" />
                     </template>
-                    <template is="dom-if" if="{{ showStateBadge(button) }}">
-                      <state-badge
-                        state-obj="[[button.state]]"
-                        override-icon="[[button.icon]]"></state-badge>
+                    <template is="dom-if"
+                              if="{{ showStateBadge(button) }}">
+                        <state-badge
+                          state-obj="[[button.state]]"
+                          override-icon="[[button.icon]]" />
                     </template>
-                    {{button.name}}
+                    [[button.name]]
                 </paper-button>
             </template>
         </template>
@@ -88,7 +96,7 @@ ${this.buttonsTemplate}
     };
   }
 
-  getClass(color) {
+  getIconClass(color) {
     if (!color) return 'icon-default';
     return `icon-${color}`;
   }
