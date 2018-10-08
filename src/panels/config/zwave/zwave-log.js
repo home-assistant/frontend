@@ -73,11 +73,6 @@ class OzwLog extends EventsMixin(PolymerElement) {
 
       _intervalId: String,
 
-      _pwaDialogClosed: {
-        type: Boolean,
-        value: true
-      },
-
       tail: Boolean,
 
     };
@@ -141,12 +136,10 @@ class OzwLog extends EventsMixin(PolymerElement) {
       _tail: this.tail,
       dialogClosedCallback: () => this._dialogClosed()
     });
-    this.setProperties({ _pwaDialogClosed: false });
   }
 
   _dialogClosed() {
     this.setProperties({
-      _pwaDialogClosed: true,
       tail: false
     });
   }
