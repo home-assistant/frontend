@@ -27,7 +27,7 @@ const CONFIGS = [
 - type: gauge
   entity: climate.ecobee
   attribute: current_temperature
-  unit_of_measurement: Degrees
+  unit_of_measurement: C
     `
   },
   {
@@ -50,6 +50,22 @@ const CONFIGS = [
   attribute: current_temperature
   min: 0
   max: 38
+    `
+  },
+  {
+    heading: 'Invalid Entity',
+    config: `
+- type: gauge
+  entity: climate.invalid_entity
+  min: 0
+  max: 38
+    `
+  },
+  {
+    heading: 'Non-Numeric Value',
+    config: `
+- type: gauge
+  entity: plant.bonsai
     `
   },
 ];
