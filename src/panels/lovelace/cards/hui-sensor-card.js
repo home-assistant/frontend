@@ -120,6 +120,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const min = Math.floor(Math.min.apply(null, values) * 0.95);
     const max = Math.ceil(Math.max.apply(null, values) * 1.05);
 
+    if (values.length === 1) values.push(values[0]);
+
     const yRatio = (max - min) / height;
     const xRatio = width / (values.length - 1);
 
