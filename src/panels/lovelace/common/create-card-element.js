@@ -27,6 +27,7 @@ const CARD_TYPES = new Set([
   'entities',
   'entity-filter',
   'error',
+  'gauge',
   'glance',
   'history-graph',
   'horizontal-stack',
@@ -40,8 +41,7 @@ const CARD_TYPES = new Set([
   'picture-glance',
   'plant-status',
   'vertical-stack',
-  'weather-forecast',
-  'gauge'
+  'weather-forecast'
 ]);
 const CUSTOM_TYPE_PREFIX = 'custom:';
 const TIMEOUT = 2000;

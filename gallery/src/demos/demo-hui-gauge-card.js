@@ -8,25 +8,22 @@ const CONFIGS = [
     heading: 'Basic example',
     config: `
 - type: gauge
-  entity: climate.ecobee
-  attribute: current_temperature
+  entity: sensor.brightness
     `
   },
   {
     heading: 'With title',
     config: `
 - type: gauge
-  title: Temperature
-  entity: climate.ecobee
-  attribute: current_temperature
+  title: Humidity
+  entity: sensor.outside_humidity
     `
   },
   {
     heading: 'Custom Unit of Measurement',
     config: `
 - type: gauge
-  entity: climate.ecobee
-  attribute: current_temperature
+  entity: sensor.outside_temperature
   unit_of_measurement: C
     `
   },
@@ -34,20 +31,18 @@ const CONFIGS = [
     heading: 'Setting Severity Levels',
     config: `
 - type: gauge
-  entity: climate.ecobee
-  attribute: current_temperature
+  entity: sensor.brightness
   severity:
     red: 32
     green: 0
-    amber: 23
+    yellow: 23
     `
   },
   {
     heading: 'Setting Min and Max Values',
     config: `
 - type: gauge
-  entity: climate.ecobee
-  attribute: current_temperature
+  entity: sensor.brightness
   min: 0
   max: 38
     `
@@ -56,9 +51,7 @@ const CONFIGS = [
     heading: 'Invalid Entity',
     config: `
 - type: gauge
-  entity: climate.invalid_entity
-  min: 0
-  max: 38
+  entity: sensor.invalid_entity
     `
   },
   {

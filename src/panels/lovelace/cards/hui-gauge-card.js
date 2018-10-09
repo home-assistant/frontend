@@ -90,7 +90,10 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
           <div class='gauge-a'></div>
           <div class='gauge-b'></div>
           <div class='gauge-c' id='gauge'></div>
-          <div class='gauge-data'><div id='percent'></div><div id='title'></div></div>
+          <div class='gauge-data'>
+            <div id='percent'>[[_computeStateDisplay(_stateObj)]]</div>
+            <div id='title'>[[_computeTitle(_stateObj)]]</div>
+          </div>
         </div>
       </ha-card>
     `;
@@ -99,16 +102,19 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       hass: {
-        type: Object,
-        observer: '_hassChanged'
+        type: Object
       },
       _config: Object,
+      _stateObj: {
+        type: Object,
+        computed: '_computeStateObj(hass.states, _config.entity)',
+        observer: '_stateObjChanged'
+      },
     };
   }
 
   ready() {
     super.ready();
-    if (this._config) this._buildConfig();
   }
 
   getCardSize() {
@@ -122,36 +128,35 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
     if (this.$) this._buildConfig();
   }
 
-  _buildConfig() {
-    const stateObj = this.hass.states[this._config.entity];
-    if (!stateObj) {
-      this.$.title.textContent = 'Entity not available: ' + this._config.entity;
-      this.$.title.className = 'not-found';
-      return;
-    }
-    if (this._config.attribute) {
-      stateObj.state = stateObj.attributes[this._config.attribute];
-    }
-    if (isNaN(stateObj.state)) {
-      this.$.title.textContent = 'Entity is non-numeric: ' + this._config.entity;
-      this.$.title.className = 'not-found';
-      return;
-    }
-
-    const unitOfMeasurement = this._config.unit_of_measurement || stateObj.attributes.unit_of_measurement || '';
-
-    if (!this.stateObj || stateObj.state !== this._stateObj.state) {
-      this.$.percent.textContent = `${stateObj.state} ${unitOfMeasurement}`;
-      this.$.title.textContent = this._config.title;
-      const turn = this._translateTurn(stateObj.state, this._config) / 10;
-      this.$.gauge.style.transform = `rotate(${turn}turn)`;
-      this.$.gauge.style.backgroundColor = this._computeSeverity(stateObj.state, this._config.severity);
-      this._stateObj = stateObj;
-    }
+  _computeStateObj(states, entityId) {
+    return states && entityId in states ? states[entityId] : null;
   }
 
-  _hassChanged() {
-    this._buildConfig();
+  _stateObjChanged(stateObj) {
+    if (!stateObj) return;
+    const config = this._config;
+
+    const turn = this._translateTurn(stateObj.state, config) / 10;
+    this.$.gauge.style.transform = `rotate(${turn}turn)`;
+    this.$.gauge.style.backgroundColor = this._computeSeverity(stateObj.state, config.severity);
+  }
+
+  _computeStateDisplay(stateObj) {
+    if (!stateObj || isNaN(stateObj.state)) return null;
+    const unitOfMeasurement = this._config.unit_of_measurement || stateObj.attributes.unit_of_measurement || '';
+    return `${stateObj.state} ${unitOfMeasurement}`;
+  }
+
+  _computeTitle(stateObj) {
+    if (!stateObj) {
+      this.$.title.className = 'not-found';
+      return 'Entity not available: ' + this._config.entity;
+    }
+    if (isNaN(stateObj.state)) {
+      this.$.title.className = 'not-found';
+      return 'Entity is non-numeric: ' + this._config.entity;
+    }
+    return this._config.title;
   }
 
   _computeSeverity(stateValue, sections) {
@@ -159,18 +164,18 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
     const severityMap = {
       red: 'var(--label-badge-red)',
       green: 'var(--label-badge-green)',
-      amber: 'var(--label-badge-yellow)',
+      yellow: 'var(--label-badge-yellow)',
       normal: 'var(--label-badge-blue)',
     };
     if (!sections) return severityMap.normal;
     const sectionsArray = Object.keys(sections);
 
-    const sortable = sectionsArray.map((severity) => {
-      if (severityMap[severity] != null) {
-        return [severity, sections[severity]];
+    const sortable = sectionsArray.map(severity => [severity, sections[severity]]);
+    for (var i = 0; i < sortable.length; i++) {
+      if (severityMap[sortable[i][0]] == null || isNaN(sortable[i][1])) {
+        return severityMap.normal;
       }
-      return severityMap.normal;
-    });
+    }
     sortable.sort((a, b) => a[1] - b[1]);
 
     if (numberValue >= sortable[0][1] && numberValue < sortable[1][1]) {
@@ -190,8 +195,7 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
   }
 
   _handleClick() {
-    const entity = this._config.entity;
-    this.fire('hass-more-info', { entity });
+    this.fire('hass-more-info', { entityId: this._config.entity });
   }
 }
 
