@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "Estat",
                                     "from": "Des de",
-                                    "to": "A"
+                                    "to": "A",
+                                    "for": "Durant"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +525,31 @@
                         "activate_user": "Activar usuari",
                         "deactivate_user": "Desactivar usuari",
                         "delete_user": "Eliminar usuari"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Sessió iniciada com a {email}",
+                    "description_not_login": "No has iniciat sessió"
+                },
+                "integrations": {
+                    "caption": "Integracions",
+                    "description": "Gestioneu dispositius i serveis connectats",
+                    "discovered": "Descobert",
+                    "configured": "Configurat",
+                    "new": "Configureu una nova integració",
+                    "configure": "Configurar",
+                    "none": "Encara no hi ha res configurat",
+                    "config_entry": {
+                        "no_devices": "Aquesta integració no té dispositius.",
+                        "no_device": "Entitats sense dispositius",
+                        "delete_confirm": "Esteu segur que voleu suprimir aquesta integració?",
+                        "restart_confirm": "Reinicieu el Home Assistant per acabar d'eliminar aquesta integració",
+                        "manuf": "per {manufacturer}",
+                        "hub": "Connectat a través de",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "dispositiu no disponible",
+                        "entity_unavailable": "entitat no disponible"
                     }
                 }
             },
@@ -804,6 +830,13 @@
                     "turn_on": "Encendre",
                     "turn_off": "Apagar"
                 }
+            },
+            "water_heater": {
+                "currently": "Actual",
+                "on_off": "On \/ Off",
+                "target_temperature": "Temperatura desitjada",
+                "operation": "Funcionament",
+                "away_mode": "Mode absent"
             }
         },
         "components": {

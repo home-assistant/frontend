@@ -1,13 +1,13 @@
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
+import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-
-import '../../components/domain-icon.js';
 
 
 import formatTime from '../../common/datetime/format_time.js';
 import formatDate from '../../common/datetime/format_date.js';
 import EventsMixin from '../../mixins/events-mixin.js';
+import domainIcon from '../../common/entity/domain_icon.js';
 
 /*
  * @appliesMixin EventsMixin
@@ -57,7 +57,7 @@ class HaLogbook extends EventsMixin(PolymerElement) {
 
       <div class="horizontal layout entry">
         <div class="time">[[_formatTime(item.when)]]</div>
-        <domain-icon domain="[[item.domain]]" class="icon"></domain-icon>
+        <iron-icon icon="[[_computeIcon(item.domain)]]"></iron-icon>
         <div class="message" flex="">
           <template is="dom-if" if="[[!item.entity_id]]">
             <span class="name">[[item.name]]</span>
@@ -99,6 +99,10 @@ class HaLogbook extends EventsMixin(PolymerElement) {
     const current = this.get('when', change.base[index]);
     const previous = this.get('when', change.base[index - 1]);
     return current && previous && current.substr(0, 10) !== previous.substr(0, 10);
+  }
+
+  _computeIcon(domain) {
+    return domainIcon(domain);
   }
 
   entityClicked(ev) {

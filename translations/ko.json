@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "상태",
                                     "from": "이전",
-                                    "to": "이후"
+                                    "to": "이후",
+                                    "for": "경과시간"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -514,7 +515,7 @@
                 },
                 "users": {
                     "caption": "사용자",
-                    "description": "사용자 관리",
+                    "description": "사용자를 관리합니다",
                     "picker": {
                         "title": "사용자"
                     },
@@ -524,6 +525,31 @@
                         "activate_user": "사용자 활성화",
                         "deactivate_user": "사용자 비활성화",
                         "delete_user": "사용자 삭제"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "{email} 로 로그인 되어있습니다",
+                    "description_not_login": "로그인이 되어있지 않습니다"
+                },
+                "integrations": {
+                    "caption": "통합 구성요소",
+                    "description": "연결된 기기 및 서비스를 관리합니다",
+                    "discovered": "발견된 구성요소",
+                    "configured": "설정된 구성요소",
+                    "new": "새로운 통합 구성요소 설정",
+                    "configure": "설정하기",
+                    "none": "설정된 구성요소가 없습니다",
+                    "config_entry": {
+                        "no_devices": "이 통합 구성요소에는 장치가 없습니다.",
+                        "no_device": "장치가 없는 구성요소",
+                        "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
+                        "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 를 재시작합니다",
+                        "manuf": "{manufacturer} 제조",
+                        "hub": "연결 경유 대상",
+                        "firmware": "펌웨어: {version}",
+                        "device_unavailable": "기기 사용불가",
+                        "entity_unavailable": "구성요소 사용불가"
                     }
                 }
             },
@@ -563,7 +589,7 @@
                     "description": "스크립트가 Home Assistant 인스턴스와 상호 작용할 수 있도록 장기 액세스 토큰을 생성하세요. 각 토큰은 생성 후 10년 동안 유효합니다. 현재 활성 상태인 장기 액세스 토큰은 다음과 같습니다.",
                     "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아 보세요.",
                     "created_at": "{date} 에 생성 됨",
-                    "confirm_delete": "{name} 의 액세스 토큰을 삭제 하시겠습니까?",
+                    "confirm_delete": "{name} 액세스 토큰을 삭제 하시겠습니까?",
                     "delete_failed": "액세스 토큰을 삭제할 수 없습니다.",
                     "create": "토큰 만들기",
                     "create_failed": "액세스 토큰을 생성을 할 수 없습니다.",
@@ -575,14 +601,14 @@
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
                 "is_owner": "관리자 계정 입니다.",
-                "logout": "로그 아웃",
+                "logout": "로그아웃",
                 "change_password": {
                     "header": "비밀번호 변경",
                     "current_password": "현재 비밀번호",
                     "new_password": "새 비밀번호",
                     "confirm_new_password": "새 비밀번호 확인",
                     "error_required": "필수 요소",
-                    "submit": "변경 하기"
+                    "submit": "변경하기"
                 },
                 "mfa": {
                     "header": "다단계 인증 모듈",
@@ -595,7 +621,7 @@
                     "title_success": "성공!",
                     "step_done": "{step} 설정 완료",
                     "close": "닫기",
-                    "submit": "구성 하기"
+                    "submit": "구성하기"
                 }
             },
             "page-authorize": {
@@ -804,6 +830,13 @@
                     "turn_on": "끄기",
                     "turn_off": "켜기"
                 }
+            },
+            "water_heater": {
+                "currently": "현재 온도",
+                "on_off": "켜기 \/ 끄기",
+                "target_temperature": "희망 온도",
+                "operation": "운전",
+                "away_mode": "외출 모드"
             }
         },
         "components": {

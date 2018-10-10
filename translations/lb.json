@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "Zoustand",
                                     "from": "Vun",
-                                    "to": "Op"
+                                    "to": "Op",
+                                    "for": "Fir"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +525,31 @@
                         "activate_user": "Benotzer aktivéieren",
                         "deactivate_user": "Benotzer déaktivéieren",
                         "delete_user": "Benotzer läschen"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Ageloggt als {email}",
+                    "description_not_login": "Net ageloggt"
+                },
+                "integrations": {
+                    "caption": "Integratioune",
+                    "description": "Verwalt verbonnen Apparater an Servicen",
+                    "discovered": "Entdeckt",
+                    "configured": "Konfiguréiert",
+                    "new": "Eng nei Integratioun ariichten",
+                    "configure": "Astellen",
+                    "none": "Nach näischt konfiguréiert",
+                    "config_entry": {
+                        "no_devices": "Dës Integratioun huet keng Apparater.",
+                        "no_device": "Entitéiten ouni Apparater",
+                        "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
+                        "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
+                        "manuf": "vun {manufacturer}",
+                        "hub": "Verbonnen via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "Apparat net erreechbar",
+                        "entity_unavailable": "Entitéit net erreechbar"
                     }
                 }
             },
@@ -804,6 +830,13 @@
                     "turn_on": "Uschalten",
                     "turn_off": "Ausschalten"
                 }
+            },
+            "water_heater": {
+                "currently": "Momentan",
+                "on_off": "Un \/ Aus",
+                "target_temperature": "Zieltemperatur",
+                "operation": "Aktioun",
+                "away_mode": "Modus Keen Doheem"
             }
         },
         "components": {

@@ -12,7 +12,8 @@
         "dev-events": "Olaylar",
         "dev-templates": "Taslaklar",
         "dev-mqtt": "MQTT",
-        "dev-info": "Bilgi"
+        "dev-info": "Bilgi",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -316,7 +317,16 @@
                 },
                 "automation": {
                     "caption": "Otomasyon",
-                    "description": "Otomasyonları oluşturun ve düzenleyin"
+                    "description": "Otomasyonları oluşturun ve düzenleyin",
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "state": {
+                                    "for": "İçin"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Senaryo",
@@ -325,6 +335,58 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave ağınızı yönetin"
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "{email} olarak oturum açtınız",
+                    "description_not_login": "Oturum açmadınız"
+                },
+                "integrations": {
+                    "caption": "Entegrasyonlar",
+                    "description": "Bağlı cihazları ve hizmetleri yönetin",
+                    "discovered": "Bulundu",
+                    "configured": "Yapılandırılmış",
+                    "new": "Yeni bir entegrasyon kur",
+                    "configure": "Yapılandır",
+                    "none": "Henüz hiçbir şey yapılandırılmamış",
+                    "config_entry": {
+                        "no_devices": "Bu entegrasyona ait hiçbir cihaz yok",
+                        "no_device": "Cihaza ait olmayan cisimler",
+                        "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
+                        "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
+                        "manuf": "üretici: {manufacturer}",
+                        "hub": "Şununla bağlı:",
+                        "firmware": "Aygıt yazılımı: {version}",
+                        "device_unavailable": "cihaz kullanılamıyor",
+                        "entity_unavailable": "cisim kullanılamıyor"
+                    }
+                }
+            },
+            "profile": {
+                "long_lived_access_tokens": {
+                    "not_used": "Hiç kullanılmamış"
+                },
+                "logout": "Çıkış yap",
+                "change_password": {
+                    "header": "Parolayı Değiştir",
+                    "current_password": "Güncel Parola",
+                    "new_password": "Yeni Parolayı",
+                    "confirm_new_password": "Yeni Parolayı Onaylayın",
+                    "error_required": "Gerekli",
+                    "submit": "Gönder"
+                },
+                "mfa": {
+                    "header": "Çoklu-faktör Kimlik Doğrulama Modülleri",
+                    "disable": "Devre dışı bırak",
+                    "enable": "Etkinleştir",
+                    "confirm_disable": "{name} adlı öğeyi devre dışı bırakmak istediğinizden emin misiniz?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "İptal edildi",
+                    "title_success": "Başarılı!",
+                    "step_done": "Kurulumun {step} adımı tamamlandı",
+                    "close": "Kapat",
+                    "submit": "Gönder"
                 }
             }
         },
@@ -352,6 +414,13 @@
             },
             "persistent_notification": {
                 "dismiss": "Kapat"
+            },
+            "water_heater": {
+                "currently": "Güncel olarak",
+                "on_off": "Açık \/ kapalı",
+                "target_temperature": "hedef sıcaklık",
+                "operation": "İşlem",
+                "away_mode": "Dışarıda modu"
             }
         }
     },

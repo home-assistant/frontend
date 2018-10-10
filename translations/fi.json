@@ -683,7 +683,7 @@
             },
             "automation": {
                 "last_triggered": "Viimeksi käynnistetty",
-                "trigger": "Käynnistysehto"
+                "trigger": "Käynnistä"
             },
             "cover": {
                 "position": "Sijainti",
@@ -743,7 +743,11 @@
             "relative_time": {
                 "past": "{time} sitten",
                 "future": "{time} kuluttua",
-                "never": "Ei koskaan"
+                "never": "Ei koskaan",
+                "duration": {
+                    "minute": "{count} {count, plural,\none {minuutti}\nother {minuuttia}\n}",
+                    "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Ladataan tilahistoriaa...",

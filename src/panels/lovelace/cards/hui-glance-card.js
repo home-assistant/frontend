@@ -22,6 +22,11 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
+        :host(.theme-primary) {
+          --paper-card-background-color:var(--primary-color);
+          --paper-item-icon-color:var(--text-primary-color);
+          color:var(--text-primary-color);
+        }
         .entities {
           display: flex;
           padding: 0 16px 4px;
@@ -90,6 +95,14 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   setConfig(config) {
     this._config = config;
     this.updateStyles({ '--glance-column-width': (config && config.column_width) || '20%' });
+
+    if (config && config.theming) {
+      if (typeof (config.theming) !== 'string') {
+        throw new Error('Incorrect theming config.');
+      }
+      this.classList.add(`theme-${config.theming}`);
+    }
+
     this._configEntities = processConfigEntities(config.entities);
   }
 

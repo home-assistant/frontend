@@ -13,7 +13,8 @@
         "dev-templates": "模板",
         "dev-mqtt": "MQTT",
         "dev-info": "資訊",
-        "calendar": "行事曆"
+        "calendar": "行事曆",
+        "profile": "個人設定"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "狀態",
                                     "from": "從...狀態",
-                                    "to": "變為...狀態"
+                                    "to": "變為...狀態",
+                                    "for": "持續"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +526,31 @@
                         "deactivate_user": "停用用戶",
                         "delete_user": "刪除用戶"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "以{email}登入",
+                    "description_not_login": "未登入"
+                },
+                "integrations": {
+                    "caption": "整合",
+                    "description": "管理已連線裝置與服務",
+                    "discovered": "已掃描",
+                    "configured": "設定成功",
+                    "new": "設定新整合",
+                    "configure": "設定",
+                    "none": "尚未設定",
+                    "config_entry": {
+                        "no_devices": "此整合沒有任何裝置。",
+                        "no_device": "物件沒有裝置",
+                        "delete_confirm": "確定要刪除此整合？",
+                        "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
+                        "manuf": "廠牌：{manufacturer}",
+                        "hub": "連線：",
+                        "firmware": "韌體：{version}",
+                        "device_unavailable": "裝置不可用",
+                        "entity_unavailable": "物件不可用"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +598,30 @@
                     "empty_state": "尚未創建永久有效存取密鑰。",
                     "last_used": "上次使用：於{date}、位置{location}",
                     "not_used": "從未使用過"
+                },
+                "current_user": "目前登入身份：{fullName}。",
+                "is_owner": "你為擁有者。",
+                "logout": "登出",
+                "change_password": {
+                    "header": "變更密碼",
+                    "current_password": "目前密碼",
+                    "new_password": "新密碼",
+                    "confirm_new_password": "確認密碼",
+                    "error_required": "必填",
+                    "submit": "傳送"
+                },
+                "mfa": {
+                    "header": "多步驟驗證模組",
+                    "disable": "關閉",
+                    "enable": "開啟",
+                    "confirm_disable": "確定要關閉{name}？"
+                },
+                "mfa_setup": {
+                    "title_aborted": "已中止",
+                    "title_success": "成功！",
+                    "step_done": "{step}已設定完成",
+                    "close": "關閉",
+                    "submit": "傳送"
                 }
             },
             "page-authorize": {
@@ -779,6 +830,13 @@
                     "turn_on": "開啟",
                     "turn_off": "關閉"
                 }
+            },
+            "water_heater": {
+                "currently": "目前狀態",
+                "on_off": "開 \/ 關",
+                "target_temperature": "設定溫度",
+                "operation": "運轉模式",
+                "away_mode": "外出模式"
             }
         },
         "components": {

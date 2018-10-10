@@ -351,7 +351,7 @@
                     "description": "Twórz i edytuj automatyzacje",
                     "picker": {
                         "header": "Edytor automatyzacji",
-                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzację. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant.",
+                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzację. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant'a.",
                         "pick_automation": "Wybierz automatyzację do edycji",
                         "no_automations": "Nie znaleziono żadnych edytowalnych automatyzacji",
                         "add_automation": "Dodaj automatyzację"
@@ -380,7 +380,8 @@
                                 "state": {
                                     "label": "Stan",
                                     "from": "Od",
-                                    "to": "Do"
+                                    "to": "Do",
+                                    "for": "Przez"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -471,7 +472,7 @@
                         },
                         "actions": {
                             "header": "Akcje",
-                            "introduction": "Akcje są wykonywane przez Home Assistant po uruchomieniu automatyki. \n\n[Dowiedz się więcej o akcjach.](Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcje są wykonywane przez Home Assistant'a po uruchomieniu automatyki. \n\n[Dowiedz się więcej o akcjach.](Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Dodaj akcję",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -524,6 +525,31 @@
                         "activate_user": "Aktywuj użytkownika",
                         "deactivate_user": "Dezaktywuj użytkownika",
                         "delete_user": "Usuń użytkownika"
+                    }
+                },
+                "cloud": {
+                    "caption": "Chmura Home Assistant",
+                    "description_login": "Zalogowany jako {email}",
+                    "description_not_login": "Nie zalogowany"
+                },
+                "integrations": {
+                    "caption": "Integracje",
+                    "description": "Zarządzaj podłączonymi urządzeniami i usługami",
+                    "discovered": "Wykryte",
+                    "configured": "Skonfigurowane",
+                    "new": "Konfiguruj nową integrację",
+                    "configure": "Konfiguruj",
+                    "none": "Nic jeszcze nie zostało skonfigurowane",
+                    "config_entry": {
+                        "no_devices": "Ta integracja nie ma żadnych urządzeń.",
+                        "no_device": "Encje bez urządzeń",
+                        "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
+                        "restart_confirm": "Zrestartuj Home Assistant'a, aby zakończyć usuwanie tej integracji",
+                        "manuf": "przez: {manufacturer}",
+                        "hub": "Połączony przez",
+                        "firmware": "Oprogramowanie: {version}",
+                        "device_unavailable": "urządzenie niedostępne",
+                        "entity_unavailable": "encja niedostępna"
                     }
                 }
             },
@@ -600,7 +626,7 @@
             },
             "page-authorize": {
                 "initializing": "Inicjowanie",
-                "authorizing_client": "Czy na pewno chcesz dać dostęp {clientId} do Twojej instancji Home Assistant.",
+                "authorizing_client": "Czy na pewno chcesz dać dostęp {clientId} do Twojej instancji Home Assistant'a.",
                 "logging_in_with": "Logowanie za pomocą **{authProviderName}**.",
                 "pick_auth_provider": "Lub zaloguj się za pomocą",
                 "abort_intro": "Logowanie przerwane",
@@ -804,6 +830,13 @@
                     "turn_on": "Włącz",
                     "turn_off": "Wyłącz"
                 }
+            },
+            "water_heater": {
+                "currently": "Obecnie",
+                "on_off": "Wł. \/ wył.",
+                "target_temperature": "Temperatura docelowa",
+                "operation": "Tryb działania",
+                "away_mode": "Tryb poza domem"
             }
         },
         "components": {

@@ -34,6 +34,7 @@
     "@polymer/iron-media-query": "^3.0.1",
     "@polymer/iron-pages": "^3.0.1",
     "@polymer/iron-resizable-behavior": "^3.0.1",
+    "@polymer/lit-element": "^0.6.2",
     "@polymer/neon-animation": "^3.0.1",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-card": "^3.0.1",

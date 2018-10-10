@@ -1,70 +1,64 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-
+import { LitElement, html } from '@polymer/lit-element';
 
 import './ha-progress-button.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import fireEvent from '../../common/dom/fire_event.js';
 
-/*
- * @appliesMixin EventsMixin
- */
-class HaCallApiButton extends EventsMixin(PolymerElement) {
-  static get template() {
+class HaCallApiButton extends LitElement {
+  render() {
     return html`
-    <ha-progress-button id="progress" progress="[[progress]]" on-click="buttonTapped" disabled="[[disabled]]"><slot></slot></ha-progress-button>
-`;
+      <ha-progress-button
+        .progress="${this.progress}"
+        @click="${this._buttonTapped}"
+        ?disabled="${this.disabled}"
+      ><slot></slot></ha-progress-button>
+    `;
+  }
+
+  constructor() {
+    super();
+    this.method = 'POST';
+    this.data = {};
+    this.disabled = false;
+    this.progress = false;
   }
 
   static get properties() {
     return {
-      hass: Object,
-
-      progress: {
-        type: Boolean,
-        value: false,
-      },
-
+      hass: { },
+      progress: Boolean,
       path: String,
-
-      method: {
-        type: String,
-        value: 'POST',
-      },
-
-      data: {
-        type: Object,
-        value: {},
-      },
-
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
+      method: String,
+      data: { },
+      disabled: Boolean
     };
   }
 
-  buttonTapped() {
+  get progressButton() {
+    return this.renderRoot.querySelector('ha-progress-button');
+  }
+
+  async _buttonTapped() {
     this.progress = true;
     const eventData = {
       method: this.method,
       path: this.path,
-      data: this.data,
+      data: this.data
     };
 
-    this.hass.callApi(this.method, this.path, this.data)
-      .then((resp) => {
-        this.progress = false;
-        this.$.progress.actionSuccess();
-        eventData.success = true;
-        eventData.response = resp;
-      }, (resp) => {
-        this.progress = false;
-        this.$.progress.actionError();
-        eventData.success = false;
-        eventData.response = resp;
-      }).then(() => {
-        this.fire('hass-api-called', eventData);
-      });
+    try {
+      const resp = await this.hass.callApi(this.method, this.path, this.data);
+      this.progress = false;
+      this.progressButton.actionSuccess();
+      eventData.success = true;
+      eventData.response = resp;
+    } catch (err) {
+      this.progress = false;
+      this.progressButton.actionError();
+      eventData.success = false;
+      eventData.response = err;
+    }
+
+    fireEvent(this, 'hass-api-called', eventData);
   }
 }
 

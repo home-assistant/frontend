@@ -64,7 +64,7 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _computeState(stateObj) {
-    return computeStateDisplay(this.localize, stateObj);
+    return stateObj && computeStateDisplay(this.localize, stateObj);
   }
 }
 customElements.define('hui-text-entity-row', HuiTextEntityRow);
