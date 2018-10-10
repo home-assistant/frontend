@@ -125,7 +125,6 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
     if (!config || !config.entity) throw new Error('Invalid card configuration');
 
     this._config = Object.assign({ min: 0, max: 100 }, config);
-    if (this.$) this._buildConfig();
   }
 
   _computeStateObj(states, entityId) {
