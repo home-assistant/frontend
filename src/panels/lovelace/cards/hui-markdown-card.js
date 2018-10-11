@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-card.js';
-import '../../../components/ha-markdown.js';
+import "../../../components/ha-card.js";
+import "../../../components/ha-markdown.js";
 
 class HuiMarkdownCard extends PolymerElement {
   static get template() {
@@ -46,7 +46,7 @@ class HuiMarkdownCard extends PolymerElement {
       noTitle: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: '_computeNoTitle(_config.title)',
+        computed: "_computeNoTitle(_config.title)",
       },
     };
   }
@@ -56,7 +56,7 @@ class HuiMarkdownCard extends PolymerElement {
   }
 
   getCardSize() {
-    return this._config.content.split('\n').length;
+    return this._config.content.split("\n").length;
   }
 
   _computeNoTitle(title) {
@@ -64,4 +64,4 @@ class HuiMarkdownCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-markdown-card', HuiMarkdownCard);
+customElements.define("hui-markdown-card", HuiMarkdownCard);

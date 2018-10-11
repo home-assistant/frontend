@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-call-service-button.js';
+import "../../../components/buttons/ha-call-service-button.js";
 
 class HuiServiceButtonElement extends PolymerElement {
   static get template() {
@@ -26,21 +26,21 @@ class HuiServiceButtonElement extends PolymerElement {
       hass: Object,
       _config: Object,
       _domain: String,
-      _service: String
+      _service: String,
     };
   }
 
   setConfig(config) {
     if (!config || !config.service) {
-      throw Error('Error in element configuration');
+      throw Error("Error in element configuration");
     }
 
-    const [domain, service] = config.service.split('.', 2);
+    const [domain, service] = config.service.split(".", 2);
     this.setProperties({
       _config: config,
       _domain: domain,
-      _service: service
+      _service: service,
     });
   }
 }
-customElements.define('hui-service-button-element', HuiServiceButtonElement);
+customElements.define("hui-service-button-element", HuiServiceButtonElement);

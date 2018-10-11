@@ -1,31 +1,31 @@
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-route/app-route.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-pages/iron-pages.js';
-import '@polymer/paper-tabs/paper-tab.js';
-import '@polymer/paper-tabs/paper-tabs.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-scroll-effects/effects/waterfall.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/app-route/app-route.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/iron-pages/iron-pages.js";
+import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/paper-tabs/paper-tabs.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/ha-cards.js';
-import '../components/ha-icon.js';
-import '../components/ha-menu-button.js';
-import '../components/ha-start-voice-button.js';
+import "../components/ha-cards.js";
+import "../components/ha-icon.js";
+import "../components/ha-menu-button.js";
+import "../components/ha-start-voice-button.js";
 
-import './ha-app-layout.js';
+import "./ha-app-layout.js";
 
-import extractViews from '../common/entity/extract_views.js';
-import getViewEntities from '../common/entity/get_view_entities.js';
-import computeStateName from '../common/entity/compute_state_name.js';
-import computeStateDomain from '../common/entity/compute_state_domain.js';
-import computeLocationName from '../common/config/location_name.js';
-import NavigateMixin from '../mixins/navigate-mixin.js';
-import EventsMixin from '../mixins/events-mixin.js';
+import extractViews from "../common/entity/extract_views.js";
+import getViewEntities from "../common/entity/get_view_entities.js";
+import computeStateName from "../common/entity/compute_state_name.js";
+import computeStateDomain from "../common/entity/compute_state_domain.js";
+import computeLocationName from "../common/config/location_name.js";
+import NavigateMixin from "../mixins/navigate-mixin.js";
+import EventsMixin from "../mixins/events-mixin.js";
 
-const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
-const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
+const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
+const ALWAYS_SHOW_DOMAIN = ["persistent_notification", "configurator"];
 
 /*
  * @appliesMixin EventsMixin
@@ -104,11 +104,10 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
 
   static get properties() {
     return {
-
       hass: {
         type: Object,
         value: null,
-        observer: 'hassChanged'
+        observer: "hassChanged",
       },
 
       narrow: {
@@ -136,13 +135,13 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       locationName: {
         type: String,
-        value: '',
-        computed: '_computeLocationName(hass)',
+        value: "",
+        computed: "_computeLocationName(hass)",
       },
 
       currentView: {
         type: String,
-        computed: '_computeCurrentView(hass, routeMatch, routeData)',
+        computed: "_computeCurrentView(hass, routeMatch, routeData)",
       },
 
       views: {
@@ -155,12 +154,12 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       viewStates: {
         type: Object,
-        computed: 'computeViewStates(currentView, hass, defaultView)',
+        computed: "computeViewStates(currentView, hass, defaultView)",
       },
 
       orderedGroupEntities: {
         type: Array,
-        computed: 'computeOrderedGroupEntities(currentView, hass, defaultView)',
+        computed: "computeOrderedGroupEntities(currentView, hass, defaultView)",
       },
 
       showTabs: {
@@ -171,23 +170,25 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 
   static get observers() {
-    return ['_updateColumns(narrow, showMenu)'];
+    return ["_updateColumns(narrow, showMenu)"];
   }
 
   ready() {
     this._updateColumns = this._updateColumns.bind(this);
-    this.mqls = [300, 600, 900, 1200].map(width => matchMedia(`(min-width: ${width}px)`));
+    this.mqls = [300, 600, 900, 1200].map((width) =>
+      matchMedia(`(min-width: ${width}px)`)
+    );
     super.ready();
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.mqls.forEach(mql => mql.addListener(this._updateColumns));
+    this.mqls.forEach((mql) => mql.addListener(this._updateColumns));
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.mqls.forEach(mql => mql.removeListener(this._updateColumns));
+    this.mqls.forEach((mql) => mql.removeListener(this._updateColumns));
   }
 
   _updateColumns() {
@@ -218,7 +219,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     var easingFn = function easeOutQuad(t, b, c, d) {
       /* eslint-disable no-param-reassign, space-infix-ops, no-mixed-operators */
       t /= d;
-      return -c * t*(t-2) + b;
+      return -c * t * (t - 2) + b;
       /* eslint-enable no-param-reassign, space-infix-ops, no-mixed-operators */
     };
     var animationId = Math.random();
@@ -233,34 +234,48 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
       if (elapsedTime > duration) {
         scroller.scrollTop = top;
       } else if (this._currentAnimationId === animationId) {
-        scroller.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
+        scroller.scrollTop = easingFn(
+          elapsedTime,
+          currentScrollTop,
+          deltaScrollTop,
+          duration
+        );
         requestAnimationFrame(updateFrame.bind(this));
       }
-    }).call(this);
+    }.call(this));
   }
 
   handleViewSelected(ev) {
-    const view = ev.detail.item.getAttribute('data-entity') || null;
+    const view = ev.detail.item.getAttribute("data-entity") || null;
 
     if (view !== this.currentView) {
-      let path = '/states';
+      let path = "/states";
       if (view) {
-        path += '/' + view;
+        path += "/" + view;
       }
       this.navigate(path);
     }
   }
 
   _computeCurrentView(hass, routeMatch, routeData) {
-    if (!routeMatch) return '';
-    if (!hass.states[routeData.view] || !hass.states[routeData.view].attributes.view) {
-      return '';
+    if (!routeMatch) return "";
+    if (
+      !hass.states[routeData.view] ||
+      !hass.states[routeData.view].attributes.view
+    ) {
+      return "";
     }
     return routeData.view;
   }
 
   computeTitle(views, defaultView, locationName) {
-    return (views && views.length > 0 && !defaultView && locationName === 'Home') || !locationName ? 'Home Assistant' : locationName;
+    return (views &&
+      views.length > 0 &&
+      !defaultView &&
+      locationName === "Home") ||
+      !locationName
+      ? "Home Assistant"
+      : locationName;
   }
 
   _computeStateName(stateObj) {
@@ -284,8 +299,10 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 
   isView(currentView, defaultView) {
-    return (currentView || defaultView)
-      && this.hass.states[currentView || DEFAULT_VIEW_ENTITY_ID];
+    return (
+      (currentView || defaultView) &&
+      this.hass.states[currentView || DEFAULT_VIEW_ENTITY_ID]
+    );
   }
 
   _defaultViewFilter(hass, entityId) {
@@ -295,9 +312,11 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
 
   _computeDefaultViewStates(hass, entityIds) {
     const states = {};
-    entityIds.filter(this._defaultViewFilter.bind(null, hass)).forEach((entityId) => {
-      states[entityId] = hass.states[entityId];
-    });
+    entityIds
+      .filter(this._defaultViewFilter.bind(null, hass))
+      .forEach((entityId) => {
+        states[entityId] = hass.states[entityId];
+      });
     return states;
   }
 
@@ -318,7 +337,10 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     if (currentView) {
       states = getViewEntities(hass.states, hass.states[currentView]);
     } else {
-      states = getViewEntities(hass.states, hass.states[DEFAULT_VIEW_ENTITY_ID]);
+      states = getViewEntities(
+        hass.states,
+        hass.states[DEFAULT_VIEW_ENTITY_ID]
+      );
     }
 
     // Make sure certain domains are always shown.
@@ -342,7 +364,8 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     }
 
     var orderedGroupEntities = {};
-    var entitiesList = hass.states[currentView || DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
+    var entitiesList =
+      hass.states[currentView || DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
 
     for (var i = 0; i < entitiesList.length; i++) {
       orderedGroupEntities[entitiesList[i]] = i;
@@ -352,4 +375,4 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 }
 
-customElements.define('partial-cards', PartialCards);
+customElements.define("partial-cards", PartialCards);

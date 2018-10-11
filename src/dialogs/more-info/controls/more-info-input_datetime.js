@@ -1,14 +1,14 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/polymer/polymer-legacy.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/polymer/polymer-legacy.js";
+import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
 
-import '../../../components/ha-relative-time.js';
-import '../../../components/paper-time-input.js';
+import "../../../components/ha-relative-time.js";
+import "../../../components/paper-time-input.js";
 
-import attributeClassNames from '../../../common/entity/attribute_class_names.js';
+import attributeClassNames from "../../../common/entity/attribute_class_names.js";
 
 class DatetimeInput extends PolymerElement {
   static get template() {
@@ -41,22 +41,22 @@ class DatetimeInput extends PolymerElement {
 
       stateObj: {
         type: Object,
-        observer: 'stateObjChanged',
+        observer: "stateObjChanged",
       },
 
       selectedDate: {
         type: String,
-        observer: 'dateTimeChanged',
+        observer: "dateTimeChanged",
       },
 
       selectedHour: {
         type: Number,
-        observer: 'dateTimeChanged',
+        observer: "dateTimeChanged",
       },
 
       selectedMinute: {
         type: Number,
-        observer: 'dateTimeChanged',
+        observer: "dateTimeChanged",
       },
     };
   }
@@ -68,24 +68,32 @@ class DatetimeInput extends PolymerElement {
 
   /* Convert the date in the stateObj into a string useable by vaadin-date-picker */
   getDateString(stateObj) {
-    if (stateObj.state === 'unknown') {
-      return '';
+    if (stateObj.state === "unknown") {
+      return "";
     }
     var monthFiller;
     if (stateObj.attributes.month < 10) {
-      monthFiller = '0';
+      monthFiller = "0";
     } else {
-      monthFiller = '';
+      monthFiller = "";
     }
 
     var dayFiller;
     if (stateObj.attributes.day < 10) {
-      dayFiller = '0';
+      dayFiller = "0";
     } else {
-      dayFiller = '';
+      dayFiller = "";
     }
 
-    return stateObj.attributes.year + '-' + monthFiller + stateObj.attributes.month + '-' + dayFiller + stateObj.attributes.day;
+    return (
+      stateObj.attributes.year +
+      "-" +
+      monthFiller +
+      stateObj.attributes.month +
+      "-" +
+      dayFiller +
+      stateObj.attributes.day
+    );
   }
 
   /* Should fire when any value was changed *by the user*, not b/c of setting
@@ -100,18 +108,20 @@ class DatetimeInput extends PolymerElement {
     let minuteFiller;
 
     const serviceData = {
-      entity_id: this.stateObj.entity_id
+      entity_id: this.stateObj.entity_id,
     };
 
     if (this.stateObj.attributes.has_time) {
-      changed |= (parseInt(this.selectedMinute) !== this.stateObj.attributes.minute);
-      changed |= (parseInt(this.selectedHour) !== this.stateObj.attributes.hour);
+      changed |=
+        parseInt(this.selectedMinute) !== this.stateObj.attributes.minute;
+      changed |= parseInt(this.selectedHour) !== this.stateObj.attributes.hour;
       if (this.selectedMinute < 10) {
-        minuteFiller = '0';
+        minuteFiller = "0";
       } else {
-        minuteFiller = '';
+        minuteFiller = "";
       }
-      var timeStr = this.selectedHour + ':' + minuteFiller + this.selectedMinute;
+      var timeStr =
+        this.selectedHour + ":" + minuteFiller + this.selectedMinute;
       serviceData.time = timeStr;
     }
 
@@ -127,13 +137,13 @@ class DatetimeInput extends PolymerElement {
         this.stateObj.attributes.day
       );
 
-      changed |= (dateValState !== dateValInput);
+      changed |= dateValState !== dateValInput;
 
       serviceData.date = this.selectedDate;
     }
 
     if (changed) {
-      this.hass.callService('input_datetime', 'set_datetime', serviceData);
+      this.hass.callService("input_datetime", "set_datetime", serviceData);
     }
   }
 
@@ -162,8 +172,11 @@ class DatetimeInput extends PolymerElement {
   }
 
   computeClassNames(stateObj) {
-    return 'more-info-input_datetime ' + attributeClassNames(stateObj, ['has_time', 'has_date']);
+    return (
+      "more-info-input_datetime " +
+      attributeClassNames(stateObj, ["has_time", "has_date"])
+    );
   }
 }
 
-customElements.define('more-info-input_datetime', DatetimeInput);
+customElements.define("more-info-input_datetime", DatetimeInput);

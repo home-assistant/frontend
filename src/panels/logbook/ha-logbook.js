@@ -1,13 +1,12 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icon/iron-icon.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/iron-icon/iron-icon.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-
-import formatTime from '../../common/datetime/format_time.js';
-import formatDate from '../../common/datetime/format_date.js';
-import EventsMixin from '../../mixins/events-mixin.js';
-import domainIcon from '../../common/entity/domain_icon.js';
+import formatTime from "../../common/datetime/format_time.js";
+import formatDate from "../../common/datetime/format_date.js";
+import EventsMixin from "../../mixins/events-mixin.js";
+import domainIcon from "../../common/entity/domain_icon.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -96,9 +95,11 @@ class HaLogbook extends EventsMixin(PolymerElement) {
 
   _needHeader(change, index) {
     if (!index) return true;
-    const current = this.get('when', change.base[index]);
-    const previous = this.get('when', change.base[index - 1]);
-    return current && previous && current.substr(0, 10) !== previous.substr(0, 10);
+    const current = this.get("when", change.base[index]);
+    const previous = this.get("when", change.base[index - 1]);
+    return (
+      current && previous && current.substr(0, 10) !== previous.substr(0, 10)
+    );
   }
 
   _computeIcon(domain) {
@@ -107,8 +108,8 @@ class HaLogbook extends EventsMixin(PolymerElement) {
 
   entityClicked(ev) {
     ev.preventDefault();
-    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
+    this.fire("hass-more-info", { entityId: ev.model.item.entity_id });
   }
 }
 
-customElements.define('ha-logbook', HaLogbook);
+customElements.define("ha-logbook", HaLogbook);

@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../cards/ha-history_graph-card.js';
-import '../../../components/ha-attributes.js';
+import "../../../cards/ha-history_graph-card.js";
+import "../../../components/ha-attributes.js";
 
 class MoreInfoHistoryGraph extends PolymerElement {
   static get template() {
@@ -26,4 +26,4 @@ class MoreInfoHistoryGraph extends PolymerElement {
     };
   }
 }
-customElements.define('more-info-history_graph', MoreInfoHistoryGraph);
+customElements.define("more-info-history_graph", MoreInfoHistoryGraph);

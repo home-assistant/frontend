@@ -1,39 +1,39 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'Without title',
+    heading: "Without title",
     config: `
 - type: iframe
   url: https://embed.windy.com/embed2.html
-    `
+    `,
   },
   {
-    heading: 'With title',
+    heading: "With title",
     config: `
 - type: iframe
   url: https://embed.windy.com/embed2.html
   title: Weather radar
-    `
+    `,
   },
   {
-    heading: 'Height-Width 3:4',
+    heading: "Height-Width 3:4",
     config: `
 - type: iframe
   url: https://embed.windy.com/embed2.html
   aspect_ratio: 75%
-    `
+    `,
   },
   {
-    heading: 'Height-Width 1:1',
+    heading: "Height-Width 1:1",
     config: `
 - type: iframe
   url: https://embed.windy.com/embed2.html
   aspect_ratio: 100%
-    `
+    `,
   },
 ];
 
@@ -48,10 +48,10 @@ class DemoIframe extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-iframe-card', DemoIframe);
+customElements.define("demo-hui-iframe-card", DemoIframe);

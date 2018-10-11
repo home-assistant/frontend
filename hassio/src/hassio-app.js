@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './hassio-main.js';
-import './resources/hassio-icons.js';
+import "./hassio-main.js";
+import "./resources/hassio-icons.js";
 
 class HassioApp extends PolymerElement {
   static get template() {
@@ -29,13 +29,13 @@ class HassioApp extends PolymerElement {
   ready() {
     super.ready();
     window.setProperties = this.setProperties.bind(this);
-    this.addEventListener('location-changed', () => this._locationChanged());
-    this.addEventListener('hass-open-menu', () => this._menuEvent(true));
-    this.addEventListener('hass-close-menu', () => this._menuEvent(false));
+    this.addEventListener("location-changed", () => this._locationChanged());
+    this.addEventListener("hass-open-menu", () => this._menuEvent(true));
+    this.addEventListener("hass-close-menu", () => this._menuEvent(false));
   }
 
   _menuEvent(shouldOpen) {
-    this.hassioPanel.fire(shouldOpen ? 'hass-open-menu' : 'hass-close-menu');
+    this.hassioPanel.fire(shouldOpen ? "hass-open-menu" : "hass-close-menu");
   }
 
   _locationChanged() {
@@ -43,4 +43,4 @@ class HassioApp extends PolymerElement {
   }
 }
 
-customElements.define('hassio-app', HassioApp);
+customElements.define("hassio-app", HassioApp);

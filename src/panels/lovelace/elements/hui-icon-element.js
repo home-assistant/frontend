@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-icon.js';
+import "../../../components/ha-icon.js";
 
-import ElementClickMixin from '../mixins/element-click-mixin.js';
+import ElementClickMixin from "../mixins/element-click-mixin.js";
 
 /*
  * @appliesMixin ElementClickMixin
@@ -26,21 +26,23 @@ class HuiIconElement extends ElementClickMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      _config: Object
+      _config: Object,
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+    this.addEventListener("click", () =>
+      this.handleClick(this.hass, this._config)
+    );
   }
 
   setConfig(config) {
     if (!config || !config.icon) {
-      throw Error('Error in element configuration');
+      throw Error("Error in element configuration");
     }
 
     this._config = config;
   }
 }
-customElements.define('hui-icon-element', HuiIconElement);
+customElements.define("hui-icon-element", HuiIconElement);

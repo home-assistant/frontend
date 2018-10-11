@@ -9,16 +9,18 @@ export default class FakeHass {
   }
 
   async callService(domain, service, serviceData) {
-    console.log('callService', { domain, service, serviceData });
+    console.log("callService", { domain, service, serviceData });
     return Promise.resolve();
   }
 
   async callWS(msg) {
     const callback = this._wsCommands[msg.type];
-    return callback ? callback(msg) : Promise.reject({
-      code: 'command_not_mocked',
-      message: 'This command is not implemented in the gallery.',
-    });
+    return callback
+      ? callback(msg)
+      : Promise.reject({
+          code: "command_not_mocked",
+          message: "This command is not implemented in the gallery.",
+        });
   }
 
   async sendWS(msg) {
@@ -29,6 +31,6 @@ export default class FakeHass {
     } else {
       console.error(`Unknown command: ${msg.type}`);
     }
-    console.log('sendWS', msg);
+    console.log("sendWS", msg);
   }
 }

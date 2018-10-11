@@ -1,16 +1,16 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
-import computeStateName from '../../common/entity/compute_state_name.js';
-import computeDomain from '../../common/entity/compute_domain.js';
-import isComponentLoaded from '../../common/config/is_component_loaded.js';
+import computeStateName from "../../common/entity/compute_state_name.js";
+import computeDomain from "../../common/entity/compute_domain.js";
+import isComponentLoaded from "../../common/config/is_component_loaded.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -73,12 +73,12 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       _componentLoaded: {
         type: Boolean,
-        computed: '_computeComponentLoaded(hass)'
+        computed: "_computeComponentLoaded(hass)",
       },
 
       registryInfo: {
         type: Object,
-        observer: '_registryInfoChanged',
+        observer: "_registryInfoChanged",
         notify: true,
       },
 
@@ -88,12 +88,12 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeStateName(stateObj) {
-    if (!stateObj) return '';
+    if (!stateObj) return "";
     return computeStateName(stateObj);
   }
 
   _computeComponentLoaded(hass) {
-    return isComponentLoaded(hass, 'config.entity_registry');
+    return isComponentLoaded(hass, "config.entity_registry");
   }
 
   _computeInvalid(entityId) {
@@ -108,20 +108,20 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
       });
     } else {
       this.setProperties({
-        _name: '',
-        _entityId: '',
+        _name: "",
+        _entityId: "",
       });
     }
   }
 
   _backTapped() {
-    this.fire('more-info-page', { page: null });
+    this.fire("more-info-page", { page: null });
   }
 
   async _save() {
     try {
       const info = await this.hass.callWS({
-        type: 'config/entity_registry/update',
+        type: "config/entity_registry/update",
         entity_id: this.stateObj.entity_id,
         name: this._name,
         new_entity_id: this._entityId,
@@ -131,11 +131,11 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       // Keep the more info dialog open at the new entity.
       if (this.stateObj.entity_id !== this._entityId) {
-        this.fire('hass-more-info', { entityId: this._entityId });
+        this.fire("hass-more-info", { entityId: this._entityId });
       }
     } catch (err) {
       alert(`save failed: ${err.message}`);
     }
   }
 }
-customElements.define('more-info-settings', MoreInfoSettings);
+customElements.define("more-info-settings", MoreInfoSettings);

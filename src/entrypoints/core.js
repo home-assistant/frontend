@@ -5,31 +5,34 @@ import {
   subscribeEntities,
   subscribeServices,
   ERR_INVALID_AUTH,
-} from 'home-assistant-js-websocket';
+} from "home-assistant-js-websocket";
 
-import { loadTokens, saveTokens } from '../common/auth/token_storage.js';
-import { subscribePanels } from '../data/ws-panels.js';
-import { subscribeThemes } from '../data/ws-themes.js';
-import { subscribeUser } from '../data/ws-user.js';
+import { loadTokens, saveTokens } from "../common/auth/token_storage.js";
+import { subscribePanels } from "../data/ws-panels.js";
+import { subscribeThemes } from "../data/ws-themes.js";
+import { subscribeUser } from "../data/ws-user.js";
 
 const hassUrl = `${location.protocol}//${location.host}`;
-const isExternal = location.search.includes('external_auth=1');
+const isExternal = location.search.includes("external_auth=1");
 
 const authProm = isExternal
-  ? () => import('../common/auth/external_auth.js')
-    .then(mod => new mod.default(hassUrl))
-  : () => getAuth({
-    hassUrl,
-    saveTokens,
-    loadTokens: () => Promise.resolve(loadTokens()),
-  });
+  ? () =>
+      import("../common/auth/external_auth.js").then(
+        (mod) => new mod.default(hassUrl)
+      )
+  : () =>
+      getAuth({
+        hassUrl,
+        saveTokens,
+        loadTokens: () => Promise.resolve(loadTokens()),
+      });
 
 const connProm = async (auth) => {
   try {
     const conn = await createConnection({ auth });
 
     // Clear url if we have been able to establish a connection
-    if (location.search.includes('auth_callback=1')) {
+    if (location.search.includes("auth_callback=1")) {
       history.replaceState(null, null, location.pathname);
     }
 
@@ -60,11 +63,13 @@ window.hassConnection.then(({ conn }) => {
   subscribeUser(conn, noop);
 });
 
-window.addEventListener('error', (e) => {
-  const homeAssistant = document.querySelector('home-assistant');
+window.addEventListener("error", (e) => {
+  const homeAssistant = document.querySelector("home-assistant");
   if (homeAssistant && homeAssistant.hass && homeAssistant.hass.callService) {
-    homeAssistant.hass.callService('system_log', 'write', {
-      logger: `frontend.${__DEV__ ? 'js_dev' : 'js'}.${__BUILD__}.${__VERSION__.replace('.', '')}`,
+    homeAssistant.hass.callService("system_log", "write", {
+      logger: `frontend.${
+        __DEV__ ? "js_dev" : "js"
+      }.${__BUILD__}.${__VERSION__.replace(".", "")}`,
       message: `${e.filename}:${e.lineno}:${e.colno} ${e.message}`,
     });
   }

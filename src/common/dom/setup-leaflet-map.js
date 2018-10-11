@@ -1,18 +1,21 @@
-import Leaflet from 'leaflet';
+import Leaflet from "leaflet";
 
 // Sets up a Leaflet map on the provided DOM element
 export default function setupLeafletMap(mapElement) {
   const map = Leaflet.map(mapElement);
-  const style = document.createElement('link');
-  style.setAttribute('href', '/static/images/leaflet/leaflet.css');
-  style.setAttribute('rel', 'stylesheet');
+  const style = document.createElement("link");
+  style.setAttribute("href", "/static/images/leaflet/leaflet.css");
+  style.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(style);
   map.setView([51.505, -0.09], 13);
   Leaflet.tileLayer(
-    `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}${Leaflet.Browser.retina ? '@2x.png' : '.png'}`,
+    `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}${
+      Leaflet.Browser.retina ? "@2x.png" : ".png"
+    }`,
     {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: "abcd",
       minZoom: 0,
       maxZoom: 20,
     }

@@ -1,9 +1,9 @@
-import Chart from 'chart.js';
-import 'chartjs-chart-timeline';
+import Chart from "chart.js";
+import "chartjs-chart-timeline";
 
 // This function add a new interaction mode to Chart.js that
 // returns one point for every dataset.
-Chart.Interaction.modes.neareach = function (chart, e, options) {
+Chart.Interaction.modes.neareach = function(chart, e, options) {
   const getRange = {
     x: (a, b) => Math.abs(a.x - b.x),
     y: (a, b) => Math.abs(a.y - b.y),
@@ -11,15 +11,15 @@ Chart.Interaction.modes.neareach = function (chart, e, options) {
     xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
   };
   const getRangeMax = {
-    x: r => r,
-    y: r => r,
-    xy: r => r * r,
+    x: (r) => r,
+    y: (r) => r,
+    xy: (r) => r * r,
   };
   let position;
   if (e.native) {
     position = {
       x: e.x,
-      y: e.y
+      y: e.y,
     };
   } else {
     position = Chart.helpers.getRelativePosition(e, chart);
@@ -28,7 +28,7 @@ Chart.Interaction.modes.neareach = function (chart, e, options) {
   const elementsRange = [];
   const datasets = chart.data.datasets;
   let meta;
-  options.axis = options.axis || 'xy';
+  options.axis = options.axis || "xy";
   const rangeFunc = getRange[options.axis];
   const rangeMaxFunc = getRangeMax[options.axis];
 
@@ -53,7 +53,7 @@ Chart.Interaction.modes.neareach = function (chart, e, options) {
       }
     }
   }
-  const ret = elements.filter(n => n !== undefined);
+  const ret = elements.filter((n) => n !== undefined);
   return ret;
 };
 

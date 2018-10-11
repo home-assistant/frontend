@@ -1,23 +1,23 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
 
-import '../../components/ha-menu-button.js';
-import '../../components/entity/ha-entity-picker.js';
-import '../../resources/ha-date-picker-style.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-menu-button.js";
+import "../../components/entity/ha-entity-picker.js";
+import "../../resources/ha-date-picker-style.js";
+import "../../resources/ha-style.js";
 
-import './ha-logbook-data.js';
-import './ha-logbook.js';
+import "./ha-logbook-data.js";
+import "./ha-logbook.js";
 
-import formatDate from '../../common/datetime/format_date.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import formatDate from "../../common/datetime/format_date.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -156,11 +156,13 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
       // ISO8601 formatted date string
       _currentDate: {
         type: String,
-        value: function () {
+        value: function() {
           const value = new Date();
-          const today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
-          return today.toISOString().split('T')[0];
-        }
+          const today = new Date(
+            Date.UTC(value.getFullYear(), value.getMonth(), value.getDate())
+          );
+          return today.toISOString().split("T")[0];
+        },
       },
 
       _periodIndex: {
@@ -170,12 +172,12 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
       _entityId: {
         type: String,
-        value: '',
+        value: "",
       },
 
       entityId: {
         type: String,
-        value: '',
+        value: "",
         readOnly: true,
       },
 
@@ -196,14 +198,15 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
     // We are unable to parse date because we use intl api to render date
-    this.$.picker.set('i18n.parseDate', null);
-    this.$.picker.set('i18n.formatDate', date =>
-      formatDate(new Date(date.year, date.month, date.day), this.language));
+    this.$.picker.set("i18n.parseDate", null);
+    this.$.picker.set("i18n.formatDate", (date) =>
+      formatDate(new Date(date.year, date.month, date.day), this.language)
+    );
   }
 
   _computeFilterDate(_currentDate) {
     if (!_currentDate) return undefined;
-    var parts = _currentDate.split('-');
+    var parts = _currentDate.split("-");
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]).toISOString();
   }
@@ -214,7 +217,8 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         return 3;
       case 2:
         return 7;
-      default: return 1;
+      default:
+        return 1;
     }
   }
 
@@ -223,8 +227,8 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   }
 
   refreshLogbook() {
-    this.shadowRoot.querySelector('ha-logbook-data').refreshLogbook();
+    this.shadowRoot.querySelector("ha-logbook-data").refreshLogbook();
   }
 }
 
-customElements.define('ha-panel-logbook', HaPanelLogbook);
+customElements.define("ha-panel-logbook", HaPanelLogbook);

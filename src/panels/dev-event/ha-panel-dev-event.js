@@ -1,17 +1,17 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-input/paper-textarea.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
-import './events-list.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
+import "./events-list.js";
+import EventsMixin from "../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -89,12 +89,12 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
 
       eventType: {
         type: String,
-        value: '',
+        value: "",
       },
 
       eventData: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
@@ -110,23 +110,23 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
       eventData = this.eventData ? JSON.parse(this.eventData) : {};
     } catch (err) {
       /* eslint-disable no-alert */
-      alert('Error parsing JSON: ' + err);
+      alert("Error parsing JSON: " + err);
       /* eslint-enable no-alert */
       return;
     }
 
-    this.hass.callApi('POST', 'events/' + this.eventType, eventData)
-      .then(function () {
-        this.fire('hass-notification', {
-          message: 'Event ' + this.eventType + ' successful fired!',
+    this.hass.callApi("POST", "events/" + this.eventType, eventData).then(
+      function() {
+        this.fire("hass-notification", {
+          message: "Event " + this.eventType + " successful fired!",
         });
-      }.bind(this));
+      }.bind(this)
+    );
   }
 
   computeFormClasses(narrow) {
-    return narrow
-      ? 'content fit' : 'content fit layout horizontal';
+    return narrow ? "content fit" : "content fit layout horizontal";
   }
 }
 
-customElements.define('ha-panel-dev-event', HaPanelDevEvent);
+customElements.define("ha-panel-dev-event", HaPanelDevEvent);

@@ -1,7 +1,7 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HassioSupervisorLog extends PolymerElement {
   static get template() {
@@ -38,12 +38,14 @@ class HassioSupervisorLog extends PolymerElement {
   }
 
   loadData() {
-    this.hass.callApi('get', 'hassio/supervisor/logs')
-      .then((info) => {
+    this.hass.callApi("get", "hassio/supervisor/logs").then(
+      (info) => {
         this.log = info;
-      }, () => {
-        this.log = 'Error fetching logs';
-      });
+      },
+      () => {
+        this.log = "Error fetching logs";
+      }
+    );
   }
 
   refreshTapped() {
@@ -51,4 +53,4 @@ class HassioSupervisorLog extends PolymerElement {
   }
 }
 
-customElements.define('hassio-supervisor-log', HassioSupervisorLog);
+customElements.define("hassio-supervisor-log", HassioSupervisorLog);

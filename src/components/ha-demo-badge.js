@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './ha-label-badge.js';
+import "./ha-label-badge.js";
 
 class HaDemoBadge extends PolymerElement {
   static get template() {
@@ -17,4 +17,4 @@ class HaDemoBadge extends PolymerElement {
   }
 }
 
-customElements.define('ha-demo-badge', HaDemoBadge);
+customElements.define("ha-demo-badge", HaDemoBadge);

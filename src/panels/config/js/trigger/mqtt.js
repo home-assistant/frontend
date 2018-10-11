@@ -1,13 +1,13 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-input/paper-input.js';
+import { h, Component } from "preact";
+import "@polymer/paper-input/paper-input.js";
 
-import { onChangeEvent } from '../../../../common/preact/event.js';
+import { onChangeEvent } from "../../../../common/preact/event.js";
 
 export default class MQTTTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'trigger');
+    this.onChange = onChangeEvent.bind(this, "trigger");
   }
 
   /* eslint-disable camelcase */
@@ -16,13 +16,17 @@ export default class MQTTTrigger extends Component {
     return (
       <div>
         <paper-input
-          label={localize('ui.panel.config.automation.editor.triggers.type.mqtt.topic')}
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type.mqtt.topic"
+          )}
           name="topic"
           value={topic}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.editor.triggers.type.mqtt.payload')}
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type.mqtt.payload"
+          )}
           name="payload"
           value={payload}
           onvalue-changed={this.onChange}
@@ -33,5 +37,5 @@ export default class MQTTTrigger extends Component {
 }
 
 MQTTTrigger.defaultConfig = {
-  topic: ''
+  topic: "",
 };

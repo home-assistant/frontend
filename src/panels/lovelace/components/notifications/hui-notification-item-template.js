@@ -1,10 +1,10 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../../components/ha-card.js';
+import "../../../../components/ha-card.js";
 
 export class HuiNotificationItemTemplate extends PolymerElement {
   static get template() {
@@ -43,4 +43,7 @@ export class HuiNotificationItemTemplate extends PolymerElement {
     `;
   }
 }
-customElements.define('hui-notification-item-template', HuiNotificationItemTemplate);
+customElements.define(
+  "hui-notification-item-template",
+  HuiNotificationItemTemplate
+);

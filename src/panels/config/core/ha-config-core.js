@@ -1,15 +1,15 @@
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../layouts/hass-subpage.js';
-import '../../../resources/ha-style.js';
+import "../../../layouts/hass-subpage.js";
+import "../../../resources/ha-style.js";
 
-import './ha-config-section-core.js';
+import "./ha-config-section-core.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -49,8 +49,8 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
   }
 
   computeClasses(isWide) {
-    return isWide ? 'content' : 'content narrow';
+    return isWide ? "content" : "content narrow";
   }
 }
 
-customElements.define('ha-config-core', HaConfigCore);
+customElements.define("ha-config-core", HaConfigCore);

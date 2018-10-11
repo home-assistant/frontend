@@ -1,21 +1,20 @@
-import fecha from 'fecha';
+import fecha from "fecha";
 
 // Check for support of native locale string options
 function toLocaleTimeStringSupportsOptions() {
   try {
-    new Date().toLocaleTimeString('i');
+    new Date().toLocaleTimeString("i");
   } catch (e) {
-    return e.name === 'RangeError';
+    return e.name === "RangeError";
   }
   return false;
 }
 
 export default (toLocaleTimeStringSupportsOptions()
-  ? function (dateObj, locales) {
-    return dateObj.toLocaleTimeString(
-      locales,
-      { hour: 'numeric', minute: '2-digit' }
-    );
-  } : function (dateObj, locales) { // eslint-disable-line no-unused-vars
-    return fecha.format(dateObj, 'shortTime');
-  });
+  ? (dateObj, locales) =>
+      dateObj.toLocaleTimeString(locales, {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+  : // eslint-disable-next-line no-unused-vars
+    (dateObj, locales) => fecha.format(dateObj, "shortTime"));

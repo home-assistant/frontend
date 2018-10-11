@@ -1,30 +1,28 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-input/paper-input.js';
-import '../../../../components/ha-textarea.js';
-import '../../../../components/entity/ha-entity-picker.js';
+import { h, Component } from "preact";
+import "@polymer/paper-input/paper-input.js";
+import "../../../../components/ha-textarea.js";
+import "../../../../components/entity/ha-entity-picker.js";
 
-import { onChangeEvent } from '../../../../common/preact/event.js';
+import { onChangeEvent } from "../../../../common/preact/event.js";
 
 export default class NumericStateCondition extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'condition');
+    this.onChange = onChangeEvent.bind(this, "condition");
     this.entityPicked = this.entityPicked.bind(this);
   }
 
   entityPicked(ev) {
-    this.props.onChange(this.props.index, Object.assign(
-      {}, this.props.condition,
-      { entity_id: ev.target.value },
-    ));
+    this.props.onChange(
+      this.props.index,
+      Object.assign({}, this.props.condition, { entity_id: ev.target.value })
+    );
   }
 
   /* eslint-disable camelcase */
   render({ condition, hass, localize }) {
-    const {
-      value_template, entity_id, below, above
-    } = condition;
+    const { value_template, entity_id, below, above } = condition;
     return (
       <div>
         <ha-entity-picker
@@ -34,19 +32,25 @@ export default class NumericStateCondition extends Component {
           allowCustomEntity
         />
         <paper-input
-          label={localize('ui.panel.config.automation.editor.conditions.type.numeric_state.above')}
+          label={localize(
+            "ui.panel.config.automation.editor.conditions.type.numeric_state.above"
+          )}
           name="above"
           value={above}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.editor.conditions.type.numeric_state.below')}
+          label={localize(
+            "ui.panel.config.automation.editor.conditions.type.numeric_state.below"
+          )}
           name="below"
           value={below}
           onvalue-changed={this.onChange}
         />
         <ha-textarea
-          label={localize('ui.panel.config.automation.editor.conditions.type.numeric_state.value_template')}
+          label={localize(
+            "ui.panel.config.automation.editor.conditions.type.numeric_state.value_template"
+          )}
           name="value_template"
           value={value_template}
           onvalue-changed={this.onChange}
@@ -57,5 +61,5 @@ export default class NumericStateCondition extends Component {
 }
 
 NumericStateCondition.defaultConfig = {
-  entity_id: '',
+  entity_id: "",
 };

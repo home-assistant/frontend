@@ -1,15 +1,15 @@
-import 'web-animations-js/web-animations-next-lite.min.js';
+import "web-animations-js/web-animations-next-lite.min.js";
 
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/resources/ha-style.js';
-import EventsMixin from '../../../src/mixins/events-mixin.js';
+import "../../../src/resources/ha-style.js";
+import EventsMixin from "../../../src/mixins/events-mixin.js";
 
 class HassioAddonAudio extends EventsMixin(PolymerElement) {
   static get template() {
@@ -64,7 +64,7 @@ class HassioAddonAudio extends EventsMixin(PolymerElement) {
       hass: Object,
       addon: {
         type: Object,
-        observer: 'addonChanged'
+        observer: "addonChanged",
       },
       inputDevices: Array,
       outputDevices: Array,
@@ -76,40 +76,55 @@ class HassioAddonAudio extends EventsMixin(PolymerElement) {
 
   addonChanged(addon) {
     this.setProperties({
-      selectedInput: addon.audio_input || 'null',
-      selectedOutput: addon.audio_output || 'null'
+      selectedInput: addon.audio_input || "null",
+      selectedOutput: addon.audio_output || "null",
     });
     if (this.outputDevices) return;
 
-    const noDevice = [{ device: 'null', name: '-' }];
-    this.hass.callApi('get', 'hassio/hardware/audio').then((resp) => {
-      const dev = resp.data.audio;
-      const input = Object.keys(dev.input).map(key => ({ device: key, name: dev.input[key] }));
-      const output = Object.keys(dev.output).map(key => ({ device: key, name: dev.output[key] }));
-      this.setProperties({
-        inputDevices: noDevice.concat(input),
-        outputDevices: noDevice.concat(output)
-      });
-    }, () => {
-      this.setProperties({
-        inputDevices: noDevice,
-        outputDevices: noDevice
-      });
-    });
+    const noDevice = [{ device: "null", name: "-" }];
+    this.hass.callApi("get", "hassio/hardware/audio").then(
+      (resp) => {
+        const dev = resp.data.audio;
+        const input = Object.keys(dev.input).map((key) => ({
+          device: key,
+          name: dev.input[key],
+        }));
+        const output = Object.keys(dev.output).map((key) => ({
+          device: key,
+          name: dev.output[key],
+        }));
+        this.setProperties({
+          inputDevices: noDevice.concat(input),
+          outputDevices: noDevice.concat(output),
+        });
+      },
+      () => {
+        this.setProperties({
+          inputDevices: noDevice,
+          outputDevices: noDevice,
+        });
+      }
+    );
   }
 
   _saveSettings() {
     this.error = null;
     const path = `hassio/addons/${this.addon.slug}/options`;
-    this.hass.callApi('post', path, {
-      audio_input: this.selectedInput === 'null' ? null : this.selectedInput,
-      audio_output: this.selectedOutput === 'null' ? null : this.selectedOutput
-    }).then(() => {
-      this.fire('hass-api-called', { success: true, path: path });
-    }, (resp) => {
-      this.error = resp.body.message;
-    });
+    this.hass
+      .callApi("post", path, {
+        audio_input: this.selectedInput === "null" ? null : this.selectedInput,
+        audio_output:
+          this.selectedOutput === "null" ? null : this.selectedOutput,
+      })
+      .then(
+        () => {
+          this.fire("hass-api-called", { success: true, path: path });
+        },
+        (resp) => {
+          this.error = resp.body.message;
+        }
+      );
   }
 }
 
-customElements.define('hassio-addon-audio', HassioAddonAudio);
+customElements.define("hassio-addon-audio", HassioAddonAudio);

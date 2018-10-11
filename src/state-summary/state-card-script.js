@@ -1,12 +1,12 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-button/paper-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/ha-entity-toggle.js';
-import '../components/entity/state-info.js';
+import "../components/entity/ha-entity-toggle.js";
+import "../components/entity/state-info.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -58,16 +58,15 @@ class StateCardScript extends LocalizeMixin(PolymerElement) {
       inDialog: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 
   fireScript(ev) {
     ev.stopPropagation();
-    this.hass.callService(
-      'script', 'turn_on',
-      { entity_id: this.stateObj.entity_id }
-    );
+    this.hass.callService("script", "turn_on", {
+      entity_id: this.stateObj.entity_id,
+    });
   }
 }
-customElements.define('state-card-script', StateCardScript);
+customElements.define("state-card-script", StateCardScript);

@@ -1,22 +1,22 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-input/paper-input.js';
-import '../../../../components/entity/ha-entity-picker.js';
+import { h, Component } from "preact";
+import "@polymer/paper-input/paper-input.js";
+import "../../../../components/entity/ha-entity-picker.js";
 
-import { onChangeEvent } from '../../../../common/preact/event.js';
+import { onChangeEvent } from "../../../../common/preact/event.js";
 
 export default class StateCondition extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'condition');
+    this.onChange = onChangeEvent.bind(this, "condition");
     this.entityPicked = this.entityPicked.bind(this);
   }
 
   entityPicked(ev) {
-    this.props.onChange(this.props.index, Object.assign(
-      {}, this.props.condition,
-      { entity_id: ev.target.value },
-    ));
+    this.props.onChange(
+      this.props.index,
+      Object.assign({}, this.props.condition, { entity_id: ev.target.value })
+    );
   }
 
   /* eslint-disable camelcase */
@@ -32,7 +32,9 @@ export default class StateCondition extends Component {
           allowCustomEntity
         />
         <paper-input
-          label={localize('ui.panel.config.automation.editor.conditions.type.state.state')}
+          label={localize(
+            "ui.panel.config.automation.editor.conditions.type.state.state"
+          )}
           name="state"
           value={state}
           onvalue-changed={this.onChange}
@@ -44,6 +46,6 @@ export default class StateCondition extends Component {
 }
 
 StateCondition.defaultConfig = {
-  entity_id: '',
-  state: '',
+  entity_id: "",
+  state: "",
 };

@@ -1,8 +1,8 @@
-import { assert } from 'chai';
+import { assert } from "chai";
 
-import canToggleDomain from '../../../src/common/entity/can_toggle_domain';
+import canToggleDomain from "../../../src/common/entity/can_toggle_domain";
 
-describe('canToggleDomain', () => {
+describe("canToggleDomain", () => {
   const hass = {
     services: {
       light: {
@@ -19,19 +19,19 @@ describe('canToggleDomain', () => {
     },
   };
 
-  it('Detects lights toggle', () => {
-    assert.isTrue(canToggleDomain(hass, 'light'));
+  it("Detects lights toggle", () => {
+    assert.isTrue(canToggleDomain(hass, "light"));
   });
 
-  it('Detects locks toggle', () => {
-    assert.isTrue(canToggleDomain(hass, 'lock'));
+  it("Detects locks toggle", () => {
+    assert.isTrue(canToggleDomain(hass, "lock"));
   });
 
-  it('Detects sensors do not toggle', () => {
-    assert.isFalse(canToggleDomain(hass, 'sensor'));
+  it("Detects sensors do not toggle", () => {
+    assert.isFalse(canToggleDomain(hass, "sensor"));
   });
 
-  it('Detects binary sensors do not toggle', () => {
-    assert.isFalse(canToggleDomain(hass, 'binary_sensor'));
+  it("Detects binary sensors do not toggle", () => {
+    assert.isFalse(canToggleDomain(hass, "binary_sensor"));
   });
 });

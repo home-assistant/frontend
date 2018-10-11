@@ -1,27 +1,26 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-ripple/paper-ripple.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-ripple/paper-ripple.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-progress-button.js';
-import '../../../layouts/hass-subpage.js';
-import '../../../resources/ha-style.js';
+import "../../../components/buttons/ha-progress-button.js";
+import "../../../layouts/hass-subpage.js";
+import "../../../resources/ha-style.js";
 
-import '../ha-config-section.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import "../ha-config-section.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
 
 /*
  * @appliesMixin NavigateMixin
  * @appliesMixin EventsMixin
  */
-class HaConfigCloudLogin extends
-  NavigateMixin(EventsMixin(PolymerElement)) {
+class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -131,7 +130,7 @@ class HaConfigCloudLogin extends
       },
       _password: {
         type: String,
-        value: '',
+        value: "",
       },
       _requestInProgress: {
         type: Boolean,
@@ -146,17 +145,16 @@ class HaConfigCloudLogin extends
   }
 
   static get observers() {
-    return [
-      '_inputChanged(email, _password)'
-    ];
+    return ["_inputChanged(email, _password)"];
   }
 
   connectedCallback() {
     super.connectedCallback();
     if (this.flashMessage) {
       // Wait for DOM to be drawn
-      requestAnimationFrame(() => requestAnimationFrame(() =>
-        this.$.flashRipple.simulatedRipple()));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => this.$.flashRipple.simulatedRipple())
+      );
     }
   }
 
@@ -177,7 +175,7 @@ class HaConfigCloudLogin extends
   _handleLogin() {
     let invalid = false;
 
-    if (!this.email || !this.email.includes('@')) {
+    if (!this.email || !this.email.includes("@")) {
       this.$.email.invalid = true;
       this.$.email.focus();
       invalid = true;
@@ -196,54 +194,64 @@ class HaConfigCloudLogin extends
 
     this._requestInProgress = true;
 
-    this.hass.callApi('post', 'cloud/login', {
-      email: this.email,
-      password: this._password,
-    }).then(() => {
-      this.fire('ha-refresh-cloud-status');
-      this.setProperties({
-        email: '',
-        _password: '',
-      });
-    }, (err) => {
-      // Do this before setProperties because changing it clears errors.
-      this._password = '';
+    this.hass
+      .callApi("post", "cloud/login", {
+        email: this.email,
+        password: this._password,
+      })
+      .then(
+        () => {
+          this.fire("ha-refresh-cloud-status");
+          this.setProperties({
+            email: "",
+            _password: "",
+          });
+        },
+        (err) => {
+          // Do this before setProperties because changing it clears errors.
+          this._password = "";
 
-      const errCode = err && err.body && err.body.code;
-      if (errCode === 'PasswordChangeRequired') {
-        alert('You need to change your password before logging in.');
-        this.navigate('/config/cloud/forgot-password');
-        return;
-      }
+          const errCode = err && err.body && err.body.code;
+          if (errCode === "PasswordChangeRequired") {
+            alert("You need to change your password before logging in.");
+            this.navigate("/config/cloud/forgot-password");
+            return;
+          }
 
-      const props = {
-        _requestInProgress: false,
-        _error: (err && err.body && err.body.message) ? err.body.message : 'Unknown error',
-      };
+          const props = {
+            _requestInProgress: false,
+            _error:
+              err && err.body && err.body.message
+                ? err.body.message
+                : "Unknown error",
+          };
 
-      if (errCode === 'UserNotConfirmed') {
-        props._error = 'You need to confirm your email before logging in.';
-      }
+          if (errCode === "UserNotConfirmed") {
+            props._error = "You need to confirm your email before logging in.";
+          }
 
-      this.setProperties(props);
-      this.$.email.focus();
-    });
+          this.setProperties(props);
+          this.$.email.focus();
+        }
+      );
   }
 
   _handleRegister() {
-    this.flashMessage = '';
-    this.navigate('/config/cloud/register');
+    this.flashMessage = "";
+    this.navigate("/config/cloud/register");
   }
 
   _handleForgotPassword() {
-    this.flashMessage = '';
-    this.navigate('/config/cloud/forgot-password');
+    this.flashMessage = "";
+    this.navigate("/config/cloud/forgot-password");
   }
 
   _dismissFlash() {
     // give some time to let the ripple finish.
-    setTimeout(() => { this.flashMessage = ''; }, 200);
+    setTimeout(() => {
+      this.flashMessage = "";
+    }, 200);
   }
 }
 
-customElements.define('ha-config-cloud-login', HaConfigCloudLogin);
+customElements.define("ha-config-cloud-login", HaConfigCloudLogin);

@@ -1,13 +1,13 @@
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import hassAttributeUtil from '../../../util/hass-attributes-util.js';
-import './ha-form-customize-attributes.js';
+import hassAttributeUtil from "../../../util/hass-attributes-util.js";
+import "./ha-form-customize-attributes.js";
 
-import computeStateDomain from '../../../common/entity/compute_state_domain';
+import computeStateDomain from "../../../common/entity/compute_state_domain";
 
 class HaFormCustomize extends PolymerElement {
   static get template() {
@@ -75,19 +75,20 @@ class HaFormCustomize extends PolymerElement {
 
       localAttributes: {
         type: Array,
-        computed: 'computeLocalAttributes(localConfig)',
+        computed: "computeLocalAttributes(localConfig)",
       },
       hasLocalAttributes: Boolean,
 
       globalAttributes: {
         type: Array,
-        computed: 'computeGlobalAttributes(localConfig, globalConfig)',
+        computed: "computeGlobalAttributes(localConfig, globalConfig)",
       },
       hasGlobalAttributes: Boolean,
 
       existingAttributes: {
         type: Array,
-        computed: 'computeExistingAttributes(localConfig, globalConfig, entity)',
+        computed:
+          "computeExistingAttributes(localConfig, globalConfig, entity)",
       },
       hasExistingAttributes: Boolean,
 
@@ -101,7 +102,7 @@ class HaFormCustomize extends PolymerElement {
       selectedNewAttribute: {
         type: Number,
         value: -1,
-        observer: 'selectedNewAttributeObserver',
+        observer: "selectedNewAttributeObserver",
       },
 
       localConfig: Object,
@@ -111,24 +112,28 @@ class HaFormCustomize extends PolymerElement {
 
   static get observers() {
     return [
-      'attributesObserver(localAttributes.*, globalAttributes.*, existingAttributes.*, newAttributes.*)',
+      "attributesObserver(localAttributes.*, globalAttributes.*, existingAttributes.*, newAttributes.*)",
     ];
   }
 
   _initOpenObject(key, value, secondary, config) {
-    return Object.assign({
-      attribute: key,
-      value: value,
-      closed: false,
-      domain: computeStateDomain(this.entity),
-      secondary: secondary,
-      description: key,
-    }, config);
+    return Object.assign(
+      {
+        attribute: key,
+        value: value,
+        closed: false,
+        domain: computeStateDomain(this.entity),
+        secondary: secondary,
+        description: key,
+      },
+      config
+    );
   }
 
   loadEntity(entity) {
     this.entity = entity;
-    return this.hass.callApi('GET', 'config/customize/config/' + entity.entity_id)
+    return this.hass
+      .callApi("GET", "config/customize/config/" + entity.entity_id)
       .then((data) => {
         this.localConfig = data.local;
         this.globalConfig = data.global;
@@ -138,27 +143,43 @@ class HaFormCustomize extends PolymerElement {
 
   saveEntity() {
     const data = {};
-    const attrs = this.localAttributes
-      .concat(this.globalAttributes, this.existingAttributes, this.newAttributes);
+    const attrs = this.localAttributes.concat(
+      this.globalAttributes,
+      this.existingAttributes,
+      this.newAttributes
+    );
     attrs.forEach((attr) => {
-      if (attr.closed || attr.secondary || !attr.attribute || !attr.value) return;
-      const value = attr.type === 'json' ? JSON.parse(attr.value) : attr.value;
+      if (attr.closed || attr.secondary || !attr.attribute || !attr.value)
+        return;
+      const value = attr.type === "json" ? JSON.parse(attr.value) : attr.value;
       if (!value) return;
       data[attr.attribute] = value;
     });
 
     const objectId = this.entity.entity_id;
-    return this.hass.callApi('POST', 'config/customize/config/' + objectId, data);
+    return this.hass.callApi(
+      "POST",
+      "config/customize/config/" + objectId,
+      data
+    );
   }
 
   _computeSingleAttribute(key, value, secondary) {
-    const config = hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key]
-        || { type: hassAttributeUtil.UNKNOWN_TYPE };
-    return this._initOpenObject(key, config.type === 'json' ? JSON.stringify(value) : value, secondary, config);
+    const config = hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key] || {
+      type: hassAttributeUtil.UNKNOWN_TYPE,
+    };
+    return this._initOpenObject(
+      key,
+      config.type === "json" ? JSON.stringify(value) : value,
+      secondary,
+      config
+    );
   }
 
   _computeAttributes(config, keys, secondary) {
-    return keys.map(key => this._computeSingleAttribute(key, config[key], secondary));
+    return keys.map((key) =>
+      this._computeSingleAttribute(key, config[key], secondary)
+    );
   }
 
   computeLocalAttributes(localConfig) {
@@ -171,7 +192,9 @@ class HaFormCustomize extends PolymerElement {
   computeGlobalAttributes(localConfig, globalConfig) {
     if (!localConfig || !globalConfig) return [];
     const localKeys = Object.keys(localConfig);
-    const globalKeys = Object.keys(globalConfig).filter(key => !localKeys.includes(key));
+    const globalKeys = Object.keys(globalConfig).filter(
+      (key) => !localKeys.includes(key)
+    );
     return this._computeAttributes(globalConfig, globalKeys, true);
   }
 
@@ -179,33 +202,47 @@ class HaFormCustomize extends PolymerElement {
     if (!localConfig || !globalConfig || !entity) return [];
     const localKeys = Object.keys(localConfig);
     const globalKeys = Object.keys(globalConfig);
-    const entityKeys = Object.keys(entity.attributes)
-      .filter(key => !localKeys.includes(key) && !globalKeys.includes(key));
+    const entityKeys = Object.keys(entity.attributes).filter(
+      (key) => !localKeys.includes(key) && !globalKeys.includes(key)
+    );
     return this._computeAttributes(entity.attributes, entityKeys, true);
   }
 
   computeShowWarning(localConfig, globalConfig) {
     if (!localConfig || !globalConfig) return false;
-    return Object.keys(localConfig)
-      .some(key => JSON.stringify(globalConfig[key]) !== JSON.stringify(localConfig[key]));
+    return Object.keys(localConfig).some(
+      (key) =>
+        JSON.stringify(globalConfig[key]) !== JSON.stringify(localConfig[key])
+    );
   }
 
   filterFromAttributes(attributes) {
-    return key => !attributes || attributes.every(attr => attr.attribute !== key || attr.closed);
+    return (key) =>
+      !attributes ||
+      attributes.every((attr) => attr.attribute !== key || attr.closed);
   }
 
-  getNewAttributesOptions(localAttributes, globalAttributes, existingAttributes, newAttributes) {
+  getNewAttributesOptions(
+    localAttributes,
+    globalAttributes,
+    existingAttributes,
+    newAttributes
+  ) {
     const knownKeys = Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES)
       .filter((key) => {
         const conf = hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
-        return conf && (!conf.domains || !this.entity
-                              || conf.domains.includes(computeStateDomain(this.entity)));
+        return (
+          conf &&
+          (!conf.domains ||
+            !this.entity ||
+            conf.domains.includes(computeStateDomain(this.entity)))
+        );
       })
       .filter(this.filterFromAttributes(localAttributes))
       .filter(this.filterFromAttributes(globalAttributes))
       .filter(this.filterFromAttributes(existingAttributes))
       .filter(this.filterFromAttributes(newAttributes));
-    return knownKeys.sort().concat('Other');
+    return knownKeys.sort().concat("Other");
   }
 
   selectedNewAttributeObserver(selected) {
@@ -213,49 +250,63 @@ class HaFormCustomize extends PolymerElement {
     const option = this.newAttributesOptions[selected];
     if (selected === this.newAttributesOptions.length - 1) {
       // The "Other" option.
-      const attr = this._initOpenObject('', '', false /* secondary */, { type: hassAttributeUtil.ADD_TYPE });
-      this.push('newAttributes', attr);
+      const attr = this._initOpenObject("", "", false /* secondary */, {
+        type: hassAttributeUtil.ADD_TYPE,
+      });
+      this.push("newAttributes", attr);
       this.selectedNewAttribute = -1;
       return;
     }
-    let result = this.localAttributes.findIndex(attr => attr.attribute === option);
+    let result = this.localAttributes.findIndex(
+      (attr) => attr.attribute === option
+    );
     if (result >= 0) {
-      this.set('localAttributes.' + result + '.closed', false);
+      this.set("localAttributes." + result + ".closed", false);
       this.selectedNewAttribute = -1;
       return;
     }
-    result = this.globalAttributes.findIndex(attr => attr.attribute === option);
+    result = this.globalAttributes.findIndex(
+      (attr) => attr.attribute === option
+    );
     if (result >= 0) {
-      this.set('globalAttributes.' + result + '.closed', false);
+      this.set("globalAttributes." + result + ".closed", false);
       this.selectedNewAttribute = -1;
       return;
     }
-    result = this.existingAttributes.findIndex(attr => attr.attribute === option);
+    result = this.existingAttributes.findIndex(
+      (attr) => attr.attribute === option
+    );
     if (result >= 0) {
-      this.set('existingAttributes.' + result + '.closed', false);
+      this.set("existingAttributes." + result + ".closed", false);
       this.selectedNewAttribute = -1;
       return;
     }
-    result = this.newAttributes.findIndex(attr => attr.attribute === option);
+    result = this.newAttributes.findIndex((attr) => attr.attribute === option);
     if (result >= 0) {
-      this.set('newAttributes.' + result + '.closed', false);
+      this.set("newAttributes." + result + ".closed", false);
       this.selectedNewAttribute = -1;
       return;
     }
-    const attr = this._computeSingleAttribute(option, '', false /* secondary */);
-    this.push('newAttributes', attr);
+    const attr = this._computeSingleAttribute(
+      option,
+      "",
+      false /* secondary */
+    );
+    this.push("newAttributes", attr);
     this.selectedNewAttribute = -1;
   }
 
   attributesObserver() {
-    this.hasLocalAttributes = (this.localAttributes
-                               && this.localAttributes.some(attr => !attr.closed));
-    this.hasGlobalAttributes = (this.globalAttributes
-                                && this.globalAttributes.some(attr => !attr.closed));
-    this.hasExistingAttributes = (this.existingAttributes
-                                  && this.existingAttributes.some(attr => !attr.closed));
-    this.hasNewAttributes = (this.newAttributes
-                             && this.newAttributes.some(attr => !attr.closed));
+    this.hasLocalAttributes =
+      this.localAttributes && this.localAttributes.some((attr) => !attr.closed);
+    this.hasGlobalAttributes =
+      this.globalAttributes &&
+      this.globalAttributes.some((attr) => !attr.closed);
+    this.hasExistingAttributes =
+      this.existingAttributes &&
+      this.existingAttributes.some((attr) => !attr.closed);
+    this.hasNewAttributes =
+      this.newAttributes && this.newAttributes.some((attr) => !attr.closed);
     this.newAttributesOptions = this.getNewAttributesOptions(
       this.localAttributes,
       this.globalAttributes,
@@ -264,4 +315,4 @@ class HaFormCustomize extends PolymerElement {
     );
   }
 }
-customElements.define('ha-form-customize', HaFormCustomize);
+customElements.define("ha-form-customize", HaFormCustomize);

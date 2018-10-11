@@ -1,10 +1,10 @@
-import { h, Component } from 'preact';
+import { h, Component } from "preact";
 
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import '../ha-config-section.js';
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-input.js";
+import "../ha-config-section.js";
 
-import Script from './script/index.js';
+import Script from "./script/index.js";
 
 export default class ScriptEditor extends Component {
   constructor() {
@@ -15,17 +15,15 @@ export default class ScriptEditor extends Component {
   }
 
   onChange(ev) {
-    this.props.onChange(Object.assign(
-      {}, this.props.script,
-      { [ev.target.name]: ev.target.value }
-    ));
+    this.props.onChange(
+      Object.assign({}, this.props.script, {
+        [ev.target.name]: ev.target.value,
+      })
+    );
   }
 
   sequenceChanged(sequence) {
-    this.props.onChange(Object.assign(
-      {}, this.props.script,
-      { sequence },
-    ));
+    this.props.onChange(Object.assign({}, this.props.script, { sequence }));
   }
 
   render({ script, isWide, hass, localize }) {
@@ -34,12 +32,12 @@ export default class ScriptEditor extends Component {
     return (
       <div>
         <ha-config-section is-wide={isWide}>
-          <span slot='header'>{alias}</span>
-          <span slot='introduction'>
+          <span slot="header">{alias}</span>
+          <span slot="introduction">
             Use scripts to execute a sequence of actions.
           </span>
           <paper-card>
-            <div class='card-content'>
+            <div class="card-content">
               <paper-input
                 label="Name"
                 name="alias"
@@ -51,12 +49,14 @@ export default class ScriptEditor extends Component {
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
-          <span slot='header'>Sequence</span>
-          <span slot='introduction'>
+          <span slot="header">Sequence</span>
+          <span slot="introduction">
             The sequence of actions of this script.
-            <p><a href="https://home-assistant.io/docs/scripts/" target="_blank">
-              Learn more about available actions.
-            </a></p>
+            <p>
+              <a href="https://home-assistant.io/docs/scripts/" target="_blank">
+                Learn more about available actions.
+              </a>
+            </p>
           </span>
           <Script
             script={sequence}

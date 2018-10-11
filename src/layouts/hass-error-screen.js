@@ -1,8 +1,8 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-button/paper-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HassErrorScreen extends PolymerElement {
   static get template() {
@@ -38,12 +38,12 @@ class HassErrorScreen extends PolymerElement {
     return {
       title: {
         type: String,
-        value: 'Home Assistant',
+        value: "Home Assistant",
       },
 
       error: {
         type: String,
-        value: 'Oops! It looks like something went wrong.'
+        value: "Oops! It looks like something went wrong.",
       },
     };
   }
@@ -53,4 +53,4 @@ class HassErrorScreen extends PolymerElement {
   }
 }
 
-customElements.define('hass-error-screen', HassErrorScreen);
+customElements.define("hass-error-screen", HassErrorScreen);

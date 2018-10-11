@@ -1,75 +1,70 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import getEntity from '../data/entity.js';
-import provideHass from '../data/provide_hass.js';
-import '../components/demo-cards.js';
+import getEntity from "../data/entity.js";
+import provideHass from "../data/provide_hass.js";
+import "../components/demo-cards.js";
 
 const ENTITIES = [
-  getEntity('light', 'bed_light', 'on', {
-    friendly_name: 'Bed Light'
+  getEntity("light", "bed_light", "on", {
+    friendly_name: "Bed Light",
   }),
-  getEntity('group', 'kitchen', 'on', {
-    entity_id: [
-      'light.bed_light',
-    ],
+  getEntity("group", "kitchen", "on", {
+    entity_id: ["light.bed_light"],
     order: 8,
-    friendly_name: 'Kitchen'
+    friendly_name: "Kitchen",
   }),
-  getEntity('lock', 'kitchen_door', 'locked', {
-    friendly_name: 'Kitchen Door'
+  getEntity("lock", "kitchen_door", "locked", {
+    friendly_name: "Kitchen Door",
   }),
-  getEntity('cover', 'kitchen_window', 'open', {
-    friendly_name: 'Kitchen Window',
-    supported_features: 11
+  getEntity("cover", "kitchen_window", "open", {
+    friendly_name: "Kitchen Window",
+    supported_features: 11,
   }),
-  getEntity('scene', 'romantic_lights', 'scening', {
-    entity_id: [
-      'light.bed_light',
-      'light.ceiling_lights'
-    ],
-    friendly_name: 'Romantic lights'
+  getEntity("scene", "romantic_lights", "scening", {
+    entity_id: ["light.bed_light", "light.ceiling_lights"],
+    friendly_name: "Romantic lights",
   }),
-  getEntity('device_tracker', 'demo_paulus', 'home', {
-    source_type: 'gps',
+  getEntity("device_tracker", "demo_paulus", "home", {
+    source_type: "gps",
     latitude: 32.877105,
     longitude: 117.232185,
     gps_accuracy: 91,
     battery: 71,
-    friendly_name: 'Paulus'
+    friendly_name: "Paulus",
   }),
-  getEntity('climate', 'ecobee', 'auto', {
+  getEntity("climate", "ecobee", "auto", {
     current_temperature: 73,
     min_temp: 45,
     max_temp: 95,
     temperature: null,
     target_temp_high: 75,
     target_temp_low: 70,
-    fan_mode: 'Auto Low',
-    fan_list: ['On Low', 'On High', 'Auto Low', 'Auto High', 'Off'],
-    operation_mode: 'auto',
-    operation_list: ['heat', 'cool', 'auto', 'off'],
-    hold_mode: 'home',
-    swing_mode: 'Auto',
-    swing_list: ['Auto', '1', '2', '3', 'Off'],
-    unit_of_measurement: '°F',
-    friendly_name: 'Ecobee',
-    supported_features: 1014
+    fan_mode: "Auto Low",
+    fan_list: ["On Low", "On High", "Auto Low", "Auto High", "Off"],
+    operation_mode: "auto",
+    operation_list: ["heat", "cool", "auto", "off"],
+    hold_mode: "home",
+    swing_mode: "Auto",
+    swing_list: ["Auto", "1", "2", "3", "Off"],
+    unit_of_measurement: "°F",
+    friendly_name: "Ecobee",
+    supported_features: 1014,
   }),
-  getEntity('input_number', 'noise_allowance', 5, {
+  getEntity("input_number", "noise_allowance", 5, {
     min: 0,
     max: 10,
     step: 1,
-    mode: 'slider',
-    unit_of_measurement: 'dB',
-    friendly_name: 'Allowed Noise',
-    icon: 'mdi:bell-ring'
-  })
+    mode: "slider",
+    unit_of_measurement: "dB",
+    friendly_name: "Allowed Noise",
+    icon: "mdi:bell-ring",
+  }),
 ];
 
 const CONFIGS = [
   {
-    heading: 'Basic',
+    heading: "Basic",
     config: `
 - type: entities
   entities:
@@ -82,10 +77,10 @@ const CONFIGS = [
     - light.non_existing
     - climate.ecobee
     - input_number.noise_allowance
-    `
+    `,
   },
   {
-    heading: 'With title, toggle-able',
+    heading: "With title, toggle-able",
     config: `
 - type: entities
   entities:
@@ -98,10 +93,10 @@ const CONFIGS = [
     - climate.ecobee
     - input_number.noise_allowance
   title: Random group
-    `
+    `,
   },
   {
-    heading: 'With title, toggle = false',
+    heading: "With title, toggle = false",
     config: `
 - type: entities
   entities:
@@ -115,19 +110,19 @@ const CONFIGS = [
     - input_number.noise_allowance
   title: Random group
   show_header_toggle: false
-    `
+    `,
   },
   {
-    heading: 'With title, can\'t toggle',
+    heading: "With title, can't toggle",
     config: `
 - type: entities
   entities:
     - device_tracker.demo_paulus
   title: Random group
-    `
+    `,
   },
   {
-    heading: 'Custom name, secondary info, custom icon',
+    heading: "Custom name, secondary info, custom icon",
     config: `
 - type: entities
   entities:
@@ -147,10 +142,10 @@ const CONFIGS = [
     - input_number.noise_allowance
   title: Random group
   show_header_toggle: false
-    `
+    `,
   },
   {
-    heading: 'Special rows',
+    heading: "Special rows",
     config: `
 - type: entities
   entities:
@@ -171,7 +166,7 @@ const CONFIGS = [
         height: 30px
         margin: 4px 0
         background: center / contain url("/images/divider.png") no-repeat
-    `
+    `,
   },
 ];
 
@@ -190,7 +185,7 @@ class DemoEntities extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
+        value: CONFIGS,
       },
       hass: Object,
     };
@@ -203,4 +198,4 @@ class DemoEntities extends PolymerElement {
   }
 }
 
-customElements.define('demo-hui-entities-card', DemoEntities);
+customElements.define("demo-hui-entities-card", DemoEntities);

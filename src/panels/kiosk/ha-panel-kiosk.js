@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../layouts/partial-cards.js';
+import "../../layouts/partial-cards.js";
 
 class HaPanelKiosk extends PolymerElement {
   static get template() {
@@ -24,4 +24,4 @@ class HaPanelKiosk extends PolymerElement {
   }
 }
 
-customElements.define('ha-panel-kiosk', HaPanelKiosk);
+customElements.define("ha-panel-kiosk", HaPanelKiosk);

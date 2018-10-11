@@ -1,8 +1,8 @@
-import { MutableData } from '@polymer/polymer/lib/mixins/mutable-data.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { MutableData } from "@polymer/polymer/lib/mixins/mutable-data.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './ha-customize-attribute.js';
+import "./ha-customize-attribute.js";
 
 class HaFormCustomizeAttributes extends MutableData(PolymerElement) {
   static get template() {
@@ -28,4 +28,7 @@ class HaFormCustomizeAttributes extends MutableData(PolymerElement) {
     };
   }
 }
-customElements.define('ha-form-customize-attributes', HaFormCustomizeAttributes);
+customElements.define(
+  "ha-form-customize-attributes",
+  HaFormCustomizeAttributes
+);

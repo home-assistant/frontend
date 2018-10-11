@@ -1,11 +1,10 @@
-import '@polymer/paper-styles/element-styles/paper-material-styles.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-styles/element-styles/paper-material-styles.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-
-import computeStateName from '../common/entity/compute_state_name.js';
-import EventsMixin from '../mixins/events-mixin.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import computeStateName from "../common/entity/compute_state_name.js";
+import EventsMixin from "../mixins/events-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 const UPDATE_INTERVAL = 10000; // ms
 /*
@@ -67,11 +66,11 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'updateCameraFeedSrc',
+        observer: "updateCameraFeedSrc",
       },
       cameraFeedSrc: {
         type: String,
-        value: '',
+        value: "",
       },
       imageLoaded: {
         type: Boolean,
@@ -82,7 +81,7 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
-    this.addEventListener('click', () => this.cardTapped());
+    this.addEventListener("click", () => this.cardTapped());
   }
 
   connectedCallback() {
@@ -96,13 +95,13 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   cardTapped() {
-    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    this.fire("hass-more-info", { entityId: this.stateObj.entity_id });
   }
 
   async updateCameraFeedSrc() {
     try {
       const { content_type: contentType, content } = await this.hass.callWS({
-        type: 'camera_thumbnail',
+        type: "camera_thumbnail",
         entity_id: this.stateObj.entity_id,
       });
       this.setProperties({
@@ -118,4 +117,4 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return computeStateName(stateObj);
   }
 }
-customElements.define('ha-camera-card', HaCameraCard);
+customElements.define("ha-camera-card", HaCameraCard);

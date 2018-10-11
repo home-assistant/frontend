@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeCardSize from '../common/compute-card-size.js';
-import createCardElement from '../common/create-card-element.js';
+import computeCardSize from "../common/compute-card-size.js";
+import createCardElement from "../common/create-card-element.js";
 
 class HuiConditionalCard extends PolymerElement {
   static get template() {
@@ -20,9 +20,9 @@ class HuiConditionalCard extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged',
+        observer: "_hassChanged",
       },
-      _config: Object
+      _config: Object,
     };
   }
 
@@ -32,9 +32,13 @@ class HuiConditionalCard extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config || !config.card || !Array.isArray(config.conditions)
-        || !config.conditions.every(c => c.entity && (c.state || c.state_not))) {
-      throw new Error('Error in card configuration.');
+    if (
+      !config ||
+      !config.card ||
+      !Array.isArray(config.conditions) ||
+      !config.conditions.every((c) => c.entity && (c.state || c.state_not))
+    ) {
+      throw new Error("Error in card configuration.");
     }
 
     this._config = config;
@@ -73,8 +77,8 @@ class HuiConditionalCard extends PolymerElement {
       }
       return false;
     });
-    root.classList.toggle('hidden', !visible);
-    this.style.setProperty('margin', (!visible) ? '0' : null);
+    root.classList.toggle("hidden", !visible);
+    this.style.setProperty("margin", !visible ? "0" : null);
   }
 }
-customElements.define('hui-conditional-card', HuiConditionalCard);
+customElements.define("hui-conditional-card", HuiConditionalCard);

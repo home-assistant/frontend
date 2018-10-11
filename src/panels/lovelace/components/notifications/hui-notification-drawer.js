@@ -1,20 +1,22 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './hui-notification-item.js';
+import "./hui-notification-item.js";
 
-import EventsMixin from '../../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  */
-export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElement)) {
+export class HuiNotificationDrawer extends EventsMixin(
+  LocalizeMixin(PolymerElement)
+) {
   static get template() {
     return html`
     <style include="paper-material-styles">
@@ -125,22 +127,22 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
       hass: Object,
       narrow: {
         type: Boolean,
-        reflectToAttribute: true
+        reflectToAttribute: true,
       },
       open: {
         type: Boolean,
         notify: true,
-        observer: '_openChanged'
+        observer: "_openChanged",
       },
       hidden: {
         type: Boolean,
         value: true,
-        reflectToAttribute: true
+        reflectToAttribute: true,
       },
       notifications: {
         type: Array,
-        value: []
-      }
+        value: [],
+      },
     };
   }
 
@@ -159,15 +161,15 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
       // Render closed then animate open
       this.hidden = false;
       this._openTimer = setTimeout(() => {
-        this.classList.add('open');
+        this.classList.add("open");
       }, 50);
     } else {
       // Animate closed then hide
-      this.classList.remove('open');
+      this.classList.remove("open");
       this._openTimer = setTimeout(() => {
         this.hidden = true;
       }, 250);
     }
   }
 }
-customElements.define('hui-notification-drawer', HuiNotificationDrawer);
+customElements.define("hui-notification-drawer", HuiNotificationDrawer);

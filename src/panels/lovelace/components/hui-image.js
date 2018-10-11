@@ -1,14 +1,14 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
 
-import { STATES_OFF } from '../../../common/const.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import { STATES_OFF } from "../../../common/const.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
-import parseAspectRatio from '../../../common/util/parse-aspect-ratio.js';
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio.js";
 
 const UPDATE_INTERVAL = 10000;
-const DEFAULT_FILTER = 'grayscale(100%)';
+const DEFAULT_FILTER = "grayscale(100%)";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -73,7 +73,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged'
+        observer: "_hassChanged",
       },
       entity: String,
       image: String,
@@ -82,18 +82,21 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       aspectRatio: String,
       filter: String,
       stateFilter: Object,
-      _imageSrc: String
+      _imageSrc: String,
     };
   }
 
   static get observers() {
-    return ['_configChanged(image, stateImage, cameraImage, aspectRatio)'];
+    return ["_configChanged(image, stateImage, cameraImage, aspectRatio)"];
   }
 
   connectedCallback() {
     super.connectedCallback();
     if (this.cameraImage) {
-      this.timer = setInterval(() => this._updateCameraImageSrc(), UPDATE_INTERVAL);
+      this.timer = setInterval(
+        () => this._updateCameraImageSrc(),
+        UPDATE_INTERVAL
+      );
     }
   }
 
@@ -106,8 +109,11 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     const ratio = parseAspectRatio(aspectRatio);
 
     if (ratio && ratio.w > 0 && ratio.h > 0) {
-      this.$.wrapper.style.paddingBottom = `${((100 * ratio.h) / ratio.w).toFixed(2)}%`;
-      this.$.wrapper.classList.add('ratio');
+      this.$.wrapper.style.paddingBottom = `${(
+        (100 * ratio.h) /
+        ratio.w
+      ).toFixed(2)}%`;
+      this.$.wrapper.classList.add("ratio");
     }
 
     if (cameraImage) {
@@ -119,17 +125,20 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
 
   _onImageError() {
     this._imageSrc = null;
-    this.$.image.classList.add('hidden');
-    if (!this.$.wrapper.classList.contains('ratio')) {
-      this.$.brokenImage.style.setProperty('height', `${this._lastImageHeight || '100'}px`);
+    this.$.image.classList.add("hidden");
+    if (!this.$.wrapper.classList.contains("ratio")) {
+      this.$.brokenImage.style.setProperty(
+        "height",
+        `${this._lastImageHeight || "100"}px`
+      );
     }
-    this.$.brokenImage.classList.remove('hidden');
+    this.$.brokenImage.classList.remove("hidden");
   }
 
   _onImageLoad() {
-    this.$.image.classList.remove('hidden');
-    this.$.brokenImage.classList.add('hidden');
-    if (!this.$.wrapper.classList.contains('ratio')) {
+    this.$.image.classList.remove("hidden");
+    this.$.brokenImage.classList.add("hidden");
+    if (!this.$.wrapper.classList.contains("ratio")) {
       this._lastImageHeight = this.$.image.offsetHeight;
     }
   }
@@ -140,7 +149,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     }
 
     const stateObj = hass.states[this.entity];
-    const newState = !stateObj ? 'unavailable' : stateObj.state;
+    const newState = !stateObj ? "unavailable" : stateObj.state;
 
     if (newState === this._currentState) return;
     this._currentState = newState;
@@ -168,13 +177,14 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     }
 
     const isOff = !stateObj || STATES_OFF.includes(stateObj.state);
-    this.$.image.style.filter = filter || (isOff && this._imageFallback && DEFAULT_FILTER) || '';
+    this.$.image.style.filter =
+      filter || (isOff && this._imageFallback && DEFAULT_FILTER) || "";
   }
 
   async _updateCameraImageSrc() {
     try {
       const { content_type: contentType, content } = await this.hass.callWS({
-        type: 'camera_thumbnail',
+        type: "camera_thumbnail",
         entity_id: this.cameraImage,
       });
       this._imageSrc = `data:${contentType};base64, ${content}`;
@@ -185,4 +195,4 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('hui-image', HuiImage);
+customElements.define("hui-image", HuiImage);

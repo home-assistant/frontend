@@ -1,15 +1,15 @@
-import '@polymer/app-route/app-route.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-route/app-route.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../src/layouts/hass-loading-screen.js';
-import './addon-view/hassio-addon-view.js';
-import './hassio-data.js';
-import './hassio-pages-with-tabs.js';
+import "../../src/layouts/hass-loading-screen.js";
+import "./addon-view/hassio-addon-view.js";
+import "./hassio-data.js";
+import "./hassio-pages-with-tabs.js";
 
-import applyThemesOnElement from '../../src/common/dom/apply_themes_on_element.js';
-import EventsMixin from '../../src/mixins/events-mixin.js';
-import NavigateMixin from '../../src/mixins/navigate-mixin.js';
+import applyThemesOnElement from "../../src/common/dom/apply_themes_on_element.js";
+import EventsMixin from "../../src/mixins/events-mixin.js";
+import NavigateMixin from "../../src/mixins/navigate-mixin.js";
 
 class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
   static get template() {
@@ -41,11 +41,11 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
         type: Object,
         // Fake route object
         value: {
-          prefix: '/hassio',
-          path: '/dashboard',
-          __queryParams: {}
+          prefix: "/hassio",
+          path: "/dashboard",
+          __queryParams: {},
         },
-        observer: 'routeChanged',
+        observer: "routeChanged",
       },
       routeData: Object,
       supervisorInfo: Object,
@@ -53,7 +53,7 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
       hassInfo: Object,
       loaded: {
         type: Boolean,
-        computed: 'computeIsLoaded(supervisorInfo, hostInfo, hassInfo)',
+        computed: "computeIsLoaded(supervisorInfo, hostInfo, hassInfo)",
       },
     };
   }
@@ -61,7 +61,7 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
   ready() {
     super.ready();
     applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
-    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }
 
   connectedCallback() {
@@ -74,7 +74,7 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
       let tries = 1;
 
       const tryUpdate = () => {
-        this.$.data.refresh().catch(function () {
+        this.$.data.refresh().catch(function() {
           tries += 1;
           setTimeout(tryUpdate, Math.min(tries, 5) * 1000);
         });
@@ -85,21 +85,19 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 
   computeIsLoaded(supervisorInfo, hostInfo, hassInfo) {
-    return (supervisorInfo !== null
-            && hostInfo !== null
-            && hassInfo !== null);
+    return supervisorInfo !== null && hostInfo !== null && hassInfo !== null;
   }
 
   routeChanged(route) {
-    if (route.path === '' && route.prefix === '/hassio') {
-      this.navigate('/hassio/dashboard', true);
+    if (route.path === "" && route.prefix === "/hassio") {
+      this.navigate("/hassio/dashboard", true);
     }
-    this.fire('iron-resize');
+    this.fire("iron-resize");
   }
 
   equalsAddon(page) {
-    return page && page === 'addon';
+    return page && page === "addon";
   }
 }
 
-customElements.define('hassio-main', HassioMain);
+customElements.define("hassio-main", HassioMain);

@@ -1,35 +1,32 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-card.js';
-import '../../../components/ha-icon.js';
-import '../components/hui-image.js';
+import "../../../components/ha-card.js";
+import "../../../components/ha-icon.js";
+import "../components/hui-image.js";
 
-import computeStateDisplay from '../../../common/entity/compute_state_display.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import { DOMAINS_TOGGLE } from '../../../common/const.js';
-import stateIcon from '../../../common/entity/state_icon.js';
-import toggleEntity from '../common/entity/toggle-entity.js';
-import processConfigEntities from '../common/process-config-entities';
+import computeStateDisplay from "../../../common/entity/compute_state_display.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import { DOMAINS_TOGGLE } from "../../../common/const.js";
+import stateIcon from "../../../common/entity/state_icon.js";
+import toggleEntity from "../common/entity/toggle-entity.js";
+import processConfigEntities from "../common/process-config-entities";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import computeDomain from '../../../common/entity/compute_domain';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import computeDomain from "../../../common/entity/compute_domain";
 
-const STATES_OFF = new Set([
-  'closed',
-  'locked',
-  'not_home',
-  'off'
-]);
+const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
-class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(PolymerElement))) {
+class HuiPictureGlanceCard extends NavigateMixin(
+  LocalizeMixin(EventsMixin(PolymerElement))
+) {
   static get template() {
     return html`
       <style>
@@ -123,17 +120,24 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   setConfig(config) {
-    if (!config || !config.entities || !Array.isArray(config.entities)
-      || !(config.image || config.camera_image || config.state_image)
-      || (config.state_image && !config.entity)) {
-      throw new Error('Invalid card configuration');
+    if (
+      !config ||
+      !config.entities ||
+      !Array.isArray(config.entities) ||
+      !(config.image || config.camera_image || config.state_image) ||
+      (config.state_image && !config.entity)
+    ) {
+      throw new Error("Invalid card configuration");
     }
     const entities = processConfigEntities(config.entities);
     const dialog = [];
     const toggle = [];
 
     entities.forEach((item) => {
-      if (config.force_dialog || !DOMAINS_TOGGLE.has(computeDomain(item.entity))) {
+      if (
+        config.force_dialog ||
+        !DOMAINS_TOGGLE.has(computeDomain(item.entity))
+      ) {
         dialog.push(item);
       } else {
         toggle.push(item);
@@ -142,12 +146,12 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     this.setProperties({
       _config: config,
       _entitiesDialog: dialog,
-      _entitiesToggle: toggle
+      _entitiesToggle: toggle,
     });
   }
 
   _computeVisible(collection, states) {
-    return collection.filter(el => el.entity in states);
+    return collection.filter((el) => el.entity in states);
   }
 
   _computeIcon(item, states) {
@@ -155,19 +159,22 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   _computeButtonClass(entityId, states) {
-    return STATES_OFF.has(states[entityId].state) ? '' : 'state-on';
+    return STATES_OFF.has(states[entityId].state) ? "" : "state-on";
   }
 
   _computeTooltip(entityId, states) {
-    return `${computeStateName(states[entityId])}: ${computeStateDisplay(this.localize, states[entityId])}`;
+    return `${computeStateName(states[entityId])}: ${computeStateDisplay(
+      this.localize,
+      states[entityId]
+    )}`;
   }
 
   _computeImageClass(config) {
-    return config.navigation_path || config.camera_image ? 'clickable' : '';
+    return config.navigation_path || config.camera_image ? "clickable" : "";
   }
 
   _openDialog(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.item.entity });
+    this.fire("hass-more-info", { entityId: ev.model.item.entity });
   }
 
   _callService(ev) {
@@ -181,8 +188,8 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     }
 
     if (this._config.camera_image) {
-      this.fire('hass-more-info', { entityId: this._config.camera_image });
+      this.fire("hass-more-info", { entityId: this._config.camera_image });
     }
   }
 }
-customElements.define('hui-picture-glance-card', HuiPictureGlanceCard);
+customElements.define("hui-picture-glance-card", HuiPictureGlanceCard);

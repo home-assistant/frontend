@@ -1,7 +1,7 @@
-import { h, Component } from 'preact';
-import '../../../../components/ha-service-picker.js';
+import { h, Component } from "preact";
+import "../../../../components/ha-service-picker.js";
 
-import JSONTextArea from '../json_textarea.js';
+import JSONTextArea from "../json_textarea.js";
 
 export default class CallServiceAction extends Component {
   constructor() {
@@ -12,17 +12,17 @@ export default class CallServiceAction extends Component {
   }
 
   serviceChanged(ev) {
-    this.props.onChange(this.props.index, Object.assign(
-      {}, this.props.action,
-      { service: ev.target.value },
-    ));
+    this.props.onChange(
+      this.props.index,
+      Object.assign({}, this.props.action, { service: ev.target.value })
+    );
   }
 
   serviceDataChanged(data) {
-    this.props.onChange(this.props.index, Object.assign(
-      {}, this.props.action,
-      { data },
-    ));
+    this.props.onChange(
+      this.props.index,
+      Object.assign({}, this.props.action, { data })
+    );
   }
 
   render({ action, hass, localize }) {
@@ -36,7 +36,9 @@ export default class CallServiceAction extends Component {
           onChange={this.serviceChanged}
         />
         <JSONTextArea
-          label={localize('ui.panel.config.automation.editor.actions.type.service.service_data')}
+          label={localize(
+            "ui.panel.config.automation.editor.actions.type.service.service_data"
+          )}
           value={data}
           onChange={this.serviceDataChanged}
         />
@@ -46,7 +48,7 @@ export default class CallServiceAction extends Component {
 }
 
 CallServiceAction.defaultConfig = {
-  alias: '',
-  service: '',
-  data: {}
+  alias: "",
+  service: "",
+  data: {},
 };

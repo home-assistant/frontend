@@ -1,15 +1,15 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-card.js';
-import '../components/hui-entities-toggle.js';
+import "../../../components/ha-card.js";
+import "../components/hui-entities-toggle.js";
 
-import createRowElement from '../common/create-row-element.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
-import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
+import createRowElement from "../common/create-row-element.js";
+import computeDomain from "../../../common/entity/compute_domain.js";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -66,9 +66,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged',
+        observer: "_hassChanged",
       },
-      _config: Object
+      _config: Object,
     };
   }
 
@@ -99,7 +99,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
   setConfig(config) {
     this._config = config;
-    this._rows = config.entities.map(item => (typeof item === 'string' ? { entity: item } : item));
+    this._rows = config.entities.map(
+      (item) => (typeof item === "string" ? { entity: item } : item)
+    );
     if (this.$) this._buildConfig();
   }
 
@@ -115,13 +117,18 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     for (const row of this._rows) {
       const entityId = row.entity;
       const element = createRowElement(row);
-      if (entityId && !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
-        element.classList.add('state-card-dialog');
-        element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
+      if (
+        entityId &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))
+      ) {
+        element.classList.add("state-card-dialog");
+        element.addEventListener("click", () =>
+          this.fire("hass-more-info", { entityId })
+        );
       }
       element.hass = this.hass;
       this._elements.push(element);
-      const container = document.createElement('div');
+      const container = document.createElement("div");
       container.appendChild(element);
       root.appendChild(container);
     }
@@ -134,8 +141,10 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
   }
 
   _filterEntities(items) {
-    return items.filter(item => (typeof item === 'string' || item.entity)).map(item => (typeof item === 'string' ? item : item.entity));
+    return items
+      .filter((item) => typeof item === "string" || item.entity)
+      .map((item) => (typeof item === "string" ? item : item.entity));
   }
 }
 
-customElements.define('hui-entities-card', HuiEntitiesCard);
+customElements.define("hui-entities-card", HuiEntitiesCard);

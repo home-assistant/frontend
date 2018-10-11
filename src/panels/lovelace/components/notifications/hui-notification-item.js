@@ -1,8 +1,8 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import computeDomain from '../../../../common/entity/compute_domain.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import computeDomain from "../../../../common/entity/compute_domain.js";
 
-import './hui-configurator-notification-item.js';
-import './hui-persistent-notification-item.js';
+import "./hui-configurator-notification-item.js";
+import "./hui-persistent-notification-item.js";
 
 export class HuiNotificationItem extends PolymerElement {
   static get properties() {
@@ -10,8 +10,8 @@ export class HuiNotificationItem extends PolymerElement {
       hass: Object,
       notification: {
         type: Object,
-        observer: '_stateChanged'
-      }
+        observer: "_stateChanged",
+      },
     };
   }
 
@@ -24,7 +24,7 @@ export class HuiNotificationItem extends PolymerElement {
 
     const domain = notification.entity_id
       ? computeDomain(notification.entity_id)
-      : 'persistent_notification';
+      : "persistent_notification";
     const tag = `hui-${domain}-notification-item`;
     const el = document.createElement(tag);
     el.hass = this.hass;
@@ -32,4 +32,4 @@ export class HuiNotificationItem extends PolymerElement {
     this.appendChild(el);
   }
 }
-customElements.define('hui-notification-item', HuiNotificationItem);
+customElements.define("hui-notification-item", HuiNotificationItem);

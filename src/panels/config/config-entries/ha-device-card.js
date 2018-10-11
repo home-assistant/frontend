@@ -1,16 +1,16 @@
-import '@polymer/paper-item/paper-icon-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../layouts/hass-subpage.js';
+import "../../../layouts/hass-subpage.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import '../../../components/entity/state-badge.js';
-import compare from '../../../common/string/compare.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import "../../../components/entity/state-badge.js";
+import compare from "../../../common/string/compare.js";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
@@ -104,24 +104,26 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       hass: Object,
       _childDevices: {
         type: Array,
-        computed: '_computeChildDevices(device, devices)',
-      }
+        computed: "_computeChildDevices(device, devices)",
+      },
     };
   }
 
   _computeChildDevices(device, devices) {
     return devices
-      .filter(dev => dev.hub_device_id === device.id)
+      .filter((dev) => dev.hub_device_id === device.id)
       .sort((dev1, dev2) => compare(dev1.name, dev2.name));
   }
 
   _computeDeviceEntities(hass, device, entities) {
     return entities
-      .filter(entity => entity.device_id === device.id)
-      .sort((ent1, ent2) => compare(
-        computeEntityName(hass, ent1) || `zzz${ent1.entity_id}`,
-        computeEntityName(hass, ent2) || `zzz${ent2.entity_id}`
-      ));
+      .filter((entity) => entity.device_id === device.id)
+      .sort((ent1, ent2) =>
+        compare(
+          computeEntityName(hass, ent1) || `zzz${ent1.entity_id}`,
+          computeEntityName(hass, ent2) || `zzz${ent2.entity_id}`
+        )
+      );
   }
 
   _computeStateObj(entity, hass) {
@@ -129,19 +131,26 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _computeEntityName(entity, hass) {
-    return computeEntityName(hass, entity)
-        || `(${this.localize('ui.panel.config.integrations.config_entry.entity_unavailable')})`;
+    return (
+      computeEntityName(hass, entity) ||
+      `(${this.localize(
+        "ui.panel.config.integrations.config_entry.entity_unavailable"
+      )})`
+    );
   }
 
   _computeDeviceName(devices, deviceId) {
-    const device = devices.find(dev => dev.id === deviceId);
-    return device ? device.name
-      : `(${this.localize('ui.panel.config.integrations.config_entry.device_unavailable')})`;
+    const device = devices.find((dev) => dev.id === deviceId);
+    return device
+      ? device.name
+      : `(${this.localize(
+          "ui.panel.config.integrations.config_entry.device_unavailable"
+        )})`;
   }
 
   _openMoreInfo(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
+    this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 }
 
-customElements.define('ha-device-card', HaDeviceCard);
+customElements.define("ha-device-card", HaDeviceCard);

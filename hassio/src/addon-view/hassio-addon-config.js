@@ -1,10 +1,10 @@
-import '@polymer/iron-autogrow-textarea/iron-autogrow-textarea.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/components/buttons/ha-call-api-button.js';
+import "../../../src/components/buttons/ha-call-api-button.js";
 
 class HassioAddonConfig extends PolymerElement {
   static get template() {
@@ -52,12 +52,12 @@ class HassioAddonConfig extends PolymerElement {
       hass: Object,
       addon: {
         type: Object,
-        observer: 'addonChanged',
+        observer: "addonChanged",
       },
       addonSlug: String,
       config: {
         type: String,
-        observer: 'configChanged',
+        observer: "configChanged",
       },
       configParsed: Object,
       error: String,
@@ -71,15 +71,15 @@ class HassioAddonConfig extends PolymerElement {
   }
 
   addonChanged(addon) {
-    this.config = addon ? JSON.stringify(addon.options, null, 2) : '';
+    this.config = addon ? JSON.stringify(addon.options, null, 2) : "";
   }
 
   configChanged(config) {
     try {
-      this.$.config.classList.remove('syntaxerror');
+      this.$.config.classList.remove("syntaxerror");
       this.configParsed = JSON.parse(config);
     } catch (err) {
-      this.$.config.classList.add('syntaxerror');
+      this.$.config.classList.add("syntaxerror");
       this.configParsed = null;
     }
   }
@@ -87,12 +87,14 @@ class HassioAddonConfig extends PolymerElement {
   saveTapped() {
     this.error = null;
 
-    this.hass.callApi('post', `hassio/addons/${this.addonSlug}/options`, {
-      options: this.configParsed
-    }).catch((resp) => {
-      this.error = resp.body.message;
-    });
+    this.hass
+      .callApi("post", `hassio/addons/${this.addonSlug}/options`, {
+        options: this.configParsed,
+      })
+      .catch((resp) => {
+        this.error = resp.body.message;
+      });
   }
 }
 
-customElements.define('hassio-addon-config', HassioAddonConfig);
+customElements.define("hassio-addon-config", HassioAddonConfig);

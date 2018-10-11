@@ -1,14 +1,15 @@
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../mixins/events-mixin.js';
+import EventsMixin from "../mixins/events-mixin.js";
 
-export const pushSupported = (
-  'serviceWorker' in navigator && 'PushManager' in window
-  && (document.location.protocol === 'https:'
-    || document.location.hostname === 'localhost'
-    || document.location.hostname === '127.0.0.1'));
+export const pushSupported =
+  "serviceWorker" in navigator &&
+  "PushManager" in window &&
+  (document.location.protocol === "https:" ||
+    document.location.hostname === "localhost" ||
+    document.location.hostname === "127.0.0.1");
 
 /*
  * @appliesMixin EventsMixin
@@ -32,13 +33,14 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       },
       pushChecked: {
         type: Boolean,
-        value: 'Notification' in window && Notification.permission === 'granted',
-        observer: 'handlePushChange',
+        value:
+          "Notification" in window && Notification.permission === "granted",
+        observer: "handlePushChange",
       },
       loading: {
         type: Boolean,
         value: true,
-      }
+      },
     };
   }
 
@@ -80,23 +82,23 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       const sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
 
       let browserName;
-      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        browserName = 'firefox';
+      if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+        browserName = "firefox";
       } else {
-        browserName = 'chrome';
+        browserName = "chrome";
       }
 
-      await this.hass.callApi('POST', 'notify.html5', {
+      await this.hass.callApi("POST", "notify.html5", {
         subscription: sub,
-        browser: browserName
+        browser: browserName,
       });
     } catch (err) {
-      const message = err.message || 'Notification registration failed.';
+      const message = err.message || "Notification registration failed.";
 
       // eslint-disable-next-line
       console.error(err);
 
-      this.fire('hass-notification', { message });
+      this.fire("hass-notification", { message });
       this.pushChecked = false;
     }
   }
@@ -109,15 +111,16 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
 
       if (!sub) return;
 
-      await this.hass.callApi('DELETE', 'notify.html5', { subscription: sub });
+      await this.hass.callApi("DELETE", "notify.html5", { subscription: sub });
       await sub.unsubscribe();
     } catch (err) {
-      const message = err.message || 'Failed unsubscribing for push notifications.';
+      const message =
+        err.message || "Failed unsubscribing for push notifications.";
 
       // eslint-disable-next-line
-      console.error('Error in unsub push', err);
+      console.error("Error in unsub push", err);
 
-      this.fire('hass-notification', { message });
+      this.fire("hass-notification", { message });
       this.pushChecked = true;
     }
   }
@@ -127,4 +130,7 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-push-notifications-toggle', HaPushNotificationsToggle);
+customElements.define(
+  "ha-push-notifications-toggle",
+  HaPushNotificationsToggle
+);

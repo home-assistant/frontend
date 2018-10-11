@@ -1,13 +1,13 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/dialogs/more-info/controls/more-info-content.js';
-import '../../../src/components/ha-card.js';
+import "../../../src/dialogs/more-info/controls/more-info-content.js";
+import "../../../src/components/ha-card.js";
 
-import getEntity from '../data/entity.js';
-import provideHass from '../data/provide_hass.js';
+import getEntity from "../data/entity.js";
+import provideHass from "../data/provide_hass.js";
 
-import '../components/demo-more-infos.js';
+import "../components/demo-more-infos.js";
 
 /* eslint-disable no-unused-vars */
 
@@ -20,16 +20,15 @@ const SUPPORT_TRANSITION = 32;
 const SUPPORT_WHITE_VALUE = 128;
 
 const ENTITIES = [
-  getEntity('light', 'bed_light', 'on', {
-    friendly_name: 'Basic Light'
+  getEntity("light", "bed_light", "on", {
+    friendly_name: "Basic Light",
   }),
-  getEntity('light', 'kitchen_light', 'on', {
-    friendly_name: 'Brightness Light',
+  getEntity("light", "kitchen_light", "on", {
+    friendly_name: "Brightness Light",
     brightness: 80,
     supported_features: SUPPORT_BRIGHTNESS,
   }),
 ];
-
 
 class DemoMoreInfoLight extends PolymerElement {
   static get template() {
@@ -45,7 +44,7 @@ class DemoMoreInfoLight extends PolymerElement {
     return {
       _entities: {
         type: Array,
-        value: ENTITIES.map(ent => ent.entityId),
+        value: ENTITIES.map((ent) => ent.entityId),
       },
     };
   }
@@ -57,4 +56,4 @@ class DemoMoreInfoLight extends PolymerElement {
   }
 }
 
-customElements.define('demo-more-info-light', DemoMoreInfoLight);
+customElements.define("demo-more-info-light", DemoMoreInfoLight);

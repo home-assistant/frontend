@@ -1,36 +1,30 @@
-import { assert } from 'chai';
+import { assert } from "chai";
 
-import featureClassNames from '../../../src/common/entity/feature_class_names';
+import featureClassNames from "../../../src/common/entity/feature_class_names";
 
-describe('featureClassNames', () => {
+describe("featureClassNames", () => {
   const classNames = {
-    1: 'has-feature_a',
-    2: 'has-feature_b',
-    4: 'has-feature_c',
-    8: 'has-feature_d',
+    1: "has-feature_a",
+    2: "has-feature_b",
+    4: "has-feature_c",
+    8: "has-feature_d",
   };
 
-  it('Skips null states', () => {
+  it("Skips null states", () => {
     const stateObj = null;
-    assert.strictEqual(
-      featureClassNames(stateObj, classNames),
-      ''
-    );
+    assert.strictEqual(featureClassNames(stateObj, classNames), "");
   });
 
-  it('Matches no features', () => {
+  it("Matches no features", () => {
     const stateObj = {
       attributes: {
         supported_features: 64,
       },
     };
-    assert.strictEqual(
-      featureClassNames(stateObj, classNames),
-      ''
-    );
+    assert.strictEqual(featureClassNames(stateObj, classNames), "");
   });
 
-  it('Matches one feature', () => {
+  it("Matches one feature", () => {
     const stateObj = {
       attributes: {
         supported_features: 72,
@@ -38,11 +32,11 @@ describe('featureClassNames', () => {
     };
     assert.strictEqual(
       featureClassNames(stateObj, classNames),
-      'has-feature_d'
+      "has-feature_d"
     );
   });
 
-  it('Matches two features', () => {
+  it("Matches two features", () => {
     const stateObj = {
       attributes: {
         supported_features: 73,
@@ -50,7 +44,7 @@ describe('featureClassNames', () => {
     };
     assert.strictEqual(
       featureClassNames(stateObj, classNames),
-      'has-feature_a has-feature_d'
+      "has-feature_a has-feature_d"
     );
   });
 });

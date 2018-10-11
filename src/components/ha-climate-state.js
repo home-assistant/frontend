@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -52,7 +52,7 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
       stateObj: Object,
       currentStatus: {
         type: String,
-        computed: 'computeCurrentStatus(hass, stateObj)',
+        computed: "computeCurrentStatus(hass, stateObj)",
       },
     };
   }
@@ -60,7 +60,9 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
   computeCurrentStatus(hass, stateObj) {
     if (!hass || !stateObj) return null;
     if (stateObj.attributes.current_temperature != null) {
-      return `${stateObj.attributes.current_temperature} ${hass.config.unit_system.temperature}`;
+      return `${stateObj.attributes.current_temperature} ${
+        hass.config.unit_system.temperature
+      }`;
     }
     if (stateObj.attributes.current_humidity != null) {
       return `${stateObj.attributes.current_humidity} %`;
@@ -71,23 +73,36 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
   computeTarget(hass, stateObj) {
     if (!hass || !stateObj) return null;
     // We're using "!= null" on purpose so that we match both null and undefined.
-    if (stateObj.attributes.target_temp_low != null
-        && stateObj.attributes.target_temp_high != null) {
-      return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${hass.config.unit_system.temperature}`;
-    } if (stateObj.attributes.temperature != null) {
-      return `${stateObj.attributes.temperature} ${hass.config.unit_system.temperature}`;
-    } if (stateObj.attributes.target_humidity_low != null
-               && stateObj.attributes.target_humidity_high != null) {
-      return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} %`;
-    } if (stateObj.attributes.humidity != null) {
+    if (
+      stateObj.attributes.target_temp_low != null &&
+      stateObj.attributes.target_temp_high != null
+    ) {
+      return `${stateObj.attributes.target_temp_low} - ${
+        stateObj.attributes.target_temp_high
+      } ${hass.config.unit_system.temperature}`;
+    }
+    if (stateObj.attributes.temperature != null) {
+      return `${stateObj.attributes.temperature} ${
+        hass.config.unit_system.temperature
+      }`;
+    }
+    if (
+      stateObj.attributes.target_humidity_low != null &&
+      stateObj.attributes.target_humidity_high != null
+    ) {
+      return `${stateObj.attributes.target_humidity_low} - ${
+        stateObj.attributes.target_humidity_high
+      } %`;
+    }
+    if (stateObj.attributes.humidity != null) {
       return `${stateObj.attributes.humidity} %`;
     }
 
-    return '';
+    return "";
   }
 
   _localizeState(state) {
     return this.localize(`state.climate.${state}`) || state;
   }
 }
-customElements.define('ha-climate-state', HaClimateState);
+customElements.define("ha-climate-state", HaClimateState);

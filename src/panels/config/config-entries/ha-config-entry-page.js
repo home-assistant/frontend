@@ -1,19 +1,21 @@
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../layouts/hass-subpage.js';
+import "../../../layouts/hass-subpage.js";
 
-import '../../../components/entity/state-badge.js';
-import compare from '../../../common/string/compare.js';
+import "../../../components/entity/state-badge.js";
+import compare from "../../../common/string/compare.js";
 
-import './ha-device-card.js';
-import './ha-ce-entities-card.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import "./ha-device-card.js";
+import "./ha-ce-entities-card.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
 
-class HaConfigEntryPage extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerElement))) {
+class HaConfigEntryPage extends NavigateMixin(
+  EventsMixin(LocalizeMixin(PolymerElement))
+) {
   static get template() {
     return html`
   <style>
@@ -78,7 +80,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerE
 
       _configEntryDevices: {
         type: Array,
-        computed: '_computeConfigEntryDevices(configEntry, devices)'
+        computed: "_computeConfigEntryDevices(configEntry, devices)",
       },
 
       /**
@@ -87,7 +89,7 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerE
        */
       _noDeviceEntities: {
         type: Array,
-        computed: '_computeNoDeviceEntities(configEntry, entities)',
+        computed: "_computeNoDeviceEntities(configEntry, entities)",
       },
 
       /**
@@ -110,14 +112,19 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerE
   _computeConfigEntryDevices(configEntry, devices) {
     if (!devices) return [];
     return devices
-      .filter(device => device.config_entries.includes(configEntry.entry_id))
-      .sort((dev1, dev2) => (!!dev1.hub_device_id - !!dev2.hub_device_id)
-            || compare(dev1.name, dev2.name));
+      .filter((device) => device.config_entries.includes(configEntry.entry_id))
+      .sort(
+        (dev1, dev2) =>
+          !!dev1.hub_device_id - !!dev2.hub_device_id ||
+          compare(dev1.name, dev2.name)
+      );
   }
 
   _computeNoDeviceEntities(configEntry, entities) {
     if (!entities) return [];
-    return entities.filter(ent => !ent.device_id && ent.config_entry_id === configEntry.entry_id);
+    return entities.filter(
+      (ent) => !ent.device_id && ent.config_entry_id === configEntry.entry_id
+    );
   }
 
   _computeIsEmpty(configEntryDevices, noDeviceEntities) {
@@ -125,19 +132,31 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerE
   }
 
   _removeEntry() {
-    if (!confirm(this.localize('ui.panel.config.integrations.config_entry.delete_confirm'))) return;
+    if (
+      !confirm(
+        this.localize(
+          "ui.panel.config.integrations.config_entry.delete_confirm"
+        )
+      )
+    )
+      return;
 
     const entryId = this.configEntry.entry_id;
 
-    this.hass.callApi('delete', `config/config_entries/entry/${entryId}`)
+    this.hass
+      .callApi("delete", `config/config_entries/entry/${entryId}`)
       .then((result) => {
-        this.fire('hass-reload-entries');
+        this.fire("hass-reload-entries");
         if (result.require_restart) {
-          alert(this.localize('ui.panel.config.integrations.config_entry.restart_confirm'));
+          alert(
+            this.localize(
+              "ui.panel.config.integrations.config_entry.restart_confirm"
+            )
+          );
         }
-        this.navigate('/config/integrations/dashboard', true);
+        this.navigate("/config/integrations/dashboard", true);
       });
   }
 }
 
-customElements.define('ha-config-entry-page', HaConfigEntryPage);
+customElements.define("ha-config-entry-page", HaConfigEntryPage);

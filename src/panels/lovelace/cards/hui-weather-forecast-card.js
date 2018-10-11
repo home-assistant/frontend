@@ -1,10 +1,10 @@
-import '../../../cards/ha-camera-card.js';
+import "../../../cards/ha-camera-card.js";
 
-import LegacyWrapperCard from './hui-legacy-wrapper-card.js';
+import LegacyWrapperCard from "./hui-legacy-wrapper-card.js";
 
 class HuiWeatherForecastCard extends LegacyWrapperCard {
   constructor() {
-    super('ha-weather-card', 'weather');
+    super("ha-weather-card", "weather");
   }
 
   getCardSize() {
@@ -12,4 +12,4 @@ class HuiWeatherForecastCard extends LegacyWrapperCard {
   }
 }
 
-customElements.define('hui-weather-forecast-card', HuiWeatherForecastCard);
+customElements.define("hui-weather-forecast-card", HuiWeatherForecastCard);

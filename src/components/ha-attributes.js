@@ -1,8 +1,8 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import hassAttributeUtil from '../util/hass-attributes-util.js';
+import hassAttributeUtil from "../util/hass-attributes-util.js";
 
 class HaAttributes extends PolymerElement {
   static get template() {
@@ -37,39 +37,41 @@ class HaAttributes extends PolymerElement {
       },
       extraFilters: {
         type: String,
-        value: '',
+        value: "",
       },
       filtersArray: {
         type: Array,
-        computed: 'computeFiltersArray(extraFilters)',
+        computed: "computeFiltersArray(extraFilters)",
       },
     };
   }
 
   computeFiltersArray(extraFilters) {
-    return Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(extraFilters ? extraFilters.split(',') : []);
+    return Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
+      extraFilters ? extraFilters.split(",") : []
+    );
   }
 
   computeDisplayAttributes(stateObj, filtersArray) {
     if (!stateObj) {
       return [];
     }
-    return Object.keys(stateObj.attributes).filter(function (key) {
+    return Object.keys(stateObj.attributes).filter(function(key) {
       return filtersArray.indexOf(key) === -1;
     });
   }
 
   formatAttribute(attribute) {
-    return attribute.replace(/_/g, ' ');
+    return attribute.replace(/_/g, " ");
   }
 
   formatAttributeValue(stateObj, attribute) {
     var value = stateObj.attributes[attribute];
-    if (value === null) return '-';
+    if (value === null) return "-";
     if (Array.isArray(value)) {
-      return value.join(', ');
+      return value.join(", ");
     }
-    return (value instanceof Object) ? JSON.stringify(value, null, 2) : value;
+    return value instanceof Object ? JSON.stringify(value, null, 2) : value;
   }
 
   computeAttribution(stateObj) {
@@ -77,4 +79,4 @@ class HaAttributes extends PolymerElement {
   }
 }
 
-customElements.define('ha-attributes', HaAttributes);
+customElements.define("ha-attributes", HaAttributes);

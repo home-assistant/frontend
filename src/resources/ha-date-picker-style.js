@@ -1,5 +1,5 @@
-const documentContainer = document.createElement('template');
-documentContainer.setAttribute('style', 'display: none;');
+const documentContainer = document.createElement("template");
+documentContainer.setAttribute("style", "display: none;");
 
 documentContainer.innerHTML = `<dom-module id="ha-date-picker-vaadin-date-picker-styles" theme-for="vaadin-date-picker">
   <template>
