@@ -78,7 +78,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
   }
 
   incrementValue() {
-    const newval = this.value + this.step;
+    const newval = Number.parseFloat((this.value + this.step).toFixed(2));
     if (this.value < this.max) {
       this.last_changed = Date.now();
       this.temperatureStateInFlux(true);
@@ -98,7 +98,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
   }
 
   decrementValue() {
-    const newval = this.value - this.step;
+    const newval = Number.parseFloat((this.value - this.step).toFixed(2));
     if (this.value > this.min) {
       this.last_changed = Date.now();
       this.temperatureStateInFlux(true);

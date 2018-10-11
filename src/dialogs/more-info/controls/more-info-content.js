@@ -15,6 +15,7 @@ import './more-info-light.js';
 import './more-info-lock.js';
 import './more-info-media_player.js';
 import './more-info-script.js';
+import './more-info-sous_vide.js';
 import './more-info-sun.js';
 import './more-info-updater.js';
 import './more-info-vacuum.js';
