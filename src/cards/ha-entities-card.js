@@ -1,18 +1,17 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/ha-entity-toggle.js';
-import '../components/ha-card.js';
-import '../state-summary/state-card-content.js';
+import "../components/entity/ha-entity-toggle.js";
+import "../components/ha-card.js";
+import "../state-summary/state-card-content.js";
 
-
-import computeStateDomain from '../common/entity/compute_state_domain.js';
-import computeStateName from '../common/entity/compute_state_name.js';
-import stateMoreInfoType from '../common/entity/state_more_info_type.js';
-import canToggleState from '../common/entity/can_toggle_state.js';
-import EventsMixin from '../mixins/events-mixin.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import computeStateDomain from "../common/entity/compute_state_domain.js";
+import computeStateName from "../common/entity/compute_state_name.js";
+import stateMoreInfoType from "../common/entity/state_more_info_type.js";
+import canToggleState from "../common/entity/can_toggle_state.js";
+import EventsMixin from "../mixins/events-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
@@ -74,7 +73,7 @@ class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       groupEntity: Object,
       title: {
         type: String,
-        computed: 'computeTitle(states, groupEntity, localize)',
+        computed: "computeTitle(states, groupEntity, localize)",
       },
     };
   }
@@ -91,34 +90,40 @@ class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       return computeStateName(groupEntity).trim();
     }
     const domain = computeStateDomain(states[0]);
-    return (localize && localize(`domain.${domain}`)) || domain.replace(/_/g, ' ');
+    return (
+      (localize && localize(`domain.${domain}`)) || domain.replace(/_/g, " ")
+    );
   }
 
   computeTitleClass(groupEntity) {
-    let classes = 'header horizontal layout center ';
+    let classes = "header horizontal layout center ";
     if (groupEntity) {
-      classes += 'more-info';
+      classes += "more-info";
     }
     return classes;
   }
 
   computeStateClass(stateObj) {
-    return stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state';
+    return stateMoreInfoType(stateObj) !== "hidden"
+      ? "state more-info"
+      : "state";
   }
 
   addTapEvents() {
-    const cards = this.root.querySelectorAll('.state');
+    const cards = this.root.querySelectorAll(".state");
     cards.forEach((card) => {
-      if (card.classList.contains('more-info')) {
-        card.addEventListener('click', this.entityTapped);
+      if (card.classList.contains("more-info")) {
+        card.addEventListener("click", this.entityTapped);
       } else {
-        card.removeEventListener('click', this.entityTapped);
+        card.removeEventListener("click", this.entityTapped);
       }
     });
   }
 
   entityTapped(ev) {
-    const item = this.root.querySelector('dom-repeat').itemForElement(ev.target);
+    const item = this.root
+      .querySelector("dom-repeat")
+      .itemForElement(ev.target);
     let entityId;
     if (!item && !this.groupEntity) {
       return;
@@ -130,12 +135,16 @@ class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     } else {
       entityId = this.groupEntity.entity_id;
     }
-    this.fire('hass-more-info', { entityId: entityId });
+    this.fire("hass-more-info", { entityId: entityId });
   }
 
   showGroupToggle(groupEntity, states) {
-    if (!groupEntity || !states || groupEntity.attributes.control === 'hidden'
-        || (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
+    if (
+      !groupEntity ||
+      !states ||
+      groupEntity.attributes.control === "hidden" ||
+      (groupEntity.state !== "on" && groupEntity.state !== "off")
+    ) {
       return false;
     }
 
@@ -156,4 +165,4 @@ class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return canToggleCount > 1;
   }
 }
-customElements.define('ha-entities-card', HaEntitiesCard);
+customElements.define("ha-entities-card", HaEntitiesCard);

@@ -1,14 +1,14 @@
-import { h, Component } from 'preact';
+import { h, Component } from "preact";
 
-import '@polymer/paper-input/paper-input.js';
+import "@polymer/paper-input/paper-input.js";
 
-import { onChangeEvent } from '../../../../common/preact/event.js';
+import { onChangeEvent } from "../../../../common/preact/event.js";
 
 export default class TimeTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'trigger');
+    this.onChange = onChangeEvent.bind(this, "trigger");
   }
 
   /* eslint-disable camelcase */
@@ -17,7 +17,9 @@ export default class TimeTrigger extends Component {
     return (
       <div>
         <paper-input
-          label={localize('ui.panel.config.automation.editor.triggers.type.time.at')}
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type.time.at"
+          )}
           name="at"
           value={at}
           onvalue-changed={this.onChange}
@@ -28,5 +30,5 @@ export default class TimeTrigger extends Component {
 }
 
 TimeTrigger.defaultConfig = {
-  at: '',
+  at: "",
 };

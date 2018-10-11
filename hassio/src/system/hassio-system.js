@@ -1,10 +1,10 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './hassio-host-info.js';
-import './hassio-supervisor-info.js';
-import './hassio-supervisor-log.js';
+import "./hassio-host-info.js";
+import "./hassio-supervisor-info.js";
+import "./hassio-supervisor-log.js";
 
 class HassioSystem extends PolymerElement {
   static get template() {
@@ -40,4 +40,4 @@ class HassioSystem extends PolymerElement {
   }
 }
 
-customElements.define('hassio-system', HassioSystem);
+customElements.define("hassio-system", HassioSystem);

@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'Title, dialog, toggle',
+    heading: "Title, dialog, toggle",
     config: `
 - type: picture-glance
   image: /images/living_room.png
@@ -15,10 +15,10 @@ const CONFIGS = [
     - light.ceiling_lights
     - binary_sensor.movement_backyard
     - binary_sensor.basement_floor_wet
-    `
+    `,
   },
   {
-    heading: 'Title, dialog, no toggle',
+    heading: "Title, dialog, no toggle",
     config: `
 - type: picture-glance
   image: /images/living_room.png
@@ -26,10 +26,10 @@ const CONFIGS = [
   entities:
     - binary_sensor.movement_backyard
     - binary_sensor.basement_floor_wet
-    `
+    `,
   },
   {
-    heading: 'Title, no dialog, toggle',
+    heading: "Title, no dialog, toggle",
     config: `
 - type: picture-glance
   image: /images/living_room.png
@@ -37,10 +37,10 @@ const CONFIGS = [
   entities:
     - switch.decorative_lights
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'No title, dialog, toggle',
+    heading: "No title, dialog, toggle",
     config: `
 - type: picture-glance
   image: /images/living_room.png
@@ -49,30 +49,30 @@ const CONFIGS = [
     - light.ceiling_lights
     - binary_sensor.movement_backyard
     - binary_sensor.basement_floor_wet
-    `
+    `,
   },
   {
-    heading: 'No title, dialog, no toggle',
+    heading: "No title, dialog, no toggle",
     config: `
 - type: picture-glance
   image: /images/living_room.png
   entities:
     - binary_sensor.movement_backyard
     - binary_sensor.basement_floor_wet
-    `
+    `,
   },
   {
-    heading: 'No title, no dialog, toggle',
+    heading: "No title, no dialog, toggle",
     config: `
 - type: picture-glance
   image: /images/living_room.png
   entities:
     - switch.decorative_lights
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'Custom icon',
+    heading: "Custom icon",
     config: `
 - type: picture-glance
   image: /images/living_room.png
@@ -81,7 +81,7 @@ const CONFIGS = [
     - entity: switch.decorative_lights
       icon: mdi:power
     - binary_sensor.basement_floor_wet
-    `
+    `,
   },
 ];
 
@@ -96,10 +96,10 @@ class DemoPicGlance extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-picture-glance-card', DemoPicGlance);
+customElements.define("demo-hui-picture-glance-card", DemoPicGlance);

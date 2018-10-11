@@ -1,7 +1,7 @@
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html } from "@polymer/lit-element";
 
-import './ha-progress-button.js';
-import fireEvent from '../../common/dom/fire_event.js';
+import "./ha-progress-button.js";
+import fireEvent from "../../common/dom/fire_event.js";
 
 class HaCallApiButton extends LitElement {
   render() {
@@ -16,7 +16,7 @@ class HaCallApiButton extends LitElement {
 
   constructor() {
     super();
-    this.method = 'POST';
+    this.method = "POST";
     this.data = {};
     this.disabled = false;
     this.progress = false;
@@ -24,17 +24,17 @@ class HaCallApiButton extends LitElement {
 
   static get properties() {
     return {
-      hass: { },
+      hass: {},
       progress: Boolean,
       path: String,
       method: String,
-      data: { },
-      disabled: Boolean
+      data: {},
+      disabled: Boolean,
     };
   }
 
   get progressButton() {
-    return this.renderRoot.querySelector('ha-progress-button');
+    return this.renderRoot.querySelector("ha-progress-button");
   }
 
   async _buttonTapped() {
@@ -42,7 +42,7 @@ class HaCallApiButton extends LitElement {
     const eventData = {
       method: this.method,
       path: this.path,
-      data: this.data
+      data: this.data,
     };
 
     try {
@@ -58,8 +58,8 @@ class HaCallApiButton extends LitElement {
       eventData.response = err;
     }
 
-    fireEvent(this, 'hass-api-called', eventData);
+    fireEvent(this, "hass-api-called", eventData);
   }
 }
 
-customElements.define('ha-call-api-button', HaCallApiButton);
+customElements.define("ha-call-api-button", HaCallApiButton);

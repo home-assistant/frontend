@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-button/paper-button.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button.js";
 
-import '../../../components/ha-icon.js';
-import callService from '../common/call-service.js';
+import "../../../components/ha-icon.js";
+import callService from "../common/call-service.js";
 
 class HuiCallServiceRow extends PolymerElement {
   static get template() {
@@ -55,14 +55,20 @@ class HuiCallServiceRow extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      _config: Object
+      _config: Object,
     };
   }
 
   setConfig(config) {
-    if (!config || !config.icon || !config.name || !config.action_name
-        || !config.service || !config.service_data) {
-      throw new Error('Error in card configuration.');
+    if (
+      !config ||
+      !config.icon ||
+      !config.name ||
+      !config.action_name ||
+      !config.service ||
+      !config.service_data
+    ) {
+      throw new Error("Error in card configuration.");
     }
     this._config = config;
   }
@@ -71,4 +77,4 @@ class HuiCallServiceRow extends PolymerElement {
     callService(this._config, this.hass);
   }
 }
-customElements.define('hui-call-service-row', HuiCallServiceRow);
+customElements.define("hui-call-service-row", HuiCallServiceRow);

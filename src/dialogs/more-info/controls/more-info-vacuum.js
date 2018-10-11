@@ -1,13 +1,13 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-attributes.js';
+import "../../../components/ha-attributes.js";
 
 class MoreInfoVacuum extends PolymerElement {
   static get template() {
@@ -107,7 +107,7 @@ class MoreInfoVacuum extends PolymerElement {
       fanSpeedIndex: {
         type: Number,
         value: -1,
-        observer: 'fanSpeedChanged',
+        observer: "fanSpeedChanged",
       },
     };
   }
@@ -151,12 +151,14 @@ class MoreInfoVacuum extends PolymerElement {
   }
 
   supportsCommandBar(stateObj) {
-    return (((stateObj.attributes.supported_features & 4) !== 0)
-            | ((stateObj.attributes.supported_features & 8) !== 0)
-            | ((stateObj.attributes.supported_features & 16) !== 0)
-            | ((stateObj.attributes.supported_features & 512) !== 0)
-            | ((stateObj.attributes.supported_features & 1024) !== 0)
-            | ((stateObj.attributes.supported_features & 8192) !== 0));
+    return (
+      ((stateObj.attributes.supported_features & 4) !== 0) |
+      ((stateObj.attributes.supported_features & 8) !== 0) |
+      ((stateObj.attributes.supported_features & 16) !== 0) |
+      ((stateObj.attributes.supported_features & 512) !== 0) |
+      ((stateObj.attributes.supported_features & 1024) !== 0) |
+      ((stateObj.attributes.supported_features & 8192) !== 0)
+    );
   }
 
   /* eslint-enable no-bitwise */
@@ -164,58 +166,58 @@ class MoreInfoVacuum extends PolymerElement {
   fanSpeedChanged(fanSpeedIndex) {
     var fanSpeedInput;
     // Selected Option will transition to '' before transitioning to new value
-    if (fanSpeedIndex === '' || fanSpeedIndex === -1) return;
+    if (fanSpeedIndex === "" || fanSpeedIndex === -1) return;
 
     fanSpeedInput = this.stateObj.attributes.fan_speed_list[fanSpeedIndex];
     if (fanSpeedInput === this.stateObj.attributes.fan_speed) return;
 
-    this.hass.callService('vacuum', 'set_fan_speed', {
+    this.hass.callService("vacuum", "set_fan_speed", {
       entity_id: this.stateObj.entity_id,
       fan_speed: fanSpeedInput,
     });
   }
 
   onStop() {
-    this.hass.callService('vacuum', 'stop', {
-      entity_id: this.stateObj.entity_id
+    this.hass.callService("vacuum", "stop", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
   onPlayPause() {
-    this.hass.callService('vacuum', 'start_pause', {
-      entity_id: this.stateObj.entity_id
+    this.hass.callService("vacuum", "start_pause", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
   onPause() {
-    this.hass.callService('vacuum', 'pause', {
-      entity_id: this.stateObj.entity_id
+    this.hass.callService("vacuum", "pause", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
   onStart() {
-    this.hass.callService('vacuum', 'start', {
-      entity_id: this.stateObj.entity_id
+    this.hass.callService("vacuum", "start", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
   onLocate() {
-    this.hass.callService('vacuum', 'locate', {
-      entity_id: this.stateObj.entity_id
+    this.hass.callService("vacuum", "locate", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
   onCleanSpot() {
-    this.hass.callService('vacuum', 'clean_spot', {
-      entity_id: this.stateObj.entity_id
+    this.hass.callService("vacuum", "clean_spot", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 
   onReturnHome() {
-    this.hass.callService('vacuum', 'return_to_base', {
-      entity_id: this.stateObj.entity_id
+    this.hass.callService("vacuum", "return_to_base", {
+      entity_id: this.stateObj.entity_id,
     });
   }
 }
 
-customElements.define('more-info-vacuum', MoreInfoVacuum);
+customElements.define("more-info-vacuum", MoreInfoVacuum);

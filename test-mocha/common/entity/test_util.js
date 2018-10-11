@@ -4,7 +4,7 @@ let mockState = 1;
 export function createEntity(entity) {
   mockState++;
   entity.entity_id = entity.entity_id || `test.test_${mockState}`;
-  entity.last_changed = entity.last_changed || (new Date()).toISOString();
+  entity.last_changed = entity.last_changed || new Date().toISOString();
   entity.last_updated = entity.last_updated || entity.last_changed;
   entity.attributes = entity.attributes || {};
   return entity;
@@ -13,9 +13,9 @@ export function createEntity(entity) {
 export function createGroup(entity) {
   mockState++;
   entity.entity_id = entity.entity_id || `group.test_${mockState}`;
-  entity.state = entity.state || 'on';
+  entity.state = entity.state || "on";
   entity.attributes = entity.attributes || {};
-  if (!('order' in entity.attributes)) {
+  if (!("order" in entity.attributes)) {
     entity.attributes.order = 0;
   }
   return createEntity(entity);
@@ -34,7 +34,7 @@ export function createLightEntity(isOn) {
   }
   return createEntity({
     entity_id: `light.mock_${mockState}`,
-    state: isOn ? 'on' : 'off',
+    state: isOn ? "on" : "off",
   });
 }
 
@@ -49,6 +49,8 @@ export function createEntities(count) {
 
 export function entityMap(entityList) {
   const entities = {};
-  entityList.forEach((entity) => { entities[entity.entity_id] = entity; });
+  entityList.forEach((entity) => {
+    entities[entity.entity_id] = entity;
+  });
   return entities;
 }

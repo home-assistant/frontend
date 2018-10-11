@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/entity/state-badge.js';
+import "../../../components/entity/state-badge.js";
 
-import ElementClickMixin from '../mixins/element-click-mixin.js';
+import ElementClickMixin from "../mixins/element-click-mixin.js";
 
 /*
  * @appliesMixin ElementClickMixin
@@ -27,21 +27,23 @@ class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged'
+        observer: "_hassChanged",
       },
       _config: Object,
-      _stateObj: Object
+      _stateObj: Object,
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+    this.addEventListener("click", () =>
+      this.handleClick(this.hass, this._config)
+    );
   }
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw Error('Error in element configuration');
+      throw Error("Error in element configuration");
     }
 
     this._config = config;
@@ -51,4 +53,4 @@ class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
     this._stateObj = hass.states[this._config.entity];
   }
 }
-customElements.define('hui-state-icon-element', HuiStateIconElement);
+customElements.define("hui-state-icon-element", HuiStateIconElement);

@@ -1,13 +1,15 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
-class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement)) {
+class MoreInfoAlarmControlPanel extends LocalizeMixin(
+  EventsMixin(PolymerElement)
+) {
   static get template() {
     return html`
       <style include="iron-flex"></style>
@@ -94,38 +96,43 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
       hass: Object,
       stateObj: {
         type: Object,
-        observer: '_stateObjChanged'
+        observer: "_stateObjChanged",
       },
       _enteredCode: {
         type: String,
-        value: ''
+        value: "",
       },
       _codeFormat: {
         type: String,
-        value: ''
+        value: "",
       },
       _codeValid: {
         type: Boolean,
-        computed: '_validateCode(_enteredCode, _codeFormat)'
+        computed: "_validateCode(_enteredCode, _codeFormat)",
       },
       _disarmVisible: {
         type: Boolean,
-        value: false
+        value: false,
       },
       _armVisible: {
         type: Boolean,
-        value: false
+        value: false,
       },
       _inputEnabled: {
         type: Boolean,
-        value: false
-      }
+        value: false,
+      },
     };
   }
 
   constructor() {
     super();
-    this._armedStates = ['armed_home', 'armed_away', 'armed_night', 'armed_custom_bypass'];
+    this._armedStates = [
+      "armed_home",
+      "armed_away",
+      "armed_night",
+      "armed_custom_bypass",
+    ];
   }
 
   _stateObjChanged(newVal, oldVal) {
@@ -133,22 +140,25 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
       const state = newVal.state;
       const props = {
         _codeFormat: newVal.attributes.code_format,
-        _armVisible: state === 'disarmed',
-        _disarmVisible: this._armedStates.includes(state)
-          || state === 'pending' || state === 'triggered' || state === 'arming'
+        _armVisible: state === "disarmed",
+        _disarmVisible:
+          this._armedStates.includes(state) ||
+          state === "pending" ||
+          state === "triggered" ||
+          state === "arming",
       };
       props._inputEnabled = props._disarmVisible || props._armVisible;
       this.setProperties(props);
     }
     if (oldVal) {
       setTimeout(() => {
-        this.fire('iron-resize');
+        this.fire("iron-resize");
       }, 500);
     }
   }
 
   _isNumber(format) {
-    return format === 'Number';
+    return format === "Number";
   }
 
   _validateCode(code, format) {
@@ -156,23 +166,25 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
   }
 
   _digitClicked(ev) {
-    this._enteredCode += ev.target.getAttribute('data-digit');
+    this._enteredCode += ev.target.getAttribute("data-digit");
   }
 
   _clearEnteredCode() {
-    this._enteredCode = '';
+    this._enteredCode = "";
   }
 
   _callService(ev) {
-    const service = ev.target.getAttribute('data-service');
+    const service = ev.target.getAttribute("data-service");
     const data = {
       entity_id: this.stateObj.entity_id,
-      code: this._enteredCode
+      code: this._enteredCode,
     };
-    this.hass.callService('alarm_control_panel', service, data)
-      .then(() => {
-        this._enteredCode = '';
-      });
+    this.hass.callService("alarm_control_panel", service, data).then(() => {
+      this._enteredCode = "";
+    });
   }
 }
-customElements.define('more-info-alarm_control_panel', MoreInfoAlarmControlPanel);
+customElements.define(
+  "more-info-alarm_control_panel",
+  MoreInfoAlarmControlPanel
+);

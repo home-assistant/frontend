@@ -9,9 +9,9 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-import { AppStorageBehavior } from '@polymer/app-storage/app-storage-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import '@polymer/polymer/polymer-legacy.js';
+import { AppStorageBehavior } from "@polymer/app-storage/app-storage-behavior.js";
+import { Polymer } from "@polymer/polymer/lib/legacy/polymer-fn.js";
+import "@polymer/polymer/polymer-legacy.js";
 
 /**
  * app-localstorage-document synchronizes storage between an in-memory
@@ -38,7 +38,7 @@ import '@polymer/polymer/polymer-legacy.js';
  * Only supports storing JSON-serializable values.
  */
 Polymer({
-  is: 'app-localstorage-document',
+  is: "app-localstorage-document",
   behaviors: [AppStorageBehavior],
 
   properties: {
@@ -47,34 +47,40 @@ Polymer({
      *
      * @type{String}
      */
-    key: {type: String, notify: true},
+    key: { type: String, notify: true },
 
     /**
      * If true, the data will automatically be cleared from storage when
      * the page session ends (i.e. when the user has navigated away from
      * the page).
      */
-    sessionOnly: {type: Boolean, value: false},
+    sessionOnly: { type: Boolean, value: false },
 
     /**
      * Either `window.localStorage` or `window.sessionStorage`, depending on
      * `this.sessionOnly`.
      */
-    storage: {type: Object, computed: '__computeStorage(sessionOnly)'}
+    storage: { type: Object, computed: "__computeStorage(sessionOnly)" },
   },
 
-  observers: ['__storageSourceChanged(storage, key)'],
+  observers: ["__storageSourceChanged(storage, key)"],
 
   attached: function() {
-    this.listen(window, 'storage', '__onStorage');
+    this.listen(window, "storage", "__onStorage");
     this.listen(
-        window.top, 'app-local-storage-changed', '__onAppLocalStorageChanged');
+      window.top,
+      "app-local-storage-changed",
+      "__onAppLocalStorageChanged"
+    );
   },
 
   detached: function() {
-    this.unlisten(window, 'storage', '__onStorage');
+    this.unlisten(window, "storage", "__onStorage");
     this.unlisten(
-        window.top, 'app-local-storage-changed', '__onAppLocalStorageChanged');
+      window.top,
+      "app-local-storage-changed",
+      "__onAppLocalStorageChanged"
+    );
   },
 
   get isNew() {
@@ -123,7 +129,7 @@ Polymer({
         value = this.__parseValueFromStorage();
 
         if (value != null) {
-          value = this.get(path, {data: value});
+          value = this.get(path, { data: value });
         } else {
           value = undefined;
         }
@@ -143,7 +149,7 @@ Polymer({
         return Promise.reject(e);
       }
 
-      this.fire('app-local-storage-changed', this, {node: window.top});
+      this.fire("app-local-storage-changed", this, { node: window.top });
     }
 
     return Promise.resolve(value);
@@ -163,17 +169,20 @@ Polymer({
     }
 
     this.syncToMemory(function() {
-      this.set('data', this.__parseValueFromStorage());
+      this.set("data", this.__parseValueFromStorage());
     });
   },
 
   __onAppLocalStorageChanged: function(event) {
-    if (event.detail === this || event.detail.key !== this.key ||
-        event.detail.storage !== this.storage) {
+    if (
+      event.detail === this ||
+      event.detail.key !== this.key ||
+      event.detail.storage !== this.storage
+    ) {
       return;
     }
     this.syncToMemory(function() {
-      this.set('data', event.detail.data);
+      this.set("data", event.detail.data);
     });
   },
 
@@ -181,13 +190,12 @@ Polymer({
     try {
       return JSON.parse(this.storage.getItem(this.key));
     } catch (e) {
-      console.error('Failed to parse value from storage for', this.key);
+      console.error("Failed to parse value from storage for", this.key);
     }
   },
 
   __setStorageValue: function(key, value) {
-    if (typeof value === 'undefined')
-      value = null;
+    if (typeof value === "undefined") value = null;
     this.storage.setItem(key, JSON.stringify(value));
-  }
+  },
 });

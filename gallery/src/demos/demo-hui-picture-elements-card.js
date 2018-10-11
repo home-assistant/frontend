@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'Card with few elements',
+    heading: "Card with few elements",
     config: `
 - type: picture-elements
   image: /images/floorplan.png
@@ -49,7 +49,7 @@ const CONFIGS = [
       style:
         top: 8%
         left: 35%
-    `
+    `,
   },
 ];
 
@@ -64,10 +64,10 @@ class DemoPicElements extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-picture-elements-card', DemoPicElements);
+customElements.define("demo-hui-picture-elements-card", DemoPicElements);

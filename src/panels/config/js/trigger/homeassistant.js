@@ -1,6 +1,6 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-radio-button/paper-radio-button.js';
-import '@polymer/paper-radio-group/paper-radio-group.js';
+import { h, Component } from "preact";
+import "@polymer/paper-radio-button/paper-radio-button.js";
+import "@polymer/paper-radio-group/paper-radio-group.js";
 
 export default class HassTrigger extends Component {
   constructor() {
@@ -10,10 +10,10 @@ export default class HassTrigger extends Component {
   }
 
   radioGroupPicked(ev) {
-    this.props.onChange(this.props.index, Object.assign(
-      {}, this.props.trigger,
-      { event: ev.target.selected },
-    ));
+    this.props.onChange(
+      this.props.index,
+      Object.assign({}, this.props.trigger, { event: ev.target.selected })
+    );
   }
 
   /* eslint-disable camelcase */
@@ -21,14 +21,26 @@ export default class HassTrigger extends Component {
     const { event } = trigger;
     return (
       <div>
-        <label id="eventlabel">{localize('ui.panel.config.automation.editor.triggers.type.homeassistant.event')}</label>
+        <label id="eventlabel">
+          {localize(
+            "ui.panel.config.automation.editor.triggers.type.homeassistant.event"
+          )}
+        </label>
         <paper-radio-group
           selected={event}
           aria-labelledby="eventlabel"
           onpaper-radio-group-changed={this.radioGroupPicked}
         >
-          <paper-radio-button name="start">{localize('ui.panel.config.automation.editor.triggers.type.homeassistant.start')}</paper-radio-button>
-          <paper-radio-button name="shutdown">{localize('ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown')}</paper-radio-button>
+          <paper-radio-button name="start">
+            {localize(
+              "ui.panel.config.automation.editor.triggers.type.homeassistant.start"
+            )}
+          </paper-radio-button>
+          <paper-radio-button name="shutdown">
+            {localize(
+              "ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown"
+            )}
+          </paper-radio-button>
         </paper-radio-group>
       </div>
     );
@@ -36,5 +48,5 @@ export default class HassTrigger extends Component {
 }
 
 HassTrigger.defaultConfig = {
-  event: 'start'
+  event: "start",
 };

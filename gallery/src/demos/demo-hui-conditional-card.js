@@ -1,28 +1,28 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import getEntity from '../data/entity.js';
-import provideHass from '../data/provide_hass.js';
-import '../components/demo-cards.js';
+import getEntity from "../data/entity.js";
+import provideHass from "../data/provide_hass.js";
+import "../components/demo-cards.js";
 
 const ENTITIES = [
-  getEntity('light', 'controller_1', 'on', {
-    friendly_name: 'Controller 1'
+  getEntity("light", "controller_1", "on", {
+    friendly_name: "Controller 1",
   }),
-  getEntity('light', 'controller_2', 'on', {
-    friendly_name: 'Controller 2'
+  getEntity("light", "controller_2", "on", {
+    friendly_name: "Controller 2",
   }),
-  getEntity('light', 'floor', 'off', {
-    friendly_name: 'Floor light'
+  getEntity("light", "floor", "off", {
+    friendly_name: "Floor light",
   }),
-  getEntity('light', 'kitchen', 'on', {
-    friendly_name: 'Kitchen light'
+  getEntity("light", "kitchen", "on", {
+    friendly_name: "Kitchen light",
   }),
 ];
 
 const CONFIGS = [
   {
-    heading: 'Controller',
+    heading: "Controller",
     config: `
 - type: entities
   entities:
@@ -31,10 +31,10 @@ const CONFIGS = [
     - type: divider
     - light.floor
     - light.kitchen
-    `
+    `,
   },
   {
-    heading: 'Demo',
+    heading: "Demo",
     config: `
 - type: conditional
   conditions:
@@ -49,7 +49,7 @@ const CONFIGS = [
       - light.controller_2
       - light.floor
       - light.kitchen
-    `
+    `,
   },
 ];
 
@@ -68,7 +68,7 @@ class DemoConditional extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
+        value: CONFIGS,
       },
       hass: Object,
     };
@@ -81,4 +81,4 @@ class DemoConditional extends PolymerElement {
   }
 }
 
-customElements.define('demo-hui-conditional-card', DemoConditional);
+customElements.define("demo-hui-conditional-card", DemoConditional);

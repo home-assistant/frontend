@@ -1,9 +1,9 @@
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import relativeTime from '../common/datetime/relative_time.js';
+import relativeTime from "../common/datetime/relative_time.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -14,15 +14,15 @@ class HaRelativeTime extends LocalizeMixin(PolymerElement) {
       hass: Object,
       datetime: {
         type: String,
-        observer: 'datetimeChanged',
+        observer: "datetimeChanged",
       },
 
       datetimeObj: {
         type: Object,
-        observer: 'datetimeObjChanged',
+        observer: "datetimeObjChanged",
       },
 
-      parsedDateTime: Object
+      parsedDateTime: Object,
     };
   }
 
@@ -57,11 +57,11 @@ class HaRelativeTime extends LocalizeMixin(PolymerElement) {
   updateRelative() {
     const root = dom(this);
     if (!this.parsedDateTime) {
-      root.innerHTML = this.localize('ui.components.relative_time.never');
+      root.innerHTML = this.localize("ui.components.relative_time.never");
     } else {
       root.innerHTML = relativeTime(this.parsedDateTime, this.localize);
     }
   }
 }
 
-customElements.define('ha-relative-time', HaRelativeTime);
+customElements.define("ha-relative-time", HaRelativeTime);

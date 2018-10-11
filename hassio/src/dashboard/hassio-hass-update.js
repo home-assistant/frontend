@@ -1,11 +1,11 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/components/buttons/ha-call-api-button.js';
-import '../components/hassio-card-content.js';
-import '../resources/hassio-style.js';
+import "../../../src/components/buttons/ha-call-api-button.js";
+import "../components/hassio-card-content.js";
+import "../resources/hassio-style.js";
 
 class HassioHassUpdate extends PolymerElement {
   static get template() {
@@ -56,7 +56,7 @@ class HassioHassUpdate extends PolymerElement {
 
   ready() {
     super.ready();
-    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }
 
   apiCalled(ev) {
@@ -67,8 +67,8 @@ class HassioHassUpdate extends PolymerElement {
 
     const response = ev.detail.response;
 
-    if (typeof response.body === 'object') {
-      this.errors = response.body.message || 'Unknown error';
+    if (typeof response.body === "object") {
+      this.errors = response.body.message || "Unknown error";
     } else {
       this.errors = response.body;
     }
@@ -79,4 +79,4 @@ class HassioHassUpdate extends PolymerElement {
   }
 }
 
-customElements.define('hassio-hass-update', HassioHassUpdate);
+customElements.define("hassio-hass-update", HassioHassUpdate);

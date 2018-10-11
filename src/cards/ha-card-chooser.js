@@ -1,28 +1,29 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './ha-camera-card.js';
-import './ha-entities-card.js';
-import './ha-history_graph-card.js';
-import './ha-media_player-card.js';
-import './ha-persistent_notification-card.js';
-import './ha-plant-card.js';
-import './ha-weather-card.js';
+import "./ha-camera-card.js";
+import "./ha-entities-card.js";
+import "./ha-history_graph-card.js";
+import "./ha-media_player-card.js";
+import "./ha-persistent_notification-card.js";
+import "./ha-plant-card.js";
+import "./ha-weather-card.js";
 
-import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater.js";
 
 class HaCardChooser extends PolymerElement {
   static get properties() {
     return {
       cardData: {
         type: Object,
-        observer: 'cardDataChanged',
+        observer: "cardDataChanged",
       },
     };
   }
 
   _updateCard(newData) {
     dynamicContentUpdater(
-      this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
+      this,
+      "HA-" + newData.cardType.toUpperCase() + "-CARD",
       newData
     );
   }
@@ -32,7 +33,7 @@ class HaCardChooser extends PolymerElement {
     this.observer = new IntersectionObserver((entries) => {
       if (!entries.length) return;
       if (entries[0].isIntersecting) {
-        this.style.height = '';
+        this.style.height = "";
         if (this._detachedChild) {
           this.appendChild(this._detachedChild);
           this._detachedChild = null;
@@ -58,13 +59,14 @@ class HaCardChooser extends PolymerElement {
     if (!newData) return;
     // ha-entities-card is exempt from observer as it doesn't load heavy resources.
     // and usually doesn't load external resources (except for entity_picture).
-    const eligibleToObserver = (window.IntersectionObserver && newData.cardType !== 'entities');
+    const eligibleToObserver =
+      window.IntersectionObserver && newData.cardType !== "entities";
     if (!eligibleToObserver) {
       if (this.observer) {
         this.observer.unobserve(this);
         this.observer = null;
       }
-      this.style.height = '';
+      this.style.height = "";
       this._updateCard(newData);
       return;
     }
@@ -76,4 +78,4 @@ class HaCardChooser extends PolymerElement {
     }
   }
 }
-customElements.define('ha-card-chooser', HaCardChooser);
+customElements.define("ha-card-chooser", HaCardChooser);

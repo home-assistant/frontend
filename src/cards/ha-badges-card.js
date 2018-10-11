@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/ha-state-label-badge.js';
+import "../components/entity/ha-state-label-badge.js";
 
 class HaBadgesCard extends PolymerElement {
   static get template() {
@@ -25,4 +25,4 @@ class HaBadgesCard extends PolymerElement {
     };
   }
 }
-customElements.define('ha-badges-card', HaBadgesCard);
+customElements.define("ha-badges-card", HaBadgesCard);

@@ -1,6 +1,6 @@
-import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
+import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin.js";
 
-import fireEvent from '../common/dom/fire_event.js';
+import fireEvent from "../common/dom/fire_event.js";
 
 // Polymer legacy event helpers used courtesy of the Polymer project.
 //
@@ -33,8 +33,10 @@ import fireEvent from '../common/dom/fire_event.js';
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* @polymerMixin */
-export default dedupingMixin(superClass => class extends superClass {
-  /**
+export default dedupingMixin(
+  (superClass) =>
+    class extends superClass {
+      /**
    * Dispatches a custom event with an optional detail value.
    *
    * @param {string} type Name of event type.
@@ -49,8 +51,9 @@ export default dedupingMixin(superClass => class extends superClass {
     *  `node` on which to fire the event (HTMLElement, defaults to `this`).
     * @return {Event} The new event that was fired.
     */
-  fire(type, detail, options) {
-    options = options || {};
-    return fireEvent(options.node || this, type, detail, options);
-  }
-});
+      fire(type, detail, options) {
+        options = options || {};
+        return fireEvent(options.node || this, type, detail, options);
+      }
+    }
+);

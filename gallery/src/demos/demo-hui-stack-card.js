@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'Vertical Stack',
+    heading: "Vertical Stack",
     config: `
 - type: vertical-stack
   cards:
@@ -17,10 +17,10 @@ const CONFIGS = [
         - device_tracker.demo_anne_therese
         - device_tracker.demo_home_boy
         - device_tracker.demo_paulus
-    `
+    `,
   },
   {
-    heading: 'Horizontal Stack',
+    heading: "Horizontal Stack",
     config: `
 - type: horizontal-stack
   cards:
@@ -32,10 +32,10 @@ const CONFIGS = [
         - device_tracker.demo_anne_therese
         - device_tracker.demo_home_boy
         - device_tracker.demo_paulus
-    `
+    `,
   },
   {
-    heading: 'Combination of both',
+    heading: "Combination of both",
     config: `
 - type: vertical-stack
   cards:
@@ -52,7 +52,7 @@ const CONFIGS = [
     - type: picture-entity
       image: /images/bed.png
       entity: light.bed_light
-    `
+    `,
   },
 ];
 
@@ -67,10 +67,10 @@ class DemoStack extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-stack-card', DemoStack);
+customElements.define("demo-hui-stack-card", DemoStack);

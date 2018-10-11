@@ -6,7 +6,7 @@
 // leading edge, instead of the trailing.
 export default function debounce(func, wait, immediate) {
   let timeout;
-  return function (...args) {
+  return function(...args) {
     const context = this;
     const later = () => {
       timeout = null;

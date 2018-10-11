@@ -1,10 +1,10 @@
-import '@polymer/paper-button/paper-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-relative-time.js';
+import "../../../components/ha-relative-time.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -42,15 +42,15 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object
+      stateObj: Object,
     };
   }
 
   handleTriggerTapped() {
-    this.hass.callService('automation', 'trigger', {
+    this.hass.callService("automation", "trigger", {
       entity_id: this.stateObj.entity_id,
     });
   }
 }
 
-customElements.define('more-info-automation', MoreInfoAutomation);
+customElements.define("more-info-automation", MoreInfoAutomation);

@@ -1,31 +1,29 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-input/paper-input.js';
-import '../../../../components/ha-textarea.js';
+import { h, Component } from "preact";
+import "@polymer/paper-input/paper-input.js";
+import "../../../../components/ha-textarea.js";
 
-import '../../../../components/entity/ha-entity-picker.js';
+import "../../../../components/entity/ha-entity-picker.js";
 
-import { onChangeEvent } from '../../../../common/preact/event.js';
+import { onChangeEvent } from "../../../../common/preact/event.js";
 
 export default class NumericStateTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'trigger');
+    this.onChange = onChangeEvent.bind(this, "trigger");
     this.entityPicked = this.entityPicked.bind(this);
   }
 
   entityPicked(ev) {
-    this.props.onChange(this.props.index, Object.assign(
-      {}, this.props.trigger,
-      { entity_id: ev.target.value },
-    ));
+    this.props.onChange(
+      this.props.index,
+      Object.assign({}, this.props.trigger, { entity_id: ev.target.value })
+    );
   }
 
   /* eslint-disable camelcase */
   render({ trigger, hass, localize }) {
-    const {
-      value_template, entity_id, below, above
-    } = trigger;
+    const { value_template, entity_id, below, above } = trigger;
 
     return (
       <div>
@@ -36,19 +34,25 @@ export default class NumericStateTrigger extends Component {
           allowCustomEntity
         />
         <paper-input
-          label={localize('ui.panel.config.automation.editor.triggers.type.numeric_state.above')}
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type.numeric_state.above"
+          )}
           name="above"
           value={above}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.editor.triggers.type.numeric_state.below')}
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type.numeric_state.below"
+          )}
           name="below"
           value={below}
           onvalue-changed={this.onChange}
         />
         <ha-textarea
-          label={localize('ui.panel.config.automation.editor.triggers.type.numeric_state.value_template')}
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type.numeric_state.value_template"
+          )}
           name="value_template"
           value={value_template}
           onvalue-changed={this.onChange}
@@ -59,5 +63,5 @@ export default class NumericStateTrigger extends Component {
 }
 
 NumericStateTrigger.defaultConfig = {
-  entity_id: '',
+  entity_id: "",
 };

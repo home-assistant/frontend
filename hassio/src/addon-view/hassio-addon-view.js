@@ -1,19 +1,19 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-route/app-route.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/app-route/app-route.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/components/ha-menu-button.js';
-import '../../../src/resources/ha-style.js';
-import '../hassio-markdown-dialog.js';
-import './hassio-addon-audio.js';
-import './hassio-addon-config.js';
-import './hassio-addon-info.js';
-import './hassio-addon-logs.js';
-import './hassio-addon-network.js';
+import "../../../src/components/ha-menu-button.js";
+import "../../../src/resources/ha-style.js";
+import "../hassio-markdown-dialog.js";
+import "./hassio-addon-audio.js";
+import "./hassio-addon-config.js";
+import "./hassio-addon-info.js";
+import "./hassio-addon-logs.js";
+import "./hassio-addon-network.js";
 
 class HassioAddonView extends PolymerElement {
   static get template() {
@@ -91,7 +91,7 @@ class HassioAddonView extends PolymerElement {
       route: Object,
       routeData: {
         type: Object,
-        observer: 'routeDataChanged',
+        observer: "routeDataChanged",
       },
       routeMatches: Boolean,
       addon: Object,
@@ -99,15 +99,17 @@ class HassioAddonView extends PolymerElement {
       markdownTitle: String,
       markdownContent: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
-    this.addEventListener('hassio-markdown-dialog', ev => this.openMarkdown(ev));
+    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
+    this.addEventListener("hassio-markdown-dialog", (ev) =>
+      this.openMarkdown(ev)
+    );
   }
 
   apiCalled(ev) {
@@ -115,7 +117,7 @@ class HassioAddonView extends PolymerElement {
 
     if (!path) return;
 
-    if (path.substr(path.lastIndexOf('/') + 1) === 'uninstall') {
+    if (path.substr(path.lastIndexOf("/") + 1) === "uninstall") {
       this.backTapped();
     } else {
       this.routeDataChanged(this.routeData);
@@ -124,12 +126,14 @@ class HassioAddonView extends PolymerElement {
 
   routeDataChanged(routeData) {
     if (!this.routeMatches || !routeData || !routeData.slug) return;
-    this.hass.callApi('get', `hassio/addons/${routeData.slug}/info`)
-      .then((info) => {
+    this.hass.callApi("get", `hassio/addons/${routeData.slug}/info`).then(
+      (info) => {
         this.addon = info.data;
-      }, () => {
+      },
+      () => {
         this.addon = null;
-      });
+      }
+    );
   }
 
   backTapped() {
@@ -141,8 +145,8 @@ class HassioAddonView extends PolymerElement {
       markdownTitle: ev.detail.title,
       markdownContent: ev.detail.content,
     });
-    this.shadowRoot.querySelector('hassio-markdown-dialog').openDialog();
+    this.shadowRoot.querySelector("hassio-markdown-dialog").openDialog();
   }
 }
 
-customElements.define('hassio-addon-view', HassioAddonView);
+customElements.define("hassio-addon-view", HassioAddonView);

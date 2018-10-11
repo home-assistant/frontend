@@ -1,9 +1,9 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
 
 class HaPanelIframe extends PolymerElement {
   static get template() {
@@ -45,4 +45,4 @@ class HaPanelIframe extends PolymerElement {
   }
 }
 
-customElements.define('ha-panel-iframe', HaPanelIframe);
+customElements.define("ha-panel-iframe", HaPanelIframe);

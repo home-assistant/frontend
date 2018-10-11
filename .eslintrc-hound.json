@@ -1,5 +1,5 @@
 {
-  "extends": "airbnb-base",
+  "extends": ["airbnb-base", "prettier"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true,
@@ -67,13 +67,11 @@
     "react/no-find-dom-node": 2,
     "react/no-is-mounted": 2,
     "react/jsx-no-comment-textnodes": 2,
-    "react/jsx-curly-spacing": 2,
     "react/jsx-no-undef": 2,
     "react/jsx-uses-react": 2,
     "react/jsx-uses-vars": 2,
-    "no-restricted-syntax": [0, "ForOfStatement"]
+    "no-restricted-syntax": [0, "ForOfStatement"],
+    "prettier/prettier": "error"
   },
-  "plugins": [
-    "react"
-  ]
+  "plugins": ["react", "prettier"]
 }

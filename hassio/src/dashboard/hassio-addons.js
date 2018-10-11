@@ -1,10 +1,10 @@
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/hassio-card-content.js';
-import '../resources/hassio-style.js';
-import NavigateMixin from '../../../src/mixins/navigate-mixin.js';
+import "../components/hassio-card-content.js";
+import "../resources/hassio-style.js";
+import NavigateMixin from "../../../src/mixins/navigate-mixin.js";
 
 class HassioAddons extends NavigateMixin(PolymerElement) {
   static get template() {
@@ -46,28 +46,32 @@ class HassioAddons extends NavigateMixin(PolymerElement) {
   }
 
   computeIcon(addon) {
-    return addon.installed !== addon.version ? 'hassio:arrow-up-bold-circle' : 'hassio:puzzle';
+    return addon.installed !== addon.version
+      ? "hassio:arrow-up-bold-circle"
+      : "hassio:puzzle";
   }
 
   computeIconTitle(addon) {
-    if (addon.installed !== addon.version) return 'New version available';
-    return addon.state === 'started' ? 'Add-on is running' : 'Add-on is stopped';
+    if (addon.installed !== addon.version) return "New version available";
+    return addon.state === "started"
+      ? "Add-on is running"
+      : "Add-on is stopped";
   }
 
   computeIconClass(addon) {
-    if (addon.installed !== addon.version) return 'update';
-    return addon.state === 'started' ? 'running' : '';
+    if (addon.installed !== addon.version) return "update";
+    return addon.state === "started" ? "running" : "";
   }
 
   addonTapped(ev) {
-    this.navigate('/hassio/addon/' + ev.model.addon.slug);
+    this.navigate("/hassio/addon/" + ev.model.addon.slug);
     ev.target.blur();
   }
 
   openStore(ev) {
-    this.navigate('/hassio/store');
+    this.navigate("/hassio/store");
     ev.target.blur();
   }
 }
 
-customElements.define('hassio-addons', HassioAddons);
+customElements.define("hassio-addons", HassioAddons);

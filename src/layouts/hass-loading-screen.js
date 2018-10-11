@@ -1,10 +1,10 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/ha-menu-button.js';
+import "../components/ha-menu-button.js";
 
 class HassLoadingScreen extends PolymerElement {
   static get template() {
@@ -45,10 +45,10 @@ class HassLoadingScreen extends PolymerElement {
 
       title: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
 }
 
-customElements.define('hass-loading-screen', HassLoadingScreen);
+customElements.define("hass-loading-screen", HassLoadingScreen);

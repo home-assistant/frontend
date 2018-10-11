@@ -1,34 +1,34 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'Basic example',
+    heading: "Basic example",
     config: `
 - type: gauge
   entity: sensor.brightness
-    `
+    `,
   },
   {
-    heading: 'With title',
+    heading: "With title",
     config: `
 - type: gauge
   title: Humidity
   entity: sensor.outside_humidity
-    `
+    `,
   },
   {
-    heading: 'Custom Unit of Measurement',
+    heading: "Custom Unit of Measurement",
     config: `
 - type: gauge
   entity: sensor.outside_temperature
   unit_of_measurement: C
-    `
+    `,
   },
   {
-    heading: 'Setting Severity Levels',
+    heading: "Setting Severity Levels",
     config: `
 - type: gauge
   entity: sensor.brightness
@@ -36,30 +36,30 @@ const CONFIGS = [
     red: 32
     green: 0
     yellow: 23
-    `
+    `,
   },
   {
-    heading: 'Setting Min and Max Values',
+    heading: "Setting Min and Max Values",
     config: `
 - type: gauge
   entity: sensor.brightness
   min: 0
   max: 38
-    `
+    `,
   },
   {
-    heading: 'Invalid Entity',
+    heading: "Invalid Entity",
     config: `
 - type: gauge
   entity: sensor.invalid_entity
-    `
+    `,
   },
   {
-    heading: 'Non-Numeric Value',
+    heading: "Non-Numeric Value",
     config: `
 - type: gauge
   entity: plant.bonsai
-    `
+    `,
   },
 ];
 
@@ -74,10 +74,10 @@ class DemoGaugeEntity extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-gauge-card', DemoGaugeEntity);
+customElements.define("demo-hui-gauge-card", DemoGaugeEntity);

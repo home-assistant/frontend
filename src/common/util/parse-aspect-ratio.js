@@ -8,7 +8,7 @@ export default function parseAspectRatio(input) {
   }
   try {
     if (input) {
-      const arr = input.replace(':', 'x').split('x');
+      const arr = input.replace(":", "x").split("x");
       if (arr.length === 0) {
         return null;
       }

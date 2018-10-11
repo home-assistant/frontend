@@ -1,19 +1,19 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-call-api-button.js';
-import '../../../layouts/hass-subpage.js';
-import '../../../resources/ha-style.js';
+import "../../../components/buttons/ha-call-api-button.js";
+import "../../../layouts/hass-subpage.js";
+import "../../../resources/ha-style.js";
 
-import '../ha-config-section.js';
+import "../ha-config-section.js";
 
-import formatDateTime from '../../../common/datetime/format_date_time.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import formatDateTime from "../../../common/datetime/format_date_time.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -179,7 +179,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
       _subscription: {
         type: Object,
         value: null,
-      }
+      },
     };
   }
 
@@ -189,41 +189,46 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   async _fetchSubscriptionInfo() {
-    this._subscription = await this.hass.callWS({ type: 'cloud/subscription' });
+    this._subscription = await this.hass.callWS({ type: "cloud/subscription" });
   }
 
   handleLogout() {
-    this.hass.callApi('post', 'cloud/logout')
-      .then(() => this.fire('ha-refresh-cloud-status'));
+    this.hass
+      .callApi("post", "cloud/logout")
+      .then(() => this.fire("ha-refresh-cloud-status"));
   }
 
   _formatSubscription(subInfo) {
     return subInfo === null
-      ? 'Fetching subscription…'
+      ? "Fetching subscription…"
       : subInfo.human_description.replace(
-        '{periodEnd}', formatDateTime(new Date(subInfo.subscription.current_period_end * 1000), this.language)
-      );
+          "{periodEnd}",
+          formatDateTime(
+            new Date(subInfo.subscription.current_period_end * 1000),
+            this.language
+          )
+        );
   }
 
   _alexaChanged(ev) {
-    this._handleToggleChange('alexa_enabled', ev.target);
+    this._handleToggleChange("alexa_enabled", ev.target);
   }
 
   _googleChanged(ev) {
-    this._handleToggleChange('google_enabled', ev.target);
+    this._handleToggleChange("google_enabled", ev.target);
   }
 
   async _handleToggleChange(property, element) {
     try {
       await this.hass.callWS({
-        type: 'cloud/update_prefs',
+        type: "cloud/update_prefs",
         [property]: element.checked,
       });
-      this.fire('ha-refresh-cloud-status');
+      this.fire("ha-refresh-cloud-status");
     } catch (err) {
       element.checked = !element.checked;
     }
   }
 }
 
-customElements.define('ha-config-cloud-account', HaConfigCloudAccount);
+customElements.define("ha-config-cloud-account", HaConfigCloudAccount);

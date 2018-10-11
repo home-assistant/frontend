@@ -1,32 +1,26 @@
-import { assert } from 'chai';
+import { assert } from "chai";
 
-import attributeClassNames from '../../../src/common/entity/attribute_class_names';
+import attributeClassNames from "../../../src/common/entity/attribute_class_names";
 
-describe('attributeClassNames', () => {
-  const attrs = ['mock_attr1', 'mock_attr2'];
+describe("attributeClassNames", () => {
+  const attrs = ["mock_attr1", "mock_attr2"];
 
-  it('Skips null states', () => {
+  it("Skips null states", () => {
     const stateObj = null;
-    assert.strictEqual(
-      attributeClassNames(stateObj, attrs),
-      ''
-    );
+    assert.strictEqual(attributeClassNames(stateObj, attrs), "");
   });
 
-  it('Matches no attrbutes', () => {
+  it("Matches no attrbutes", () => {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
         other_attr_2: 2,
       },
     };
-    assert.strictEqual(
-      attributeClassNames(stateObj, attrs),
-      ''
-    );
+    assert.strictEqual(attributeClassNames(stateObj, attrs), "");
   });
 
-  it('Matches one attrbute', () => {
+  it("Matches one attrbute", () => {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
@@ -34,13 +28,10 @@ describe('attributeClassNames', () => {
         mock_attr1: 3,
       },
     };
-    assert.strictEqual(
-      attributeClassNames(stateObj, attrs),
-      'has-mock_attr1'
-    );
+    assert.strictEqual(attributeClassNames(stateObj, attrs), "has-mock_attr1");
   });
 
-  it('Matches two attrbutes', () => {
+  it("Matches two attrbutes", () => {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
@@ -51,7 +42,7 @@ describe('attributeClassNames', () => {
     };
     assert.strictEqual(
       attributeClassNames(stateObj, attrs),
-      'has-mock_attr1 has-mock_attr2'
+      "has-mock_attr1 has-mock_attr2"
     );
   });
 });

@@ -1,10 +1,10 @@
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import DialogMixin from '../mixins/dialog-mixin.js';
+import DialogMixin from "../mixins/dialog-mixin.js";
 
 /*
  * @appliesMixin DialogMixin
@@ -138,62 +138,72 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
       results: {
         type: Object,
         value: null,
-        observer: '_scrollMessagesBottom',
+        observer: "_scrollMessagesBottom",
       },
 
       _conversation: {
         type: Array,
-        value: function () {
-          return [{ who: 'hass', text: 'How can I help?' }];
+        value: function() {
+          return [{ who: "hass", text: "How can I help?" }];
         },
-        observer: '_scrollMessagesBottom',
-      }
+        observer: "_scrollMessagesBottom",
+      },
     };
   }
 
-  static get observers() { return ['dialogOpenChanged(opened)']; }
+  static get observers() {
+    return ["dialogOpenChanged(opened)"];
+  }
 
   initRecognition() {
     /* eslint-disable new-cap */
     this.recognition = new webkitSpeechRecognition();
     /* eslint-enable new-cap */
 
-    this.recognition.onstart = function () {
+    this.recognition.onstart = function() {
       this.results = {
-        final: '',
-        interim: '',
+        final: "",
+        interim: "",
       };
     }.bind(this);
-    this.recognition.onerror = function () {
+    this.recognition.onerror = function() {
       this.recognition.abort();
       var text = this.results.final || this.results.interim;
       this.results = null;
-      if (text === '') {
-        text = '<Home Assistant did not hear anything>';
+      if (text === "") {
+        text = "<Home Assistant did not hear anything>";
       }
-      this.push('_conversation', { who: 'user', text: text, error: true });
+      this.push("_conversation", { who: "user", text: text, error: true });
     }.bind(this);
-    this.recognition.onend = function () {
+    this.recognition.onend = function() {
       // Already handled by onerror
       if (this.results == null) {
         return;
       }
       var text = this.results.final || this.results.interim;
       this.results = null;
-      this.push('_conversation', { who: 'user', text: text });
+      this.push("_conversation", { who: "user", text: text });
 
-      this.hass.callApi('post', 'conversation/process', { text: text })
-        .then(function (response) {
-          this.push('_conversation', { who: 'hass', text: response.speech.plain.speech });
-        }.bind(this), function () {
-          this.set(['_conversation', this._conversation.length - 1, 'error'], true);
-        }.bind(this));
+      this.hass.callApi("post", "conversation/process", { text: text }).then(
+        function(response) {
+          this.push("_conversation", {
+            who: "hass",
+            text: response.speech.plain.speech,
+          });
+        }.bind(this),
+        function() {
+          this.set(
+            ["_conversation", this._conversation.length - 1, "error"],
+            true
+          );
+        }.bind(this)
+      );
     }.bind(this);
 
-    this.recognition.onresult = function (event) {
+    this.recognition.onresult = function(event) {
       var oldResults = this.results;
-      var finalTranscript = '';
-      var interimTranscript = '';
+      var finalTranscript = "";
+      var interimTranscript = "";
 
       for (var ind = event.resultIndex; ind < event.results.length; ind++) {
         if (event.results[ind].isFinal) {
@@ -216,8 +226,8 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
     }
 
     this.results = {
-      interim: '',
-      final: '',
+      interim: "",
+      final: "",
     };
     this.recognition.start();
   }
@@ -227,7 +237,7 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
       this.$.messages.scrollTop = this.$.messages.scrollHeight;
 
       if (this.$.messages.scrollTop !== 0) {
-        this.$.dialog.fire('iron-resize');
+        this.$.dialog.fire("iron-resize");
       }
     }, 10);
   }
@@ -241,8 +251,8 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
   }
 
   _computeMessageClasses(message) {
-    return 'message ' + message.who + (message.error ? ' error' : '');
+    return "message " + message.who + (message.error ? " error" : "");
   }
 }
 
-customElements.define('ha-voice-command-dialog', HaVoiceCommandDialog);
+customElements.define("ha-voice-command-dialog", HaVoiceCommandDialog);

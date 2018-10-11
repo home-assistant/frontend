@@ -1,19 +1,19 @@
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-fab/paper-fab.js';
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-fab/paper-fab.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { h, render } from 'preact';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { h, render } from "preact";
 
-import '../../../layouts/ha-app-layout.js';
+import "../../../layouts/ha-app-layout.js";
 
-import Automation from '../js/automation.js';
-import unmountPreact from '../../../common/preact/unmount.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import Automation from "../js/automation.js";
+import unmountPreact from "../../../common/preact/unmount.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
@@ -23,8 +23,7 @@ function AutomationEditor(mountEl, props, mergeEl) {
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
-class HaAutomationEditor extends
-  LocalizeMixin(NavigateMixin(PolymerElement)) {
+class HaAutomationEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">
@@ -106,7 +105,7 @@ class HaAutomationEditor extends
     return {
       hass: {
         type: Object,
-        observer: '_updateComponent',
+        observer: "_updateComponent",
       },
 
       narrow: {
@@ -135,22 +134,22 @@ class HaAutomationEditor extends
 
       automation: {
         type: Object,
-        observer: 'automationChanged',
+        observer: "automationChanged",
       },
 
       creatingNew: {
         type: Boolean,
-        observer: 'creatingNewChanged',
+        observer: "creatingNewChanged",
       },
 
       name: {
         type: String,
-        computed: 'computeName(automation, localize)'
+        computed: "computeName(automation, localize)",
       },
 
       isWide: {
         type: Boolean,
-        observer: '_updateComponent',
+        observer: "_updateComponent",
       },
 
       _rendered: {
@@ -196,20 +195,23 @@ class HaAutomationEditor extends
     if (oldVal && oldVal.attributes.id === newVal.attributes.id) {
       return;
     }
-    this.hass.callApi('get', 'config/automation/config/' + newVal.attributes.id)
-      .then(function (config) {
-        // Normalize data: ensure trigger, action and condition are lists
-        // Happens when people copy paste their automations into the config
-        ['trigger', 'condition', 'action'].forEach(function (key) {
-          var value = config[key];
-          if (value && !Array.isArray(value)) {
-            config[key] = [value];
-          }
-        });
-        this.dirty = false;
-        this.config = config;
-        this._updateComponent();
-      }.bind(this));
+    this.hass
+      .callApi("get", "config/automation/config/" + newVal.attributes.id)
+      .then(
+        function(config) {
+          // Normalize data: ensure trigger, action and condition are lists
+          // Happens when people copy paste their automations into the config
+          ["trigger", "condition", "action"].forEach(function(key) {
+            var value = config[key];
+            if (value && !Array.isArray(value)) {
+              config[key] = [value];
+            }
+          });
+          this.dirty = false;
+          this.config = config;
+          this._updateComponent();
+        }.bind(this)
+      );
   }
 
   creatingNewChanged(newVal) {
@@ -218,22 +220,22 @@ class HaAutomationEditor extends
     }
     this.dirty = false;
     this.config = {
-      alias: this.localize('ui.panel.config.automation.editor.default_name'),
-      trigger: [
-        { platform: 'state' },
-      ],
+      alias: this.localize("ui.panel.config.automation.editor.default_name"),
+      trigger: [{ platform: "state" }],
       condition: [],
-      action: [
-        { service: '' },
-      ],
+      action: [{ service: "" }],
     };
     this._updateComponent();
   }
 
   backTapped() {
-    if (this.dirty
-        // eslint-disable-next-line
-        && !confirm(this.localize('ui.panel.config.automation.editor.unsaved_confirm'))) {
+    if (
+      this.dirty &&
+      // eslint-disable-next-line
+      !confirm(
+        this.localize("ui.panel.config.automation.editor.unsaved_confirm")
+      )
+    ) {
       return;
     }
     history.back();
@@ -249,34 +251,43 @@ class HaAutomationEditor extends
 
     this._renderScheduled = false;
 
-    this._rendered = AutomationEditor(this.$.root, {
-      automation: this.config,
-      onChange: this.configChanged,
-      isWide: this.isWide,
-      hass: this.hass,
-      localize: this.localize,
-    }, this._rendered);
+    this._rendered = AutomationEditor(
+      this.$.root,
+      {
+        automation: this.config,
+        onChange: this.configChanged,
+        isWide: this.isWide,
+        hass: this.hass,
+        localize: this.localize,
+      },
+      this._rendered
+    );
   }
 
   saveAutomation() {
-    var id = this.creatingNew ? '' + Date.now() : this.automation.attributes.id;
-    this.hass.callApi('post', 'config/automation/config/' + id, this.config).then(function () {
-      this.dirty = false;
+    var id = this.creatingNew ? "" + Date.now() : this.automation.attributes.id;
+    this.hass
+      .callApi("post", "config/automation/config/" + id, this.config)
+      .then(
+        function() {
+          this.dirty = false;
 
-      if (this.creatingNew) {
-        this.navigate(`/config/automation/edit/${id}`, true);
-      }
-    }.bind(this), function (errors) {
-      this.errors = errors.body.message;
-      throw errors;
-    }.bind(this));
+          if (this.creatingNew) {
+            this.navigate(`/config/automation/edit/${id}`, true);
+          }
+        }.bind(this),
+        function(errors) {
+          this.errors = errors.body.message;
+          throw errors;
+        }.bind(this)
+      );
   }
 
   computeName(automation, localize) {
     return automation
       ? computeStateName(automation)
-      : localize('ui.panel.config.automation.editor.default_name');
+      : localize("ui.panel.config.automation.editor.default_name");
   }
 }
 
-customElements.define('ha-automation-editor', HaAutomationEditor);
+customElements.define("ha-automation-editor", HaAutomationEditor);

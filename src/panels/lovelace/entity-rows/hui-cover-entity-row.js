@@ -1,10 +1,10 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/hui-generic-entity-row.js';
-import '../../../components/ha-cover-controls.js';
-import '../../../components/ha-cover-tilt-controls.js';
-import CoverEntity from '../../../util/cover-model.js';
+import "../components/hui-generic-entity-row.js";
+import "../../../components/ha-cover-controls.js";
+import "../../../components/ha-cover-tilt-controls.js";
+import CoverEntity from "../../../util/cover-model.js";
 
 class HuiCoverEntityRow extends PolymerElement {
   static get template() {
@@ -47,11 +47,11 @@ class HuiCoverEntityRow extends PolymerElement {
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
+        computed: "_computeStateObj(hass.states, _config.entity)",
       },
       _entityObj: {
         type: Object,
-        computed: '_computeEntityObj(hass, _stateObj)'
+        computed: "_computeEntityObj(hass, _stateObj)",
       },
     };
   }
@@ -66,9 +66,9 @@ class HuiCoverEntityRow extends PolymerElement {
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw new Error('Entity not configured.');
+      throw new Error("Entity not configured.");
     }
     this._config = config;
   }
 }
-customElements.define('hui-cover-entity-row', HuiCoverEntityRow);
+customElements.define("hui-cover-entity-row", HuiCoverEntityRow);

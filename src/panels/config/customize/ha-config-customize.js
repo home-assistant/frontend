@@ -1,20 +1,20 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../resources/ha-style.js';
+import "../../../resources/ha-style.js";
 
-import '../ha-config-section.js';
-import '../ha-entity-config.js';
-import './ha-form-customize.js';
+import "../ha-config-section.js";
+import "../ha-entity-config.js";
+import "./ha-form-customize.js";
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import computeStateDomain from '../../../common/entity/compute_state_domain.js';
-import sortByName from '../../../common/entity/states_sort_by_name.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import computeStateDomain from "../../../common/entity/compute_state_domain.js";
+import sortByName from "../../../common/entity/states_sort_by_name.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -55,21 +55,25 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
 
       entities: {
         type: Array,
-        computed: 'computeEntities(hass)',
+        computed: "computeEntities(hass)",
       },
 
       entityConfig: {
         type: Object,
         value: {
-          component: 'ha-form-customize',
-          computeSelectCaption: stateObj => computeStateName(stateObj) + ' (' + computeStateDomain(stateObj) + ')'
-        }
+          component: "ha-form-customize",
+          computeSelectCaption: (stateObj) =>
+            computeStateName(stateObj) +
+            " (" +
+            computeStateDomain(stateObj) +
+            ")",
+        },
       },
     };
   }
 
   computeClasses(isWide) {
-    return isWide ? 'content' : 'content narrow';
+    return isWide ? "content" : "content narrow";
   }
 
   _backTapped() {
@@ -78,8 +82,8 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
 
   computeEntities(hass) {
     return Object.keys(hass.states)
-      .map(key => hass.states[key])
+      .map((key) => hass.states[key])
       .sort(sortByName);
   }
 }
-customElements.define('ha-config-customize', HaConfigCustomize);
+customElements.define("ha-config-customize", HaConfigCustomize);

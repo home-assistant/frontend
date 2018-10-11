@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/entity/ha-state-label-badge.js';
+import "../../components/entity/ha-state-label-badge.js";
 
-import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
+import applyThemesOnElement from "../../common/dom/apply_themes_on_element.js";
 
-import createCardElement from './common/create-card-element';
+import createCardElement from "./common/create-card-element";
 
 class HUIView extends PolymerElement {
   static get template() {
@@ -69,18 +69,18 @@ class HUIView extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged',
+        observer: "_hassChanged",
       },
       config: Object,
-      columns: Number
+      columns: Number,
     };
   }
 
   static get observers() {
     return [
       // Put all properties in 1 observer so we only call configChanged once
-      '_createBadges(config)',
-      '_createCards(config, columns)'
+      "_createBadges(config)",
+      "_createCards(config, columns)",
     ];
   }
 
@@ -97,7 +97,7 @@ class HUIView extends PolymerElement {
     }
 
     if (!config || !config.badges || !Array.isArray(config.badges)) {
-      root.style.display = 'none';
+      root.style.display = "none";
       this._badges = [];
       return;
     }
@@ -106,13 +106,13 @@ class HUIView extends PolymerElement {
     for (const entityId of config.badges) {
       if (!(entityId in this.hass.states)) continue;
 
-      const element = document.createElement('ha-state-label-badge');
+      const element = document.createElement("ha-state-label-badge");
       element.state = this.hass.states[entityId];
       elements.push({ element, entityId });
       root.appendChild(element);
     }
     this._badges = elements;
-    root.style.display = elements.length > 0 ? 'block' : 'none';
+    root.style.display = elements.length > 0 ? "block" : "none";
   }
 
   _createCards(config) {
@@ -164,23 +164,24 @@ class HUIView extends PolymerElement {
       // because a DOM element can only be in 1 position, so it will be removed from
       // 'this' and added to the correct column afterwards.
       this.appendChild(el);
-      const cardSize = typeof el.getCardSize === 'function' ? el.getCardSize() : 1;
+      const cardSize =
+        typeof el.getCardSize === "function" ? el.getCardSize() : 1;
       columns[getColumnIndex(cardSize)].push(el);
     });
 
     // Remove empty columns
-    columns = columns.filter(val => val.length > 0);
+    columns = columns.filter((val) => val.length > 0);
 
     columns.forEach((column) => {
-      const columnEl = document.createElement('div');
-      columnEl.classList.add('column');
-      column.forEach(el => columnEl.appendChild(el));
+      const columnEl = document.createElement("div");
+      columnEl.classList.add("column");
+      column.forEach((el) => columnEl.appendChild(el));
       root.appendChild(columnEl);
     });
 
     this._cards = elements;
 
-    if ('theme' in config) {
+    if ("theme" in config) {
       applyThemesOnElement(root, this.hass.themes, config.theme);
     }
   }
@@ -190,7 +191,7 @@ class HUIView extends PolymerElement {
       const { element, entityId } = badge;
       element.setProperties({
         hass,
-        state: hass.states[entityId]
+        state: hass.states[entityId],
       });
     });
     this._cards.forEach((element) => {
@@ -199,4 +200,4 @@ class HUIView extends PolymerElement {
   }
 }
 
-customElements.define('hui-view', HUIView);
+customElements.define("hui-view", HUIView);

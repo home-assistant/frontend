@@ -1,12 +1,12 @@
-import '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
-import './entity/ha-chart-base.js';
+import "./entity/ha-chart-base.js";
 
-import formatDateTime from '../common/datetime/format_date_time';
+import formatDateTime from "../common/datetime/format_date_time";
 
 class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -34,7 +34,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       chartData: Object,
       data: {
         type: Object,
-        observer: 'dataChanged',
+        observer: "dataChanged",
       },
       names: Object,
       noSingle: Boolean,
@@ -43,12 +43,12 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-      }
+      },
     };
   }
 
   static get observers() {
-    return ['dataChanged(data, endTime, localize, language)'];
+    return ["dataChanged(data, endTime, localize, language)"];
   }
 
   connectedCallback() {
@@ -65,9 +65,9 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
     const staticColors = {
       on: 1,
       off: 0,
-      unavailable: '#a0a0a0',
-      unknown: '#606060',
-      idle: 2
+      unavailable: "#a0a0a0",
+      unknown: "#606060",
+      idle: 2,
     };
     let stateHistory = this.data;
 
@@ -79,17 +79,27 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       stateHistory = [];
     }
 
-    const startTime = new Date(stateHistory.reduce(
-      (minTime, stateInfo) => Math.min(minTime, new Date(stateInfo.data[0].last_changed)),
-      new Date()
-    ));
+    const startTime = new Date(
+      stateHistory.reduce(
+        (minTime, stateInfo) =>
+          Math.min(minTime, new Date(stateInfo.data[0].last_changed)),
+        new Date()
+      )
+    );
 
     // end time is Math.max(startTime, last_event)
-    let endTime = this.endTime
-      || new Date(stateHistory.reduce((maxTime, stateInfo) => Math.max(
-        maxTime,
-        new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
-      ), startTime));
+    let endTime =
+      this.endTime ||
+      new Date(
+        stateHistory.reduce(
+          (maxTime, stateInfo) =>
+            Math.max(
+              maxTime,
+              new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
+            ),
+          startTime
+        )
+      );
 
     if (endTime > new Date()) {
       endTime = new Date();
@@ -110,7 +120,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       stateInfo.data.forEach((state) => {
         let newState = state.state;
         const timeStamp = new Date(state.last_changed);
-        if (newState === undefined || newState === '') {
+        if (newState === undefined || newState === "") {
           newState = null;
         }
         if (timeStamp > endTime) {
@@ -121,12 +131,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
         if (prevState !== null && newState !== prevState) {
           newLastChanged = new Date(state.last_changed);
 
-          dataRow.push([
-            prevLastChanged,
-            newLastChanged,
-            locState,
-            prevState,
-          ]);
+          dataRow.push([prevLastChanged, newLastChanged, locState, prevState]);
 
           prevState = newState;
           locState = state.state_localize;
@@ -139,18 +144,13 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       });
 
       if (prevState !== null) {
-        dataRow.push([
-          prevLastChanged,
-          endTime,
-          locState,
-          prevState,
-        ]);
+        dataRow.push([prevLastChanged, endTime, locState, prevState]);
       }
       datasets.push({ data: dataRow });
       labels.push(entityDisplay);
     });
 
-    const formatTooltipLabel = function (item, data) {
+    const formatTooltipLabel = function(item, data) {
       const values = data.datasets[item.datasetIndex].data[item.index];
 
       const start = formatDateTime(values[0], this.language);
@@ -161,38 +161,45 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
     };
 
     const chartOptions = {
-      type: 'timeline',
+      type: "timeline",
       options: {
         tooltips: {
           callbacks: {
-            label: formatTooltipLabel
-          }
+            label: formatTooltipLabel,
+          },
         },
         scales: {
-          xAxes: [{
-            ticks: {
-              major: {
-                fontStyle: 'bold',
+          xAxes: [
+            {
+              ticks: {
+                major: {
+                  fontStyle: "bold",
+                },
               },
             },
-          }],
-          yAxes: [{
-            afterSetDimensions: (yaxe) => {
-              yaxe.maxWidth = yaxe.chart.width * 0.18;
-            }
-          }],
+          ],
+          yAxes: [
+            {
+              afterSetDimensions: (yaxe) => {
+                yaxe.maxWidth = yaxe.chart.width * 0.18;
+              },
+            },
+          ],
         },
       },
       data: {
         labels: labels,
-        datasets: datasets
+        datasets: datasets,
       },
       colors: {
         staticColors: staticColors,
         staticColorIndex: 3,
-      }
+      },
     };
     this.chartData = chartOptions;
   }
 }
-customElements.define('state-history-chart-timeline', StateHistoryChartTimeline);
+customElements.define(
+  "state-history-chart-timeline",
+  StateHistoryChartTimeline
+);

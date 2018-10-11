@@ -104,7 +104,9 @@
     "del": "^3.0.0",
     "eslint": "^5.6.0",
     "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
     "gulp": "^3.9.1",
     "gulp-foreach": "^0.1.0",
@@ -117,12 +119,15 @@
     "html-loader": "^0.5.5",
     "html-minifier": "^3.5.20",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^1.1.0",
+    "lint-staged": "^7.3.0",
     "merge-stream": "^1.0.1",
     "mocha": "^5.2.0",
     "parse5": "^5.1.0",
     "polymer-analyzer": "^3.1.2",
     "polymer-bundler": "^4.0.2",
     "polymer-cli": "^1.8.0",
+    "prettier": "^1.14.3",
     "raw-loader": "^0.5.1",
     "reify": "^0.17.3",
     "require-dir": "^1.0.0",
@@ -146,5 +151,20 @@
     "@vaadin/vaadin-lumo-styles": "1.2.0",
     "fecha": "https://github.com/balloob/fecha/archive/51d14fd0eb4781e2ecf265d1c3080706259133b5.tar.gz"
   },
-  "main": "src/home-assistant.js"
+  "main": "src/home-assistant.js",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "arrowParens": "always"
+  }
 }

@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-input/paper-input.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-input/paper-input.js";
 
-import '../components/hui-generic-entity-row.js';
+import "../components/hui-generic-entity-row.js";
 
 class HuiInputTextEntityRow extends PolymerElement {
   static get template() {
@@ -38,10 +38,10 @@ class HuiInputTextEntityRow extends PolymerElement {
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)',
-        observer: '_stateObjChanged',
+        computed: "_computeStateObj(hass.states, _config.entity)",
+        observer: "_stateObjChanged",
       },
-      _value: String
+      _value: String,
     };
   }
 
@@ -51,7 +51,7 @@ class HuiInputTextEntityRow extends PolymerElement {
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw new Error('Entity not configured.');
+      throw new Error("Entity not configured.");
     }
     this._config = config;
   }
@@ -64,10 +64,10 @@ class HuiInputTextEntityRow extends PolymerElement {
     if (this._value === this._stateObj.state) {
       return;
     }
-    this.hass.callService('input_text', 'set_value', {
+    this.hass.callService("input_text", "set_value", {
       value: this._value,
       entity_id: this._stateObj.entity_id,
     });
   }
 }
-customElements.define('hui-input-text-entity-row', HuiInputTextEntityRow);
+customElements.define("hui-input-text-entity-row", HuiInputTextEntityRow);

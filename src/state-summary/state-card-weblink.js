@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/state-badge.js';
+import "../components/entity/state-badge.js";
 
-import computeStateName from '../common/entity/compute_state_name.js';
+import computeStateName from "../common/entity/compute_state_name.js";
 
 class StateCardWeblink extends PolymerElement {
   static get template() {
@@ -40,13 +40,13 @@ class StateCardWeblink extends PolymerElement {
       inDialog: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('click', ev => this.onTap(ev));
+    this.addEventListener("click", (ev) => this.onTap(ev));
   }
 
   _computeStateName(stateObj) {
@@ -56,7 +56,7 @@ class StateCardWeblink extends PolymerElement {
   onTap(ev) {
     ev.stopPropagation();
     ev.preventDefault();
-    window.open(this.stateObj.state, '_blank');
+    window.open(this.stateObj.state, "_blank");
   }
 }
-customElements.define('state-card-weblink', StateCardWeblink);
+customElements.define("state-card-weblink", StateCardWeblink);

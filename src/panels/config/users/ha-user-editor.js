@@ -1,20 +1,21 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../layouts/hass-subpage.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-
+import "../../../layouts/hass-subpage.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  * @appliesMixin EventsMixin
  */
-class HaUserEditor extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElement))) {
+class HaUserEditor extends EventsMixin(
+  NavigateMixin(LocalizeMixin(PolymerElement))
+) {
   static get template() {
     return html`
   <style>
@@ -74,26 +75,30 @@ class HaUserEditor extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElemen
   }
 
   _computeName(user) {
-    return user && (user.name || 'Unnamed user');
+    return user && (user.name || "Unnamed user");
   }
 
   async _deleteUser(ev) {
-    if (!confirm(`Are you sure you want to delete ${this._computeName(this.user)}`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete ${this._computeName(this.user)}`
+      )
+    ) {
       ev.target.blur();
       return;
     }
     try {
       await this.hass.callWS({
-        type: 'config/auth/delete',
+        type: "config/auth/delete",
         user_id: this.user.id,
       });
     } catch (err) {
       alert(err.code);
       return;
     }
-    this.fire('reload-users');
-    this.navigate('/config/users');
+    this.fire("reload-users");
+    this.navigate("/config/users");
   }
 }
 
-customElements.define('ha-user-editor', HaUserEditor);
+customElements.define("ha-user-editor", HaUserEditor);

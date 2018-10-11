@@ -1,10 +1,10 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-button/paper-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/state-info.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import "../components/entity/state-info.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -47,16 +47,15 @@ class StateCardScene extends LocalizeMixin(PolymerElement) {
       inDialog: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 
   activateScene(ev) {
     ev.stopPropagation();
-    this.hass.callService(
-      'scene', 'turn_on',
-      { entity_id: this.stateObj.entity_id }
-    );
+    this.hass.callService("scene", "turn_on", {
+      entity_id: this.stateObj.entity_id,
+    });
   }
 }
-customElements.define('state-card-scene', StateCardScene);
+customElements.define("state-card-scene", StateCardScene);

@@ -1,7 +1,7 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HaProgressButton extends PolymerElement {
   static get template() {
@@ -83,7 +83,7 @@ class HaProgressButton extends PolymerElement {
 
   ready() {
     super.ready();
-    this.addEventListener('click', ev => this.buttonTapped(ev));
+    this.addEventListener("click", (ev) => this.buttonTapped(ev));
   }
 
   buttonTapped(ev) {
@@ -91,11 +91,11 @@ class HaProgressButton extends PolymerElement {
   }
 
   actionSuccess() {
-    this.tempClass('success');
+    this.tempClass("success");
   }
 
   actionError() {
-    this.tempClass('error');
+    this.tempClass("error");
   }
 
   computeDisabled(disabled, progress) {
@@ -103,4 +103,4 @@ class HaProgressButton extends PolymerElement {
   }
 }
 
-customElements.define('ha-progress-button', HaProgressButton);
+customElements.define("ha-progress-button", HaProgressButton);

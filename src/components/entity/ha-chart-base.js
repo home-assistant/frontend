@@ -1,20 +1,21 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class.js";
 
-import formatTime from '../../common/datetime/format_time.js';
+import formatTime from "../../common/datetime/format_time.js";
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
 
 let scriptsLoaded = null;
 
-class HaChartBase extends mixinBehaviors([
-  IronResizableBehavior
-], PolymerElement) {
+class HaChartBase extends mixinBehaviors(
+  [IronResizableBehavior],
+  PolymerElement
+) {
   static get template() {
     return html`
   <style>
@@ -154,19 +155,19 @@ class HaChartBase extends mixinBehaviors([
       tooltip: {
         type: Object,
         value: () => ({
-          opacity: '0',
-          left: '0',
-          top: '0',
-          xPadding: '5',
-          yPadding: '3'
-        })
+          opacity: "0",
+          left: "0",
+          top: "0",
+          xPadding: "5",
+          yPadding: "3",
+        }),
       },
       unit: Object,
     };
   }
 
   static get observers() {
-    return ['onPropsChange(data)'];
+    return ["onPropsChange(data)"];
   }
 
   connectedCallback() {
@@ -185,7 +186,7 @@ class HaChartBase extends mixinBehaviors([
       );
     };
 
-    if (typeof ResizeObserver === 'function') {
+    if (typeof ResizeObserver === "function") {
       this.resizeObserver = new ResizeObserver((entries) => {
         entries.forEach(() => {
           this._resizeListener();
@@ -193,11 +194,11 @@ class HaChartBase extends mixinBehaviors([
       });
       this.resizeObserver.observe(this.$.chartTarget);
     } else {
-      this.addEventListener('iron-resize', this._resizeListener);
+      this.addEventListener("iron-resize", this._resizeListener);
     }
 
     if (scriptsLoaded === null) {
-      scriptsLoaded = import(/* webpackChunkName: "load_chart" */ '../../resources/ha-chart-scripts.js');
+      scriptsLoaded = import(/* webpackChunkName: "load_chart" */ "../../resources/ha-chart-scripts.js");
     }
     scriptsLoaded.then((ChartModule) => {
       this.ChartClass = ChartModule.default;
@@ -212,7 +213,7 @@ class HaChartBase extends mixinBehaviors([
       this.resizeObserver.unobserve(this.$.chartTarget);
     }
 
-    this.removeEventListener('iron-resize', this._resizeListener);
+    this.removeEventListener("iron-resize", this._resizeListener);
 
     if (this._resizeTimer !== undefined) {
       clearInterval(this._resizeTimer);
@@ -230,31 +231,34 @@ class HaChartBase extends mixinBehaviors([
   _customTooltips(tooltip) {
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
-      this.set(['tooltip', 'opacity'], 0);
+      this.set(["tooltip", "opacity"], 0);
       return;
     }
     // Set caret Position
     if (tooltip.yAlign) {
-      this.set(['tooltip', 'yAlign'], tooltip.yAlign);
+      this.set(["tooltip", "yAlign"], tooltip.yAlign);
     } else {
-      this.set(['tooltip', 'yAlign'], 'no-transform');
+      this.set(["tooltip", "yAlign"], "no-transform");
     }
 
-    const title = tooltip.title ? tooltip.title[0] || '' : '';
-    this.set(['tooltip', 'title'], title);
+    const title = tooltip.title ? tooltip.title[0] || "" : "";
+    this.set(["tooltip", "title"], title);
 
-    const bodyLines = tooltip.body.map(n => n.lines);
+    const bodyLines = tooltip.body.map((n) => n.lines);
 
     // Set Text
     if (tooltip.body) {
-      this.set(['tooltip', 'lines'], bodyLines.map((body, i) => {
-        const colors = tooltip.labelColors[i];
-        return {
-          color: colors.borderColor,
-          bgColor: colors.backgroundColor,
-          text: body.join('\n'),
-        };
-      }));
+      this.set(
+        ["tooltip", "lines"],
+        bodyLines.map((body, i) => {
+          const colors = tooltip.labelColors[i];
+          return {
+            color: colors.borderColor,
+            bgColor: colors.backgroundColor,
+            text: body.join("\n"),
+          };
+        })
+      );
     }
     const parentWidth = this.$.chartTarget.clientWidth;
     let positionX = tooltip.caretX;
@@ -277,29 +281,40 @@ class HaChartBase extends mixinBehaviors([
     event = event || window.event;
     event.stopPropagation();
     let target = event.target || event.srcElement;
-    while (target.nodeName !== 'LI') { // user clicked child, find parent LI
+    while (target.nodeName !== "LI") {
+      // user clicked child, find parent LI
       target = target.parentElement;
     }
     const index = event.model.itemsIndex;
 
     const meta = this._chart.getDatasetMeta(index);
-    meta.hidden = meta.hidden === null ? !this._chart.data.datasets[index].hidden : null;
-    this.set(['metas', index, 'hidden'], this._chart.isDatasetVisible(index) ? null : 'hidden');
+    meta.hidden =
+      meta.hidden === null ? !this._chart.data.datasets[index].hidden : null;
+    this.set(
+      ["metas", index, "hidden"],
+      this._chart.isDatasetVisible(index) ? null : "hidden"
+    );
     this._chart.update();
   }
 
   _drawLegend() {
     const chart = this._chart;
     // New data for old graph. Keep metadata.
-    const preserveVisibility = this._oldIdentifier && this.identifier === this._oldIdentifier;
+    const preserveVisibility =
+      this._oldIdentifier && this.identifier === this._oldIdentifier;
     this._oldIdentifier = this.identifier;
-    this.set('metas', this._chart.data.datasets.map((x, i) => ({
-      label: x.label,
-      color: x.color,
-      bgColor: x.backgroundColor,
-      hidden: preserveVisibility && i < this.metas.length
-        ? this.metas[i].hidden : !chart.isDatasetVisible(i),
-    })));
+    this.set(
+      "metas",
+      this._chart.data.datasets.map((x, i) => ({
+        label: x.label,
+        color: x.color,
+        bgColor: x.backgroundColor,
+        hidden:
+          preserveVisibility && i < this.metas.length
+            ? this.metas[i].hidden
+            : !chart.isDatasetVisible(i),
+      }))
+    );
     let updateNeeded = false;
     if (preserveVisibility) {
       for (let i = 0; i < this.metas.length; i++) {
@@ -329,12 +344,14 @@ class HaChartBase extends mixinBehaviors([
     if ((!data.datasets || !data.datasets.length) && !this._chart) {
       return;
     }
-    if (this.data.type !== 'timeline' && data.datasets.length > 0) {
+    if (this.data.type !== "timeline" && data.datasets.length > 0) {
       const cnt = data.datasets.length;
       const colors = this.constructor.getColorList(cnt);
       for (let loopI = 0; loopI < cnt; loopI++) {
         data.datasets[loopI].borderColor = colors[loopI].rgbString();
-        data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.6).rgbaString();
+        data.datasets[loopI].backgroundColor = colors[loopI]
+          .alpha(0.6)
+          .rgbaString();
       }
     }
 
@@ -353,9 +370,7 @@ class HaChartBase extends mixinBehaviors([
         return;
       }
       this._customTooltips({ opacity: 0 });
-      const plugins = [
-        { afterRender: () => this._setRendered(true) }
-      ];
+      const plugins = [{ afterRender: () => this._setRendered(true) }];
       let options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -381,12 +396,12 @@ class HaChartBase extends mixinBehaviors([
         },
         ticks: {
           fontFamily: "'Roboto', 'sans-serif'",
-        }
+        },
       };
       options = Chart.helpers.merge(options, this.data.options);
       options.scales.xAxes[0].ticks.callback = this._formatTickValue;
-      if (this.data.type === 'timeline') {
-        this.set('isTimeline', true);
+      if (this.data.type === "timeline") {
+        this.set("isTimeline", true);
         if (this.data.colors !== undefined) {
           this._colorFunc = this.constructor.getColorGenerator(
             this.data.colors.staticColors,
@@ -408,9 +423,9 @@ class HaChartBase extends mixinBehaviors([
             options.scales.yAxes[0].gridLines = { display: false };
           }
         }
-        this.$.chartTarget.style.height = '50px';
+        this.$.chartTarget.style.height = "50px";
       } else {
-        this.$.chartTarget.style.height = '160px';
+        this.$.chartTarget.style.height = "160px";
       }
       const chartData = {
         type: this.data.type,
@@ -461,18 +476,18 @@ class HaChartBase extends mixinBehaviors([
     const areaBot = this._chart.chartArea.bottom;
     const height1 = this._chart.canvas.clientHeight;
     if (areaBot > 0) {
-      this._axisHeight = (height1 - areaBot) + areaTop;
+      this._axisHeight = height1 - areaBot + areaTop;
     }
 
     if (!this._axisHeight) {
-      chartTarget.style.height = '50px';
+      chartTarget.style.height = "50px";
       this._chart.resize();
       this.resizeChart();
       return;
     }
     if (this._axisHeight) {
       const cnt = data.datasets.length;
-      const targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
+      const targetHeight = 30 * cnt + this._axisHeight + "px";
       if (chartTarget.style.height !== targetHeight) {
         chartTarget.style.height = targetHeight;
       }
@@ -503,18 +518,69 @@ class HaChartBase extends mixinBehaviors([
     // should add for very common state string manually.
     // Palette modified from http://google.github.io/palette.js/ mpn65, Apache 2.0
     const palette = [
-      'ff0029', '66a61e', '377eb8', '984ea3', '00d2d5', 'ff7f00', 'af8d00',
-      '7f80cd', 'b3e900', 'c42e60', 'a65628', 'f781bf', '8dd3c7', 'bebada',
-      'fb8072', '80b1d3', 'fdb462', 'fccde5', 'bc80bd', 'ffed6f', 'c4eaff',
-      'cf8c00', '1b9e77', 'd95f02', 'e7298a', 'e6ab02', 'a6761d', '0097ff',
-      '00d067', 'f43600', '4ba93b', '5779bb', '927acc', '97ee3f', 'bf3947',
-      '9f5b00', 'f48758', '8caed6', 'f2b94f', 'eff26e', 'e43872', 'd9b100',
-      '9d7a00', '698cff', 'd9d9d9', '00d27e', 'd06800', '009f82', 'c49200',
-      'cbe8ff', 'fecddf', 'c27eb6', '8cd2ce', 'c4b8d9', 'f883b0', 'a49100',
-      'f48800', '27d0df', 'a04a9b'];
+      "ff0029",
+      "66a61e",
+      "377eb8",
+      "984ea3",
+      "00d2d5",
+      "ff7f00",
+      "af8d00",
+      "7f80cd",
+      "b3e900",
+      "c42e60",
+      "a65628",
+      "f781bf",
+      "8dd3c7",
+      "bebada",
+      "fb8072",
+      "80b1d3",
+      "fdb462",
+      "fccde5",
+      "bc80bd",
+      "ffed6f",
+      "c4eaff",
+      "cf8c00",
+      "1b9e77",
+      "d95f02",
+      "e7298a",
+      "e6ab02",
+      "a6761d",
+      "0097ff",
+      "00d067",
+      "f43600",
+      "4ba93b",
+      "5779bb",
+      "927acc",
+      "97ee3f",
+      "bf3947",
+      "9f5b00",
+      "f48758",
+      "8caed6",
+      "f2b94f",
+      "eff26e",
+      "e43872",
+      "d9b100",
+      "9d7a00",
+      "698cff",
+      "d9d9d9",
+      "00d27e",
+      "d06800",
+      "009f82",
+      "c49200",
+      "cbe8ff",
+      "fecddf",
+      "c27eb6",
+      "8cd2ce",
+      "c4b8d9",
+      "f883b0",
+      "a49100",
+      "f48800",
+      "27d0df",
+      "a04a9b",
+    ];
     function getColorIndex(idx) {
       // Reuse the color if index too large.
-      return Color('#' + palette[idx % palette.length]);
+      return Color("#" + palette[idx % palette.length]);
     }
     const colorDict = {};
     let colorIndex = 0;
@@ -549,4 +615,4 @@ class HaChartBase extends mixinBehaviors([
     return getColor;
   }
 }
-customElements.define('ha-chart-base', HaChartBase);
+customElements.define("ha-chart-base", HaChartBase);

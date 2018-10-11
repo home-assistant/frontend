@@ -1,8 +1,8 @@
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import CoverEntity from '../util/cover-model.js';
+import CoverEntity from "../util/cover-model.js";
 
 class HaCoverControls extends PolymerElement {
   static get template() {
@@ -34,7 +34,7 @@ class HaCoverControls extends PolymerElement {
       },
       entityObj: {
         type: Object,
-        computed: 'computeEntityObj(hass, stateObj)',
+        computed: "computeEntityObj(hass, stateObj)",
       },
     };
   }
@@ -49,7 +49,7 @@ class HaCoverControls extends PolymerElement {
   }
 
   computeClosedDisabled(stateObj, entityObj) {
-    var assumedState = (stateObj.attributes.assumed_state === true);
+    var assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
   }
 
@@ -69,4 +69,4 @@ class HaCoverControls extends PolymerElement {
   }
 }
 
-customElements.define('ha-cover-controls', HaCoverControls);
+customElements.define("ha-cover-controls", HaCoverControls);

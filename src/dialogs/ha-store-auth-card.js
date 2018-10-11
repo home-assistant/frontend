@@ -1,11 +1,11 @@
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import { enableWrite } from '../common/auth/token_storage.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import { enableWrite } from "../common/auth/token_storage.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
-import '../resources/ha-style.js';
+import "../resources/ha-style.js";
 
 class HaStoreAuth extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -50,7 +50,7 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.classList.toggle('small', window.innerWidth < 600);
+    this.classList.toggle("small", window.innerWidth < 600);
   }
 
   _save() {
@@ -59,11 +59,11 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
   }
 
   _done() {
-    const card = this.shadowRoot.querySelector('paper-card');
-    card.style.transition = 'bottom .25s';
+    const card = this.shadowRoot.querySelector("paper-card");
+    card.style.transition = "bottom .25s";
     card.style.bottom = `-${card.offsetHeight + 8}px`;
     setTimeout(() => this.parentNode.removeChild(this), 300);
   }
 }
 
-customElements.define('ha-store-auth-card', HaStoreAuth);
+customElements.define("ha-store-auth-card", HaStoreAuth);

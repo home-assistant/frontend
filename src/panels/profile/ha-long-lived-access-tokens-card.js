@@ -1,14 +1,14 @@
-import '@polymer/paper-button/paper-button.js';
+import "@polymer/paper-button/paper-button.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
-import formatDateTime from '../../common/datetime/format_date_time.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import EventsMixin from "../../mixins/events-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
+import formatDateTime from "../../common/datetime/format_date_time.js";
 
-import '../../resources/ha-style.js';
+import "../../resources/ha-style.js";
 
-import './ha-settings-row.js';
+import "./ha-settings-row.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -65,63 +65,86 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
       refreshTokens: Array,
       _tokens: {
         type: Array,
-        computed: '_computeTokens(refreshTokens)'
-      }
+        computed: "_computeTokens(refreshTokens)",
+      },
     };
   }
 
   _computeTokens(refreshTokens) {
-    return refreshTokens.filter(tkn => tkn.type === 'long_lived_access_token').reverse();
+    return refreshTokens
+      .filter((tkn) => tkn.type === "long_lived_access_token")
+      .reverse();
   }
 
   _formatTitle(name) {
     return this.localize(
-      'ui.panel.profile.long_lived_access_tokens.token_title',
-      'name', name
+      "ui.panel.profile.long_lived_access_tokens.token_title",
+      "name",
+      name
     );
   }
 
   _formatCreatedAt(created) {
     return this.localize(
-      'ui.panel.profile.long_lived_access_tokens.created_at',
-      'date', formatDateTime(new Date(created), this.language)
+      "ui.panel.profile.long_lived_access_tokens.created_at",
+      "date",
+      formatDateTime(new Date(created), this.language)
     );
   }
 
   async _handleCreate() {
-    const name = prompt(this.localize('ui.panel.profile.long_lived_access_tokens.prompt_name'));
+    const name = prompt(
+      this.localize("ui.panel.profile.long_lived_access_tokens.prompt_name")
+    );
     if (!name) return;
     try {
       const token = await this.hass.callWS({
-        type: 'auth/long_lived_access_token',
+        type: "auth/long_lived_access_token",
         lifespan: 3650,
         client_name: name,
       });
-      prompt(this.localize('ui.panel.profile.long_lived_access_tokens.prompt_copy_token'), token);
-      this.fire('hass-refresh-tokens');
+      prompt(
+        this.localize(
+          "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
+        ),
+        token
+      );
+      this.fire("hass-refresh-tokens");
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-      alert(this.localize('ui.panel.profile.long_lived_access_tokens.create_failed'));
+      alert(
+        this.localize("ui.panel.profile.long_lived_access_tokens.create_failed")
+      );
     }
   }
 
   async _handleDelete(ev) {
-    if (!confirm(this.localize('ui.panel.profile.long_lived_access_tokens.confirm_delete', 'name', ev.model.item.client_name))) {
+    if (
+      !confirm(
+        this.localize(
+          "ui.panel.profile.long_lived_access_tokens.confirm_delete",
+          "name",
+          ev.model.item.client_name
+        )
+      )
+    ) {
       return;
     }
     try {
       await this.hass.callWS({
-        type: 'auth/delete_refresh_token',
+        type: "auth/delete_refresh_token",
         refresh_token_id: ev.model.item.id,
       });
-      this.fire('hass-refresh-tokens');
+      this.fire("hass-refresh-tokens");
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-      alert(this.localize('ui.panel.profile.long_lived_access_tokens.delete_failed'));
+      alert(
+        this.localize("ui.panel.profile.long_lived_access_tokens.delete_failed")
+      );
     }
   }
 }
 
-customElements.define('ha-long-lived-access-tokens-card', HaLongLivedTokens);
+customElements.define("ha-long-lived-access-tokens-card", HaLongLivedTokens);

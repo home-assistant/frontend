@@ -1,17 +1,17 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-checkbox/paper-checkbox.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-input/paper-textarea.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/entity/ha-entity-picker.js';
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import "../../components/entity/ha-entity-picker.js";
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
+import EventsMixin from "../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -157,32 +157,32 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
       _entityId: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _entityFilter: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _stateFilter: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _attributeFilter: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _state: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _stateAttributes: {
         type: String,
-        value: '',
+        value: "",
       },
 
       _showAttributes: {
@@ -192,7 +192,8 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
       _entities: {
         type: Array,
-        computed: 'computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)',
+        computed:
+          "computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)",
       },
     };
   }
@@ -201,37 +202,39 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     var state = ev.model.entity;
     this._entityId = state.entity_id;
     this._state = state.state;
-    this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
+    this._stateAttributes = JSON.stringify(state.attributes, null, "  ");
     ev.preventDefault();
   }
 
   entityMoreInfo(ev) {
     ev.preventDefault();
-    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
+    this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 
   handleSetState() {
     var attr;
-    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, '');
+    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, "");
     try {
-      attr = attrRaw
-        ? JSON.parse(attrRaw) : {};
+      attr = attrRaw ? JSON.parse(attrRaw) : {};
     } catch (err) {
       /* eslint-disable no-alert */
-      alert('Error parsing JSON: ' + err);
+      alert("Error parsing JSON: " + err);
       /* eslint-enable no-alert */
       return;
     }
 
-    this.hass.callApi('POST', 'states/' + this._entityId, {
+    this.hass.callApi("POST", "states/" + this._entityId, {
       state: this._state,
       attributes: attr,
     });
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
-      .filter(function (value) {
+    return Object.keys(hass.states)
+      .map(function(key) {
+        return hass.states[key];
+      })
+      .filter(function(value) {
         if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
           return false;
         }
@@ -240,9 +243,9 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           return false;
         }
 
-        if (_attributeFilter !== '') {
+        if (_attributeFilter !== "") {
           var attributeFilter = _attributeFilter.toLowerCase();
-          var colonIndex = attributeFilter.indexOf(':');
+          var colonIndex = attributeFilter.indexOf(":");
           var multiMode = colonIndex !== -1;
 
           var keyFilter = attributeFilter;
@@ -261,14 +264,19 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
             if (key.includes(keyFilter) && !multiMode) {
               return true; // in single mode we're already satisfied with this match
-            } if (!key.includes(keyFilter) && multiMode) {
+            }
+            if (!key.includes(keyFilter) && multiMode) {
               continue;
             }
 
             var attributeValue = value.attributes[key];
 
-            if (attributeValue !== null
-                && JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)) {
+            if (
+              attributeValue !== null &&
+              JSON.stringify(attributeValue)
+                .toLowerCase()
+                .includes(valueFilter)
+            ) {
               return true;
             }
           }
@@ -279,7 +287,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
         return true;
       })
-      .sort(function (entityA, entityB) {
+      .sort(function(entityA, entityB) {
         if (entityA.entity_id < entityB.entity_id) {
           return -1;
         }
@@ -299,7 +307,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
   }
 
   attributeString(entity) {
-    var output = '';
+    var output = "";
     var i;
     var keys;
     var key;
@@ -308,14 +316,14 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     for (i = 0, keys = Object.keys(entity.attributes); i < keys.length; i++) {
       key = keys[i];
       value = entity.attributes[key];
-      if (!Array.isArray(value) && (value instanceof Object)) {
-        value = JSON.stringify(value, null, '  ');
+      if (!Array.isArray(value) && value instanceof Object) {
+        value = JSON.stringify(value, null, "  ");
       }
-      output += key + ': ' + value + '\n';
+      output += key + ": " + value + "\n";
     }
 
     return output;
   }
 }
 
-customElements.define('ha-panel-dev-state', HaPanelDevState);
+customElements.define("ha-panel-dev-state", HaPanelDevState);
