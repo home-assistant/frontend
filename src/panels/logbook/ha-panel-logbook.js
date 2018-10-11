@@ -9,6 +9,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 import '../../components/ha-menu-button.js';
+import '../../components/entity/ha-entity-picker.js';
 import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
 
@@ -31,16 +32,36 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
     paper-spinner {
       position: absolute;
-      top: 15px;
-      left: 186px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .wrap {
+      margin-bottom: 24px;
     }
 
     vaadin-date-picker {
       --vaadin-date-picker-clear-icon: {
         display: none;
       }
-      margin-bottom: 24px;
       max-width: 200px;
+      margin-right: 16px;
+    }
+
+    paper-dropdown-menu {
+      max-width: 100px;
+      margin-right: 16px;
+    }
+
+    paper-item {
+      cursor: pointer;
+    }
+
+    ha-entity-picker {
+      display: inline-block;
+      width: 100%;
+      max-width: 400px;
     }
 
     [hidden] {
@@ -53,6 +74,8 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
       is-loading='{{isLoading}}'
       entries='{{entries}}'
       filter-date='[[_computeFilterDate(_currentDate)]]'
+      filter-period='[[_computeFilterDays(_periodIndex)]]'
+      filter-entity='[[entityId]]'
     ></ha-logbook-data>
 
     <app-header-layout has-scrolling-region>
@@ -75,14 +98,38 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
           alt="[[localize('ui.common.loading')]]"
         ></paper-spinner>
 
-        <vaadin-date-picker
-          id='picker'
-          value='{{_currentDate}}'
-          label="[[localize('ui.panel.logbook.showing_entries')]]"
-          disabled='[[isLoading]]'
-          required
-        ></vaadin-date-picker>
-
+        <div class="flex layout horizontal wrap">
+          <vaadin-date-picker
+            id='picker'
+            value='{{_currentDate}}'
+            label="[[localize('ui.panel.logbook.showing_entries')]]"
+            disabled='[[isLoading]]'
+            required
+          ></vaadin-date-picker>
+  
+          <paper-dropdown-menu
+            label-float
+            label="[[localize('ui.panel.logbook.period')]]"
+            disabled='[[isLoading]]'
+          >
+            <paper-listbox
+              slot="dropdown-content"
+              selected="{{_periodIndex}}"
+            >
+              <paper-item>[[localize('ui.duration.day', 'count', 1)]]</paper-item>
+              <paper-item>[[localize('ui.duration.day', 'count', 3)]]</paper-item>
+              <paper-item>[[localize('ui.duration.week', 'count', 1)]]</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
+  
+          <ha-entity-picker
+            hass="[[hass]]"
+            value="{{_entityId}}"
+            label="[[localize('ui.components.entity.entity-picker.entity')]]"
+            disabled='[[isLoading]]'
+            on-change='_entityPicked'
+          ></ha-entity-picker>
+        </div>
 
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
       </div>
@@ -116,6 +163,22 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         }
       },
 
+      _periodIndex: {
+        type: Number,
+        value: 0,
+      },
+
+      _entityId: {
+        type: String,
+        value: '',
+      },
+
+      entityId: {
+        type: String,
+        value: '',
+        readOnly: true,
+      },
+
       isLoading: {
         type: Boolean,
       },
@@ -143,6 +206,20 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     var parts = _currentDate.split('-');
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]).toISOString();
+  }
+
+  _computeFilterDays(periodIndex) {
+    switch (periodIndex) {
+      case 1:
+        return 3;
+      case 2:
+        return 7;
+      default: return 1;
+    }
+  }
+
+  _entityPicked(ev) {
+    this._setEntityId(ev.target.value);
   }
 
   refreshLogbook() {

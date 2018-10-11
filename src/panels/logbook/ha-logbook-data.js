@@ -1,6 +1,7 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-var DATE_CACHE = {};
+const DATA_CACHE = {};
+const ALL_ENTITIES = '*';
 
 class HaLogbookData extends PolymerElement {
   static get properties() {
@@ -12,7 +13,17 @@ class HaLogbookData extends PolymerElement {
 
       filterDate: {
         type: String,
-        observer: 'filterDateChanged',
+        observer: 'filterDataChanged',
+      },
+
+      filterPeriod: {
+        type: Number,
+        observer: 'filterDataChanged',
+      },
+
+      filterEntity: {
+        type: String,
+        observer: 'filterDataChanged',
       },
 
       isLoading: {
@@ -33,41 +44,70 @@ class HaLogbookData extends PolymerElement {
 
   hassChanged(newHass, oldHass) {
     if (!oldHass && this.filterDate) {
-      this.filterDateChanged(this.filterDate);
+      this.updateData();
     }
   }
 
-  filterDateChanged(filterDate) {
+  filterDataChanged(newValue, oldValue) {
+    if (oldValue !== undefined) {
+      this.updateData();
+    }
+  }
+
+  updateData() {
     if (!this.hass) return;
 
     this._setIsLoading(true);
 
-    this.getDate(filterDate).then(function (logbookEntries) {
-      this._setEntries(logbookEntries);
-      this._setIsLoading(false);
-    }.bind(this));
+    this.getDate(this.filterDate, this.filterPeriod, this.filterEntity)
+      .then((logbookEntries) => {
+        this._setEntries(logbookEntries);
+        this._setIsLoading(false);
+      });
   }
 
-  getDate(date) {
-    if (!DATE_CACHE[date]) {
-      DATE_CACHE[date] = this.hass.callApi('GET', 'logbook/' + date).then(
-        function (logbookEntries) {
-          logbookEntries.reverse();
-          return logbookEntries;
-        },
-        function () {
-          DATE_CACHE[date] = false;
-          return null;
-        }
-      );
+  getDate(date, period, entityId) {
+    if (!entityId) entityId = ALL_ENTITIES;
+
+    if (!DATA_CACHE[period]) DATA_CACHE[period] = [];
+    if (!DATA_CACHE[period][date]) DATA_CACHE[period][date] = [];
+
+    if (DATA_CACHE[period][date][entityId]) {
+      return DATA_CACHE[period][date][entityId];
     }
 
-    return DATE_CACHE[date];
+    if (entityId !== ALL_ENTITIES && DATA_CACHE[period][date][ALL_ENTITIES]) {
+      return DATA_CACHE[period][date][ALL_ENTITIES].then(function (entities) {
+        return entities.filter(function (entity) {
+          return entity.entity_id === entityId;
+        });
+      });
+    }
+
+    DATA_CACHE[period][date][entityId] = this._getFromServer(date, period, entityId);
+    return DATA_CACHE[period][date][entityId];
+  }
+
+  _getFromServer(date, period, entityId) {
+    let url = 'logbook/' + date + '?period=' + period;
+    if (entityId !== ALL_ENTITIES) {
+      url += '&entity=' + entityId;
+    }
+
+    return this.hass.callApi('GET', url).then(
+      function (logbookEntries) {
+        logbookEntries.reverse();
+        return logbookEntries;
+      },
+      function () {
+        return null;
+      }
+    );
   }
 
   refreshLogbook() {
-    DATE_CACHE[this.filterDate] = null;
-    this.filterDateChanged(this.filterDate);
+    DATA_CACHE[this.filterPeriod][this.filterDate] = [];
+    this.updateData();
   }
 }
 
