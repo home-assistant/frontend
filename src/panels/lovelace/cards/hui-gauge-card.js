@@ -113,17 +113,12 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
     };
   }
 
-  ready() {
-    super.ready();
-  }
-
   getCardSize() {
     return 1;
   }
 
   setConfig(config) {
     if (!config || !config.entity) throw new Error('Invalid card configuration');
-
     this._config = Object.assign({ min: 0, max: 100 }, config);
   }
 
@@ -132,16 +127,17 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
   }
 
   _stateObjChanged(stateObj) {
-    if (!stateObj) return;
-    const config = this._config;
+    if (!stateObj || isNaN(stateObj.state)) return;
 
+    const config = this._config;
     const turn = this._translateTurn(stateObj.state, config) / 10;
+
     this.$.gauge.style.transform = `rotate(${turn}turn)`;
     this.$.gauge.style.backgroundColor = this._computeSeverity(stateObj.state, config.severity);
   }
 
   _computeStateDisplay(stateObj) {
-    if (!stateObj || isNaN(stateObj.state)) return null;
+    if (!stateObj || isNaN(stateObj.state)) return '';
     const unitOfMeasurement = this._config.unit_of_measurement || stateObj.attributes.unit_of_measurement || '';
     return `${stateObj.state} ${unitOfMeasurement}`;
   }
@@ -166,10 +162,12 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
       yellow: 'var(--label-badge-yellow)',
       normal: 'var(--label-badge-blue)',
     };
-    if (!sections) return severityMap.normal;
-    const sectionsArray = Object.keys(sections);
 
+    if (!sections) return severityMap.normal;
+
+    const sectionsArray = Object.keys(sections);
     const sortable = sectionsArray.map(severity => [severity, sections[severity]]);
+
     for (var i = 0; i < sortable.length; i++) {
       if (severityMap[sortable[i][0]] == null || isNaN(sortable[i][1])) {
         return severityMap.normal;
