@@ -16,6 +16,7 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
           --base-unit: 50px;
           height: calc(var(--base-unit)*3);
           position: relative;
+          cursor: pointer;
         }
         .container{
           width: calc(var(--base-unit) * 4);
@@ -151,6 +152,7 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
       this.$.title.className = 'not-found';
       return 'Entity is non-numeric: ' + this._config.entity;
     }
+    this.$.title.className = '';
     return this._config.title;
   }
 
