@@ -1,18 +1,18 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeStateDisplay from '../../../common/entity/compute_state_display.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import processConfigEntities from '../common/process-config-entities';
+import computeStateDisplay from "../../../common/entity/compute_state_display.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import processConfigEntities from "../common/process-config-entities";
 
-import toggleEntity from '../common/entity/toggle-entity.js';
+import toggleEntity from "../common/entity/toggle-entity.js";
 
-import '../../../components/entity/state-badge.js';
-import '../../../components/ha-card.js';
-import '../../../components/ha-icon.js';
+import "../../../components/entity/state-badge.js";
+import "../../../components/ha-card.js";
+import "../../../components/ha-icon.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -94,11 +94,13 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   setConfig(config) {
     this._config = config;
-    this.updateStyles({ '--glance-column-width': (config && config.column_width) || '20%' });
+    this.updateStyles({
+      "--glance-column-width": (config && config.column_width) || "20%",
+    });
 
     if (config && config.theming) {
-      if (typeof (config.theming) !== 'string') {
-        throw new Error('Incorrect theming config.');
+      if (typeof config.theming !== "string") {
+        throw new Error("Incorrect theming config.");
       }
       this.classList.add(`theme-${config.theming}`);
     }
@@ -107,7 +109,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeClasses(hasHeader) {
-    return `entities ${hasHeader ? '' : 'no-header'}`;
+    return `entities ${hasHeader ? "" : "no-header"}`;
   }
 
   _showEntity(item, states) {
@@ -119,7 +121,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeName(item, states) {
-    return 'name' in item ? item.name : computeStateName(states[item.entity]);
+    return "name" in item ? item.name : computeStateName(states[item.entity]);
   }
 
   _computeStateObj(item, states) {
@@ -134,22 +136,23 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     const config = ev.model.item;
     const entityId = config.entity;
     switch (config.tap_action) {
-      case 'toggle':
+      case "toggle":
         toggleEntity(this.hass, entityId);
         break;
-      case 'call-service': {
-        const [domain, service] = config.service.split('.', 2);
+      case "call-service": {
+        const [domain, service] = config.service.split(".", 2);
         const serviceData = Object.assign(
-          {}, { entity_id: entityId },
+          {},
+          { entity_id: entityId },
           config.service_data
         );
         this.hass.callService(domain, service, serviceData);
         break;
       }
       default:
-        this.fire('hass-more-info', { entityId });
+        this.fire("hass-more-info", { entityId });
     }
   }
 }
 
-customElements.define('hui-glance-card', HuiGlanceCard);
+customElements.define("hui-glance-card", HuiGlanceCard);

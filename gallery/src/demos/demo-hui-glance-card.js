@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'Basic example',
+    heading: "Basic example",
     config: `
 - type: glance
   entities:
@@ -16,10 +16,10 @@ const CONFIGS = [
     - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'With title',
+    heading: "With title",
     config: `
 - type: glance
   title: This is glance
@@ -31,10 +31,10 @@ const CONFIGS = [
     - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'Custom column width',
+    heading: "Custom column width",
     config: `
 - type: glance
   column_width: calc(100% / 7)
@@ -46,10 +46,10 @@ const CONFIGS = [
     - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'No name',
+    heading: "No name",
     config: `
 - type: glance
   show_name: false
@@ -61,10 +61,10 @@ const CONFIGS = [
     - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'No state',
+    heading: "No state",
     config: `
 - type: glance
   show_state: false
@@ -76,10 +76,10 @@ const CONFIGS = [
     - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'No name and no state',
+    heading: "No name and no state",
     config: `
 - type: glance
   show_name: false
@@ -92,10 +92,10 @@ const CONFIGS = [
     - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'Custom name, custom icon',
+    heading: "Custom name, custom icon",
     config: `
 - type: glance
   entities:
@@ -109,10 +109,10 @@ const CONFIGS = [
       icon: mdi:alarm-light
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
   {
-    heading: 'Custom tap action',
+    heading: "Custom tap action",
     config: `
 - type: glance
   entities:
@@ -126,10 +126,10 @@ const CONFIGS = [
     - sun.sun
     - cover.kitchen_window
     - light.kitchen_lights
-    `
+    `,
   },
   {
-    heading: 'Selectively hidden name',
+    heading: "Selectively hidden name",
     config: `
 - type: glance
   entities:
@@ -140,10 +140,10 @@ const CONFIGS = [
     - entity: cover.kitchen_window
       name:
     - light.kitchen_lights
-    `
+    `,
   },
   {
-    heading: 'Primary theme',
+    heading: "Primary theme",
     config: `
 - type: glance
   theming: primary
@@ -155,7 +155,7 @@ const CONFIGS = [
     - light.kitchen_lights
     - lock.kitchen_door
     - light.ceiling_lights
-    `
+    `,
   },
 ];
 
@@ -170,10 +170,10 @@ class DemoPicEntity extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-glance-card', DemoPicEntity);
+customElements.define("demo-hui-glance-card", DemoPicEntity);

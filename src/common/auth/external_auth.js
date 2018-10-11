@@ -1,13 +1,15 @@
 /**
  * Auth class that connects to a native app for authentication.
  */
-import { Auth } from 'home-assistant-js-websocket';
+import { Auth } from "home-assistant-js-websocket";
 
-const CALLBACK_SET_TOKEN = 'externalAuthSetToken';
-const CALLBACK_REVOKE_TOKEN = 'externalAuthRevokeToken';
+const CALLBACK_SET_TOKEN = "externalAuthSetToken";
+const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";
 
 if (!window.externalApp && !window.webkit) {
-  throw new Error('External auth requires either externalApp or webkit defined on Window object.');
+  throw new Error(
+    "External auth requires either externalApp or webkit defined on Window object."
+  );
 }
 
 export default class ExternalAuth extends Auth {
@@ -16,7 +18,7 @@ export default class ExternalAuth extends Auth {
 
     this.data = {
       hassUrl,
-      access_token: '',
+      access_token: "",
       // This will trigger connection to do a refresh right away
       expires: 0,
     };
@@ -24,7 +26,8 @@ export default class ExternalAuth extends Auth {
 
   async refreshAccessToken() {
     const responseProm = new Promise((resolve, reject) => {
-      window[CALLBACK_SET_TOKEN] = (success, data) => (success ? resolve(data) : reject(data));
+      window[CALLBACK_SET_TOKEN] = (success, data) =>
+        success ? resolve(data) : reject(data);
     });
 
     // Allow promise to set resolve on window object.
@@ -35,7 +38,9 @@ export default class ExternalAuth extends Auth {
     if (window.externalApp) {
       window.externalApp.getExternalAuth(callbackPayload);
     } else {
-      window.webkit.messageHandlers.getExternalAuth.postMessage(callbackPayload);
+      window.webkit.messageHandlers.getExternalAuth.postMessage(
+        callbackPayload
+      );
     }
 
     // Response we expect back:
@@ -46,12 +51,13 @@ export default class ExternalAuth extends Auth {
     const tokens = await responseProm;
 
     this.data.access_token = tokens.access_token;
-    this.data.expires = (tokens.expires_in * 1000) + Date.now();
+    this.data.expires = tokens.expires_in * 1000 + Date.now();
   }
 
   async revoke() {
     const responseProm = new Promise((resolve, reject) => {
-      window[CALLBACK_REVOKE_TOKEN] = (success, data) => (success ? resolve(data) : reject(data));
+      window[CALLBACK_REVOKE_TOKEN] = (success, data) =>
+        success ? resolve(data) : reject(data);
     });
 
     // Allow promise to set resolve on window object.
@@ -62,7 +68,9 @@ export default class ExternalAuth extends Auth {
     if (window.externalApp) {
       window.externalApp.revokeExternalAuth(callbackPayload);
     } else {
-      window.webkit.messageHandlers.revokeExternalAuth.postMessage(callbackPayload);
+      window.webkit.messageHandlers.revokeExternalAuth.postMessage(
+        callbackPayload
+      );
     }
 
     await responseProm;

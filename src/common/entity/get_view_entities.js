@@ -1,5 +1,5 @@
-import computeDomain from './compute_domain.js';
-import getGroupEntities from './get_group_entities.js';
+import computeDomain from "./compute_domain.js";
+import getGroupEntities from "./get_group_entities.js";
 
 // Return an object containing all entities that the view will show
 // including embedded groups.
@@ -12,7 +12,7 @@ export default function getViewEntities(entities, view) {
     if (entity && !entity.attributes.hidden) {
       viewEntities[entity.entity_id] = entity;
 
-      if (computeDomain(entity.entity_id) === 'group') {
+      if (computeDomain(entity.entity_id) === "group") {
         const groupEntities = getGroupEntities(entities, entity);
 
         Object.keys(groupEntities).forEach((grEntityId) => {

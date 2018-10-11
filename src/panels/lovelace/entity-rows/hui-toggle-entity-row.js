@@ -1,12 +1,12 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/hui-generic-entity-row.js';
-import '../../../components/entity/ha-entity-toggle.js';
+import "../components/hui-generic-entity-row.js";
+import "../../../components/entity/ha-entity-toggle.js";
 
-import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import computeStateDisplay from "../../../common/entity/compute_state_display.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -45,12 +45,12 @@ class HuiToggleEntityRow extends LocalizeMixin(PolymerElement) {
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
+        computed: "_computeStateObj(hass.states, _config.entity)",
       },
       _canToggle: {
         type: Boolean,
-        computed: '_computeCanToggle(_stateObj.state)'
-      }
+        computed: "_computeCanToggle(_stateObj.state)",
+      },
     };
   }
 
@@ -59,7 +59,7 @@ class HuiToggleEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _computeCanToggle(state) {
-    return state === 'on' || state === 'off';
+    return state === "on" || state === "off";
   }
 
   _computeState(stateObj) {
@@ -68,9 +68,9 @@ class HuiToggleEntityRow extends LocalizeMixin(PolymerElement) {
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw new Error('Entity not configured.');
+      throw new Error("Entity not configured.");
     }
     this._config = config;
   }
 }
-customElements.define('hui-toggle-entity-row', HuiToggleEntityRow);
+customElements.define("hui-toggle-entity-row", HuiToggleEntityRow);

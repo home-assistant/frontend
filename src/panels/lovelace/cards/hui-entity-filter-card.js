@@ -1,7 +1,7 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import createCardElement from '../common/create-card-element.js';
-import processConfigEntities from '../common/process-config-entities.js';
+import createCardElement from "../common/create-card-element.js";
+import processConfigEntities from "../common/process-config-entities.js";
 
 function getEntities(hass, filterState, entities) {
   return entities.filter((entityConf) => {
@@ -15,7 +15,7 @@ class HuiEntitiesCard extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged'
+        observer: "_hassChanged",
       },
     };
   }
@@ -26,7 +26,7 @@ class HuiEntitiesCard extends PolymerElement {
 
   setConfig(config) {
     if (!config.state_filter || !Array.isArray(config.state_filter)) {
-      throw new Error('Incorrect filter config.');
+      throw new Error("Incorrect filter config.");
     }
 
     this._config = config;
@@ -37,8 +37,8 @@ class HuiEntitiesCard extends PolymerElement {
       this._element = null;
     }
 
-    const card = 'card' in config ? Object.assign({}, config.card) : {};
-    if (!card.type) card.type = 'entities';
+    const card = "card" in config ? Object.assign({}, config.card) : {};
+    if (!card.type) card.type = "entities";
     card.entities = [];
 
     const element = createCardElement(card);
@@ -53,20 +53,22 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _updateCardConfig(element) {
-    if (!element || element.tagName === 'HUI-ERROR-CARD' || !this.hass) return;
-    const entitiesList = getEntities(this.hass, this._config.state_filter, this._configEntities);
+    if (!element || element.tagName === "HUI-ERROR-CARD" || !this.hass) return;
+    const entitiesList = getEntities(
+      this.hass,
+      this._config.state_filter,
+      this._configEntities
+    );
 
     if (entitiesList.length === 0 && this._config.show_empty === false) {
-      this.style.display = 'none';
+      this.style.display = "none";
       return;
     }
 
-    this.style.display = 'block';
-    element.setConfig(Object.assign(
-      {},
-      element._filterRawConfig,
-      { entities: entitiesList }
-    ));
+    this.style.display = "block";
+    element.setConfig(
+      Object.assign({}, element._filterRawConfig, { entities: entitiesList })
+    );
     element.isPanel = this.isPanel;
     element.hass = this.hass;
 
@@ -74,4 +76,4 @@ class HuiEntitiesCard extends PolymerElement {
     if (!this.lastChild) this.appendChild(element);
   }
 }
-customElements.define('hui-entity-filter-card', HuiEntitiesCard);
+customElements.define("hui-entity-filter-card", HuiEntitiesCard);

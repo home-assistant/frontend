@@ -16,12 +16,12 @@ Custom property | Description | Default
 `--paper-time-input-cotnainer` | Mixin applied to the inputs | `{}`
 `--paper-time-dropdown-input-cotnainer` | Mixin applied to the dropdown input | `{}`
 */
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class PaperTimeInput extends PolymerElement {
   static get template() {
@@ -124,7 +124,6 @@ class PaperTimeInput extends PolymerElement {
     `;
   }
 
-
   static get properties() {
     return {
       /**
@@ -132,49 +131,49 @@ class PaperTimeInput extends PolymerElement {
        */
       label: {
         type: String,
-        value: 'Time'
+        value: "Time",
       },
       /**
        * auto validate time inputs
        */
       autoValidate: {
         type: Boolean,
-        value: true
+        value: true,
       },
       /**
        * hides the label
        */
       hideLabel: {
         type: Boolean,
-        value: false
+        value: false,
       },
       /**
        * 12 or 24 hr format
        */
       format: {
         type: Number,
-        value: 12
+        value: 12,
       },
       /**
        * disables the inputs
        */
       disabled: {
         type: Boolean,
-        value: false
+        value: false,
       },
       /**
        * hour
        */
       hour: {
         type: String,
-        notify: true
+        notify: true,
       },
       /**
        * minute
        */
       min: {
         type: String,
-        notify: true
+        notify: true,
       },
       /**
        * AM or PM
@@ -182,7 +181,7 @@ class PaperTimeInput extends PolymerElement {
       amPm: {
         type: String,
         notify: true,
-        value: 'AM'
+        value: "AM",
       },
       /**
        * Formatted time string
@@ -191,7 +190,7 @@ class PaperTimeInput extends PolymerElement {
         type: String,
         notify: true,
         readOnly: true,
-        computed: '_computeTime(min, hour, amPm)'
+        computed: "_computeTime(min, hour, amPm)",
       },
     };
   }
@@ -220,9 +219,9 @@ class PaperTimeInput extends PolymerElement {
     if (hour && min) {
       // No ampm on 24 hr time
       if (this.format === 24) {
-        amPm = '';
+        amPm = "";
       }
-      return hour + ':' + min + ' ' + amPm;
+      return hour + ":" + min + " " + amPm;
     }
     return undefined;
   }
@@ -232,7 +231,7 @@ class PaperTimeInput extends PolymerElement {
    */
   _formatMin() {
     if (this.min.toString().length === 1) {
-      this.min = (this.min < 10) ? ('0' + this.min) : this.min;
+      this.min = this.min < 10 ? "0" + this.min : this.min;
     }
   }
 
@@ -241,7 +240,7 @@ class PaperTimeInput extends PolymerElement {
    */
   _shouldFormatHour() {
     if (this.format === 24 && this.hour.toString().length === 1) {
-      this.hour = (this.hour < 10) ? ('0' + this.hour) : this.hour;
+      this.hour = this.hour < 10 ? "0" + this.hour : this.hour;
     }
   }
 
@@ -260,4 +259,4 @@ class PaperTimeInput extends PolymerElement {
   }
 }
 
-customElements.define('paper-time-input', PaperTimeInput);
+customElements.define("paper-time-input", PaperTimeInput);

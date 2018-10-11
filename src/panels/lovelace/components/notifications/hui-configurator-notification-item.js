@@ -1,19 +1,21 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './hui-notification-item-template.js';
+import "./hui-notification-item-template.js";
 
-import EventsMixin from '../../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  */
-export class HuiConfiguratorNotificationItem extends EventsMixin(LocalizeMixin(PolymerElement)) {
+export class HuiConfiguratorNotificationItem extends EventsMixin(
+  LocalizeMixin(PolymerElement)
+) {
   static get template() {
     return html`
     <hui-notification-item-template>
@@ -33,12 +35,12 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(LocalizeMixin(P
   static get properties() {
     return {
       hass: Object,
-      notification: Object
+      notification: Object,
     };
   }
 
   _handleClick() {
-    this.fire('hass-more-info', { entityId: this.notification.entity_id });
+    this.fire("hass-more-info", { entityId: this.notification.entity_id });
   }
 
   _localizeState(state) {
@@ -47,7 +49,14 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(LocalizeMixin(P
 
   _getMessage(notification) {
     const friendlyName = notification.attributes.friendly_name;
-    return this.localize('ui.notification_drawer.click_to_configure', 'entity', friendlyName);
+    return this.localize(
+      "ui.notification_drawer.click_to_configure",
+      "entity",
+      friendlyName
+    );
   }
 }
-customElements.define('hui-configurator-notification-item', HuiConfiguratorNotificationItem);
+customElements.define(
+  "hui-configurator-notification-item",
+  HuiConfiguratorNotificationItem
+);

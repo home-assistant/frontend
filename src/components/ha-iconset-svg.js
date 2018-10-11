@@ -1,13 +1,13 @@
-import '@polymer/iron-iconset-svg/iron-iconset-svg.js';
+import "@polymer/iron-iconset-svg/iron-iconset-svg.js";
 
-const IronIconsetClass = customElements.get('iron-iconset-svg');
+const IronIconsetClass = customElements.get("iron-iconset-svg");
 
 class HaIconset extends IronIconsetClass {
   /**
    * Fire 'iron-iconset-added' event at next microtask.
    */
   _fireIronIconsetAdded() {
-    this.async(() => this.fire('iron-iconset-added', this, { node: window }));
+    this.async(() => this.fire("iron-iconset-added", this, { node: window }));
   }
 
   /**
@@ -19,9 +19,9 @@ class HaIconset extends IronIconsetClass {
     this._meta.value = null;
     this._meta.key = this.name;
     this._meta.value = this;
-    if (this.ownerDocument && this.ownerDocument.readyState === 'loading') {
+    if (this.ownerDocument && this.ownerDocument.readyState === "loading") {
       // Document still loading. It could be that not all icons in the iconset are parsed yet.
-      this.ownerDocument.addEventListener('DOMContentLoaded', () => {
+      this.ownerDocument.addEventListener("DOMContentLoaded", () => {
         this._fireIronIconsetAdded();
       });
     } else {
@@ -30,4 +30,4 @@ class HaIconset extends IronIconsetClass {
   }
 }
 
-customElements.define('ha-iconset-svg', HaIconset);
+customElements.define("ha-iconset-svg", HaIconset);

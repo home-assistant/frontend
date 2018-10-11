@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import emptyImageBase64 from '../../../common/empty_image_base64.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import emptyImageBase64 from "../../../common/empty_image_base64.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -53,7 +53,7 @@ class MoreInfoCamera extends EventsMixin(PolymerElement) {
   }
 
   imageLoaded() {
-    this.fire('iron-resize');
+    this.fire("iron-resize");
   }
 
   _computeStateName(stateObj) {
@@ -62,14 +62,19 @@ class MoreInfoCamera extends EventsMixin(PolymerElement) {
 
   computeCameraImageUrl(hass, stateObj, isVisible) {
     if (hass.demo) {
-      return '/demo/webcam.jpg';
-    } if (stateObj && isVisible) {
-      return '/api/camera_proxy_stream/' + stateObj.entity_id
-             + '?token=' + stateObj.attributes.access_token;
+      return "/demo/webcam.jpg";
+    }
+    if (stateObj && isVisible) {
+      return (
+        "/api/camera_proxy_stream/" +
+        stateObj.entity_id +
+        "?token=" +
+        stateObj.attributes.access_token
+      );
     }
     // Return an empty image if no stateObj (= dialog not open) or in cleanup mode.
     return emptyImageBase64;
   }
 }
 
-customElements.define('more-info-camera', MoreInfoCamera);
+customElements.define("more-info-camera", MoreInfoCamera);

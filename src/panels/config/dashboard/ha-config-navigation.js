@@ -1,26 +1,21 @@
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import isComponentLoaded from "../../../common/config/is_component_loaded.js";
 
-import isComponentLoaded from '../../../common/config/is_component_loaded.js';
-
-const CORE_PAGES = [
-  'core',
-  'customize',
-];
+const CORE_PAGES = ["core", "customize"];
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
-class HaConfigNavigation extends
-  LocalizeMixin(NavigateMixin(PolymerElement)) {
+class HaConfigNavigation extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
   <style include="iron-flex">
@@ -55,14 +50,8 @@ class HaConfigNavigation extends
 
       pages: {
         type: Array,
-        value: [
-          'core',
-          'customize',
-          'automation',
-          'script',
-          'zwave',
-        ],
-      }
+        value: ["core", "customize", "automation", "script", "zwave"],
+      },
     };
   }
 
@@ -79,8 +68,8 @@ class HaConfigNavigation extends
   }
 
   _navigate(ev) {
-    this.navigate('/config/' + ev.model.item);
+    this.navigate("/config/" + ev.model.item);
   }
 }
 
-customElements.define('ha-config-navigation', HaConfigNavigation);
+customElements.define("ha-config-navigation", HaConfigNavigation);

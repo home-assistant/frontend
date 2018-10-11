@@ -1,22 +1,22 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import moment from 'moment';
-import dates from 'react-big-calendar/lib/utils/dates';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-checkbox/paper-checkbox.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import moment from "moment";
+import dates from "react-big-calendar/lib/utils/dates";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
-import './ha-big-calendar.js';
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
+import "./ha-big-calendar.js";
 
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
-const DEFAULT_VIEW = 'month';
+const DEFAULT_VIEW = "month";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -111,12 +111,12 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
 
       currentView: {
         type: String,
-        value: DEFAULT_VIEW
+        value: DEFAULT_VIEW,
       },
 
       currentDate: {
         type: Object,
-        value: new Date()
+        value: new Date(),
       },
 
       events: {
@@ -143,7 +143,6 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
-
     };
   }
 
@@ -153,18 +152,19 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   }
 
   _fetchCalendars() {
-    this.hass.callApi('get', 'calendars')
-      .then((result) => {
-        this.calendars = result;
-        this.selectedCalendars = result.map(cal => cal.entity_id);
-      });
+    this.hass.callApi("get", "calendars").then((result) => {
+      this.calendars = result;
+      this.selectedCalendars = result.map((cal) => cal.entity_id);
+    });
   }
 
   _fetchData() {
     const start = dates.firstVisibleDay(this.currentDate).toISOString();
     const end = dates.lastVisibleDay(this.currentDate).toISOString();
     const params = encodeURI(`?start=${start}&end=${end}`);
-    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', `calendars/${cal}${params}`));
+    const calls = this.selectedCalendars.map((cal) =>
+      this.hass.callApi("get", `calendars/${cal}${params}`)
+    );
     Promise.all(calls).then((results) => {
       const tmpEvents = [];
 
@@ -186,18 +186,24 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   _getDateRange() {
     let startDate;
     let endDate;
-    if (this.currentView === 'day') {
-      startDate = moment(this.currentDate).startOf('day');
-      endDate = moment(this.currentDate).startOf('day');
-    } else if (this.currentView === 'week') {
-      startDate = moment(this.currentDate).startOf('isoWeek');
-      endDate = moment(this.currentDate).endOf('isoWeek');
-    } else if (this.currentView === 'month') {
-      startDate = moment(this.currentDate).startOf('month').subtract(7, 'days');
-      endDate = moment(this.currentDate).endOf('month').add(7, 'days');
-    } else if (this.currentView === 'agenda') {
-      startDate = moment(this.currentDate).startOf('day');
-      endDate = moment(this.currentDate).endOf('day').add(1, 'month');
+    if (this.currentView === "day") {
+      startDate = moment(this.currentDate).startOf("day");
+      endDate = moment(this.currentDate).startOf("day");
+    } else if (this.currentView === "week") {
+      startDate = moment(this.currentDate).startOf("isoWeek");
+      endDate = moment(this.currentDate).endOf("isoWeek");
+    } else if (this.currentView === "month") {
+      startDate = moment(this.currentDate)
+        .startOf("month")
+        .subtract(7, "days");
+      endDate = moment(this.currentDate)
+        .endOf("month")
+        .add(7, "days");
+    } else if (this.currentView === "agenda") {
+      startDate = moment(this.currentDate).startOf("day");
+      endDate = moment(this.currentDate)
+        .endOf("day")
+        .add(1, "month");
     }
     return [startDate.toISOString(), endDate.toISOString()];
   }
@@ -216,4 +222,4 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-panel-calendar', HaPanelCalendar);
+customElements.define("ha-panel-calendar", HaPanelCalendar);

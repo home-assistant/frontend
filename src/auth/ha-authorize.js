@@ -1,13 +1,13 @@
-import '@polymer/polymer/lib/elements/dom-if.js';
-import '@polymer/polymer/lib/elements/dom-repeat.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/polymer/lib/elements/dom-if.js";
+import "@polymer/polymer/lib/elements/dom-repeat.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/ha-markdown.js';
+import "../components/ha-markdown.js";
 
-import LocalizeLiteMixin from '../mixins/localize-lite-mixin.js';
+import LocalizeLiteMixin from "../mixins/localize-lite-mixin.js";
 
-import './ha-auth-flow.js';
+import "./ha-auth-flow.js";
 
 class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   static get template() {
@@ -66,17 +66,17 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
       oauth2State: String,
       translationFragment: {
         type: String,
-        value: 'page-authorize',
-      }
+        value: "page-authorize",
+      },
     };
   }
 
   async ready() {
     super.ready();
     const query = {};
-    const values = location.search.substr(1).split('&');
+    const values = location.search.substr(1).split("&");
     for (let i = 0; i < values.length; i++) {
-      const value = values[i].split('=');
+      const value = values[i].split("=");
       if (value.length > 1) {
         query[decodeURIComponent(value[0])] = decodeURIComponent(value[1]);
       }
@@ -87,7 +87,7 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
     if (query.state) props.oauth2State = query.state;
     this.setProperties(props);
 
-    import(/* webpackChunkName: "pick-auth-provider" */ '../auth/ha-pick-auth-provider.js');
+    import(/* webpackChunkName: "pick-auth-provider" */ "../auth/ha-pick-auth-provider.js");
 
     // Fetch auth providers
     try {
@@ -95,13 +95,16 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
       const authProviders = await response.json();
 
       // Forward to main screen which will redirect to right onboarding page.
-      if (response.status === 400 && authProviders.code === 'onboarding_required') {
-        location.href = '/';
+      if (
+        response.status === 400 &&
+        authProviders.code === "onboarding_required"
+      ) {
+        location.href = "/";
         return;
       }
 
       if (authProviders.length === 0) {
-        alert('No auth providers returned. Unable to finish login.');
+        alert("No auth providers returned. Unable to finish login.");
         return;
       }
 
@@ -111,8 +114,8 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
       });
     } catch (err) {
       // eslint-disable-next-line
-      console.error('Error loading auth providers', err);
-      this._state = 'error-loading';
+      console.error("Error loading auth providers", err);
+      this._state = "error-loading";
     }
   }
 
@@ -125,15 +128,25 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   }
 
   _computeInactiveProvders(curProvider, providers) {
-    return providers.filter(prv => prv.type !== curProvider.type || prv.id !== curProvider.id);
+    return providers.filter(
+      (prv) => prv.type !== curProvider.type || prv.id !== curProvider.id
+    );
   }
 
   _computeIntro(localize, clientId, authProvider) {
     return (
-      localize('ui.panel.page-authorize.authorizing_client', 'clientId', clientId)
-      + '\n\n'
-      + localize('ui.panel.page-authorize.logging_in_with', 'authProviderName', authProvider.name)
+      localize(
+        "ui.panel.page-authorize.authorizing_client",
+        "clientId",
+        clientId
+      ) +
+      "\n\n" +
+      localize(
+        "ui.panel.page-authorize.logging_in_with",
+        "authProviderName",
+        authProvider.name
+      )
     );
   }
 }
-customElements.define('ha-authorize', HaAuthorize);
+customElements.define("ha-authorize", HaAuthorize);

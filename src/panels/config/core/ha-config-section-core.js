@@ -1,16 +1,16 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-call-service-button.js';
-import '../../../resources/ha-style.js';
+import "../../../components/buttons/ha-call-service-button.js";
+import "../../../resources/ha-style.js";
 
-import '../ha-config-section.js';
+import "../ha-config-section.js";
 
-import isComponentLoaded from '../../../common/config/is_component_loaded.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import isComponentLoaded from "../../../common/config/is_component_loaded.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -141,31 +141,31 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
 
       validateLog: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
 
   groupLoaded(hass) {
-    return isComponentLoaded(hass, 'group');
+    return isComponentLoaded(hass, "group");
   }
 
   automationLoaded(hass) {
-    return isComponentLoaded(hass, 'automation');
+    return isComponentLoaded(hass, "automation");
   }
 
   scriptLoaded(hass) {
-    return isComponentLoaded(hass, 'script');
+    return isComponentLoaded(hass, "script");
   }
 
   validateConfig() {
     this.validating = true;
-    this.validateLog = '';
+    this.validateLog = "";
     this.isValid = null;
 
-    this.hass.callApi('POST', 'config/core/check_config').then((result) => {
+    this.hass.callApi("POST", "config/core/check_config").then((result) => {
       this.validating = false;
-      this.isValid = result.result === 'valid';
+      this.isValid = result.result === "valid";
 
       if (!this.isValid) {
         this.validateLog = result.errors;
@@ -174,4 +174,4 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-config-section-core', HaConfigSectionCore);
+customElements.define("ha-config-section-core", HaConfigSectionCore);

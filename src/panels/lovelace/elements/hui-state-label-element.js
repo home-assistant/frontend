@@ -1,18 +1,20 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import computeStateDisplay from "../../../common/entity/compute_state_display.js";
 
-import '../../../components/entity/ha-state-label-badge.js';
+import "../../../components/entity/ha-state-label-badge.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import ElementClickMixin from '../mixins/element-click-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import ElementClickMixin from "../mixins/element-click-mixin.js";
 
 /*
  * @appliesMixin ElementClickMixin
  * @appliesMixin LocalizeMixin
  */
-class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElement)) {
+class HuiStateLabelElement extends LocalizeMixin(
+  ElementClickMixin(PolymerElement)
+) {
   static get template() {
     return html`
       <style>
@@ -34,21 +36,23 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged'
+        observer: "_hassChanged",
       },
       _config: Object,
-      _stateObj: Object
+      _stateObj: Object,
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+    this.addEventListener("click", () =>
+      this.handleClick(this.hass, this._config)
+    );
   }
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw Error('Error in element configuration');
+      throw Error("Error in element configuration");
     }
 
     this._config = config;
@@ -59,7 +63,7 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
   }
 
   _computeStateDisplay(stateObj) {
-    return stateObj ? computeStateDisplay(this.localize, stateObj) : '-';
+    return stateObj ? computeStateDisplay(this.localize, stateObj) : "-";
   }
 }
-customElements.define('hui-state-label-element', HuiStateLabelElement);
+customElements.define("hui-state-label-element", HuiStateLabelElement);

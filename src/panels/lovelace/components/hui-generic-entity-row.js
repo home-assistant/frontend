@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/entity/state-badge.js';
-import '../../../components/ha-relative-time.js';
-import '../../../components/ha-icon.js';
+import "../../../components/entity/state-badge.js";
+import "../../../components/ha-relative-time.js";
+import "../../../components/ha-icon.js";
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
+import computeStateName from "../../../common/entity/compute_state_name.js";
 
 class HuiGenericEntityRow extends PolymerElement {
   static get template() {
@@ -113,12 +113,12 @@ class HuiGenericEntityRow extends PolymerElement {
       config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, config.entity)'
+        computed: "_computeStateObj(hass.states, config.entity)",
       },
       showSecondary: {
         type: Boolean,
-        value: true
-      }
+        value: true,
+      },
     };
   }
 
@@ -134,4 +134,4 @@ class HuiGenericEntityRow extends PolymerElement {
     return name || computeStateName(stateObj);
   }
 }
-customElements.define('hui-generic-entity-row', HuiGenericEntityRow);
+customElements.define("hui-generic-entity-row", HuiGenericEntityRow);

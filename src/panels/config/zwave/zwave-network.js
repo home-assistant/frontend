@@ -1,12 +1,12 @@
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-call-api-button.js';
-import '../../../components/buttons/ha-call-service-button.js';
-import '../../../components/ha-service-description.js';
-import '../ha-config-section.js';
+import "../../../components/buttons/ha-call-api-button.js";
+import "../../../components/buttons/ha-call-service-button.js";
+import "../../../components/ha-service-description.js";
+import "../ha-config-section.js";
 
 class ZwaveNetwork extends PolymerElement {
   static get template() {
@@ -203,4 +203,4 @@ class ZwaveNetwork extends PolymerElement {
   }
 }
 
-customElements.define('zwave-network', ZwaveNetwork);
+customElements.define("zwave-network", ZwaveNetwork);

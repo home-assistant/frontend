@@ -1,16 +1,16 @@
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/components/buttons/ha-call-api-button.js';
-import '../../../src/components/ha-markdown.js';
-import '../../../src/resources/ha-style.js';
-import EventsMixin from '../../../src/mixins/events-mixin.js';
+import "../../../src/components/buttons/ha-call-api-button.js";
+import "../../../src/components/ha-markdown.js";
+import "../../../src/resources/ha-style.js";
+import EventsMixin from "../../../src/mixins/events-mixin.js";
 
-import '../components/hassio-card-content.js';
+import "../components/hassio-card-content.js";
 
 class HassioAddonInfo extends EventsMixin(PolymerElement) {
   static get template() {
@@ -157,21 +157,26 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
       addonSlug: String,
       isRunning: {
         type: Boolean,
-        computed: 'computeIsRunning(addon)',
+        computed: "computeIsRunning(addon)",
       },
     };
   }
 
   computeIsRunning(addon) {
-    return addon && addon.state === 'started';
+    return addon && addon.state === "started";
   }
 
   computeUpdateAvailable(addon) {
-    return addon && !addon.detached && addon.version && addon.version !== addon.last_version;
+    return (
+      addon &&
+      !addon.detached &&
+      addon.version &&
+      addon.version !== addon.last_version
+    );
   }
 
   pathWebui(webui) {
-    return webui && webui.replace('[HOST]', document.location.hostname);
+    return webui && webui.replace("[HOST]", document.location.hostname);
   }
 
   computeShowWebUI(webui, isRunning) {
@@ -179,49 +184,54 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
   }
 
   computeStartOnBoot(state) {
-    return state === 'auto';
+    return state === "auto";
   }
 
   startOnBootToggled() {
-    const data = { boot: this.addon.boot === 'auto' ? 'manual' : 'auto' };
-    this.hass.callApi('POST', `hassio/addons/${this.addonSlug}/options`, data);
+    const data = { boot: this.addon.boot === "auto" ? "manual" : "auto" };
+    this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/options`, data);
   }
 
   autoUpdateToggled() {
     const data = { auto_update: !this.addon.auto_update };
-    this.hass.callApi('POST', `hassio/addons/${this.addonSlug}/options`, data);
+    this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/options`, data);
   }
 
   openChangelog() {
-    this.hass.callApi('get', `hassio/addons/${this.addonSlug}/changelog`)
-      .then(
-        resp => resp,
-        () => 'Error getting changelog'
-      ).then((content) => {
-        this.fire('hassio-markdown-dialog', {
-          title: 'Changelog',
+    this.hass
+      .callApi("get", `hassio/addons/${this.addonSlug}/changelog`)
+      .then((resp) => resp, () => "Error getting changelog")
+      .then((content) => {
+        this.fire("hassio-markdown-dialog", {
+          title: "Changelog",
           content: content,
         });
       });
   }
 
   _unistallClicked() {
-    if (!confirm('Are you sure you want to uninstall this add-on?')) {
+    if (!confirm("Are you sure you want to uninstall this add-on?")) {
       return;
     }
     const path = `hassio/addons/${this.addonSlug}/uninstall`;
     const eventData = {
       path: path,
     };
-    this.hass.callApi('post', path).then((resp) => {
-      eventData.success = true;
-      eventData.response = resp;
-    }, (resp) => {
-      eventData.success = false;
-      eventData.response = resp;
-    }).then(() => {
-      this.fire('hass-api-called', eventData);
-    });
+    this.hass
+      .callApi("post", path)
+      .then(
+        (resp) => {
+          eventData.success = true;
+          eventData.response = resp;
+        },
+        (resp) => {
+          eventData.success = false;
+          eventData.response = resp;
+        }
+      )
+      .then(() => {
+        this.fire("hass-api-called", eventData);
+      });
   }
 }
-customElements.define('hassio-addon-info', HassioAddonInfo);
+customElements.define("hassio-addon-info", HassioAddonInfo);

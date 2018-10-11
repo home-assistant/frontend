@@ -1,8 +1,8 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-button/paper-button.js';
+import { h, Component } from "preact";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-button/paper-button.js";
 
-import ConditionRow from './condition_row.js';
+import ConditionRow from "./condition_row.js";
 
 export default class Condition extends Component {
   constructor() {
@@ -14,7 +14,7 @@ export default class Condition extends Component {
 
   addCondition() {
     const condition = this.props.condition.concat({
-      condition: 'state',
+      condition: "state",
     });
 
     this.props.onChange(condition);
@@ -42,10 +42,13 @@ export default class Condition extends Component {
             onChange={this.conditionChanged}
             hass={hass}
             localize={localize}
-          />))}
+          />
+        ))}
         <paper-card>
-          <div class='card-actions add-card'>
-            <paper-button onTap={this.addCondition}>{localize('ui.panel.config.automation.editor.conditions.add')}</paper-button>
+          <div class="card-actions add-card">
+            <paper-button onTap={this.addCondition}>
+              {localize("ui.panel.config.automation.editor.conditions.add")}
+            </paper-button>
           </div>
         </paper-card>
       </div>

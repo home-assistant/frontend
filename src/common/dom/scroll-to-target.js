@@ -16,7 +16,7 @@ export default function scrollToTarget(element, target) {
   var easingFn = function easeOutQuad(t, b, c, d) {
     /* eslint-disable no-param-reassign, space-infix-ops, no-mixed-operators */
     t /= d;
-    return -c * t*(t-2) + b;
+    return -c * t * (t - 2) + b;
     /* eslint-enable no-param-reassign, space-infix-ops, no-mixed-operators */
   };
   var animationId = Math.random();
@@ -31,8 +31,13 @@ export default function scrollToTarget(element, target) {
     if (elapsedTime > duration) {
       scroller.scrollTop = top;
     } else if (element._currentAnimationId === animationId) {
-      scroller.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
+      scroller.scrollTop = easingFn(
+        elapsedTime,
+        currentScrollTop,
+        deltaScrollTop,
+        duration
+      );
       requestAnimationFrame(updateFrame.bind(element));
     }
-  }).call(element);
+  }.call(element));
 }

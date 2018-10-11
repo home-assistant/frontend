@@ -1,9 +1,9 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/state-info.js';
+import "../components/entity/state-info.js";
 
 class StateCardInputText extends PolymerElement {
   static get template() {
@@ -33,7 +33,6 @@ class StateCardInputText extends PolymerElement {
 `;
   }
 
-
   static get properties() {
     return {
       hass: Object,
@@ -45,11 +44,11 @@ class StateCardInputText extends PolymerElement {
 
       stateObj: {
         type: Object,
-        observer: 'stateObjectChanged',
+        observer: "stateObjectChanged",
       },
 
       pattern: String,
-      value: String
+      value: String,
     };
   }
 
@@ -61,7 +60,7 @@ class StateCardInputText extends PolymerElement {
     if (this.value === this.stateObj.state) {
       return;
     }
-    this.hass.callService('input_text', 'set_value', {
+    this.hass.callService("input_text", "set_value", {
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });
@@ -72,4 +71,4 @@ class StateCardInputText extends PolymerElement {
   }
 }
 
-customElements.define('state-card-input_text', StateCardInputText);
+customElements.define("state-card-input_text", StateCardInputText);

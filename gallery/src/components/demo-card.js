@@ -1,12 +1,12 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import JsYaml from 'js-yaml';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import JsYaml from "js-yaml";
 
-import HomeAssistant from '../data/hass.js';
-import demoConfig from '../data/demo_config.js';
-import demoResources from '../data/demo_resources.js';
-import demoStates from '../data/demo_states.js';
-import createCardElement from '../../../src/panels/lovelace/common/create-card-element.js';
+import HomeAssistant from "../data/hass.js";
+import demoConfig from "../data/demo_config.js";
+import demoResources from "../data/demo_resources.js";
+import demoStates from "../data/demo_states.js";
+import createCardElement from "../../../src/panels/lovelace/common/create-card-element.js";
 
 class DemoCard extends PolymerElement {
   static get template() {
@@ -50,11 +50,11 @@ class DemoCard extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged',
+        observer: "_hassChanged",
       },
       config: {
         type: Object,
-        observer: '_configChanged'
+        observer: "_configChanged",
       },
       showConfig: Boolean,
     };
@@ -74,7 +74,7 @@ class DemoCard extends PolymerElement {
       const hass = new HomeAssistant(demoStates);
       hass.config = demoConfig;
       hass.resources = demoResources;
-      hass.language = 'en';
+      hass.language = "en";
       hass.states = demoStates;
       el.hass = hass;
     }
@@ -92,4 +92,4 @@ class DemoCard extends PolymerElement {
   }
 }
 
-customElements.define('demo-card', DemoCard);
+customElements.define("demo-card", DemoCard);

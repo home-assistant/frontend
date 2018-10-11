@@ -1,20 +1,20 @@
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-fab/paper-fab.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-fab/paper-fab.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../layouts/ha-app-layout.js';
+import "../../../layouts/ha-app-layout.js";
 
-import '../ha-config-section.js';
+import "../ha-config-section.js";
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -113,11 +113,13 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   }
 
   scriptTapped(ev) {
-    this.navigate('/config/script/edit/' + this.scripts[ev.model.index].entity_id);
+    this.navigate(
+      "/config/script/edit/" + this.scripts[ev.model.index].entity_id
+    );
   }
 
   addScript() {
-    this.navigate('/config/script/new');
+    this.navigate("/config/script/new");
   }
 
   computeName(script) {
@@ -127,7 +129,7 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   // Still thinking of something to add here.
   // eslint-disable-next-line
   computeDescription(script) {
-    return '';
+    return "";
   }
 
   _backTapped() {
@@ -135,4 +137,4 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   }
 }
 
-customElements.define('ha-script-picker', HaScriptPicker);
+customElements.define("ha-script-picker", HaScriptPicker);

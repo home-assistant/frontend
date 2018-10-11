@@ -1,6 +1,6 @@
 export default function createErrorConfig(error, origConfig) {
   return {
-    type: 'error',
+    type: "error",
     error,
     origConfig,
   };

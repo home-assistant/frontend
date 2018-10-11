@@ -1,13 +1,13 @@
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-progress-button.js';
-import '../../../layouts/hass-subpage.js';
-import '../../../resources/ha-style.js';
-import '../ha-config-section.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
+import "../../../components/buttons/ha-progress-button.js";
+import "../../../layouts/hass-subpage.js";
+import "../../../resources/ha-style.js";
+import "../ha-config-section.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -113,23 +113,21 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
       },
       _password: {
         type: String,
-        value: '',
+        value: "",
       },
       _error: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
 
   static get observers() {
-    return [
-      '_inputChanged(email, _password)'
-    ];
+    return ["_inputChanged(email, _password)"];
   }
 
   _inputChanged() {
-    this._error = '';
+    this._error = "";
     this.$.email.invalid = false;
     this.$.password.invalid = false;
   }
@@ -145,7 +143,7 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
   _handleRegister() {
     let invalid = false;
 
-    if (!this.email || !this.email.includes('@')) {
+    if (!this.email || !this.email.includes("@")) {
       this.$.email.invalid = true;
       this.$.email.focus();
       invalid = true;
@@ -164,18 +162,26 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
 
     this._requestInProgress = true;
 
-    this.hass.callApi('post', 'cloud/register', {
-      email: this.email,
-      password: this._password,
-    }).then(() => this._verificationEmailSent(), (err) => {
-      // Do this before setProperties because changing it clears errors.
-      this._password = '';
+    this.hass
+      .callApi("post", "cloud/register", {
+        email: this.email,
+        password: this._password,
+      })
+      .then(
+        () => this._verificationEmailSent(),
+        (err) => {
+          // Do this before setProperties because changing it clears errors.
+          this._password = "";
 
-      this.setProperties({
-        _requestInProgress: false,
-        _error: err && err.body && err.body.message ? err.body.message : 'Unknown error'
-      });
-    });
+          this.setProperties({
+            _requestInProgress: false,
+            _error:
+              err && err.body && err.body.message
+                ? err.body.message
+                : "Unknown error",
+          });
+        }
+      );
   }
 
   _handleResendVerifyEmail() {
@@ -184,22 +190,32 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
       return;
     }
 
-    this.hass.callApi('post', 'cloud/resend_confirm', {
-      email: this.email,
-    }).then(() => this._verificationEmailSent(), err => this.setProperties({
-      _error: err && err.body && err.body.message ? err.body.message : 'Unknown error'
-    }));
+    this.hass
+      .callApi("post", "cloud/resend_confirm", {
+        email: this.email,
+      })
+      .then(
+        () => this._verificationEmailSent(),
+        (err) =>
+          this.setProperties({
+            _error:
+              err && err.body && err.body.message
+                ? err.body.message
+                : "Unknown error",
+          })
+      );
   }
 
   _verificationEmailSent() {
     this.setProperties({
       _requestInProgress: false,
-      _password: '',
+      _password: "",
     });
-    this.fire('cloud-done', {
-      flashMessage: 'Account created! Check your email for instructions on how to activate your account.'
+    this.fire("cloud-done", {
+      flashMessage:
+        "Account created! Check your email for instructions on how to activate your account.",
     });
   }
 }
 
-customElements.define('ha-config-cloud-register', HaConfigCloudRegister);
+customElements.define("ha-config-cloud-register", HaConfigCloudRegister);

@@ -1,6 +1,6 @@
-import '@polymer/paper-slider';
+import "@polymer/paper-slider";
 
-const PaperSliderClass = customElements.get('paper-slider');
+const PaperSliderClass = customElements.get("paper-slider");
 
 class HaSlider extends PaperSliderClass {
   _calcStep(value) {
@@ -10,7 +10,7 @@ class HaSlider extends PaperSliderClass {
 
     const numSteps = Math.round((value - this.min) / this.step);
     const stepStr = this.step.toString();
-    const stepPointAt = stepStr.indexOf('.');
+    const stepPointAt = stepStr.indexOf(".");
     if (stepPointAt !== -1) {
       /**
        * For small values of this.step, if we calculate the step using
@@ -22,10 +22,12 @@ class HaSlider extends PaperSliderClass {
        * as a work around we can round with the decimal precision of `step`
        */
       const precision = 10 ** (stepStr.length - stepPointAt - 1);
-      return Math.round((numSteps * this.step + this.min) * precision) / precision;
+      return (
+        Math.round((numSteps * this.step + this.min) * precision) / precision
+      );
     }
 
     return numSteps * this.step + this.min;
   }
 }
-customElements.define('ha-slider', HaSlider);
+customElements.define("ha-slider", HaSlider);

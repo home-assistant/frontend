@@ -1,21 +1,21 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-menu-button.js';
+import "../../../components/ha-menu-button.js";
 
-import '../ha-config-section.js';
-import './ha-config-navigation.js';
+import "../ha-config-section.js";
+import "./ha-config-navigation.js";
 
-import isComponentLoaded from '../../../common/config/is_component_loaded.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import isComponentLoaded from "../../../common/config/is_component_loaded.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -120,4 +120,4 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
   }
 }
 
-customElements.define('ha-config-dashboard', HaConfigDashboard);
+customElements.define("ha-config-dashboard", HaConfigDashboard);

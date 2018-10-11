@@ -1,10 +1,10 @@
-import '@polymer/polymer/lib/elements/dom-if.js';
-import '@polymer/polymer/lib/elements/dom-repeat.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button/paper-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
+import "@polymer/polymer/lib/elements/dom-if.js";
+import "@polymer/polymer/lib/elements/dom-repeat.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import localizeLiteMixin from "../mixins/localize-lite-mixin.js";
 
 class HaOnboarding extends localizeLiteMixin(PolymerElement) {
   static get template() {
@@ -85,7 +85,7 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
       },
       translationFragment: {
         type: String,
-        value: 'page-onboarding',
+        value: "page-onboarding",
       },
       _errorMsg: String,
     };
@@ -93,7 +93,7 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
 
   async ready() {
     super.ready();
-    this.addEventListener('keypress', (ev) => {
+    this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitForm();
       }
@@ -104,25 +104,25 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
 
       if (response.status === 404) {
         // We don't load the component when onboarding is done
-        document.location = '/';
+        document.location = "/";
         return;
       }
 
       const steps = await response.json();
 
-      if (steps.every(step => step.done)) {
+      if (steps.every((step) => step.done)) {
         // Onboarding is done!
-        document.location = '/';
+        document.location = "/";
       }
     } catch (err) {
-      alert('Something went wrong loading loading onboarding, try refreshing');
+      alert("Something went wrong loading loading onboarding, try refreshing");
     }
   }
 
   _maybePopulateUsername() {
     if (this._username) return;
 
-    const parts = this._name.split(' ');
+    const parts = this._name.split(" ");
 
     if (parts.length) {
       this._username = parts[0].toLowerCase();
@@ -131,31 +131,31 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
 
   async _submitForm() {
     if (!this._name || !this._username || !this._password) {
-      this._errorMsg = 'required_fields';
+      this._errorMsg = "required_fields";
       return;
     }
 
-    this._errorMsg = '';
+    this._errorMsg = "";
 
     try {
-      const response = await fetch('/api/onboarding/users', {
-        method: 'POST',
-        credentials: 'same-origin',
+      const response = await fetch("/api/onboarding/users", {
+        method: "POST",
+        credentials: "same-origin",
         body: JSON.stringify({
           name: this._name,
           username: this._username,
           password: this._password,
-        })
+        }),
       });
 
       if (!response.ok) {
         // eslint-disable-next-line
         throw {
-          message: `Bad response from server: ${response.status}`
+          message: `Bad response from server: ${response.status}`,
         };
       }
 
-      document.location = '/';
+      document.location = "/";
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
@@ -167,7 +167,9 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
   }
 
   _computeErrorMsg(localize, errorMsg) {
-    return localize(`ui.panel.page-onboarding.user.error.${errorMsg}`) || errorMsg;
+    return (
+      localize(`ui.panel.page-onboarding.user.error.${errorMsg}`) || errorMsg
+    );
   }
 }
-customElements.define('ha-onboarding', HaOnboarding);
+customElements.define("ha-onboarding", HaOnboarding);

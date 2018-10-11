@@ -1,14 +1,14 @@
-import '@polymer/paper-item/paper-icon-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../layouts/hass-subpage.js';
+import "../../../layouts/hass-subpage.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import '../../../components/entity/state-badge.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import "../../../components/entity/state-badge.js";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
@@ -63,13 +63,17 @@ class HaCeEntitiesCard extends EventsMixin(PolymerElement) {
   }
 
   _computeEntityName(entity, hass) {
-    return computeEntityName(hass, entity)
-        || `(${this.localize('ui.panel.config.integrations.config_entry.entity_unavailable')})`;
+    return (
+      computeEntityName(hass, entity) ||
+      `(${this.localize(
+        "ui.panel.config.integrations.config_entry.entity_unavailable"
+      )})`
+    );
   }
 
   _openMoreInfo(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
+    this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 }
 
-customElements.define('ha-ce-entities-card', HaCeEntitiesCard);
+customElements.define("ha-ce-entities-card", HaCeEntitiesCard);

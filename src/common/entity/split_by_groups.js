@@ -1,4 +1,4 @@
-import computeDomain from './compute_domain.js';
+import computeDomain from "./compute_domain.js";
 
 // Split a collection into a list of groups and a 'rest' list of ungrouped
 // entities.
@@ -10,16 +10,18 @@ export default function splitByGroups(entities) {
   Object.keys(entities).forEach((entityId) => {
     const entity = entities[entityId];
 
-    if (computeDomain(entityId) === 'group') {
+    if (computeDomain(entityId) === "group") {
       groups.push(entity);
     } else {
       ungrouped[entityId] = entity;
     }
   });
 
-  groups.forEach(group => group.attributes.entity_id.forEach((entityId) => {
-    delete ungrouped[entityId];
-  }));
+  groups.forEach((group) =>
+    group.attributes.entity_id.forEach((entityId) => {
+      delete ungrouped[entityId];
+    })
+  );
 
   return { groups, ungrouped };
 }

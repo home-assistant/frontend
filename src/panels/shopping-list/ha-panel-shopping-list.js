@@ -1,21 +1,21 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-icon-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-menu-button/paper-menu-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-checkbox/paper-checkbox.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-menu-button/paper-menu-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-menu-button.js';
-import '../../components/ha-start-voice-button.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import "../../components/ha-menu-button.js";
+import "../../components/ha-start-voice-button.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -153,8 +153,13 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
     super.connectedCallback();
     this._fetchData = this._fetchData.bind(this);
 
-    this.hass.connection.subscribeEvents(this._fetchData, 'shopping_list_updated')
-      .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
+    this.hass.connection
+      .subscribeEvents(this._fetchData, "shopping_list_updated")
+      .then(
+        function(unsub) {
+          this._unsubEvents = unsub;
+        }.bind(this)
+      );
     this._fetchData();
   }
 
@@ -164,25 +169,30 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
   }
 
   _fetchData() {
-    this.hass.callApi('get', 'shopping_list')
-      .then(function (items) {
+    this.hass.callApi("get", "shopping_list").then(
+      function(items) {
         items.reverse();
         this.items = items;
-      }.bind(this));
+      }.bind(this)
+    );
   }
 
   _itemCompleteTapped(ev) {
     ev.stopPropagation();
-    this.hass.callApi('post', 'shopping_list/item/' + ev.model.item.id, {
-      complete: ev.target.checked
-    }).catch(() => this._fetchData());
+    this.hass
+      .callApi("post", "shopping_list/item/" + ev.model.item.id, {
+        complete: ev.target.checked,
+      })
+      .catch(() => this._fetchData());
   }
 
   _addItem(ev) {
-    this.hass.callApi('post', 'shopping_list/item', {
-      name: this.$.addBox.value,
-    }).catch(() => this._fetchData());
-    this.$.addBox.value = '';
+    this.hass
+      .callApi("post", "shopping_list/item", {
+        name: this.$.addBox.value,
+      })
+      .catch(() => this._fetchData());
+    this.$.addBox.value = "";
     // Presence of 'ev' means tap on "add" button.
     if (ev) {
       setTimeout(() => this.$.addBox.focus(), 10);
@@ -203,15 +213,17 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
       return;
     }
 
-    this.set(['items', index, 'name'], name);
-    this.hass.callApi('post', 'shopping_list/item/' + item.id, {
-      name: name
-    }).catch(() => this._fetchData());
+    this.set(["items", index, "name"], name);
+    this.hass
+      .callApi("post", "shopping_list/item/" + item.id, {
+        name: name,
+      })
+      .catch(() => this._fetchData());
   }
 
   _clearCompleted() {
-    this.hass.callApi('POST', 'shopping_list/clear_completed');
+    this.hass.callApi("POST", "shopping_list/clear_completed");
   }
 }
 
-customElements.define('ha-panel-shopping-list', HaPanelShoppingList);
+customElements.define("ha-panel-shopping-list", HaPanelShoppingList);

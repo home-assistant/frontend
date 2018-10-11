@@ -1,11 +1,11 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-attributes.js';
+import "../../../components/ha-attributes.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -33,30 +33,30 @@ class MoreInfoLock extends LocalizeMixin(PolymerElement) {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'stateObjChanged',
+        observer: "stateObjChanged",
       },
       enteredCode: {
         type: String,
-        value: '',
+        value: "",
       },
-      isLocked: Boolean
+      isLocked: Boolean,
     };
   }
 
   stateObjChanged(newVal) {
     if (newVal) {
-      this.isLocked = newVal.state === 'locked';
+      this.isLocked = newVal.state === "locked";
     }
   }
 
   callService(ev) {
-    const service = ev.target.getAttribute('data-service');
+    const service = ev.target.getAttribute("data-service");
     const data = {
       entity_id: this.stateObj.entity_id,
-      code: this.enteredCode
+      code: this.enteredCode,
     };
-    this.hass.callService('lock', service, data);
+    this.hass.callService("lock", service, data);
   }
 }
 
-customElements.define('more-info-lock', MoreInfoLock);
+customElements.define("more-info-lock", MoreInfoLock);

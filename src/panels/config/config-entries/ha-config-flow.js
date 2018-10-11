@@ -1,17 +1,17 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-tooltip/paper-tooltip.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
+import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-tooltip/paper-tooltip.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-form.js';
-import '../../../components/ha-markdown.js';
-import '../../../resources/ha-style.js';
+import "../../../components/ha-form.js";
+import "../../../components/ha-markdown.js";
+import "../../../resources/ha-style.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 let instance = 0;
 
@@ -19,8 +19,7 @@ let instance = 0;
  * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
-class HaConfigFlow extends
-  LocalizeMixin(EventsMixin(PolymerElement)) {
+class HaConfigFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style-dialog">
@@ -134,7 +133,7 @@ class HaConfigFlow extends
 
       _canSubmit: {
         type: Boolean,
-        computed: '_computeCanSubmit(_step, _stepData, _counter)'
+        computed: "_computeCanSubmit(_step, _stepData, _counter)",
       },
 
       // Bogus counter because observing of `_stepData` doesn't seem to work
@@ -159,20 +158,25 @@ class HaConfigFlow extends
       _stepData: {
         type: Object,
         value: null,
-      }
+      },
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('keypress', (ev) => {
+    this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitStep();
       }
     });
   }
 
-  showDialog({ hass, continueFlowId, newFlowForHandler, dialogClosedCallback }) {
+  showDialog({
+    hass,
+    continueFlowId,
+    newFlowForHandler,
+    dialogClosedCallback,
+  }) {
     this.hass = hass;
     this._instance = instance++;
     this._dialogClosedCallback = dialogClosedCallback;
@@ -181,8 +185,10 @@ class HaConfigFlow extends
     this._opened = true;
 
     const fetchStep = continueFlowId
-      ? this.hass.callApi('get', `config/config_entries/flow/${continueFlowId}`)
-      : this.hass.callApi('post', 'config/config_entries/flow', { handler: newFlowForHandler });
+      ? this.hass.callApi("get", `config/config_entries/flow/${continueFlowId}`)
+      : this.hass.callApi("post", "config/config_entries/flow", {
+          handler: newFlowForHandler,
+        });
 
     const curInstance = this._instance;
 
@@ -206,14 +212,15 @@ class HaConfigFlow extends
     const data = {};
     Object.keys(this._stepData).forEach((key) => {
       const value = this._stepData[key];
-      const isEmpty = [undefined, ''].includes(value);
+      const isEmpty = [undefined, ""].includes(value);
 
       if (!isEmpty) {
         data[key] = value;
       }
     });
 
-    this.hass.callApi('post', `config/config_entries/flow/${this._step.flow_id}`, data)
+    this.hass
+      .callApi("post", `config/config_entries/flow/${this._step.flow_id}`, data)
       .then(
         (step) => {
           if (curInstance !== this._instance) return;
@@ -222,7 +229,8 @@ class HaConfigFlow extends
           this._loading = false;
         },
         (err) => {
-          this._errorMsg = (err && err.body && err.body.message) || 'Unknown error occurred';
+          this._errorMsg =
+            (err && err.body && err.body.message) || "Unknown error occurred";
           this._loading = false;
         }
       );
@@ -232,10 +240,10 @@ class HaConfigFlow extends
     if (!step.errors) step.errors = {};
     this._step = step;
     // We got a new form if there are no errors.
-    if (step.type === 'form' && Object.keys(step.errors).length === 0) {
+    if (step.type === "form" && Object.keys(step.errors).length === 0) {
       const data = {};
       step.data_schema.forEach((field) => {
-        if ('default' in field) {
+        if ("default" in field) {
           data[field.name] = field.default;
         }
       });
@@ -245,10 +253,14 @@ class HaConfigFlow extends
 
   _flowDone() {
     this._opened = false;
-    const flowFinished = this._step && ['success', 'abort'].includes(this._step.type);
+    const flowFinished =
+      this._step && ["success", "abort"].includes(this._step.type);
 
     if (this._step && !flowFinished && this._createdFromHandler) {
-      this.hass.callApi('delete', `config/config_entries/flow/${this._step.flow_id}`);
+      this.hass.callApi(
+        "delete",
+        `config/config_entries/flow/${this._step.flow_id}`
+      );
     }
 
     this._dialogClosedCallback({
@@ -273,17 +285,24 @@ class HaConfigFlow extends
   }
 
   _computeStepTitle(localize, step) {
-    return localize(`component.${step.handler}.config.step.${step.step_id}.title`);
+    return localize(
+      `component.${step.handler}.config.step.${step.step_id}.title`
+    );
   }
 
   _computeStepDescription(localize, step) {
     const args = [];
-    if (step.type === 'form') {
-      args.push(`component.${step.handler}.config.step.${step.step_id}.description`);
-    } else if (step.type === 'abort') {
+    if (step.type === "form") {
+      args.push(
+        `component.${step.handler}.config.step.${step.step_id}.description`
+      );
+    } else if (step.type === "abort") {
       args.push(`component.${step.handler}.config.abort.${step.reason}`);
-    } else if (step.type === 'create_entry') {
-      args.push(`component.${step.handler}.config.create_entry.${step.description || 'default'}`);
+    } else if (step.type === "create_entry") {
+      args.push(
+        `component.${step.handler}.config.create_entry.${step.description ||
+          "default"}`
+      );
     }
 
     const placeholders = step.description_placeholders || {};
@@ -297,18 +316,31 @@ class HaConfigFlow extends
 
   _computeLabelCallback(localize, step) {
     // Returns a callback for ha-form to calculate labels per schema object
-    return schema => localize(`component.${step.handler}.config.step.${step.step_id}.data.${schema.name}`);
+    return (schema) =>
+      localize(
+        `component.${step.handler}.config.step.${step.step_id}.data.${
+          schema.name
+        }`
+      );
   }
 
   _computeErrorCallback(localize, step) {
     // Returns a callback for ha-form to calculate error messages
-    return error => localize(`component.${step.handler}.config.error.${error}`);
+    return (error) =>
+      localize(`component.${step.handler}.config.error.${error}`);
   }
 
   _computeCanSubmit(step, stepData) {
     // We can submit if all required fields are filled in
-    return step !== null && step.type === 'form' && stepData !== null
-      && step.data_schema.every(field => field.optional || !['', undefined].includes(stepData[field.name]));
+    return (
+      step !== null &&
+      step.type === "form" &&
+      stepData !== null &&
+      step.data_schema.every(
+        (field) =>
+          field.optional || !["", undefined].includes(stepData[field.name])
+      )
+    );
   }
 
   _increaseCounter() {
@@ -316,4 +348,4 @@ class HaConfigFlow extends
   }
 }
 
-customElements.define('ha-config-flow', HaConfigFlow);
+customElements.define("ha-config-flow", HaConfigFlow);

@@ -1,12 +1,12 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-input/iron-input.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/iron-input/iron-input.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-markdown.js';
+import "../../../components/ha-markdown.js";
 
 class MoreInfoConfigurator extends PolymerElement {
   static get template() {
@@ -82,12 +82,12 @@ class MoreInfoConfigurator extends PolymerElement {
 
       action: {
         type: String,
-        value: 'display',
+        value: "display",
       },
 
       isConfigurable: {
         type: Boolean,
-        computed: 'computeIsConfigurable(stateObj)',
+        computed: "computeIsConfigurable(stateObj)",
       },
 
       isConfiguring: {
@@ -97,13 +97,15 @@ class MoreInfoConfigurator extends PolymerElement {
 
       fieldInput: {
         type: Object,
-        value: function () { return {}; },
+        value: function() {
+          return {};
+        },
       },
     };
   }
 
   computeIsConfigurable(stateObj) {
-    return stateObj.state === 'configure';
+    return stateObj.state === "configure";
   }
 
   fieldChanged(ev) {
@@ -119,15 +121,15 @@ class MoreInfoConfigurator extends PolymerElement {
 
     this.isConfiguring = true;
 
-    this.hass.callService('configurator', 'configure', data).then(
-      function () {
+    this.hass.callService("configurator", "configure", data).then(
+      function() {
         this.isConfiguring = false;
       }.bind(this),
-      function () {
+      function() {
         this.isConfiguring = false;
       }.bind(this)
     );
   }
 }
 
-customElements.define('more-info-configurator', MoreInfoConfigurator);
+customElements.define("more-info-configurator", MoreInfoConfigurator);

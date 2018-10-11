@@ -1,8 +1,8 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-button/paper-button.js';
+import { h, Component } from "preact";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-button/paper-button.js";
 
-import ActionRow from './action_row.js';
+import ActionRow from "./action_row.js";
 
 export default class Script extends Component {
   constructor() {
@@ -14,7 +14,7 @@ export default class Script extends Component {
 
   addAction() {
     const script = this.props.script.concat({
-      service: '',
+      service: "",
     });
 
     this.props.onChange(script);
@@ -42,10 +42,13 @@ export default class Script extends Component {
             onChange={this.actionChanged}
             hass={hass}
             localize={localize}
-          />))}
+          />
+        ))}
         <paper-card>
-          <div class='card-actions add-card'>
-            <paper-button onTap={this.addAction}>{localize('ui.panel.config.automation.editor.actions.add')}</paper-button>
+          <div class="card-actions add-card">
+            <paper-button onTap={this.addAction}>
+              {localize("ui.panel.config.automation.editor.actions.add")}
+            </paper-button>
           </div>
         </paper-card>
       </div>

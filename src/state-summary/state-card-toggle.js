@@ -1,9 +1,9 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/ha-entity-toggle.js';
-import '../components/entity/state-info.js';
+import "../components/entity/ha-entity-toggle.js";
+import "../components/entity/state-info.js";
 
 class StateCardToggle extends PolymerElement {
   static get template() {
@@ -40,8 +40,8 @@ class StateCardToggle extends PolymerElement {
       inDialog: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 }
-customElements.define('state-card-toggle', StateCardToggle);
+customElements.define("state-card-toggle", StateCardToggle);

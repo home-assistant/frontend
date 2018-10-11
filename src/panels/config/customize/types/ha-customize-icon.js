@@ -1,7 +1,7 @@
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HaCustomizeIcon extends PolymerElement {
   static get template() {
@@ -28,8 +28,8 @@ class HaCustomizeIcon extends PolymerElement {
       item: {
         type: Object,
         notifies: true,
-      }
+      },
     };
   }
 }
-customElements.define('ha-customize-icon', HaCustomizeIcon);
+customElements.define("ha-customize-icon", HaCustomizeIcon);

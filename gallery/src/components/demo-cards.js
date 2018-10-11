@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
 
-import './demo-card.js';
+import "./demo-card.js";
 
 class DemoCards extends PolymerElement {
   static get template() {
@@ -50,9 +50,9 @@ class DemoCards extends PolymerElement {
       _showConfig: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 }
 
-customElements.define('demo-cards', DemoCards);
+customElements.define("demo-cards", DemoCards);

@@ -1,4 +1,4 @@
-import translationMetadata from '../../build-translations/translationMetadata.json';
+import translationMetadata from "../../build-translations/translationMetadata.json";
 
 export function getActiveTranslation() {
   // Perform case-insenstive comparison since browser isn't required to
@@ -16,8 +16,8 @@ export function getActiveTranslation() {
     if (lookup[lang]) {
       return lookup[lang];
     }
-    if (lang.split('-')[0] === 'zh') {
-      return (lang === 'zh-cn' || lang === 'zh-sg') ? 'zh-Hans' : 'zh-Hant';
+    if (lang.split("-")[0] === "zh") {
+      return lang === "zh-cn" || lang === "zh-sg" ? "zh-Hans" : "zh-Hant";
     }
     return null;
   }
@@ -49,15 +49,15 @@ export function getActiveTranslation() {
   if (translation) {
     return translation;
   }
-  if (navigator.language.includes('-')) {
-    translation = languageGetTranslation(navigator.language.split('-')[0]);
+  if (navigator.language.includes("-")) {
+    translation = languageGetTranslation(navigator.language.split("-")[0]);
     if (translation) {
       return translation;
     }
   }
 
   // Final fallback
-  return 'en';
+  return "en";
 }
 
 // Store loaded translations in memory so translations are available immediately
@@ -68,27 +68,32 @@ export function getTranslation(fragment, translationInput) {
   const translation = translationInput || getActiveTranslation();
   const metadata = translationMetadata.translations[translation];
   if (!metadata) {
-    if (translationInput !== 'en') {
-      return getTranslation(fragment, 'en');
+    if (translationInput !== "en") {
+      return getTranslation(fragment, "en");
     }
-    return Promise.reject(new Error('Language en not found in metadata'));
+    return Promise.reject(new Error("Language en not found in metadata"));
   }
-  const translationFingerprint = metadata.fingerprints[
-    fragment ? `${fragment}/${translation}` : translation
-  ];
+  const translationFingerprint =
+    metadata.fingerprints[
+      fragment ? `${fragment}/${translation}` : translation
+    ];
 
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {
-    translations[translationFingerprint] = fetch(`/static/translations/${translationFingerprint}`, { credentials: 'same-origin' })
-      .then(response => response.json()).then(data => ({
+    translations[translationFingerprint] = fetch(
+      `/static/translations/${translationFingerprint}`,
+      { credentials: "same-origin" }
+    )
+      .then((response) => response.json())
+      .then((data) => ({
         language: translation,
         data: data,
       }))
       .catch((error) => {
         delete translations[translationFingerprint];
-        if (translationInput !== 'en') {
+        if (translationInput !== "en") {
           // Couldn't load selected translation. Try a fall back to en before failing.
-          return getTranslation(fragment, 'en');
+          return getTranslation(fragment, "en");
         }
         return Promise.reject(error);
       });

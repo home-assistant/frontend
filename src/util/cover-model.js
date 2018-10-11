@@ -11,14 +11,14 @@ export default class CoverEntity {
     if (this._attr.current_position !== undefined) {
       return this._attr.current_position === 100;
     }
-    return this.stateObj.state === 'open';
+    return this.stateObj.state === "open";
   }
 
   get isFullyClosed() {
     if (this._attr.current_position !== undefined) {
       return this._attr.current_position === 0;
     }
-    return this.stateObj.state === 'closed';
+    return this.stateObj.state === "closed";
   }
 
   get isFullyOpenTilt() {
@@ -30,11 +30,11 @@ export default class CoverEntity {
   }
 
   get isOpening() {
-    return this.stateObj.state === 'opening';
+    return this.stateObj.state === "opening";
   }
 
   get isClosing() {
-    return this.stateObj.state === 'closing';
+    return this.stateObj.state === "closing";
   }
 
   /* eslint-disable no-bitwise */
@@ -72,47 +72,51 @@ export default class CoverEntity {
   }
 
   get isTiltOnly() {
-    var supportsCover = this.supportsOpen || this.supportsClose || this.supportsStop;
-    var supportsTilt = this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
+    var supportsCover =
+      this.supportsOpen || this.supportsClose || this.supportsStop;
+    var supportsTilt =
+      this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
     return supportsTilt && !supportsCover;
   }
 
   openCover() {
-    this.callService('open_cover');
+    this.callService("open_cover");
   }
 
   closeCover() {
-    this.callService('close_cover');
+    this.callService("close_cover");
   }
 
   stopCover() {
-    this.callService('stop_cover');
+    this.callService("stop_cover");
   }
 
   openCoverTilt() {
-    this.callService('open_cover_tilt');
+    this.callService("open_cover_tilt");
   }
 
   closeCoverTilt() {
-    this.callService('close_cover_tilt');
+    this.callService("close_cover_tilt");
   }
 
   stopCoverTilt() {
-    this.callService('stop_cover_tilt');
+    this.callService("stop_cover_tilt");
   }
 
   setCoverPosition(position) {
-    this.callService('set_cover_position', { position });
+    this.callService("set_cover_position", { position });
   }
 
   setCoverTiltPosition(tiltPosition) {
-    this.callService('set_cover_tilt_position', { tilt_position: tiltPosition });
+    this.callService("set_cover_tilt_position", {
+      tilt_position: tiltPosition,
+    });
   }
 
   // helper method
 
   callService(service, data = {}) {
     data.entity_id = this.stateObj.entity_id;
-    this.hass.callService('cover', service, data);
+    this.hass.callService("cover", service, data);
   }
 }

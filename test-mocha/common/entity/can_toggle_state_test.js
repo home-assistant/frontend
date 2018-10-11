@@ -1,8 +1,8 @@
-import { assert } from 'chai';
+import { assert } from "chai";
 
-import canToggleState from '../../../src/common/entity/can_toggle_state';
+import canToggleState from "../../../src/common/entity/can_toggle_state";
 
-describe('canToggleState', () => {
+describe("canToggleState", () => {
   const hass = {
     services: {
       light: {
@@ -12,33 +12,33 @@ describe('canToggleState', () => {
     },
   };
 
-  it('Detects lights toggle', () => {
+  it("Detects lights toggle", () => {
     const stateObj = {
-      entity_id: 'light.bla',
-      state: 'on',
+      entity_id: "light.bla",
+      state: "on",
     };
     assert.isTrue(canToggleState(hass, stateObj));
   });
 
-  it('Detects group with toggle', () => {
+  it("Detects group with toggle", () => {
     const stateObj = {
-      entity_id: 'group.bla',
-      state: 'on',
+      entity_id: "group.bla",
+      state: "on",
     };
     assert.isTrue(canToggleState(hass, stateObj));
   });
 
-  it('Detects group without toggle', () => {
+  it("Detects group without toggle", () => {
     const stateObj = {
-      entity_id: 'group.devices',
-      state: 'home',
+      entity_id: "group.devices",
+      state: "home",
     };
     assert.isFalse(canToggleState(hass, stateObj));
   });
 
-  it('Detects climate with toggle', () => {
+  it("Detects climate with toggle", () => {
     const stateObj = {
-      entity_id: 'climate.bla',
+      entity_id: "climate.bla",
       attributes: {
         supported_features: 4096,
       },
@@ -46,9 +46,9 @@ describe('canToggleState', () => {
     assert.isTrue(canToggleState(hass, stateObj));
   });
 
-  it('Detects climate without toggle', () => {
+  it("Detects climate without toggle", () => {
     const stateObj = {
-      entity_id: 'climate.bla',
+      entity_id: "climate.bla",
     };
     assert.isFalse(canToggleState(hass, stateObj));
   });

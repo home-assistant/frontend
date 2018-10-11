@@ -1,6 +1,6 @@
-import '@polymer/paper-styles/element-styles/paper-material-styles.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-styles/element-styles/paper-material-styles.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HaCard extends PolymerElement {
   static get template() {
@@ -30,9 +30,9 @@ class HaCard extends PolymerElement {
 
   static get properties() {
     return {
-      header: String
+      header: String,
     };
   }
 }
 
-customElements.define('ha-card', HaCard);
+customElements.define("ha-card", HaCard);

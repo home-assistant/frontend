@@ -1,10 +1,10 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeUnusedEntities from './common/compute-unused-entities.js';
-import createCardElement from './common/create-card-element.js';
+import computeUnusedEntities from "./common/compute-unused-entities.js";
+import createCardElement from "./common/create-card-element.js";
 
-import './cards/hui-entities-card.js';
+import "./cards/hui-entities-card.js";
 
 class HuiUnusedEntities extends PolymerElement {
   static get template() {
@@ -24,11 +24,11 @@ class HuiUnusedEntities extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged'
+        observer: "_hassChanged",
       },
       config: {
         type: Object,
-        observer: '_configChanged'
+        observer: "_configChanged",
       },
     };
   }
@@ -37,12 +37,15 @@ class HuiUnusedEntities extends PolymerElement {
     const root = this.$.root;
     if (root.lastChild) root.removeChild(root.lastChild);
 
-    const entities = computeUnusedEntities(this.hass, config).map(entity => ({ entity, secondary_info: 'entity-id' }));
+    const entities = computeUnusedEntities(this.hass, config).map((entity) => ({
+      entity,
+      secondary_info: "entity-id",
+    }));
     const cardConfig = {
-      type: 'entities',
-      title: 'Unused entities',
+      type: "entities",
+      title: "Unused entities",
       entities,
-      show_header_toggle: false
+      show_header_toggle: false,
     };
     const element = createCardElement(cardConfig);
     element.hass = this.hass;
@@ -55,4 +58,4 @@ class HuiUnusedEntities extends PolymerElement {
     root.lastChild.hass = hass;
   }
 }
-customElements.define('hui-unused-entities', HuiUnusedEntities);
+customElements.define("hui-unused-entities", HuiUnusedEntities);

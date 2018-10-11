@@ -1,6 +1,6 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../../../components/entity/ha-state-label-badge.js';
-import computeStateName from '../../../common/entity/compute_state_name';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "../../../components/entity/ha-state-label-badge.js";
+import computeStateName from "../../../common/entity/compute_state_name";
 
 class HuiStateBadgeElement extends PolymerElement {
   static get properties() {
@@ -11,21 +11,19 @@ class HuiStateBadgeElement extends PolymerElement {
   }
 
   static get observers() {
-    return [
-      '_updateBadge(hass, _config)'
-    ];
+    return ["_updateBadge(hass, _config)"];
   }
 
   _updateBadge(hass, config) {
     if (!hass || !config || !(config.entity in hass.states)) return;
 
     if (!this._badge) {
-      this._badge = document.createElement('ha-state-label-badge');
+      this._badge = document.createElement("ha-state-label-badge");
     }
 
     const stateObj = hass.states[config.entity];
     this._badge.state = stateObj;
-    this._badge.setAttribute('title', computeStateName(stateObj));
+    this._badge.setAttribute("title", computeStateName(stateObj));
 
     if (!this.lastChild) {
       this.appendChild(this._badge);
@@ -34,7 +32,7 @@ class HuiStateBadgeElement extends PolymerElement {
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw Error('Error in element configuration');
+      throw Error("Error in element configuration");
     }
 
     if (this.lastChild) {
@@ -45,4 +43,4 @@ class HuiStateBadgeElement extends PolymerElement {
     this._config = config;
   }
 }
-customElements.define('hui-state-badge-element', HuiStateBadgeElement);
+customElements.define("hui-state-badge-element", HuiStateBadgeElement);

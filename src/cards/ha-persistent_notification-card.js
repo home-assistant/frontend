@@ -1,14 +1,13 @@
-import '@polymer/paper-button/paper-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/ha-card.js';
-import '../components/ha-markdown.js';
+import "../components/ha-card.js";
+import "../components/ha-markdown.js";
 
-
-import computeStateName from '../common/entity/compute_state_name.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
-import computeObjectId from '../common/entity/compute_object_id';
+import computeStateName from "../common/entity/compute_state_name.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
+import computeObjectId from "../common/entity/compute_object_id";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -60,15 +59,17 @@ class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
   }
 
   computeTitle(stateObj) {
-    return (stateObj.attributes.title
-            || computeStateName(stateObj));
+    return stateObj.attributes.title || computeStateName(stateObj);
   }
 
   dismissTap(ev) {
     ev.preventDefault();
-    this.hass.callService('persistent_notification', 'dismiss', {
-      notification_id: computeObjectId(this.stateObj.entity_id)
+    this.hass.callService("persistent_notification", "dismiss", {
+      notification_id: computeObjectId(this.stateObj.entity_id),
     });
   }
 }
-customElements.define('ha-persistent_notification-card', HaPersistentNotificationCard);
+customElements.define(
+  "ha-persistent_notification-card",
+  HaPersistentNotificationCard
+);

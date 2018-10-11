@@ -1,10 +1,10 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-button/paper-button.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button.js";
 
-import '../../layouts/hass-loading-screen.js';
-import '../../layouts/hass-error-screen.js';
-import './hui-root.js';
+import "../../layouts/hass-loading-screen.js";
+import "../../layouts/hass-error-screen.js";
+import "./hui-root.js";
 
 class Lovelace extends PolymerElement {
   static get template() {
@@ -68,7 +68,7 @@ class Lovelace extends PolymerElement {
 
       _state: {
         type: String,
-        value: 'loading',
+        value: "loading",
       },
 
       _errorMsg: String,
@@ -81,7 +81,7 @@ class Lovelace extends PolymerElement {
   }
 
   static get observers() {
-    return ['_updateColumns(narrow, showMenu)'];
+    return ["_updateColumns(narrow, showMenu)"];
   }
 
   ready() {
@@ -104,14 +104,14 @@ class Lovelace extends PolymerElement {
 
   async _fetchConfig() {
     try {
-      const conf = await this.hass.callWS({ type: 'lovelace/config' });
+      const conf = await this.hass.callWS({ type: "lovelace/config" });
       this.setProperties({
         _config: conf,
-        _state: 'loaded',
+        _state: "loaded",
       });
     } catch (err) {
       this.setProperties({
-        _state: 'error',
+        _state: "error",
         _errorMsg: err.message,
       });
     }
@@ -122,4 +122,4 @@ class Lovelace extends PolymerElement {
   }
 }
 
-customElements.define('ha-panel-lovelace', Lovelace);
+customElements.define("ha-panel-lovelace", Lovelace);

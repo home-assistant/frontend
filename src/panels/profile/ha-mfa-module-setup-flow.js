@@ -1,16 +1,16 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
+import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-form.js';
-import '../../components/ha-markdown.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-form.js";
+import "../../components/ha-markdown.js";
+import "../../resources/ha-style.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
 let instance = 0;
 
@@ -18,8 +18,7 @@ let instance = 0;
  * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
-class HaMfaModuleSetupFlow extends
-  LocalizeMixin(EventsMixin(PolymerElement)) {
+class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style-dialog">
@@ -147,7 +146,7 @@ class HaMfaModuleSetupFlow extends
 
   ready() {
     super.ready();
-    this.addEventListener('keypress', (ev) => {
+    this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitStep();
       }
@@ -164,13 +163,13 @@ class HaMfaModuleSetupFlow extends
 
     const fetchStep = continueFlowId
       ? this.hass.callWS({
-        type: 'auth/setup_mfa',
-        flow_id: continueFlowId,
-      })
+          type: "auth/setup_mfa",
+          flow_id: continueFlowId,
+        })
       : this.hass.callWS({
-        type: 'auth/setup_mfa',
-        mfa_module_id: mfaModuleId,
-      });
+          type: "auth/setup_mfa",
+          mfa_module_id: mfaModuleId,
+        });
 
     const curInstance = this._instance;
 
@@ -191,22 +190,25 @@ class HaMfaModuleSetupFlow extends
 
     const curInstance = this._instance;
 
-    this.hass.callWS({
-      type: 'auth/setup_mfa',
-      flow_id: this._step.flow_id,
-      user_input: this._stepData,
-    }).then(
-      (step) => {
-        if (curInstance !== this._instance) return;
+    this.hass
+      .callWS({
+        type: "auth/setup_mfa",
+        flow_id: this._step.flow_id,
+        user_input: this._stepData,
+      })
+      .then(
+        (step) => {
+          if (curInstance !== this._instance) return;
 
-        this._processStep(step);
-        this._loading = false;
-      },
-      (err) => {
-        this._errorMsg = (err && err.body && err.body.message) || 'Unknown error occurred';
-        this._loading = false;
-      }
-    );
+          this._processStep(step);
+          this._loading = false;
+        },
+        (err) => {
+          this._errorMsg =
+            (err && err.body && err.body.message) || "Unknown error occurred";
+          this._loading = false;
+        }
+      );
   }
 
   _processStep(step) {
@@ -220,7 +222,8 @@ class HaMfaModuleSetupFlow extends
 
   _flowDone() {
     this._opened = false;
-    const flowFinished = this._step && ['create_entry', 'abort'].includes(this._step.type);
+    const flowFinished =
+      this._step && ["create_entry", "abort"].includes(this._step.type);
 
     if (this._step && !flowFinished && this._createdFromHandler) {
       // console.log('flow not finish');
@@ -248,16 +251,25 @@ class HaMfaModuleSetupFlow extends
   }
 
   _computeStepAbortedReason(localize, step) {
-    return localize(`component.auth.mfa_setup.${step.handler}.abort.${step.reason}`);
+    return localize(
+      `component.auth.mfa_setup.${step.handler}.abort.${step.reason}`
+    );
   }
 
   _computeStepTitle(localize, step) {
-    return localize(`component.auth.mfa_setup.${step.handler}.step.${step.step_id}.title`)
-     || 'Setup Multi-factor Authentication';
+    return (
+      localize(
+        `component.auth.mfa_setup.${step.handler}.step.${step.step_id}.title`
+      ) || "Setup Multi-factor Authentication"
+    );
   }
 
   _computeStepDescription(localize, step) {
-    const args = [`component.auth.mfa_setup.${step.handler}.step.${step.step_id}.description`];
+    const args = [
+      `component.auth.mfa_setup.${step.handler}.step.${
+        step.step_id
+      }.description`,
+    ];
     const placeholders = step.description_placeholders || {};
     Object.keys(placeholders).forEach((key) => {
       args.push(key);
@@ -268,14 +280,20 @@ class HaMfaModuleSetupFlow extends
 
   _computeLabelCallback(localize, step) {
     // Returns a callback for ha-form to calculate labels per schema object
-    return schema => localize(`component.auth.mfa_setup.${step.handler}.step.${step.step_id}.data.${schema.name}`)
-      || schema.name;
+    return (schema) =>
+      localize(
+        `component.auth.mfa_setup.${step.handler}.step.${step.step_id}.data.${
+          schema.name
+        }`
+      ) || schema.name;
   }
 
   _computeErrorCallback(localize, step) {
     // Returns a callback for ha-form to calculate error messages
-    return error => localize(`component.auth.mfa_setup.${step.handler}.error.${error}`) || error;
+    return (error) =>
+      localize(`component.auth.mfa_setup.${step.handler}.error.${error}`) ||
+      error;
   }
 }
 
-customElements.define('ha-mfa-module-setup-flow', HaMfaModuleSetupFlow);
+customElements.define("ha-mfa-module-setup-flow", HaMfaModuleSetupFlow);

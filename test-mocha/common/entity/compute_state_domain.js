@@ -1,12 +1,12 @@
-import { assert } from 'chai';
+import { assert } from "chai";
 
-import computeStateDomain from '../../../src/common/entity/compute_state_domain.js';
+import computeStateDomain from "../../../src/common/entity/compute_state_domain.js";
 
-describe('computeStateDomain', () => {
-  it('Detects sensor domain', () => {
+describe("computeStateDomain", () => {
+  it("Detects sensor domain", () => {
     const stateObj = {
-      entity_id: 'sensor.test',
+      entity_id: "sensor.test",
     };
-    assert.strictEqual(computeStateDomain(stateObj), 'sensor');
+    assert.strictEqual(computeStateDomain(stateObj), "sensor");
   });
 });

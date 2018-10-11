@@ -1,13 +1,13 @@
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-call-service-button.js';
+import "../../../components/buttons/ha-call-service-button.js";
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
+import computeStateName from "../../../common/entity/compute_state_name.js";
 
 class ZwaveGroups extends PolymerElement {
   static get template() {
@@ -107,59 +107,59 @@ class ZwaveGroups extends PolymerElement {
 
       selectedNode: {
         type: Number,
-        observer: '_selectedNodeChanged'
+        observer: "_selectedNodeChanged",
       },
 
       _selectedTargetNode: {
         type: Number,
         value: -1,
-        observer: '_selectedTargetNodeChanged'
+        observer: "_selectedTargetNodeChanged",
       },
 
       _selectedGroup: {
         type: Number,
-        value: -1
+        value: -1,
       },
 
       _otherGroupNodes: {
         type: Array,
         value: -1,
-        computed: '_computeOtherGroupNodes(_selectedGroup)'
+        computed: "_computeOtherGroupNodes(_selectedGroup)",
       },
 
       _maxAssociations: {
         type: String,
-        value: '',
-        computed: '_computeMaxAssociations(_selectedGroup)'
+        value: "",
+        computed: "_computeMaxAssociations(_selectedGroup)",
       },
 
       _noAssociationsLeft: {
         type: Boolean,
         value: true,
-        computed: '_computeAssociationsLeft(_selectedGroup)'
+        computed: "_computeAssociationsLeft(_selectedGroup)",
       },
 
       _addAssocServiceData: {
         type: String,
-        value: ''
+        value: "",
       },
 
       _removeAssocServiceData: {
         type: String,
-        value: ''
+        value: "",
       },
     };
   }
 
   static get observers() {
-    return [
-      '_selectedGroupChanged(groups, _selectedGroup)',
-    ];
+    return ["_selectedGroupChanged(groups, _selectedGroup)"];
   }
 
   ready() {
     super.ready();
-    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+    this.addEventListener("hass-service-called", (ev) =>
+      this.serviceCalled(ev)
+    );
   }
 
   serviceCalled(ev) {
@@ -172,27 +172,29 @@ class ZwaveGroups extends PolymerElement {
 
   _computeAssociationsLeft(selectedGroup) {
     if (selectedGroup === -1) return true;
-    return (this._maxAssociations === this._otherGroupNodes.length);
+    return this._maxAssociations === this._otherGroupNodes.length;
   }
 
   _computeMaxAssociations(selectedGroup) {
     if (selectedGroup === -1) return -1;
     const maxAssociations = this.groups[selectedGroup].value.max_associations;
-    if (!maxAssociations) return 'None';
+    if (!maxAssociations) return "None";
     return maxAssociations;
   }
 
   _computeOtherGroupNodes(selectedGroup) {
     if (selectedGroup === -1) return -1;
-    const associations = Object.values(this.groups[selectedGroup].value.association_instances);
-    if (!associations.length) return ['None'];
+    const associations = Object.values(
+      this.groups[selectedGroup].value.association_instances
+    );
+    if (!associations.length) return ["None"];
     return associations.map((assoc) => {
       if (!assoc.length || assoc.length !== 2) {
         return `Unknown Node: ${assoc}`;
       }
       const id = assoc[0];
       const instance = assoc[1];
-      const node = this.nodes.find(n => n.attributes.node_id === id);
+      const node = this.nodes.find((n) => n.attributes.node_id === id);
       if (!node) {
         return `Unknown Node (${id}: (${instance} ? ${id}.${instance} : ${id}))`;
       }
@@ -206,20 +208,25 @@ class ZwaveGroups extends PolymerElement {
 
   _computeTargetInGroup(selectedGroup, selectedTargetNode) {
     if (selectedGroup === -1 || selectedTargetNode === -1) return false;
-    const associations = Object.values(this.groups[selectedGroup].value.associations);
+    const associations = Object.values(
+      this.groups[selectedGroup].value.associations
+    );
     if (!associations.length) return false;
-    return associations.indexOf(this.nodes[selectedTargetNode].attributes.node_id) !== -1;
+    return (
+      associations.indexOf(
+        this.nodes[selectedTargetNode].attributes.node_id
+      ) !== -1
+    );
   }
 
   _computeSelectCaption(stateObj) {
-    return (
-      `${computeStateName(stateObj)}
+    return `${computeStateName(stateObj)}
       (Node: ${stateObj.attributes.node_id}
-      ${stateObj.attributes.query_stage})`);
+      ${stateObj.attributes.query_stage})`;
   }
 
   _computeSelectCaptionGroup(stateObj) {
-    return (`${stateObj.key}: ${stateObj.value.label}`);
+    return `${stateObj.key}: ${stateObj.value.label}`;
   }
 
   _computeIsTargetNodeSelected(selectedTargetNode) {
@@ -231,19 +238,27 @@ class ZwaveGroups extends PolymerElement {
   }
 
   _computeAssocServiceData(selectedGroup, type) {
-    if (!this.groups === -1 || selectedGroup === -1
-        || this.selectedNode === -1 || this._selectedTargetNode === -1) return -1;
+    if (
+      !this.groups === -1 ||
+      selectedGroup === -1 ||
+      this.selectedNode === -1 ||
+      this._selectedTargetNode === -1
+    )
+      return -1;
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
       target_node_id: this.nodes[this._selectedTargetNode].attributes.node_id,
-      group: this.groups[selectedGroup].key
+      group: this.groups[selectedGroup].key,
     };
   }
 
   async _refreshGroups(selectedNode) {
     const groupData = [];
-    const groups = await this.hass.callApi('GET', `zwave/groups/${this.nodes[selectedNode].attributes.node_id}`);
+    const groups = await this.hass.callApi(
+      "GET",
+      `zwave/groups/${this.nodes[selectedNode].attributes.node_id}`
+    );
     Object.keys(groups).forEach((key) => {
       groupData.push({
         key,
@@ -253,7 +268,9 @@ class ZwaveGroups extends PolymerElement {
     this.setProperties({
       groups: groupData,
       _maxAssociations: groupData[this._selectedGroup].value.max_associations,
-      _otherGroupNodes: Object.values(groupData[this._selectedGroup].value.associations)
+      _otherGroupNodes: Object.values(
+        groupData[this._selectedGroup].value.associations
+      ),
     });
     const oldGroup = this._selectedGroup;
     this.setProperties({ _selectedGroup: -1 });
@@ -264,18 +281,29 @@ class ZwaveGroups extends PolymerElement {
     if (this._selectedGroup === -1) return;
     this.setProperties({
       _maxAssociations: this.groups[this._selectedGroup].value.max_associations,
-      _otherGroupNodes: Object.values(this.groups[this._selectedGroup].value.associations) });
+      _otherGroupNodes: Object.values(
+        this.groups[this._selectedGroup].value.associations
+      ),
+    });
   }
 
   _selectedTargetNodeChanged() {
     if (this._selectedGroup === -1) return;
-    if (this._computeTargetInGroup(this._selectedGroup, this._selectedTargetNode)) {
+    if (
+      this._computeTargetInGroup(this._selectedGroup, this._selectedTargetNode)
+    ) {
       this.setProperties({
-        _removeAssocServiceData: this._computeAssocServiceData(this._selectedGroup, 'remove')
+        _removeAssocServiceData: this._computeAssocServiceData(
+          this._selectedGroup,
+          "remove"
+        ),
       });
     } else {
       this.setProperties({
-        _addAssocServiceData: this._computeAssocServiceData(this._selectedGroup, 'add')
+        _addAssocServiceData: this._computeAssocServiceData(
+          this._selectedGroup,
+          "add"
+        ),
       });
     }
   }
@@ -286,4 +314,4 @@ class ZwaveGroups extends PolymerElement {
   }
 }
 
-customElements.define('zwave-groups', ZwaveGroups);
+customElements.define("zwave-groups", ZwaveGroups);

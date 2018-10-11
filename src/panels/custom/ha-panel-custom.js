@@ -1,10 +1,10 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import NavigateMixin from '../../mixins/navigate-mixin.js';
-import loadCustomPanel from '../../util/custom-panel/load-custom-panel.js';
-import createCustomPanelElement from '../../util/custom-panel/create-custom-panel-element.js';
-import setCustomPanelProperties from '../../util/custom-panel/set-custom-panel-properties.js';
+import EventsMixin from "../../mixins/events-mixin.js";
+import NavigateMixin from "../../mixins/navigate-mixin.js";
+import loadCustomPanel from "../../util/custom-panel/load-custom-panel.js";
+import createCustomPanelElement from "../../util/custom-panel/create-custom-panel-element.js";
+import setCustomPanelProperties from "../../util/custom-panel/set-custom-panel-properties.js";
 
 /*
  * Mixins are used by ifram to communicate with main frontend.
@@ -20,15 +20,13 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
       route: Object,
       panel: {
         type: Object,
-        observer: '_panelChanged',
-      }
+        observer: "_panelChanged",
+      },
     };
   }
 
   static get observers() {
-    return [
-      '_dataChanged(hass, narrow, showMenu, route)'
-    ];
+    return ["_dataChanged(hass, narrow, showMenu, route)"];
   }
 
   constructor() {
@@ -46,38 +44,45 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
 
     const config = panel.config._panel_custom;
 
-    const tempA = document.createElement('a');
+    const tempA = document.createElement("a");
     tempA.href = config.html_url || config.js_url || config.module_url;
 
-    if (!config.trust_external && !['localhost', '127.0.0.1', location.hostname].includes(tempA.hostname)) {
-      if (!confirm(`Do you trust the external panel "${config.name}" at "${tempA.href}"?
+    if (
+      !config.trust_external &&
+      !["localhost", "127.0.0.1", location.hostname].includes(tempA.hostname)
+    ) {
+      if (
+        !confirm(`Do you trust the external panel "${config.name}" at "${
+          tempA.href
+        }"?
 
 It will have access to all data in Home Assistant.
 
-(Check docs for the panel_custom component to hide this message)`)) {
+(Check docs for the panel_custom component to hide this message)`)
+      ) {
         return;
       }
     }
 
     if (!config.embed_iframe) {
-      loadCustomPanel(config)
-        .then(
-          () => {
-            const element = createCustomPanelElement(config);
-            this._setProperties = props => setCustomPanelProperties(element, props);
-            setCustomPanelProperties(element, {
-              panel,
-              hass: this.hass,
-              narrow: this.narrow,
-              showMenu: this.showMenu,
-              route: this.route,
-            });
-            this.appendChild(element);
-          },
-          () => {
-            alert(`Unable to load custom panel from ${tempA.href}`);
-          }
-        );
+      loadCustomPanel(config).then(
+        () => {
+          const element = createCustomPanelElement(config);
+          this._setProperties = (props) =>
+            setCustomPanelProperties(element, props);
+          setCustomPanelProperties(element, {
+            panel,
+            hass: this.hass,
+            narrow: this.narrow,
+            showMenu: this.showMenu,
+            route: this.route,
+          });
+          this.appendChild(element);
+        },
+        () => {
+          alert(`Unable to load custom panel from ${tempA.href}`);
+        }
+      );
       return;
     }
 
@@ -93,7 +98,7 @@ It will have access to all data in Home Assistant.
     </style>
     <iframe></iframe>
     `;
-    const iframeDoc = this.querySelector('iframe').contentWindow.document;
+    const iframeDoc = this.querySelector("iframe").contentWindow.document;
     iframeDoc.open();
     iframeDoc.write(`<script src='${window.customPanelJS}'></script>`);
     iframeDoc.close();
@@ -120,4 +125,4 @@ It will have access to all data in Home Assistant.
   }
 }
 
-customElements.define('ha-panel-custom', HaPanelCustom);
+customElements.define("ha-panel-custom", HaPanelCustom);

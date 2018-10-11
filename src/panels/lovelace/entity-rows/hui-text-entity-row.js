@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/hui-generic-entity-row.js';
+import "../components/hui-generic-entity-row.js";
 
-import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import computeStateDisplay from "../../../common/entity/compute_state_display.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -47,8 +47,8 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
-      }
+        computed: "_computeStateObj(hass.states, _config.entity)",
+      },
     };
   }
 
@@ -58,7 +58,7 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw new Error('Entity not configured.');
+      throw new Error("Entity not configured.");
     }
     this._config = config;
   }
@@ -67,4 +67,4 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
     return stateObj && computeStateDisplay(this.localize, stateObj);
   }
 }
-customElements.define('hui-text-entity-row', HuiTextEntityRow);
+customElements.define("hui-text-entity-row", HuiTextEntityRow);

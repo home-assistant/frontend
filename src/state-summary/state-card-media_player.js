@@ -1,10 +1,10 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/state-info.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
-import HassMediaPlayerEntity from '../util/hass-media-player-model.js';
+import "../components/entity/state-info.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
+import HassMediaPlayerEntity from "../util/hass-media-player-model.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -71,8 +71,8 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
       },
       playerObj: {
         type: Object,
-        computed: 'computePlayerObj(hass, stateObj)',
-      }
+        computed: "computePlayerObj(hass, stateObj)",
+      },
     };
   }
 
@@ -81,9 +81,12 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   }
 
   computePrimaryText(localize, playerObj) {
-    return playerObj.primaryTitle
-      || localize(`state.media_player.${playerObj.stateObj.state}`)
-      || localize(`state.default.${playerObj.stateObj.state}`) || playerObj.stateObj.state;
+    return (
+      playerObj.primaryTitle ||
+      localize(`state.media_player.${playerObj.stateObj.state}`) ||
+      localize(`state.default.${playerObj.stateObj.state}`) ||
+      playerObj.stateObj.state
+    );
   }
 }
-customElements.define('state-card-media_player', StateCardMediaPlayer);
+customElements.define("state-card-media_player", StateCardMediaPlayer);

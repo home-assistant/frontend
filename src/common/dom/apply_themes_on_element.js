@@ -5,21 +5,26 @@
  * themes: HASS Theme information
  * localTheme: selected theme.
  * updateMeta: boolean if we should update the theme-color meta element.
-*/
-export default function applyThemesOnElement(element, themes, localTheme, updateMeta = false) {
+ */
+export default function applyThemesOnElement(
+  element,
+  themes,
+  localTheme,
+  updateMeta = false
+) {
   if (!element._themes) {
     element._themes = {};
   }
   let themeName = themes.default_theme;
-  if (localTheme === 'default' || (localTheme && themes.themes[localTheme])) {
+  if (localTheme === "default" || (localTheme && themes.themes[localTheme])) {
     themeName = localTheme;
   }
   const styles = Object.assign({}, element._themes);
-  if (themeName !== 'default') {
+  if (themeName !== "default") {
     var theme = themes.themes[themeName];
     Object.keys(theme).forEach((key) => {
-      var prefixedKey = '--' + key;
-      element._themes[prefixedKey] = '';
+      var prefixedKey = "--" + key;
+      element._themes[prefixedKey] = "";
       styles[prefixedKey] = theme[key];
     });
   }
@@ -27,17 +32,18 @@ export default function applyThemesOnElement(element, themes, localTheme, update
     element.updateStyles(styles);
   } else if (window.ShadyCSS) {
     // implement updateStyles() method of Polemer elements
-    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */(element), styles);
+    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ (element), styles);
   }
 
   if (!updateMeta) return;
 
-  const meta = document.querySelector('meta[name=theme-color]');
+  const meta = document.querySelector("meta[name=theme-color]");
   if (meta) {
-    if (!meta.hasAttribute('default-content')) {
-      meta.setAttribute('default-content', meta.getAttribute('content'));
+    if (!meta.hasAttribute("default-content")) {
+      meta.setAttribute("default-content", meta.getAttribute("content"));
     }
-    const themeColor = styles['--primary-color'] || meta.getAttribute('default-content');
-    meta.setAttribute('content', themeColor);
+    const themeColor =
+      styles["--primary-color"] || meta.getAttribute("default-content");
+    meta.setAttribute("content", themeColor);
   }
 }

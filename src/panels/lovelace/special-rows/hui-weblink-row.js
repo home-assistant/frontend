@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-icon.js';
+import "../../../components/ha-icon.js";
 
 class HuiWeblinkRow extends PolymerElement {
   static get template() {
@@ -41,15 +41,15 @@ class HuiWeblinkRow extends PolymerElement {
 
   static get properties() {
     return {
-      _config: Object
+      _config: Object,
     };
   }
 
   setConfig(config) {
     if (!config || !config.icon || !config.name || !config.url) {
-      throw new Error('Error in card configuration.');
+      throw new Error("Error in card configuration.");
     }
     this._config = config;
   }
 }
-customElements.define('hui-weblink-row', HuiWeblinkRow);
+customElements.define("hui-weblink-row", HuiWeblinkRow);

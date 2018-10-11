@@ -10,7 +10,9 @@ if (!tokenCache) {
 }
 
 export function askWrite() {
-  return tokenCache.tokens !== undefined && tokenCache.writeEnabled === undefined;
+  return (
+    tokenCache.tokens !== undefined && tokenCache.writeEnabled === undefined
+  );
 }
 
 export function saveTokens(tokens) {
@@ -18,7 +20,7 @@ export function saveTokens(tokens) {
   if (tokenCache.writeEnabled) {
     try {
       storage.hassTokens = JSON.stringify(tokens);
-    } catch (err) {}  // eslint-disable-line
+    } catch (err) {} // eslint-disable-line
   }
 }
 

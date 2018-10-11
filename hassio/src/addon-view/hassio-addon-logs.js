@@ -1,9 +1,9 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/resources/ha-style.js';
+import "../../../src/resources/ha-style.js";
 
 class HassioAddonLogs extends PolymerElement {
   static get template() {
@@ -33,7 +33,7 @@ class HassioAddonLogs extends PolymerElement {
       hass: Object,
       addonSlug: {
         type: String,
-        observer: 'addonSlugChanged',
+        observer: "addonSlugChanged",
       },
       log: String,
     };
@@ -41,7 +41,9 @@ class HassioAddonLogs extends PolymerElement {
 
   addonSlugChanged(slug) {
     if (!this.hass) {
-      setTimeout(() => { this.addonChanged(slug); }, 0);
+      setTimeout(() => {
+        this.addonChanged(slug);
+      }, 0);
       return;
     }
 
@@ -49,11 +51,12 @@ class HassioAddonLogs extends PolymerElement {
   }
 
   refresh() {
-    this.hass.callApi('get', `hassio/addons/${this.addonSlug}/logs`)
+    this.hass
+      .callApi("get", `hassio/addons/${this.addonSlug}/logs`)
       .then((info) => {
         this.log = info;
       });
   }
 }
 
-customElements.define('hassio-addon-logs', HassioAddonLogs);
+customElements.define("hassio-addon-logs", HassioAddonLogs);

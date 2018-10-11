@@ -1,12 +1,12 @@
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-progress-button.js';
-import '../../../layouts/hass-subpage.js';
-import '../../../resources/ha-style.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
+import "../../../components/buttons/ha-progress-button.js";
+import "../../../layouts/hass-subpage.js";
+import "../../../resources/ha-style.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -70,7 +70,7 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
       email: {
         type: String,
         notify: true,
-        observer: '_emailChanged'
+        observer: "_emailChanged",
       },
       _requestInProgress: {
         type: Boolean,
@@ -78,13 +78,13 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
       },
       _error: {
         type: String,
-        value: '',
-      }
+        value: "",
+      },
     };
   }
 
   _emailChanged() {
-    this._error = '';
+    this._error = "";
     this.$.email.invalid = false;
   }
 
@@ -97,7 +97,7 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
   }
 
   _handleEmailPasswordReset() {
-    if (!this.email || !this.email.includes('@')) {
+    if (!this.email || !this.email.includes("@")) {
       this.$.email.invalid = true;
     }
 
@@ -105,19 +105,31 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
 
     this._requestInProgress = true;
 
-    this.hass.callApi('post', 'cloud/forgot_password', {
-      email: this.email,
-    }).then(() => {
-      this._requestInProgress = false;
-      this.fire('cloud-done', {
-        flashMessage: 'Check your email for instructions on how to reset your password.'
-      });
-    }, err => this.setProperties({
-      _requestInProgress: false,
-      _error: err && err.body && err.body.message
-        ? err.body.message : 'Unknown error',
-    }));
+    this.hass
+      .callApi("post", "cloud/forgot_password", {
+        email: this.email,
+      })
+      .then(
+        () => {
+          this._requestInProgress = false;
+          this.fire("cloud-done", {
+            flashMessage:
+              "Check your email for instructions on how to reset your password.",
+          });
+        },
+        (err) =>
+          this.setProperties({
+            _requestInProgress: false,
+            _error:
+              err && err.body && err.body.message
+                ? err.body.message
+                : "Unknown error",
+          })
+      );
   }
 }
 
-customElements.define('ha-config-cloud-forgot-password', HaConfigCloudForgotPassword);
+customElements.define(
+  "ha-config-cloud-forgot-password",
+  HaConfigCloudForgotPassword
+);

@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
 
-import { DOMAINS_TOGGLE } from '../../../common/const.js';
-import turnOnOffEntities from '../common/entity/turn-on-off-entities.js';
+import { DOMAINS_TOGGLE } from "../../../common/const.js";
+import turnOnOffEntities from "../common/entity/turn-on-off-entities.js";
 
 class HuiEntitiesToggle extends PolymerElement {
   static get template() {
@@ -32,18 +32,20 @@ class HuiEntitiesToggle extends PolymerElement {
       entities: Array,
       _toggleEntities: {
         type: Array,
-        computed: '_computeToggleEntities(hass, entities)'
-      }
+        computed: "_computeToggleEntities(hass, entities)",
+      },
     };
   }
 
   _computeToggleEntities(hass, entityIds) {
-    return entityIds.filter(entityId => (entityId in hass.states
-      && DOMAINS_TOGGLE.has(entityId.split('.', 1)[0])));
+    return entityIds.filter(
+      (entityId) =>
+        entityId in hass.states && DOMAINS_TOGGLE.has(entityId.split(".", 1)[0])
+    );
   }
 
   _computeIsChecked(hass, entityIds) {
-    return entityIds.some(entityId => hass.states[entityId].state === 'on');
+    return entityIds.some((entityId) => hass.states[entityId].state === "on");
   }
 
   _callService(ev) {
@@ -52,4 +54,4 @@ class HuiEntitiesToggle extends PolymerElement {
   }
 }
 
-customElements.define('hui-entities-toggle', HuiEntitiesToggle);
+customElements.define("hui-entities-toggle", HuiEntitiesToggle);

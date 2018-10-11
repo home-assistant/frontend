@@ -1,10 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/state-summary/state-card-content.js';
-import '../../../src/dialogs/more-info/controls/more-info-content.js';
-import '../../../src/components/ha-card.js';
-
+import "../../../src/state-summary/state-card-content.js";
+import "../../../src/dialogs/more-info/controls/more-info-content.js";
+import "../../../src/components/ha-card.js";
 
 class DemoMoreInfo extends PolymerElement {
   static get template() {
@@ -68,8 +67,8 @@ class DemoMoreInfo extends PolymerElement {
       showConfig: Boolean,
       _stateObj: {
         type: Object,
-        computed: '_getState(entityId, hass.states)'
-      }
+        computed: "_getState(entityId, hass.states)",
+      },
     };
   }
 
@@ -82,7 +81,7 @@ class DemoMoreInfo extends PolymerElement {
     // (it sucks, we will remove in the future)
     const tmp = {};
     Object.keys(stateObj).forEach((key) => {
-      if (key[0] !== '_') {
+      if (key[0] !== "_") {
         tmp[key] = stateObj[key];
       }
     });
@@ -90,4 +89,4 @@ class DemoMoreInfo extends PolymerElement {
   }
 }
 
-customElements.define('demo-more-info', DemoMoreInfo);
+customElements.define("demo-more-info", DemoMoreInfo);
