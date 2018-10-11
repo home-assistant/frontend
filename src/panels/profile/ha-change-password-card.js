@@ -1,13 +1,13 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
-import '../../resources/ha-style.js';
+import "../../resources/ha-style.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -106,7 +106,7 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.addEventListener('keypress', (ev) => {
+    this.addEventListener("keypress", (ev) => {
       this._statusMsg = null;
       if (ev.keyCode === 13) {
         this._changePassword();
@@ -124,7 +124,7 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
     }
 
     if (this._currentPassword === this._password1) {
-      this._errorMsg = 'New password must be different than current password';
+      this._errorMsg = "New password must be different than current password";
       return;
     }
 
@@ -133,16 +133,16 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
 
     try {
       await this.hass.callWS({
-        type: 'config/auth_provider/homeassistant/change_password',
+        type: "config/auth_provider/homeassistant/change_password",
         current_password: this._currentPassword,
         new_password: this._password1,
       });
 
       this.setProperties({
-        _statusMsg: 'Password changed successfully',
+        _statusMsg: "Password changed successfully",
         _currentPassword: null,
         _password1: null,
-        _password2: null
+        _password2: null,
       });
     } catch (err) {
       this._errorMsg = err.message;
@@ -152,4 +152,4 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-change-password-card', HaChangePasswordCard);
+customElements.define("ha-change-password-card", HaChangePasswordCard);

@@ -1,4 +1,4 @@
-import { fetchWithAuth } from './fetch-with-auth.js';
+import { fetchWithAuth } from "./fetch-with-auth.js";
 
 /* eslint-disable no-throw-literal */
 
@@ -11,7 +11,7 @@ export default async function hassCallApi(auth, method, path, parameters) {
   };
 
   if (parameters) {
-    init.headers['Content-Type'] = 'application/json;charset=UTF-8';
+    init.headers["Content-Type"] = "application/json;charset=UTF-8";
     init.body = JSON.stringify(parameters);
   }
 
@@ -21,7 +21,7 @@ export default async function hassCallApi(auth, method, path, parameters) {
     response = await fetchWithAuth(auth, url, init);
   } catch (err) {
     throw {
-      error: 'Request error',
+      error: "Request error",
       status_code: undefined,
       body: undefined,
     };
@@ -29,14 +29,14 @@ export default async function hassCallApi(auth, method, path, parameters) {
 
   let body = null;
 
-  const contentType = response.headers.get('content-type');
+  const contentType = response.headers.get("content-type");
 
-  if (contentType && contentType.includes('application/json')) {
+  if (contentType && contentType.includes("application/json")) {
     try {
       body = await response.json();
     } catch (err) {
       throw {
-        error: 'Unable to parse JSON response',
+        error: "Unable to parse JSON response",
         status_code: err.status,
         body: null,
       };
@@ -49,7 +49,7 @@ export default async function hassCallApi(auth, method, path, parameters) {
     throw {
       error: `Response error: ${response.status}`,
       status_code: response.status,
-      body: body
+      body: body,
     };
   }
 

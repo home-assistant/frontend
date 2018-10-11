@@ -7,11 +7,11 @@ export default class MediaPlayerEntity {
   }
 
   get isOff() {
-    return this.stateObj.state === 'off';
+    return this.stateObj.state === "off";
   }
 
   get isIdle() {
-    return this.stateObj.state === 'idle';
+    return this.stateObj.state === "idle";
   }
 
   get isMuted() {
@@ -19,23 +19,23 @@ export default class MediaPlayerEntity {
   }
 
   get isPaused() {
-    return this.stateObj.state === 'paused';
+    return this.stateObj.state === "paused";
   }
 
   get isPlaying() {
-    return this.stateObj.state === 'playing';
+    return this.stateObj.state === "playing";
   }
 
   get isMusic() {
-    return this._attr.media_content_type === 'music';
+    return this._attr.media_content_type === "music";
   }
 
   get isTVShow() {
-    return this._attr.media_content_type === 'tvshow';
+    return this._attr.media_content_type === "tvshow";
   }
 
   get hasMediaControl() {
-    return ['playing', 'paused', 'unknown'].indexOf(this.stateObj.state) !== -1;
+    return ["playing", "paused", "unknown"].indexOf(this.stateObj.state) !== -1;
   }
 
   get volumeSliderValue() {
@@ -44,17 +44,20 @@ export default class MediaPlayerEntity {
 
   get showProgress() {
     return (
-      (this.isPlaying || this.isPaused)
-      && 'media_duration' in this.stateObj.attributes
-      && 'media_position' in this.stateObj.attributes
-      && 'media_position_updated_at' in this.stateObj.attributes);
+      (this.isPlaying || this.isPaused) &&
+      "media_duration" in this.stateObj.attributes &&
+      "media_position" in this.stateObj.attributes &&
+      "media_position_updated_at" in this.stateObj.attributes
+    );
   }
 
   get currentProgress() {
     var progress = this._attr.media_position;
     if (this.isPlaying) {
-      progress += (Date.now()
-                  - new Date(this._attr.media_position_updated_at).getTime()) / 1000.0;
+      progress +=
+        (Date.now() -
+          new Date(this._attr.media_position_updated_at).getTime()) /
+        1000.0;
     }
     return progress;
   }
@@ -118,22 +121,24 @@ export default class MediaPlayerEntity {
   get secondaryTitle() {
     if (this.isMusic) {
       return this._attr.media_artist;
-    } if (this.isTVShow) {
+    }
+    if (this.isTVShow) {
       var text = this._attr.media_series_title;
 
       if (this._attr.media_season) {
-        text += ' S' + this._attr.media_season;
+        text += " S" + this._attr.media_season;
 
         if (this._attr.media_episode) {
-          text += 'E' + this._attr.media_episode;
+          text += "E" + this._attr.media_episode;
         }
       }
 
       return text;
-    } if (this._attr.app_name) {
+    }
+    if (this._attr.app_name) {
       return this._attr.app_name;
     }
-    return '';
+    return "";
   }
 
   get source() {
@@ -153,23 +158,23 @@ export default class MediaPlayerEntity {
   }
 
   mediaPlayPause() {
-    this.callService('media_play_pause');
+    this.callService("media_play_pause");
   }
 
   nextTrack() {
-    this.callService('media_next_track');
+    this.callService("media_next_track");
   }
 
   playbackControl() {
-    this.callService('media_play_pause');
+    this.callService("media_play_pause");
   }
 
   previousTrack() {
-    this.callService('media_previous_track');
+    this.callService("media_previous_track");
   }
 
   setVolume(volume) {
-    this.callService('volume_set', { volume_level: volume });
+    this.callService("volume_set", { volume_level: volume });
   }
 
   togglePower() {
@@ -181,40 +186,40 @@ export default class MediaPlayerEntity {
   }
 
   turnOff() {
-    this.callService('turn_off');
+    this.callService("turn_off");
   }
 
   turnOn() {
-    this.callService('turn_on');
+    this.callService("turn_on");
   }
 
   volumeDown() {
-    this.callService('volume_down');
+    this.callService("volume_down");
   }
 
   volumeMute(mute) {
     if (!this.supportsVolumeMute) {
-      throw new Error('Muting volume not supported');
+      throw new Error("Muting volume not supported");
     }
-    this.callService('volume_mute', { is_volume_muted: mute });
+    this.callService("volume_mute", { is_volume_muted: mute });
   }
 
   volumeUp() {
-    this.callService('volume_up');
+    this.callService("volume_up");
   }
 
   selectSource(source) {
-    this.callService('select_source', { source });
+    this.callService("select_source", { source });
   }
 
   selectSoundMode(soundMode) {
-    this.callService('select_sound_mode', { sound_mode: soundMode });
+    this.callService("select_sound_mode", { sound_mode: soundMode });
   }
 
   // helper method
 
   callService(service, data = {}) {
     data.entity_id = this.stateObj.entity_id;
-    this.hass.callService('media_player', service, data);
+    this.hass.callService("media_player", service, data);
   }
 }

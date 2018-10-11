@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../ha-icon.js';
-import computeStateDomain from '../../common/entity/compute_state_domain.js';
-import stateIcon from '../../common/entity/state_icon.js';
+import "../ha-icon.js";
+import computeStateDomain from "../../common/entity/compute_state_domain.js";
+import stateIcon from "../../common/entity/state_icon.js";
 
 class StateBadge extends PolymerElement {
   static get template() {
@@ -53,9 +53,9 @@ class StateBadge extends PolymerElement {
     return {
       stateObj: {
         type: Object,
-        observer: '_updateIconAppearance',
+        observer: "_updateIconAppearance",
       },
-      overrideIcon: String
+      overrideIcon: String,
     };
   }
 
@@ -69,21 +69,22 @@ class StateBadge extends PolymerElement {
 
   _updateIconAppearance(newVal) {
     const iconStyle = {
-      color: '',
-      filter: '',
+      color: "",
+      filter: "",
     };
     const hostStyle = {
-      backgroundImage: '',
+      backgroundImage: "",
     };
     // hide icon if we have entity picture
     if (newVal.attributes.entity_picture) {
-      hostStyle.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
-      iconStyle.display = 'none';
+      hostStyle.backgroundImage =
+        "url(" + newVal.attributes.entity_picture + ")";
+      iconStyle.display = "none";
     } else {
       if (newVal.attributes.hs_color) {
         const hue = newVal.attributes.hs_color[0];
         const sat = newVal.attributes.hs_color[1];
-        if (sat > 10) iconStyle.color = `hsl(${hue}, 100%, ${100 - (sat / 2)}%)`;
+        if (sat > 10) iconStyle.color = `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
       }
       if (newVal.attributes.brightness) {
         const brightness = newVal.attributes.brightness;
@@ -95,4 +96,4 @@ class StateBadge extends PolymerElement {
     Object.assign(this.style, hostStyle);
   }
 }
-customElements.define('state-badge', StateBadge);
+customElements.define("state-badge", StateBadge);

@@ -1,20 +1,22 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-tooltip/paper-tooltip.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-tooltip/paper-tooltip.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../../components/ha-relative-time.js';
-import '../../../../components/ha-markdown.js';
-import './hui-notification-item-template.js';
+import "../../../../components/ha-relative-time.js";
+import "../../../../components/ha-markdown.js";
+import "./hui-notification-item-template.js";
 
-import LocalizeMixin from '../../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
  */
-export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement) {
+export class HuiPersistentNotificationItem extends LocalizeMixin(
+  PolymerElement
+) {
   static get template() {
     return html`
     <style>
@@ -54,13 +56,13 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
   static get properties() {
     return {
       hass: Object,
-      notification: Object
+      notification: Object,
     };
   }
 
   _handleDismiss() {
-    this.hass.callService('persistent_notification', 'dismiss', {
-      notification_id: this.notification.notification_id
+    this.hass.callService("persistent_notification", "dismiss", {
+      notification_id: this.notification.notification_id,
     });
   }
 
@@ -73,11 +75,15 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(PolymerElement)
 
     const d = new Date(notification.created_at);
     return d.toLocaleDateString(hass.language, {
-      year: 'numeric', month: 'short', day: 'numeric', minute: 'numeric', hour: 'numeric'
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      minute: "numeric",
+      hour: "numeric",
     });
   }
 }
 customElements.define(
-  'hui-persistent_notification-notification-item',
+  "hui-persistent_notification-notification-item",
   HuiPersistentNotificationItem
 );

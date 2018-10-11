@@ -1,13 +1,13 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeStateName from '../../common/entity/compute_state_name.js';
+import computeStateName from "../../common/entity/compute_state_name.js";
 
 class HaEntityConfig extends PolymerElement {
   static get template() {
@@ -80,17 +80,17 @@ class HaEntityConfig extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: 'hassChanged',
+        observer: "hassChanged",
       },
 
       label: {
         type: String,
-        value: 'Device',
+        value: "Device",
       },
 
       entities: {
         type: Array,
-        observer: 'entitiesChanged',
+        observer: "entitiesChanged",
       },
 
       allowDelete: {
@@ -101,18 +101,18 @@ class HaEntityConfig extends PolymerElement {
       selectedEntity: {
         type: Number,
         value: -1,
-        observer: 'entityChanged',
+        observer: "entityChanged",
       },
 
       formState: {
         type: String,
         // no-devices, loading, saving, editing
-        value: 'no-devices',
+        value: "no-devices",
       },
 
       config: {
         type: Object,
-      }
+      },
     };
   }
 
@@ -131,19 +131,19 @@ class HaEntityConfig extends PolymerElement {
   }
 
   computeShowNoDevices(formState) {
-    return formState === 'no-devices';
+    return formState === "no-devices";
   }
 
   computeShowSpinner(formState) {
-    return formState === 'loading' || formState === 'saving';
+    return formState === "loading" || formState === "saving";
   }
 
   computeShowPlaceholder(formState) {
-    return formState !== 'editing';
+    return formState !== "editing";
   }
 
   computeShowForm(formState) {
-    return formState === 'editing';
+    return formState === "editing";
   }
 
   hassChanged(hass) {
@@ -154,16 +154,17 @@ class HaEntityConfig extends PolymerElement {
 
   entitiesChanged(entities, oldEntities) {
     if (entities.length === 0) {
-      this.formState = 'no-devices';
+      this.formState = "no-devices";
       return;
-    } if (!oldEntities) {
+    }
+    if (!oldEntities) {
       this.selectedEntity = 0;
       return;
     }
 
     var oldEntityId = oldEntities[this.selectedEntity].entity_id;
 
-    var newIndex = entities.findIndex(function (ent) {
+    var newIndex = entities.findIndex(function(ent) {
       return ent.entity_id === oldEntityId;
     });
 
@@ -180,22 +181,20 @@ class HaEntityConfig extends PolymerElement {
     var entity = this.entities[index];
     if (!entity) return;
 
-    this.formState = 'loading';
+    this.formState = "loading";
     var el = this;
-    this.formEl.loadEntity(entity)
-      .then(function () {
-        el.formState = 'editing';
-      });
+    this.formEl.loadEntity(entity).then(function() {
+      el.formState = "editing";
+    });
   }
 
   saveEntity() {
-    this.formState = 'saving';
+    this.formState = "saving";
     var el = this;
-    this.formEl.saveEntity()
-      .then(function () {
-        el.formState = 'editing';
-      });
+    this.formEl.saveEntity().then(function() {
+      el.formState = "editing";
+    });
   }
 }
 
-customElements.define('ha-entity-config', HaEntityConfig);
+customElements.define("ha-entity-config", HaEntityConfig);

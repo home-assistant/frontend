@@ -1,12 +1,12 @@
-import '@polymer/app-route/app-route.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-route/app-route.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './ha-script-editor.js';
-import './ha-script-picker.js';
+import "./ha-script-editor.js";
+import "./ha-script-picker.js";
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import computeStateDomain from '../../../common/entity/compute_state_domain.js';
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 
 class HaConfigScript extends PolymerElement {
   static get template() {
@@ -44,18 +44,18 @@ class HaConfigScript extends PolymerElement {
 
       scripts: {
         type: Array,
-        computed: 'computeScripts(hass)',
+        computed: "computeScripts(hass)",
       },
 
       script: {
         type: Object,
-        computed: 'computeScript(scripts, _edittingScript, _routeData)',
+        computed: "computeScript(scripts, _edittingScript, _routeData)",
       },
 
       showEditor: {
         type: Boolean,
-        computed: 'computeShowEditor(_edittingScript, _creatingNew)',
-      }
+        computed: "computeShowEditor(_edittingScript, _creatingNew)",
+      },
     };
   }
 
@@ -74,10 +74,10 @@ class HaConfigScript extends PolymerElement {
   computeScripts(hass) {
     var scripts = [];
 
-    Object.keys(hass.states).forEach(function (key) {
+    Object.keys(hass.states).forEach(function(key) {
       var entity = hass.states[key];
 
-      if (computeStateDomain(entity) === 'script') {
+      if (computeStateDomain(entity) === "script") {
         scripts.push(entity);
       }
     });
@@ -101,4 +101,4 @@ class HaConfigScript extends PolymerElement {
   }
 }
 
-customElements.define('ha-config-script', HaConfigScript);
+customElements.define("ha-config-script", HaConfigScript);

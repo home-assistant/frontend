@@ -1,14 +1,11 @@
-import assert from 'assert';
+import assert from "assert";
 
-import extractViews from '../../../src/common/entity/extract_views.js';
+import extractViews from "../../../src/common/entity/extract_views.js";
 
-import {
-  createEntities,
-  createView,
-} from './test_util';
+import { createEntities, createView } from "./test_util";
 
-describe('extractViews', () => {
-  it('should work', () => {
+describe("extractViews", () => {
+  it("should work", () => {
     const entities = createEntities(10);
     const view1 = createView({ attributes: { order: 10 } });
     entities[view1.entity_id] = view1;
@@ -17,8 +14,8 @@ describe('extractViews', () => {
     entities[view2.entity_id] = view2;
 
     const view3 = createView({
-      entity_id: 'group.default_view',
-      attributes: { order: 8 }
+      entity_id: "group.default_view",
+      attributes: { order: 8 },
     });
     entities[view3.entity_id] = view3;
 

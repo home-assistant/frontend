@@ -1,9 +1,9 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-button/paper-button.js';
+import { h, Component } from "preact";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-button/paper-button.js";
 
-import TriggerRow from './trigger_row.js';
-import StateTrigger from './state.js';
+import TriggerRow from "./trigger_row.js";
+import StateTrigger from "./state.js";
 
 export default class Trigger extends Component {
   constructor() {
@@ -14,10 +14,9 @@ export default class Trigger extends Component {
   }
 
   addTrigger() {
-    const trigger = this.props.trigger.concat(Object.assign(
-      { platform: 'state' },
-      StateTrigger.defaultConfig,
-    ));
+    const trigger = this.props.trigger.concat(
+      Object.assign({ platform: "state" }, StateTrigger.defaultConfig)
+    );
 
     this.props.onChange(trigger);
   }
@@ -44,10 +43,13 @@ export default class Trigger extends Component {
             onChange={this.triggerChanged}
             hass={hass}
             localize={localize}
-          />))}
+          />
+        ))}
         <paper-card>
-          <div class='card-actions add-card'>
-            <paper-button onTap={this.addTrigger}>{localize('ui.panel.config.automation.editor.triggers.add')}</paper-button>
+          <div class="card-actions add-card">
+            <paper-button onTap={this.addTrigger}>
+              {localize("ui.panel.config.automation.editor.triggers.add")}
+            </paper-button>
           </div>
         </paper-card>
       </div>

@@ -1,11 +1,11 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../../../mixins/events-mixin.js';
+import EventsMixin from "../../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -42,12 +42,12 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
     return {
       notificationsOpen: {
         type: Boolean,
-        notify: true
+        notify: true,
       },
       notifications: {
         type: Array,
-        value: []
-      }
+        value: [],
+      },
     };
   }
 
@@ -59,4 +59,4 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
     return notifications.length > 0;
   }
 }
-customElements.define('hui-notifications-button', HuiNotificationsButton);
+customElements.define("hui-notifications-button", HuiNotificationsButton);

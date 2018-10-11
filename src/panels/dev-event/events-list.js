@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -50,15 +50,17 @@ class EventsList extends EventsMixin(PolymerElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    this.hass.callApi('GET', 'events').then(function (events) {
-      this.events = events;
-    }.bind(this));
+    this.hass.callApi("GET", "events").then(
+      function(events) {
+        this.events = events;
+      }.bind(this)
+    );
   }
 
   eventSelected(ev) {
     ev.preventDefault();
-    this.fire('event-selected', { eventType: ev.model.event.event });
+    this.fire("event-selected", { eventType: ev.model.event.event });
   }
 }
 
-customElements.define('events-list', EventsList);
+customElements.define("events-list", EventsList);

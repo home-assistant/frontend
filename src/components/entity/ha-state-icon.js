@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../ha-icon.js';
-import stateIcon from '../../common/entity/state_icon.js';
+import "../ha-icon.js";
+import stateIcon from "../../common/entity/state_icon.js";
 
 class HaStateIcon extends PolymerElement {
   static get template() {
@@ -22,4 +22,4 @@ class HaStateIcon extends PolymerElement {
   }
 }
 
-customElements.define('ha-state-icon', HaStateIcon);
+customElements.define("ha-state-icon", HaStateIcon);

@@ -1,17 +1,21 @@
-import assert from 'assert';
+import assert from "assert";
 
-import getGroupEntities from '../../../src/common/entity/get_group_entities.js';
+import getGroupEntities from "../../../src/common/entity/get_group_entities.js";
 
-import { createEntities, createGroup, entityMap } from './test_util';
+import { createEntities, createGroup, entityMap } from "./test_util";
 
-describe('getGroupEntities', () => {
-  it('works if all entities exist', () => {
+describe("getGroupEntities", () => {
+  it("works if all entities exist", () => {
     const entities = createEntities(5);
     const entityIds = Object.keys(entities);
 
-    const group = createGroup({ attributes: { entity_id: entityIds.splice(0, 2) } });
+    const group = createGroup({
+      attributes: { entity_id: entityIds.splice(0, 2) },
+    });
 
-    const groupEntities = entityMap(group.attributes.entity_id.map(ent => entities[ent]));
+    const groupEntities = entityMap(
+      group.attributes.entity_id.map((ent) => entities[ent])
+    );
     assert.deepEqual(groupEntities, getGroupEntities(entities, group));
   });
 
@@ -24,7 +28,11 @@ describe('getGroupEntities', () => {
       entities[entityIds[1]],
     ]);
 
-    const group = createGroup({ attributes: { entity_id: entityIds.splice(0, 2).concat('light.does_not_exist') } });
+    const group = createGroup({
+      attributes: {
+        entity_id: entityIds.splice(0, 2).concat("light.does_not_exist"),
+      },
+    });
 
     assert.deepEqual(groupEntities, getGroupEntities(entities, group));
   });

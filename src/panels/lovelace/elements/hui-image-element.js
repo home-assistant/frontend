@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/hui-image.js';
+import "../components/hui-image.js";
 
-import ElementClickMixin from '../mixins/element-click-mixin.js';
+import ElementClickMixin from "../mixins/element-click-mixin.js";
 
 /*
  * @appliesMixin ElementClickMixin
@@ -36,22 +36,24 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      _config: Object
+      _config: Object,
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+    this.addEventListener("click", () =>
+      this.handleClick(this.hass, this._config)
+    );
   }
 
   setConfig(config) {
     if (!config) {
-      throw Error('Error in element configuration');
+      throw Error("Error in element configuration");
     }
 
-    this.classList.toggle('clickable', config.tap_action !== 'none');
+    this.classList.toggle("clickable", config.tap_action !== "none");
     this._config = config;
   }
 }
-customElements.define('hui-image-element', HuiImageElement);
+customElements.define("hui-image-element", HuiImageElement);

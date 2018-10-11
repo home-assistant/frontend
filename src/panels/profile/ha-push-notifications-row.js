@@ -1,15 +1,15 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-label/iron-label.js';
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/iron-label/iron-label.js";
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import isComponentLoaded from '../../common/config/is_component_loaded.js';
-import { pushSupported } from '../../components/ha-push-notifications-toggle.js';
+import isComponentLoaded from "../../common/config/is_component_loaded.js";
+import { pushSupported } from "../../components/ha-push-notifications-toggle.js";
 
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
-import './ha-settings-row.js';
+import "./ha-settings-row.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -44,7 +44,7 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
       narrow: Boolean,
       _platformLoaded: {
         type: Boolean,
-        computed: '_compPlatformLoaded(hass)'
+        computed: "_compPlatformLoaded(hass)",
       },
       _pushSupported: {
         type: Boolean,
@@ -52,13 +52,13 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
       },
       _error: {
         type: Boolean,
-        computed: '_compError(_platformLoaded, _pushSupported)',
+        computed: "_compError(_platformLoaded, _pushSupported)",
       },
     };
   }
 
   _compPlatformLoaded(hass) {
-    return isComponentLoaded(hass, 'notify.html5');
+    return isComponentLoaded(hass, "notify.html5");
   }
 
   _compError(platformLoaded, pushSupported_) {
@@ -68,14 +68,14 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
   _description(platformLoaded, pushSupported_) {
     let key;
     if (!pushSupported_) {
-      key = 'error_use_https';
+      key = "error_use_https";
     } else if (!platformLoaded) {
-      key = 'error_load_platform';
+      key = "error_load_platform";
     } else {
-      key = 'description';
+      key = "description";
     }
     return this.localize(`ui.panel.profile.push_notifications.${key}`);
   }
 }
 
-customElements.define('ha-push-notifications-row', HaPushNotificationsRow);
+customElements.define("ha-push-notifications-row", HaPushNotificationsRow);

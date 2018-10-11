@@ -1,21 +1,20 @@
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
-import './ha-settings-row.js';
+import "./ha-settings-row.js";
 
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
-class HaPickLanguageRow extends
-  LocalizeMixin(EventsMixin(PolymerElement)) {
+class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -45,22 +44,24 @@ class HaPickLanguageRow extends
       narrow: Boolean,
       languageSelection: {
         type: String,
-        observer: 'languageSelectionChanged',
+        observer: "languageSelectionChanged",
       },
       languages: {
         type: Array,
-        computed: 'computeLanguages(hass)',
+        computed: "computeLanguages(hass)",
       },
     };
   }
 
-  static get observers() { return ['setLanguageSelection(language)']; }
+  static get observers() {
+    return ["setLanguageSelection(language)"];
+  }
 
   computeLanguages(hass) {
     if (!hass || !hass.translationMetadata) {
       return [];
     }
-    return Object.keys(hass.translationMetadata.translations).map(key => ({
+    return Object.keys(hass.translationMetadata.translations).map((key) => ({
       tag: key,
       nativeName: hass.translationMetadata.translations[key].nativeName,
     }));
@@ -74,9 +75,9 @@ class HaPickLanguageRow extends
     // Only fire event if language was changed. This prevents select updates when
     // responding to hass changes.
     if (newVal !== this.language) {
-      this.fire('hass-language-select', { language: newVal });
+      this.fire("hass-language-select", { language: newVal });
     }
   }
 }
 
-customElements.define('ha-pick-language-row', HaPickLanguageRow);
+customElements.define("ha-pick-language-row", HaPickLanguageRow);

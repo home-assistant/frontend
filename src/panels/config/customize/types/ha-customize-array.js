@@ -1,10 +1,10 @@
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../../../mixins/events-mixin.js';
+import EventsMixin from "../../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -32,16 +32,16 @@ class HaCustomizeArray extends EventsMixin(PolymerElement) {
       item: {
         type: Object,
         notifies: true,
-      }
+      },
     };
   }
 
   getOptions(item) {
-    const domain = item.domain || '*';
-    const options = item.options[domain] || item.options['*'];
+    const domain = item.domain || "*";
+    const options = item.options[domain] || item.options["*"];
     if (!options) {
-      this.item.type = 'string';
-      this.fire('item-changed');
+      this.item.type = "string";
+      this.fire("item-changed");
       return [];
     }
     return options.sort();
@@ -52,4 +52,4 @@ class HaCustomizeArray extends EventsMixin(PolymerElement) {
     return options.indexOf(item.value);
   }
 }
-customElements.define('ha-customize-array', HaCustomizeArray);
+customElements.define("ha-customize-array", HaCustomizeArray);

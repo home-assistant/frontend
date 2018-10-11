@@ -1,10 +1,10 @@
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/hassio-card-content.js';
-import '../resources/hassio-style.js';
-import NavigateMixin from '../../../src/mixins/navigate-mixin.js';
+import "../components/hassio-card-content.js";
+import "../resources/hassio-style.js";
+import NavigateMixin from "../../../src/mixins/navigate-mixin.js";
 
 class HassioAddonRepository extends NavigateMixin(PolymerElement) {
   static get template() {
@@ -52,17 +52,23 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
   }
 
   computeIcon(addon) {
-    return addon.installed && addon.installed !== addon.version ? 'hassio:arrow-up-bold-circle' : 'hassio:puzzle';
+    return addon.installed && addon.installed !== addon.version
+      ? "hassio:arrow-up-bold-circle"
+      : "hassio:puzzle";
   }
 
   computeIconTitle(addon) {
-    if (addon.installed) return addon.installed !== addon.version ? 'New version available' : 'Add-on is installed';
-    return 'Add-on is not installed';
+    if (addon.installed)
+      return addon.installed !== addon.version
+        ? "New version available"
+        : "Add-on is installed";
+    return "Add-on is not installed";
   }
 
   computeIconClass(addon) {
-    if (addon.installed) return addon.installed !== addon.version ? 'update' : 'installed';
-    return '';
+    if (addon.installed)
+      return addon.installed !== addon.version ? "update" : "installed";
+    return "";
   }
 
   addonTapped(ev) {
@@ -70,4 +76,4 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
   }
 }
 
-customElements.define('hassio-addon-repository', HassioAddonRepository);
+customElements.define("hassio-addon-repository", HassioAddonRepository);

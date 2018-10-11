@@ -1,11 +1,11 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-relative-time.js';
+import "../../../components/ha-relative-time.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import formatTime from '../../../common/datetime/format_time.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import formatTime from "../../../common/datetime/format_time.js";
 
 class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -34,12 +34,12 @@ class MoreInfoSun extends LocalizeMixin(PolymerElement) {
       stateObj: Object,
       risingDate: {
         type: Object,
-        computed: 'computeRising(stateObj)',
+        computed: "computeRising(stateObj)",
       },
 
       settingDate: {
         type: Object,
-        computed: 'computeSetting(stateObj)',
+        computed: "computeSetting(stateObj)",
       },
     };
   }
@@ -53,15 +53,15 @@ class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   }
 
   computeOrder(risingDate, settingDate) {
-    return risingDate > settingDate ? ['set', 'ris'] : ['ris', 'set'];
+    return risingDate > settingDate ? ["set", "ris"] : ["ris", "set"];
   }
 
   itemCaption(type) {
-    return type === 'ris' ? 'Rising ' : 'Setting ';
+    return type === "ris" ? "Rising " : "Setting ";
   }
 
   itemDate(type) {
-    return type === 'ris' ? this.risingDate : this.settingDate;
+    return type === "ris" ? this.risingDate : this.settingDate;
   }
 
   itemValue(type) {
@@ -69,4 +69,4 @@ class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('more-info-sun', MoreInfoSun);
+customElements.define("more-info-sun", MoreInfoSun);

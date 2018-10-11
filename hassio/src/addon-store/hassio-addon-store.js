@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './hassio-addon-repository.js';
-import './hassio-repositories-editor.js';
+import "./hassio-addon-repository.js";
+import "./hassio-repositories-editor.js";
 
 class HassioAddonStore extends PolymerElement {
   static get template() {
@@ -30,7 +30,7 @@ class HassioAddonStore extends PolymerElement {
 
   ready() {
     super.ready();
-    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
     this.loadData();
   }
 
@@ -41,42 +41,45 @@ class HassioAddonStore extends PolymerElement {
   }
 
   sortRepos(a, b) {
-    if (a.slug === 'local') {
+    if (a.slug === "local") {
       return -1;
-    } if (b.slug === 'local') {
+    }
+    if (b.slug === "local") {
       return 1;
-    } if (a.slug === 'core') {
+    }
+    if (a.slug === "core") {
       return -1;
-    } if (b.slug === 'core') {
+    }
+    if (b.slug === "core") {
       return 1;
     }
     return a.name < b.name ? -1 : 1;
   }
 
   computeAddons(repo) {
-    return this.addons.filter(function (addon) {
+    return this.addons.filter(function(addon) {
       return addon.repository === repo;
     });
   }
 
   loadData() {
-    this.hass.callApi('get', 'hassio/addons')
-      .then((info) => {
+    this.hass.callApi("get", "hassio/addons").then(
+      (info) => {
         this.addons = info.data.addons;
         this.repos = info.data.repositories;
-      }, () => {
+      },
+      () => {
         this.addons = [];
         this.repos = [];
-      });
+      }
+    );
   }
 
-
   refreshData() {
-    this.hass.callApi('post', 'hassio/addons/reload')
-      .then(() => {
-        this.loadData();
-      });
+    this.hass.callApi("post", "hassio/addons/reload").then(() => {
+      this.loadData();
+    });
   }
 }
 
-customElements.define('hassio-addon-store', HassioAddonStore);
+customElements.define("hassio-addon-store", HassioAddonStore);

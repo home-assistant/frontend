@@ -1,5 +1,5 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HaSettingsRow extends PolymerElement {
   static get template() {
@@ -39,9 +39,9 @@ class HaSettingsRow extends PolymerElement {
       threeLine: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 }
 
-customElements.define('ha-settings-row', HaSettingsRow);
+customElements.define("ha-settings-row", HaSettingsRow);

@@ -1,12 +1,12 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/state-info.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import "../components/entity/state-info.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
-import computeStateDisplay from '../common/entity/compute_state_display.js';
-import attributeClassNames from '../common/entity/attribute_class_names.js';
+import computeStateDisplay from "../common/entity/compute_state_display.js";
+import attributeClassNames from "../common/entity/attribute_class_names.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -61,7 +61,7 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
       inDialog: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 
@@ -71,10 +71,10 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
 
   computeClassNames(stateObj) {
     const classes = [
-      'state',
-      attributeClassNames(stateObj, ['unit_of_measurement']),
+      "state",
+      attributeClassNames(stateObj, ["unit_of_measurement"]),
     ];
-    return classes.join(' ');
+    return classes.join(" ");
   }
 }
-customElements.define('state-card-display', StateCardDisplay);
+customElements.define("state-card-display", StateCardDisplay);

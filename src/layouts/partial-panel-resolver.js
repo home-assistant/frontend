@@ -1,14 +1,14 @@
-import '@polymer/app-route/app-route.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-route/app-route.js";
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './hass-loading-screen.js';
-import './hass-error-screen.js';
-import { importHref } from '../resources/html-import/import-href';
+import "./hass-loading-screen.js";
+import "./hass-error-screen.js";
+import { importHref } from "../resources/html-import/import-href";
 
-import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
-import NavigateMixin from '../mixins/navigate-mixin.js';
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater.js";
+import NavigateMixin from "../mixins/navigate-mixin.js";
 
 const loaded = {};
 
@@ -18,76 +18,76 @@ function ensureLoaded(panel) {
   let imported;
   // Name each panel we support here, that way Webpack knows about it.
   switch (panel) {
-    case 'config':
-      imported = import(/* webpackChunkName: "panel-config" */ '../panels/config/ha-panel-config.js');
+    case "config":
+      imported = import(/* webpackChunkName: "panel-config" */ "../panels/config/ha-panel-config.js");
       break;
 
-    case 'custom':
-      imported = import(/* webpackChunkName: "panel-custom" */ '../panels/custom/ha-panel-custom.js');
+    case "custom":
+      imported = import(/* webpackChunkName: "panel-custom" */ "../panels/custom/ha-panel-custom.js");
       break;
 
-    case 'dev-event':
-      imported = import(/* webpackChunkName: "panel-dev-event" */ '../panels/dev-event/ha-panel-dev-event.js');
+    case "dev-event":
+      imported = import(/* webpackChunkName: "panel-dev-event" */ "../panels/dev-event/ha-panel-dev-event.js");
       break;
 
-    case 'dev-info':
-      imported = import(/* webpackChunkName: "panel-dev-info" */ '../panels/dev-info/ha-panel-dev-info.js');
+    case "dev-info":
+      imported = import(/* webpackChunkName: "panel-dev-info" */ "../panels/dev-info/ha-panel-dev-info.js");
       break;
 
-    case 'dev-mqtt':
-      imported = import(/* webpackChunkName: "panel-dev-mqtt" */ '../panels/dev-mqtt/ha-panel-dev-mqtt.js');
+    case "dev-mqtt":
+      imported = import(/* webpackChunkName: "panel-dev-mqtt" */ "../panels/dev-mqtt/ha-panel-dev-mqtt.js");
       break;
 
-    case 'dev-service':
-      imported = import(/* webpackChunkName: "panel-dev-service" */ '../panels/dev-service/ha-panel-dev-service.js');
+    case "dev-service":
+      imported = import(/* webpackChunkName: "panel-dev-service" */ "../panels/dev-service/ha-panel-dev-service.js");
       break;
 
-    case 'dev-state':
-      imported = import(/* webpackChunkName: "panel-dev-state" */ '../panels/dev-state/ha-panel-dev-state.js');
+    case "dev-state":
+      imported = import(/* webpackChunkName: "panel-dev-state" */ "../panels/dev-state/ha-panel-dev-state.js");
       break;
 
-    case 'dev-template':
-      imported = import(/* webpackChunkName: "panel-dev-template" */ '../panels/dev-template/ha-panel-dev-template.js');
+    case "dev-template":
+      imported = import(/* webpackChunkName: "panel-dev-template" */ "../panels/dev-template/ha-panel-dev-template.js");
       break;
 
-    case 'lovelace':
-      imported = import(/* webpackChunkName: "panel-lovelace" */ '../panels/lovelace/ha-panel-lovelace.js');
+    case "lovelace":
+      imported = import(/* webpackChunkName: "panel-lovelace" */ "../panels/lovelace/ha-panel-lovelace.js");
       break;
 
-    case 'history':
-      imported = import(/* webpackChunkName: "panel-history" */ '../panels/history/ha-panel-history.js');
+    case "history":
+      imported = import(/* webpackChunkName: "panel-history" */ "../panels/history/ha-panel-history.js");
       break;
 
-    case 'iframe':
-      imported = import(/* webpackChunkName: "panel-iframe" */ '../panels/iframe/ha-panel-iframe.js');
+    case "iframe":
+      imported = import(/* webpackChunkName: "panel-iframe" */ "../panels/iframe/ha-panel-iframe.js");
       break;
 
-    case 'kiosk':
-      imported = import(/* webpackChunkName: "panel-kiosk" */ '../panels/kiosk/ha-panel-kiosk.js');
+    case "kiosk":
+      imported = import(/* webpackChunkName: "panel-kiosk" */ "../panels/kiosk/ha-panel-kiosk.js");
       break;
 
-    case 'logbook':
-      imported = import(/* webpackChunkName: "panel-logbook" */ '../panels/logbook/ha-panel-logbook.js');
+    case "logbook":
+      imported = import(/* webpackChunkName: "panel-logbook" */ "../panels/logbook/ha-panel-logbook.js");
       break;
 
-    case 'mailbox':
-      imported = import(/* webpackChunkName: "panel-mailbox" */ '../panels/mailbox/ha-panel-mailbox.js');
+    case "mailbox":
+      imported = import(/* webpackChunkName: "panel-mailbox" */ "../panels/mailbox/ha-panel-mailbox.js");
       break;
 
-    case 'map':
-      imported = import(/* webpackChunkName: "panel-map" */ '../panels/map/ha-panel-map.js');
+    case "map":
+      imported = import(/* webpackChunkName: "panel-map" */ "../panels/map/ha-panel-map.js");
       break;
 
-    case 'profile':
-      imported = import(/* webpackChunkName: "panel-profile" */ '../panels/profile/ha-panel-profile.js');
+    case "profile":
+      imported = import(/* webpackChunkName: "panel-profile" */ "../panels/profile/ha-panel-profile.js");
       break;
 
-    case 'shopping-list':
-      imported = import(/* webpackChunkName: "panel-shopping-list" */ '../panels/shopping-list/ha-panel-shopping-list.js');
+    case "shopping-list":
+      imported = import(/* webpackChunkName: "panel-shopping-list" */ "../panels/shopping-list/ha-panel-shopping-list.js");
       break;
 
-    case 'calendar':
-      imported = import(/* webpackChunkName: "panel-calendar" */ '../panels/calendar/ha-panel-calendar.js');
+    case "calendar":
+      imported = import(/* webpackChunkName: "panel-calendar" */ "../panels/calendar/ha-panel-calendar.js");
       break;
 
     default:
@@ -134,34 +134,34 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-        observer: 'updateAttributes',
+        observer: "updateAttributes",
       },
 
       narrow: {
         type: Boolean,
         value: false,
-        observer: 'updateAttributes',
+        observer: "updateAttributes",
       },
 
       showMenu: {
         type: Boolean,
         value: false,
-        observer: 'updateAttributes',
+        observer: "updateAttributes",
       },
       route: Object,
       routeData: Object,
       routeTail: {
         type: Object,
-        observer: 'updateAttributes',
+        observer: "updateAttributes",
       },
       _state: {
         type: String,
-        value: 'loading',
+        value: "loading",
       },
       panel: {
         type: Object,
-        computed: 'computeCurrentPanel(hass)',
-        observer: 'panelChanged',
+        computed: "computeCurrentPanel(hass)",
+        observer: "panelChanged",
       },
     };
   }
@@ -174,32 +174,40 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
       return;
     }
 
-    this._state = 'loading';
+    this._state = "loading";
 
     let loadingProm;
     if (panel.url) {
-      loadingProm = new Promise((resolve, reject) => importHref(panel.url, resolve, reject));
+      loadingProm = new Promise((resolve, reject) =>
+        importHref(panel.url, resolve, reject)
+      );
     } else {
       loadingProm = ensureLoaded(panel.component_name);
     }
 
     if (loadingProm === null) {
-      this._state = 'error';
+      this._state = "error";
       return;
     }
 
     loadingProm.then(
       () => {
-        dynamicContentUpdater(this.$.panel, 'ha-panel-' + panel.component_name, {
-          hass: this.hass,
-          narrow: this.narrow,
-          showMenu: this.showMenu,
-          route: this.routeTail,
-          panel: panel,
-        });
-        this._state = 'loaded';
+        dynamicContentUpdater(
+          this.$.panel,
+          "ha-panel-" + panel.component_name,
+          {
+            hass: this.hass,
+            narrow: this.narrow,
+            showMenu: this.showMenu,
+            route: this.routeTail,
+            panel: panel,
+          }
+        );
+        this._state = "loaded";
       },
-      () => { this._state = 'error'; },
+      () => {
+        this._state = "error";
+      }
     );
   }
 
@@ -221,4 +229,4 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
   }
 }
 
-customElements.define('partial-panel-resolver', PartialPanelResolver);
+customElements.define("partial-panel-resolver", PartialPanelResolver);

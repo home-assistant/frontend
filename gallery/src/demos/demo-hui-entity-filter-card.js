@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'Basic',
+    heading: "Basic",
     config: `
 - type: entity-filter
   entities:
@@ -18,10 +18,10 @@ const CONFIGS = [
   state_filter:
     - "on"
     - not_home
-    `
+    `,
   },
   {
-    heading: 'With card config',
+    heading: "With card config",
     config: `
 - type: entity-filter
   entities:
@@ -37,10 +37,10 @@ const CONFIGS = [
   card:
     type: glance
     show_state: false
-    `
+    `,
   },
   {
-    heading: 'Showing single entity conditionally',
+    heading: "Showing single entity conditionally",
     config: `
 - type: entity-filter
   entities:
@@ -50,8 +50,8 @@ const CONFIGS = [
   card:
     type: media-control
     entity: media_player.lounge_room
-    `
-  }
+    `,
+  },
 ];
 
 class DemoFilter extends PolymerElement {
@@ -65,10 +65,10 @@ class DemoFilter extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-entity-filter-card', DemoFilter);
+customElements.define("demo-hui-entity-filter-card", DemoFilter);

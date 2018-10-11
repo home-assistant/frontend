@@ -1,21 +1,21 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-tooltip/paper-tooltip.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-tooltip/paper-tooltip.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/entity/ha-state-icon.js';
-import '../../../layouts/hass-subpage.js';
-import '../../../resources/ha-style.js';
+import "../../../components/entity/ha-state-icon.js";
+import "../../../layouts/hass-subpage.js";
+import "../../../resources/ha-style.js";
 
-import '../ha-config-section.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
+import "../ha-config-section.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
 
 let registeredDialog = false;
 
@@ -23,8 +23,9 @@ let registeredDialog = false;
  * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
-class HaConfigManagerDashboard extends
-  LocalizeMixin(EventsMixin(PolymerElement)) {
+class HaConfigManagerDashboard extends LocalizeMixin(
+  EventsMixin(PolymerElement)
+) {
   static get template() {
     return html`
   <style include="iron-flex ha-style">
@@ -149,27 +150,27 @@ class HaConfigManagerDashboard extends
 
     if (!registeredDialog) {
       registeredDialog = true;
-      this.fire('register-dialog', {
-        dialogShowEvent: 'show-config-flow',
-        dialogTag: 'ha-config-flow',
-        dialogImport: () => import('./ha-config-flow.js'),
+      this.fire("register-dialog", {
+        dialogShowEvent: "show-config-flow",
+        dialogTag: "ha-config-flow",
+        dialogImport: () => import("./ha-config-flow.js"),
       });
     }
   }
 
   _createFlow(ev) {
-    this.fire('show-config-flow', {
+    this.fire("show-config-flow", {
       hass: this.hass,
       newFlowForHandler: ev.model.item,
-      dialogClosedCallback: () => this.fire('hass-reload-entries'),
+      dialogClosedCallback: () => this.fire("hass-reload-entries"),
     });
   }
 
   _continueFlow(ev) {
-    this.fire('show-config-flow', {
+    this.fire("show-config-flow", {
       hass: this.hass,
       continueFlowId: ev.model.item.flow_id,
-      dialogClosedCallback: () => this.fire('hass-reload-entries'),
+      dialogClosedCallback: () => this.fire("hass-reload-entries"),
     });
   }
 
@@ -183,7 +184,10 @@ class HaConfigManagerDashboard extends
     }
     const states = [];
     entities.forEach((entity) => {
-      if (entity.config_entry_id === configEntry.entry_id && entity.entity_id in hass.states) {
+      if (
+        entity.config_entry_id === configEntry.entry_id &&
+        entity.entity_id in hass.states
+      ) {
         states.push(hass.states[entity.entity_id]);
       }
     });
@@ -195,8 +199,8 @@ class HaConfigManagerDashboard extends
   }
 
   _handleMoreInfo(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
+    this.fire("hass-more-info", { entityId: ev.model.item.entity_id });
   }
 }
 
-customElements.define('ha-config-entries-dashboard', HaConfigManagerDashboard);
+customElements.define("ha-config-entries-dashboard", HaConfigManagerDashboard);

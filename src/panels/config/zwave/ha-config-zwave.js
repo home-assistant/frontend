@@ -1,35 +1,35 @@
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/buttons/ha-call-service-button.js';
-import '../../../components/ha-menu-button.js';
-import '../../../components/ha-service-description.js';
-import '../../../layouts/ha-app-layout.js';
-import '../../../resources/ha-style.js';
+import "../../../components/buttons/ha-call-service-button.js";
+import "../../../components/ha-menu-button.js";
+import "../../../components/ha-service-description.js";
+import "../../../layouts/ha-app-layout.js";
+import "../../../resources/ha-style.js";
 
-import '../ha-config-section.js';
-import '../ha-form-style.js';
-import './zwave-groups.js';
-import './zwave-log.js';
-import './zwave-network.js';
-import './zwave-node-config.js';
-import './zwave-usercodes.js';
-import './zwave-values.js';
-import './zwave-node-protection.js';
+import "../ha-config-section.js";
+import "../ha-form-style.js";
+import "./zwave-groups.js";
+import "./zwave-log.js";
+import "./zwave-network.js";
+import "./zwave-node-config.js";
+import "./zwave-usercodes.js";
+import "./zwave-values.js";
+import "./zwave-node-protection.js";
 
-import sortByName from '../../../common/entity/states_sort_by_name.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import computeStateDomain from '../../../common/entity/compute_state_domain.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import sortByName from "../../../common/entity/states_sort_by_name.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import computeStateDomain from "../../../common/entity/compute_state_domain.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -326,29 +326,29 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       nodes: {
         type: Array,
-        computed: 'computeNodes(hass)'
+        computed: "computeNodes(hass)",
       },
 
       selectedNode: {
         type: Number,
         value: -1,
-        observer: 'selectedNodeChanged'
+        observer: "selectedNodeChanged",
       },
 
       config: {
         type: Array,
-        value: () => []
+        value: () => [],
       },
 
       entities: {
         type: Array,
-        computed: 'computeEntities(selectedNode)',
+        computed: "computeEntities(selectedNode)",
       },
 
       selectedEntity: {
         type: Number,
         value: -1,
-        observer: 'selectedEntityChanged',
+        observer: "selectedEntityChanged",
       },
 
       values: {
@@ -361,7 +361,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       userCodes: {
         type: Array,
-        value: () => []
+        value: () => [],
       },
 
       hasNodeUserCodes: {
@@ -383,7 +383,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       _protection: {
         type: Array,
-        value: () => []
+        value: () => [],
       },
 
       _protectionNode: {
@@ -395,19 +395,21 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
-    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+    this.addEventListener("hass-service-called", (ev) =>
+      this.serviceCalled(ev)
+    );
   }
 
   serviceCalled(ev) {
-    if ((ev.detail.success) && (ev.detail.service === 'set_poll_intensity')) {
+    if (ev.detail.success && ev.detail.service === "set_poll_intensity") {
       this._saveEntity();
     }
   }
 
   computeNodes(hass) {
     return Object.keys(hass.states)
-      .map(key => hass.states[key])
-      .filter(ent => (ent.entity_id).match('zwave[.]'))
+      .map((key) => hass.states[key])
+      .filter((ent) => ent.entity_id.match("zwave[.]"))
       .sort(sortByName);
   }
 
@@ -416,15 +418,17 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
     const nodeid = this.nodes[this.selectedNode].attributes.node_id;
     const hass = this.hass;
     return Object.keys(this.hass.states)
-      .map(key => hass.states[key])
+      .map((key) => hass.states[key])
       .filter((ent) => {
         if (ent.attributes.node_id === undefined) {
           return false;
         }
-        return (!ent.attributes.hidden
-                && 'node_id' in ent.attributes
-                && ent.attributes.node_id === nodeid
-                && (!(ent.entity_id).match('zwave[.]')));
+        return (
+          !ent.attributes.hidden &&
+          "node_id" in ent.attributes &&
+          ent.attributes.node_id === nodeid &&
+          !ent.entity_id.match("zwave[.]")
+        );
       })
       .sort(sortByName);
   }
@@ -433,77 +437,115 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (selectedNode === -1) return;
     this.selectedEntity = -1;
 
-    this.hass.callApi('GET', `zwave/config/${this.nodes[selectedNode].attributes.node_id}`).then((configs) => {
-      this.config = this._objToArray(configs);
-    });
+    this.hass
+      .callApi(
+        "GET",
+        `zwave/config/${this.nodes[selectedNode].attributes.node_id}`
+      )
+      .then((configs) => {
+        this.config = this._objToArray(configs);
+      });
 
-    this.hass.callApi('GET', `zwave/values/${this.nodes[selectedNode].attributes.node_id}`).then((values) => {
-      this.values = this._objToArray(values);
-    });
+    this.hass
+      .callApi(
+        "GET",
+        `zwave/values/${this.nodes[selectedNode].attributes.node_id}`
+      )
+      .then((values) => {
+        this.values = this._objToArray(values);
+      });
 
-    this.hass.callApi('GET', `zwave/groups/${this.nodes[selectedNode].attributes.node_id}`).then((groups) => {
-      this.groups = this._objToArray(groups);
-    });
+    this.hass
+      .callApi(
+        "GET",
+        `zwave/groups/${this.nodes[selectedNode].attributes.node_id}`
+      )
+      .then((groups) => {
+        this.groups = this._objToArray(groups);
+      });
 
     this.hasNodeUserCodes = false;
-    this.notifyPath('hasNodeUserCodes');
-    this.hass.callApi('GET', `zwave/usercodes/${this.nodes[selectedNode].attributes.node_id}`).then((usercodes) => {
-      this.userCodes = this._objToArray(usercodes);
-      this.hasNodeUserCodes = this.userCodes.length > 0;
-      this.notifyPath('hasNodeUserCodes');
-    });
-    this.hass.callApi('GET', `zwave/protection/${this.nodes[selectedNode].attributes.node_id}`).then((protections) => {
-      this._protection = this._objToArray(protections);
-      if (this._protection) {
-        if (this._protection.length === 0) {
-          return;
+    this.notifyPath("hasNodeUserCodes");
+    this.hass
+      .callApi(
+        "GET",
+        `zwave/usercodes/${this.nodes[selectedNode].attributes.node_id}`
+      )
+      .then((usercodes) => {
+        this.userCodes = this._objToArray(usercodes);
+        this.hasNodeUserCodes = this.userCodes.length > 0;
+        this.notifyPath("hasNodeUserCodes");
+      });
+    this.hass
+      .callApi(
+        "GET",
+        `zwave/protection/${this.nodes[selectedNode].attributes.node_id}`
+      )
+      .then((protections) => {
+        this._protection = this._objToArray(protections);
+        if (this._protection) {
+          if (this._protection.length === 0) {
+            return;
+          }
+          this._protectionNode = true;
         }
-        this._protectionNode = true;
-      }
-    });
+      });
   }
 
   selectedEntityChanged(selectedEntity) {
     if (selectedEntity === -1) return;
-    this.hass.callApi('GET', `zwave/values/${this.nodes[this.selectedNode].attributes.node_id}`).then((values) => {
-      this.values = this._objToArray(values);
-    });
+    this.hass
+      .callApi(
+        "GET",
+        `zwave/values/${this.nodes[this.selectedNode].attributes.node_id}`
+      )
+      .then((values) => {
+        this.values = this._objToArray(values);
+      });
 
     const valueId = this.entities[selectedEntity].attributes.value_id;
-    const valueData = this.values.find(obj => obj.key === valueId);
+    const valueData = this.values.find((obj) => obj.key === valueId);
     const valueIndex = this.values.indexOf(valueData);
-    this.hass.callApi('GET', `config/zwave/device_config/${this.entities[selectedEntity].entity_id}`)
+    this.hass
+      .callApi(
+        "GET",
+        `config/zwave/device_config/${this.entities[selectedEntity].entity_id}`
+      )
       .then((data) => {
         this.setProperties({
           entityIgnored: data.ignored || false,
-          entityPollingIntensity: this.values[valueIndex].value.poll_intensity
+          entityPollingIntensity: this.values[valueIndex].value.poll_intensity,
         });
       })
       .catch(() => {
         this.setProperties({
           entityIgnored: false,
-          entityPollingIntensity: this.values[valueIndex].value.poll_intensity
+          entityPollingIntensity: this.values[valueIndex].value.poll_intensity,
         });
       });
   }
 
   computeSelectCaption(stateObj) {
-    return computeStateName(stateObj) + ' (Node:'
-      + stateObj.attributes.node_id + ' '
-      + stateObj.attributes.query_stage + ')';
+    return (
+      computeStateName(stateObj) +
+      " (Node:" +
+      stateObj.attributes.node_id +
+      " " +
+      stateObj.attributes.query_stage +
+      ")"
+    );
   }
 
   computeSelectCaptionEnt(stateObj) {
-    return (computeStateDomain(stateObj) + '.'
-            + computeStateName(stateObj));
+    return computeStateDomain(stateObj) + "." + computeStateName(stateObj);
   }
 
   computeIsNodeSelected() {
-    return (this.nodes && this.selectedNode !== -1);
+    return this.nodes && this.selectedNode !== -1;
   }
 
   computeIsEntitySelected(selectedEntity) {
-    return (selectedEntity === -1);
+    return selectedEntity === -1;
   }
 
   computeNodeServiceData(selectedNode) {
@@ -513,7 +555,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeHealNodeServiceData(selectedNode) {
     return {
       node_id: this.nodes[selectedNode].attributes.node_id,
-      return_routes: true
+      return_routes: true,
     };
   }
 
@@ -532,11 +574,15 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _nodeMoreInfo() {
-    this.fire('hass-more-info', { entityId: this.nodes[this.selectedNode].entity_id });
+    this.fire("hass-more-info", {
+      entityId: this.nodes[this.selectedNode].entity_id,
+    });
   }
 
   _entityMoreInfo() {
-    this.fire('hass-more-info', { entityId: this.entities[this.selectedEntity].entity_id });
+    this.fire("hass-more-info", {
+      entityId: this.entities[this.selectedEntity].entity_id,
+    });
   }
 
   _saveEntity() {
@@ -544,7 +590,13 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
       ignored: this.entityIgnored,
       polling_intensity: parseInt(this.entityPollingIntensity),
     };
-    return this.hass.callApi('POST', `config/zwave/device_config/${this.entities[this.selectedEntity].entity_id}`, data);
+    return this.hass.callApi(
+      "POST",
+      `config/zwave/device_config/${
+        this.entities[this.selectedEntity].entity_id
+      }`,
+      data
+    );
   }
 
   toggleHelp() {
@@ -567,4 +619,4 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 }
 
-customElements.define('ha-config-zwave', HaConfigZwave);
+customElements.define("ha-config-zwave", HaConfigZwave);

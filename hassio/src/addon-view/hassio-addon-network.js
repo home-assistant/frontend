@@ -1,11 +1,11 @@
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/components/buttons/ha-call-api-button.js';
-import '../../../src/resources/ha-style.js';
-import EventsMixin from '../../../src/mixins/events-mixin.js';
+import "../../../src/components/buttons/ha-call-api-button.js";
+import "../../../src/resources/ha-style.js";
+import EventsMixin from "../../../src/mixins/events-mixin.js";
 
 class HassioAddonNetwork extends EventsMixin(PolymerElement) {
   static get template() {
@@ -64,7 +64,7 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
       config: Object,
       addon: {
         type: Object,
-        observer: 'addonChanged',
+        observer: "addonChanged",
       },
       error: String,
       resetData: {
@@ -80,29 +80,36 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
     if (!addon) return;
 
     const network = addon.network || {};
-    const items = Object.keys(network).map(key => ({
+    const items = Object.keys(network).map((key) => ({
       container: key,
-      host: network[key]
+      host: network[key],
     }));
-    this.config = items.sort(function (el1, el2) { return el1.host - el2.host; });
+    this.config = items.sort(function(el1, el2) {
+      return el1.host - el2.host;
+    });
   }
 
   saveTapped() {
     this.error = null;
     const data = {};
-    this.config.forEach(function (item) {
+    this.config.forEach(function(item) {
       data[item.container] = parseInt(item.host);
     });
     const path = `hassio/addons/${this.addonSlug}/options`;
 
-    this.hass.callApi('post', path, {
-      network: data
-    }).then(() => {
-      this.fire('hass-api-called', { success: true, path: path });
-    }, (resp) => {
-      this.error = resp.body.message;
-    });
+    this.hass
+      .callApi("post", path, {
+        network: data,
+      })
+      .then(
+        () => {
+          this.fire("hass-api-called", { success: true, path: path });
+        },
+        (resp) => {
+          this.error = resp.body.message;
+        }
+      );
   }
 }
 
-customElements.define('hassio-addon-network', HassioAddonNetwork);
+customElements.define("hassio-addon-network", HassioAddonNetwork);

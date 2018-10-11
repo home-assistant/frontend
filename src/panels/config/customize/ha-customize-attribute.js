@@ -1,14 +1,14 @@
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import hassAttributeUtil from '../../../util/hass-attributes-util.js';
-import '../ha-form-style.js';
-import './types/ha-customize-array.js';
-import './types/ha-customize-boolean.js';
-import './types/ha-customize-icon.js';
-import './types/ha-customize-key-value.js';
-import './types/ha-customize-string.js';
+import hassAttributeUtil from "../../../util/hass-attributes-util.js";
+import "../ha-form-style.js";
+import "./types/ha-customize-array.js";
+import "./types/ha-customize-boolean.js";
+import "./types/ha-customize-icon.js";
+import "./types/ha-customize-key-value.js";
+import "./types/ha-customize-string.js";
 
 class HaCustomizeAttribute extends PolymerElement {
   static get template() {
@@ -37,8 +37,8 @@ class HaCustomizeAttribute extends PolymerElement {
       item: {
         type: Object,
         notify: true,
-        observer: 'itemObserver',
-      }
+        observer: "itemObserver",
+      },
     };
   }
 
@@ -51,7 +51,7 @@ class HaCustomizeAttribute extends PolymerElement {
   }
 
   getIcon(secondary) {
-    return secondary ? 'hass:pencil' : 'hass:close';
+    return secondary ? "hass:pencil" : "hass:close";
   }
 
   itemObserver(item) {
@@ -67,8 +67,8 @@ class HaCustomizeAttribute extends PolymerElement {
       // Creating an element with upper case works fine in Chrome, but in FF it doesn't immediately
       // become a defined Custom Element. Polymer does that in some later pass.
       this.$.child = child = document.createElement(tag.toLowerCase());
-      child.className = 'form-control';
-      child.addEventListener('item-changed', () => {
+      child.className = "form-control";
+      child.addEventListener("item-changed", () => {
         this.item = Object.assign({}, child.item);
       });
     }
@@ -78,4 +78,4 @@ class HaCustomizeAttribute extends PolymerElement {
     }
   }
 }
-customElements.define('ha-customize-attribute', HaCustomizeAttribute);
+customElements.define("ha-customize-attribute", HaCustomizeAttribute);

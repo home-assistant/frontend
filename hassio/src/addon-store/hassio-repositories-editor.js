@@ -1,12 +1,12 @@
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/components/buttons/ha-call-api-button.js';
-import '../components/hassio-card-content.js';
-import '../resources/hassio-style.js';
+import "../../../src/components/buttons/ha-call-api-button.js";
+import "../components/hassio-card-content.js";
+import "../resources/hassio-style.js";
 
 class HassioRepositoriesEditor extends PolymerElement {
   static get template() {
@@ -60,7 +60,7 @@ class HassioRepositoriesEditor extends PolymerElement {
       hass: Object,
       repos: {
         type: Array,
-        observer: 'reposChanged',
+        observer: "reposChanged",
       },
       repoList: Array,
       repoUrl: String,
@@ -68,8 +68,10 @@ class HassioRepositoriesEditor extends PolymerElement {
   }
 
   reposChanged(repos) {
-    this.repoList = repos.filter(repo => repo.slug !== 'core' && repo.slug !== 'local');
-    this.repoUrl = '';
+    this.repoList = repos.filter(
+      (repo) => repo.slug !== "core" && repo.slug !== "local"
+    );
+    this.repoUrl = "";
   }
 
   sortRepos(a, b) {
@@ -77,15 +79,17 @@ class HassioRepositoriesEditor extends PolymerElement {
   }
 
   computeRemoveRepoData(repoList, url) {
-    const list = repoList.filter(repo => repo.url !== url).map(repo => repo.url);
+    const list = repoList
+      .filter((repo) => repo.url !== url)
+      .map((repo) => repo.url);
     return { addons_repositories: list };
   }
 
   computeAddRepoData(repoList, url) {
-    const list = repoList ? repoList.map(repo => repo.url) : [];
+    const list = repoList ? repoList.map((repo) => repo.url) : [];
     list.push(url);
     return { addons_repositories: list };
   }
 }
 
-customElements.define('hassio-repositories-editor', HassioRepositoriesEditor);
+customElements.define("hassio-repositories-editor", HassioRepositoriesEditor);

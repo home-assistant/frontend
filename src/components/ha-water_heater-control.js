@@ -1,9 +1,9 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../mixins/events-mixin.js';
+import EventsMixin from "../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -55,7 +55,7 @@ class HaWaterHeaterControl extends EventsMixin(PolymerElement) {
     return {
       value: {
         type: Number,
-        observer: 'valueChanged'
+        observer: "valueChanged",
       },
       units: {
         type: String,
@@ -74,7 +74,7 @@ class HaWaterHeaterControl extends EventsMixin(PolymerElement) {
   }
 
   temperatureStateInFlux(inFlux) {
-    this.$.target_temperature.classList.toggle('in-flux', inFlux);
+    this.$.target_temperature.classList.toggle("in-flux", inFlux);
   }
 
   incrementValue() {
@@ -119,7 +119,7 @@ class HaWaterHeaterControl extends EventsMixin(PolymerElement) {
       window.setTimeout(() => {
         const now = Date.now();
         if (now - this.last_changed >= 2000) {
-          this.fire('change');
+          this.fire("change");
           this.temperatureStateInFlux(false);
           this.last_changed = null;
         }
@@ -128,4 +128,4 @@ class HaWaterHeaterControl extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-water_heater-control', HaWaterHeaterControl);
+customElements.define("ha-water_heater-control", HaWaterHeaterControl);

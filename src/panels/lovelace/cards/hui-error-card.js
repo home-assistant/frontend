@@ -1,5 +1,5 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HuiErrorCard extends PolymerElement {
   static get template() {
@@ -37,4 +37,4 @@ class HuiErrorCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-error-card', HuiErrorCard);
+customElements.define("hui-error-card", HuiErrorCard);

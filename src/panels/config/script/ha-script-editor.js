@@ -1,20 +1,20 @@
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-fab/paper-fab.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { h, render } from 'preact';
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-fab/paper-fab.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { h, render } from "preact";
 
-import '../../../layouts/ha-app-layout.js';
+import "../../../layouts/ha-app-layout.js";
 
-import Script from '../js/script.js';
-import unmountPreact from '../../../common/preact/unmount.js';
+import Script from "../js/script.js";
+import unmountPreact from "../../../common/preact/unmount.js";
 
-import computeObjectId from '../../../common/entity/compute_object_id.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import computeObjectId from "../../../common/entity/compute_object_id.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);
@@ -24,8 +24,7 @@ function ScriptEditor(mountEl, props, mergeEl) {
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
-class HaScriptEditor extends
-  LocalizeMixin(NavigateMixin(PolymerElement)) {
+class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">
@@ -133,22 +132,22 @@ class HaScriptEditor extends
 
       script: {
         type: Object,
-        observer: 'scriptChanged',
+        observer: "scriptChanged",
       },
 
       creatingNew: {
         type: Boolean,
-        observer: 'creatingNewChanged',
+        observer: "creatingNewChanged",
       },
 
       name: {
         type: String,
-        computed: 'computeName(script)'
+        computed: "computeName(script)",
       },
 
       isWide: {
         type: Boolean,
-        observer: '_updateComponent',
+        observer: "_updateComponent",
       },
 
       _rendered: {
@@ -194,22 +193,29 @@ class HaScriptEditor extends
     if (oldVal && oldVal.entity_id === newVal.entity_id) {
       return;
     }
-    this.hass.callApi('get', 'config/script/config/' + computeObjectId(newVal.entity_id))
-      .then((config) => {
-        // Normalize data: ensure sequence is a list
-        // Happens when people copy paste their scripts into the config
-        var value = config.sequence;
-        if (value && !Array.isArray(value)) {
-          config.sequence = [value];
-        }
+    this.hass
+      .callApi(
+        "get",
+        "config/script/config/" + computeObjectId(newVal.entity_id)
+      )
+      .then(
+        (config) => {
+          // Normalize data: ensure sequence is a list
+          // Happens when people copy paste their scripts into the config
+          var value = config.sequence;
+          if (value && !Array.isArray(value)) {
+            config.sequence = [value];
+          }
 
-        this.dirty = false;
-        this.config = config;
-        this._updateComponent();
-      }, () => {
-        alert('Only scripts inside scripts.yaml are editable.');
-        history.back();
-      });
+          this.dirty = false;
+          this.config = config;
+          this._updateComponent();
+        },
+        () => {
+          alert("Only scripts inside scripts.yaml are editable.");
+          history.back();
+        }
+      );
   }
 
   creatingNewChanged(newVal) {
@@ -218,18 +224,18 @@ class HaScriptEditor extends
     }
     this.dirty = false;
     this.config = {
-      alias: 'New Script',
-      sequence: [
-        { service: '', data: {} },
-      ],
+      alias: "New Script",
+      sequence: [{ service: "", data: {} }],
     };
     this._updateComponent();
   }
 
   backTapped() {
-    if (this.dirty
-        // eslint-disable-next-line
-        && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
+    if (
+      this.dirty &&
+      // eslint-disable-next-line
+      !confirm("You have unsaved changes. Are you sure you want to leave?")
+    ) {
       return;
     }
     history.back();
@@ -239,30 +245,38 @@ class HaScriptEditor extends
     if (this._renderScheduled || !this.hass || !this.config) return;
     this._renderScheduled = true;
     Promise.resolve().then(() => {
-      this._rendered = ScriptEditor(this.$.root, {
-        script: this.config,
-        onChange: this.configChanged,
-        isWide: this.isWide,
-        hass: this.hass,
-        localize: this.localize,
-      }, this._rendered);
+      this._rendered = ScriptEditor(
+        this.$.root,
+        {
+          script: this.config,
+          onChange: this.configChanged,
+          isWide: this.isWide,
+          hass: this.hass,
+          localize: this.localize,
+        },
+        this._rendered
+      );
       this._renderScheduled = false;
     });
   }
 
   saveScript() {
     var id = this.creatingNew
-      ? '' + Date.now() : computeObjectId(this.script.entity_id);
-    this.hass.callApi('post', 'config/script/config/' + id, this.config).then(() => {
-      this.dirty = false;
+      ? "" + Date.now()
+      : computeObjectId(this.script.entity_id);
+    this.hass.callApi("post", "config/script/config/" + id, this.config).then(
+      () => {
+        this.dirty = false;
 
-      if (this.creatingNew) {
-        this.navigate(`/config/script/edit/${id}`, true);
+        if (this.creatingNew) {
+          this.navigate(`/config/script/edit/${id}`, true);
+        }
+      },
+      (errors) => {
+        this.errors = errors.body.message;
+        throw errors;
       }
-    }, (errors) => {
-      this.errors = errors.body.message;
-      throw errors;
-    });
+    );
   }
 
   computeName(script) {
@@ -270,4 +284,4 @@ class HaScriptEditor extends
   }
 }
 
-customElements.define('ha-script-editor', HaScriptEditor);
+customElements.define("ha-script-editor", HaScriptEditor);

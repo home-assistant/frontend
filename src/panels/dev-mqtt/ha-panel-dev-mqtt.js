@@ -1,16 +1,16 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-input/paper-textarea.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
-import '../../util/app-localstorage-document.js';
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
+import "../../util/app-localstorage-document.js";
 
 class HaPanelDevMqtt extends PolymerElement {
   static get template() {
@@ -89,11 +89,11 @@ class HaPanelDevMqtt extends PolymerElement {
   }
 
   _publish() {
-    this.hass.callService('mqtt', 'publish', {
+    this.hass.callService("mqtt", "publish", {
       topic: this.topic,
       payload_template: this.payload,
     });
   }
 }
 
-customElements.define('ha-panel-dev-mqtt', HaPanelDevMqtt);
+customElements.define("ha-panel-dev-mqtt", HaPanelDevMqtt);

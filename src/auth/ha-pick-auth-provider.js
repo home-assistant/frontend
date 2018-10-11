@@ -1,15 +1,17 @@
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../mixins/events-mixin.js';
-import LocalizeLiteMixin from '../mixins/localize-lite-mixin.js';
+import EventsMixin from "../mixins/events-mixin.js";
+import LocalizeLiteMixin from "../mixins/localize-lite-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
  */
-class HaPickAuthProvider extends EventsMixin(LocalizeLiteMixin(PolymerElement)) {
+class HaPickAuthProvider extends EventsMixin(
+  LocalizeLiteMixin(PolymerElement)
+) {
   static get template() {
     return html`
     <style>
@@ -34,18 +36,18 @@ class HaPickAuthProvider extends EventsMixin(LocalizeLiteMixin(PolymerElement)) 
     return {
       _state: {
         type: String,
-        value: 'loading'
+        value: "loading",
       },
       authProviders: Array,
     };
   }
 
   _handlePick(ev) {
-    this.fire('pick', ev.model.item);
+    this.fire("pick", ev.model.item);
   }
 
   _equal(a, b) {
     return a === b;
   }
 }
-customElements.define('ha-pick-auth-provider', HaPickAuthProvider);
+customElements.define("ha-pick-auth-provider", HaPickAuthProvider);

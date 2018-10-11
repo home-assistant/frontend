@@ -1,7 +1,7 @@
-import { h, Component } from 'preact';
+import { h, Component } from "preact";
 
-import StateCondition from '../condition/state.js';
-import ConditionEdit from '../condition/condition_edit.js';
+import StateCondition from "../condition/state.js";
+import ConditionEdit from "../condition/condition_edit.js";
 
 export default class ConditionAction extends Component {
   // eslint-disable-next-line
@@ -19,6 +19,6 @@ export default class ConditionAction extends Component {
 }
 
 ConditionAction.defaultConfig = Object.assign(
-  { condition: 'state' },
-  StateCondition.defaultConfig,
+  { condition: "state" },
+  StateCondition.defaultConfig
 );

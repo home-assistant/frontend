@@ -1,8 +1,8 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeCardSize from '../common/compute-card-size.js';
-import createCardElement from '../common/create-card-element.js';
+import computeCardSize from "../common/compute-card-size.js";
+import createCardElement from "../common/create-card-element.js";
 
 class HuiVerticalStackCard extends PolymerElement {
   static get template() {
@@ -30,7 +30,7 @@ class HuiVerticalStackCard extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged'
+        observer: "_hassChanged",
       },
     };
   }
@@ -55,7 +55,7 @@ class HuiVerticalStackCard extends PolymerElement {
 
   setConfig(config) {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
-      throw new Error('Card config incorrect');
+      throw new Error("Card config incorrect");
     }
 
     this._config = config;
@@ -89,4 +89,4 @@ class HuiVerticalStackCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-vertical-stack-card', HuiVerticalStackCard);
+customElements.define("hui-vertical-stack-card", HuiVerticalStackCard);

@@ -1,19 +1,19 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-cover-tilt-controls.js';
-import '../../../components/ha-labeled-slider.js';
-import CoverEntity from '../../../util/cover-model.js';
+import "../../../components/ha-cover-tilt-controls.js";
+import "../../../components/ha-labeled-slider.js";
+import CoverEntity from "../../../util/cover-model.js";
 
-import attributeClassNames from '../../../common/entity/attribute_class_names';
-import featureClassNames from '../../../common/entity/feature_class_names';
+import attributeClassNames from "../../../common/entity/attribute_class_names";
+import featureClassNames from "../../../common/entity/feature_class_names";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 const FEATURE_CLASS_NAMES = {
-  128: 'has-set_tilt_position',
+  128: "has-set_tilt_position",
 };
 class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -71,14 +71,14 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'stateObjChanged',
+        observer: "stateObjChanged",
       },
       entityObj: {
         type: Object,
-        computed: 'computeEntityObj(hass, stateObj)',
+        computed: "computeEntityObj(hass, stateObj)",
       },
       coverPositionSliderValue: Number,
-      coverTiltPositionSliderValue: Number
+      coverTiltPositionSliderValue: Number,
     };
   }
 
@@ -97,10 +97,13 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
 
   computeClassNames(stateObj) {
     var classes = [
-      attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
+      attributeClassNames(stateObj, [
+        "current_position",
+        "current_tilt_position",
+      ]),
       featureClassNames(stateObj, FEATURE_CLASS_NAMES),
     ];
-    return classes.join(' ');
+    return classes.join(" ");
   }
 
   coverPositionSliderChanged(ev) {
@@ -112,4 +115,4 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('more-info-cover', MoreInfoCover);
+customElements.define("more-info-cover", MoreInfoCover);

@@ -1,12 +1,12 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../resources/ha-style.js';
+import "../../resources/ha-style.js";
 
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -100,18 +100,19 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     const platform = message.platform;
     const mp3 = this.$.mp3;
     if (platform.has_media) {
-      mp3.style.display = '';
+      mp3.style.display = "";
       this._showLoading(true);
       mp3.src = null;
       const url = `/api/mailbox/media/${platform.name}/${message.sha}`;
-      this.hass.fetchWithAuth(url)
+      this.hass
+        .fetchWithAuth(url)
         .then((response) => {
           if (response.ok) {
             return response.blob();
           }
           return Promise.reject({
             status: response.status,
-            statusText: response.statusText
+            statusText: response.statusText,
           });
         })
         .then((blob) => {
@@ -124,20 +125,23 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
           this._errorMsg = `Error loading audio: ${err.statusText}`;
         });
     } else {
-      mp3.style.display = 'none';
+      mp3.style.display = "none";
       this._showLoading(false);
     }
   }
 
   openDeleteDialog() {
-    if (confirm(this.localize('ui.panel.mailbox.delete_prompt'))) {
+    if (confirm(this.localize("ui.panel.mailbox.delete_prompt"))) {
       this.deleteSelected();
     }
   }
 
   deleteSelected() {
     const msg = this._currentMessage;
-    this.hass.callApi('DELETE', `mailbox/delete/${msg.platform.name}/${msg.sha}`);
+    this.hass.callApi(
+      "DELETE",
+      `mailbox/delete/${msg.platform.name}/${msg.sha}`
+    );
     this._dialogDone();
   }
 
@@ -164,12 +168,12 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     const delicon = this.$.delicon;
     if (displayed) {
       this._loading = true;
-      delicon.style.display = 'none';
+      delicon.style.display = "none";
     } else {
       const platform = this._currentMessage.platform;
       this._loading = false;
-      delicon.style.display = platform.can_delete ? '' : 'none';
+      delicon.style.display = platform.can_delete ? "" : "none";
     }
   }
 }
-customElements.define('ha-dialog-show-audio-message', HaDialogShowAudioMessage);
+customElements.define("ha-dialog-show-audio-message", HaDialogShowAudioMessage);

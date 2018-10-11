@@ -1,8 +1,8 @@
-import '@polymer/iron-icon/iron-icon.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-icon/iron-icon.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -106,66 +106,84 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object
+      stateObj: Object,
     };
   }
 
   constructor() {
     super();
     this.cardinalDirections = [
-      'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-      'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
+      "N",
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW",
+      "N",
     ];
     this.weatherIcons = {
-      'clear-night': 'hass:weather-night',
-      cloudy: 'hass:weather-cloudy',
-      fog: 'hass:weather-fog',
-      hail: 'hass:weather-hail',
-      lightning: 'hass:weather-lightning',
-      'lightning-rainy': 'hass:weather-lightning-rainy',
-      partlycloudy: 'hass:weather-partlycloudy',
-      pouring: 'hass:weather-pouring',
-      rainy: 'hass:weather-rainy',
-      snowy: 'hass:weather-snowy',
-      'snowy-rainy': 'hass:weather-snowy-rainy',
-      sunny: 'hass:weather-sunny',
-      windy: 'hass:weather-windy',
-      'windy-variant': 'hass:weather-windy-variant'
+      "clear-night": "hass:weather-night",
+      cloudy: "hass:weather-cloudy",
+      fog: "hass:weather-fog",
+      hail: "hass:weather-hail",
+      lightning: "hass:weather-lightning",
+      "lightning-rainy": "hass:weather-lightning-rainy",
+      partlycloudy: "hass:weather-partlycloudy",
+      pouring: "hass:weather-pouring",
+      rainy: "hass:weather-rainy",
+      snowy: "hass:weather-snowy",
+      "snowy-rainy": "hass:weather-snowy-rainy",
+      sunny: "hass:weather-sunny",
+      windy: "hass:weather-windy",
+      "windy-variant": "hass:weather-windy-variant",
     };
   }
 
   computeDateTime(data) {
     const date = new Date(data);
     const provider = this.stateObj.attributes.attribution;
-    if (provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
+    if (
+      provider === "Powered by Dark Sky" ||
+      provider === "Data provided by OpenWeatherMap"
+    ) {
       if (new Date().getDay() === date.getDay()) {
         return date.toLocaleTimeString(
           this.hass.selectedLanguage || this.hass.language,
-          { hour: 'numeric' }
+          { hour: "numeric" }
         );
       }
       return date.toLocaleDateString(
         this.hass.selectedLanguage || this.hass.language,
-        { weekday: 'long', hour: 'numeric' }
+        { weekday: "long", hour: "numeric" }
       );
     }
     return date.toLocaleDateString(
       this.hass.selectedLanguage || this.hass.language,
-      { weekday: 'long', month: 'short', day: 'numeric' }
+      { weekday: "long", month: "short", day: "numeric" }
     );
   }
 
   getUnit(measure) {
-    const lengthUnit = this.hass.config.unit_system.length || '';
+    const lengthUnit = this.hass.config.unit_system.length || "";
     switch (measure) {
-      case 'air_pressure':
-        return lengthUnit === 'km' ? 'hPa' : 'inHg';
-      case 'length':
+      case "air_pressure":
+        return lengthUnit === "km" ? "hPa" : "inHg";
+      case "length":
         return lengthUnit;
-      case 'precipitation':
-        return lengthUnit === 'km' ? 'mm' : 'in';
+      case "precipitation":
+        return lengthUnit === "km" ? "mm" : "in";
       default:
-        return this.hass.config.unit_system[measure] || '';
+        return this.hass.config.unit_system[measure] || "";
     }
   }
 
@@ -180,9 +198,11 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
   getWind(speed, bearing, localize) {
     if (bearing != null) {
       const cardinalDirection = this.windBearingToText(bearing);
-      return `${speed} ${this.getUnit('length')}/h (${localize(`ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`) || cardinalDirection})`;
+      return `${speed} ${this.getUnit("length")}/h (${localize(
+        `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
+      ) || cardinalDirection})`;
     }
-    return `${speed} ${this.getUnit('length')}/h`;
+    return `${speed} ${this.getUnit("length")}/h`;
   }
 
   getWeatherIcon(condition) {
@@ -190,8 +210,8 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
   }
 
   _showValue(item) {
-    return typeof item !== 'undefined' && item !== null;
+    return typeof item !== "undefined" && item !== null;
   }
 }
 
-customElements.define('more-info-weather', MoreInfoWeather);
+customElements.define("more-info-weather", MoreInfoWeather);

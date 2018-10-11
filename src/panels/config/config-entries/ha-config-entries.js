@@ -1,13 +1,13 @@
-import '@polymer/app-route/app-route.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import "@polymer/app-route/app-route.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
 
-import './ha-config-entries-dashboard.js';
-import './ha-config-entry-page.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import compare from '../../../common/string/compare.js';
+import "./ha-config-entries-dashboard.js";
+import "./ha-config-entry-page.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import compare from "../../../common/string/compare.js";
 
 class HaConfigEntries extends NavigateMixin(PolymerElement) {
   static get template() {
@@ -43,7 +43,7 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
 
       _configEntry: {
         type: Object,
-        computed: '_computeConfigEntry(_routeData, _entries)',
+        computed: "_computeConfigEntry(_routeData, _entries)",
       },
 
       /**
@@ -71,26 +71,29 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
 
       _routeData: Object,
       _routeTail: Object,
-
     };
   }
 
   ready() {
     super.ready();
     this._loadData();
-    this.addEventListener('hass-reload-entries', () => this._loadData());
+    this.addEventListener("hass-reload-entries", () => this._loadData());
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.hass.connection.subscribeEvents(() => {
-      this._debouncer = Debouncer.debounce(
-        this._debouncer,
-        timeOut.after(500),
-        () => this._loadData()
-      );
-    }, 'config_entry_discovered').then((unsub) => { this._unsubEvents = unsub; });
+    this.hass.connection
+      .subscribeEvents(() => {
+        this._debouncer = Debouncer.debounce(
+          this._debouncer,
+          timeOut.after(500),
+          () => this._loadData()
+        );
+      }, "config_entry_discovered")
+      .then((unsub) => {
+        this._unsubEvents = unsub;
+      });
   }
 
   disconnectedCallback() {
@@ -99,26 +102,42 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
   }
 
   _loadData() {
-    this.hass.callApi('get', 'config/config_entries/entry').then((entries) => {
-      this._entries = entries.sort((conf1, conf2) => compare(conf1.title, conf2.title));
+    this.hass.callApi("get", "config/config_entries/entry").then((entries) => {
+      this._entries = entries.sort((conf1, conf2) =>
+        compare(conf1.title, conf2.title)
+      );
     });
 
-    this.hass.callApi('get', 'config/config_entries/flow')
-      .then((progress) => { this._progress = progress; });
+    this.hass.callApi("get", "config/config_entries/flow").then((progress) => {
+      this._progress = progress;
+    });
 
-    this.hass.callApi('get', 'config/config_entries/flow_handlers')
-      .then((handlers) => { this._handlers = handlers; });
+    this.hass
+      .callApi("get", "config/config_entries/flow_handlers")
+      .then((handlers) => {
+        this._handlers = handlers;
+      });
 
-    this.hass.callWS({ type: 'config/entity_registry/list' })
-      .then((entities) => { this._entities = entities; });
+    this.hass
+      .callWS({ type: "config/entity_registry/list" })
+      .then((entities) => {
+        this._entities = entities;
+      });
 
-    this.hass.callWS({ type: 'config/device_registry/list' })
-      .then((devices) => { this._devices = devices; });
+    this.hass
+      .callWS({ type: "config/device_registry/list" })
+      .then((devices) => {
+        this._devices = devices;
+      });
   }
 
   _computeConfigEntry(routeData, entries) {
-    return !!entries && !!routeData && entries.find(ent => ent.entry_id === routeData.page);
+    return (
+      !!entries &&
+      !!routeData &&
+      entries.find((ent) => ent.entry_id === routeData.page)
+    );
   }
 }
 
-customElements.define('ha-config-entries', HaConfigEntries);
+customElements.define("ha-config-entries", HaConfigEntries);

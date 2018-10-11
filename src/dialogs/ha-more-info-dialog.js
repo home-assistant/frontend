@@ -1,17 +1,17 @@
-import '@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../resources/ha-style.js';
+import "../resources/ha-style.js";
 
-import './more-info/more-info-controls.js';
-import './more-info/more-info-settings.js';
+import "./more-info/more-info-controls.js";
+import "./more-info/more-info-settings.js";
 
-import computeStateDomain from '../common/entity/compute_state_domain';
-import isComponentLoaded from '../common/config/is_component_loaded.js';
+import computeStateDomain from "../common/entity/compute_state_domain";
+import isComponentLoaded from "../common/config/is_component_loaded.js";
 
-import DialogMixin from '../mixins/dialog-mixin.js';
+import DialogMixin from "../mixins/dialog-mixin.js";
 
 /*
  * @appliesMixin DialogMixin
@@ -87,14 +87,14 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
       hass: Object,
       stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass)',
-        observer: '_stateObjChanged',
+        computed: "_computeStateObj(hass)",
+        observer: "_stateObjChanged",
       },
 
       large: {
         type: Boolean,
         reflectToAttribute: true,
-        observer: '_largeChanged',
+        observer: "_largeChanged",
       },
 
       _dialogElement: Object,
@@ -106,22 +106,26 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
       },
 
       dataDomain: {
-        computed: '_computeDomain(stateObj)',
-        reflectToAttribute: true
+        computed: "_computeDomain(stateObj)",
+        reflectToAttribute: true,
       },
     };
   }
 
-  static get observers() { return ['_dialogOpenChanged(opened)']; }
+  static get observers() {
+    return ["_dialogOpenChanged(opened)"];
+  }
 
   ready() {
     super.ready();
     this._dialogElement = this;
-    this.addEventListener('more-info-page', (ev) => { this._page = ev.detail.page; });
+    this.addEventListener("more-info-page", (ev) => {
+      this._page = ev.detail.page;
+    });
   }
 
   _computeDomain(stateObj) {
-    return stateObj ? computeStateDomain(stateObj) : '';
+    return stateObj ? computeStateDomain(stateObj) : "";
   }
 
   _computeStateObj(hass) {
@@ -139,20 +143,24 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
       return;
     }
 
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      // allow dialog to render content before showing it so it will be
-      // positioned correctly.
-      this.opened = true;
-    }));
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        // allow dialog to render content before showing it so it will be
+        // positioned correctly.
+        this.opened = true;
+      })
+    );
 
-    if (!isComponentLoaded(this.hass, 'config.entity_registry')
-        || (oldVal && oldVal.entity_id === newVal.entity_id)) {
+    if (
+      !isComponentLoaded(this.hass, "config.entity_registry") ||
+      (oldVal && oldVal.entity_id === newVal.entity_id)
+    ) {
       return;
     }
 
     try {
       const info = await this.hass.callWS({
-        type: 'config/entity_registry/get',
+        type: "config/entity_registry/get",
         entity_id: newVal.entity_id,
       });
       this._registryInfo = info;
@@ -163,7 +171,7 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
 
   _dialogOpenChanged(newVal) {
     if (!newVal && this.stateObj) {
-      this.fire('hass-more-info', { entityId: null });
+      this.fire("hass-more-info", { entityId: null });
     }
   }
 
@@ -175,4 +183,4 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
     this.notifyResize();
   }
 }
-customElements.define('ha-more-info-dialog', HaMoreInfoDialog);
+customElements.define("ha-more-info-dialog", HaMoreInfoDialog);

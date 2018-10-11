@@ -1,5 +1,5 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HuiIframeCard extends PolymerElement {
   static get template() {
@@ -48,11 +48,11 @@ class HuiIframeCard extends PolymerElement {
   _buildConfig() {
     const config = this._config;
 
-    this.$.root.style.paddingTop = config.aspect_ratio || '50%';
+    this.$.root.style.paddingTop = config.aspect_ratio || "50%";
   }
 
   getCardSize() {
-    return 1 + (this.offsetHeight / 50);
+    return 1 + this.offsetHeight / 50;
   }
 }
-customElements.define('hui-iframe-card', HuiIframeCard);
+customElements.define("hui-iframe-card", HuiIframeCard);

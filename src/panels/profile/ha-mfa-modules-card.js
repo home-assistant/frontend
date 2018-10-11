@@ -1,14 +1,14 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../resources/ha-style.js';
+import "../../resources/ha-style.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
 let registeredDialog = false;
 
@@ -86,16 +86,16 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
     if (!registeredDialog) {
       registeredDialog = true;
-      this.fire('register-dialog', {
-        dialogShowEvent: 'show-mfa-module-setup-flow',
-        dialogTag: 'ha-mfa-module-setup-flow',
-        dialogImport: () => import('./ha-mfa-module-setup-flow.js'),
+      this.fire("register-dialog", {
+        dialogShowEvent: "show-mfa-module-setup-flow",
+        dialogTag: "ha-mfa-module-setup-flow",
+        dialogImport: () => import("./ha-mfa-module-setup-flow.js"),
       });
     }
   }
 
   _enable(ev) {
-    this.fire('show-mfa-module-setup-flow', {
+    this.fire("show-mfa-module-setup-flow", {
       hass: this.hass,
       mfaModuleId: ev.model.module.id,
       dialogClosedCallback: () => this._refreshCurrentUser(),
@@ -103,26 +103,33 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _disable(ev) {
-    if (!confirm(this.localize(
-      'ui.panel.profile.mfa.confirm_disable',
-      'name', ev.model.module.name
-    ))) {
+    if (
+      !confirm(
+        this.localize(
+          "ui.panel.profile.mfa.confirm_disable",
+          "name",
+          ev.model.module.name
+        )
+      )
+    ) {
       return;
     }
 
     const mfaModuleId = ev.model.module.id;
 
-    this.hass.callWS({
-      type: 'auth/depose_mfa',
-      mfa_module_id: mfaModuleId,
-    }).then(() => {
-      this._refreshCurrentUser();
-    });
+    this.hass
+      .callWS({
+        type: "auth/depose_mfa",
+        mfa_module_id: mfaModuleId,
+      })
+      .then(() => {
+        this._refreshCurrentUser();
+      });
   }
 
   _refreshCurrentUser() {
-    this.fire('hass-refresh-current-user');
+    this.fire("hass-refresh-current-user");
   }
 }
 
-customElements.define('ha-mfa-modules-card', HaMfaModulesCard);
+customElements.define("ha-mfa-modules-card", HaMfaModulesCard);

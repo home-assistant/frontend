@@ -1,24 +1,23 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
 
-import '../../components/ha-menu-button.js';
-import '../../components/state-history-charts.js';
-import '../../data/ha-state-history-data.js';
-import '../../resources/ha-date-picker-style.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-menu-button.js";
+import "../../components/state-history-charts.js";
+import "../../data/ha-state-history-data.js";
+import "../../resources/ha-date-picker-style.js";
+import "../../resources/ha-style.js";
 
-
-import formatDate from '../../common/datetime/format_date.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import formatDate from "../../common/datetime/format_date.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -130,22 +129,24 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
 
       endTime: {
         type: Object,
-        computed: '_computeEndTime(_currentDate, _periodIndex)',
+        computed: "_computeEndTime(_currentDate, _periodIndex)",
       },
 
       // ISO8601 formatted date string
       _currentDate: {
         type: String,
-        value: function () {
+        value: function() {
           var value = new Date();
-          var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
-          return today.toISOString().split('T')[0];
+          var today = new Date(
+            Date.UTC(value.getFullYear(), value.getMonth(), value.getDate())
+          );
+          return today.toISOString().split("T")[0];
         },
       },
 
       _filterType: {
         type: String,
-        value: 'date',
+        value: "date",
       },
     };
   }
@@ -157,14 +158,15 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
     // We are unable to parse date because we use intl api to render date
-    this.$.picker.set('i18n.parseDate', null);
-    this.$.picker.set('i18n.formatDate', date =>
-      formatDate(new Date(date.year, date.month, date.day), this.language));
+    this.$.picker.set("i18n.parseDate", null);
+    this.$.picker.set("i18n.formatDate", (date) =>
+      formatDate(new Date(date.year, date.month, date.day), this.language)
+    );
   }
 
   _computeStartTime(_currentDate) {
     if (!_currentDate) return undefined;
-    var parts = _currentDate.split('-');
+    var parts = _currentDate.split("-");
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]);
   }
@@ -182,9 +184,10 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
         return 3;
       case 2:
         return 7;
-      default: return 1;
+      default:
+        return 1;
     }
   }
 }
 
-customElements.define('ha-panel-history', HaPanelHistory);
+customElements.define("ha-panel-history", HaPanelHistory);
