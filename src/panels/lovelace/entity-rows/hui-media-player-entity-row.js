@@ -1,15 +1,15 @@
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/hui-generic-entity-row.js';
+import "../components/hui-generic-entity-row.js";
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 const SUPPORT_PAUSE = 1;
 const SUPPORT_NEXT_TRACK = 32;
 const SUPPORTS_PLAY = 16384;
-const OFF_STATES = ['off', 'idle'];
+const OFF_STATES = ["off", "idle"];
 
 /*
  * @appliesMixin LocalizeMixin
@@ -72,8 +72,8 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
-      }
+        computed: "_computeStateObj(hass.states, _config.entity)",
+      },
     };
   }
 
@@ -83,7 +83,7 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
 
   setConfig(config) {
     if (!config || !config.entity) {
-      throw new Error('Entity not configured.');
+      throw new Error("Entity not configured.");
     }
     this._config = config;
   }
@@ -91,45 +91,61 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
   _computeControlIcon(stateObj) {
     if (!stateObj) return null;
 
-    if (stateObj.state !== 'playing') {
-      return stateObj.attributes.supported_features & SUPPORTS_PLAY ? 'hass:play' : '';
+    if (stateObj.state !== "playing") {
+      return stateObj.attributes.supported_features & SUPPORTS_PLAY
+        ? "hass:play"
+        : "";
     }
 
-    return stateObj.attributes.supported_features & SUPPORT_PAUSE ? 'hass:pause' : 'hass:stop';
+    return stateObj.attributes.supported_features & SUPPORT_PAUSE
+      ? "hass:pause"
+      : "hass:stop";
   }
 
   _computeMediaTitle(stateObj) {
     if (!stateObj || this._isOff(stateObj.state)) return null;
 
     switch (stateObj.attributes.media_content_type) {
-      case 'music':
-        return `${stateObj.attributes.media_artist}: ${stateObj.attributes.media_title}`;
-      case 'tvshow':
-        return `${stateObj.attributes.media_series_title}: ${stateObj.attributes.media_title}`;
+      case "music":
+        return `${stateObj.attributes.media_artist}: ${
+          stateObj.attributes.media_title
+        }`;
+      case "tvshow":
+        return `${stateObj.attributes.media_series_title}: ${
+          stateObj.attributes.media_title
+        }`;
       default:
-        return stateObj.attributes.media_title || stateObj.attributes.app_name || stateObj.state;
+        return (
+          stateObj.attributes.media_title ||
+          stateObj.attributes.app_name ||
+          stateObj.state
+        );
     }
   }
 
   _computeState(state) {
-    return this.localize(`state.media_player.${state}`)
-      || this.localize(`state.default.${state}`)
-      || state;
+    return (
+      this.localize(`state.media_player.${state}`) ||
+      this.localize(`state.default.${state}`) ||
+      state
+    );
   }
 
   _callService(service) {
-    this.hass.callService('media_player', service, { entity_id: this._config.entity });
+    this.hass.callService("media_player", service, {
+      entity_id: this._config.entity,
+    });
   }
 
   _playPause(event) {
     event.stopPropagation();
-    this._callService('media_play_pause');
+    this._callService("media_play_pause");
   }
 
   _nextTrack(event) {
     event.stopPropagation();
     if (this._stateObj.attributes.supported_features & SUPPORT_NEXT_TRACK) {
-      this._callService('media_next_track');
+      this._callService("media_next_track");
     }
   }
 
@@ -138,7 +154,9 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _supportsNext(stateObj) {
-    return stateObj && (stateObj.attributes.supported_features & SUPPORT_NEXT_TRACK);
+    return (
+      stateObj && stateObj.attributes.supported_features & SUPPORT_NEXT_TRACK
+    );
   }
 }
-customElements.define('hui-media-player-entity-row', HuiMediaPlayerEntityRow);
+customElements.define("hui-media-player-entity-row", HuiMediaPlayerEntityRow);

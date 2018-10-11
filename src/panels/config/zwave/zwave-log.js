@@ -1,15 +1,15 @@
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import isPwa from '../../../common/config/is_pwa.js';
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-checkbox/paper-checkbox.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
+import isPwa from "../../../common/config/is_pwa.js";
 
-import '../ha-config-section.js';
+import "../ha-config-section.js";
 
 let registeredDialog = false;
 
@@ -62,19 +62,18 @@ class OzwLog extends EventsMixin(PolymerElement) {
 
       _completeLog: {
         type: Boolean,
-        value: true
+        value: true,
       },
 
       numLogLines: {
         type: Number,
         value: 0,
-        observer: '_isCompleteLog'
+        observer: "_isCompleteLog",
       },
 
       _intervalId: String,
 
       tail: Boolean,
-
     };
   }
 
@@ -83,18 +82,24 @@ class OzwLog extends EventsMixin(PolymerElement) {
     const ozwWindow = await this._openLogWindow();
     if (!isPwa()) {
       this.setProperties({
-        _intervalId: setInterval(() => { this._refreshLog(ozwWindow); }, 1500) });
+        _intervalId: setInterval(() => {
+          this._refreshLog(ozwWindow);
+        }, 1500),
+      });
     }
   }
 
   async _openLogWindow() {
-    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this.numLogLines);
+    const info = await this.hass.callApi(
+      "GET",
+      "zwave/ozwlog?lines=" + this.numLogLines
+    );
     this.setProperties({ _ozwLogs: info });
     if (isPwa()) {
       this._showOzwlogDialog();
       return -1;
     }
-    const ozwWindow = open('', 'ozwLog', 'toolbar');
+    const ozwWindow = open("", "ozwLog", "toolbar");
     ozwWindow.document.body.innerHTML = `<pre>${this._ozwLogs}</pre>`;
     return ozwWindow;
   }
@@ -104,44 +109,49 @@ class OzwLog extends EventsMixin(PolymerElement) {
       clearInterval(this._intervalId);
       this.setProperties({ _intervalId: null });
     } else {
-      const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this.numLogLines);
+      const info = await this.hass.callApi(
+        "GET",
+        "zwave/ozwlog?lines=" + this.numLogLines
+      );
       this.setProperties({ _ozwLogs: info });
       ozwWindow.document.body.innerHTML = `<pre>${this._ozwLogs}</pre>`;
     }
   }
 
   _isCompleteLog() {
-    if (this.numLogLines !== '0') {
+    if (this.numLogLines !== "0") {
       this.setProperties({ _completeLog: false });
-    } else { this.setProperties({ _completeLog: true }); }
+    } else {
+      this.setProperties({ _completeLog: true });
+    }
   }
 
   connectedCallback() {
     super.connectedCallback();
     if (!registeredDialog) {
       registeredDialog = true;
-      this.fire('register-dialog', {
-        dialogShowEvent: 'show-ozwlog-dialog',
-        dialogTag: 'zwave-log-dialog',
-        dialogImport: () => import('./zwave-log-dialog.js'),
+      this.fire("register-dialog", {
+        dialogShowEvent: "show-ozwlog-dialog",
+        dialogTag: "zwave-log-dialog",
+        dialogImport: () => import("./zwave-log-dialog.js"),
       });
     }
   }
 
   _showOzwlogDialog() {
-    this.fire('show-ozwlog-dialog', {
+    this.fire("show-ozwlog-dialog", {
       hass: this.hass,
       _numLogLines: this.numLogLines,
       _ozwLog: this._ozwLogs,
       _tail: this.tail,
-      dialogClosedCallback: () => this._dialogClosed()
+      dialogClosedCallback: () => this._dialogClosed(),
     });
   }
 
   _dialogClosed() {
     this.setProperties({
-      tail: false
+      tail: false,
     });
   }
 }
-customElements.define('ozw-log', OzwLog);
+customElements.define("ozw-log", OzwLog);

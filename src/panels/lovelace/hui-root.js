@@ -1,36 +1,36 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-route/app-route.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-menu-button/paper-menu-button.js';
-import '@polymer/paper-tabs/paper-tab.js';
-import '@polymer/paper-tabs/paper-tabs.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-scroll-effects/effects/waterfall.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/app-route/app-route.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-menu-button/paper-menu-button.js";
+import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/paper-tabs/paper-tabs.js";
 
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import scrollToTarget from '../../common/dom/scroll-to-target.js';
+import scrollToTarget from "../../common/dom/scroll-to-target.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import NavigateMixin from '../../mixins/navigate-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
+import NavigateMixin from "../../mixins/navigate-mixin.js";
 
-import '../../layouts/ha-app-layout.js';
-import '../../components/ha-start-voice-button.js';
-import '../../components/ha-icon.js';
-import { loadModule, loadCSS, loadJS } from '../../common/dom/load_resource.js';
-import { subscribeNotifications } from '../../data/ws-notifications';
-import './components/notifications/hui-notification-drawer.js';
-import './components/notifications/hui-notifications-button.js';
-import './hui-unused-entities.js';
-import './hui-view.js';
-import debounce from '../../common/util/debounce.js';
+import "../../layouts/ha-app-layout.js";
+import "../../components/ha-start-voice-button.js";
+import "../../components/ha-icon.js";
+import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource.js";
+import { subscribeNotifications } from "../../data/ws-notifications";
+import "./components/notifications/hui-notification-drawer.js";
+import "./components/notifications/hui-notifications-button.js";
+import "./hui-unused-entities.js";
+import "./hui-view.js";
+import debounce from "../../common/util/debounce.js";
 
-import createCardElement from './common/create-card-element.js';
-import computeNotifications from './common/compute-notifications';
+import createCardElement from "./common/create-card-element.js";
+import computeNotifications from "./common/compute-notifications";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -134,15 +134,15 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       showMenu: Boolean,
       hass: {
         type: Object,
-        observer: '_hassChanged',
+        observer: "_hassChanged",
       },
       config: {
         type: Object,
-        observer: '_configChanged',
+        observer: "_configChanged",
       },
       columns: {
         type: Number,
-        observer: '_columnsChanged',
+        observer: "_columnsChanged",
       },
 
       _curView: {
@@ -152,7 +152,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
       route: {
         type: Object,
-        observer: '_routeChanged'
+        observer: "_routeChanged",
       },
 
       notificationsOpen: {
@@ -162,12 +162,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
       _persistentNotifications: {
         type: Array,
-        value: []
+        value: [],
       },
 
       _notifications: {
         type: Array,
-        computed: '_updateNotifications(hass.states, _persistentNotifications)'
+        computed: "_updateNotifications(hass.states, _persistentNotifications)",
       },
 
       routeData: Object,
@@ -176,19 +176,25 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   constructor() {
     super();
-    this._debouncedConfigChanged = debounce(() => this._selectView(this._curView), 100);
+    this._debouncedConfigChanged = debounce(
+      () => this._selectView(this._curView),
+      100
+    );
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this._unsubNotifications = subscribeNotifications(this.hass.connection, (notifications) => {
-      this._persistentNotifications = notifications;
-    });
+    this._unsubNotifications = subscribeNotifications(
+      this.hass.connection,
+      (notifications) => {
+        this._persistentNotifications = notifications;
+      }
+    );
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    if (typeof this._unsubNotifications === 'function') {
+    if (typeof this._unsubNotifications === "function") {
       this._unsubNotifications();
     }
   }
@@ -202,7 +208,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   _routeChanged(route) {
     const views = this.config && this.config.views;
-    if (route.path === '' && route.prefix === '/lovelace' && views) {
+    if (route.path === "" && route.prefix === "/lovelace" && views) {
       this.navigate(`/lovelace/${views[0].id || 0}`, true);
     } else if (this.routeData.view) {
       const view = this.routeData.view;
@@ -222,7 +228,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeTitle(config) {
-    return config.title || 'Home Assistant';
+    return config.title || "Home Assistant";
   }
 
   _computeTabsHidden(views) {
@@ -230,15 +236,15 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeTabTitle(title) {
-    return title || 'Unnamed view';
+    return title || "Unnamed view";
   }
 
   _handleRefresh() {
-    this.fire('config-refresh');
+    this.fire("config-refresh");
   }
 
   _handleUnusedEntities() {
-    this._selectView('unused');
+    this._selectView("unused");
   }
 
   _deselect(ev) {
@@ -246,7 +252,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _handleHelp() {
-    window.open('https://www.home-assistant.io/lovelace/', '_blank');
+    window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
   _handleViewSelected(ev) {
@@ -268,10 +274,10 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     }
 
     let view;
-    let background = this.config.background || '';
+    let background = this.config.background || "";
 
-    if (viewIndex === 'unused') {
-      view = document.createElement('hui-unused-entities');
+    if (viewIndex === "unused") {
+      view = document.createElement("hui-unused-entities");
       view.config = this.config;
     } else {
       const viewConfig = this.config.views[this._curView];
@@ -279,7 +285,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
       } else {
-        view = document.createElement('hui-view');
+        view = document.createElement("hui-view");
         view.config = viewConfig;
         view.columns = this.columns;
       }
@@ -301,7 +307,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     this._loadResources(config.resources || []);
     // On config change, recreate the view from scratch.
     this._selectView(this._curView);
-    this.$.view.classList.toggle('tabs-hidden', config.views.length < 2);
+    this.$.view.classList.toggle("tabs-hidden", config.views.length < 2);
   }
 
   _columnsChanged(columns) {
@@ -312,30 +318,31 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   _loadResources(resources) {
     resources.forEach((resource) => {
       switch (resource.type) {
-        case 'css':
+        case "css":
           if (resource.url in CSS_CACHE) break;
           CSS_CACHE[resource.url] = loadCSS(resource.url);
           break;
 
-        case 'js':
+        case "js":
           if (resource.url in JS_CACHE) break;
           JS_CACHE[resource.url] = loadJS(resource.url);
           break;
 
-        case 'module':
+        case "module":
           loadModule(resource.url);
           break;
 
-        case 'html':
-          import(/* webpackChunkName: "import-href-polyfill" */ '../../resources/html-import/import-href.js')
-            .then(({ importHref }) => importHref(resource.url));
+        case "html":
+          import(/* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href.js").then(
+            ({ importHref }) => importHref(resource.url)
+          );
           break;
 
         default:
           // eslint-disable-next-line
-          console.warn('Unknown resource type specified: ${resource.type}');
+          console.warn("Unknown resource type specified: ${resource.type}");
       }
     });
   }
 }
-customElements.define('hui-root', HUIRoot);
+customElements.define("hui-root", HUIRoot);

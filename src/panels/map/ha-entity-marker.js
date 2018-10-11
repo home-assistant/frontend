@@ -1,8 +1,8 @@
-import '@polymer/iron-image/iron-image.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-image/iron-image.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -49,7 +49,7 @@ class HaEntityMarker extends EventsMixin(PolymerElement) {
 
       entityId: {
         type: String,
-        value: '',
+        value: "",
       },
 
       entityName: {
@@ -60,21 +60,21 @@ class HaEntityMarker extends EventsMixin(PolymerElement) {
       entityPicture: {
         type: String,
         value: null,
-      }
+      },
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('click', ev => this.badgeTap(ev));
+    this.addEventListener("click", (ev) => this.badgeTap(ev));
   }
 
   badgeTap(ev) {
     ev.stopPropagation();
     if (this.entityId) {
-      this.fire('hass-more-info', { entityId: this.entityId });
+      this.fire("hass-more-info", { entityId: this.entityId });
     }
   }
 }
 
-customElements.define('ha-entity-marker', HaEntityMarker);
+customElements.define("ha-entity-marker", HaEntityMarker);

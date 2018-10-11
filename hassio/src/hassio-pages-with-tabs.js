@@ -1,24 +1,24 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-tabs/paper-tab.js';
-import '@polymer/paper-tabs/paper-tabs.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/paper-tabs/paper-tabs.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
-import './addon-store/hassio-addon-store.js';
-import './dashboard/hassio-dashboard.js';
-import './hassio-markdown-dialog.js';
-import './snapshots/hassio-snapshot.js';
-import './snapshots/hassio-snapshots.js';
-import './system/hassio-system.js';
+import "../../src/components/ha-menu-button.js";
+import "../../src/resources/ha-style.js";
+import "./addon-store/hassio-addon-store.js";
+import "./dashboard/hassio-dashboard.js";
+import "./hassio-markdown-dialog.js";
+import "./snapshots/hassio-snapshot.js";
+import "./snapshots/hassio-snapshots.js";
+import "./system/hassio-system.js";
 
-import scrollToTarget from '../../src/common/dom/scroll-to-target.js';
+import scrollToTarget from "../../src/common/dom/scroll-to-target.js";
 
-import NavigateMixin from '../../src/mixins/navigate-mixin.js';
+import NavigateMixin from "../../src/mixins/navigate-mixin.js";
 
 class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   static get template() {
@@ -87,18 +87,20 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
       markdownTitle: String,
       markdownContent: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
 
   ready() {
     super.ready();
-    this.addEventListener('hassio-markdown-dialog', ev => this.openMarkdown(ev));
+    this.addEventListener("hassio-markdown-dialog", (ev) =>
+      this.openMarkdown(ev)
+    );
   }
 
   handlePageSelected(ev) {
-    const newPage = ev.detail.item.getAttribute('page-name');
+    const newPage = ev.detail.item.getAttribute("page-name");
     if (newPage !== this.page) {
       this.navigate(`/hassio/${newPage}`);
     }
@@ -110,14 +112,14 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   }
 
   showRefreshButton(page) {
-    return page === 'store' || page === 'snapshots';
+    return page === "store" || page === "snapshots";
   }
 
   refreshClicked() {
-    if (this.page === 'snapshots') {
-      this.shadowRoot.querySelector('hassio-snapshots').refreshData();
+    if (this.page === "snapshots") {
+      this.shadowRoot.querySelector("hassio-snapshots").refreshData();
     } else {
-      this.shadowRoot.querySelector('hassio-addon-store').refreshData();
+      this.shadowRoot.querySelector("hassio-addon-store").refreshData();
     }
   }
 
@@ -126,8 +128,8 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
       markdownTitle: ev.detail.title,
       markdownContent: ev.detail.content,
     });
-    this.shadowRoot.querySelector('hassio-markdown-dialog').openDialog();
+    this.shadowRoot.querySelector("hassio-markdown-dialog").openDialog();
   }
 }
 
-customElements.define('hassio-pages-with-tabs', HassioPagesWithTabs);
+customElements.define("hassio-pages-with-tabs", HassioPagesWithTabs);

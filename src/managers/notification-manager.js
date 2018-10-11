@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 class NotificationManager extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -32,7 +32,7 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    import(/* webpackChunkName: "ha-toast" */ '../components/ha-toast.js');
+    import(/* webpackChunkName: "ha-toast" */ "../components/ha-toast.js");
   }
 
   showDialog({ message }) {
@@ -40,4 +40,4 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('notification-manager', NotificationManager);
+customElements.define("notification-manager", NotificationManager);

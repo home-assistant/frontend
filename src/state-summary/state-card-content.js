@@ -1,24 +1,24 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './state-card-climate.js';
-import './state-card-configurator.js';
-import './state-card-cover.js';
-import './state-card-display.js';
-import './state-card-input_number.js';
-import './state-card-input_select.js';
-import './state-card-input_text.js';
-import './state-card-lock.js';
-import './state-card-media_player.js';
-import './state-card-scene.js';
-import './state-card-script.js';
-import './state-card-timer.js';
-import './state-card-toggle.js';
-import './state-card-vacuum.js';
-import './state-card-water_heater.js';
-import './state-card-weblink.js';
+import "./state-card-climate.js";
+import "./state-card-configurator.js";
+import "./state-card-cover.js";
+import "./state-card-display.js";
+import "./state-card-input_number.js";
+import "./state-card-input_select.js";
+import "./state-card-input_text.js";
+import "./state-card-lock.js";
+import "./state-card-media_player.js";
+import "./state-card-scene.js";
+import "./state-card-script.js";
+import "./state-card-timer.js";
+import "./state-card-toggle.js";
+import "./state-card-vacuum.js";
+import "./state-card-water_heater.js";
+import "./state-card-weblink.js";
 
-import stateCardType from '../common/entity/state_card_type.js';
-import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
+import stateCardType from "../common/entity/state_card_type.js";
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater.js";
 
 class StateCardContent extends PolymerElement {
   static get properties() {
@@ -33,28 +33,22 @@ class StateCardContent extends PolymerElement {
   }
 
   static get observers() {
-    return [
-      'inputChanged(hass, inDialog, stateObj)',
-    ];
+    return ["inputChanged(hass, inDialog, stateObj)"];
   }
 
   inputChanged(hass, inDialog, stateObj) {
     let stateCard;
     if (!stateObj || !hass) return;
-    if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
+    if (stateObj.attributes && "custom_ui_state_card" in stateObj.attributes) {
       stateCard = stateObj.attributes.custom_ui_state_card;
     } else {
-      stateCard = 'state-card-' + stateCardType(hass, stateObj);
+      stateCard = "state-card-" + stateCardType(hass, stateObj);
     }
-    dynamicContentUpdater(
-      this,
-      stateCard.toUpperCase(),
-      {
-        hass: hass,
-        stateObj: stateObj,
-        inDialog: inDialog,
-      }
-    );
+    dynamicContentUpdater(this, stateCard.toUpperCase(), {
+      hass: hass,
+      stateObj: stateObj,
+      inDialog: inDialog,
+    });
   }
 }
-customElements.define('state-card-content', StateCardContent);
+customElements.define("state-card-content", StateCardContent);

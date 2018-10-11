@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/ha-card.js';
-import '../components/ha-icon.js';
+import "../components/ha-card.js";
+import "../components/ha-icon.js";
 
-import computeStateName from '../common/entity/compute_state_name.js';
-import EventsMixin from '../mixins/events-mixin.js';
+import computeStateName from "../common/entity/compute_state_name.js";
+import EventsMixin from "../mixins/events-mixin.js";
 
 class HaPlantCard extends EventsMixin(PolymerElement) {
   static get template() {
@@ -85,18 +85,18 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object
+      stateObj: Object,
     };
   }
 
   constructor() {
     super();
     this.sensors = {
-      moisture: 'hass:water',
-      temperature: 'hass:thermometer',
-      brightness: 'hass:white-balance-sunny',
-      conductivity: 'hass:emoticon-poop',
-      battery: 'hass:battery'
+      moisture: "hass:water",
+      temperature: "hass:thermometer",
+      brightness: "hass:white-balance-sunny",
+      conductivity: "hass:emoticon-poop",
+      battery: "hass:battery",
     };
   }
 
@@ -105,16 +105,17 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
   }
 
   computeAttributes(data) {
-    return Object.keys(this.sensors).filter(key => key in data);
+    return Object.keys(this.sensors).filter((key) => key in data);
   }
 
   computeIcon(attr, batLvl) {
     const icon = this.sensors[attr];
-    if (attr === 'battery') {
+    if (attr === "battery") {
       if (batLvl <= 5) {
         return `${icon}-alert`;
-      } if (batLvl < 95) {
-        return `${icon}-${Math.round((batLvl / 10) - 0.01) * 10}`;
+      }
+      if (batLvl < 95) {
+        return `${icon}-${Math.round(batLvl / 10 - 0.01) * 10}`;
       }
     }
     return icon;
@@ -125,20 +126,22 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
   }
 
   computeUom(dict, attr) {
-    return dict[attr] || '';
+    return dict[attr] || "";
   }
 
   computeAttributeClass(problem, attr) {
-    return problem.indexOf(attr) === -1 ? '' : 'problem';
+    return problem.indexOf(attr) === -1 ? "" : "problem";
   }
 
   computeImageClass(entityPicture) {
-    return entityPicture ? 'has-plant-image' : '';
+    return entityPicture ? "has-plant-image" : "";
   }
 
   attributeClicked(ev) {
-    this.fire('hass-more-info', { entityId: this.stateObj.attributes.sensors[ev.model.item] });
+    this.fire("hass-more-info", {
+      entityId: this.stateObj.attributes.sensors[ev.model.item],
+    });
   }
 }
 
-customElements.define('ha-plant-card', HaPlantCard);
+customElements.define("ha-plant-card", HaPlantCard);

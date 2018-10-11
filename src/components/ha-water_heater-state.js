@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -56,19 +56,25 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
   computeTarget(hass, stateObj) {
     if (!hass || !stateObj) return null;
     // We're using "!= null" on purpose so that we match both null and undefined.
-    if (stateObj.attributes.target_temp_low != null
-        && stateObj.attributes.target_temp_high != null) {
-      return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${hass.config.unit_system.temperature}`;
+    if (
+      stateObj.attributes.target_temp_low != null &&
+      stateObj.attributes.target_temp_high != null
+    ) {
+      return `${stateObj.attributes.target_temp_low} - ${
+        stateObj.attributes.target_temp_high
+      } ${hass.config.unit_system.temperature}`;
     }
     if (stateObj.attributes.temperature != null) {
-      return `${stateObj.attributes.temperature} ${hass.config.unit_system.temperature}`;
+      return `${stateObj.attributes.temperature} ${
+        hass.config.unit_system.temperature
+      }`;
     }
 
-    return '';
+    return "";
   }
 
   _localizeState(state) {
     return this.localize(`state.water_heater.${state}`) || state;
   }
 }
-customElements.define('ha-water_heater-state', HaWaterHeaterState);
+customElements.define("ha-water_heater-state", HaWaterHeaterState);

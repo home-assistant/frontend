@@ -1,12 +1,12 @@
 /** Return an icon representing a sensor state. */
-import { UNIT_C, UNIT_F } from '../const.js';
-import domainIcon from './domain_icon.js';
+import { UNIT_C, UNIT_F } from "../const.js";
+import domainIcon from "./domain_icon.js";
 
 const fixedDeviceClassIcons = {
-  humidity: 'hass:water-percent',
-  illuminance: 'hass:brightness-5',
-  temperature: 'hass:thermometer',
-  pressure: 'hass:gauge'
+  humidity: "hass:water-percent",
+  illuminance: "hass:brightness-5",
+  temperature: "hass:thermometer",
+  pressure: "hass:gauge",
 };
 
 export default function sensorIcon(state) {
@@ -14,16 +14,17 @@ export default function sensorIcon(state) {
 
   if (dclass in fixedDeviceClassIcons) {
     return fixedDeviceClassIcons[dclass];
-  } if (dclass === 'battery') {
+  }
+  if (dclass === "battery") {
     if (isNaN(state.state)) {
-      return 'hass:battery-unknown';
+      return "hass:battery-unknown";
     }
     const batteryRound = Math.round(state.state / 10) * 10;
     if (batteryRound >= 100) {
-      return 'hass:battery';
+      return "hass:battery";
     }
     if (batteryRound <= 0) {
-      return 'hass:battery-alert';
+      return "hass:battery-alert";
     }
     // Will return one of the following icons: (listed so extractor picks up)
     // hass:battery-10
@@ -36,12 +37,12 @@ export default function sensorIcon(state) {
     // hass:battery-80
     // hass:battery-90
     // We obscure 'hass' in iconname so this name does not get picked up
-    return `${'hass'}:battery-${batteryRound}`;
+    return `${"hass"}:battery-${batteryRound}`;
   }
 
   const unit = state.attributes.unit_of_measurement;
   if (unit === UNIT_C || unit === UNIT_F) {
-    return 'hass:thermometer';
+    return "hass:thermometer";
   }
-  return domainIcon('sensor');
+  return domainIcon("sensor");
 }

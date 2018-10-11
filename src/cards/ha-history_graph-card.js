@@ -1,13 +1,12 @@
-import '@polymer/paper-card/paper-card.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-card/paper-card.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/state-history-charts.js';
-import '../data/ha-state-history-data.js';
+import "../components/state-history-charts.js";
+import "../data/ha-state-history-data.js";
 
-
-import computeStateName from '../common/entity/compute_state_name.js';
-import EventsMixin from '../mixins/events-mixin.js';
+import computeStateName from "../common/entity/compute_state_name.js";
+import EventsMixin from "../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -55,7 +54,7 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'stateObjObserver',
+        observer: "stateObjObserver",
       },
       inDialog: {
         type: Boolean,
@@ -76,14 +75,19 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
 
   stateObjObserver(stateObj) {
     if (!stateObj) return;
-    if (this.cacheConfig.cacheKey !== stateObj.entity_id
-        || this.cacheConfig.refresh !== (stateObj.attributes.refresh || 0)
-        || this.cacheConfig.hoursToShow !== (stateObj.attributes.hours_to_show || 24)) {
-      this.cacheConfig = Object.assign({}, {
-        refresh: stateObj.attributes.refresh || 0,
-        cacheKey: stateObj.entity_id,
-        hoursToShow: stateObj.attributes.hours_to_show || 24
-      });
+    if (
+      this.cacheConfig.cacheKey !== stateObj.entity_id ||
+      this.cacheConfig.refresh !== (stateObj.attributes.refresh || 0) ||
+      this.cacheConfig.hoursToShow !== (stateObj.attributes.hours_to_show || 24)
+    ) {
+      this.cacheConfig = Object.assign(
+        {},
+        {
+          refresh: stateObj.attributes.refresh || 0,
+          cacheKey: stateObj.entity_id,
+          hoursToShow: stateObj.attributes.hours_to_show || 24,
+        }
+      );
     }
   }
 
@@ -92,7 +96,7 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
   }
 
   computeContentClass(inDialog) {
-    return inDialog ? '' : 'content';
+    return inDialog ? "" : "content";
   }
 
   computeHistoryEntities(stateObj) {
@@ -104,11 +108,11 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
   }
 
   cardTapped(ev) {
-    const mq = window.matchMedia('(min-width: 610px) and (min-height: 550px)');
+    const mq = window.matchMedia("(min-width: 610px) and (min-height: 550px)");
     if (mq.matches) {
       ev.stopPropagation();
-      this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+      this.fire("hass-more-info", { entityId: this.stateObj.entity_id });
     }
   }
 }
-customElements.define('ha-history_graph-card', HaHistoryGraphCard);
+customElements.define("ha-history_graph-card", HaHistoryGraphCard);

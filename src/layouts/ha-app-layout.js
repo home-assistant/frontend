@@ -17,11 +17,11 @@ transform: translate(0) is added.
   from HTML and may be out of place here. Review them and
   then delete this comment!
 */
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import "@polymer/polymer/polymer-element.js";
 
-class HaAppLayout extends customElements.get('app-header-layout') {
+class HaAppLayout extends customElements.get("app-header-layout") {
   static get template() {
     return html`
     <style>
@@ -96,4 +96,4 @@ class HaAppLayout extends customElements.get('app-header-layout') {
 `;
   }
 }
-customElements.define('ha-app-layout', HaAppLayout);
+customElements.define("ha-app-layout", HaAppLayout);

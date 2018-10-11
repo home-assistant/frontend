@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-card.js';
+import "../../../components/ha-card.js";
 
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
 
 /*
  * @appliesMixin NavigateMixin
@@ -43,7 +43,7 @@ class HuiPictureCard extends NavigateMixin(PolymerElement) {
 
   setConfig(config) {
     if (!config || !config.image) {
-      throw new Error('Error in card configuration.');
+      throw new Error("Error in card configuration.");
     }
 
     this._config = config;
@@ -58,10 +58,10 @@ class HuiPictureCard extends NavigateMixin(PolymerElement) {
       this.navigate(this._config.navigation_path);
     }
     if (this._config.service) {
-      const [domain, service] = this._config.service.split('.', 2);
+      const [domain, service] = this._config.service.split(".", 2);
       this.hass.callService(domain, service, this._config.service_data);
     }
   }
 }
 
-customElements.define('hui-picture-card', HuiPictureCard);
+customElements.define("hui-picture-card", HuiPictureCard);

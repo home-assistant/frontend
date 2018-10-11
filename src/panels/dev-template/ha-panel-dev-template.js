@@ -1,15 +1,15 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-input/paper-textarea.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
 
 class HaPanelDevTemplate extends PolymerElement {
   static get template() {
@@ -150,23 +150,22 @@ For loop example:
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`,
         /* eslint-enable max-len */
-        observer: 'templateChanged',
+        observer: "templateChanged",
       },
 
       processed: {
         type: String,
-        value: '',
+        value: "",
       },
     };
   }
 
   computeFormClasses(narrow) {
-    return narrow
-      ? 'content fit' : 'content fit layout horizontal';
+    return narrow ? "content fit" : "content fit layout horizontal";
   }
 
   computeRenderedClasses(error) {
-    return error ? 'error rendered' : 'rendered';
+    return error ? "error rendered" : "rendered";
   }
 
   templateChanged() {
@@ -176,23 +175,27 @@ For loop example:
     this._debouncer = Debouncer.debounce(
       this._debouncer,
       timeOut.after(500),
-      () => { this.renderTemplate(); }
+      () => {
+        this.renderTemplate();
+      }
     );
   }
 
   renderTemplate() {
     this.rendering = true;
 
-    this.hass.callApi('POST', 'template', { template: this.template })
-      .then(function (processed) {
+    this.hass.callApi("POST", "template", { template: this.template }).then(
+      function(processed) {
         this.processed = processed;
         this.rendering = false;
-      }.bind(this), function (error) {
+      }.bind(this),
+      function(error) {
         this.processed = error.body.message;
         this.error = true;
         this.rendering = false;
-      }.bind(this));
+      }.bind(this)
+    );
   }
 }
 
-customElements.define('ha-panel-dev-template', HaPanelDevTemplate);
+customElements.define("ha-panel-dev-template", HaPanelDevTemplate);

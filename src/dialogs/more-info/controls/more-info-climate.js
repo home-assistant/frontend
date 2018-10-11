@@ -1,22 +1,21 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-climate-control.js';
-import '../../../components/ha-paper-slider.js';
+import "../../../components/ha-climate-control.js";
+import "../../../components/ha-paper-slider.js";
 
+import attributeClassNames from "../../../common/entity/attribute_class_names.js";
+import featureClassNames from "../../../common/entity/feature_class_names";
 
-import attributeClassNames from '../../../common/entity/attribute_class_names.js';
-import featureClassNames from '../../../common/entity/feature_class_names';
-
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -217,25 +216,25 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       stateObj: {
         type: Object,
-        observer: 'stateObjChanged',
+        observer: "stateObjChanged",
       },
 
       operationIndex: {
         type: Number,
         value: -1,
-        observer: 'handleOperationmodeChanged',
+        observer: "handleOperationmodeChanged",
       },
 
       fanIndex: {
         type: Number,
         value: -1,
-        observer: 'handleFanmodeChanged',
+        observer: "handleFanmodeChanged",
       },
 
       swingIndex: {
         type: Number,
         value: -1,
-        observer: 'handleSwingmodeChanged',
+        observer: "handleSwingmodeChanged",
       },
       awayToggleChecked: Boolean,
       auxToggleChecked: Boolean,
@@ -246,9 +245,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   stateObjChanged(newVal, oldVal) {
     if (newVal) {
       this.setProperties({
-        awayToggleChecked: newVal.attributes.away_mode === 'on',
-        auxToggleChecked: newVal.attributes.aux_heat === 'on',
-        onToggleChecked: newVal.state !== 'off',
+        awayToggleChecked: newVal.attributes.away_mode === "on",
+        auxToggleChecked: newVal.attributes.aux_heat === "on",
+        onToggleChecked: newVal.state !== "off",
       });
     }
 
@@ -257,7 +256,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         this._debouncer,
         timeOut.after(500),
         () => {
-          this.fire('iron-resize');
+          this.fire("iron-resize");
         }
       );
     }
@@ -267,8 +266,8 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // force polymer to recognize selected item change (to update actual label)
     this.operationIndex = -1;
     if (this.stateObj.attributes.operation_list) {
-      this.operationIndex = (
-        this.stateObj.attributes.operation_list.indexOf(this.stateObj.attributes.operation_mode)
+      this.operationIndex = this.stateObj.attributes.operation_list.indexOf(
+        this.stateObj.attributes.operation_mode
       );
     }
   }
@@ -277,8 +276,8 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // force polymer to recognize selected item change (to update actual label)
     this.swingIndex = -1;
     if (this.stateObj.attributes.swing_list) {
-      this.swingIndex = (
-        this.stateObj.attributes.swing_list.indexOf(this.stateObj.attributes.swing_mode)
+      this.swingIndex = this.stateObj.attributes.swing_list.indexOf(
+        this.stateObj.attributes.swing_mode
       );
     }
   }
@@ -287,8 +286,8 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // force polymer to recognize selected item change (to update actual label)
     this.fanIndex = -1;
     if (this.stateObj.attributes.fan_list) {
-      this.fanIndex = (
-        this.stateObj.attributes.fan_list.indexOf(this.stateObj.attributes.fan_mode)
+      this.fanIndex = this.stateObj.attributes.fan_list.indexOf(
+        this.stateObj.attributes.fan_mode
       );
     }
   }
@@ -296,23 +295,33 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeTemperatureStepSize(hass, stateObj) {
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
-    } if (hass.config.unit_system.temperature.indexOf('F') !== -1) {
+    }
+    if (hass.config.unit_system.temperature.indexOf("F") !== -1) {
       return 1;
     }
     return 0.5;
   }
 
   supportsTemperatureControls(stateObj) {
-    return this.supportsTemperature(stateObj)
-      || this.supportsTemperatureRange(stateObj);
+    return (
+      this.supportsTemperature(stateObj) ||
+      this.supportsTemperatureRange(stateObj)
+    );
   }
 
   supportsTemperature(stateObj) {
-    return (stateObj.attributes.supported_features & 1) !== 0 && typeof stateObj.attributes.temperature === 'number';
+    return (
+      (stateObj.attributes.supported_features & 1) !== 0 &&
+      typeof stateObj.attributes.temperature === "number"
+    );
   }
 
   supportsTemperatureRange(stateObj) {
-    return (stateObj.attributes.supported_features & 6) !== 0 && (typeof stateObj.attributes.target_temp_low === 'number' || typeof stateObj.attributes.target_temp_high === 'number');
+    return (
+      (stateObj.attributes.supported_features & 6) !== 0 &&
+      (typeof stateObj.attributes.target_temp_low === "number" ||
+        typeof stateObj.attributes.target_temp_high === "number")
+    );
   }
 
   supportsHumidity(stateObj) {
@@ -345,42 +354,44 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   computeClassNames(stateObj) {
     const _featureClassNames = {
-      1: 'has-target_temperature',
-      2: 'has-target_temperature_high',
-      4: 'has-target_temperature_low',
-      8: 'has-target_humidity',
-      16: 'has-target_humidity_high',
-      32: 'has-target_humidity_low',
-      64: 'has-fan_mode',
-      128: 'has-operation_mode',
-      256: 'has-hold_mode',
-      512: 'has-swing_mode',
-      1024: 'has-away_mode',
-      2048: 'has-aux_heat',
-      4096: 'has-on',
+      1: "has-target_temperature",
+      2: "has-target_temperature_high",
+      4: "has-target_temperature_low",
+      8: "has-target_humidity",
+      16: "has-target_humidity_high",
+      32: "has-target_humidity_low",
+      64: "has-fan_mode",
+      128: "has-operation_mode",
+      256: "has-hold_mode",
+      512: "has-swing_mode",
+      1024: "has-away_mode",
+      2048: "has-aux_heat",
+      4096: "has-on",
     };
 
-
     var classes = [
-      attributeClassNames(stateObj, ['current_temperature', 'current_humidity']),
+      attributeClassNames(stateObj, [
+        "current_temperature",
+        "current_humidity",
+      ]),
       featureClassNames(stateObj, _featureClassNames),
     ];
 
-    classes.push('more-info-climate');
+    classes.push("more-info-climate");
 
-    return classes.join(' ');
+    return classes.join(" ");
   }
 
   targetTemperatureChanged(ev) {
     const temperature = ev.target.value;
     if (temperature === this.stateObj.attributes.temperature) return;
-    this.callServiceHelper('set_temperature', { temperature: temperature });
+    this.callServiceHelper("set_temperature", { temperature: temperature });
   }
 
   targetTemperatureLowChanged(ev) {
     const targetTempLow = ev.currentTarget.value;
     if (targetTempLow === this.stateObj.attributes.target_temp_low) return;
-    this.callServiceHelper('set_temperature', {
+    this.callServiceHelper("set_temperature", {
       target_temp_low: targetTempLow,
       target_temp_high: this.stateObj.attributes.target_temp_high,
     });
@@ -389,7 +400,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   targetTemperatureHighChanged(ev) {
     const targetTempHigh = ev.currentTarget.value;
     if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
-    this.callServiceHelper('set_temperature', {
+    this.callServiceHelper("set_temperature", {
       target_temp_low: this.stateObj.attributes.target_temp_low,
       target_temp_high: targetTempHigh,
     });
@@ -398,53 +409,57 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   targetHumiditySliderChanged(ev) {
     const humidity = ev.target.value;
     if (humidity === this.stateObj.attributes.humidity) return;
-    this.callServiceHelper('set_humidity', { humidity: humidity });
+    this.callServiceHelper("set_humidity", { humidity: humidity });
   }
 
   awayToggleChanged(ev) {
-    const oldVal = this.stateObj.attributes.away_mode === 'on';
+    const oldVal = this.stateObj.attributes.away_mode === "on";
     const newVal = ev.target.checked;
     if (oldVal === newVal) return;
-    this.callServiceHelper('set_away_mode', { away_mode: newVal });
+    this.callServiceHelper("set_away_mode", { away_mode: newVal });
   }
 
   auxToggleChanged(ev) {
-    const oldVal = this.stateObj.attributes.aux_heat === 'on';
+    const oldVal = this.stateObj.attributes.aux_heat === "on";
     const newVal = ev.target.checked;
     if (oldVal === newVal) return;
-    this.callServiceHelper('set_aux_heat', { aux_heat: newVal });
+    this.callServiceHelper("set_aux_heat", { aux_heat: newVal });
   }
 
   onToggleChanged(ev) {
-    const oldVal = this.stateObj.state !== 'off';
+    const oldVal = this.stateObj.state !== "off";
     const newVal = ev.target.checked;
     if (oldVal === newVal) return;
-    this.callServiceHelper(newVal ? 'turn_on' : 'turn_off', {});
+    this.callServiceHelper(newVal ? "turn_on" : "turn_off", {});
   }
 
   handleFanmodeChanged(fanIndex) {
     // Selected Option will transition to '' before transitioning to new value
-    if (fanIndex === '' || fanIndex === -1) return;
+    if (fanIndex === "" || fanIndex === -1) return;
     const fanInput = this.stateObj.attributes.fan_list[fanIndex];
     if (fanInput === this.stateObj.attributes.fan_mode) return;
-    this.callServiceHelper('set_fan_mode', { fan_mode: fanInput });
+    this.callServiceHelper("set_fan_mode", { fan_mode: fanInput });
   }
 
   handleOperationmodeChanged(operationIndex) {
     // Selected Option will transition to '' before transitioning to new value
-    if (operationIndex === '' || operationIndex === -1) return;
-    const operationInput = this.stateObj.attributes.operation_list[operationIndex];
+    if (operationIndex === "" || operationIndex === -1) return;
+    const operationInput = this.stateObj.attributes.operation_list[
+      operationIndex
+    ];
     if (operationInput === this.stateObj.attributes.operation_mode) return;
 
-    this.callServiceHelper('set_operation_mode', { operation_mode: operationInput });
+    this.callServiceHelper("set_operation_mode", {
+      operation_mode: operationInput,
+    });
   }
 
   handleSwingmodeChanged(swingIndex) {
     // Selected Option will transition to '' before transitioning to new value
-    if (swingIndex === '' || swingIndex === -1) return;
+    if (swingIndex === "" || swingIndex === -1) return;
     const swingInput = this.stateObj.attributes.swing_list[swingIndex];
     if (swingInput === this.stateObj.attributes.swing_mode) return;
-    this.callServiceHelper('set_swing_mode', { swing_mode: swingInput });
+    this.callServiceHelper("set_swing_mode", { swing_mode: swingInput });
   }
 
   callServiceHelper(service, data) {
@@ -455,10 +470,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     /* eslint-disable no-param-reassign */
     data.entity_id = this.stateObj.entity_id;
     /* eslint-enable no-param-reassign */
-    this.hass.callService('climate', service, data)
-      .then(() => {
-        this.stateObjChanged(this.stateObj);
-      });
+    this.hass.callService("climate", service, data).then(() => {
+      this.stateObjChanged(this.stateObj);
+    });
   }
 
   _localizeOperationMode(localize, mode) {
@@ -466,4 +480,4 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 }
 
-customElements.define('more-info-climate', MoreInfoClimate);
+customElements.define("more-info-climate", MoreInfoClimate);

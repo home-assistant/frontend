@@ -1,18 +1,18 @@
-import { h, Component } from 'preact';
+import { h, Component } from "preact";
 
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
 
-import EventTrigger from './event.js';
-import HassTrigger from './homeassistant.js';
-import MQTTTrigger from './mqtt.js';
-import NumericStateTrigger from './numeric_state.js';
-import StateTrigger from './state.js';
-import SunTrigger from './sun.js';
-import TemplateTrigger from './template.js';
-import TimeTrigger from './time.js';
-import ZoneTrigger from './zone.js';
+import EventTrigger from "./event.js";
+import HassTrigger from "./homeassistant.js";
+import MQTTTrigger from "./mqtt.js";
+import NumericStateTrigger from "./numeric_state.js";
+import StateTrigger from "./state.js";
+import SunTrigger from "./sun.js";
+import TemplateTrigger from "./template.js";
+import TimeTrigger from "./time.js";
+import ZoneTrigger from "./zone.js";
 
 const TYPES = {
   event: EventTrigger,
@@ -39,10 +39,10 @@ export default class TriggerEdit extends Component {
     const type = ev.target.selectedItem.attributes.platform.value;
 
     if (type !== this.props.trigger.platform) {
-      this.props.onChange(this.props.index, Object.assign(
-        { platform: type },
-        TYPES[type].defaultConfig
-      ));
+      this.props.onChange(
+        this.props.index,
+        Object.assign({ platform: type }, TYPES[type].defaultConfig)
+      );
     }
   }
 
@@ -53,20 +53,35 @@ export default class TriggerEdit extends Component {
     if (!Comp) {
       return (
         <div>
-          {localize('ui.panel.config.automation.editor.triggers.unsupported_platform', 'platform', trigger.platform)}
+          {localize(
+            "ui.panel.config.automation.editor.triggers.unsupported_platform",
+            "platform",
+            trigger.platform
+          )}
           <pre>{JSON.stringify(trigger, null, 2)}</pre>
         </div>
       );
     }
     return (
       <div>
-        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.editor.triggers.type_select')} no-animations>
+        <paper-dropdown-menu-light
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type_select"
+          )}
+          no-animations
+        >
           <paper-listbox
             slot="dropdown-content"
             selected={selected}
             oniron-select={this.typeChanged}
           >
-            {OPTIONS.map(opt => <paper-item platform={opt}>{localize(`ui.panel.config.automation.editor.triggers.type.${opt}.label`)}</paper-item>)}
+            {OPTIONS.map((opt) => (
+              <paper-item platform={opt}>
+                {localize(
+                  `ui.panel.config.automation.editor.triggers.type.${opt}.label`
+                )}
+              </paper-item>
+            ))}
           </paper-listbox>
         </paper-dropdown-menu-light>
         <Comp

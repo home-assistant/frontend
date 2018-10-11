@@ -1,27 +1,23 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/state-history-charts.js';
-import '../../data/ha-state-history-data.js';
-import '../../resources/ha-style.js';
-import '../../state-summary/state-card-content.js';
+import "../../components/state-history-charts.js";
+import "../../data/ha-state-history-data.js";
+import "../../resources/ha-style.js";
+import "../../state-summary/state-card-content.js";
 
-import './controls/more-info-content.js';
+import "./controls/more-info-content.js";
 
-import computeStateName from '../../common/entity/compute_state_name.js';
-import computeStateDomain from '../../common/entity/compute_state_domain.js';
-import isComponentLoaded from '../../common/config/is_component_loaded.js';
-import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../common/const.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import computeStateName from "../../common/entity/compute_state_name.js";
+import computeStateDomain from "../../common/entity/compute_state_domain.js";
+import isComponentLoaded from "../../common/config/is_component_loaded.js";
+import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const.js";
+import EventsMixin from "../../mixins/events-mixin.js";
 
-const DOMAINS_NO_INFO = [
-  'camera',
-  'configurator',
-  'history_graph',
-];
+const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*
  * @appliesMixin EventsMixin
  */
@@ -91,7 +87,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
 
       stateObj: {
         type: Object,
-        observer: '_stateObjChanged',
+        observer: "_stateObjChanged",
       },
 
       dialogElement: Object,
@@ -100,7 +96,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
       domain: {
         type: String,
         reflectToAttribute: true,
-        computed: '_computeDomain(stateObj)',
+        computed: "_computeDomain(stateObj)",
       },
 
       _stateHistory: Object,
@@ -132,17 +128,20 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
   }
 
   _computeShowHistoryComponent(hass, stateObj) {
-    return hass && stateObj
-      && isComponentLoaded(hass, 'history')
-      && !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
+    return (
+      hass &&
+      stateObj &&
+      isComponentLoaded(hass, "history") &&
+      !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj))
+    );
   }
 
   _computeDomain(stateObj) {
-    return stateObj ? computeStateDomain(stateObj) : '';
+    return stateObj ? computeStateDomain(stateObj) : "";
   }
 
   _computeStateName(stateObj) {
-    return stateObj ? computeStateName(stateObj) : '';
+    return stateObj ? computeStateName(stateObj) : "";
   }
 
   _stateObjChanged(newVal) {
@@ -151,15 +150,14 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
     }
 
     if (this._cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
-      this._cacheConfig = Object.assign(
-        {}, this._cacheConfig,
-        { cacheKey: `more_info.${newVal.entity_id}` }
-      );
+      this._cacheConfig = Object.assign({}, this._cacheConfig, {
+        cacheKey: `more_info.${newVal.entity_id}`,
+      });
     }
   }
 
   _gotoSettings() {
-    this.fire('more-info-page', { page: 'settings' });
+    this.fire("more-info-page", { page: "settings" });
   }
 }
-customElements.define('more-info-controls', MoreInfoControls);
+customElements.define("more-info-controls", MoreInfoControls);

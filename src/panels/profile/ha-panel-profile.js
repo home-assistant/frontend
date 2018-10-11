@@ -1,27 +1,27 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from "../../mixins/events-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
-import './ha-change-password-card.js';
-import './ha-mfa-modules-card.js';
-import './ha-refresh-tokens-card.js';
-import './ha-long-lived-access-tokens-card.js';
+import "./ha-change-password-card.js";
+import "./ha-mfa-modules-card.js";
+import "./ha-refresh-tokens-card.js";
+import "./ha-long-lived-access-tokens-card.js";
 
-import './ha-pick-language-row.js';
-import './ha-pick-theme-row.js';
-import './ha-push-notifications-row.js';
+import "./ha-pick-language-row.js";
+import "./ha-pick-theme-row.js";
+import "./ha-push-notifications-row.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -126,17 +126,19 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   async _refreshRefreshTokens() {
     this._refreshTokens = await this.hass.callWS({
-      type: 'auth/refresh_tokens'
+      type: "auth/refresh_tokens",
     });
   }
 
   _handleLogOut() {
-    this.fire('hass-logout');
+    this.fire("hass-logout");
   }
 
   _canChangePassword(user) {
-    return user.credentials.some(cred => cred.auth_provider_type === 'homeassistant');
+    return user.credentials.some(
+      (cred) => cred.auth_provider_type === "homeassistant"
+    );
   }
 }
 
-customElements.define('ha-panel-profile', HaPanelProfile);
+customElements.define("ha-panel-profile", HaPanelProfile);

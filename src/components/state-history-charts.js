@@ -1,11 +1,11 @@
-import '@polymer/paper-spinner/paper-spinner.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './state-history-chart-line.js';
-import './state-history-chart-timeline.js';
+import "./state-history-chart-line.js";
+import "./state-history-chart-timeline.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -67,9 +67,11 @@ class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
   }
 
   _computeIsEmpty(isLoadingData, historyData) {
-    const historyDataEmpty = (!historyData || !historyData.timeline || !historyData.line
-                              || (historyData.timeline.length === 0
-                              && historyData.line.length === 0));
+    const historyDataEmpty =
+      !historyData ||
+      !historyData.timeline ||
+      !historyData.line ||
+      (historyData.timeline.length === 0 && historyData.line.length === 0);
     return !isLoadingData && historyDataEmpty;
   }
 
@@ -77,11 +79,10 @@ class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
     return isLoading && !this.historyData;
   }
 
-
   _computeEndTime(endTime, upToNow) {
     // We don't really care about the value of historyData, but if it change we want to update
     // endTime.
     return upToNow ? new Date() : endTime;
   }
 }
-customElements.define('state-history-charts', StateHistoryCharts);
+customElements.define("state-history-charts", StateHistoryCharts);

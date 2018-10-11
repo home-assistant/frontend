@@ -1,58 +1,58 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import getEntity from '../data/entity.js';
-import provideHass from '../data/provide_hass.js';
-import '../components/demo-cards.js';
+import getEntity from "../data/entity.js";
+import provideHass from "../data/provide_hass.js";
+import "../components/demo-cards.js";
 
 const ENTITIES = [
-  getEntity('media_player', 'bedroom', 'playing', {
-    media_content_type: 'movie',
-    media_title: 'Epic sax guy 10 hours',
-    app_name: 'YouTube',
-    supported_features: 32
+  getEntity("media_player", "bedroom", "playing", {
+    media_content_type: "movie",
+    media_title: "Epic sax guy 10 hours",
+    app_name: "YouTube",
+    supported_features: 32,
   }),
-  getEntity('media_player', 'family_room', 'paused', {
-    media_content_type: 'music',
-    media_title: 'I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)',
-    media_artist: 'Technohead',
-    supported_features: 16417
+  getEntity("media_player", "family_room", "paused", {
+    media_content_type: "music",
+    media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
+    media_artist: "Technohead",
+    supported_features: 16417,
   }),
-  getEntity('media_player', 'family_room_no_play', 'paused', {
-    media_content_type: 'movie',
-    media_title: 'Epic sax guy 10 hours',
-    app_name: 'YouTube',
-    supported_features: 33
+  getEntity("media_player", "family_room_no_play", "paused", {
+    media_content_type: "movie",
+    media_title: "Epic sax guy 10 hours",
+    app_name: "YouTube",
+    supported_features: 33,
   }),
-  getEntity('media_player', 'living_room', 'playing', {
-    media_content_type: 'tvshow',
-    media_title: 'Chapter 1',
-    media_series_title: 'House of Cards',
-    app_name: 'Netflix',
-    supported_features: 1
-  }),
-  getEntity('media_player', 'lounge_room', 'idle', {
-    media_content_type: 'music',
-    media_title: 'I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)',
-    media_artist: 'Technohead',
+  getEntity("media_player", "living_room", "playing", {
+    media_content_type: "tvshow",
+    media_title: "Chapter 1",
+    media_series_title: "House of Cards",
+    app_name: "Netflix",
     supported_features: 1,
   }),
-  getEntity('media_player', 'theater', 'off', {
-    media_content_type: 'movie',
-    media_title: 'Epic sax guy 10 hours',
-    app_name: 'YouTube',
-    supported_features: 33
+  getEntity("media_player", "lounge_room", "idle", {
+    media_content_type: "music",
+    media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
+    media_artist: "Technohead",
+    supported_features: 1,
   }),
-  getEntity('media_player', 'android_cast', 'playing', {
-    media_title: 'Android Screen Casting',
-    app_name: 'Screen Mirroring',
-    supported_features: 21437
+  getEntity("media_player", "theater", "off", {
+    media_content_type: "movie",
+    media_title: "Epic sax guy 10 hours",
+    app_name: "YouTube",
+    supported_features: 33,
+  }),
+  getEntity("media_player", "android_cast", "playing", {
+    media_title: "Android Screen Casting",
+    app_name: "Screen Mirroring",
+    supported_features: 21437,
   }),
 ];
 
 const CONFIGS = [
   {
-    heading: 'Media Players',
+    heading: "Media Players",
     config: `
 - type: entities
   entities:
@@ -70,8 +70,8 @@ const CONFIGS = [
       name: Chromcast Idle
     - entity: media_player.theater
       name: 'Player Off'
-    `
-  }
+    `,
+  },
 ];
 
 class DemoHuiMediaPlayerRows extends PolymerElement {
@@ -89,7 +89,7 @@ class DemoHuiMediaPlayerRows extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
+        value: CONFIGS,
       },
       hass: Object,
     };
@@ -102,4 +102,4 @@ class DemoHuiMediaPlayerRows extends PolymerElement {
   }
 }
 
-customElements.define('demo-hui-media-player-rows', DemoHuiMediaPlayerRows);
+customElements.define("demo-hui-media-player-rows", DemoHuiMediaPlayerRows);

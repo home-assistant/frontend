@@ -1,9 +1,9 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-card.js';
+import "../../../components/ha-card.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -103,13 +103,13 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       hass: {
-        type: Object
+        type: Object,
       },
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)',
-        observer: '_stateObjChanged'
+        computed: "_computeStateObj(hass.states, _config.entity)",
+        observer: "_stateObjChanged",
       },
     };
   }
@@ -119,7 +119,8 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
   }
 
   setConfig(config) {
-    if (!config || !config.entity) throw new Error('Invalid card configuration');
+    if (!config || !config.entity)
+      throw new Error("Invalid card configuration");
     this._config = Object.assign({ min: 0, max: 100 }, config);
   }
 
@@ -134,41 +135,50 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
     const turn = this._translateTurn(stateObj.state, config) / 10;
 
     this.$.gauge.style.transform = `rotate(${turn}turn)`;
-    this.$.gauge.style.backgroundColor = this._computeSeverity(stateObj.state, config.severity);
+    this.$.gauge.style.backgroundColor = this._computeSeverity(
+      stateObj.state,
+      config.severity
+    );
   }
 
   _computeStateDisplay(stateObj) {
-    if (!stateObj || isNaN(stateObj.state)) return '';
-    const unitOfMeasurement = this._config.unit_of_measurement || stateObj.attributes.unit_of_measurement || '';
+    if (!stateObj || isNaN(stateObj.state)) return "";
+    const unitOfMeasurement =
+      this._config.unit_of_measurement ||
+      stateObj.attributes.unit_of_measurement ||
+      "";
     return `${stateObj.state} ${unitOfMeasurement}`;
   }
 
   _computeTitle(stateObj) {
     if (!stateObj) {
-      this.$.title.className = 'not-found';
-      return 'Entity not available: ' + this._config.entity;
+      this.$.title.className = "not-found";
+      return "Entity not available: " + this._config.entity;
     }
     if (isNaN(stateObj.state)) {
-      this.$.title.className = 'not-found';
-      return 'Entity is non-numeric: ' + this._config.entity;
+      this.$.title.className = "not-found";
+      return "Entity is non-numeric: " + this._config.entity;
     }
-    this.$.title.className = '';
+    this.$.title.className = "";
     return this._config.title;
   }
 
   _computeSeverity(stateValue, sections) {
     const numberValue = Number(stateValue);
     const severityMap = {
-      red: 'var(--label-badge-red)',
-      green: 'var(--label-badge-green)',
-      yellow: 'var(--label-badge-yellow)',
-      normal: 'var(--label-badge-blue)',
+      red: "var(--label-badge-red)",
+      green: "var(--label-badge-green)",
+      yellow: "var(--label-badge-yellow)",
+      normal: "var(--label-badge-blue)",
     };
 
     if (!sections) return severityMap.normal;
 
     const sectionsArray = Object.keys(sections);
-    const sortable = sectionsArray.map(severity => [severity, sections[severity]]);
+    const sortable = sectionsArray.map((severity) => [
+      severity,
+      sections[severity],
+    ]);
 
     for (var i = 0; i < sortable.length; i++) {
       if (severityMap[sortable[i][0]] == null || isNaN(sortable[i][1])) {
@@ -190,12 +200,12 @@ class HuiGaugeCard extends EventsMixin(PolymerElement) {
   }
 
   _translateTurn(value, config) {
-    return 5 * (value - config.min) / (config.max - config.min);
+    return (5 * (value - config.min)) / (config.max - config.min);
   }
 
   _handleClick() {
-    this.fire('hass-more-info', { entityId: this._config.entity });
+    this.fire("hass-more-info", { entityId: this._config.entity });
   }
 }
 
-customElements.define('hui-gauge-card', HuiGaugeCard);
+customElements.define("hui-gauge-card", HuiGaugeCard);

@@ -1,20 +1,20 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-toggle-button/paper-toggle-button.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-water_heater-control.js';
-import '../../../components/ha-paper-slider.js';
+import "../../../components/ha-water_heater-control.js";
+import "../../../components/ha-paper-slider.js";
 
-import featureClassNames from '../../../common/entity/feature_class_names';
+import featureClassNames from "../../../common/entity/feature_class_names";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin EventsMixin
@@ -116,13 +116,13 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       stateObj: {
         type: Object,
-        observer: 'stateObjChanged',
+        observer: "stateObjChanged",
       },
 
       operationIndex: {
         type: Number,
         value: -1,
-        observer: 'handleOperationmodeChanged',
+        observer: "handleOperationmodeChanged",
       },
       awayToggleChecked: Boolean,
     };
@@ -131,7 +131,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
   stateObjChanged(newVal, oldVal) {
     if (newVal) {
       this.setProperties({
-        awayToggleChecked: newVal.attributes.away_mode === 'on'
+        awayToggleChecked: newVal.attributes.away_mode === "on",
       });
     }
 
@@ -140,7 +140,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         this._debouncer,
         timeOut.after(500),
         () => {
-          this.fire('iron-resize');
+          this.fire("iron-resize");
         }
       );
     }
@@ -160,7 +160,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
     }
-    if (hass.config.unit_system.temperature.indexOf('F') !== -1) {
+    if (hass.config.unit_system.temperature.indexOf("F") !== -1) {
       return 1;
     }
     return 0.5;
@@ -171,8 +171,10 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   supportsTemperature(stateObj) {
-    return (stateObj.attributes.supported_features & 1) !== 0
-            && typeof stateObj.attributes.temperature === 'number';
+    return (
+      (stateObj.attributes.supported_features & 1) !== 0 &&
+      typeof stateObj.attributes.temperature === "number"
+    );
   }
 
   supportsOperationMode(stateObj) {
@@ -185,41 +187,42 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   computeClassNames(stateObj) {
     const _featureClassNames = {
-      1: 'has-target_temperature',
-      2: 'has-operation_mode',
-      4: 'has-away_mode'
+      1: "has-target_temperature",
+      2: "has-operation_mode",
+      4: "has-away_mode",
     };
 
+    var classes = [featureClassNames(stateObj, _featureClassNames)];
 
-    var classes = [
-      featureClassNames(stateObj, _featureClassNames),
-    ];
+    classes.push("more-info-water_heater");
 
-    classes.push('more-info-water_heater');
-
-    return classes.join(' ');
+    return classes.join(" ");
   }
 
   targetTemperatureChanged(ev) {
     const temperature = ev.target.value;
     if (temperature === this.stateObj.attributes.temperature) return;
-    this.callServiceHelper('set_temperature', { temperature: temperature });
+    this.callServiceHelper("set_temperature", { temperature: temperature });
   }
 
   awayToggleChanged(ev) {
-    const oldVal = this.stateObj.attributes.away_mode === 'on';
+    const oldVal = this.stateObj.attributes.away_mode === "on";
     const newVal = ev.target.checked;
     if (oldVal === newVal) return;
-    this.callServiceHelper('set_away_mode', { away_mode: newVal });
+    this.callServiceHelper("set_away_mode", { away_mode: newVal });
   }
 
   handleOperationmodeChanged(operationIndex) {
     // Selected Option will transition to '' before transitioning to new value
-    if (operationIndex === '' || operationIndex === -1) return;
-    const operationInput = this.stateObj.attributes.operation_list[operationIndex];
+    if (operationIndex === "" || operationIndex === -1) return;
+    const operationInput = this.stateObj.attributes.operation_list[
+      operationIndex
+    ];
     if (operationInput === this.stateObj.attributes.operation_mode) return;
 
-    this.callServiceHelper('set_operation_mode', { operation_mode: operationInput });
+    this.callServiceHelper("set_operation_mode", {
+      operation_mode: operationInput,
+    });
   }
 
   callServiceHelper(service, data) {
@@ -230,10 +233,9 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     /* eslint-disable no-param-reassign */
     data.entity_id = this.stateObj.entity_id;
     /* eslint-enable no-param-reassign */
-    this.hass.callService('water_heater', service, data)
-      .then(() => {
-        this.stateObjChanged(this.stateObj);
-      });
+    this.hass.callService("water_heater", service, data).then(() => {
+      this.stateObjChanged(this.stateObj);
+    });
   }
 
   _localizeOperationMode(localize, mode) {
@@ -241,4 +243,4 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 }
 
-customElements.define('more-info-water_heater', MoreInfoWaterHeater);
+customElements.define("more-info-water_heater", MoreInfoWaterHeater);

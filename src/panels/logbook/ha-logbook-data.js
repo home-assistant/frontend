@@ -1,29 +1,29 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 const DATA_CACHE = {};
-const ALL_ENTITIES = '*';
+const ALL_ENTITIES = "*";
 
 class HaLogbookData extends PolymerElement {
   static get properties() {
     return {
       hass: {
         type: Object,
-        observer: 'hassChanged',
+        observer: "hassChanged",
       },
 
       filterDate: {
         type: String,
-        observer: 'filterDataChanged',
+        observer: "filterDataChanged",
       },
 
       filterPeriod: {
         type: Number,
-        observer: 'filterDataChanged',
+        observer: "filterDataChanged",
       },
 
       filterEntity: {
         type: String,
-        observer: 'filterDataChanged',
+        observer: "filterDataChanged",
       },
 
       isLoading: {
@@ -59,11 +59,12 @@ class HaLogbookData extends PolymerElement {
 
     this._setIsLoading(true);
 
-    this.getDate(this.filterDate, this.filterPeriod, this.filterEntity)
-      .then((logbookEntries) => {
+    this.getDate(this.filterDate, this.filterPeriod, this.filterEntity).then(
+      (logbookEntries) => {
         this._setEntries(logbookEntries);
         this._setIsLoading(false);
-      });
+      }
+    );
   }
 
   getDate(date, period, entityId) {
@@ -77,29 +78,33 @@ class HaLogbookData extends PolymerElement {
     }
 
     if (entityId !== ALL_ENTITIES && DATA_CACHE[period][date][ALL_ENTITIES]) {
-      return DATA_CACHE[period][date][ALL_ENTITIES].then(function (entities) {
-        return entities.filter(function (entity) {
+      return DATA_CACHE[period][date][ALL_ENTITIES].then(function(entities) {
+        return entities.filter(function(entity) {
           return entity.entity_id === entityId;
         });
       });
     }
 
-    DATA_CACHE[period][date][entityId] = this._getFromServer(date, period, entityId);
+    DATA_CACHE[period][date][entityId] = this._getFromServer(
+      date,
+      period,
+      entityId
+    );
     return DATA_CACHE[period][date][entityId];
   }
 
   _getFromServer(date, period, entityId) {
-    let url = 'logbook/' + date + '?period=' + period;
+    let url = "logbook/" + date + "?period=" + period;
     if (entityId !== ALL_ENTITIES) {
-      url += '&entity=' + entityId;
+      url += "&entity=" + entityId;
     }
 
-    return this.hass.callApi('GET', url).then(
-      function (logbookEntries) {
+    return this.hass.callApi("GET", url).then(
+      function(logbookEntries) {
         logbookEntries.reverse();
         return logbookEntries;
       },
-      function () {
+      function() {
         return null;
       }
     );
@@ -111,4 +116,4 @@ class HaLogbookData extends PolymerElement {
   }
 }
 
-customElements.define('ha-logbook-data', HaLogbookData);
+customElements.define("ha-logbook-data", HaLogbookData);

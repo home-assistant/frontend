@@ -1,4 +1,4 @@
-const STORED_STATE = ['dockedSidebar', 'selectedTheme', 'selectedLanguage'];
+const STORED_STATE = ["dockedSidebar", "selectedTheme", "selectedLanguage"];
 const STORAGE = window.localStorage || {};
 
 export function storeState(hass) {

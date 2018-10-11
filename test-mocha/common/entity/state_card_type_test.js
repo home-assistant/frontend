@@ -1,8 +1,8 @@
-import { assert } from 'chai';
+import { assert } from "chai";
 
-import stateCardType from '../../../src/common/entity/state_card_type.js';
+import stateCardType from "../../../src/common/entity/state_card_type.js";
 
-describe('stateCardType', () => {
+describe("stateCardType", () => {
   const hass = {
     services: {
       light: {
@@ -12,42 +12,42 @@ describe('stateCardType', () => {
     },
   };
 
-  it('Returns display for unavailable states', () => {
+  it("Returns display for unavailable states", () => {
     const stateObj = {
-      state: 'unavailable',
+      state: "unavailable",
     };
-    assert.strictEqual(stateCardType(hass, stateObj), 'display');
+    assert.strictEqual(stateCardType(hass, stateObj), "display");
   });
 
-  it('Returns media_player for media_player states', () => {
+  it("Returns media_player for media_player states", () => {
     const stateObj = {
-      entity_id: 'media_player.bla',
+      entity_id: "media_player.bla",
     };
-    assert.strictEqual(stateCardType(hass, stateObj), 'media_player');
+    assert.strictEqual(stateCardType(hass, stateObj), "media_player");
   });
 
-  it('Returns toggle for states that can toggle', () => {
+  it("Returns toggle for states that can toggle", () => {
     const stateObj = {
-      entity_id: 'light.bla',
+      entity_id: "light.bla",
       attributes: {},
     };
-    assert.strictEqual(stateCardType(hass, stateObj), 'toggle');
+    assert.strictEqual(stateCardType(hass, stateObj), "toggle");
   });
 
-  it('Returns display for states with hidden control', () => {
+  it("Returns display for states with hidden control", () => {
     const stateObj = {
-      entity_id: 'light.bla',
+      entity_id: "light.bla",
       attributes: {
-        control: 'hidden',
+        control: "hidden",
       },
     };
-    assert.strictEqual(stateCardType(hass, stateObj), 'display');
+    assert.strictEqual(stateCardType(hass, stateObj), "display");
   });
 
-  it('Returns display for entities that cannot toggle', () => {
+  it("Returns display for entities that cannot toggle", () => {
     const stateObj = {
-      entity_id: 'sensor.bla',
+      entity_id: "sensor.bla",
     };
-    assert.strictEqual(stateCardType(hass, stateObj), 'display');
+    assert.strictEqual(stateCardType(hass, stateObj), "display");
   });
 });

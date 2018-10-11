@@ -1,56 +1,52 @@
-import fireEvent from '../../../common/dom/fire_event.js';
+import fireEvent from "../../../common/dom/fire_event.js";
 
-import '../entity-rows/hui-climate-entity-row.js';
-import '../entity-rows/hui-cover-entity-row.js';
-import '../entity-rows/hui-group-entity-row.js';
-import '../entity-rows/hui-input-number-entity-row.js';
-import '../entity-rows/hui-input-select-entity-row.js';
-import '../entity-rows/hui-input-text-entity-row.js';
-import '../entity-rows/hui-lock-entity-row.js';
-import '../entity-rows/hui-media-player-entity-row.js';
-import '../entity-rows/hui-scene-entity-row.js';
-import '../entity-rows/hui-script-entity-row.js';
-import '../entity-rows/hui-text-entity-row.js';
-import '../entity-rows/hui-timer-entity-row.js';
-import '../entity-rows/hui-toggle-entity-row.js';
+import "../entity-rows/hui-climate-entity-row.js";
+import "../entity-rows/hui-cover-entity-row.js";
+import "../entity-rows/hui-group-entity-row.js";
+import "../entity-rows/hui-input-number-entity-row.js";
+import "../entity-rows/hui-input-select-entity-row.js";
+import "../entity-rows/hui-input-text-entity-row.js";
+import "../entity-rows/hui-lock-entity-row.js";
+import "../entity-rows/hui-media-player-entity-row.js";
+import "../entity-rows/hui-scene-entity-row.js";
+import "../entity-rows/hui-script-entity-row.js";
+import "../entity-rows/hui-text-entity-row.js";
+import "../entity-rows/hui-timer-entity-row.js";
+import "../entity-rows/hui-toggle-entity-row.js";
 
-import '../special-rows/hui-call-service-row.js';
-import '../special-rows/hui-divider-row.js';
-import '../special-rows/hui-weblink-row.js';
+import "../special-rows/hui-call-service-row.js";
+import "../special-rows/hui-divider-row.js";
+import "../special-rows/hui-weblink-row.js";
 
-import createErrorCardConfig from './create-error-card-config.js';
+import createErrorCardConfig from "./create-error-card-config.js";
 
-const CUSTOM_TYPE_PREFIX = 'custom:';
-const SPECIAL_TYPES = new Set([
-  'call-service',
-  'divider',
-  'weblink'
-]);
+const CUSTOM_TYPE_PREFIX = "custom:";
+const SPECIAL_TYPES = new Set(["call-service", "divider", "weblink"]);
 const DOMAIN_TO_ELEMENT_TYPE = {
-  automation: 'toggle',
-  climate: 'climate',
-  cover: 'cover',
-  fan: 'toggle',
-  group: 'group',
-  input_boolean: 'toggle',
-  input_number: 'input-number',
-  input_select: 'input-select',
-  input_text: 'input-text',
-  light: 'toggle',
-  media_player: 'media-player',
-  lock: 'lock',
-  scene: 'scene',
-  script: 'script',
-  timer: 'timer',
-  switch: 'toggle',
-  vacuum: 'toggle'
+  automation: "toggle",
+  climate: "climate",
+  cover: "cover",
+  fan: "toggle",
+  group: "group",
+  input_boolean: "toggle",
+  input_number: "input-number",
+  input_select: "input-select",
+  input_text: "input-text",
+  light: "toggle",
+  media_player: "media-player",
+  lock: "lock",
+  scene: "scene",
+  script: "script",
+  timer: "timer",
+  switch: "toggle",
+  vacuum: "toggle",
 };
 const TIMEOUT = 2000;
 
 function _createElement(tag, config) {
   const element = document.createElement(tag);
   try {
-    if ('setConfig' in element) element.setConfig(config);
+    if ("setConfig" in element) element.setConfig(config);
   } catch (err) {
     // eslint-disable-next-line
     console.error(tag, err);
@@ -62,22 +58,28 @@ function _createElement(tag, config) {
 }
 
 function _createErrorElement(error, config) {
-  return _createElement('hui-error-card', createErrorCardConfig(error, config));
+  return _createElement("hui-error-card", createErrorCardConfig(error, config));
 }
 
 function _hideErrorElement(element) {
-  element.style.display = 'None';
-  return window.setTimeout(() => { element.style.display = ''; }, TIMEOUT);
+  element.style.display = "None";
+  return window.setTimeout(() => {
+    element.style.display = "";
+  }, TIMEOUT);
 }
 
 export default function createRowElement(config) {
   let tag;
 
-  if (!config || typeof config !== 'object' || (!config.entity && !config.type)) {
-    return _createErrorElement('Invalid config given.', config);
+  if (
+    !config ||
+    typeof config !== "object" ||
+    (!config.entity && !config.type)
+  ) {
+    return _createErrorElement("Invalid config given.", config);
   }
 
-  const type = config.type || 'default';
+  const type = config.type || "default";
   if (SPECIAL_TYPES.has(type)) {
     return _createElement(`hui-${type}-row`, config);
   }
@@ -88,19 +90,22 @@ export default function createRowElement(config) {
     if (customElements.get(tag)) {
       return _createElement(tag, config);
     }
-    const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
+    const element = _createErrorElement(
+      `Custom element doesn't exist: ${tag}.`,
+      config
+    );
     const timer = _hideErrorElement(element);
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);
-      fireEvent(element, 'rebuild-view');
+      fireEvent(element, "rebuild-view");
     });
 
     return element;
   }
 
-  const domain = config.entity.split('.', 1)[0];
-  tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
+  const domain = config.entity.split(".", 1)[0];
+  tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || "text"}-entity-row`;
 
   return _createElement(tag, config);
 }

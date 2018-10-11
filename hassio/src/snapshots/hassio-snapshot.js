@@ -1,14 +1,14 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-checkbox/paper-checkbox.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
+import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../src/resources/ha-style.js';
+import "../../../src/resources/ha-style.js";
 
 class HassioSnapshot extends PolymerElement {
   static get template() {
@@ -114,7 +114,7 @@ class HassioSnapshot extends PolymerElement {
       snapshotSlug: {
         type: String,
         notify: true,
-        observer: '_snapshotSlugChanged',
+        observer: "_snapshotSlugChanged",
       },
       snapshotDeleted: {
         type: Boolean,
@@ -131,85 +131,124 @@ class HassioSnapshot extends PolymerElement {
   }
 
   _snapshotSlugChanged(snapshotSlug) {
-    if (!snapshotSlug || snapshotSlug === 'update') return;
-    this.hass.callApi('get', `hassio/snapshots/${snapshotSlug}/info`)
-      .then((info) => {
+    if (!snapshotSlug || snapshotSlug === "update") return;
+    this.hass.callApi("get", `hassio/snapshots/${snapshotSlug}/info`).then(
+      (info) => {
         info.data.folders = this._computeFolders(info.data.folders);
         info.data.addons = this._computeAddons(info.data.addons);
         this.snapshot = info.data;
         this.$.dialog.open();
-      }, () => {
+      },
+      () => {
         this.snapshot = null;
-      });
+      }
+    );
   }
 
   _computeFolders(folders) {
     const list = [];
-    if (folders.includes('homeassistant')) list.push({ slug: 'homeassistant', name: 'Home Assistant configuration', checked: true });
-    if (folders.includes('ssl')) list.push({ slug: 'ssl', name: 'SSL', checked: true });
-    if (folders.includes('share')) list.push({ slug: 'share', name: 'Share', checked: true });
-    if (folders.includes('addons/local')) list.push({ slug: 'addons/local', name: 'Local add-ons', checked: true });
+    if (folders.includes("homeassistant"))
+      list.push({
+        slug: "homeassistant",
+        name: "Home Assistant configuration",
+        checked: true,
+      });
+    if (folders.includes("ssl"))
+      list.push({ slug: "ssl", name: "SSL", checked: true });
+    if (folders.includes("share"))
+      list.push({ slug: "share", name: "Share", checked: true });
+    if (folders.includes("addons/local"))
+      list.push({ slug: "addons/local", name: "Local add-ons", checked: true });
     return list;
   }
 
   _computeAddons(addons) {
-    return addons.map(addon => (
-      { slug: addon.slug, name: addon.name, version: addon.version, checked: true }));
+    return addons.map((addon) => ({
+      slug: addon.slug,
+      name: addon.name,
+      version: addon.version,
+      checked: true,
+    }));
   }
 
   _isFullSnapshot(type) {
-    return type === 'full';
+    return type === "full";
   }
 
   _partialRestoreClicked() {
-    if (!confirm('Are you sure you want to restore this snapshot?')) {
+    if (!confirm("Are you sure you want to restore this snapshot?")) {
       return;
     }
-    const addons = this.snapshot.addons.filter(addon => addon.checked).map(addon => addon.slug);
-    const folders = this.snapshot.folders.filter(
-      folder => folder.checked
-    ).map(folder => folder.slug);
+    const addons = this.snapshot.addons
+      .filter((addon) => addon.checked)
+      .map((addon) => addon.slug);
+    const folders = this.snapshot.folders
+      .filter((folder) => folder.checked)
+      .map((folder) => folder.slug);
 
     const data = {
       homeassistant: this.restoreHass,
       addons: addons,
-      folders: folders
+      folders: folders,
     };
     if (this.snapshot.protected) data.password = this.snapshotPassword;
 
-    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/partial`, data).then(() => {
-      alert('Snapshot restored!');
-      this.$.dialog.close();
-    }, (error) => {
-      this.error = error.body.message;
-    });
+    this.hass
+      .callApi(
+        "post",
+        `hassio/snapshots/${this.snapshotSlug}/restore/partial`,
+        data
+      )
+      .then(
+        () => {
+          alert("Snapshot restored!");
+          this.$.dialog.close();
+        },
+        (error) => {
+          this.error = error.body.message;
+        }
+      );
   }
 
   _fullRestoreClicked() {
-    if (!confirm('Are you sure you want to restore this snapshot?')) {
+    if (!confirm("Are you sure you want to restore this snapshot?")) {
       return;
     }
-    const data = this.snapshot.protected ? { password: this.snapshotPassword } : null;
-    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/full`, data)
-      .then(() => {
-        alert('Snapshot restored!');
-        this.$.dialog.close();
-      }, (error) => {
-        this.error = error.body.message;
-      });
+    const data = this.snapshot.protected
+      ? { password: this.snapshotPassword }
+      : null;
+    this.hass
+      .callApi(
+        "post",
+        `hassio/snapshots/${this.snapshotSlug}/restore/full`,
+        data
+      )
+      .then(
+        () => {
+          alert("Snapshot restored!");
+          this.$.dialog.close();
+        },
+        (error) => {
+          this.error = error.body.message;
+        }
+      );
   }
 
   _deleteClicked() {
-    if (!confirm('Are you sure you want to delete this snapshot?')) {
+    if (!confirm("Are you sure you want to delete this snapshot?")) {
       return;
     }
-    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/remove`)
-      .then(() => {
-        this.$.dialog.close();
-        this.snapshotDeleted = true;
-      }, (error) => {
-        this.error = error.body.message;
-      });
+    this.hass
+      .callApi("post", `hassio/snapshots/${this.snapshotSlug}/remove`)
+      .then(
+        () => {
+          this.$.dialog.close();
+          this.snapshotDeleted = true;
+        },
+        (error) => {
+          this.error = error.body.message;
+        }
+      );
   }
 
   _computeDownloadUrl(snapshotSlug) {
@@ -218,7 +257,7 @@ class HassioSnapshot extends PolymerElement {
   }
 
   _computeDownloadName(snapshot) {
-    const name = this._computeName(snapshot).replace(/[^a-z0-9]+/gi, '_');
+    const name = this._computeName(snapshot).replace(/[^a-z0-9]+/gi, "_");
     return `Hass_io_${name}.tar`;
   }
 
@@ -227,11 +266,11 @@ class HassioSnapshot extends PolymerElement {
   }
 
   _computeType(type) {
-    return type === 'full' ? 'Full snapshot' : 'Partial snapshot';
+    return type === "full" ? "Full snapshot" : "Partial snapshot";
   }
 
   _computeSize(size) {
-    return (Math.ceil(size * 10) / 10) + ' MB';
+    return Math.ceil(size * 10) / 10 + " MB";
   }
 
   _sortAddons(a, b) {
@@ -240,12 +279,12 @@ class HassioSnapshot extends PolymerElement {
 
   _formatDatetime(datetime) {
     return new Date(datetime).toLocaleDateString(navigator.language, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
+      weekday: "long",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
     });
   }
 
@@ -253,4 +292,4 @@ class HassioSnapshot extends PolymerElement {
     this.snapshotSlug = null;
   }
 }
-customElements.define('hassio-snapshot', HassioSnapshot);
+customElements.define("hassio-snapshot", HassioSnapshot);

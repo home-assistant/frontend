@@ -1,15 +1,15 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-progress/paper-progress.js';
-import '@polymer/paper-styles/element-styles/paper-material-styles.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-progress/paper-progress.js";
+import "@polymer/paper-styles/element-styles/paper-material-styles.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import HassMediaPlayerEntity from '../util/hass-media-player-model.js';
+import HassMediaPlayerEntity from "../util/hass-media-player-model.js";
 
-import computeStateName from '../common/entity/compute_state_name.js';
-import EventsMixin from '../mixins/events-mixin.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import computeStateName from "../common/entity/compute_state_name.js";
+import EventsMixin from "../mixins/events-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -189,12 +189,12 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       stateObj: Object,
       playerObj: {
         type: Object,
-        computed: 'computePlayerObj(hass, stateObj)',
-        observer: 'playerObjChanged',
+        computed: "computePlayerObj(hass, stateObj)",
+        observer: "playerObjChanged",
       },
       playbackControlIcon: {
         type: String,
-        computed: 'computePlaybackControlIcon(playerObj)',
+        computed: "computePlaybackControlIcon(playerObj)",
       },
       playbackPosition: Number,
     };
@@ -203,7 +203,10 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   async playerObjChanged(playerObj, oldPlayerObj) {
     if (playerObj.isPlaying && playerObj.showProgress) {
       if (!this._positionTracking) {
-        this._positionTracking = setInterval(() => this.updatePlaybackPosition(), 1000);
+        this._positionTracking = setInterval(
+          () => this.updatePlaybackPosition(),
+          1000
+        );
       }
     } else if (this._positionTracking) {
       clearInterval(this._positionTracking);
@@ -214,25 +217,27 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
 
     const picture = playerObj.stateObj.attributes.entity_picture;
-    const oldPicture = oldPlayerObj && oldPlayerObj.stateObj.attributes.entity_picture;
+    const oldPicture =
+      oldPlayerObj && oldPlayerObj.stateObj.attributes.entity_picture;
 
     if (picture !== oldPicture && !picture) {
-      this.$.cover.style.backgroundImage = '';
+      this.$.cover.style.backgroundImage = "";
       return;
-    } if (picture === oldPicture) {
+    }
+    if (picture === oldPicture) {
       return;
     }
 
     // We have a new picture url
     try {
       const { content_type: contentType, content } = await this.hass.callWS({
-        type: 'media_player_thumbnail',
+        type: "media_player_thumbnail",
         entity_id: playerObj.stateObj.entity_id,
       });
       this.$.cover.style.backgroundImage = `url(data:${contentType};base64,${content})`;
     } catch (err) {
-      this.$.cover.style.backgroundImage = '';
-      this.$.cover.parentElement.classList.add('no-cover');
+      this.$.cover.style.backgroundImage = "";
+      this.$.cover.parentElement.classList.add("no-cover");
     }
   }
 
@@ -241,14 +246,14 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeBannerClasses(playerObj) {
-    var cls = 'banner';
+    var cls = "banner";
 
     if (playerObj.isOff || playerObj.isIdle) {
-      cls += ' is-off no-cover';
+      cls += " is-off no-cover";
     } else if (!playerObj.stateObj.attributes.entity_picture) {
-      cls += ' no-cover';
-    } else if (playerObj.stateObj.attributes.media_content_type === 'music') {
-      cls += ' content-type-music';
+      cls += " no-cover";
+    } else if (playerObj.stateObj.attributes.media_content_type === "music") {
+      cls += " content-type-music";
     }
 
     return cls;
@@ -259,7 +264,9 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeHidePowerButton(playerObj) {
-    return playerObj.isOff ? !playerObj.supportsTurnOn : !playerObj.supportsTurnOff;
+    return playerObj.isOff
+      ? !playerObj.supportsTurnOn
+      : !playerObj.supportsTurnOff;
   }
 
   computePlayerObj(hass, stateObj) {
@@ -267,21 +274,29 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computePrimaryText(localize, playerObj) {
-    return playerObj.primaryTitle
-      || localize(`state.media_player.${playerObj.stateObj.state}`)
-      || localize(`state.default.${playerObj.stateObj.state}`) || playerObj.stateObj.state;
+    return (
+      playerObj.primaryTitle ||
+      localize(`state.media_player.${playerObj.stateObj.state}`) ||
+      localize(`state.default.${playerObj.stateObj.state}`) ||
+      playerObj.stateObj.state
+    );
   }
 
   computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
-      return playerObj.supportsPause ? 'hass:pause' : 'hass:stop';
-    } if (playerObj.hasMediaControl || playerObj.isOff || playerObj.isIdle) {
-      if (playerObj.hasMediaControl && playerObj.supportsPause && !playerObj.isPaused) {
-        return 'hass:play-pause';
-      }
-      return playerObj.supportsPlay ? 'hass:play' : null;
+      return playerObj.supportsPause ? "hass:pause" : "hass:stop";
     }
-    return '';
+    if (playerObj.hasMediaControl || playerObj.isOff || playerObj.isIdle) {
+      if (
+        playerObj.hasMediaControl &&
+        playerObj.supportsPause &&
+        !playerObj.isPaused
+      ) {
+        return "hass:play-pause";
+      }
+      return playerObj.supportsPlay ? "hass:play" : null;
+    }
+    return "";
   }
 
   _computeStateName(stateObj) {
@@ -295,7 +310,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   handleOpenMoreInfo(ev) {
     ev.stopPropagation();
-    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    this.fire("hass-more-info", { entityId: this.stateObj.entity_id });
   }
 
   handlePlaybackControl(ev) {
@@ -313,4 +328,4 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playerObj.togglePower();
   }
 }
-customElements.define('ha-media_player-card', HaMediaPlayerCard);
+customElements.define("ha-media_player-card", HaMediaPlayerCard);

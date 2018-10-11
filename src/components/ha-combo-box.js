@@ -1,11 +1,11 @@
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@vaadin/vaadin-combo-box/vaadin-combo-box-light.js";
 
-import EventsMixin from '../mixins/events-mixin.js';
+import EventsMixin from "../mixins/events-mixin.js";
 
 class HaComboBox extends EventsMixin(PolymerElement) {
   static get template() {
@@ -51,7 +51,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
       allowCustomValue: Boolean,
       items: {
         type: Object,
-        observer: '_itemsChanged',
+        observer: "_itemsChanged",
       },
       _items: Object,
       itemLabelPath: String,
@@ -61,7 +61,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
       opened: {
         type: Boolean,
         value: false,
-        observer: '_openedChanged',
+        observer: "_openedChanged",
       },
       value: {
         type: String,
@@ -83,7 +83,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
   }
 
   _computeToggleIcon(opened) {
-    return opened ? 'hass:menu-up' : 'hass:menu-down';
+    return opened ? "hass:menu-up" : "hass:menu-down";
   }
 
   _computeItemLabel(item, itemLabelPath) {
@@ -92,8 +92,8 @@ class HaComboBox extends EventsMixin(PolymerElement) {
 
   _fireChanged(ev) {
     ev.stopPropagation();
-    this.fire('change');
+    this.fire("change");
   }
 }
 
-customElements.define('ha-combo-box', HaComboBox);
+customElements.define("ha-combo-box", HaComboBox);

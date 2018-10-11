@@ -1,8 +1,8 @@
-import '@polymer/paper-styles/paper-styles.js';
-import '@polymer/polymer/polymer-legacy.js';
+import "@polymer/paper-styles/paper-styles.js";
+import "@polymer/polymer/polymer-legacy.js";
 
-const documentContainer = document.createElement('template');
-documentContainer.setAttribute('style', 'display: none;');
+const documentContainer = document.createElement("template");
+documentContainer.setAttribute("style", "display: none;");
 
 documentContainer.innerHTML = `<custom-style>
   <style>

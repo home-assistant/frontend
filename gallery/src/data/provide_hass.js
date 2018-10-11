@@ -1,9 +1,9 @@
-import fireEvent from '../../../src/common/dom/fire_event.js';
+import fireEvent from "../../../src/common/dom/fire_event.js";
 
-import demoConfig from './demo_config.js';
-import demoResources from './demo_resources.js';
+import demoConfig from "./demo_config.js";
+import demoResources from "./demo_resources.js";
 
-const ensureArray = val => (Array.isArray(val) ? val : [val]);
+const ensureArray = (val) => (Array.isArray(val) ? val : [val]);
 
 export default (elements, { initialStates = {} } = {}) => {
   elements = ensureArray(elements);
@@ -14,13 +14,15 @@ export default (elements, { initialStates = {} } = {}) => {
 
   function updateHass(obj) {
     hass = Object.assign({}, hass, obj);
-    elements.forEach((el) => { el.hass = hass; });
+    elements.forEach((el) => {
+      el.hass = hass;
+    });
   }
 
   updateHass({
     // Home Assistant properties
     config: demoConfig,
-    language: 'en',
+    language: "en",
     resources: demoResources,
     states: initialStates,
 
@@ -29,21 +31,28 @@ export default (elements, { initialStates = {} } = {}) => {
 
     // Home Assistant functions
     async callService(domain, service, data) {
-      fireEvent(elements[0], 'show-notification', { message: `Called service ${domain}/${service}` });
+      fireEvent(elements[0], "show-notification", {
+        message: `Called service ${domain}/${service}`,
+      });
       if (data.entity_id) {
-        await Promise.all(ensureArray(data.entity_id).map(ent =>
-          entities[ent].handleService(domain, service, data)));
+        await Promise.all(
+          ensureArray(data.entity_id).map((ent) =>
+            entities[ent].handleService(domain, service, data)
+          )
+        );
       } else {
-        console.log('unmocked callService', domain, service, data);
+        console.log("unmocked callService", domain, service, data);
       }
     },
 
     async callWS(msg) {
       const callback = wsCommands[msg.type];
-      return callback ? callback(msg) : Promise.reject({
-        code: 'command_not_mocked',
-        message: 'This command is not implemented in the gallery.',
-      });
+      return callback
+        ? callback(msg)
+        : Promise.reject({
+            code: "command_not_mocked",
+            message: "This command is not implemented in the gallery.",
+          });
     },
 
     async sendWS(msg) {
@@ -54,7 +63,7 @@ export default (elements, { initialStates = {} } = {}) => {
       } else {
         console.error(`Unknown command: ${msg.type}`);
       }
-      console.log('sendWS', msg);
+      console.log("sendWS", msg);
     },
 
     // Mock functions
@@ -72,7 +81,7 @@ export default (elements, { initialStates = {} } = {}) => {
         states[ent.entityId] = ent.toState();
       });
       this.updateStates(states);
-    }
+    },
   });
 
   return hass;

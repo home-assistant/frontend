@@ -1,4 +1,4 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HassioData extends PolymerElement {
   static get properties() {
@@ -36,25 +36,24 @@ class HassioData extends PolymerElement {
   }
 
   fetchSupervisorInfo() {
-    return this.hass.callApi('get', 'hassio/supervisor/info')
-      .then((info) => {
-        this.supervisor = info.data;
-      });
+    return this.hass.callApi("get", "hassio/supervisor/info").then((info) => {
+      this.supervisor = info.data;
+    });
   }
 
   fetchHostInfo() {
-    return this.hass.callApi('get', 'hassio/host/info')
-      .then((info) => {
-        this.host = info.data;
-      });
+    return this.hass.callApi("get", "hassio/host/info").then((info) => {
+      this.host = info.data;
+    });
   }
 
   fetchHassInfo() {
-    return this.hass.callApi('get', 'hassio/homeassistant/info')
+    return this.hass
+      .callApi("get", "hassio/homeassistant/info")
       .then((info) => {
         this.homeassistant = info.data;
       });
   }
 }
 
-customElements.define('hassio-data', HassioData);
+customElements.define("hassio-data", HassioData);

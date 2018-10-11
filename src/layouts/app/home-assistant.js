@@ -1,27 +1,28 @@
-import '@polymer/app-route/app-location.js';
-import '@polymer/app-route/app-route.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import "@polymer/app-route/app-location.js";
+import "@polymer/app-route/app-route.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { afterNextRender } from "@polymer/polymer/lib/utils/render-status.js";
 
-import '../home-assistant-main.js';
-import '../ha-init-page.js';
-import '../../resources/ha-style.js';
-import registerServiceWorker from '../../util/register-service-worker.js';
+import "../home-assistant-main.js";
+import "../ha-init-page.js";
+import "../../resources/ha-style.js";
+import registerServiceWorker from "../../util/register-service-worker.js";
 
-import HassBaseMixin from './hass-base-mixin.js';
-import AuthMixin from './auth-mixin.js';
-import TranslationsMixin from './translations-mixin.js';
-import ThemesMixin from './themes-mixin.js';
-import MoreInfoMixin from './more-info-mixin.js';
-import SidebarMixin from './sidebar-mixin.js';
-import DialogManagerMixin from './dialog-manager-mixin.js';
-import ConnectionMixin from './connection-mixin.js';
-import NotificationMixin from './notification-mixin.js';
-import DisconnectToastMixin from './disconnect-toast-mixin.js';
+import HassBaseMixin from "./hass-base-mixin.js";
+import AuthMixin from "./auth-mixin.js";
+import TranslationsMixin from "./translations-mixin.js";
+import ThemesMixin from "./themes-mixin.js";
+import MoreInfoMixin from "./more-info-mixin.js";
+import SidebarMixin from "./sidebar-mixin.js";
+import DialogManagerMixin from "./dialog-manager-mixin.js";
+import ConnectionMixin from "./connection-mixin.js";
+import NotificationMixin from "./notification-mixin.js";
+import DisconnectToastMixin from "./disconnect-toast-mixin.js";
 
-const ext = (baseClass, mixins) => mixins.reduceRight((base, mixin) => mixin(base), baseClass);
+const ext = (baseClass, mixins) =>
+  mixins.reduceRight((base, mixin) => mixin(base), baseClass);
 
 class HomeAssistant extends ext(PolymerElement, [
   AuthMixin,
@@ -33,7 +34,7 @@ class HomeAssistant extends ext(PolymerElement, [
   ConnectionMixin,
   NotificationMixin,
   DialogManagerMixin,
-  HassBaseMixin
+  HassBaseMixin,
 ]) {
   static get template() {
     return html`
@@ -64,19 +65,19 @@ class HomeAssistant extends ext(PolymerElement, [
       },
       showMain: {
         type: Boolean,
-        computed: 'computeShowMain(hass)',
+        computed: "computeShowMain(hass)",
       },
       route: Object,
       routeData: Object,
       panelUrl: {
         type: String,
-        computed: 'computePanelUrl(routeData)',
-        observer: 'panelUrlChanged',
+        computed: "computePanelUrl(routeData)",
+        observer: "panelUrlChanged",
       },
       _error: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 
@@ -90,7 +91,7 @@ class HomeAssistant extends ext(PolymerElement, [
   }
 
   computePanelUrl(routeData) {
-    return (routeData && routeData.panel) || 'states';
+    return (routeData && routeData.panel) || "states";
   }
 
   panelUrlChanged(newPanelUrl) {
@@ -99,4 +100,4 @@ class HomeAssistant extends ext(PolymerElement, [
   }
 }
 
-customElements.define('home-assistant', HomeAssistant);
+customElements.define("home-assistant", HomeAssistant);

@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../resources/ha-style.js';
+import "../../resources/ha-style.js";
 
 class HaConfigSection extends PolymerElement {
   static get template() {
@@ -92,16 +92,16 @@ class HaConfigSection extends PolymerElement {
   }
 
   computeContentClasses(isWide) {
-    var classes = 'content ';
+    var classes = "content ";
 
-    return isWide ? classes : classes + 'narrow';
+    return isWide ? classes : classes + "narrow";
   }
 
   computeClasses(isWide) {
-    var classes = 'together layout ';
+    var classes = "together layout ";
 
-    return classes + (isWide ? 'horizontal' : 'vertical narrow');
+    return classes + (isWide ? "horizontal" : "vertical narrow");
   }
 }
 
-customElements.define('ha-config-section', HaConfigSection);
+customElements.define("ha-config-section", HaConfigSection);

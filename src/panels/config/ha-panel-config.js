@@ -1,23 +1,23 @@
-import '@polymer/app-route/app-route.js';
-import '@polymer/iron-media-query/iron-media-query.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-route/app-route.js";
+import "@polymer/iron-media-query/iron-media-query.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../layouts/hass-error-screen.js';
+import "../../layouts/hass-error-screen.js";
 
-import isComponentLoaded from '../../common/config/is_component_loaded.js';
-import EventsMixin from '../../mixins/events-mixin.js';
-import NavigateMixin from '../../mixins/navigate-mixin.js';
+import isComponentLoaded from "../../common/config/is_component_loaded.js";
+import EventsMixin from "../../mixins/events-mixin.js";
+import NavigateMixin from "../../mixins/navigate-mixin.js";
 
-import(/* webpackChunkName: "panel-config-automation" */ './automation/ha-config-automation.js');
-import(/* webpackChunkName: "panel-config-cloud" */ './cloud/ha-config-cloud.js');
-import(/* webpackChunkName: "panel-config-config" */ './config-entries/ha-config-entries.js');
-import(/* webpackChunkName: "panel-config-core" */ './core/ha-config-core.js');
-import(/* webpackChunkName: "panel-config-customize" */ './customize/ha-config-customize.js');
-import(/* webpackChunkName: "panel-config-dashboard" */ './dashboard/ha-config-dashboard.js');
-import(/* webpackChunkName: "panel-config-script" */ './script/ha-config-script.js');
-import(/* webpackChunkName: "panel-config-users" */ './users/ha-config-users.js');
-import(/* webpackChunkName: "panel-config-zwave" */ './zwave/ha-config-zwave.js');
+import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation.js");
+import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud.js");
+import(/* webpackChunkName: "panel-config-config" */ "./config-entries/ha-config-entries.js");
+import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core.js");
+import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize.js");
+import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard.js");
+import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script.js");
+import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users.js");
+import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave.js");
 
 /*
  * @appliesMixin EventsMixin
@@ -131,7 +131,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       route: {
         type: Object,
-        observer: '_routeChanged',
+        observer: "_routeChanged",
       },
 
       _routeData: Object,
@@ -141,25 +141,25 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       isWide: {
         type: Boolean,
-        computed: 'computeIsWide(showMenu, wideSidebar, wide)'
+        computed: "computeIsWide(showMenu, wideSidebar, wide)",
       },
     };
   }
 
   ready() {
     super.ready();
-    if (isComponentLoaded(this.hass, 'cloud')) {
+    if (isComponentLoaded(this.hass, "cloud")) {
       this._updateCloudStatus();
     }
-    this.addEventListener(
-      'ha-refresh-cloud-status', () => this._updateCloudStatus()
+    this.addEventListener("ha-refresh-cloud-status", () =>
+      this._updateCloudStatus()
     );
   }
 
   async _updateCloudStatus() {
-    this._cloudStatus = await this.hass.callWS({ type: 'cloud/status' });
+    this._cloudStatus = await this.hass.callWS({ type: "cloud/status" });
 
-    if (this._cloudStatus.cloud === 'connecting') {
+    if (this._cloudStatus.cloud === "connecting") {
       setTimeout(() => this._updateCloudStatus(), 5000);
     }
   }
@@ -169,10 +169,10 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 
   _routeChanged(route) {
-    if (route.path === '' && route.prefix === '/config') {
-      this.navigate('/config/dashboard', true);
+    if (route.path === "" && route.prefix === "/config") {
+      this.navigate("/config/dashboard", true);
     }
-    this.fire('iron-resize');
+    this.fire("iron-resize");
   }
 
   _equals(a, b) {
@@ -180,4 +180,4 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 }
 
-customElements.define('ha-panel-config', HaPanelConfig);
+customElements.define("ha-panel-config", HaPanelConfig);

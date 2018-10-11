@@ -1,25 +1,27 @@
-import { h, Component } from 'preact';
-import '@polymer/paper-input/paper-input.js';
+import { h, Component } from "preact";
+import "@polymer/paper-input/paper-input.js";
 
-import '../../../../components/ha-textarea.js';
+import "../../../../components/ha-textarea.js";
 
-import { onChangeEvent } from '../../../../common/preact/event.js';
+import { onChangeEvent } from "../../../../common/preact/event.js";
 
 export default class WaitAction extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'action');
+    this.onChange = onChangeEvent.bind(this, "action");
     this.onTemplateChange = this.onTemplateChange.bind(this);
   }
 
   // Gets fired on mount. If empty, onChangeEvent removes attribute.
   // Without the attribute this action is no longer matched to this component.
   onTemplateChange(ev) {
-    this.props.onChange(this.props.index, Object.assign(
-      {}, this.props.trigger,
-      { [ev.target.name]: ev.target.value },
-    ));
+    this.props.onChange(
+      this.props.index,
+      Object.assign({}, this.props.trigger, {
+        [ev.target.name]: ev.target.value,
+      })
+    );
   }
 
   render({ action, localize }) {
@@ -28,13 +30,17 @@ export default class WaitAction extends Component {
     return (
       <div>
         <ha-textarea
-          label={localize('ui.panel.config.automation.editor.actions.type.wait_template.wait_template')}
+          label={localize(
+            "ui.panel.config.automation.editor.actions.type.wait_template.wait_template"
+          )}
           name="wait_template"
           value={wait_template}
           onvalue-changed={this.onTemplateChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.editor.actions.type.wait_template.timeout')}
+          label={localize(
+            "ui.panel.config.automation.editor.actions.type.wait_template.timeout"
+          )}
           name="timeout"
           value={timeout}
           onvalue-changed={this.onChange}
@@ -45,6 +51,6 @@ export default class WaitAction extends Component {
 }
 
 WaitAction.defaultConfig = {
-  wait_template: '',
-  timeout: '',
+  wait_template: "",
+  timeout: "",
 };

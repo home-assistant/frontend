@@ -1,20 +1,19 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-paper-slider.js';
-import HassMediaPlayerEntity from '../../../util/hass-media-player-model.js';
+import "../../../components/ha-paper-slider.js";
+import HassMediaPlayerEntity from "../../../util/hass-media-player-model.js";
 
-
-import attributeClassNames from '../../../common/entity/attribute_class_names';
-import isComponentLoaded from '../../../common/config/is_component_loaded.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import attributeClassNames from "../../../common/entity/attribute_class_names";
+import isComponentLoaded from "../../../common/config/is_component_loaded.js";
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -126,32 +125,31 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
       stateObj: Object,
       playerObj: {
         type: Object,
-        computed: 'computePlayerObj(hass, stateObj)',
-        observer: 'playerObjChanged',
+        computed: "computePlayerObj(hass, stateObj)",
+        observer: "playerObjChanged",
       },
 
       sourceIndex: {
         type: Number,
         value: 0,
-        observer: 'handleSourceChanged',
+        observer: "handleSourceChanged",
       },
 
       SoundModeInput: {
         type: String,
-        value: '',
-        observer: 'handleSoundModeChanged',
+        value: "",
+        observer: "handleSoundModeChanged",
       },
 
       ttsLoaded: {
         type: Boolean,
-        computed: 'computeTTSLoaded(hass)',
+        computed: "computeTTSLoaded(hass)",
       },
 
       ttsMessage: {
         type: String,
-        value: '',
+        value: "",
       },
-
     };
   }
 
@@ -170,17 +168,17 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
     if (oldVal) {
       setTimeout(() => {
-        this.fire('iron-resize');
+        this.fire("iron-resize");
       }, 500);
     }
   }
 
   computeClassNames(stateObj) {
-    return attributeClassNames(stateObj, ['volume_level']);
+    return attributeClassNames(stateObj, ["volume_level"]);
   }
 
   computeMuteVolumeIcon(playerObj) {
-    return playerObj.isMuted ? 'hass:volume-off' : 'hass:volume-high';
+    return playerObj.isMuted ? "hass:volume-off" : "hass:volume-high";
   }
 
   computeHideVolumeButtons(playerObj) {
@@ -193,26 +191,41 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
-      return playerObj.supportsPause ? 'hass:pause' : 'hass:stop';
-    } if (playerObj.hasMediaControl || playerObj.isOff || playerObj.isIdle) {
-      if (playerObj.hasMediaControl && playerObj.supportsPause && !playerObj.isPaused) {
-        return 'hass:play-pause';
-      }
-      return playerObj.supportsPlay ? 'hass:play' : null;
+      return playerObj.supportsPause ? "hass:pause" : "hass:stop";
     }
-    return '';
+    if (playerObj.hasMediaControl || playerObj.isOff || playerObj.isIdle) {
+      if (
+        playerObj.hasMediaControl &&
+        playerObj.supportsPause &&
+        !playerObj.isPaused
+      ) {
+        return "hass:play-pause";
+      }
+      return playerObj.supportsPlay ? "hass:play" : null;
+    }
+    return "";
   }
 
   computeHidePowerButton(playerObj) {
-    return playerObj.isOff ? !playerObj.supportsTurnOn : !playerObj.supportsTurnOff;
+    return playerObj.isOff
+      ? !playerObj.supportsTurnOn
+      : !playerObj.supportsTurnOff;
   }
 
   computeHideSelectSource(playerObj) {
-    return playerObj.isOff || !playerObj.supportsSelectSource || !playerObj.sourceList;
+    return (
+      playerObj.isOff ||
+      !playerObj.supportsSelectSource ||
+      !playerObj.sourceList
+    );
   }
 
   computeHideSelectSoundMode(playerObj) {
-    return playerObj.isOff || !playerObj.supportsSelectSoundMode || !playerObj.soundModeList;
+    return (
+      playerObj.isOff ||
+      !playerObj.supportsSelectSoundMode ||
+      !playerObj.soundModeList
+    );
   }
 
   computeHideTTS(ttsLoaded, playerObj) {
@@ -220,7 +233,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeTTSLoaded(hass) {
-    return isComponentLoaded(hass, 'tts');
+    return isComponentLoaded(hass, "tts");
   }
 
   handleTogglePower() {
@@ -241,12 +254,13 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   handleSourceChanged(sourceIndex, sourceIndexOld) {
     // Selected Option will transition to '' before transitioning to new value
-    if (!this.playerObj
-        || !this.playerObj.supportsSelectSource
-        || this.playerObj.sourceList === undefined
-        || sourceIndex < 0
-        || sourceIndex >= this.playerObj.sourceList
-        || sourceIndexOld === undefined
+    if (
+      !this.playerObj ||
+      !this.playerObj.supportsSelectSource ||
+      this.playerObj.sourceList === undefined ||
+      sourceIndex < 0 ||
+      sourceIndex >= this.playerObj.sourceList ||
+      sourceIndexOld === undefined
     ) {
       return;
     }
@@ -261,9 +275,10 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   handleSoundModeChanged(newVal, oldVal) {
-    if (oldVal
-        && newVal !== this.playerObj.soundMode
-        && this.playerObj.supportsSelectSoundMode
+    if (
+      oldVal &&
+      newVal !== this.playerObj.soundMode &&
+      this.playerObj.supportsSelectSoundMode
     ) {
       this.playerObj.selectSoundMode(newVal);
     }
@@ -278,12 +293,12 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   handleVolumeUp() {
     const obj = this.$.volumeUp;
-    this.handleVolumeWorker('volume_up', obj, true);
+    this.handleVolumeWorker("volume_up", obj, true);
   }
 
   handleVolumeDown() {
     const obj = this.$.volumeDown;
-    this.handleVolumeWorker('volume_down', obj, true);
+    this.handleVolumeWorker("volume_down", obj, true);
   }
 
   handleVolumeWorker(service, obj, force) {
@@ -310,7 +325,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     let i;
 
     for (i = 0; i < serviceKeys.length; i++) {
-      if (serviceKeys[i].indexOf('_say') !== -1) {
+      if (serviceKeys[i].indexOf("_say") !== -1) {
         service = serviceKeys[i];
         break;
       }
@@ -320,13 +335,13 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
       return;
     }
 
-    this.hass.callService('tts', service, {
+    this.hass.callService("tts", service, {
       entity_id: this.stateObj.entity_id,
       message: this.ttsMessage,
     });
-    this.ttsMessage = '';
+    this.ttsMessage = "";
     this.$.ttsInput.focus();
   }
 }
 
-customElements.define('more-info-media_player', MoreInfoMediaPlayer);
+customElements.define("more-info-media_player", MoreInfoMediaPlayer);

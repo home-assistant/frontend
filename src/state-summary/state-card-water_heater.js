@@ -1,9 +1,9 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/entity/state-info.js';
-import '../components/ha-water_heater-state.js';
+import "../components/entity/state-info.js";
+import "../components/ha-water_heater-state.js";
 
 class StateCardWaterHeater extends PolymerElement {
   static get template() {
@@ -45,8 +45,8 @@ class StateCardWaterHeater extends PolymerElement {
       inDialog: {
         type: Boolean,
         value: false,
-      }
+      },
     };
   }
 }
-customElements.define('state-card-water_heater', StateCardWaterHeater);
+customElements.define("state-card-water_heater", StateCardWaterHeater);

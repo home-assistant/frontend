@@ -1,27 +1,26 @@
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-fab/paper-fab.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-fab/paper-fab.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-markdown.js';
-import '../../../layouts/ha-app-layout.js';
+import "../../../components/ha-markdown.js";
+import "../../../layouts/ha-app-layout.js";
 
-import '../ha-config-section.js';
+import "../ha-config-section.js";
 
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
-class HaAutomationPicker extends
-  LocalizeMixin(NavigateMixin(PolymerElement)) {
+class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">
@@ -117,11 +116,14 @@ class HaAutomationPicker extends
   }
 
   automationTapped(ev) {
-    this.navigate('/config/automation/edit/' + this.automations[ev.model.index].attributes.id);
+    this.navigate(
+      "/config/automation/edit/" +
+        this.automations[ev.model.index].attributes.id
+    );
   }
 
   addAutomation() {
-    this.navigate('/config/automation/new');
+    this.navigate("/config/automation/new");
   }
 
   computeName(automation) {
@@ -131,7 +133,7 @@ class HaAutomationPicker extends
   // Still thinking of something to add here.
   // eslint-disable-next-line
   computeDescription(automation) {
-    return '';
+    return "";
   }
 
   _backTapped() {
@@ -139,4 +141,4 @@ class HaAutomationPicker extends
   }
 }
 
-customElements.define('ha-automation-picker', HaAutomationPicker);
+customElements.define("ha-automation-picker", HaAutomationPicker);

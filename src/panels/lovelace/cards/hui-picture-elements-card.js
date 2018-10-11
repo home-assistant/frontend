@@ -1,7 +1,7 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import createHuiElement from '../common/create-hui-element.js';
+import createHuiElement from "../common/create-hui-element.js";
 
 class HuiPictureElementsCard extends PolymerElement {
   static get template() {
@@ -37,9 +37,9 @@ class HuiPictureElementsCard extends PolymerElement {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged'
+        observer: "_hassChanged",
       },
-      _config: Object
+      _config: Object,
     };
   }
 
@@ -59,7 +59,7 @@ class HuiPictureElementsCard extends PolymerElement {
 
   setConfig(config) {
     if (!config || !config.image || !Array.isArray(config.elements)) {
-      throw new Error('Invalid card configuration');
+      throw new Error("Invalid card configuration");
     }
 
     this._config = config;
@@ -75,7 +75,7 @@ class HuiPictureElementsCard extends PolymerElement {
       root.removeChild(root.lastChild);
     }
 
-    const img = document.createElement('img');
+    const img = document.createElement("img");
     img.src = config.image;
     root.appendChild(img);
 
@@ -84,7 +84,7 @@ class HuiPictureElementsCard extends PolymerElement {
       el.hass = this.hass;
       this._elements.push(el);
 
-      el.classList.add('element');
+      el.classList.add("element");
       Object.keys(element.style).forEach((prop) => {
         el.style.setProperty(prop, element.style[prop]);
       });
@@ -103,4 +103,4 @@ class HuiPictureElementsCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-picture-elements-card', HuiPictureElementsCard);
+customElements.define("hui-picture-elements-card", HuiPictureElementsCard);

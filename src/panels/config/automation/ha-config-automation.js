@@ -1,11 +1,11 @@
-import '@polymer/app-route/app-route.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-route/app-route.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import './ha-automation-editor.js';
-import './ha-automation-picker.js';
+import "./ha-automation-editor.js";
+import "./ha-automation-picker.js";
 
-import computeStateDomain from '../../../common/entity/compute_state_domain.js';
+import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 
 class HaConfigAutomation extends PolymerElement {
   static get template() {
@@ -43,18 +43,19 @@ class HaConfigAutomation extends PolymerElement {
 
       automations: {
         type: Array,
-        computed: 'computeAutomations(hass)',
+        computed: "computeAutomations(hass)",
       },
 
       automation: {
         type: Object,
-        computed: 'computeAutomation(automations, _edittingAutomation, _routeData)',
+        computed:
+          "computeAutomation(automations, _edittingAutomation, _routeData)",
       },
 
       showEditor: {
         type: Boolean,
-        computed: 'computeShowEditor(_edittingAutomation, _creatingNew)',
-      }
+        computed: "computeShowEditor(_edittingAutomation, _creatingNew)",
+      },
     };
   }
 
@@ -73,20 +74,20 @@ class HaConfigAutomation extends PolymerElement {
   computeAutomations(hass) {
     var automations = [];
 
-    Object.keys(hass.states).forEach(function (key) {
+    Object.keys(hass.states).forEach(function(key) {
       var entity = hass.states[key];
 
-      if (computeStateDomain(entity) === 'automation'
-          && 'id' in entity.attributes) {
+      if (
+        computeStateDomain(entity) === "automation" &&
+        "id" in entity.attributes
+      ) {
         automations.push(entity);
       }
     });
 
     return automations.sort(function entitySortBy(entityA, entityB) {
-      var nameA = (entityA.attributes.alias
-                   || entityA.entity_id).toLowerCase();
-      var nameB = (entityB.attributes.alias
-                   || entityB.entity_id).toLowerCase();
+      var nameA = (entityA.attributes.alias || entityA.entity_id).toLowerCase();
+      var nameB = (entityB.attributes.alias || entityB.entity_id).toLowerCase();
 
       if (nameA < nameB) {
         return -1;
@@ -103,4 +104,4 @@ class HaConfigAutomation extends PolymerElement {
   }
 }
 
-customElements.define('ha-config-automation', HaConfigAutomation);
+customElements.define("ha-config-automation", HaConfigAutomation);

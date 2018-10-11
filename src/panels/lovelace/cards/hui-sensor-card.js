@@ -1,12 +1,12 @@
-import { LitElement, html, svg } from '@polymer/lit-element';
+import { LitElement, html, svg } from "@polymer/lit-element";
 
-import '../../../components/ha-card.js';
-import '../../../components/ha-icon.js';
+import "../../../components/ha-card.js";
+import "../../../components/ha-icon.js";
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import stateIcon from '../../../common/entity/state_icon.js';
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import stateIcon from "../../../common/entity/state_icon.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
 
 class HuiSensorCard extends EventsMixin(LitElement) {
   set hass(hass) {
@@ -14,7 +14,10 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const entity = hass.states[this._config.entity];
     if (entity && this._entity !== entity) {
       this._entity = entity;
-      if (this._config.graph !== 'none' && entity.attributes.unit_of_measurement) {
+      if (
+        this._config.graph !== "none" &&
+        entity.attributes.unit_of_measurement
+      ) {
         this._getHistory();
       }
     }
@@ -22,26 +25,29 @@ class HuiSensorCard extends EventsMixin(LitElement) {
 
   static get properties() {
     return {
-      _hass: { },
-      _config: { },
-      _entity: { },
-      _line: String
+      _hass: {},
+      _config: {},
+      _entity: {},
+      _line: String,
     };
   }
 
   setConfig(config) {
-    if (!config.entity || config.entity.split('.')[0] !== 'sensor') {
-      throw new Error('Specify an entity from within the sensor domain.');
+    if (!config.entity || config.entity.split(".")[0] !== "sensor") {
+      throw new Error("Specify an entity from within the sensor domain.");
     }
 
-    const cardConfig = Object.assign({
-      icon: false,
-      hours_to_show: 24,
-      accuracy: 10,
-      height: 100,
-      line_width: 5,
-      line_color: 'var(--accent-color)'
-    }, config);
+    const cardConfig = Object.assign(
+      {
+        icon: false,
+        hours_to_show: 24,
+        accuracy: 10,
+        height: 100,
+        line_width: 5,
+        line_color: "var(--accent-color)",
+      },
+      config
+    );
     cardConfig.hours_to_show = Number(cardConfig.hours_to_show);
     cardConfig.accuracy = Number(cardConfig.accuracy);
     cardConfig.height = Number(cardConfig.height);
@@ -51,10 +57,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   }
 
   shouldUpdate(changedProps) {
-    const change = (
-      changedProps.has('_entity')
-      || changedProps.has('_line')
-    );
+    const change = changedProps.has("_entity") || changedProps.has("_line");
     return change;
   }
 
@@ -76,19 +79,23 @@ class HuiSensorCard extends EventsMixin(LitElement) {
         </div>
         <div class='graph'>
           <div>
-            ${_line ? svg`
+            ${
+              _line
+                ? svg`
             <svg width='100%' height='100%' viewBox='0 0 500 ${_config.height}'>
               <path d=${_line} fill='none' stroke=${_config.line_color}
                 stroke-width=${_config.line_width}
                 stroke-linecap='round' stroke-linejoin='round' />
-            </svg>` : ''}
+            </svg>`
+                : ""
+            }
           </div>
         </div>
       </ha-card>`;
   }
 
   _handleClick() {
-    this.fire('hass-more-info', { entityId: this._config.entity });
+    this.fire("hass-more-info", { entityId: this._config.entity });
   }
 
   _computeIcon(item) {
@@ -110,7 +117,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   }
 
   _getValueArr(items) {
-    return items.map(item => Number(item.state) || 0);
+    return items.map((item) => Number(item.state) || 0);
   }
 
   _calcCoordinates(values, width, height) {
@@ -126,34 +133,35 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const xRatio = width / (values.length - 1);
 
     return values.map((value, i) => {
-      const y = height - ((value - min) / yRatio) || 0;
-      const x = (xRatio * i) + margin;
+      const y = height - (value - min) / yRatio || 0;
+      const x = xRatio * i + margin;
       return [x, y];
     });
   }
 
   _getPath(points) {
-    const SPACE = ' ';
-    let next; let Z;
+    const SPACE = " ";
+    let next;
+    let Z;
     const X = 0;
     const Y = 1;
-    let path = '';
+    let path = "";
     let point = points[0];
 
-    path += 'M' + point[X] + ',' + point[Y];
+    path += "M" + point[X] + "," + point[Y];
     const first = point;
 
     for (let i = 0; i < points.length; i++) {
       next = points[i];
       Z = this._midPoint(point[X], point[Y], next[X], next[Y]);
-      path += SPACE + Z[X] + ',' + Z[Y];
-      path += 'Q' + Math.floor(next[X]) + ',' + next[Y];
+      path += SPACE + Z[X] + "," + Z[Y];
+      path += "Q" + Math.floor(next[X]) + "," + next[Y];
       point = next;
     }
 
     const second = points[1];
     Z = this._midPoint(first[X], first[Y], second[X], second[Y]);
-    path += SPACE + Math.floor(next[X]) + '.' + points[points.length - 1];
+    path += SPACE + Math.floor(next[X]) + "." + points[points.length - 1];
     return path;
   }
 
@@ -167,14 +175,18 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const endTime = new Date();
     const startTime = new Date();
     startTime.setHours(endTime.getHours() - this._config.hours_to_show);
-    const stateHistory = await this._fetchRecent(this._config.entity, startTime, endTime);
+    const stateHistory = await this._fetchRecent(
+      this._config.entity,
+      startTime,
+      endTime
+    );
     const history = stateHistory[0];
     const valArray = [history[history.length - 1]];
 
     let pos = history.length - 1;
-    const accuracy = (this._config.accuracy) <= pos ? this._config.accuracy : pos;
+    const accuracy = this._config.accuracy <= pos ? this._config.accuracy : pos;
     let increment = Math.ceil(history.length / accuracy);
-    increment = (increment <= 0) ? 1 : increment;
+    increment = increment <= 0 ? 1 : increment;
     for (let i = accuracy; i >= 2; i--) {
       pos -= increment;
       valArray.unshift(pos >= 0 ? history[pos] : history[0]);
@@ -183,12 +195,12 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   }
 
   async _fetchRecent(entityId, startTime, endTime) {
-    let url = 'history/period';
-    if (startTime) url += '/' + startTime.toISOString();
-    url += '?filter_entity_id=' + entityId;
-    if (endTime) url += '&end_time=' + endTime.toISOString();
+    let url = "history/period";
+    if (startTime) url += "/" + startTime.toISOString();
+    url += "?filter_entity_id=" + entityId;
+    if (endTime) url += "&end_time=" + endTime.toISOString();
 
-    return await this._hass.callApi('GET', url);
+    return await this._hass.callApi("GET", url);
   }
 
   getCardSize() {
@@ -279,4 +291,4 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   }
 }
 
-customElements.define('hui-sensor-card', HuiSensorCard);
+customElements.define("hui-sensor-card", HuiSensorCard);

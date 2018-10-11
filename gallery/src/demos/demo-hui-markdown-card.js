@@ -1,11 +1,11 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../components/demo-cards.js';
+import "../components/demo-cards.js";
 
 const CONFIGS = [
   {
-    heading: 'markdown-it demo',
+    heading: "markdown-it demo",
     config: `
 - type: markdown
   content: >
@@ -248,7 +248,7 @@ const CONFIGS = [
     ::: warning
     *here be dragons*
     :::
-    `
+    `,
   },
 ];
 
@@ -263,10 +263,10 @@ class DemoMarkdown extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
-      }
+        value: CONFIGS,
+      },
     };
   }
 }
 
-customElements.define('demo-hui-markdown-card', DemoMarkdown);
+customElements.define("demo-hui-markdown-card", DemoMarkdown);

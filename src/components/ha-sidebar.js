@@ -1,16 +1,16 @@
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-item/paper-icon-item.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import './ha-icon.js';
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "./ha-icon.js";
 
-import '../util/hass-translation.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
-import isComponentLoaded from '../common/config/is_component_loaded.js';
+import "../util/hass-translation.js";
+import LocalizeMixin from "../mixins/localize-mixin.js";
+import isComponentLoaded from "../common/config/is_component_loaded.js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -248,36 +248,40 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
       narrow: Boolean,
       panels: {
         type: Array,
-        computed: 'computePanels(hass)',
+        computed: "computePanels(hass)",
       },
       defaultPage: String,
       _initials: {
         type: String,
-        computed: '_computeUserInitials(hass.user.name)',
+        computed: "_computeUserInitials(hass.user.name)",
       },
     };
   }
 
   _computeUserInitials(name) {
-    if (!name) return 'user';
-    return name.trim()
-      // Split by space and take first 3 words
-      .split(' ').slice(0, 3)
-      // Of each word, take first letter
-      .map(s => s.substr(0, 1))
-      .join('');
+    if (!name) return "user";
+    return (
+      name
+        .trim()
+        // Split by space and take first 3 words
+        .split(" ")
+        .slice(0, 3)
+        // Of each word, take first letter
+        .map((s) => s.substr(0, 1))
+        .join("")
+    );
   }
 
   _computeBadgeClass(initials) {
-    return `profile-badge ${initials.length > 2 ? 'long' : ''}`;
+    return `profile-badge ${initials.length > 2 ? "long" : ""}`;
   }
 
   _mqttLoaded(hass) {
-    return isComponentLoaded(hass, 'mqtt');
+    return isComponentLoaded(hass, "mqtt");
   }
 
   _computeUserName(user) {
-    return user && (user.name || 'Unnamed User');
+    return user && (user.name || "Unnamed User");
   }
 
   _computePanelName(localize, panel) {
@@ -293,21 +297,23 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
     };
     var result = [];
 
-    Object.keys(panels).forEach(function (key) {
+    Object.keys(panels).forEach(function(key) {
       if (panels[key].title) {
         result.push(panels[key]);
       }
     });
 
-    result.sort(function (a, b) {
-      var aBuiltIn = (a.component_name in sortValue);
-      var bBuiltIn = (b.component_name in sortValue);
+    result.sort(function(a, b) {
+      var aBuiltIn = a.component_name in sortValue;
+      var bBuiltIn = b.component_name in sortValue;
 
       if (aBuiltIn && bBuiltIn) {
         return sortValue[a.component_name] - sortValue[b.component_name];
-      } if (aBuiltIn) {
+      }
+      if (aBuiltIn) {
         return -1;
-      } if (bBuiltIn) {
+      }
+      if (bBuiltIn) {
         return 1;
       }
       // both not built in, sort by title
@@ -328,8 +334,8 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
   }
 
   _handleLogOut() {
-    this.fire('hass-logout');
+    this.fire("hass-logout");
   }
 }
 
-customElements.define('ha-sidebar', HaSidebar);
+customElements.define("ha-sidebar", HaSidebar);

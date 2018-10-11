@@ -1,33 +1,33 @@
-import '@polymer/paper-button/paper-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import LocalizeMixin from '../mixins/localize-mixin.js';
+import LocalizeMixin from "../mixins/localize-mixin.js";
 
 const STATES_INTERCEPTABLE = {
   cleaning: {
-    action: 'return_to_base',
-    service: 'return_to_base'
+    action: "return_to_base",
+    service: "return_to_base",
   },
   docked: {
-    action: 'start_cleaning',
-    service: 'start'
+    action: "start_cleaning",
+    service: "start",
   },
   idle: {
-    action: 'start_cleaning',
-    service: 'start'
+    action: "start_cleaning",
+    service: "start",
   },
   off: {
-    action: 'turn_on',
-    service: 'turn_on'
+    action: "turn_on",
+    service: "turn_on",
   },
   on: {
-    action: 'turn_off',
-    service: 'turn_off'
+    action: "turn_off",
+    service: "turn_off",
   },
   paused: {
-    action: 'resume_cleaning',
-    service: 'start'
+    action: "resume_cleaning",
+    service: "start",
   },
 };
 
@@ -64,8 +64,9 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       stateObj: Object,
       _interceptable: {
         type: Boolean,
-        computed: '_computeInterceptable(stateObj.state, stateObj.attributes.supported_features)'
-      }
+        computed:
+          "_computeInterceptable(stateObj.state, stateObj.attributes.supported_features)",
+      },
     };
   }
 
@@ -75,7 +76,9 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
 
   _computeLabel(state, interceptable) {
     return interceptable
-      ? this.localize(`ui.card.vacuum.actions.${STATES_INTERCEPTABLE[state].action}`)
+      ? this.localize(
+          `ui.card.vacuum.actions.${STATES_INTERCEPTABLE[state].action}`
+        )
       : this.localize(`state.vacuum.${state}`);
   }
 
@@ -83,7 +86,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
     ev.stopPropagation();
     const stateObj = this.stateObj;
     const service = STATES_INTERCEPTABLE[stateObj.state].service;
-    this.hass.callService('vacuum', service, { entity_id: stateObj.entity_id });
+    this.hass.callService("vacuum", service, { entity_id: stateObj.entity_id });
   }
 }
-customElements.define('ha-vacuum-state', HaVacuumState);
+customElements.define("ha-vacuum-state", HaVacuumState);

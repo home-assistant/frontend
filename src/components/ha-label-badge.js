@@ -1,6 +1,6 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import './ha-icon.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "./ha-icon.js";
 
 class HaLabelBadge extends PolymerElement {
   static get template() {
@@ -104,17 +104,17 @@ class HaLabelBadge extends PolymerElement {
 
       image: {
         type: String,
-        observer: 'imageChanged',
+        observer: "imageChanged",
       },
     };
   }
 
   computeValueClasses(value) {
-    return value && value.length > 4 ? 'value big' : 'value';
+    return value && value.length > 4 ? "value big" : "value";
   }
 
   computeLabelClasses(label) {
-    return label && label.length > 5 ? 'label big' : 'label';
+    return label && label.length > 5 ? "label big" : "label";
   }
 
   computeHideLabel(label) {
@@ -130,7 +130,7 @@ class HaLabelBadge extends PolymerElement {
   }
 
   imageChanged(newVal) {
-    this.$.badge.style.backgroundImage = newVal ? 'url(' + newVal + ')' : '';
+    this.$.badge.style.backgroundImage = newVal ? "url(" + newVal + ")" : "";
   }
 }
-customElements.define('ha-label-badge', HaLabelBadge);
+customElements.define("ha-label-badge", HaLabelBadge);

@@ -1,16 +1,16 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-textarea.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-input/paper-textarea.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/entity/ha-entity-picker.js';
-import '../../components/ha-menu-button.js';
-import '../../components/ha-service-picker.js';
-import '../../resources/ha-style.js';
-import '../../util/app-localstorage-document.js';
+import "../../components/entity/ha-entity-picker.js";
+import "../../components/ha-menu-button.js";
+import "../../components/ha-service-picker.js";
+import "../../resources/ha-style.js";
+import "../../util/app-localstorage-document.js";
 
 const ERROR_SENTINEL = {};
 class HaPanelDevService extends PolymerElement {
@@ -185,48 +185,48 @@ class HaPanelDevService extends PolymerElement {
 
       domainService: {
         type: String,
-        observer: '_domainServiceChanged',
+        observer: "_domainServiceChanged",
       },
 
       _domain: {
         type: String,
-        computed: '_computeDomain(domainService)',
+        computed: "_computeDomain(domainService)",
       },
 
       _service: {
         type: String,
-        computed: '_computeService(domainService)',
+        computed: "_computeService(domainService)",
       },
 
       serviceData: {
         type: String,
-        value: '',
+        value: "",
       },
 
       parsedJSON: {
         type: Object,
-        computed: '_computeParsedServiceData(serviceData)'
+        computed: "_computeParsedServiceData(serviceData)",
       },
 
       validJSON: {
         type: Boolean,
-        computed: '_computeValidJSON(parsedJSON)',
+        computed: "_computeValidJSON(parsedJSON)",
       },
 
       _attributes: {
         type: Array,
-        computed: '_computeAttributesArray(hass, _domain, _service)',
+        computed: "_computeAttributesArray(hass, _domain, _service)",
       },
 
       _description: {
         type: String,
-        computed: '_computeDescription(hass, _domain, _service)',
+        computed: "_computeDescription(hass, _domain, _service)",
       },
     };
   }
 
   _domainServiceChanged() {
-    this.serviceData = '';
+    this.serviceData = "";
   }
 
   _computeAttributesArray(hass, domain, service) {
@@ -235,7 +235,7 @@ class HaPanelDevService extends PolymerElement {
     if (!(service in serviceDomains[domain])) return [];
 
     const fields = serviceDomains[domain][service].fields;
-    return Object.keys(fields).map(function (field) {
+    return Object.keys(fields).map(function(field) {
       return Object.assign({ key: field }, fields[field]);
     });
   }
@@ -252,11 +252,11 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _computeDomain(domainService) {
-    return domainService.split('.', 1)[0];
+    return domainService.split(".", 1)[0];
   }
 
   _computeService(domainService) {
-    return domainService.split('.', 2)[1] || null;
+    return domainService.split(".", 2)[1] || null;
   }
 
   _computeParsedServiceData(serviceData) {
@@ -272,15 +272,15 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _computeHasEntity(attributes) {
-    return attributes.some(attr => attr.key === 'entity_id');
+    return attributes.some((attr) => attr.key === "entity_id");
   }
 
   _computeEntityValue(parsedJSON) {
-    return parsedJSON === ERROR_SENTINEL ? '' : parsedJSON.entity_id;
+    return parsedJSON === ERROR_SENTINEL ? "" : parsedJSON.entity_id;
   }
 
   _computeEntityDomainFilter(domain) {
-    return domain === 'homeassistant' ? null : domain;
+    return domain === "homeassistant" ? null : domain;
   }
 
   _callService() {
@@ -293,10 +293,14 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _entityPicked(ev) {
-    this.serviceData = JSON.stringify(Object.assign({}, this.parsedJSON, {
-      entity_id: ev.target.value
-    }), null, 2);
+    this.serviceData = JSON.stringify(
+      Object.assign({}, this.parsedJSON, {
+        entity_id: ev.target.value,
+      }),
+      null,
+      2
+    );
   }
 }
 
-customElements.define('ha-panel-dev-service', HaPanelDevService);
+customElements.define("ha-panel-dev-service", HaPanelDevService);

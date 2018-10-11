@@ -1,24 +1,21 @@
-import '@polymer/app-route/app-route.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-route/app-route.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
+import "../ha-config-section.js";
+import "./ha-config-cloud-account.js";
+import "./ha-config-cloud-forgot-password.js";
+import "./ha-config-cloud-login.js";
+import "./ha-config-cloud-register.js";
+import NavigateMixin from "../../../mixins/navigate-mixin.js";
 
-import '../ha-config-section.js';
-import './ha-config-cloud-account.js';
-import './ha-config-cloud-forgot-password.js';
-import './ha-config-cloud-login.js';
-import './ha-config-cloud-register.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-
-const LOGGED_IN_URLS = [
-  '/cloud/account',
-];
+const LOGGED_IN_URLS = ["/cloud/account"];
 const NOT_LOGGED_IN_URLS = [
-  '/cloud/login',
-  '/cloud/register',
-  '/cloud/forgot-password',
+  "/cloud/login",
+  "/cloud/register",
+  "/cloud/forgot-password",
 ];
 
 /*
@@ -72,14 +69,14 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
       isWide: Boolean,
       loadingAccount: {
         type: Boolean,
-        value: false
+        value: false,
       },
       cloudStatus: {
         type: Object,
       },
       _flashMessage: {
         type: String,
-        value: '',
+        value: "",
       },
 
       route: Object,
@@ -91,30 +88,34 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
   }
 
   static get observers() {
-    return [
-      '_checkRoute(route, cloudStatus)'
-    ];
+    return ["_checkRoute(route, cloudStatus)"];
   }
 
   ready() {
     super.ready();
-    this.addEventListener('cloud-done', (ev) => {
+    this.addEventListener("cloud-done", (ev) => {
       this._flashMessage = ev.detail.flashMessage;
-      this.navigate('/config/cloud/login');
+      this.navigate("/config/cloud/login");
     });
   }
 
   _checkRoute(route) {
-    if (!route || route.path.substr(0, 6) !== '/cloud') return;
+    if (!route || route.path.substr(0, 6) !== "/cloud") return;
 
     this._debouncer = Debouncer.debounce(
       this._debouncer,
       timeOut.after(0),
       () => {
-        if (!this.cloudStatus.logged_in && !NOT_LOGGED_IN_URLS.includes(route.path)) {
-          this.navigate('/config/cloud/login', true);
-        } else if (this.cloudStatus.logged_in && !LOGGED_IN_URLS.includes(route.path)) {
-          this.navigate('/config/cloud/account', true);
+        if (
+          !this.cloudStatus.logged_in &&
+          !NOT_LOGGED_IN_URLS.includes(route.path)
+        ) {
+          this.navigate("/config/cloud/login", true);
+        } else if (
+          this.cloudStatus.logged_in &&
+          !LOGGED_IN_URLS.includes(route.path)
+        ) {
+          this.navigate("/config/cloud/account", true);
         }
       }
     );
@@ -125,4 +126,4 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-config-cloud', HaConfigCloud);
+customElements.define("ha-config-cloud", HaConfigCloud);

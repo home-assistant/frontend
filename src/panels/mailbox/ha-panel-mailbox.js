@@ -1,22 +1,21 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-tabs/paper-tab.js';
-import '@polymer/paper-tabs/paper-tabs.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card.js";
+import "@polymer/paper-input/paper-textarea.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/paper-tabs/paper-tabs.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../components/ha-menu-button.js';
-import '../../resources/ha-style.js';
+import "../../components/ha-menu-button.js";
+import "../../resources/ha-style.js";
 
-
-import formatDateTime from '../../common/datetime/format_date_time.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import formatDateTime from "../../common/datetime/format_date_time.js";
+import LocalizeMixin from "../../mixins/localize-mixin.js";
 
 let registeredDialog = false;
 
@@ -158,19 +157,26 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
     super.connectedCallback();
     if (!registeredDialog) {
       registeredDialog = true;
-      this.fire('register-dialog', {
-        dialogShowEvent: 'show-audio-message-dialog',
-        dialogTag: 'ha-dialog-show-audio-message',
-        dialogImport: () => import('./ha-dialog-show-audio-message.js'),
+      this.fire("register-dialog", {
+        dialogShowEvent: "show-audio-message-dialog",
+        dialogTag: "ha-dialog-show-audio-message",
+        dialogImport: () => import("./ha-dialog-show-audio-message.js"),
       });
     }
     this.hassChanged = this.hassChanged.bind(this);
-    this.hass.connection.subscribeEvents(this.hassChanged, 'mailbox_updated')
-      .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
-    this.computePlatforms().then(function (platforms) {
-      this.platforms = platforms;
-      this.hassChanged();
-    }.bind(this));
+    this.hass.connection
+      .subscribeEvents(this.hassChanged, "mailbox_updated")
+      .then(
+        function(unsub) {
+          this._unsubEvents = unsub;
+        }.bind(this)
+      );
+    this.computePlatforms().then(
+      function(platforms) {
+        this.platforms = platforms;
+        this.hassChanged();
+      }.bind(this)
+    );
   }
 
   disconnectedCallback() {
@@ -182,13 +188,15 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
     if (!this._messages) {
       this._messages = [];
     }
-    this.getMessages().then(function (items) {
-      this._messages = items;
-    }.bind(this));
+    this.getMessages().then(
+      function(items) {
+        this._messages = items;
+      }.bind(this)
+    );
   }
 
   openMP3Dialog(event) {
-    this.fire('show-audio-message-dialog', {
+    this.fire("show-audio-message-dialog", {
       hass: this.hass,
       message: event.model.item,
     });
@@ -196,28 +204,33 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
 
   getMessages() {
     const platform = this.platforms[this._currentPlatform];
-    return this.hass.callApi('GET', `mailbox/messages/${platform.name}`).then(function (values) {
-      const platformItems = [];
-      const arrayLength = values.length;
-      for (let i = 0; i < arrayLength; i++) {
-        const datetime = formatDateTime(new Date(values[i].info.origtime * 1000), this.language);
-        platformItems.push({
-          timestamp: datetime,
-          caller: values[i].info.callerid,
-          message: values[i].text,
-          sha: values[i].sha,
-          duration: values[i].info.duration,
-          platform: platform
+    return this.hass
+      .callApi("GET", `mailbox/messages/${platform.name}`)
+      .then(function(values) {
+        const platformItems = [];
+        const arrayLength = values.length;
+        for (let i = 0; i < arrayLength; i++) {
+          const datetime = formatDateTime(
+            new Date(values[i].info.origtime * 1000),
+            this.language
+          );
+          platformItems.push({
+            timestamp: datetime,
+            caller: values[i].info.callerid,
+            message: values[i].text,
+            sha: values[i].sha,
+            duration: values[i].info.duration,
+            platform: platform,
+          });
+        }
+        return platformItems.sort(function(a, b) {
+          return new Date(b.timestamp) - new Date(a.timestamp);
         });
-      }
-      return platformItems.sort(function (a, b) {
-        return new Date(b.timestamp) - new Date(a.timestamp);
       });
-    });
   }
 
   computePlatforms() {
-    return this.hass.callApi('GET', 'mailbox/platforms');
+    return this.hass.callApi("GET", "mailbox/platforms");
   }
 
   handlePlatformSelected(ev) {
@@ -239,4 +252,4 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-panel-mailbox', HaPanelMailbox);
+customElements.define("ha-panel-mailbox", HaPanelMailbox);

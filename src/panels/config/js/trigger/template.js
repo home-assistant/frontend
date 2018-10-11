@@ -1,14 +1,14 @@
-import { h, Component } from 'preact';
+import { h, Component } from "preact";
 
-import '../../../../components/ha-textarea.js';
+import "../../../../components/ha-textarea.js";
 
-import { onChangeEvent } from '../../../../common/preact/event.js';
+import { onChangeEvent } from "../../../../common/preact/event.js";
 
 export default class TemplateTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'trigger');
+    this.onChange = onChangeEvent.bind(this, "trigger");
   }
 
   render({ trigger, localize }) {
@@ -17,7 +17,9 @@ export default class TemplateTrigger extends Component {
     return (
       <div>
         <ha-textarea
-          label={localize('ui.panel.config.automation.editor.triggers.type.template.value_template')}
+          label={localize(
+            "ui.panel.config.automation.editor.triggers.type.template.value_template"
+          )}
           name="value_template"
           value={value_template}
           onvalue-changed={this.onChange}
@@ -28,5 +30,5 @@ export default class TemplateTrigger extends Component {
 }
 
 TemplateTrigger.defaultConfig = {
-  value_template: '',
+  value_template: "",
 };
