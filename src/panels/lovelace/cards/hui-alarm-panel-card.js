@@ -214,7 +214,7 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
   }
 
   _handlePadClick(e) {
-    e.target.getAttribute('value') === 'clear' ? this._value = '' : this._value += e.target.getAttribute('value');
+    this._value = e.target.getAttribute('value') === 'clear' ? '' : this._value + e.target.getAttribute('value');
   }
 
   _handleActionClick(e) {
