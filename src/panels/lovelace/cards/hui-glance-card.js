@@ -64,7 +64,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
   }
 
   renderEntity(entityConf) {
-    if (!this._config) return html``;
     const stateObj = this.hass.states[entityConf.entity];
 
     return html`
@@ -94,6 +93,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
   }
 
   render() {
+    if (!this._config) return html``;
     const { title } = this._config;
     const states = this.hass.states;
     const entities = this._configEntities.filter(
