@@ -68,7 +68,9 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
     const stateObj = this.hass.states[entityConf.entity];
 
     return html`
-      <div class="entity" @click="${entityConf.handleClick}">
+      <div class="entity" .entityConf="${entityConf}" @click="${
+      this._handleClick
+    }">
         ${
           this._config.show_name !== false
             ? html`<div class="name">${
@@ -136,15 +138,13 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
     }
 
     this._configEntities = processConfigEntities(config.entities);
-    this._configEntities.forEach((conf) => {
-      conf.handleClick = () => this._handleClick(conf);
-    });
     if (this.hass) {
       this.requestUpdate();
     }
   }
 
-  _handleClick(config) {
+  _handleClick(ev) {
+    const config = ev.currentTarget.entityConf;
     const entityId = config.entity;
     switch (config.tap_action) {
       case "toggle":
