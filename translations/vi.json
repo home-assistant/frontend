@@ -1,670 +1,889 @@
 {
-    "panel": {
-        "config": "Cấu hình",
-        "states": "Tổng quan",
-        "map": "Bản đồ",
-        "logbook": "Nhật ký",
-        "history": "Lịch sử",
-        "mailbox": "Hộp thư",
-        "shopping_list": "Danh sách mua sắm",
-        "dev-services": "Dịch vụ",
-        "dev-states": "Trạng thái",
-        "dev-events": "Sự kiện",
-        "dev-templates": "Mẫu sẵn",
-        "dev-mqtt": "MQTT",
-        "dev-info": "Thông tin",
-        "calendar": "Lịch"
+  "panel": {
+    "config": "Cấu hình",
+    "states": "Tổng quan",
+    "map": "Bản đồ",
+    "logbook": "Nhật ký",
+    "history": "Lịch sử",
+    "mailbox": "Hộp thư",
+    "shopping_list": "Danh sách mua sắm",
+    "dev-services": "Dịch vụ",
+    "dev-states": "Trạng thái",
+    "dev-events": "Sự kiện",
+    "dev-templates": "Mẫu sẵn",
+    "dev-mqtt": "MQTT",
+    "dev-info": "Thông tin",
+    "calendar": "Lịch",
+    "profile": "Hồ sơ"
+  },
+  "state": {
+    "default": {
+      "off": "Tắt",
+      "on": "Bật",
+      "unknown": "Chưa biết",
+      "unavailable": "Không có sẵn"
     },
-    "state": {
-        "default": {
-            "off": "Tắt",
-            "on": "Bật",
-            "unknown": "Chưa biết",
-            "unavailable": "Không có sẵn"
+    "alarm_control_panel": {
+      "armed": "Vũ trang",
+      "disarmed": "Vô hiệu hóa",
+      "armed_home": "Vũ trang khi ở nhà",
+      "armed_away": "Vũ trang khi đi vắng",
+      "armed_night": "Vũ trang đêm",
+      "pending": "Đang chờ xử lý",
+      "arming": "Vũ trang",
+      "disarming": "Giải giáp",
+      "triggered": "Kích hoạt",
+      "armed_custom_bypass": "Tùy chỉnh bỏ qua Vũ trang"
+    },
+    "automation": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "binary_sensor": {
+      "default": {
+        "off": "Tắt",
+        "on": "Bật"
+      },
+      "moisture": {
+        "off": "Khô",
+        "on": "Ướt"
+      },
+      "gas": {
+        "off": "Trống trải",
+        "on": "Phát hiện"
+      },
+      "motion": {
+        "off": "Trống trải",
+        "on": "Phát hiện"
+      },
+      "occupancy": {
+        "off": "Trống trải",
+        "on": "Phát hiện"
+      },
+      "smoke": {
+        "off": "Trống trải",
+        "on": "Phát hiện"
+      },
+      "sound": {
+        "off": "Trống trải",
+        "on": "Phát hiện"
+      },
+      "vibration": {
+        "off": "Trống trải",
+        "on": "Phát hiện"
+      },
+      "opening": {
+        "off": "Đã đóng",
+        "on": "Mở"
+      },
+      "safety": {
+        "off": "An toàn",
+        "on": "Không an toàn"
+      },
+      "presence": {
+        "off": "Đi vắng",
+        "on": "Ở nhà"
+      },
+      "battery": {
+        "off": "Bình thường",
+        "on": "Thấp"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Có vấn đề"
+      },
+      "connectivity": {
+        "off": "Đã ngắt kết nối",
+        "on": "Đã kết nối"
+      },
+      "cold": {
+        "off": "Bình thường",
+        "on": "Lạnh"
+      },
+      "door": {
+        "off": "Đóng",
+        "on": "Mở"
+      },
+      "garage_door": {
+        "off": "Đóng",
+        "on": "Mở"
+      },
+      "heat": {
+        "off": "Bình thường",
+        "on": "Nóng"
+      },
+      "window": {
+        "off": "Đóng",
+        "on": "Mở"
+      }
+    },
+    "calendar": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "camera": {
+      "recording": "Ghi âm",
+      "streaming": "Phát trực tuyến",
+      "idle": "Không hoạt động"
+    },
+    "climate": {
+      "off": "Tắt",
+      "on": "Bật",
+      "heat": "Nhiệt",
+      "cool": "Mát mẻ",
+      "idle": "Không hoạt động",
+      "auto": "Tự động",
+      "dry": "Khô",
+      "fan_only": "Chỉ có quạt",
+      "eco": "Tiết kiệm",
+      "electric": "Điện",
+      "performance": "Hiệu suất",
+      "high_demand": "Nhu cầu cao",
+      "heat_pump": "Bơm nhiệt",
+      "gas": "Khí"
+    },
+    "configurator": {
+      "configure": "Cấu hình",
+      "configured": "Đã cấu hình"
+    },
+    "cover": {
+      "open": "Mở",
+      "opening": "Đang mở",
+      "closed": "Đã đóng",
+      "closing": "Đang đóng",
+      "stopped": "Đã dừng"
+    },
+    "device_tracker": {
+      "home": "Ở nhà",
+      "not_home": "Đi vắng"
+    },
+    "fan": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "group": {
+      "off": "Tắt",
+      "on": "Bật",
+      "home": "Ở nhà",
+      "not_home": "Đi vắng",
+      "open": "Mở",
+      "opening": "Đang mở",
+      "closed": "Đã đóng",
+      "closing": "Đang đóng",
+      "stopped": "Đã dừng",
+      "locked": "Khoá",
+      "unlocked": "Mở khoá",
+      "ok": "OK",
+      "problem": "Vấn đề"
+    },
+    "input_boolean": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "light": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "lock": {
+      "locked": "Đã khóa",
+      "unlocked": "Mở khóa"
+    },
+    "media_player": {
+      "off": "Tắt",
+      "on": "Bật",
+      "playing": "Đang chơi",
+      "paused": "Tạm dừng",
+      "idle": "Không hoạt động",
+      "standby": "Chế độ chờ"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Vấn đề"
+    },
+    "remote": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "scene": {
+      "scening": "Bối cảnh"
+    },
+    "script": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "sensor": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "sun": {
+      "above_horizon": "Trên đường chân trời",
+      "below_horizon": "Dưới đường chân trời"
+    },
+    "switch": {
+      "off": "Tắt",
+      "on": "Bật"
+    },
+    "zwave": {
+      "default": {
+        "initializing": "Khởi tạo",
+        "dead": "Chết",
+        "sleeping": "Ngủ",
+        "ready": "Sẵn sàng"
+      }
+    },
+    "weather": {
+      "clear-night": "Trời trong, đêm",
+      "cloudy": "Nhiều mây",
+      "fog": "Sương mù",
+      "hail": "Mưa đá",
+      "lightning": "Sét",
+      "lightning-rainy": "Sét, mưa",
+      "partlycloudy": "Mây rải rác",
+      "pouring": "Mưa lớn",
+      "rainy": "Mưa",
+      "snowy": "Tuyết",
+      "snowy-rainy": "Tuyết, mưa",
+      "sunny": "Nắng đẹp",
+      "windy": "Gió nhẹ",
+      "windy-variant": "Gió nhẹ"
+    },
+    "vacuum": {
+      "cleaning": "Đang làm sạch",
+      "docked": "Đã vào dock",
+      "error": "Lỗi",
+      "idle": "Không hoạt động",
+      "off": "Mở",
+      "on": "Tắt",
+      "paused": "Tạm dừng",
+      "returning": "Đang trở lại dock"
+    }
+  },
+  "state_badge": {
+    "default": {
+      "unknown": "KB",
+      "unavailable": "KKD"
+    },
+    "alarm_control_panel": {
+      "armed": "VT",
+      "disarmed": "Vô hiệu hoá",
+      "pending": "Chờ",
+      "arming": "Đang VT",
+      "disarming": "Giải giáp"
+    },
+    "device_tracker": {
+      "home": "Ở nhà",
+      "not_home": "Đi vắng"
+    }
+  },
+  "ui": {
+    "panel": {
+      "shopping-list": {
+        "clear_completed": "Xóa hoàn tất",
+        "add_item": "Thêm mục",
+        "microphone_tip": "Chạm vào micrô ở trên cùng bên phải và nói \"Thêm kẹo vào danh sách mua sắm của tôi\""
+      },
+      "history": {
+        "showing_entries": "Hiển thị mục cho",
+        "period": "Giai đoạn"
+      },
+      "logbook": {
+        "showing_entries": "Hiển thị mục cho"
+      },
+      "mailbox": {
+        "empty": "Bạn không có tin nhắn nào",
+        "playback_title": "Phát lại tin nhắn",
+        "delete_prompt": "Xóa tin nhắn này?",
+        "delete_button": "Xóa"
+      },
+      "config": {
+        "header": "Cấu hình Home Assistant",
+        "introduction": "Ở đây có thể định cấu hình các thành phần của bạn và Home Assistant. Không phải mọi thứ đều có thể được cấu hình từ giao diện người dùng, nhưng chúng tôi đang cải thiện việc đó.",
+        "core": {
+          "caption": "Tổng quát",
+          "description": "Xác nhận tập tin cấu hình của bạn và kiểm soát máy chủ",
+          "section": {
+            "core": {
+              "header": "Cấu hình và kiểm soát máy chủ",
+              "introduction": "Thay đổi cấu hình của bạn có thể là một quá trình mệt mỏi. Chúng tôi biết. Phần này sẽ cố gắng làm cho việc đó dễ dàng hơn.",
+              "validation": {
+                "heading": "Xác nhận cấu hình",
+                "introduction": "Xác thực cấu hình của bạn nếu gần đây bạn đã thực hiện một số thay đổi đối với cấu hình của bạn và muốn đảm bảo rằng nó là hợp lệ",
+                "check_config": "Kiểm tra cấu hình",
+                "valid": "Cấu hình hợp lệ!",
+                "invalid": "Cấu hình không hợp lệ"
+              },
+              "reloading": {
+                "heading": "Nạp lại Cấu hình ",
+                "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
+                "core": "Tải lại lõi",
+                "group": "Tải lại nhóm",
+                "automation": "Tải lại Tự động hóa",
+                "script": "Tải lại Kịch bản"
+              },
+              "server_management": {
+                "heading": "Quản lý máy chủ",
+                "introduction": "Kiểm soát máy chủ Home Assistant của bạn từ Home Assistant.",
+                "restart": "Khởi động lại",
+                "stop": "Dừng"
+              }
+            }
+          }
         },
-        "alarm_control_panel": {
-            "armed": "Vũ trang",
-            "disarmed": "Vô hiệu hóa",
-            "armed_home": "Vũ trang khi ở nhà",
-            "armed_away": "Vũ trang khi đi vắng",
-            "armed_night": "Vũ trang đêm",
-            "pending": "Đang chờ xử lý",
-            "arming": "Vũ trang",
-            "disarming": "Giải giáp",
-            "triggered": "Kích hoạt",
-            "armed_custom_bypass": "Tùy chỉnh bỏ qua Vũ trang"
+        "customize": {
+          "caption": "Tùy chỉnh",
+          "description": "Tùy chỉnh các thực thể của bạn"
         },
         "automation": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "binary_sensor": {
-            "default": {
-                "off": "Tắt",
-                "on": "Bật"
+          "caption": "Tự động hóa",
+          "description": "Tạo và chỉnh sửa Tự động hóa",
+          "picker": {
+            "header": "Trình biên tập tự động hóa",
+            "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng đọc [hướng dẫn] (https://home-assistant.io/docs/automation/editor/) để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
+            "pick_automation": "Chọn tự động hóa để chỉnh sửa",
+            "no_automations": "Chúng tôi không thể tìm thấy tự động hóa nào có thể chỉnh sửa",
+            "add_automation": "Thêm Tự động hóa"
+          },
+          "editor": {
+            "introduction": "Sử dụng tự động hóa để mang sự sống cho nhà bạn",
+            "default_name": "Thêm Tự động hóa",
+            "save": "Lưu",
+            "unsaved_confirm": "Bạn có thay đổi chưa được lưu. Bạn có chắc anh muốn bỏ đi?",
+            "alias": "Tên",
+            "triggers": {
+              "header": "Bộ khởi động",
+              "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \n\n [Tìm hiểu thêm về Bộ khởi động] (https://home-assistant.io/docs/automation/trigger/)",
+              "add": "Thêm Bộ khởi động",
+              "duplicate": "Bản sao",
+              "delete_confirm": "Chắc chắn bạn muốn xóa?",
+              "unsupported_platform": "Nền tảng không được hỗ trợ: {platform}",
+              "type_select": "Loại Bộ khởi động",
+              "type": {
+                "event": {
+                  "label": "Sự kiện",
+                  "event_type": "Loại sự kiện",
+                  "event_data": "Dữ liệu sự kiện"
+                },
+                "state": {
+                  "label": "Trạng thái",
+                  "from": "Từ",
+                  "to": "Đến",
+                  "for": "Cho"
+                },
+                "homeassistant": {
+                  "label": "Home Assistant",
+                  "event": "Sự kiện:",
+                  "start": "Bắt đầu",
+                  "shutdown": "Tắt"
+                },
+                "mqtt": {
+                  "label": "MQTT",
+                  "topic": "Chủ đề",
+                  "payload": "Phụ tải (tùy chọn)"
+                },
+                "numeric_state": {
+                  "label": "Trạng thái số",
+                  "above": "Trên",
+                  "below": "Dưới",
+                  "value_template": "Mẫu giá trị (tùy chọn)"
+                },
+                "sun": {
+                  "label": "Mặt trời",
+                  "sunrise": "Bình minh",
+                  "sunset": "Hoàng hôn",
+                  "offset": "Bù đắp (tùy chọn)"
+                },
+                "template": {
+                  "label": "Mẫu",
+                  "value_template": "Mẫu giá trị (tùy chọn)"
+                },
+                "time": {
+                  "label": "Thời gian",
+                  "at": "Lúc"
+                },
+                "zone": {
+                  "label": "Khu vực",
+                  "entity": "Thực thể với vị trí",
+                  "enter": "Vào",
+                  "leave": "Ra"
+                }
+              }
             },
-            "moisture": {
-                "off": "Khô",
-                "on": "Ướt"
+            "conditions": {
+              "header": "Điều kiện",
+              "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \n\n [Tìm hiểu thêm về điều kiện] (https://home-assistant.io/docs/scripts/conditions/)",
+              "add": "Thêm điều kiện",
+              "unsupported_condition": "Điều kiện không được hỗ trợ: {condition}",
+              "type_select": "Loại điều kiện",
+              "type": {
+                "numeric_state": {
+                  "above": "Ở trên",
+                  "below": "Bên dưới",
+                  "value_template": "Giá trị mẫu (không bắt buộc)"
+                },
+                "sun": {
+                  "label": "Mặt trời",
+                  "before": "Trước khi:",
+                  "after": "Sau khi:",
+                  "before_offset": "Trước khi bù đắp (tùy chọn)",
+                  "after_offset": "Sau khi bù đắp (tùy chọn)",
+                  "sunrise": "Bình minh",
+                  "sunset": "Hoàng hôn"
+                },
+                "template": {
+                  "label": "Mẫu",
+                  "value_template": "Giá trị mẫu"
+                },
+                "time": {
+                  "label": "Thời gian",
+                  "after": "Sau",
+                  "before": "Trước"
+                },
+                "zone": {
+                  "label": "Vùng",
+                  "zone": "Vùng"
+                }
+              }
             },
-            "gas": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "motion": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "occupancy": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "smoke": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "sound": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "vibration": {
-                "off": "Trống trải",
-                "on": "Phát hiện"
-            },
-            "opening": {
-                "off": "Đã đóng",
-                "on": "Mở"
-            },
-            "safety": {
-                "off": "An toàn",
-                "on": "Không an toàn"
-            },
-            "battery": {
-                "off": "Bình thường",
-                "on": "Thấp"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Có vấn đề"
-            },
-            "connectivity": {
-                "off": "Đã ngắt kết nối",
-                "on": "Đã kết nối"
-            },
-            "cold": {
-                "on": "Lạnh"
-            },
-            "door": {
-                "off": "Đóng",
-                "on": "Mở"
-            },
-            "garage_door": {
-                "off": "Đóng",
-                "on": "Mở"
-            },
-            "heat": {
-                "on": "Nóng"
-            },
-            "window": {
-                "off": "Đóng",
-                "on": "Mở"
+            "actions": {
+              "header": "Hành động",
+              "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \n\n [Tìm hiểu thêm về các hành động.] (https://home-assistant.io/docs/automation/action/)",
+              "add": "Thêm hành động",
+              "unsupported_action": "Hành động không được hỗ trợ: {action}",
+              "type_select": "Loại hành động",
+              "type": {
+                "service": {
+                  "label": "Gọi dịch vụ",
+                  "service_data": "Dữ liệu dịch vụ"
+                },
+                "delay": {
+                  "label": "Chậm trễ"
+                },
+                "wait_template": {
+                  "label": "Chờ",
+                  "wait_template": "Mẫu chờ",
+                  "timeout": "Thời gian chờ (tùy chọn)"
+                },
+                "condition": {
+                  "label": "Điều kiện"
+                },
+                "event": {
+                  "label": "Kích hoạt Sự kiện"
+                }
+              }
             }
-        },
-        "calendar": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "camera": {
-            "recording": "Ghi âm",
-            "streaming": "Phát trực tuyến",
-            "idle": "Không hoạt động"
-        },
-        "climate": {
-            "off": "Tắt",
-            "on": "Bật",
-            "heat": "Nhiệt",
-            "cool": "Mát mẻ",
-            "idle": "Không hoạt động",
-            "auto": "Tự động",
-            "dry": "Khô",
-            "fan_only": "Chỉ có quạt",
-            "eco": "Tiết kiệm",
-            "electric": "Điện",
-            "performance": "Hiệu suất",
-            "high_demand": "Nhu cầu cao",
-            "heat_pump": "Bơm nhiệt",
-            "gas": "Khí"
-        },
-        "configurator": {
-            "configure": "Cấu hình",
-            "configured": "Đã cấu hình"
-        },
-        "cover": {
-            "open": "Mở",
-            "opening": "Đang mở",
-            "closed": "Đã đóng",
-            "closing": "Đang đóng",
-            "stopped": "Đã dừng"
-        },
-        "device_tracker": {
-            "home": "Ở nhà",
-            "not_home": "Đi vắng"
-        },
-        "fan": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "group": {
-            "off": "Tắt",
-            "on": "Bật",
-            "home": "Ở nhà",
-            "not_home": "Đi vắng",
-            "open": "Mở",
-            "opening": "Đang mở",
-            "closed": "Đã đóng",
-            "closing": "Đang đóng",
-            "stopped": "Đã dừng",
-            "locked": "Khoá",
-            "unlocked": "Mở khoá",
-            "ok": "OK",
-            "problem": "Vấn đề"
-        },
-        "input_boolean": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "light": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "lock": {
-            "locked": "Đã khóa",
-            "unlocked": "Mở khóa"
-        },
-        "media_player": {
-            "off": "Tắt",
-            "on": "Bật",
-            "playing": "Đang chơi",
-            "paused": "Tạm dừng",
-            "idle": "Không hoạt động",
-            "standby": "Chế độ chờ"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Vấn đề"
-        },
-        "remote": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "scene": {
-            "scening": "Bối cảnh"
+          }
         },
         "script": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "sensor": {
-            "off": "Tắt",
-            "on": "Bật"
-        },
-        "sun": {
-            "above_horizon": "Trên đường chân trời",
-            "below_horizon": "Dưới đường chân trời"
-        },
-        "switch": {
-            "off": "Tắt",
-            "on": "Bật"
+          "caption": "Kịch bản",
+          "description": "Tạo và chỉnh sửa các tập lệnh"
         },
         "zwave": {
-            "default": {
-                "initializing": "Khởi tạo",
-                "dead": "Chết",
-                "sleeping": "Ngủ",
-                "ready": "Sẵn sàng"
-            }
+          "caption": "Z-Wave",
+          "description": "Quản lý mạng Z-Wave"
         },
-        "weather": {
-            "clear-night": "Trời trong, đêm",
-            "cloudy": "Nhiều mây",
-            "fog": "Sương mù",
-            "hail": "Mưa đá",
-            "lightning": "Sét",
-            "lightning-rainy": "Sét, mưa",
-            "partlycloudy": "Mây rải rác",
-            "pouring": "Mưa lớn",
-            "rainy": "Mưa",
-            "snowy": "Tuyết",
-            "snowy-rainy": "Tuyết, mưa",
-            "sunny": "Nắng đẹp",
-            "windy": "Gió nhẹ",
-            "windy-variant": "Gió nhẹ"
+        "users": {
+          "caption": "Người dùng",
+          "description": "Quản lý Người dùng",
+          "picker": {
+            "title": "Người dùng"
+          },
+          "editor": {
+            "rename_user": "Đổi tên người dùng",
+            "change_password": "Đổi mật khẩu",
+            "activate_user": "Kích hoạt người dùng",
+            "deactivate_user": "Hủy kích hoạt người dùng",
+            "delete_user": "Xóa người dùng"
+          }
+        },
+        "cloud": {
+          "caption": "Home Assistant Cloud",
+          "description_login": "Đã đăng nhập với tên {email}",
+          "description_not_login": "Chưa đăng nhập"
+        },
+        "integrations": {
+          "caption": "Các bộ tích hợp",
+          "description": "Quản lý thiết bị và dịch vụ đã kết nối",
+          "discovered": "Đã quét",
+          "configured": "Đã cấu hình",
+          "new": "Thiết lập bộ tích hợp mới",
+          "configure": "Cấu hình",
+          "none": "Chưa có cấu hình nào",
+          "config_entry": {
+            "no_devices": "Bộ tích hợp này chưa có thiết bị nào",
+            "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
+            "restart_confirm": "Khởi động lại Home Assistant để hoàn tất xóa bộ tích hợp này",
+            "manuf": "bởi {manufacturer}",
+            "hub": "Đã kết nối qua",
+            "firmware": "Firmware: {version}",
+            "device_unavailable": "thiết bị không khả dụng"
+          }
         }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "KB",
-            "unavailable": "KKD"
+      },
+      "profile": {
+        "push_notifications": {
+          "header": "Thông báo đẩy",
+          "description": "Gửi thông báo tới thiết bị này.",
+          "error_load_platform": "Configure notify.html5.",
+          "error_use_https": "Yêu cầu bật SSL cho giao diện người dùng.",
+          "push_notifications": "Thông báo đẩy",
+          "link_promo": "Tìm hiểu thêm"
         },
-        "alarm_control_panel": {
-            "armed": "VT",
-            "disarmed": "Vô hiệu hoá",
-            "pending": "Chờ",
-            "arming": "Đang VT",
-            "disarming": "Giải giáp"
+        "language": {
+          "header": "Ngôn ngữ",
+          "link_promo": "Trợ giúp dịch",
+          "dropdown_label": "Ngôn ngữ"
         },
-        "device_tracker": {
-            "home": "Ở nhà",
-            "not_home": "Đi vắng"
+        "themes": {
+          "header": "Giao diện",
+          "error_no_theme": "Không có giao diện nào.",
+          "link_promo": "Tìm hiểu về giao diện",
+          "dropdown_label": "Giao diện"
+        },
+        "refresh_tokens": {
+          "created_at": "Được tạo lúc {date}",
+          "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
+          "not_used": "Chưa bao giờ được sử dụng"
+        },
+        "long_lived_access_tokens": {
+          "header": "Token truy cập thời hạn dài",
+          "created_at": "Được tạo lúc {date}",
+          "confirm_delete": "Bạn có chắn chắn muốn xóa token truy cập {name}?",
+          "delete_failed": "Không thể xóa token truy cập.",
+          "create": "Tạo Token",
+          "create_failed": "Không thể tạo token truy cập.",
+          "prompt_name": "Tên?",
+          "prompt_copy_token": "Sao chép token truy cập của bạn. Nó sẽ không đươc hiển thị nữa.",
+          "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
+          "not_used": "Chưa bao giờ được sử dụng"
+        },
+        "current_user": "Bạn hiện đang đăng nhập với tên {fullName} .",
+        "is_owner": "Bạn là chủ sở hữu.",
+        "logout": "Đăng xuất",
+        "change_password": {
+          "header": "Đổi mật khẩu",
+          "current_password": "Mật khẩu hiện tại",
+          "new_password": "Mật khẩu mới",
+          "confirm_new_password": "Xác nhận mật khẩu mới",
+          "error_required": "Yêu cầu",
+          "submit": "Gửi đi"
+        },
+        "mfa": {
+          "header": "Các mô-đun đa xác thực",
+          "disable": "Vô hiệu hóa",
+          "enable": "Kích hoạt",
+          "confirm_disable": "Bạn có chắc chắn muốn tắt {name}?"
+        },
+        "mfa_setup": {
+          "title_aborted": "Bị hủy bỏ",
+          "title_success": "Thành công!",
+          "step_done": "Đã hoàn tất thiết lập cho {step}",
+          "close": "Đóng",
+          "submit": "Gửi đi"
         }
-    },
-    "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "Xóa hoàn tất",
-                "add_item": "Thêm mục",
-                "microphone_tip": "Chạm vào micrô ở trên cùng bên phải và nói \"Thêm kẹo vào danh sách mua sắm của tôi\""
-            },
-            "history": {
-                "showing_entries": "Hiển thị mục cho",
-                "period": "Giai đoạn"
-            },
-            "mailbox": {
-                "empty": "Bạn không có tin nhắn nào",
-                "playback_title": "Phát lại tin nhắn",
-                "delete_prompt": "Xóa tin nhắn này?",
-                "delete_button": "Xóa"
-            },
-            "config": {
-                "header": "Cấu hình Home Assistant",
-                "introduction": "Ở đây có thể định cấu hình các thành phần của bạn và Home Assistant. Không phải mọi thứ đều có thể được cấu hình từ giao diện người dùng, nhưng chúng tôi đang cải thiện việc đó.",
-                "core": {
-                    "caption": "Tổng quát",
-                    "description": "Xác nhận tập tin cấu hình của bạn và kiểm soát máy chủ",
-                    "section": {
-                        "core": {
-                            "header": "Cấu hình và kiểm soát máy chủ",
-                            "introduction": "Thay đổi cấu hình của bạn có thể là một quá trình mệt mỏi. Chúng tôi biết. Phần này sẽ cố gắng làm cho việc đó dễ dàng hơn.",
-                            "validation": {
-                                "heading": "Xác nhận cấu hình",
-                                "introduction": "Xác thực cấu hình của bạn nếu gần đây bạn đã thực hiện một số thay đổi đối với cấu hình của bạn và muốn đảm bảo rằng nó là hợp lệ",
-                                "check_config": "Kiểm tra cấu hình",
-                                "valid": "Cấu hình hợp lệ!",
-                                "invalid": "Cấu hình không hợp lệ"
-                            },
-                            "reloading": {
-                                "heading": "Nạp lại Cấu hình ",
-                                "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
-                                "core": "Tải lại lõi",
-                                "group": "Tải lại nhóm",
-                                "automation": "Tải lại Tự động hóa",
-                                "script": "Tải lại Kịch bản"
-                            },
-                            "server_management": {
-                                "heading": "Quản lý máy chủ",
-                                "introduction": "Kiểm soát máy chủ Home Assistant của bạn từ Home Assistant.",
-                                "restart": "Khởi động lại",
-                                "stop": "Dừng"
-                            }
-                        }
-                    }
+      },
+      "page-authorize": {
+        "initializing": "Đang khởi tạo",
+        "authorizing_client": "Bạn sắp cấp quyền cho {clientId} truy cập vào Home Assistant của bạn.",
+        "logging_in_with": "Đăng nhập bằng **{authProviderName}**.",
+        "pick_auth_provider": "Hoặc đăng nhập bằng",
+        "abort_intro": "Đã hủy đăng nhập",
+        "form": {
+          "working": "Vui lòng đợi",
+          "unknown_error": "Đã xảy ra sự cố",
+          "providers": {
+            "homeassistant": {
+              "step": {
+                "init": {
+                  "data": {
+                    "username": "Tên đăng nhập",
+                    "password": "Mật khẩu"
+                  }
                 },
-                "customize": {
-                    "caption": "Tùy chỉnh",
-                    "description": "Tùy chỉnh các thực thể của bạn"
-                },
-                "automation": {
-                    "caption": "Tự động hóa",
-                    "description": "Tạo và chỉnh sửa Tự động hóa",
-                    "picker": {
-                        "header": "Trình biên tập tự động hóa",
-                        "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng đọc [hướng dẫn] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
-                        "pick_automation": "Chọn tự động hóa để chỉnh sửa",
-                        "no_automations": "Chúng tôi không thể tìm thấy tự động hóa nào có thể chỉnh sửa",
-                        "add_automation": "Thêm Tự động hóa"
-                    },
-                    "editor": {
-                        "introduction": "Sử dụng tự động hóa để mang sự sống cho nhà bạn",
-                        "default_name": "Thêm Tự động hóa",
-                        "save": "Lưu",
-                        "unsaved_confirm": "Bạn có thay đổi chưa được lưu. Bạn có chắc anh muốn bỏ đi?",
-                        "alias": "Tên",
-                        "triggers": {
-                            "header": "Bộ khởi động",
-                            "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \n\n [Tìm hiểu thêm về Bộ khởi động] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
-                            "add": "Thêm Bộ khởi động",
-                            "duplicate": "Bản sao",
-                            "delete_confirm": "Chắc chắn bạn muốn xóa?",
-                            "unsupported_platform": "Nền tảng không được hỗ trợ: {platform}",
-                            "type_select": "Loại Bộ khởi động",
-                            "type": {
-                                "event": {
-                                    "label": "Sự kiện",
-                                    "event_type": "Loại sự kiện",
-                                    "event_data": "Dữ liệu sự kiện"
-                                },
-                                "state": {
-                                    "label": "Trạng thái",
-                                    "from": "Từ",
-                                    "to": "Đến"
-                                },
-                                "homeassistant": {
-                                    "label": "Home Assistant",
-                                    "event": "Sự kiện:",
-                                    "start": "Bắt đầu",
-                                    "shutdown": "Tắt"
-                                },
-                                "mqtt": {
-                                    "label": "MQTT",
-                                    "topic": "Chủ đề",
-                                    "payload": "Phụ tải (tùy chọn)"
-                                },
-                                "numeric_state": {
-                                    "label": "Trạng thái số",
-                                    "above": "Trên",
-                                    "below": "Dưới",
-                                    "value_template": "Mẫu giá trị (tùy chọn)"
-                                },
-                                "sun": {
-                                    "label": "Mặt trời",
-                                    "sunrise": "Bình minh",
-                                    "sunset": "Hoàng hôn",
-                                    "offset": "Bù đắp (tùy chọn)"
-                                },
-                                "template": {
-                                    "label": "Mẫu",
-                                    "value_template": "Mẫu giá trị (tùy chọn)"
-                                },
-                                "time": {
-                                    "label": "Thời gian",
-                                    "at": "Lúc"
-                                },
-                                "zone": {
-                                    "label": "Khu vực",
-                                    "entity": "Thực thể với vị trí",
-                                    "enter": "Vào",
-                                    "leave": "Ra"
-                                }
-                            }
-                        },
-                        "conditions": {
-                            "header": "Điều kiện",
-                            "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \n\n [Tìm hiểu thêm về điều kiện] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
-                            "add": "Thêm điều kiện",
-                            "unsupported_condition": "Điều kiện không được hỗ trợ: {condition}",
-                            "type_select": "Loại điều kiện",
-                            "type": {
-                                "sun": {
-                                    "before": "Trước khi:",
-                                    "after": "Sau khi:",
-                                    "before_offset": "Trước khi bù đắp (tùy chọn)",
-                                    "after_offset": "Sau khi bù đắp (tùy chọn)",
-                                    "sunrise": "Bình minh",
-                                    "sunset": "Hoàng hôn"
-                                },
-                                "time": {
-                                    "after": "Sau",
-                                    "before": "Trước"
-                                }
-                            }
-                        },
-                        "actions": {
-                            "header": "Hành động",
-                            "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \n\n [Tìm hiểu thêm về các hành động.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
-                            "add": "Thêm hành động",
-                            "unsupported_action": "Hành động không được hỗ trợ: {action}",
-                            "type_select": "Loại hành động",
-                            "type": {
-                                "service": {
-                                    "label": "Gọi dịch vụ",
-                                    "service_data": "Dữ liệu dịch vụ"
-                                },
-                                "delay": {
-                                    "label": "Chậm trễ"
-                                },
-                                "wait_template": {
-                                    "label": "Chờ",
-                                    "wait_template": "Mẫu chờ",
-                                    "timeout": "Thời gian chờ (tùy chọn)"
-                                },
-                                "condition": {
-                                    "label": "Điều kiện"
-                                },
-                                "event": {
-                                    "label": "Kích hoạt Sự kiện"
-                                }
-                            }
-                        }
-                    }
-                },
-                "script": {
-                    "caption": "Kịch bản",
-                    "description": "Tạo và chỉnh sửa các tập lệnh"
-                },
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "description": "Quản lý mạng Z-Wave"
-                },
-                "users": {
-                    "caption": "Người dùng",
-                    "description": "Quản lý Người dùng",
-                    "picker": {
-                        "title": "Người dùng"
-                    },
-                    "editor": {
-                        "rename_user": "Đổi tên người dùng",
-                        "change_password": "Đổi mật khẩu",
-                        "activate_user": "Kích hoạt người dùng",
-                        "deactivate_user": "Hủy kích hoạt người dùng",
-                        "delete_user": "Xóa người dùng"
-                    }
+                "mfa": {
+                  "data": {
+                    "code": "Mã xác thực hai lớp"
+                  },
+                  "description": "Mở **{mfa_module_name}** trên thiết bị của bạn để xem mã xác thực hai lớp và xác minh danh tính của bạn:"
                 }
+              },
+              "error": {
+                "invalid_auth": "Tên đăng nhập hoặc mật khẩu không chính xác",
+                "invalid_code": "Mã xác thực không hợp lệ"
+              },
+              "abort": {
+                "login_expired": "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại."
+              }
             },
-            "page-authorize": {
-                "form": {
-                    "providers": {
-                        "trusted_networks": {
-                            "step": {
-                                "init": {
-                                    "description": "Vui lòng lựa chọn một tài khoản để đăng nhập"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "sidebar": {
-            "log_out": "Đăng xuất",
-            "developer_tools": "Công cụ Nhà phát triển"
-        },
-        "common": {
-            "loading": "Đang tải",
-            "cancel": "Hủy bỏ"
-        },
-        "duration": {
-            "day": "{count}{count, plural,\n  one { ngày }\n  other { ngày }\n}",
-            "week": "{count}{count, plural,\n  one { tuần }\n  other { tuần }\n}",
-            "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
-            "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
-            "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}"
-        },
-        "login-form": {
-            "password": "Mật khẩu",
-            "remember": "Ghi nhớ",
-            "log_in": "Đăng nhập"
-        },
-        "card": {
-            "camera": {
-                "not_available": "Không có hình ảnh"
-            },
-            "persistent_notification": {
-                "dismiss": "Bỏ qua"
-            },
-            "scene": {
-                "activate": "Kích hoạt"
-            },
-            "script": {
-                "execute": "Thi hành"
-            },
-            "weather": {
-                "attributes": {
-                    "air_pressure": "Áp suất không khí",
-                    "humidity": "Độ ẩm",
-                    "temperature": "Nhiệt độ",
-                    "visibility": "Tầm nhìn",
-                    "wind_speed": "Tốc độ gió"
+            "legacy_api_password": {
+              "step": {
+                "init": {
+                  "data": {
+                    "password": "Mật khẩu API"
+                  },
+                  "description": "Vui lòng nhập mật khẩu API trong cấu hình http của bạn:"
                 },
-                "cardinal_direction": {
-                    "e": "Đ",
-                    "ene": "ĐĐB",
-                    "ese": "ĐĐN",
-                    "n": "B",
-                    "ne": "ĐB",
-                    "nne": "BĐB",
-                    "nw": "TB",
-                    "nnw": "BTB",
-                    "s": "N",
-                    "se": "ĐN",
-                    "sse": "NĐN",
-                    "ssw": "NTN",
-                    "sw": "TN",
-                    "w": "T",
-                    "wnw": "TTB",
-                    "wsw": "TTN"
-                },
-                "forecast": "Dự báo"
-            },
-            "alarm_control_panel": {
-                "code": "Mã số",
-                "clear_code": "Xóa",
-                "disarm": "Không vũ trang",
-                "arm_home": "An ninh khi ở nhà",
-                "arm_away": "An ninh khi đi vắng"
-            },
-            "automation": {
-                "last_triggered": "Kích hoạt lần cuối",
-                "trigger": "Kích hoạt"
-            },
-            "cover": {
-                "position": "Vị trí",
-                "tilt_position": "Nghiêng vị trí"
-            },
-            "fan": {
-                "speed": "Tốc độ",
-                "oscillate": "Dao động",
-                "direction": "Hướng"
-            },
-            "light": {
-                "brightness": "Độ sáng",
-                "color_temperature": "Nhiệt độ màu",
-                "white_value": "Giá trị trắng",
-                "effect": "Hiệu ứng"
-            },
-            "media_player": {
-                "text_to_speak": "Văn bản sang giọng nói",
-                "source": "Nguồn",
-                "sound_mode": "Chế độ âm thanh"
-            },
-            "climate": {
-                "currently": "Hiện tại",
-                "on_off": "Bật \/ tắt",
-                "target_temperature": "Nhiệt độ mục tiêu",
-                "target_humidity": "Độ ẩm mục tiêu",
-                "operation": "Chế độ hoạt động",
-                "fan_mode": "Chế độ quạt",
-                "swing_mode": "Chế độ swing",
-                "away_mode": "Chế độ đi vắng",
-                "aux_heat": "Nhiệt phụ trợ"
-            },
-            "lock": {
-                "code": "Mã",
-                "lock": "Khóa",
-                "unlock": "Mở khóa"
-            }
-        },
-        "components": {
-            "entity": {
-                "entity-picker": {
-                    "entity": "Thực thể"
+                "mfa": {
+                  "data": {
+                    "code": "Mã xác thực hai lớp"
+                  },
+                  "description": "Mở **{mfa_module_name}** trên thiết bị của bạn để xem mã xác thự hai lớp và xác minh danh tính của bạn:"
                 }
+              },
+              "error": {
+                "invalid_auth": "Mật khẩu API không hợp lệ",
+                "invalid_code": "Mã xác thực không chính xác"
+              },
+              "abort": {
+                "no_api_password_set": "Bạn không có mật khẩu API được định cấu hình.",
+                "login_expired": "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại."
+              }
             },
-            "service-picker": {
-                "service": "Dịch vụ"
-            },
-            "relative_time": {
-                "past": "{time} trước",
-                "future": "Trong {time}",
-                "never": "Không bao giờ",
-                "duration": {
-                    "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
-                    "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
-                    "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}",
-                    "day": "{count} {count, plural,\n  one { ngày }\n  other { ngày }\n}",
-                    "week": "{count} {count, plural,\n  one { tuần }\n  other { tuần }\n}"
+            "trusted_networks": {
+              "step": {
+                "init": {
+                  "data": {
+                    "user": "Người dùng"
+                  },
+                  "description": "Vui lòng lựa chọn một tài khoản để đăng nhập"
                 }
-            },
-            "history_charts": {
-                "loading_history": "Đang tải lịch sử trạng thái ...",
-                "no_history_found": "Không tìm thấy lịch sử trạng thái."
+              },
+              "abort": {
+                "not_whitelisted": "Máy tính của bạn không nằm trong danh sách trắng."
+              }
             }
-        },
-        "notification_toast": {
-            "entity_turned_on": "Đã bật {entity} .",
-            "entity_turned_off": "Đã tắt {entity} .",
-            "service_called": "Đã gọi dịch vụ {service} .",
-            "service_call_failed": "Không thể gọi dịch vụ {service} .",
-            "connection_lost": "Kết nối bị mất. Đang kết nối lại…"
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "save": "Lưu",
-                "name": "Tên"
-            }
+          }
         }
+      },
+      "page-onboarding": {
+        "user": {
+          "intro": "Hãy bắt đầu bằng cách tạo tài khoản người dùng.",
+          "required_field": "Yêu cầu",
+          "data": {
+            "name": "Tên",
+            "username": "Tên đăng nhập",
+            "password": "Mật khẩu"
+          },
+          "create_account": "Tạo tài khoản",
+          "error": {
+            "required_fields": "Điền vào tất cả các trường bắt buộc"
+          }
+        }
+      }
     },
-    "domain": {
-        "alarm_control_panel": "Bảng điều khiển an ninh",
-        "automation": "Tự động hóa",
-        "binary_sensor": "Cảm biến nhị phân",
-        "calendar": "Lịch",
-        "camera": "Máy ảnh",
-        "climate": "Khí hậu",
-        "configurator": "Trình cấu hình",
-        "conversation": "Hội thoại",
-        "cover": "Rèm, cửa cuốn",
-        "device_tracker": "Trình theo dõi thiết bị",
-        "fan": "Quạt",
-        "history_graph": "Biểu đồ lịch sử",
-        "group": "Nhóm",
-        "image_processing": "Xử lý ảnh",
-        "input_boolean": "Đầu vào lôgic",
-        "input_datetime": "Đầu vào ngày giờ",
-        "input_select": "Chọn đầu vào",
-        "input_number": "Đầu vào số",
-        "input_text": "Đầu vào ký tự",
-        "light": "Đèn",
+    "sidebar": {
+      "log_out": "Đăng xuất",
+      "developer_tools": "Công cụ Nhà phát triển"
+    },
+    "common": {
+      "loading": "Đang tải",
+      "cancel": "Hủy bỏ"
+    },
+    "duration": {
+      "day": "{count}{count, plural,\n  one { ngày }\n  other { ngày }\n}",
+      "week": "{count}{count, plural,\n  one { tuần }\n  other { tuần }\n}",
+      "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
+      "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
+      "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}"
+    },
+    "login-form": {
+      "password": "Mật khẩu",
+      "remember": "Ghi nhớ",
+      "log_in": "Đăng nhập"
+    },
+    "card": {
+      "camera": {
+        "not_available": "Không có hình ảnh"
+      },
+      "persistent_notification": {
+        "dismiss": "Bỏ qua"
+      },
+      "scene": {
+        "activate": "Kích hoạt"
+      },
+      "script": {
+        "execute": "Thi hành"
+      },
+      "weather": {
+        "attributes": {
+          "air_pressure": "Áp suất không khí",
+          "humidity": "Độ ẩm",
+          "temperature": "Nhiệt độ",
+          "visibility": "Tầm nhìn",
+          "wind_speed": "Tốc độ gió"
+        },
+        "cardinal_direction": {
+          "e": "Đ",
+          "ene": "ĐĐB",
+          "ese": "ĐĐN",
+          "n": "B",
+          "ne": "ĐB",
+          "nne": "BĐB",
+          "nw": "TB",
+          "nnw": "BTB",
+          "s": "N",
+          "se": "ĐN",
+          "sse": "NĐN",
+          "ssw": "NTN",
+          "sw": "TN",
+          "w": "T",
+          "wnw": "TTB",
+          "wsw": "TTN"
+        },
+        "forecast": "Dự báo"
+      },
+      "alarm_control_panel": {
+        "code": "Mã số",
+        "clear_code": "Xóa",
+        "disarm": "Không vũ trang",
+        "arm_home": "An ninh khi ở nhà",
+        "arm_away": "An ninh khi đi vắng"
+      },
+      "automation": {
+        "last_triggered": "Kích hoạt lần cuối",
+        "trigger": "Kích hoạt"
+      },
+      "cover": {
+        "position": "Vị trí",
+        "tilt_position": "Nghiêng vị trí"
+      },
+      "fan": {
+        "speed": "Tốc độ",
+        "oscillate": "Dao động",
+        "direction": "Hướng"
+      },
+      "light": {
+        "brightness": "Độ sáng",
+        "color_temperature": "Nhiệt độ màu",
+        "white_value": "Giá trị trắng",
+        "effect": "Hiệu ứng"
+      },
+      "media_player": {
+        "text_to_speak": "Văn bản sang giọng nói",
+        "source": "Nguồn",
+        "sound_mode": "Chế độ âm thanh"
+      },
+      "climate": {
+        "currently": "Hiện tại",
+        "on_off": "Bật / tắt",
+        "target_temperature": "Nhiệt độ mục tiêu",
+        "target_humidity": "Độ ẩm mục tiêu",
+        "operation": "Chế độ hoạt động",
+        "fan_mode": "Chế độ quạt",
+        "swing_mode": "Chế độ swing",
+        "away_mode": "Chế độ đi vắng",
+        "aux_heat": "Nhiệt phụ trợ"
+      },
+      "lock": {
+        "code": "Mã",
         "lock": "Khóa",
-        "mailbox": "Hộp thư",
-        "media_player": "Media player",
-        "notify": "Thông báo",
-        "plant": "Cây trồng",
-        "proximity": "Tiệm cận",
-        "remote": "ĐK Từ xa",
-        "scene": "Bối cảnh",
-        "script": "Kịch bản",
-        "sensor": "Cảm biến",
-        "sun": "Mặt trời",
-        "switch": "Công tắc",
-        "updater": "Trình cập nhật",
-        "weblink": "Liên kết web",
-        "zwave": "Z-Wave"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "Độ ẩm",
-            "visibility": "Tầm nhìn",
-            "wind_speed": "Tốc độ gió"
+        "unlock": "Mở khóa"
+      },
+      "vacuum": {
+        "actions": {
+          "resume_cleaning": "Tiếp tục làm sạch",
+          "return_to_base": "Trở lại dock",
+          "start_cleaning": "Bắt đầu dọn dẹp",
+          "turn_on": "Bật",
+          "turn_off": "Tắt"
         }
+      },
+      "water_heater": {
+        "currently": "Hiện tại"
+      }
+    },
+    "components": {
+      "entity": {
+        "entity-picker": {
+          "entity": "Thực thể"
+        }
+      },
+      "service-picker": {
+        "service": "Dịch vụ"
+      },
+      "relative_time": {
+        "past": "{time} trước",
+        "future": "Trong {time}",
+        "never": "Không bao giờ",
+        "duration": {
+          "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
+          "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
+          "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}",
+          "day": "{count} {count, plural,\n  one { ngày }\n  other { ngày }\n}",
+          "week": "{count} {count, plural,\n  one { tuần }\n  other { tuần }\n}"
+        }
+      },
+      "history_charts": {
+        "loading_history": "Đang tải lịch sử trạng thái ...",
+        "no_history_found": "Không tìm thấy lịch sử trạng thái."
+      }
+    },
+    "notification_toast": {
+      "entity_turned_on": "Đã bật {entity} .",
+      "entity_turned_off": "Đã tắt {entity} .",
+      "service_called": "Đã gọi dịch vụ {service} .",
+      "service_call_failed": "Không thể gọi dịch vụ {service} .",
+      "connection_lost": "Kết nối bị mất. Đang kết nối lại…"
+    },
+    "dialogs": {
+      "more_info_settings": {
+        "save": "Lưu",
+        "name": "Tên"
+      }
+    },
+    "auth_store": {
+      "ask": "Bạn có muốn lưu thông tin đăng nhập này không?",
+      "decline": "Không, cám ơn",
+      "confirm": "Lưu thông tin đăng nhập"
+    },
+    "notification_drawer": {
+      "click_to_configure": "Nhấp vào nút để cấu hình {entity}",
+      "empty": "Không có thông báo",
+      "title": "Thông báo"
     }
+  },
+  "domain": {
+    "alarm_control_panel": "Bảng điều khiển an ninh",
+    "automation": "Tự động hóa",
+    "binary_sensor": "Cảm biến nhị phân",
+    "calendar": "Lịch",
+    "camera": "Máy ảnh",
+    "climate": "Khí hậu",
+    "configurator": "Trình cấu hình",
+    "conversation": "Hội thoại",
+    "cover": "Rèm, cửa cuốn",
+    "device_tracker": "Trình theo dõi thiết bị",
+    "fan": "Quạt",
+    "history_graph": "Biểu đồ lịch sử",
+    "group": "Nhóm",
+    "image_processing": "Xử lý ảnh",
+    "input_boolean": "Đầu vào lôgic",
+    "input_datetime": "Đầu vào ngày giờ",
+    "input_select": "Chọn đầu vào",
+    "input_number": "Đầu vào số",
+    "input_text": "Đầu vào ký tự",
+    "light": "Đèn",
+    "lock": "Khóa",
+    "mailbox": "Hộp thư",
+    "media_player": "Media player",
+    "notify": "Thông báo",
+    "plant": "Cây trồng",
+    "proximity": "Tiệm cận",
+    "remote": "ĐK Từ xa",
+    "scene": "Bối cảnh",
+    "script": "Kịch bản",
+    "sensor": "Cảm biến",
+    "sun": "Mặt trời",
+    "switch": "Công tắc",
+    "updater": "Trình cập nhật",
+    "weblink": "Liên kết web",
+    "zwave": "Z-Wave",
+    "vacuum": "Vacuum"
+  },
+  "attribute": {
+    "weather": {
+      "humidity": "Độ ẩm",
+      "visibility": "Tầm nhìn",
+      "wind_speed": "Tốc độ gió"
+    }
+  }
 }
