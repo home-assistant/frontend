@@ -67,9 +67,11 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
     const stateObj = this.hass.states[entityConf.entity];
 
     return html`
-      <div class="entity" .entityConf="${entityConf}" @click="${
-      this._handleClick
-    }">
+      <div
+        class="entity"
+        .entityConf="${entityConf}"
+        @click="${this._handleClick}"
+      >
         ${
           this._config.show_name !== false
             ? html`<div class="name">${
@@ -104,11 +106,11 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-        ${repeat(
-          entities,
-          (entityConf) => entityConf.entity,
-          (entityConf) => this.renderEntity(entityConf)
-        )}
+          ${repeat(
+            entities,
+            (entityConf) => entityConf.entity,
+            (entityConf) => this.renderEntity(entityConf)
+          )}
         </div>
       </ha-card>
     `;
