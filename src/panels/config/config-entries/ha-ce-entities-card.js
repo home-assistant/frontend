@@ -7,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../../../layouts/hass-subpage.js";
 
 import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixIn from "../../../mixins/localize-mixin.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
 import "../../../components/entity/state-badge.js";
 
@@ -17,9 +18,10 @@ function computeEntityName(hass, entity) {
 }
 
 /*
+ * @appliesMixin LocalizeMixIn
  * @appliesMixin EventsMixin
  */
-class HaCeEntitiesCard extends EventsMixin(PolymerElement) {
+class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
