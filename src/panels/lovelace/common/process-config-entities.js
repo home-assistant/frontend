@@ -12,7 +12,7 @@ export default function processConfigEntities(entities) {
       !Array.isArray(entityConf) &&
       entityConf.type
     ) {
-      return entityConf;
+      return Object.assign({}, entityConf);
     }
 
     if (typeof entityConf === "string") {
