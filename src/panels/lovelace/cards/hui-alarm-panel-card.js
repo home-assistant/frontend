@@ -62,7 +62,7 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
         font-size: calc(var(--base-unit));
       }
       .state {
-        margin-left: 20px;
+        margin-left: 16px;
         font-size: calc(var(--base-unit) * 0.9);
         position: relative;
         bottom: 16px;
@@ -166,19 +166,19 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
   }
 
   getCardSize() {
-    return 1;
+    return 4;
   }
 
   setConfig(config) {
     if (!config || !config.entity || config.entity.split('.')[0] !== 'alarm_control_panel') throw new Error('Invalid card configuration');
     this._config = Object.assign({ states: ['arm_away', 'arm_home'] }, config);
     this._icons = {
-      armed_away: 'mdi:security-lock',
-      armed_custom_bypass: 'mdi:security',
-      armed_home: 'mdi:security-home',
-      armed_night: 'mdi:security-home',
-      disarmed: 'mdi:verified',
-      pending: 'mdi:shield-outline',
+      armed_away: 'hass:security-lock',
+      armed_custom_bypass: 'hass:security',
+      armed_home: 'hass:security-home',
+      armed_night: 'hass:security-home',
+      disarmed: 'hass:verified',
+      pending: 'hass:shield-outline',
       triggered: 'hass:bell-ring',
     };
   }
