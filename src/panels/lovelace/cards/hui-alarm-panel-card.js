@@ -4,6 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/ha-card.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
+import '../../../components/ha-label-badge.js';
 
 /*
  * @appliesMixin EventsMixin
@@ -24,14 +25,14 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
         --base-unit: 15px;
         font-size: calc(var(--base-unit));
       }
-      ha-icon {
+      ha-label-badge {
+        --ha-label-badge-color:  var(--alarm-state-color);
+        --label-badge-text-color: var(--alarm-state-color);
         color: var(--alarm-state-color);
         position: absolute;
-        right: 20px;
-        top: 20px;
+        right: 10px;
+        top: 10px;
         padding: 10px;
-        border: 2px solid var(--alarm-state-color);
-        border-radius: 50%;
       }
       .disarmed {
         --alarm-state-color: var(--alarm-color-disarmed);
@@ -50,10 +51,10 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
       }
       @keyframes pulse {
         0% {
-          border: 2px solid var(--alarm-state-color);
+          --ha-label-badge-color: var(--alarm-state-color);
         }
         100% {
-          border: 2px solid rgba(255, 153, 0, 0.3);
+          --ha-label-badge-color: rgba(255, 153, 0, 0.3);
         }
       }
       paper-input {
@@ -105,41 +106,38 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
     </style>
     <ha-card header$='[[_computeHeader(_stateObj)]]' class$='[[_computeClassName(_stateObj)]]'>
       <template is='dom-if' if='[[_stateObj]]'>
-        <div id='AlarmPanel'>
-          <ha-icon id='Icon' icon='[[_computeIcon(_stateObj)]]' class$='[[_stateObj.state]]'></ha-icon>
-          <div id='StateText' class$='state [[_stateObj.state]]'>[[_computeStateText(_stateObj)]]</div>
-          <template is='dom-if' if='[[_showActionToggle(_stateObj.state)]]'>
-            <div id='ArmActions' class='actions'>
-              <template is='dom-repeat' items='[[_config.states]]'>
-                <paper-button noink raised id='[[item]]' on-click='_handleActionClick'>[[_label(item)]]</paper-button>
-              </template>
-            </div>
-          </template>
-          <template is='dom-if' if='[[!_showActionToggle(_stateObj.state)]]'>
-            <div id='DisarmActions' class='actions'>
-              <paper-button noink raised id='disarm' on-click='_handleActionClick'>[[_label('disarm')]]</paper-button>
-            </div>
-          </template>
-          <paper-input id='Input' label='Alarm Code' type='password' value='[[_value]]'></paper-input>
-          <div id='Keypad'>
-              <div id='ButtonSection1'>
-                <paper-button noink raised value='1' on-click='_handlePadClick'>1</paper-button>
-                <paper-button noink raised value='4' on-click='_handlePadClick'>4</paper-button>
-                <paper-button noink raised value='7' on-click='_handlePadClick'>7</paper-button>
-              </div>
-              <div id='ButtonSection2'>
-                <paper-button noink raised value='2' on-click='_handlePadClick'>2</paper-button>
-                <paper-button noink raised value='5' on-click='_handlePadClick'>5</paper-button>
-                <paper-button noink raised value='8' on-click='_handlePadClick'>8</paper-button>
-                <paper-button noink raised value='0' on-click='_handlePadClick'>0</paper-button>
-              </div>
-              <div id='ButtonSection3'>
-                <paper-button noink raised value='3' on-click='_handlePadClick'>3</paper-button>
-                <paper-button noink raised value='6' on-click='_handlePadClick'>6</paper-button>
-                <paper-button noink raised value='9' on-click='_handlePadClick'>9</paper-button>
-                <paper-button noink raised value='clear' on-click='_handlePadClick'>CLEAR</paper-button>
-              </div>
-        </div>
+        <ha-label-badge class$="[[_stateObj.state]]" icon="[[_computeIcon(_stateObj)]]" label="[[_stateIconLabel(_stateObj.state)]]"></ha-label-badge>
+        <template is='dom-if' if='[[_showActionToggle(_stateObj.state)]]'>
+          <div id='ArmActions' class='actions'>
+            <template is='dom-repeat' items='[[_config.states]]'>
+              <paper-button noink raised id='[[item]]' on-click='_handleActionClick'>[[_label(item)]]</paper-button>
+            </template>
+          </div>
+        </template>
+        <template is='dom-if' if='[[!_showActionToggle(_stateObj.state)]]'>
+          <div id='DisarmActions' class='actions'>
+            <paper-button noink raised id='disarm' on-click='_handleActionClick'>[[_label('disarm')]]</paper-button>
+          </div>
+        </template>
+        <paper-input label='Alarm Code' type='password' value='[[_value]]'></paper-input>
+        <div id='Keypad'>
+          <div>
+            <paper-button noink raised value='1' on-click='_handlePadClick'>1</paper-button>
+            <paper-button noink raised value='4' on-click='_handlePadClick'>4</paper-button>
+            <paper-button noink raised value='7' on-click='_handlePadClick'>7</paper-button>
+          </div>
+          <div>
+            <paper-button noink raised value='2' on-click='_handlePadClick'>2</paper-button>
+            <paper-button noink raised value='5' on-click='_handlePadClick'>5</paper-button>
+            <paper-button noink raised value='8' on-click='_handlePadClick'>8</paper-button>
+            <paper-button noink raised value='0' on-click='_handlePadClick'>0</paper-button>
+          </div>
+          <div>
+            <paper-button noink raised value='3' on-click='_handlePadClick'>3</paper-button>
+            <paper-button noink raised value='6' on-click='_handlePadClick'>6</paper-button>
+            <paper-button noink raised value='9' on-click='_handlePadClick'>9</paper-button>
+            <paper-button noink raised value='clear' on-click='_handlePadClick'>CLEAR</paper-button>
+          </div>
       </template>
       <template is='dom-if' if='[[!_stateObj]]'>
         <div>Entity not available: [[_config.entity]]</div>
@@ -197,11 +195,16 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
   }
 
   _computeIcon(stateObj) {
-    return this._icons[stateObj.state] || 'mdi:shield-outline';
+    return this._icons[stateObj.state] || 'hass:shield-outline';
   }
 
   _label(state) {
     return state.split('_').join(' ').replace(/^\w/, c => c.toUpperCase());
+  }
+
+  _stateIconLabel(state) {
+    const stateLabel = state.split('_').pop();
+    return stateLabel === 'disarmed' || stateLabel === 'triggered' ? '' : stateLabel;
   }
 
   _showActionToggle(state) {
