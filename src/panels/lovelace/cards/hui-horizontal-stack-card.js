@@ -14,6 +14,7 @@ class HuiHorizontalStackCard extends PolymerElement {
         #root > * {
           flex: 1 1 0;
           margin: 0 4px;
+          min-width: 0;
         }
         #root > *:first-child {
           margin-left: 0;
