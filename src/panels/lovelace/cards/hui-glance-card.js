@@ -1,5 +1,6 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html } from "@polymer/lit-element";
+import { classMap } from "lit-html/directives/classMap.js";
+import { repeat } from "lit-html/directives/repeat";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
@@ -18,8 +19,8 @@ import LocalizeMixin from "../../../mixins/localize-mixin.js";
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  */
-class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
-  static get template() {
+class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
+  renderStyle() {
     return html`
       <style>
         :host(.theme-primary) {
@@ -55,26 +56,61 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .name {
           min-height: var(--paper-font-body1_-_line-height, 20px);
         }
+        state-badge {
+          margin: 8px 0;
+        }
       </style>
+    `;
+  }
 
-      <ha-card header="[[_config.title]]">
-        <div class$="[[_computeClasses(_config.title)]]">
-          <template is="dom-repeat" items="[[_configEntities]]">
-            <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
-              <div class="entity" on-click="_handleClick">
-                <template is="dom-if" if="[[_showInfo(_config.show_name)]]">
-                  <div class="name">[[_computeName(item, hass.states)]]</div>
-                </template>
-                <state-badge
-                  state-obj="[[_computeStateObj(item, hass.states)]]"
-                  override-icon="[[item.icon]]"
-                ></state-badge>
-                <template is="dom-if" if="[[_showInfo(_config.show_state)]]">
-                  <div>[[_computeState(item, hass.states)]]</div>
-                </template>
-              </div>
-            </template>
-          </template>
+  renderEntity(entityConf) {
+    const stateObj = this.hass.states[entityConf.entity];
+
+    return html`
+      <div
+        class="entity"
+        .entityConf="${entityConf}"
+        @click="${this._handleClick}"
+      >
+        ${
+          this._config.show_name !== false
+            ? html`<div class="name">${
+                "name" in entityConf
+                  ? entityConf.name
+                  : computeStateName(stateObj)
+              }</div>`
+            : ""
+        }
+        <state-badge
+          .stateObj="${stateObj}"
+          .overrideIcon="${entityConf.icon}"
+        ></state-badge>
+        ${
+          this._config.show_state !== false
+            ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
+            : ""
+        }
+      </div>
+    `;
+  }
+
+  render() {
+    if (!this._config) return html``;
+    const { title } = this._config;
+    const states = this.hass.states;
+    const entities = this._configEntities.filter(
+      (conf) => conf.entity in states
+    );
+
+    return html`
+      ${this.renderStyle()}
+      <ha-card .header="${title}">
+        <div class="entities ${classMap({ "no-header": !title })}">
+          ${repeat(
+            entities,
+            (entityConf) => entityConf.entity,
+            (entityConf) => this.renderEntity(entityConf)
+          )}
         </div>
       </ha-card>
     `;
@@ -82,9 +118,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   static get properties() {
     return {
-      hass: Object,
-      _config: Object,
-      _configEntities: Array,
+      hass: {},
     };
   }
 
@@ -106,34 +140,13 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
 
     this._configEntities = processConfigEntities(config.entities);
-  }
-
-  _computeClasses(hasHeader) {
-    return `entities ${hasHeader ? "" : "no-header"}`;
-  }
-
-  _showEntity(item, states) {
-    return item.entity in states;
-  }
-
-  _showInfo(info) {
-    return info !== false;
-  }
-
-  _computeName(item, states) {
-    return "name" in item ? item.name : computeStateName(states[item.entity]);
-  }
-
-  _computeStateObj(item, states) {
-    return states[item.entity];
-  }
-
-  _computeState(item, states) {
-    return computeStateDisplay(this.localize, states[item.entity]);
+    if (this.hass) {
+      this.requestUpdate();
+    }
   }
 
   _handleClick(ev) {
-    const config = ev.model.item;
+    const config = ev.currentTarget.entityConf;
     const entityId = config.entity;
     switch (config.tap_action) {
       case "toggle":
