@@ -1,5 +1,6 @@
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
+import "../cards/hui-entity-button-card.js";
 import "../cards/hui-conditional-card.js";
 import "../cards/hui-entities-card.js";
 import "../cards/hui-entity-filter-card.js";
@@ -26,6 +27,7 @@ import createErrorCardConfig from "./create-error-card-config.js";
 const CARD_TYPES = new Set([
   "conditional",
   "entities",
+  "entity-button",
   "entity-filter",
   "error",
   "gauge",
