@@ -19,11 +19,11 @@ module.exports = {
           loader: "babel-loader",
           options: {
             presets: [
-              [require("babel-preset-env").default, { modules: false }],
+              [require("@babel/preset-env").default, { modules: false }],
             ],
             plugins: [
               // Only support the syntax, Webpack will handle it.
-              "syntax-dynamic-import",
+              "@babel/syntax-dynamic-import",
             ],
           },
         },
