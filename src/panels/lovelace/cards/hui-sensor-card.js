@@ -37,17 +37,15 @@ class HuiSensorCard extends EventsMixin(LitElement) {
       throw new Error("Specify an entity from within the sensor domain.");
     }
 
-    const cardConfig = Object.assign(
-      {
-        icon: false,
-        hours_to_show: 24,
-        accuracy: 10,
-        height: 100,
-        line_width: 5,
-        line_color: "var(--accent-color)",
-      },
-      config
-    );
+    const cardConfig = {
+      icon: false,
+      hours_to_show: 24,
+      accuracy: 10,
+      height: 100,
+      line_width: 5,
+      line_color: "var(--accent-color)",
+      ...config,
+    };
     cardConfig.hours_to_show = Number(cardConfig.hours_to_show);
     cardConfig.accuracy = Number(cardConfig.accuracy);
     cardConfig.height = Number(cardConfig.height);
