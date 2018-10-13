@@ -22,9 +22,9 @@ module.exports = {
           options: {
             plugins: [
               // Only support the syntax, Webpack will handle it.
-              "syntax-dynamic-import",
+              "@babel/syntax-dynamic-import",
               [
-                "transform-react-jsx",
+                "@babel/transform-react-jsx",
                 {
                   pragma: "h",
                 },
