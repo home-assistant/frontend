@@ -13,13 +13,9 @@ import "../../../components/ha-card.js";
 import "../../../components/ha-icon.js";
 
 import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin.js";
 
-/*
- * @appliesMixin EventsMixin
- * @appliesMixin LocalizeMixin
- */
-class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
+class HuiGlanceCard extends HassLocalizeLitMixin(EventsMixin(LitElement)) {
   renderStyle() {
     return html`
       <style>
