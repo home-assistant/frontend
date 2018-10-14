@@ -380,7 +380,8 @@
                 "state": {
                   "label": "Tila",
                   "from": "Lähtötila",
-                  "to": "Kohdetila"
+                  "to": "Kohdetila",
+                  "for": "Ajaksi"
                 },
                 "homeassistant": {
                   "label": "Home Assistant",
@@ -572,14 +573,17 @@
           "dropdown_label": "Teema"
         },
         "refresh_tokens": {
+          "header": "Päivitä tokenit",
           "created_at": "Luotu {date}",
           "last_used": "Viimeksi käytetty {date} sijainnista {location}",
           "not_used": "Ei ole koskaan käytetty"
         },
         "long_lived_access_tokens": {
           "created_at": "Luotu {date}",
+          "create": "Luo token",
           "prompt_name": "Nimi?",
           "prompt_copy_token": "Kopioi käyttöoikeuskoodi. Sitä ei näytetä uudelleen.",
+          "last_used": "Viimeksi käytetty {date} sijainnista {location}",
           "not_used": "לא היה בשימוש לעולם"
         },
         "current_user": "מחובר כעת כ",
@@ -590,16 +594,25 @@
           "current_password": "סיסמא נוכחית",
           "new_password": "סיסמא חדשה",
           "confirm_new_password": "אשר סיסמא חדשה",
-          "error_required": "דרוש"
+          "error_required": "דרוש",
+          "submit": "Lähetä"
+        },
+        "mfa": {
+          "disable": "Poista käytöstä",
+          "enable": "Ota käyttöön",
+          "confirm_disable": "Haluatko varmasti poistaa {nimi}?"
         },
         "mfa_setup": {
           "title_aborted": "הופסק",
+          "title_success": "Onnistui!",
           "close": "סגור",
           "submit": "שלח"
         }
       },
       "page-authorize": {
         "initializing": "Alustetaan",
+        "logging_in_with": "Kirjaudutaan sisään",
+        "pick_auth_provider": "Tai kirjaudu sisään joillakin seuraavista",
         "abort_intro": "Kirjautuminen on keskeytetty",
         "form": {
           "working": "Ole hyvä ja odota",
@@ -612,10 +625,19 @@
                     "username": "Käyttäjätunnus",
                     "password": "Salasana"
                   }
+                },
+                "mfa": {
+                  "data": {
+                    "code": "Kaksivaiheinen tunnistuskoodi"
+                  }
                 }
               },
               "error": {
-                "invalid_auth": "Virheellinen käyttäjätunnus tai salasana"
+                "invalid_auth": "Virheellinen käyttäjätunnus tai salasana",
+                "invalid_code": "Väärä tunnistuskoodi"
+              },
+              "abort": {
+                "login_expired": "Istunto päättyi, ole hyvä ja kirjaudu uudelleen."
               }
             },
             "legacy_api_password": {
@@ -628,6 +650,9 @@
               },
               "error": {
                 "invalid_auth": "Virheellinen API-salasana"
+              },
+              "abort": {
+                "no_api_password_set": "API salasanaa ei ole asetettu."
               }
             },
             "trusted_networks": {
@@ -635,7 +660,8 @@
                 "init": {
                   "data": {
                     "user": "Käyttäjä"
-                  }
+                  },
+                  "description": "Valitse käyttäjä, jolla haluat kirjautua:"
                 }
               }
             }
@@ -643,6 +669,7 @@
         }
       },
       "page-onboarding": {
+        "intro": "Oletko valmis herättämään kotisi eloon, palauttamaan yksityisyytesi ja liittymään maailmanlaajuiseen nikkarien joukkoon?",
         "user": {
           "intro": "Aloitetaan luomalla käyttäjätili.",
           "required_field": "Edellytetään",
@@ -650,6 +677,10 @@
             "name": "Nimi",
             "username": "Käyttäjätunnus",
             "password": "Salasana"
+          },
+          "create_account": "Luo tili",
+          "error": {
+            "required_fields": "Täytä kaikki pakolliset kentät"
           }
         }
       }
@@ -770,6 +801,13 @@
           "turn_on": "Päälle",
           "turn_off": "Sammuta"
         }
+      },
+      "water_heater": {
+        "currently": "Tällä hetkellä",
+        "on_off": "Päällä / pois",
+        "target_temperature": "Tavoitelämpötila",
+        "operation": "Toiminto",
+        "away_mode": "Poissa kotoa"
       }
     },
     "components": {
@@ -786,8 +824,11 @@
         "future": "{time} kuluttua",
         "never": "Ei koskaan",
         "duration": {
+          "second": "{count} {count, plural,\none {sekunti}\nother {sekuntia}\n}",
           "minute": "{count} {count, plural,\none {minuutti}\nother {minuuttia}\n}",
-          "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n}"
+          "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n}",
+          "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
+          "week": "{count} {count, plural,\n  one {viikkoa}\n  other {viikkoa}\n}"
         }
       },
       "history_charts": {
