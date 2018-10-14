@@ -77,6 +77,10 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
         type: Object,
         computed: "computeEntityObj(hass, stateObj)",
       },
+      deviceClass: {
+        type: String,
+        computed: "computeDeviceClass(entityObj)",
+      },
       coverPositionSliderValue: Number,
       coverTiltPositionSliderValue: Number,
     };
@@ -88,11 +92,29 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
 
   stateObjChanged(newVal) {
     if (newVal) {
-      this.setProperties({
-        coverPositionSliderValue: newVal.attributes.current_position,
-        coverTiltPositionSliderValue: newVal.attributes.current_tilt_position,
-      });
+      switch (this.deviceClass) {
+        case "curtain":
+          this.setProperties({
+            coverPositionSliderValue: Math.abs(
+              newVal.attributes.current_position - 100
+            ),
+            coverTiltPositionSliderValue:
+              newVal.attributes.current_tilt_position,
+          });
+          break;
+        default:
+          this.setProperties({
+            coverPositionSliderValue: newVal.attributes.current_position,
+            coverTiltPositionSliderValue:
+              newVal.attributes.current_tilt_position,
+          });
+          break;
+      }
     }
+  }
+
+  computeDeviceClass(entityObj) {
+    return entityObj.deviceClass;
   }
 
   computeClassNames(stateObj) {
@@ -107,7 +129,14 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   }
 
   coverPositionSliderChanged(ev) {
-    this.entityObj.setCoverPosition(ev.target.value);
+    switch (this.deviceClass) {
+      case "curtain":
+        this.entityObj.setCoverPosition(Math.abs(ev.target.value - 100));
+        break;
+      default:
+        this.entityObj.setCoverPosition(ev.target.value);
+        break;
+    }
   }
 
   coverTiltPositionSliderChanged(ev) {

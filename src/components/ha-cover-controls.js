@@ -17,9 +17,9 @@ class HaCoverControls extends PolymerElement {
     </style>
 
     <div class="state">
-      <paper-icon-button icon="hass:arrow-up" on-click="onOpenTap" invisible$="[[!entityObj.supportsOpen]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
+      <paper-icon-button icon="[[computeIcon('left')]]" on-click="onOpenTap" invisible$="[[!entityObj.supportsOpen]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
       <paper-icon-button icon="hass:stop" on-click="onStopTap" invisible$="[[!entityObj.supportsStop]]"></paper-icon-button>
-      <paper-icon-button icon="hass:arrow-down" on-click="onCloseTap" invisible$="[[!entityObj.supportsClose]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
+      <paper-icon-button icon="[[computeIcon('right')]]" on-click="onCloseTap" invisible$="[[!entityObj.supportsClose]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
     </div>
 `;
   }
@@ -36,6 +36,10 @@ class HaCoverControls extends PolymerElement {
         type: Object,
         computed: "computeEntityObj(hass, stateObj)",
       },
+      deviceClass: {
+        type: String,
+        computed: "computeDeviceClass(entityObj)",
+      },
     };
   }
 
@@ -51,6 +55,27 @@ class HaCoverControls extends PolymerElement {
   computeClosedDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
+  }
+
+  computeDeviceClass(entityObj) {
+    return entityObj.deviceClass;
+  }
+
+  computeIcon(position) {
+    switch (this.deviceClass) {
+      case "curtain":
+        if (position === "left") {
+          return "hass:arrow-left";
+        }
+        return "hass:arrow-right";
+        break;
+      default:
+        if (position === "left") {
+          return "hass:arrow-up";
+        }
+        return "hass:arrow-down";
+        break;
+    }
   }
 
   onOpenTap(ev) {
