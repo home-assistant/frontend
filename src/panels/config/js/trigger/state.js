@@ -26,7 +26,7 @@ export default class StateTrigger extends Component {
     const trgFrom = trigger.from;
     let trgFor = trigger.for;
 
-    if (trgFor.hours || trgFor.minutes || trgFor.seconds) {
+    if (trgFor && (trgFor.hours || trgFor.minutes || trgFor.seconds)) {
       // If the trigger was defined using the yaml dict syntax, convert it to
       // the equivalent string format
       let { hours = 0, minutes = 0, seconds = 0 } = trgFor;
