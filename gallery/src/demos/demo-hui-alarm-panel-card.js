@@ -1,50 +1,50 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import getEntity from '../data/entity.js';
-import provideHass from '../data/provide_hass.js';
-import '../components/demo-cards.js';
+import getEntity from "../data/entity.js";
+import provideHass from "../data/provide_hass.js";
+import "../components/demo-cards.js";
 
 const ENTITIES = [
-  getEntity('alarm_control_panel', 'alarm', 'disarmed', {
-    friendly_name: 'Alarm',
+  getEntity("alarm_control_panel", "alarm", "disarmed", {
+    friendly_name: "Alarm",
   }),
-  getEntity('alarm_control_panel', 'alarm_armed', 'armed_home', {
-    friendly_name: 'Alarm',
+  getEntity("alarm_control_panel", "alarm_armed", "armed_home", {
+    friendly_name: "Alarm",
   }),
 ];
 
 const CONFIGS = [
   {
-    heading: 'Basic Example',
+    heading: "Basic Example",
     config: `
 - type: alarm-panel
   entity: alarm_control_panel.alarm
-    `
+    `,
   },
   {
-    heading: 'With Title',
+    heading: "With Title",
     config: `
 - type: alarm-panel
   entity: alarm_control_panel.alarm_armed
   title: My Alarm
-    `
+    `,
   },
   {
-    heading: 'Using only Arm_Home State',
+    heading: "Using only Arm_Home State",
     config: `
 - type: alarm-panel
   entity: alarm_control_panel.alarm
   states:
     - arm_home
-    `
+    `,
   },
   {
-    heading: 'Invalid Entity',
+    heading: "Invalid Entity",
     config: `
 - type: alarm-panel
   entity: alarm_control_panel.alarm1
-    `
+    `,
   },
 ];
 
@@ -59,7 +59,7 @@ class DemoAlarmPanelEntity extends PolymerElement {
     return {
       _configs: {
         type: Object,
-        value: CONFIGS
+        value: CONFIGS,
       },
       hass: Object,
     };
@@ -72,4 +72,4 @@ class DemoAlarmPanelEntity extends PolymerElement {
   }
 }
 
-customElements.define('demo-hui-alarm-panel-card', DemoAlarmPanelEntity);
+customElements.define("demo-hui-alarm-panel-card", DemoAlarmPanelEntity);
