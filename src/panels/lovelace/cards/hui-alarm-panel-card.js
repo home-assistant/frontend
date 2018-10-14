@@ -87,6 +87,7 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       }
       .actions {
         margin: 0 8px;
+        padding-top: 20px; 
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
