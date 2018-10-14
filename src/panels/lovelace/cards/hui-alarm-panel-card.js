@@ -1,15 +1,16 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import '../../../components/ha-card.js';
+import "../../../components/ha-card.js";
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import '../../../components/ha-label-badge.js';
+import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import "../../../components/ha-label-badge.js";
 
 /*
  * @appliesMixin EventsMixin
  */
-class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
+class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -70,15 +71,15 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
         color: var(--alarm-state-color);
         animation: none;
       }
-      #Keypad {
+      #keypad {
         display: flex;
         justify-content: center;
       }
-      #Keypad div {
+      #keypad div {
         display: flex;
         flex-direction: column;
       }
-      #Keypad paper-button {
+      #keypad paper-button {
         margin-bottom: 10%;
         position: relative;
         padding: calc(var(--base-unit));
@@ -104,42 +105,49 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
         padding: 8px;
       }
     </style>
-    <ha-card header$='[[_computeHeader(_stateObj)]]' class$='[[_computeClassName(_stateObj)]]'>
-      <template is='dom-if' if='[[_stateObj]]'>
-        <ha-label-badge class$="[[_stateObj.state]]" icon="[[_computeIcon(_stateObj)]]" label="[[_stateIconLabel(_stateObj.state)]]"></ha-label-badge>
-        <template is='dom-if' if='[[_showActionToggle(_stateObj.state)]]'>
-          <div id='ArmActions' class='actions'>
-            <template is='dom-repeat' items='[[_config.states]]'>
-              <paper-button noink raised id='[[item]]' on-click='_handleActionClick'>[[_label(item)]]</paper-button>
+    <ha-card
+      header$="[[_computeHeader(localize, _stateObj)]]"
+      class$="[[_computeClassName(_stateObj)]]"
+    >
+      <template is="dom-if" if="[[_stateObj]]">
+        <ha-label-badge
+          class$="[[_stateObj.state]]"
+          icon="[[_computeIcon(_stateObj)]]"
+          label="[[_stateIconLabel(_stateObj.state)]]"
+        ></ha-label-badge>
+        <template is="dom-if" if="[[_showActionToggle(_stateObj.state)]]">
+          <div id="armActions" class="actions">
+            <template is="dom-repeat" items="[[_config.states]]">
+              <paper-button noink raised id="[[item]]" on-click="_handleActionClick">[[_label(localize, item)]]</paper-button>
             </template>
           </div>
         </template>
-        <template is='dom-if' if='[[!_showActionToggle(_stateObj.state)]]'>
-          <div id='DisarmActions' class='actions'>
-            <paper-button noink raised id='disarm' on-click='_handleActionClick'>[[_label('disarm')]]</paper-button>
+        <template is="dom-if" if="[[!_showActionToggle(_stateObj.state)]]">
+          <div id="disarmActions" class="actions">
+            <paper-button noink raised id="disarm" on-click="_handleActionClick">[[_label(localize, "disarm")]]</paper-button>
           </div>
         </template>
-        <paper-input label='Alarm Code' type='password' value='[[_value]]'></paper-input>
-        <div id='Keypad'>
+        <paper-input label="Alarm Code" type="password" value="[[_value]]"></paper-input>
+        <div id="keypad">
           <div>
-            <paper-button noink raised value='1' on-click='_handlePadClick'>1</paper-button>
-            <paper-button noink raised value='4' on-click='_handlePadClick'>4</paper-button>
-            <paper-button noink raised value='7' on-click='_handlePadClick'>7</paper-button>
+            <paper-button noink raised value="1" on-click="_handlePadClick">1</paper-button>
+            <paper-button noink raised value="4" on-click="_handlePadClick">4</paper-button>
+            <paper-button noink raised value="7" on-click="_handlePadClick">7</paper-button>
           </div>
           <div>
-            <paper-button noink raised value='2' on-click='_handlePadClick'>2</paper-button>
-            <paper-button noink raised value='5' on-click='_handlePadClick'>5</paper-button>
-            <paper-button noink raised value='8' on-click='_handlePadClick'>8</paper-button>
-            <paper-button noink raised value='0' on-click='_handlePadClick'>0</paper-button>
+            <paper-button noink raised value="2" on-click="_handlePadClick">2</paper-button>
+            <paper-button noink raised value="5" on-click="_handlePadClick">5</paper-button>
+            <paper-button noink raised value="8" on-click="_handlePadClick">8</paper-button>
+            <paper-button noink raised value="0" on-click="_handlePadClick">0</paper-button>
           </div>
           <div>
-            <paper-button noink raised value='3' on-click='_handlePadClick'>3</paper-button>
-            <paper-button noink raised value='6' on-click='_handlePadClick'>6</paper-button>
-            <paper-button noink raised value='9' on-click='_handlePadClick'>9</paper-button>
-            <paper-button noink raised value='clear' on-click='_handlePadClick'>CLEAR</paper-button>
+            <paper-button noink raised value="3" on-click="_handlePadClick">3</paper-button>
+            <paper-button noink raised value="6" on-click="_handlePadClick">6</paper-button>
+            <paper-button noink raised value="9" on-click="_handlePadClick">9</paper-button>
+            <paper-button noink raised value="clear" on-click="_handlePadClick">CLEAR</paper-button>
           </div>
       </template>
-      <template is='dom-if' if='[[!_stateObj]]'>
+      <template is="dom-if" if="[[!_stateObj]]">
         <div>Entity not available: [[_config.entity]]</div>
       </template>
     </ha-card>
@@ -149,16 +157,16 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       hass: {
-        type: Object
+        type: Object,
       },
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)',
+        computed: "_computeStateObj(hass.states, _config.entity)",
       },
       _value: {
         type: String,
-        value: ''
+        value: "",
       },
     };
   }
@@ -168,16 +176,21 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
   }
 
   setConfig(config) {
-    if (!config || !config.entity || config.entity.split('.')[0] !== 'alarm_control_panel') throw new Error('Invalid card configuration');
-    this._config = Object.assign({ states: ['arm_away', 'arm_home'] }, config);
+    if (
+      !config ||
+      !config.entity ||
+      config.entity.split(".")[0] !== "alarm_control_panel"
+    )
+      throw new Error("Invalid card configuration");
+    this._config = Object.assign({ states: ["arm_away", "arm_home"] }, config);
     this._icons = {
-      armed_away: 'hass:security-lock',
-      armed_custom_bypass: 'hass:security',
-      armed_home: 'hass:security-home',
-      armed_night: 'hass:security-home',
-      disarmed: 'hass:verified',
-      pending: 'hass:shield-outline',
-      triggered: 'hass:bell-ring',
+      armed_away: "hass:security-lock",
+      armed_custom_bypass: "hass:security",
+      armed_home: "hass:security-home",
+      armed_night: "hass:security-home",
+      disarmed: "hass:verified",
+      pending: "hass:shield-outline",
+      triggered: "hass:bell-ring",
     };
   }
 
@@ -185,48 +198,49 @@ class HuiAlarmPanelCard extends EventsMixin(PolymerElement) {
     return states && entityId in states ? states[entityId] : null;
   }
 
-  _computeHeader(stateObj) {
-    if (!stateObj) return '';
-    return this._config.title ? this._config.title : this._label(stateObj.state);
-  }
-
-  _computeStateText(stateObj) {
-    return this._config.title ? this._label(stateObj.state) : '';
+  _computeHeader(localize, stateObj) {
+    if (!stateObj) return "";
+    return this._config.title
+      ? this._config.title
+      : this._label(localize, stateObj.state);
   }
 
   _computeIcon(stateObj) {
-    return this._icons[stateObj.state] || 'hass:shield-outline';
+    return this._icons[stateObj.state] || "hass:shield-outline";
   }
 
-  _label(state) {
-    return state.split('_').join(' ').replace(/^\w/, c => c.toUpperCase());
+  _label(localize, state) {
+    return localize(`component.alarm_control_panel.state.${state}`) || state;
   }
 
   _stateIconLabel(state) {
-    const stateLabel = state.split('_').pop();
-    return stateLabel === 'disarmed' || stateLabel === 'triggered' ? '' : stateLabel;
+    const stateLabel = state.split("_").pop();
+    return stateLabel === "disarmed" || stateLabel === "triggered"
+      ? ""
+      : stateLabel;
   }
 
   _showActionToggle(state) {
-    return state === 'disarmed';
+    return state === "disarmed";
   }
 
   _computeClassName(stateObj) {
-    if (!stateObj) return 'not-found';
-    return '';
+    if (!stateObj) return "not-found";
+    return "";
   }
 
   _handlePadClick(e) {
-    this._value = e.target.getAttribute('value') === 'clear' ? '' : this._value + e.target.getAttribute('value');
+    const val = e.target.getAttribute("value");
+    this._value = val === "clear" ? "" : this._value + val;
   }
 
   _handleActionClick(e) {
-    this.hass.callService('alarm_control_panel', 'alarm_' + e.target.id, {
+    this.hass.callService("alarm_control_panel", "alarm_" + e.target.id, {
       entity_id: this._stateObj.entity_id,
       code: this._value,
     });
-    this._value = '';
+    this._value = "";
   }
 }
 
-customElements.define('hui-alarm-panel-card', HuiAlarmPanelCard);
+customElements.define("hui-alarm-panel-card", HuiAlarmPanelCard);
