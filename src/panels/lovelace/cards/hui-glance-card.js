@@ -124,9 +124,10 @@ class HuiGlanceCard extends HassLocalizeLitMixin(EventsMixin(LitElement)) {
 
   setConfig(config) {
     this._config = config;
-    this.updateStyles({
-      "--glance-column-width": (config && config.column_width) || "20%",
-    });
+    this.style.setProperty(
+      "--glance-column-width",
+      (config && config.column_width) || "20%"
+    );
 
     if (config && config.theming) {
       if (typeof config.theming !== "string") {
