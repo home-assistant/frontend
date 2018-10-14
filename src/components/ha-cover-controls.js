@@ -60,13 +60,11 @@ class HaCoverControls extends PolymerElement {
           return "hass:arrow-left";
         }
         return "hass:arrow-right";
-        break;
       default:
         if (position === "left") {
           return "hass:arrow-up";
         }
         return "hass:arrow-down";
-        break;
     }
   }
 
