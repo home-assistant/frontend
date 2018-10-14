@@ -1,6 +1,7 @@
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const config = require("./config.js");
+const { babelLoaderConfig } = require("../config/babel.js");
 
 const isProdBuild = process.env.NODE_ENV === "production";
 const chunkFilename = isProdBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
@@ -13,21 +14,7 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.m?js$/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [
-              [require("@babel/preset-env").default, { modules: false }],
-            ],
-            plugins: [
-              // Only support the syntax, Webpack will handle it.
-              "@babel/syntax-dynamic-import",
-            ],
-          },
-        },
-      },
+      babelLoaderConfig({ latestBuild: false }),
       {
         test: /\.(html)$/,
         use: {
