@@ -154,11 +154,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(LitElement)) {
         break;
       case "call-service": {
         const [domain, service] = config.service.split(".", 2);
-        const serviceData = Object.assign(
-          {},
-          { entity_id: entityId },
-          config.service_data
-        );
+        const serviceData = { entity_id: entityId, ...config.service_data };
         this.hass.callService(domain, service, serviceData);
         break;
       }
