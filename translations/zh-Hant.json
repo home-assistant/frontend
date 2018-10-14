@@ -335,7 +335,7 @@
               },
               "server_management": {
                 "heading": "服務器管理",
-                "introduction": "由 Home Assistant，控制 Home Assistant 伺服器。",
+                "introduction": "控制 Home Assistant 伺服器。",
                 "restart": "重啟",
                 "stop": "停止"
               }
@@ -392,7 +392,7 @@
                 "mqtt": {
                   "label": "MQTT",
                   "topic": "MQTT 主題",
-                  "payload": "MQTT資料（選項）"
+                  "payload": "負載（選項）"
                 },
                 "numeric_state": {
                   "label": "數值變動觸發",
