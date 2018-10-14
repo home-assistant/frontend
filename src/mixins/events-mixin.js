@@ -1,6 +1,6 @@
 import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin.js";
 
-import fireEvent from "../common/dom/fire_event.js";
+import { fireEvent } from "../common/dom/fire_event.js";
 
 // Polymer legacy event helpers used courtesy of the Polymer project.
 //
