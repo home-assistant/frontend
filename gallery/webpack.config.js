@@ -1,6 +1,7 @@
 const path = require("path");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const { babelLoaderConfig } = require("../config/babel.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
@@ -15,24 +16,7 @@ module.exports = {
   entry: "./src/entrypoint.js",
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            plugins: [
-              // Only support the syntax, Webpack will handle it.
-              "@babel/syntax-dynamic-import",
-              [
-                "@babel/transform-react-jsx",
-                {
-                  pragma: "h",
-                },
-              ],
-            ],
-          },
-        },
-      },
+      babelLoaderConfig({ latestBuild: true }),
       {
         test: /\.(html)$/,
         use: {
