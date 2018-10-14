@@ -64,6 +64,8 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <template is='dom-if' if='[[hass.user.is_owner]]'>[[localize('ui.panel.profile.is_owner')]]</template>
           </div>
 
+          <hello-world hass='[[hass]]'></hello-world>
+
           <ha-pick-language-row
             narrow="[[narrow]]"
             hass="[[hass]]"
