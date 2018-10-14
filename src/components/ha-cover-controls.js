@@ -36,10 +36,6 @@ class HaCoverControls extends PolymerElement {
         type: Object,
         computed: "computeEntityObj(hass, stateObj)",
       },
-      deviceClass: {
-        type: String,
-        computed: "computeDeviceClass(entityObj)",
-      },
     };
   }
 
@@ -57,12 +53,8 @@ class HaCoverControls extends PolymerElement {
     return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
   }
 
-  computeDeviceClass(entityObj) {
-    return entityObj.deviceClass;
-  }
-
   computeIcon(position) {
-    switch (this.deviceClass) {
+    switch (this.entityObj.deviceClass) {
       case "curtain":
         if (position === "left") {
           return "hass:arrow-left";

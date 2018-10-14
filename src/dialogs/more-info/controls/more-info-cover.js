@@ -77,10 +77,6 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
         type: Object,
         computed: "computeEntityObj(hass, stateObj)",
       },
-      deviceClass: {
-        type: String,
-        computed: "computeDeviceClass(entityObj)",
-      },
       coverPositionSliderValue: Number,
       coverTiltPositionSliderValue: Number,
     };
@@ -92,7 +88,7 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
 
   stateObjChanged(newVal) {
     if (newVal) {
-      switch (this.deviceClass) {
+      switch (this.entityObj.deviceClass) {
         case "curtain":
           this.setProperties({
             coverPositionSliderValue: Math.abs(
@@ -129,7 +125,7 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   }
 
   coverPositionSliderChanged(ev) {
-    switch (this.deviceClass) {
+    switch (this.entityObj.deviceClass) {
       case "curtain":
         this.entityObj.setCoverPosition(Math.abs(ev.target.value - 100));
         break;
