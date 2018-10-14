@@ -109,10 +109,6 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
     }
   }
 
-  computeDeviceClass(entityObj) {
-    return entityObj.deviceClass;
-  }
-
   computeClassNames(stateObj) {
     var classes = [
       attributeClassNames(stateObj, [
