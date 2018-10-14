@@ -8,6 +8,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 const translationMetadata = require("./build-translations/translationMetadata.json");
+const { babelLoaderConfig } = require("./config/babel.js");
 
 const version = fs.readFileSync("setup.py", "utf8").match(/\d{8}[^']*/);
 if (!version) {
@@ -61,30 +62,7 @@ function createConfig(isProdBuild, latestBuild) {
     entry,
     module: {
       rules: [
-        {
-          test: /\.m?js$/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                !latestBuild && [
-                  require("@babel/preset-env").default,
-                  { modules: false },
-                ],
-              ].filter(Boolean),
-              plugins: [
-                // Only support the syntax, Webpack will handle it.
-                "@babel/syntax-dynamic-import",
-                [
-                  "@babel/transform-react-jsx",
-                  {
-                    pragma: "h",
-                  },
-                ],
-              ],
-            },
-          },
-        },
+        babelLoaderConfig({ latestBuild }),
         {
           test: /\.(html)$/,
           use: {

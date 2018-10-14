@@ -37,7 +37,7 @@ class HuiEntitiesCard extends PolymerElement {
       this._element = null;
     }
 
-    const card = "card" in config ? Object.assign({}, config.card) : {};
+    const card = "card" in config ? { ...config.card } : {};
     if (!card.type) card.type = "entities";
     card.entities = [];
 
@@ -66,9 +66,7 @@ class HuiEntitiesCard extends PolymerElement {
     }
 
     this.style.display = "block";
-    element.setConfig(
-      Object.assign({}, element._filterRawConfig, { entities: entitiesList })
-    );
+    element.setConfig({ ...element._filterRawConfig, entities: entitiesList });
     element.isPanel = this.isPanel;
     element.hass = this.hass;
 
