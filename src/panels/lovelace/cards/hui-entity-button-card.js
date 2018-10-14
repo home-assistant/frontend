@@ -3,9 +3,9 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 import "../../../components/ha-card.js";
 
-import { STATES_OFF } from "../../../common/const.js";
 import toggleEntity from "../common/entity/toggle-entity.js";
 import stateIcon from "../../../common/entity/state_icon.js";
+import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 import EventsMixin from "../../../mixins/events-mixin.js";
 import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
@@ -22,6 +22,16 @@ class HuiEntityButtonCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         width: 40%;
         height: 40%;
         color: var(--paper-item-icon-color, #44739e);
+      }
+      ha-icon[data-domain=light][data-state=on],
+      ha-icon[data-domain=switch][data-state=on],
+      ha-icon[data-domain=binary_sensor][data-state=on],
+      ha-icon[data-domain=fan][data-state=on],
+      ha-icon[data-domain=sun][data-state=above_horizon] {
+        color: var(--paper-item-icon-active-color, #FDD835);
+      }
+      ha-icon[data-state=unavailable] {
+        color: var(--state-icon-unavailable-color);
       }
       state-badge {
         display: flex;
@@ -40,10 +50,13 @@ class HuiEntityButtonCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         padding: 8px;
       }
     </style>
-    <ha-card on-click='_handleClick'>
+    <ha-card on-click="_handleClick">
       <paper-button>
-        <div class$='[[_computeClassName(_stateObj)]]'>
-          <ha-icon id='ButtonIcon' icon='[[_computeIcon(_stateObj)]]'></ha-icon>
+        <div class$="[[_computeClassName(_stateObj)]]">
+          <ha-icon id="ButtonIcon"
+            data-domain$="[[_computeDomain(_stateObj)]]"
+            data-state$="[[_stateObj.state]]"
+            icon="[[_computeIcon(_stateObj)]]"></ha-icon>
           <span>[[_computeName(_stateObj)]]</span>
         </div>
       </paper-button>
@@ -91,15 +104,17 @@ class HuiEntityButtonCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       const hue = stateObj.attributes.hs_color[0];
       const sat = stateObj.attributes.hs_color[1];
       if (sat > 10) iconStyle.color = `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
-    } else if (!STATES_OFF.includes(stateObj.state)) {
-      iconStyle.color = "var(--paper-item-icon-active-color";
     }
-
     if (stateObj.attributes.brightness) {
       const brightness = stateObj.attributes.brightness;
       iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
     }
     Object.assign(this.$.ButtonIcon.style, iconStyle);
+  }
+
+  _computeDomain(stateObj) {
+    if (!stateObj) return "";
+    return computeStateDomain(stateObj);
   }
 
   _computeName(stateObj) {

@@ -52,11 +52,11 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Custom Tap Action",
+    heading: "Custom Tap Action (toggle)",
     config: `
 - type: entity-button
   entity: light.bed_light
-  tap_action: more-info
+  tap_action: toggle
     `,
   },
   {
