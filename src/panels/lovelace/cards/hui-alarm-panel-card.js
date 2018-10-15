@@ -155,7 +155,7 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <paper-button noink raised value="3" on-click="_handlePadClick">3</paper-button>
             <paper-button noink raised value="6" on-click="_handlePadClick">6</paper-button>
             <paper-button noink raised value="9" on-click="_handlePadClick">9</paper-button>
-            <paper-button noink raised value="clear" on-click="_handlePadClick">CLEAR</paper-button>
+            <paper-button noink raised value="clear" on-click="_handlePadClick">[[_label(localize, "clear_code")]]</paper-button>
           </div>
       </template>
       <template is="dom-if" if="[[!_stateObj]]">
@@ -219,7 +219,10 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _label(localize, state) {
-    return localize(`component.alarm_control_panel.state.${state}`) || state;
+    return (
+      localize(`state.alarm_control_panel.${state}`) ||
+      localize(`ui.card.alarm_control_panel.${state}`)
+    );
   }
 
   _stateIconLabel(state) {
