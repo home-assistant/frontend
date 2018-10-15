@@ -60,6 +60,7 @@ class HaForm extends EventsMixin(PolymerElement) {
         </template>
         <template is="dom-if" if="[[!_includes(schema.name, &quot;password&quot;)]]" restamp="">
           <paper-input
+            autofocus
             label="[[computeLabel(schema)]]"
             value="{{data}}"
             required="[[schema.required]]"
