@@ -31,7 +31,7 @@ class HaLogbook extends EventsMixin(PolymerElement) {
         color: var(--secondary-text-color);
       }
 
-      domain-icon {
+      iron-icon {
         margin: 0 8px 0 16px;
         color: var(--primary-text-color);
       }
