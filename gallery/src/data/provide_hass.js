@@ -1,4 +1,4 @@
-import fireEvent from "../../../src/common/dom/fire_event.js";
+import { fireEvent } from "../../../src/common/dom/fire_event.js";
 
 import demoConfig from "./demo_config.js";
 import demoResources from "./demo_resources.js";

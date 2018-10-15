@@ -1,4 +1,4 @@
-import fireEvent from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../entity-rows/hui-climate-entity-row.js";
 import "../entity-rows/hui-cover-entity-row.js";
