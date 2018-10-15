@@ -1,11 +1,13 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../../../components/ha-card.js";
 
 import toggleEntity from "../common/entity/toggle-entity.js";
 import stateIcon from "../../../common/entity/state_icon.js";
 import computeStateDomain from "../../../common/entity/compute_state_domain.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
 import EventsMixin from "../../../mixins/events-mixin.js";
 import LocalizeMixin from "../../../mixins/localize-mixin.js";
 
@@ -79,13 +81,15 @@ class HuiEntityButtonCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   getCardSize() {
-    return 1;
+    return 2;
   }
 
   setConfig(config) {
-    if (!config || !config.entity)
+    if (!config || !config.entity) {
       throw new Error("Invalid card configuration");
-    this._config = Object.assign({ show_state: true }, config);
+    }
+    const defaults = { show_state: true };
+    this._config = { ...defaults, ...config };
   }
 
   _computeStateObj(states, entityId) {
@@ -120,7 +124,7 @@ class HuiEntityButtonCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _computeName(stateObj) {
     const config = this._config;
     if (!stateObj) return "Entity not available: " + this._config.entity;
-    return config.name ? config.name : stateObj.attributes.friendly_name;
+    return config.name ? config.name : computeStateName(stateObj);
   }
 
   _computeIcon(stateObj) {
@@ -145,15 +149,12 @@ class HuiEntityButtonCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         break;
       case "call-service": {
         const [domain, service] = config.service.split(".", 2);
-        const serviceData = Object.assign(
-          { entity_id: entityId },
-          config.service_data
-        );
+        const serviceData = { entity_id: entityId, ...config.service_data };
         this.hass.callService(domain, service, serviceData);
         break;
       }
       default:
-        this.fire("hass-more-info", { entityId });
+        fireEvent(this, "hass-more-info", { entityId });
     }
   }
 }
