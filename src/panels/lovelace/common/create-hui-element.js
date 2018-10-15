@@ -5,7 +5,7 @@ import "../elements/hui-state-badge-element.js";
 import "../elements/hui-state-icon-element.js";
 import "../elements/hui-state-label-element.js";
 
-import fireEvent from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event.js";
 import createErrorCardConfig from "./create-error-card-config.js";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
