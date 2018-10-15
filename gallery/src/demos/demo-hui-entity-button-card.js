@@ -44,14 +44,6 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Setting Color",
-    config: `
-- type: entity-button
-  entity: light.bed_light
-  color: blue
-    `,
-  },
-  {
     heading: "Custom Tap Action (toggle)",
     config: `
 - type: entity-button

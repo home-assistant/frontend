@@ -88,8 +88,7 @@ class HuiEntityButtonCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (!config || !config.entity) {
       throw new Error("Invalid card configuration");
     }
-    const defaults = { show_state: true };
-    this._config = { ...defaults, ...config };
+    this._config = { show_state: true, ...config };
   }
 
   _computeStateObj(states, entityId) {
