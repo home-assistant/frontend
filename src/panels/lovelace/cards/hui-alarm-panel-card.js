@@ -10,6 +10,17 @@ import "../../../components/ha-label-badge.js";
 /*
  * @appliesMixin EventsMixin
  */
+
+const Icons = {
+  armed_away: "hass:security-lock",
+  armed_custom_bypass: "hass:security",
+  armed_home: "hass:security-home",
+  armed_night: "hass:security-home",
+  disarmed: "hass:verified",
+  pending: "hass:shield-outline",
+  triggered: "hass:bell-ring",
+};
+
 class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
@@ -31,9 +42,8 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         --label-badge-text-color: var(--alarm-state-color);
         color: var(--alarm-state-color);
         position: absolute;
-        right: 10px;
-        top: 10px;
-        padding: 10px;
+        right: 12px;
+        top: 12px;
       }
       .disarmed {
         --alarm-state-color: var(--alarm-color-disarmed);
@@ -87,7 +97,7 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       }
       .actions {
         margin: 0 8px;
-        padding-top: 20px; 
+        padding-top: 20px;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -181,18 +191,16 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       !config ||
       !config.entity ||
       config.entity.split(".")[0] !== "alarm_control_panel"
-    )
+    ) {
       throw new Error("Invalid card configuration");
-    this._config = Object.assign({ states: ["arm_away", "arm_home"] }, config);
-    this._icons = {
-      armed_away: "hass:security-lock",
-      armed_custom_bypass: "hass:security",
-      armed_home: "hass:security-home",
-      armed_night: "hass:security-home",
-      disarmed: "hass:verified",
-      pending: "hass:shield-outline",
-      triggered: "hass:bell-ring",
+    }
+
+    const defaults = {
+      states: ["arm_away", "arm_home"],
     };
+
+    this._config = { ...defaults, ...config };
+    this._icons = Icons;
   }
 
   _computeStateObj(states, entityId) {
