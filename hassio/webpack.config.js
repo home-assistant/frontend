@@ -42,6 +42,9 @@ module.exports = {
         exclude: [/\.js\.map$/, /\.LICENSE$/, /\.py$/, /\.txt$/],
       }),
   ].filter(Boolean),
+  resolve: {
+    extensions: [".ts", ".js", ".json"],
+  },
   output: {
     filename: "[name].js",
     chunkFilename,
