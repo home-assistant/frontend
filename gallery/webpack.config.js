@@ -56,6 +56,9 @@ module.exports = {
         },
       }),
   ].filter(Boolean),
+  resolve: {
+    extensions: [".ts", ".js", ".json"],
+  },
   output: {
     filename: "[name].js",
     chunkFilename: chunkFilename,
