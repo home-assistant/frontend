@@ -38,11 +38,11 @@ implements LovelaceCard {
   }
 
   public setConfig(config: Config) {
-    this.config = config;
-    
-    if(!isValidEntityId(this.config.entity)) {
+    if(!isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }
+
+    this.config = config;
 
     if(this.hass) {
       this.requestUpdate();
@@ -54,7 +54,7 @@ implements LovelaceCard {
       return html``;
     }
     const stateObj = this.hass!.states[this.config.entity];
-
+    
     return html`
       ${this.renderStyle()}
       <ha-card @click="${this.handleClick}">
