@@ -16,8 +16,8 @@ export const HassLocalizeLitMixin = (
 ): Constructor<LitElement & LocalizeMixin> =>
   // @ts-ignore
   class extends LocalizeBaseMixin(superClass) {
-    protected hass: HomeAssistant;
-    protected localize: LocalizeFunc;
+    protected hass?: HomeAssistant;
+    protected localize?: LocalizeFunc;
 
     static get properties(): PropertyDeclarations {
       return {

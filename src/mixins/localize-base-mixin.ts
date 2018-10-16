@@ -1,4 +1,3 @@
-import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin.js";
 import IntlMessageFormat from "intl-messageformat/src/main.js";
 
 /**
