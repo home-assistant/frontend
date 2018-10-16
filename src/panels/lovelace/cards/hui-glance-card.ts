@@ -42,9 +42,9 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       hass: {},
     };
   }
-  protected hass: HomeAssistant;
-  protected config: Config;
-  protected configEntities: EntityConfig[];
+  protected hass?: HomeAssistant;
+  protected config?: Config;
+  protected configEntities?: EntityConfig[];
 
   public getCardSize() {
     return 3;
@@ -71,12 +71,12 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   }
 
   protected render() {
-    if (!this.config) {
+    if (!this.config || !this.hass) {
       return html``;
     }
     const { title } = this.config;
     const states = this.hass.states;
-    const entities = this.configEntities.filter(
+    const entities = this.configEntities!.filter(
       (conf) => conf.entity in states
     );
 
@@ -138,7 +138,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   }
 
   private renderEntity(entityConf) {
-    const stateObj = this.hass.states[entityConf.entity];
+    const stateObj = this.hass!.states[entityConf.entity];
 
     return html`
       <div
@@ -147,7 +147,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         @click="${this.handleClick}"
       >
         ${
-          this.config.show_name !== false
+          this.config!.show_name !== false
             ? html`<div class="name">${
                 "name" in entityConf
                   ? entityConf.name
@@ -160,7 +160,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
           .overrideIcon="${entityConf.icon}"
         ></state-badge>
         ${
-          this.config.show_state !== false
+          this.config!.show_state !== false
             ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
             : ""
         }
@@ -176,9 +176,9 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         toggleEntity(this.hass, entityId);
         break;
       case "call-service": {
-        const [domain, service] = config.service.split(".", 2);
+        const [domain, service] = config.service!.split(".", 2);
         const serviceData = { entity_id: entityId, ...config.service_data };
-        this.hass.callService(domain, service, serviceData);
+        this.hass!.callService(domain, service, serviceData);
         break;
       }
       default:
