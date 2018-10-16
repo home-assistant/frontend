@@ -156,8 +156,8 @@ const CONFIGS = [
       service: light.toggle
       service_data:
         entity_id: light.bed_light
-    - type: label
-      name: Links
+    - type: section
+      label: Links
     - type: weblink
       url: http://google.com/
       icon: mdi:google

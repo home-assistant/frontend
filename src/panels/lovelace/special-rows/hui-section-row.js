@@ -3,14 +3,14 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 import "../../../components/ha-icon.js";
 
-class HuiLabelRow extends PolymerElement {
+class HuiSectionRow extends PolymerElement {
   static get template() {
     return html`
       ${this.styleTemplate}
       <div class=divider></div>
-      <template is="dom-if" if="[[_config.name]]">
+      <template is="dom-if" if="[[_config.label]]">
         <div class=label>
-          [[_config.name]]
+          [[_config.label]]
         </div>
       </template>
     `;
@@ -50,4 +50,4 @@ class HuiLabelRow extends PolymerElement {
     this._config = config;
   }
 }
-customElements.define("hui-label-row", HuiLabelRow);
+customElements.define("hui-section-row", HuiSectionRow);
