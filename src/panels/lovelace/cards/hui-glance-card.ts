@@ -42,9 +42,9 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       hass: {},
     };
   }
-  protected hass: HomeAssistant;
-  protected config: Config;
-  protected configEntities: EntityConfig[];
+  protected hass?: HomeAssistant;
+  protected config?: Config;
+  protected configEntities?: EntityConfig[];
 
   public getCardSize() {
     return 3;
@@ -52,6 +52,16 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config) {
     this.config = config;
+    const entities = processConfigEntities(config.entities);
+
+    for (const entity of entities) {
+      if (entity.tap_action === "call-service" && !entity.service) {
+        throw new Error(
+          'Missing required property "service" when tap_action is call-service'
+        );
+      }
+    }
+
     this.style.setProperty(
       "--glance-column-width",
       config.column_width || "20%"
@@ -64,19 +74,20 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       this.classList.add(`theme-${config.theming}`);
     }
 
-    this.configEntities = processConfigEntities(config.entities);
+    this.configEntities = entities;
+
     if (this.hass) {
       this.requestUpdate();
     }
   }
 
   protected render() {
-    if (!this.config) {
+    if (!this.config || !this.hass) {
       return html``;
     }
     const { title } = this.config;
     const states = this.hass.states;
-    const entities = this.configEntities.filter(
+    const entities = this.configEntities!.filter(
       (conf) => conf.entity in states
     );
 
@@ -138,7 +149,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   }
 
   private renderEntity(entityConf) {
-    const stateObj = this.hass.states[entityConf.entity];
+    const stateObj = this.hass!.states[entityConf.entity];
 
     return html`
       <div
@@ -147,7 +158,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         @click="${this.handleClick}"
       >
         ${
-          this.config.show_name !== false
+          this.config!.show_name !== false
             ? html`<div class="name">${
                 "name" in entityConf
                   ? entityConf.name
@@ -160,7 +171,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
           .overrideIcon="${entityConf.icon}"
         ></state-badge>
         ${
-          this.config.show_state !== false
+          this.config!.show_state !== false
             ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
             : ""
         }
@@ -176,9 +187,9 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         toggleEntity(this.hass, entityId);
         break;
       case "call-service": {
-        const [domain, service] = config.service.split(".", 2);
+        const [domain, service] = config.service!.split(".", 2);
         const serviceData = { entity_id: entityId, ...config.service_data };
-        this.hass.callService(domain, service, serviceData);
+        this.hass!.callService(domain, service, serviceData);
         break;
       }
       default:
