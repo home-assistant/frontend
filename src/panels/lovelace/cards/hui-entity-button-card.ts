@@ -150,7 +150,7 @@ implements LovelaceCard {
       return;
     }
     const stateObj = this.hass!.states[config.entity];
-    if(!config || !stateObj) {
+    if(!stateObj) {
       return;
     }
     const entityId = stateObj.entity_id;
