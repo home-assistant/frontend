@@ -149,10 +149,6 @@ const CONFIGS = [
     config: `
 - type: entities
   entities:
-    - type: weblink
-      url: http://google.com/
-      icon: mdi:google
-      name: Google
     - type: call-service
       icon: mdi:power
       name: Bed light
@@ -160,6 +156,12 @@ const CONFIGS = [
       service: light.toggle
       service_data:
         entity_id: light.bed_light
+    - type: section
+      label: Links
+    - type: weblink
+      url: http://google.com/
+      icon: mdi:google
+      name: Google
     - type: divider
     - type: divider
       style:
