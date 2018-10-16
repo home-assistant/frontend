@@ -7,10 +7,12 @@ class HuiLabelRow extends PolymerElement {
   static get template() {
     return html`
       ${this.styleTemplate}
-    <div class=divider></div>
-      <div class=label>
-      [[_config.name]]
-    </div>
+      <div class=divider></div>
+      <template is="dom-if" if="[[_config.name]]">
+        <div class=label>
+          [[_config.name]]
+        </div>
+      </template>
     `;
   }
 
@@ -42,7 +44,7 @@ class HuiLabelRow extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config || !config.name) {
+    if (!config) {
       throw new Error("Error in card configuration.");
     }
     this._config = config;
