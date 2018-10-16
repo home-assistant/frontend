@@ -54,8 +54,8 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
     this.config = config;
     const entities = processConfigEntities(config.entities);
 
-    for (let i = 0; i < entities.length; i++) {
-      if (entities[i].tap_action === "call-service" && !entities[i].service) {
+    for (const entity of entities) {
+      if (entity.tap_action === "call-service" && !entity.service) {
         throw new Error(
           'Missing required property "service" when tap_action is call-service'
         );
