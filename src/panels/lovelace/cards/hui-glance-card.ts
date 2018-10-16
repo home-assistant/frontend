@@ -52,6 +52,16 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config) {
     this.config = config;
+    const entities = processConfigEntities(config.entities);
+
+    for (let i = 0; i < entities.length; i++) {
+      if (entities[i].tap_action === "call-service" && !entities[i].service) {
+        throw new Error(
+          'Missing required property "service" when tap_action is call-service'
+        );
+      }
+    }
+
     this.style.setProperty(
       "--glance-column-width",
       config.column_width || "20%"
@@ -64,7 +74,8 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       this.classList.add(`theme-${config.theming}`);
     }
 
-    this.configEntities = processConfigEntities(config.entities);
+    this.configEntities = entities;
+
     if (this.hass) {
       this.requestUpdate();
     }
