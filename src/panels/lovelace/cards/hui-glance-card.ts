@@ -62,9 +62,11 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       }
     }
 
+    const columnWidth = config.entities.length > 4 ? "20%" : `${100 / config.entities.length}%`
+
     this.style.setProperty(
       "--glance-column-width",
-      config.column_width || "20%"
+      config.column_width || columnWidth
     );
 
     if (config.theming) {
@@ -96,10 +98,10 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
           ${repeat<EntityConfig>(
-            entities,
-            (entityConf) => entityConf.entity,
-            (entityConf) => this.renderEntity(entityConf)
-          )}
+        entities,
+        (entityConf) => entityConf.entity,
+        (entityConf) => this.renderEntity(entityConf)
+      )}
         </div>
       </ha-card>
     `;
@@ -158,23 +160,23 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         @click="${this.handleClick}"
       >
         ${
-          this.config!.show_name !== false
-            ? html`<div class="name">${
-                "name" in entityConf
-                  ? entityConf.name
-                  : computeStateName(stateObj)
-              }</div>`
-            : ""
-        }
+      this.config!.show_name !== false
+        ? html`<div class="name">${
+          "name" in entityConf
+            ? entityConf.name
+            : computeStateName(stateObj)
+          }</div>`
+        : ""
+      }
         <state-badge
           .stateObj="${stateObj}"
           .overrideIcon="${entityConf.icon}"
         ></state-badge>
         ${
-          this.config!.show_state !== false
-            ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
-            : ""
-        }
+      this.config!.show_state !== false
+        ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
+        : ""
+      }
       </div>
     `;
   }
