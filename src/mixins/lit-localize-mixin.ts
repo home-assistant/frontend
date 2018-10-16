@@ -11,13 +11,13 @@ import {
   LocalizeMixin,
 } from "./localize-base-mixin";
 
-export const HassLocalizeLitMixin = (
-  superClass: Constructor<LitElement>
-): Constructor<LitElement & LocalizeMixin> =>
+export const HassLocalizeLitMixin = <T extends LitElement>(
+  superClass: Constructor<T>
+): Constructor<T & LocalizeMixin> =>
   // @ts-ignore
   class extends LocalizeBaseMixin(superClass) {
     protected hass?: HomeAssistant;
-    protected localize?: LocalizeFunc;
+    protected localize!: LocalizeFunc;
 
     static get properties(): PropertyDeclarations {
       return {
