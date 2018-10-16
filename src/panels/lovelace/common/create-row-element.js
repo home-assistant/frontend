@@ -16,12 +16,18 @@ import "../entity-rows/hui-toggle-entity-row.js";
 
 import "../special-rows/hui-call-service-row.js";
 import "../special-rows/hui-divider-row.js";
+import "../special-rows/hui-section-row.js";
 import "../special-rows/hui-weblink-row.js";
 
 import createErrorCardConfig from "./create-error-card-config.js";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
-const SPECIAL_TYPES = new Set(["call-service", "divider", "weblink"]);
+const SPECIAL_TYPES = new Set([
+  "call-service",
+  "divider",
+  "section",
+  "weblink",
+]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   automation: "toggle",
   climate: "climate",
