@@ -18,6 +18,7 @@ const fixedIcons = {
   group: "hass:google-circles-communities",
   history_graph: "hass:chart-line",
   homeassistant: "hass:home-assistant",
+  homekit: "hass:home-automation",
   image_processing: "hass:image-filter-frames",
   input_boolean: "hass:drawing",
   input_datetime: "hass:calendar-clock",
