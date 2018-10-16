@@ -135,6 +135,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
               hidden$="[[!showHelp]]">
             </ha-service-description>
 
+            <template is="dom-if" if="[[nodeFailed]]">
             <ha-call-service-button
               hass="[[hass]]"
               domain="zwave"
@@ -162,6 +163,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
               service="replace_failed_node"
               hidden$="[[!showHelp]]">
             </ha-service-description>
+            </template>
 
             <ha-call-service-button
               hass="[[hass]]"
@@ -335,6 +337,11 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "selectedNodeChanged",
       },
 
+      nodeFailed: {
+        type: Boolean,
+        value: false,
+      },
+
       config: {
         type: Array,
         value: () => [],
@@ -490,6 +497,8 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           this._protectionNode = true;
         }
       });
+
+    this.nodeFailed = this.nodes[selectedNode].attributes.is_failed;
   }
 
   selectedEntityChanged(selectedEntity) {
