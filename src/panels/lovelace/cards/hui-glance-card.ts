@@ -1,4 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  customElement,
+  property,
+  eventOptions,
+} from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap.js";
 import { repeat } from "lit-html/directives/repeat";
 
@@ -35,15 +41,15 @@ interface Config extends LovelaceConfig {
   entities: EntityConfig[];
 }
 
-class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
+@customElement("hui-glance-card" as any)
+export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-    };
-  }
+  @property()
   protected hass?: HomeAssistant;
+
+  @property()
   protected config?: Config;
+
   protected configEntities?: EntityConfig[];
 
   public getCardSize() {
@@ -179,6 +185,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
     `;
   }
 
+  @eventOptions({ passive: true })
   private handleClick(ev: MouseEvent) {
     const config = (ev.currentTarget as any).entityConf as EntityConfig;
     const entityId = config.entity;
@@ -203,5 +210,3 @@ declare global {
     "hui-glance-card": HuiGlanceCard;
   }
 }
-
-customElements.define("hui-glance-card", HuiGlanceCard);
