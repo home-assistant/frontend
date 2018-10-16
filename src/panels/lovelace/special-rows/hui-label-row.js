@@ -7,33 +7,29 @@ class HuiLabelRow extends PolymerElement {
   static get template() {
     return html`
       ${this.styleTemplate}
-      <div>
-        <ha-icon icon="[[_config.icon]]"></ha-icon>
-        <div id=name>
-          [[_config.name]]
-        </div>
-      </div>
+    <div class=divider></div>
+      <div class=label>
+      [[_config.name]]
+    </div>
     `;
   }
 
   static get styleTemplate() {
     return html`
       <style>
-        div {
-          display: flex;
-          align-items: center;
+        .label {
+          color: var(--primary-color);
+          margin-left: 8px;
+          margin-bottom: 16px;
+          margin-top: 16px;
         }
-        ha-icon {
-          padding: 8px;
-          color: var(--paper-item-icon-color);
-        }
-        #name {
-          @apply --paper-font-subhead
-          flex: 1;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          margin-left: 16px;
+        .divider {
+          height: 1px;
+          background-color: var(--secondary-text-color);
+          opacity: 0.25;
+          margin-left: -16px;
+          margin-right: -16px;
+          margin-top: 8px;
         }
       </style>
     `;
@@ -46,7 +42,7 @@ class HuiLabelRow extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config || !config.icon || !config.name) {
+    if (!config || !config.name) {
       throw new Error("Error in card configuration.");
     }
     this._config = config;

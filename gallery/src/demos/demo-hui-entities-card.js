@@ -158,7 +158,6 @@ const CONFIGS = [
         entity_id: light.bed_light
     - type: label
       name: Links
-      icon: mdi:web
     - type: weblink
       url: http://google.com/
       icon: mdi:google
