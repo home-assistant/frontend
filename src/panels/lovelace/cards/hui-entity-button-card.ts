@@ -8,6 +8,7 @@ import isValidEntityId from "../../../common/entity/valid_entity_id.js";
 import stateIcon from "../../../common/entity/state_icon.js";
 import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
 import { styleMap } from "lit-html/directives/styleMap.js";
 import { HomeAssistant } from "../../../types.js";
 import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
@@ -17,6 +18,7 @@ interface Config extends LovelaceConfig {
   entity: string;
   name?: string;
   icon?: string;
+  theme?: string;
   tap_action?: "toggle" | "call-service" | "more-info";
   service?: string;
   service_data?: object;
@@ -55,6 +57,10 @@ export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass!.states[this.config.entity];
+
+    if (this.config.theme) {
+      applyThemesOnElement(this, this.hass!.themes, this.config.theme);
+    }
 
     return html`
       ${this.renderStyle()}
