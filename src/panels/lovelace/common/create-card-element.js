@@ -3,7 +3,7 @@ import { fireEvent } from "../../../common/dom/fire_event.js";
 import "../cards/hui-alarm-panel-card.js";
 import "../cards/hui-conditional-card.js";
 import "../cards/hui-entities-card.js";
-import "../cards/hui-entity-button-card.js";
+import "../cards/hui-entity-button-card.ts";
 import "../cards/hui-entity-filter-card.js";
 import "../cards/hui-error-card.js";
 import "../cards/hui-glance-card.ts";
