@@ -1,4 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  property,
+  customElement,
+  eventOptions,
+} from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../../../components/ha-card.js";
@@ -22,15 +28,13 @@ interface Config extends LovelaceConfig {
   service_data?: object;
 }
 
-class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement) 
-implements LovelaceCard {
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {}
-    };
-  }
-
+@customElement("hui-entity-button-card" as any)
+export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
+  implements LovelaceCard {
+  @property()
   protected hass?: HomeAssistant;
+
+  @property()
   protected config?: Config;
 
   public getCardSize() {
@@ -38,13 +42,13 @@ implements LovelaceCard {
   }
 
   public setConfig(config: Config) {
-    if(!isValidEntityId(config.entity)) {
+    if (!isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }
 
     this.config = config;
 
-    if(this.hass) {
+    if (this.hass) {
       this.requestUpdate();
     }
   }
@@ -54,26 +58,34 @@ implements LovelaceCard {
       return html``;
     }
     const stateObj = this.hass!.states[this.config.entity];
-    
+
     return html`
       ${this.renderStyle()}
       <ha-card @click="${this.handleClick}">
         ${
-          !stateObj 
-          ? html`<div class="not-found">Entity not available: ${this.config.entity}</div>` 
-          : html`
+          !stateObj
+            ? html`<div class="not-found">Entity not available: ${
+                this.config.entity
+              }</div>`
+            : html`
               <paper-button>
                 <div>
                   <ha-icon
                     data-domain="${computeStateDomain(stateObj)}"
                     data-state="${stateObj.state}"
-                    .icon="${this.config.icon ? this.config.icon : stateIcon(stateObj)}"
-                    style="${styleMap({filter: this._computeBrightness(stateObj), color: this._computeColor(stateObj)})}"
+                    .icon="${
+                      this.config.icon ? this.config.icon : stateIcon(stateObj)
+                    }"
+                    style="${styleMap({
+                      filter: this._computeBrightness(stateObj),
+                      color: this._computeColor(stateObj),
+                    })}"
                   ></ha-icon>
                   <span>
-                    ${this.config.name 
-                      ? this.config.name 
-                      : computeStateName(stateObj)
+                    ${
+                      this.config.name
+                        ? this.config.name
+                        : computeStateName(stateObj)
                     }
                   </span>
                 </div>
@@ -131,26 +143,27 @@ implements LovelaceCard {
     const brightness = stateObj.attributes.brightness;
     return `brightness(${(brightness + 245) / 5}%)`;
   }
-  
+
   private _computeColor(stateObj) {
     if (!stateObj.attributes.hs_color) {
-      return '';
+      return "";
     }
     const hue = stateObj.attributes.hs_color[0];
     const sat = stateObj.attributes.hs_color[1];
-    if (sat <= 10) { 
-      return '';
+    if (sat <= 10) {
+      return "";
     }
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
+  @eventOptions({ passive: true })
   private handleClick() {
     const config = this.config;
     if (!config) {
       return;
     }
     const stateObj = this.hass!.states[config.entity];
-    if(!stateObj) {
+    if (!stateObj) {
       return;
     }
     const entityId = stateObj.entity_id;
@@ -159,7 +172,7 @@ implements LovelaceCard {
         toggleEntity(this.hass, entityId);
         break;
       case "call-service": {
-        if(!config.service){
+        if (!config.service) {
           return;
         }
         const [domain, service] = config.service.split(".", 2);
@@ -178,5 +191,3 @@ declare global {
     "hui-entity-button-card": HuiEntityButtonCard;
   }
 }
-
-customElements.define("hui-entity-button-card", HuiEntityButtonCard);
