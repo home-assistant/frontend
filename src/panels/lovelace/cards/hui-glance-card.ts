@@ -30,7 +30,6 @@ interface Config extends LovelaceConfig {
   show_name?: boolean;
   show_state?: boolean;
   title?: string;
-  column_width?: string;
   theming?: "primary";
   entities: EntityConfig[];
 }
@@ -65,10 +64,7 @@ class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
     const columnWidth =
       config.entities.length > 4 ? "20%" : `${100 / config.entities.length}%`;
 
-    this.style.setProperty(
-      "--glance-column-width",
-      config.column_width || columnWidth
-    );
+    this.style.setProperty("--glance-column-width", columnWidth);
 
     if (config.theming) {
       if (typeof config.theming !== "string") {
