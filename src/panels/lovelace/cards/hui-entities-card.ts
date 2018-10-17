@@ -86,13 +86,13 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
     const { show_header_toggle, title } = this.config;
     const states = this.hass.states;
 
-    const stateEntities = this.configEntities!.filter(
+    const entities = this.configEntities!.filter(
       (conf) => conf.entity in states
     );
 
-    const rowEntities = this.configEntities!.filter(
-      (item) => typeof item === "string" || item.entity
-    ).map((item) => (typeof item === "string" ? item : item.entity));
+    const toggableEntities = entities
+      .filter((item) => typeof item === "string" || item.entity)
+      .map((item) => (typeof item === "string" ? item : item.entity));
 
     return html`
       ${this.renderStyle()}
@@ -109,7 +109,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
                   : html`
                   <hui-entities-toggle 
                     .hass="${this.hass}" 
-                    .entities="${rowEntities}"
+                    .entities="${toggableEntities}"
                   >
                   </hui-entities-toggle>`
               }
@@ -117,7 +117,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
         }
         <div id="states">
           ${repeat<EntityConfig>(
-            stateEntities,
+            entities,
             (entityConf) => entityConf.entity,
             (entityConf) => this.renderEntity(entityConf)
           )}
