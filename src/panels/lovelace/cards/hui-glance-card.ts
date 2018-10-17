@@ -5,6 +5,7 @@ import { repeat } from "lit-html/directives/repeat";
 import computeStateDisplay from "../../../common/entity/compute_state_display.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
 import processConfigEntities from "../common/process-config-entities";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
 
 import toggleEntity from "../common/entity/toggle-entity.js";
 
@@ -31,7 +32,7 @@ interface Config extends LovelaceConfig {
   show_state?: boolean;
   title?: string;
   column_width?: string;
-  theming?: "primary";
+  theme?: string;
   entities: EntityConfig[];
 }
 
@@ -53,7 +54,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public setConfig(config: Config) {
-    this.config = config;
+    this.config = { theme: "default", ...config };
     const entities = processConfigEntities(config.entities);
 
     for (const entity of entities) {
@@ -68,13 +69,6 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       "--glance-column-width",
       config.column_width || "20%"
     );
-
-    if (config.theming) {
-      if (typeof config.theming !== "string") {
-        throw new Error("Incorrect theming config.");
-      }
-      this.classList.add(`theme-${config.theming}`);
-    }
 
     this.configEntities = entities;
 
@@ -93,6 +87,8 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       (conf) => conf.entity in states
     );
 
+    applyThemesOnElement(this, this.hass!.themes, this.config.theme);
+
     return html`
       ${this.renderStyle()}
       <ha-card .header="${title}">
@@ -110,11 +106,6 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   private renderStyle() {
     return html`
       <style>
-        :host(.theme-primary) {
-          --paper-card-background-color:var(--primary-color);
-          --paper-item-icon-color:var(--text-primary-color);
-          color:var(--text-primary-color);
-        }
         .entities {
           display: flex;
           padding: 0 16px 4px;
