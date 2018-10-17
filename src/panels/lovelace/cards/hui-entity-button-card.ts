@@ -1,10 +1,4 @@
-import {
-  html,
-  LitElement,
-  property,
-  customElement,
-  eventOptions,
-} from "@polymer/lit-element";
+import { html, LitElement } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../../../components/ha-card.js";
@@ -28,14 +22,17 @@ interface Config extends LovelaceConfig {
   service_data?: object;
 }
 
-@customElement("hui-entity-button-card" as any)
 export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  @property()
   protected hass?: HomeAssistant;
-
-  @property()
   protected config?: Config;
+
+  static get properties() {
+    return {
+      hass: {},
+      config: {},
+    };
+  }
 
   public getCardSize() {
     return 2;
@@ -156,7 +153,6 @@ export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  @eventOptions({ passive: true })
   private handleClick() {
     const config = this.config;
     if (!config) {
@@ -191,3 +187,5 @@ declare global {
     "hui-entity-button-card": HuiEntityButtonCard;
   }
 }
+
+customElements.define("hui-entity-button-card", HuiEntityButtonCard);
