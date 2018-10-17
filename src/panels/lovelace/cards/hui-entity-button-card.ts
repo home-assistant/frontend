@@ -1,4 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../../../components/ha-card.js";
@@ -8,6 +8,7 @@ import isValidEntityId from "../../../common/entity/valid_entity_id.js";
 import stateIcon from "../../../common/entity/state_icon.js";
 import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
 import { styleMap } from "lit-html/directives/styleMap.js";
 import { HomeAssistant } from "../../../types.js";
 import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
@@ -17,17 +18,18 @@ interface Config extends LovelaceConfig {
   entity: string;
   name?: string;
   icon?: string;
+  theme?: string;
   tap_action?: "toggle" | "call-service" | "more-info";
   service?: string;
   service_data?: object;
 }
 
-export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
+class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   protected hass?: HomeAssistant;
   protected config?: Config;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
       config: {},
@@ -43,7 +45,7 @@ export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
       throw new Error("Invalid Entity");
     }
 
-    this.config = config;
+    this.config = { theme: "default", ...config };
 
     if (this.hass) {
       this.requestUpdate();
@@ -55,6 +57,8 @@ export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass!.states[this.config.entity];
+
+    applyThemesOnElement(this, this.hass!.themes, this.config.theme);
 
     return html`
       ${this.renderStyle()}
