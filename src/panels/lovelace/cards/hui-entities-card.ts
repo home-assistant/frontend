@@ -111,7 +111,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
         }
         <div id="states">
           ${repeat<EntityConfig>(
-            this.configEntities as EntityConfig[],
+            this.configEntities!,
             (entityConf) => entityConf.entity,
             (entityConf) => this.renderEntity(entityConf)
           )}
