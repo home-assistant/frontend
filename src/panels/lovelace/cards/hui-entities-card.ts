@@ -46,34 +46,35 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
 
   public getCardSize() {
     // +1 for the header
-    return 1 + (this.config ? this.config.entities.length : 0);
+    if (!this.config) {
+      return 0;
+    }
+    return this.config.title ? 1 : 0 + this.config.entities.length;
   }
 
   public setConfig(config: Config) {
-    this.config = { show_header_toggle: true, ...config };
     const entities = processConfigEntities(config.entities);
-
     for (const entity of entities) {
       if (
         entity.type === "call-service" &&
-        !entity.service &&
-        !entity.name &&
-        !entity.icon &&
-        !entity.service_data &&
-        !entity.action_name
+        (!entity.service ||
+          !entity.name ||
+          !entity.icon ||
+          !entity.service_data ||
+          !entity.action_name)
       ) {
         throw new Error("Missing required property when type is call-service");
       } else if (
         entity.type === "weblink" &&
-        !entity.name &&
-        !entity.icon &&
-        !entity.url
+        (!entity.name || !entity.icon || !entity.url)
       ) {
         throw new Error("Missing required property when type is weblink");
       }
     }
 
+    this.config = config;
     this.configEntities = entities;
+
     if (this.hass) {
       this.requestUpdate();
     }
@@ -84,15 +85,8 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
       return html``;
     }
     const { show_header_toggle, title } = this.config;
-    const states = this.hass.states;
 
-    const entities = this.configEntities!.filter(
-      (conf) => conf.entity in states
-    );
-
-    const toggableEntities = entities
-      .filter((item) => typeof item === "string" || item.entity)
-      .map((item) => (typeof item === "string" ? item : item.entity));
+    const entities = this.configEntities!.map((conf) => conf.entity);
 
     return html`
       ${this.renderStyle()}
@@ -104,12 +98,12 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
             <div class='header'>
               ${!title ? html`` : html`<div class="name">${title}</div>`}
               ${
-                !show_header_toggle
+                show_header_toggle === false
                   ? html``
                   : html`
                   <hui-entities-toggle 
                     .hass="${this.hass}" 
-                    .entities="${toggableEntities}"
+                    .entities="${entities}"
                   >
                   </hui-entities-toggle>`
               }
@@ -117,7 +111,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
         }
         <div id="states">
           ${repeat<EntityConfig>(
-            entities,
+            this.configEntities as EntityConfig[],
             (entityConf) => entityConf.entity,
             (entityConf) => this.renderEntity(entityConf)
           )}
@@ -165,7 +159,10 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
     const element = createRowElement(entityConf);
     element.hass = this.hass;
     element.entityConf = entityConf;
-    if (!DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))) {
+    if (
+      !!entityConf.entity &&
+      DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
+    ) {
       element.classList.add("state-card-dialog");
       element.onclick = this.handleClick;
     }
