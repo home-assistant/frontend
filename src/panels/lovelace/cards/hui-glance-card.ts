@@ -54,7 +54,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public setConfig(config: Config) {
-    this.config = config;
+    this.config = { theme: "default", ...config };
     const entities = processConfigEntities(config.entities);
 
     for (const entity of entities) {
@@ -87,9 +87,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       (conf) => conf.entity in states
     );
 
-    if(this.config.theme) {
-      applyThemesOnElement(this, this.hass!.themes, this.config.theme)
-    }
+    applyThemesOnElement(this, this.hass!.themes, this.config.theme);
 
     return html`
       ${this.renderStyle()}
@@ -155,9 +153,9 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         ${
           this.config!.show_name !== false
             ? html`<div class="name">${
-                "name" in entityConf
-                  ? entityConf.name
-                  : computeStateName(stateObj)
+              "name" in entityConf
+                ? entityConf.name
+                : computeStateName(stateObj)
               }</div>`
             : ""
         }

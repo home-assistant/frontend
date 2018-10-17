@@ -1,4 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../../../components/ha-card.js";
@@ -24,12 +24,12 @@ interface Config extends LovelaceConfig {
   service_data?: object;
 }
 
-export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
+class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   protected hass?: HomeAssistant;
   protected config?: Config;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
       config: {},
@@ -45,7 +45,7 @@ export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
       throw new Error("Invalid Entity");
     }
 
-    this.config = config;
+    this.config = { theme: "default", ...config };
 
     if (this.hass) {
       this.requestUpdate();
@@ -58,9 +58,7 @@ export class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
     }
     const stateObj = this.hass!.states[this.config.entity];
 
-    if (this.config.theme) {
-      applyThemesOnElement(this, this.hass!.themes, this.config.theme);
-    }
+    applyThemesOnElement(this, this.hass!.themes, this.config.theme);
 
     return html`
       ${this.renderStyle()}
