@@ -153,9 +153,9 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         ${
           this.config!.show_name !== false
             ? html`<div class="name">${
-              "name" in entityConf
-                ? entityConf.name
-                : computeStateName(stateObj)
+                "name" in entityConf
+                  ? entityConf.name
+                  : computeStateName(stateObj)
               }</div>`
             : ""
         }
