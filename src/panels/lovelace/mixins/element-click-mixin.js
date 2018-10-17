@@ -14,12 +14,17 @@ export default dedupingMixin(
   (superClass) =>
     class extends NavigateMixin(EventsMixin(superClass)) {
       registerMouse(config) {
+        var isTouch =
+          "ontouchstart" in window ||
+          navigator.MaxTouchPoints > 0 ||
+          navigator.msMaxTouchPoints > 0;
+
         let ripple = null;
         const rippleWrapper = document.createElement("div");
         this.shadowRoot.appendChild(rippleWrapper);
         rippleWrapper.style.position = "absolute";
-        rippleWrapper.style.width = "100px";
-        rippleWrapper.style.height = "100px";
+        rippleWrapper.style.width = isTouch ? "100px" : "50px";
+        rippleWrapper.style.height = isTouch ? "100px" : "50px";
         rippleWrapper.style.top = "50%";
         rippleWrapper.style.left = "50%";
         rippleWrapper.style.transform = "translate(-50%, -50%)";
@@ -45,10 +50,6 @@ export default dedupingMixin(
           }
         };
 
-        var isTouch =
-          "ontouchstart" in window ||
-          navigator.MaxTouchPoints > 0 ||
-          navigator.msMaxTouchPoints > 0;
         var mouseDown = isTouch ? "touchstart" : "mousedown";
         var mouseOut = isTouch ? "touchcancel" : "mouseout";
         var click = isTouch ? "touchend" : "click";
