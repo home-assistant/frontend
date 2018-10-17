@@ -107,8 +107,9 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
       timeOut.after(0),
       () => {
         if (
-          !this.cloudStatus.logged_in &&
-          !NOT_LOGGED_IN_URLS.includes(route.path)
+          !this.cloudStatus ||
+          (!this.cloudStatus.logged_in &&
+            !NOT_LOGGED_IN_URLS.includes(route.path))
         ) {
           this.navigate("/config/cloud/login", true);
         } else if (
