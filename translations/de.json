@@ -833,7 +833,7 @@
             },
             "water_heater": {
                 "currently": "Aktuell",
-                "on_off": "An \/ aus",
+                "on_off": "An \/ Aus",
                 "target_temperature": "Solltemperatur",
                 "operation": "Betrieb",
                 "away_mode": "Abwesend-Modus"
