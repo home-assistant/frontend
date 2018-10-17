@@ -1266,6 +1266,48 @@
   dependencies:
     base64-js "^1.3.0"
 
+"@material/animation@^0.40.1":
+  version "0.40.1"
+  resolved "https://registry.yarnpkg.com/@material/animation/-/animation-0.40.1.tgz#c5ff31e7d7e17324a0045e889d3530b150b9fcec"
+  integrity sha512-HtxFUw04EHg4S6pXfTA3Z0wKxnNDNcDhe1Np2Y2geo+lAk2Hb7m8yCL/GaL9o2I/eRYsgUXC0U7+Mk74GCz3zw==
+
+"@material/base@^0.40.1":
+  version "0.40.1"
+  resolved "https://registry.yarnpkg.com/@material/base/-/base-0.40.1.tgz#a0d8e19cee98dae0f96dbf0887a14b3f7acd2aac"
+  integrity sha512-vrbOK8hONVCYgURQ9h7nkXvMdYnZVVNmAfFFijF8fbWQdwnoPcNTdqV6RoQlhBEqHYHQqLNfdUDlznAPKLclGQ==
+
+"@material/mwc-base@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.3.1.tgz#5e1440aa09e0a83633be36eb8102ff88d3fddae8"
+  integrity sha512-7AdcBu6rxARcUteEBNSJKCen3hP47T/NRsfw+RMn6IedHlEGp2GKwF6YqYDCVSsQbm0IjsJ4ft4+nVXlFVYO2g==
+  dependencies:
+    "@polymer/lit-element" "^0.6.2"
+    lit-html "^0.12.0"
+
+"@material/mwc-ripple@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@material/mwc-ripple/-/mwc-ripple-0.3.1.tgz#da812516d0bd0b15b0c4793b783fbdb9e04cd7a0"
+  integrity sha512-pOdBkP6NJyGz9UftvKjrx8sXvz+yIXMC8q6Qx/LgGw67tgU4qM/1Hy22iePiw1UFNhlqD8ZwtdPLXKVaisGauQ==
+  dependencies:
+    "@material/mwc-base" "^0.3.1"
+    "@material/ripple" "^0.40.0"
+    "@polymer/lit-element" "^0.6.2"
+    lit-html "^0.12.0"
+
+"@material/ripple@^0.40.0":
+  version "0.40.1"
+  resolved "https://registry.yarnpkg.com/@material/ripple/-/ripple-0.40.1.tgz#57cbc689303b48282229cb9b62556af7442e852a"
+  integrity sha512-sndeTS4VHa0v1UGj7MNcxMCuO9LJ1DjoL1EjE6BH3Lm3M1MnXJHdsBo2CgPbU/FI84tt6+eyHGOYPdPrEDJhCA==
+  dependencies:
+    "@material/animation" "^0.40.1"
+    "@material/base" "^0.40.1"
+    "@material/theme" "^0.40.1"
+
+"@material/theme@^0.40.1":
+  version "0.40.1"
+  resolved "https://registry.yarnpkg.com/@material/theme/-/theme-0.40.1.tgz#3cc3f1bf87ee9581df03e347a1979e53ae617221"
+  integrity sha512-cH1CsGIDisEQ2oroZhLTypV0Ir00x3WIwFXnPo7qv3832tuIDkZY623U3rUax6KNPz4Hh1j0tNpTwgrNZwvwWA==
+
 "@mdi/svg@^2.7.94":
   version "2.8.94"
   resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-2.8.94.tgz#574da5953fb8ccd58b660d95061d43add53f5704"

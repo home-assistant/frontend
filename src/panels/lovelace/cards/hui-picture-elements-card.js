@@ -22,9 +22,6 @@ class HuiPictureElementsCard extends PolymerElement {
         position: absolute;
         transform: translate(-50%, -50%);
       }
-      hui-image-element {
-        overflow-y: hidden;
-      }
     </style>
 
     <ha-card header="[[_config.title]]">

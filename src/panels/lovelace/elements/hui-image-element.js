@@ -14,9 +14,11 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
       <style>
         :host(.clickable) {
           cursor: pointer;
+          -webkit-touch-callout: none !important;
         }
         hui-image {
           overflow-y: hidden;
+          -webkit-user-select: none !important;
         }
       </style>
       <hui-image
@@ -42,9 +44,7 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.addEventListener("click", () =>
-      this.handleClick(this.hass, this._config)
-    );
+    this.registerMouse(this._config);
   }
 
   setConfig(config) {
