@@ -13,7 +13,7 @@ class HuiVerticalStackCard extends PolymerElement {
           flex-direction: column;
         }
         #root > * {
-          margin: 4px 0 8px 0;
+          margin: 4px 0 4px 0;
         }
         #root > *:first-child {
           margin-top: 0;
