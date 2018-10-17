@@ -22,7 +22,7 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
           ],
           // Used for decorators in typescript
           ["@babel/plugin-proposal-decorators", { legacy: true }],
-          "@babel/plugin-proposal-class-properties",
+          ["@babel/plugin-proposal-class-properties", { loose: true }],
           // Only support the syntax, Webpack will handle it.
           "@babel/syntax-dynamic-import",
           [
