@@ -82,10 +82,6 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       return html``;
     }
     const { title } = this.config;
-    const states = this.hass.states;
-    const entities = this.configEntities!.filter(
-      (conf) => conf.entity in states
-    );
 
     applyThemesOnElement(this, this.hass!.themes, this.config.theme);
 
@@ -94,7 +90,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
           ${repeat<EntityConfig>(
-            entities,
+            this.configEntities!,
             (entityConf) => entityConf.entity,
             (entityConf) => this.renderEntity(entityConf)
           )}
@@ -137,12 +133,22 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         state-badge {
           margin: 8px 0;
         }
+        .not-found {
+          background-color: yellow;
+          text-align: center;
+        }
       </style>
     `;
   }
 
   private renderEntity(entityConf) {
     const stateObj = this.hass!.states[entityConf.entity];
+
+    if (!stateObj) {
+      return html`<div class="entity not-found">Entity Not Available: ${
+        entityConf.entity
+      }</div>`;
+    }
 
     return html`
       <div
