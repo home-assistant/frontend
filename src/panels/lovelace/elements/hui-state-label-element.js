@@ -45,9 +45,7 @@ class HuiStateLabelElement extends LocalizeMixin(
 
   ready() {
     super.ready();
-    this.addEventListener("click", () =>
-      this.handleClick(this.hass, this._config)
-    );
+    this.registerMouse(this._config);
   }
 
   setConfig(config) {
