@@ -160,8 +160,8 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
     element.hass = this.hass;
     element.entityConf = entityConf;
     if (
-      !!entityConf.entity &&
-      DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
+      entityConf.entity &&
+      !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
     ) {
       element.classList.add("state-card-dialog");
       element.onclick = this.handleClick;
