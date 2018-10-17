@@ -13,13 +13,13 @@ class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
     return html`
       <style>
         :host {
-          cursor: pointer; 
-        } 
+          cursor: pointer;
+        }
       </style>
-      <state-badge 
+      <state-badge
         state-obj="[[_stateObj]]"
         title$="[[computeTooltip(hass, _config)]]"
-      ></state-badge> 
+      ></state-badge>
     `;
   }
 
@@ -36,9 +36,7 @@ class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.addEventListener("click", () =>
-      this.handleClick(this.hass, this._config)
-    );
+    this.registerMouse(this._config);
   }
 
   setConfig(config) {
