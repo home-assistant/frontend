@@ -22,13 +22,15 @@ export default dedupingMixin(
         let ripple = null;
         const rippleWrapper = document.createElement("div");
         this.shadowRoot.appendChild(rippleWrapper);
-        rippleWrapper.style.position = "absolute";
-        rippleWrapper.style.width = isTouch ? "100px" : "50px";
-        rippleWrapper.style.height = isTouch ? "100px" : "50px";
-        rippleWrapper.style.top = "50%";
-        rippleWrapper.style.left = "50%";
-        rippleWrapper.style.transform = "translate(-50%, -50%)";
-        rippleWrapper.style.pointerEvents = "none";
+        Object.assign(rippleWrapper.style, {
+          position: "absolute",
+          width: isTouch ? "100px" : "50px",
+          height: isTouch ? "100px" : "50px",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+        });
 
         const loadRipple = () => {
           if (ripple) return;
