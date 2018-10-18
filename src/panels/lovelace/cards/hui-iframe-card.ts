@@ -8,7 +8,7 @@ import { LovelaceCard, LovelaceConfig } from "../types.js";
 interface Config extends LovelaceConfig {
   aspect_ratio?: string;
   title?: string;
-  url?: string;
+  url: string;
 }
 
 export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
@@ -26,6 +26,10 @@ export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public setConfig(config: Config) {
+    if (!config.url) {
+      throw new Error("URL required");
+    }
+
     this.config = config;
     this.requestUpdate();
   }
@@ -37,7 +41,7 @@ export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
 
     return html`
       ${this.renderStyle()}
-      <ha-card header="${this.config.title}">
+      <ha-card .header="${this.config.title}">
         <div id="root">
           <iframe src="${this.config.url}"></iframe>
         </div>
