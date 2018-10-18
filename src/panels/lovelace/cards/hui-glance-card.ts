@@ -49,7 +49,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
     };
   }
 
-  public getCardSize() {    
+  public getCardSize() {
     return (this.config!.title ? 1 : 0) + Math.ceil(this.configEntities!.length / 5);
   }
 
