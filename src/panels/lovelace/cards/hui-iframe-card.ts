@@ -54,7 +54,6 @@ export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
       <style>
         ha-card {
           overflow: hidden;
-
         }
         #root {
           width: 100%;
@@ -68,7 +67,6 @@ export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
           height: 100%;
           top: 0;
           left: 0;
-          overflow: auto;
         }
       </style>
     `;
