@@ -114,12 +114,20 @@ class HaPanelDevService extends PolymerElement {
             disabled='[[!validJSON]]'
             domain-filter='[[_computeEntityDomainFilter(_domain)]]'
             allow-custom-entity
+            autocapitalize='off'
+            autocomplete='off'
+            autocorrect='off'
+            spellcheck='false'
           ></ha-entity-picker>
         </template>
         <paper-textarea
           always-float-label
           label='Service Data (JSON, optional)'
           value='{{serviceData}}'
+          autocapitalize='off'
+          autocomplete='off'
+          autocorrect='off'
+          spellcheck='false'
         ></paper-textarea>
         <paper-button
           on-click='_callService'
