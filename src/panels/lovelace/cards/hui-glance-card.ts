@@ -1,6 +1,5 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap.js";
-import { repeat } from "lit-html/directives/repeat";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
