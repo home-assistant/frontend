@@ -1,6 +1,5 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap.js";
-import { repeat } from "lit-html/directives/repeat";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
@@ -49,7 +48,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public getCardSize() {
-    return 3;
+    return (this.config!.title ? 1 : 0) + Math.ceil(this.configEntities!.length / 5);
   }
 
   public setConfig(config: Config) {
@@ -81,10 +80,6 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       return html``;
     }
     const { title } = this.config;
-    const states = this.hass.states;
-    const entities = this.configEntities!.filter(
-      (conf) => conf.entity in states
-    );
 
     applyThemesOnElement(this, this.hass!.themes, this.config.theme);
 
@@ -92,11 +87,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-          ${repeat<EntityConfig>(
-            entities,
-            (entityConf) => entityConf.entity,
-            (entityConf) => this.renderEntity(entityConf)
-          )}
+          ${this.configEntities!.map(entityConf => this.renderEntity(entityConf))}
         </div>
       </ha-card>
     `;
@@ -136,12 +127,22 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
         state-badge {
           margin: 8px 0;
         }
+        .not-found {
+          background-color: yellow;
+          text-align: center;
+        }
       </style>
     `;
   }
 
   private renderEntity(entityConf) {
     const stateObj = this.hass!.states[entityConf.entity];
+
+    if (!stateObj) {
+      return html`<div class="entity not-found"><div class="name">${
+        entityConf.entity
+      }</div>Entity Not Available</div>`;
+    }
 
     return html`
       <div
