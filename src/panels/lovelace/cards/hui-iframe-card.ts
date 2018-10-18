@@ -31,7 +31,6 @@ export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
     }
 
     this.config = config;
-    this.requestUpdate();
   }
 
   protected render() {
@@ -50,10 +49,6 @@ export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
   }
 
   private renderStyle() {
-    if (!this.config) {
-      return html``;
-    }
-
     return html`
       <style>
         ha-card {
@@ -62,7 +57,7 @@ export class HuiIframeCard extends HassLocalizeLitMixin(LitElement)
         #root {
           width: 100%;
           position: relative;
-          padding-top: ${this.config.aspect_ratio || "50%"};
+          padding-top: ${this.config!.aspect_ratio || "50%"};
         }
         iframe {
           position: absolute;
