@@ -168,7 +168,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       this.endTime,
       this.cacheConfig,
       this.localize,
-      this.language
+      this.hass.language
     );
   }
 
@@ -189,7 +189,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
         this.endTime,
         this.cacheConfig,
         this.localize,
-        this.language
+        this.hass.language
       );
     }
   }
