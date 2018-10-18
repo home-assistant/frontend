@@ -114,7 +114,7 @@ class HaPanelDevService extends PolymerElement {
             disabled='[[!validJSON]]'
             domain-filter='[[_computeEntityDomainFilter(_domain)]]'
             allow-custom-entity
-            autocapitalize='off'
+            autocapitalize='none'
             autocomplete='off'
             autocorrect='off'
             spellcheck='false'
@@ -124,7 +124,7 @@ class HaPanelDevService extends PolymerElement {
           always-float-label
           label='Service Data (JSON, optional)'
           value='{{serviceData}}'
-          autocapitalize='off'
+          autocapitalize='none'
           autocomplete='off'
           autocorrect='off'
           spellcheck='false'
