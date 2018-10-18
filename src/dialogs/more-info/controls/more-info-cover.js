@@ -88,10 +88,24 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
 
   stateObjChanged(newVal) {
     if (newVal) {
-      this.setProperties({
-        coverPositionSliderValue: newVal.attributes.current_position,
-        coverTiltPositionSliderValue: newVal.attributes.current_tilt_position,
-      });
+      switch (this.entityObj.deviceClass) {
+        case "curtain":
+          this.setProperties({
+            coverPositionSliderValue: Math.abs(
+              newVal.attributes.current_position - 100
+            ),
+            coverTiltPositionSliderValue:
+              newVal.attributes.current_tilt_position,
+          });
+          break;
+        default:
+          this.setProperties({
+            coverPositionSliderValue: newVal.attributes.current_position,
+            coverTiltPositionSliderValue:
+              newVal.attributes.current_tilt_position,
+          });
+          break;
+      }
     }
   }
 
@@ -107,7 +121,14 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   }
 
   coverPositionSliderChanged(ev) {
-    this.entityObj.setCoverPosition(ev.target.value);
+    switch (this.entityObj.deviceClass) {
+      case "curtain":
+        this.entityObj.setCoverPosition(Math.abs(ev.target.value - 100));
+        break;
+      default:
+        this.entityObj.setCoverPosition(ev.target.value);
+        break;
+    }
   }
 
   coverTiltPositionSliderChanged(ev) {

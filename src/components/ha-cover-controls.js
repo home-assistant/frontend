@@ -17,9 +17,9 @@ class HaCoverControls extends PolymerElement {
     </style>
 
     <div class="state">
-      <paper-icon-button icon="hass:arrow-up" on-click="onOpenTap" invisible$="[[!entityObj.supportsOpen]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
+      <paper-icon-button icon="[[computeIcon('left')]]" on-click="onOpenTap" invisible$="[[!entityObj.supportsOpen]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
       <paper-icon-button icon="hass:stop" on-click="onStopTap" invisible$="[[!entityObj.supportsStop]]"></paper-icon-button>
-      <paper-icon-button icon="hass:arrow-down" on-click="onCloseTap" invisible$="[[!entityObj.supportsClose]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
+      <paper-icon-button icon="[[computeIcon('right')]]" on-click="onCloseTap" invisible$="[[!entityObj.supportsClose]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
     </div>
 `;
   }
@@ -51,6 +51,21 @@ class HaCoverControls extends PolymerElement {
   computeClosedDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
+  }
+
+  computeIcon(position) {
+    switch (this.entityObj.deviceClass) {
+      case "curtain":
+        if (position === "left") {
+          return "hass:arrow-left";
+        }
+        return "hass:arrow-right";
+      default:
+        if (position === "left") {
+          return "hass:arrow-up";
+        }
+        return "hass:arrow-down";
+    }
   }
 
   onOpenTap(ev) {

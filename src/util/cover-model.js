@@ -37,6 +37,10 @@ export default class CoverEntity {
     return this.stateObj.state === "closing";
   }
 
+  get deviceClass() {
+    return this._attr.device_class;
+  }
+
   /* eslint-disable no-bitwise */
 
   get supportsOpen() {
