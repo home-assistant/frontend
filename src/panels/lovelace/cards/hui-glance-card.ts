@@ -31,7 +31,6 @@ interface Config extends LovelaceConfig {
   show_name?: boolean;
   show_state?: boolean;
   title?: string;
-  column_width?: string;
   theme?: string;
   entities: EntityConfig[];
 }
