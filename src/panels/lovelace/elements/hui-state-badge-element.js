@@ -22,8 +22,11 @@ class HuiStateBadgeElement extends PolymerElement {
     }
 
     const stateObj = hass.states[config.entity];
-    this._badge.state = stateObj;
-    this._badge.setAttribute("title", computeStateName(stateObj));
+    this._badge.setProperties({
+      hass,
+      state: stateObj,
+      title: computeStateName(stateObj),
+    });
 
     if (!this.lastChild) {
       this.appendChild(this._badge);
