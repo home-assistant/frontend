@@ -89,7 +89,7 @@ class StateBadge extends PolymerElement {
       if (newVal.attributes.brightness) {
         const brightness = newVal.attributes.brightness;
         // lowest brighntess will be around 50% (that's pretty dark)
-        iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        iconStyle.filter = `brightness(${(parseInt(brightness) + 245) / 5}%)`;
       }
     }
     Object.assign(this.$.icon.style, iconStyle);
