@@ -49,8 +49,8 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
     };
   }
 
-  public getCardSize() {
-    return 3;
+  public getCardSize() {    
+    return (this.config!.title ? 1 : 0) + Math.ceil(this.configEntities!.length / 5);
   }
 
   public setConfig(config: Config) {
@@ -89,11 +89,7 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-          ${repeat<EntityConfig>(
-            this.configEntities!,
-            (entityConf) => entityConf.entity,
-            (entityConf) => this.renderEntity(entityConf)
-          )}
+          ${this.configEntities!.map(entityConf => this.renderEntity(entityConf))}
         </div>
       </ha-card>
     `;
@@ -145,9 +141,9 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
-      return html`<div class="entity not-found">Entity Not Available: ${
+      return html`<div class="entity not-found"><div class="name">${
         entityConf.entity
-      }</div>`;
+      }</div>Entity Not Available</div>`;
     }
 
     return html`
