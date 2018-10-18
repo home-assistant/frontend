@@ -34,6 +34,7 @@ interface Config extends LovelaceConfig {
   entities: EntityConfig[];
 }
 
+let pressTimeout;
 export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   protected hass?: HomeAssistant;
@@ -141,52 +142,64 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
     if (!stateObj) {
       return html`<div class="entity not-found"><div class="name">${
         entityConf.entity
-      }</div>Entity Not Available</div>`;
+        }</div>Entity Not Available</div>`;
     }
 
     return html`
       <div
         class="entity"
         .entityConf="${entityConf}"
-        @click="${this.handleClick}"
+        @mouseup="${this.handleRelease}"
+        @mousedown="${this.handlePress}"
       >
         ${
-          this.config!.show_name !== false
-            ? html`<div class="name">${
-                "name" in entityConf
-                  ? entityConf.name
-                  : computeStateName(stateObj)
-              }</div>`
-            : ""
-        }
+      this.config!.show_name !== false
+        ? html`<div class="name">${
+          "name" in entityConf
+            ? entityConf.name
+            : computeStateName(stateObj)
+          }</div>`
+        : ""
+      }
         <state-badge
           .stateObj="${stateObj}"
           .overrideIcon="${entityConf.icon}"
         ></state-badge>
         ${
-          this.config!.show_state !== false
-            ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
-            : ""
-        }
+      this.config!.show_state !== false
+        ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
+        : ""
+      }
       </div>
     `;
   }
 
-  private handleClick(ev: MouseEvent) {
+  private handlePress(_ev: MouseEvent) {
+    pressTimeout = setTimeout(() => {
+      pressTimeout = undefined;
+    }, 1000);
+  }
+
+  private handleRelease(ev: MouseEvent) {
     const config = (ev.currentTarget as any).entityConf as EntityConfig;
     const entityId = config.entity;
-    switch (config.tap_action) {
-      case "toggle":
-        toggleEntity(this.hass, entityId);
-        break;
-      case "call-service": {
-        const [domain, service] = config.service!.split(".", 2);
-        const serviceData = { entity_id: entityId, ...config.service_data };
-        this.hass!.callService(domain, service, serviceData);
-        break;
+    if (pressTimeout) {
+      clearTimeout(pressTimeout);
+      switch (config.tap_action) {
+        case "toggle":
+          toggleEntity(this.hass, entityId);
+          break;
+        case "call-service": {
+          const [domain, service] = config.service!.split(".", 2);
+          const serviceData = { entity_id: entityId, ...config.service_data };
+          this.hass!.callService(domain, service, serviceData);
+          break;
+        }
+        default:
+          fireEvent(this, "hass-more-info", { entityId });
       }
-      default:
-        fireEvent(this, "hass-more-info", { entityId });
+    } else {
+      fireEvent(this, "hass-more-info", { entityId });
     }
   }
 }
