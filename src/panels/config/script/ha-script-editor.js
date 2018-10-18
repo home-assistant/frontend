@@ -86,7 +86,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       <app-header slot="header" fixed="">
         <app-toolbar>
           <paper-icon-button icon="hass:arrow-left" on-click="backTapped"></paper-icon-button>
-          <div main-title="">Script [[name]]</div>
+          <div main-title="">Script [[computeName(script)]]</div>
         </app-toolbar>
       </app-header>
       <div class="content">
@@ -138,11 +138,6 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       creatingNew: {
         type: Boolean,
         observer: "creatingNewChanged",
-      },
-
-      name: {
-        type: String,
-        computed: "computeName(script)",
       },
 
       isWide: {
