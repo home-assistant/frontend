@@ -114,10 +114,6 @@ class HaPanelDevService extends PolymerElement {
             disabled='[[!validJSON]]'
             domain-filter='[[_computeEntityDomainFilter(_domain)]]'
             allow-custom-entity
-            autocapitalize='none'
-            autocomplete='off'
-            autocorrect='off'
-            spellcheck='false'
           ></ha-entity-picker>
         </template>
         <paper-textarea

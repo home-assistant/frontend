@@ -87,10 +87,6 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
             hass="[[hass]]"
             value="{{_entityId}}"
             allow-custom-entity
-            autocapitalize='none'
-            autocomplete='off'
-            autocorrect='off'
-            spellcheck='false'
           ></ha-entity-picker>
           <paper-input
             label="State"
