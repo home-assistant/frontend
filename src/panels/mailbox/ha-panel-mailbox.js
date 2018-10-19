@@ -16,13 +16,14 @@ import "../../resources/ha-style.js";
 
 import formatDateTime from "../../common/datetime/format_date_time.js";
 import LocalizeMixin from "../../mixins/localize-mixin.js";
+import EventsMixin from "../../mixins/events-mixin.js";
 
 let registeredDialog = false;
 
 /*
  * @appliesMixin LocalizeMixin
  */
-class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
+class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include='ha-style'>
@@ -206,13 +207,13 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
     const platform = this.platforms[this._currentPlatform];
     return this.hass
       .callApi("GET", `mailbox/messages/${platform.name}`)
-      .then(function(values) {
+      .then((values) => {
         const platformItems = [];
         const arrayLength = values.length;
         for (let i = 0; i < arrayLength; i++) {
           const datetime = formatDateTime(
             new Date(values[i].info.origtime * 1000),
-            this.language
+            this.hass.language
           );
           platformItems.push({
             timestamp: datetime,
