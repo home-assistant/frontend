@@ -14,10 +14,10 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
       <style>
         :host(.clickable) {
           cursor: pointer;
+          overflow: hidden;
           -webkit-touch-callout: none !important;
         }
         hui-image {
-          overflow-y: hidden;
           -webkit-user-select: none !important;
         }
       </style>
