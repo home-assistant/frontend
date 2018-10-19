@@ -27,7 +27,7 @@ export class HuiMarkdownCard extends HassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config) {
     if (!config.content) {
-      throw new Error("content required");
+      throw new Error("Invalid Configuration: Content Required");
     }
 
     this.config = config;
@@ -41,7 +41,7 @@ export class HuiMarkdownCard extends HassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this.config.title}">
-        <ha-markdown content="${this.config.content}"></ha-markdown>
+        <ha-markdown .content="${this.config.content}"></ha-markdown>
       </ha-card>
     `;
   }
