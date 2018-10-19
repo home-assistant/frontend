@@ -1,9 +1,9 @@
 import { html, LitElement } from "@polymer/lit-element";
+import { classMap } from "lit-html/directives/classMap.js";
 
 import "../../../components/ha-card.js";
 import "../../../components/ha-markdown.js";
 
-import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 
 interface Config extends LovelaceConfig {
@@ -11,7 +11,7 @@ interface Config extends LovelaceConfig {
   title?: string;
 }
 
-export class HuiMarkdownCard extends HassLocalizeLitMixin(LitElement)
+export class HuiMarkdownCard extends LitElement
   implements LovelaceCard {
   protected config?: Config;
 
@@ -41,7 +41,9 @@ export class HuiMarkdownCard extends HassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this.config.title}">
-        <ha-markdown .content="${this.config.content}"></ha-markdown>
+        <ha-markdown class="markdown ${classMap({
+          "no-header": !this.config.title,
+        })}" .content="${this.config.content}"></ha-markdown>
       </ha-card>
     `;
   }
@@ -55,10 +57,12 @@ export class HuiMarkdownCard extends HassLocalizeLitMixin(LitElement)
         ha-markdown {
           display: block;
           padding: 0 16px 16px;
-          padding-top: ${this.config!.title ? '0' : '16px'};
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
+        }
+        .markdown.no-header {
+          padding-top: 16px;
         }
         ha-markdown > *:first-child {
           margin-top: 0;
