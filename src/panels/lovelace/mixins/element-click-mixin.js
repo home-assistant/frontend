@@ -21,13 +21,13 @@ export default dedupingMixin(
 
         let ripple = null;
         const rippleWrapper = document.createElement("div");
-        this.shadowRoot.appendChild(rippleWrapper);
+        this.parentElement.appendChild(rippleWrapper);
         Object.assign(rippleWrapper.style, {
           position: "absolute",
           width: isTouch ? "100px" : "50px",
           height: isTouch ? "100px" : "50px",
-          top: "50%",
-          left: "50%",
+          top: this.style.top,
+          left: this.style.left,
           transform: "translate(-50%, -50%)",
           pointerEvents: "none",
         });
