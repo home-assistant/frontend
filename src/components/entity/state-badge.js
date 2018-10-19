@@ -102,7 +102,7 @@ class StateBadge extends PolymerElement {
     Object.assign(this.$.icon.style, iconStyle);
     Object.assign(this.style, hostStyle);
     if (errorMessage) {
-      throw new Error(`Frontend error: ${message}`);
+      throw new Error(`Frontend error: ${errorMessage}`);
     }
   }
 }
