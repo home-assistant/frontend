@@ -38,7 +38,16 @@ class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
       allow-custom-value="[[allowCustomEntity]]"
       on-change='_fireChanged'
     >
-      <paper-input autofocus="[[autofocus]]" label="[[_computeLabel(label, localize)]]" class="input" value="[[value]]" disabled="[[disabled]]">
+      <paper-input 
+        autofocus="[[autofocus]]"
+        label="[[_computeLabel(label, localize)]]"
+        class="input"
+        autocapitalize='none'
+        autocomplete='off'
+        autocorrect='off'
+        spellcheck='false'
+        value="[[value]]"
+        disabled="[[disabled]]">
         <paper-icon-button slot="suffix" class="clear-button" icon="hass:close" no-ripple="" hidden$="[[!value]]">Clear</paper-icon-button>
         <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden="[[!_states.length]]">Toggle</paper-icon-button>
       </paper-input>
