@@ -10,6 +10,7 @@ class HaBadgesCard extends PolymerElement {
       ha-state-label-badge {
         display: inline-block;
         margin-bottom: var(--ha-state-label-badge-margin-bottom, 16px);
+        margin-top: var(--ha-state-label-badge-margin-top, 16px);
       }
     </style>
     <template is="dom-repeat" items="[[states]]">
