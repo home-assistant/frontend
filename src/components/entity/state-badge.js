@@ -68,6 +68,7 @@ class StateBadge extends PolymerElement {
   }
 
   _updateIconAppearance(newVal) {
+    var errorMessage = null;
     const iconStyle = {
       color: "",
       filter: "",
@@ -88,21 +89,21 @@ class StateBadge extends PolymerElement {
       }
       if (newVal.attributes.brightness) {
         const brightness = newVal.attributes.brightness;
-        if (typeof brightness !== "number" || isNaN(brightness)) {
-          console.warn(
-            "Type error: state-badge expected number, but type of " +
-              newVal.entity_id +
-              ".attributes.brightness is " +
-              typeof brightness
-          );
-        } else {
-          // lowest brighntess will be around 50% (that's pretty dark)
-          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        if (typeof brightness !== "number") {
+          errorMessage = `Type error: state-badge expected number, but type of ${
+            newVal.entity_id
+          }.attributes.brightness is ${typeof brightness} (${brightness})`;
+          console.warn(errorMessage);
         }
+        // lowest brighntess will be around 50% (that's pretty dark)
+        iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
       }
     }
     Object.assign(this.$.icon.style, iconStyle);
     Object.assign(this.style, hostStyle);
+    if (errorMessage) {
+      throw new Error(`Frontend error: ${message}`);
+    }
   }
 }
 customElements.define("state-badge", StateBadge);
