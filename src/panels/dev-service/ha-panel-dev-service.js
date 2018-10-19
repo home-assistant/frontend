@@ -120,6 +120,10 @@ class HaPanelDevService extends PolymerElement {
           always-float-label
           label='Service Data (JSON, optional)'
           value='{{serviceData}}'
+          autocapitalize='none'
+          autocomplete='off'
+          autocorrect='off'
+          spellcheck='false'
         ></paper-textarea>
         <paper-button
           on-click='_callService'
