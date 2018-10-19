@@ -88,8 +88,17 @@ class StateBadge extends PolymerElement {
       }
       if (newVal.attributes.brightness) {
         const brightness = newVal.attributes.brightness;
-        // lowest brighntess will be around 50% (that's pretty dark)
-        iconStyle.filter = `brightness(${(parseInt(brightness) + 245) / 5}%)`;
+        if (typeof brightness !== "number" || isNaN(brightness)) {
+          console.warn(
+            "Type error: state-badge expected number, but type of " +
+              newVal.entity_id +
+              ".attributes.brightness is " +
+              typeof brightness
+          );
+        } else {
+          // lowest brighntess will be around 50% (that's pretty dark)
+          iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+        }
       }
     }
     Object.assign(this.$.icon.style, iconStyle);
