@@ -41,9 +41,12 @@ export class HuiMarkdownCard extends LitElement
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this.config.title}">
-        <ha-markdown class="markdown ${classMap({
-          "no-header": !this.config.title,
-        })}" .content="${this.config.content}"></ha-markdown>
+        <ha-markdown
+          class="markdown ${classMap({
+            "no-header": !this.config.title,
+          })}"
+          .content="${this.config.content}"
+        ></ha-markdown>
       </ha-card>
     `;
   }
