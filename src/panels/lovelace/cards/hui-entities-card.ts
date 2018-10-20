@@ -1,5 +1,4 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { repeat } from "lit-html/directives/repeat";
 
 import "../../../components/ha-card.js";
 import "../components/hui-entities-toggle.js";
@@ -7,11 +6,11 @@ import "../components/hui-entities-toggle.js";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const.js";
 import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
-import { HomeAssistant } from "../../../types.js";
+import { LovelaceCard, LovelaceConfig, EntityRow } from "../types.js";
 import createRowElement from "../common/create-row-element.js";
 import computeDomain from "../../../common/entity/compute_domain.js";
 import processConfigEntities from "../common/process-config-entities";
+import { HomeAssistant } from "../../../types.js";
 
 interface EntityConfig {
   name?: string;
@@ -37,6 +36,28 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   protected config?: Config;
   protected configEntities?: EntityConfig[];
 
+  // set hass(hass) {
+  //   console.log("here");
+  //   this._hass = hass;
+
+  //   console.log(this.shadowRoot);
+  //   console.log(
+  //     this.shadowRoot && this.shadowRoot.querySelector("ha-card")
+  //       ? this.shadowRoot
+  //           .querySelector("ha-card")!
+  //           .querySelectorAll("#states > div > *")
+  //       : ""
+  //   );
+  //   if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
+  //     this.shadowRoot
+  //       .querySelector("ha-card")!
+  //       .querySelectorAll("#states > div > *")
+  //       .forEach((element: any) => {
+  //         element.hass = hass;
+  //       });
+  //   }
+  // }
+
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
@@ -45,14 +66,16 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public getCardSize() {
-    // +1 for the header
     if (!this.config) {
       return 0;
     }
-    return this.config.title ? 1 : 0 + this.config.entities.length;
+    // +1 for the header
+    return (this.config.title ? 1 : 0) + this.config.entities.length;
   }
 
   public setConfig(config: Config) {
+    console.log(config);
+
     const entities = processConfigEntities(config.entities);
     for (const entity of entities) {
       if (
@@ -74,10 +97,6 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
 
     this.config = config;
     this.configEntities = entities;
-
-    if (this.hass) {
-      this.requestUpdate();
-    }
   }
 
   protected render() {
@@ -85,8 +104,6 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
       return html``;
     }
     const { show_header_toggle, title } = this.config;
-
-    const entities = this.configEntities!.map((conf) => conf.entity);
 
     return html`
       ${this.renderStyle()}
@@ -96,24 +113,24 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
             ? html``
             : html`
             <div class='header'>
-              ${!title ? html`` : html`<div class="name">${title}</div>`}
+              <div class="name">${title}</div>
               ${
                 show_header_toggle === false
                   ? html``
                   : html`
-                  <hui-entities-toggle 
-                    .hass="${this.hass}" 
-                    .entities="${entities}"
+                  <hui-entities-toggle
+                    .hass="${this.hass}"
+                    .entities="${this.configEntities!.map(
+                      (conf) => conf.entity
+                    )}"
                   >
                   </hui-entities-toggle>`
               }
             </div>`
         }
         <div id="states">
-          ${repeat<EntityConfig>(
-            this.configEntities!,
-            (entityConf) => entityConf.entity,
-            (entityConf) => this.renderEntity(entityConf)
+          ${this.configEntities!.map((entityConf) =>
+            this.renderEntity(entityConf)
           )}
         </div>
       </ha-card>
