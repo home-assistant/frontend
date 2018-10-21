@@ -65,7 +65,7 @@ class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   }
 
   itemValue(type) {
-    return formatTime(this.itemDate(type), this.language);
+    return formatTime(this.itemDate(type), this.hass.language);
   }
 }
 
