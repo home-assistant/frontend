@@ -316,7 +316,7 @@
                     "description": "Validate your configuration file and control the server",
                     "section": {
                         "core": {
-                            "header": "Configuration and server control",
+                            "header": "Configuration and Server Control",
                             "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
                             "validation": {
                                 "heading": "Configuration validation",
@@ -350,7 +350,7 @@
                     "caption": "Automation",
                     "description": "Create and edit automations",
                     "picker": {
-                        "header": "Automation editor",
+                        "header": "Automation Editor",
                         "introduction": "The automation editor allows you to create and edit automations. Please read [the instructions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) to make sure that you have configured Home Assistant correctly.",
                         "pick_automation": "Pick automation to edit",
                         "no_automations": "We couldn’t find any editable automations",
