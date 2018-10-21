@@ -345,8 +345,8 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
     const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
 
     return dateTimeDay < today
-      ? formatDateTime(dateTime, this.language)
-      : formatTime(dateTime, this.language);
+      ? formatDateTime(dateTime, this.hass.language)
+      : formatTime(dateTime, this.hass.language);
   }
 
   openLog(event) {
