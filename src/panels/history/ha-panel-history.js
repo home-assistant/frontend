@@ -160,7 +160,7 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
     // We are unable to parse date because we use intl api to render date
     this.$.picker.set("i18n.parseDate", null);
     this.$.picker.set("i18n.formatDate", (date) =>
-      formatDate(new Date(date.year, date.month, date.day), this.language)
+      formatDate(new Date(date.year, date.month, date.day), this.hass.language)
     );
   }
 
