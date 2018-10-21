@@ -541,10 +541,13 @@
                     "none": "Mitään ei ole vielä määritetty",
                     "config_entry": {
                         "no_devices": "Tällä integraatiolla ei ole laitteita.",
+                        "no_device": "Kokonaisuudet ilman laitteita",
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
+                        "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "hub": "Yhdistetty kautta",
                         "firmware": "Laiteohjelmisto: {version}",
-                        "device_unavailable": "laite ei saatavissa"
+                        "device_unavailable": "laite ei saatavissa",
+                        "entity_unavailable": "kohde ei saatavilla"
                     }
                 }
             },
@@ -575,10 +578,15 @@
                     "not_used": "Ei ole koskaan käytetty"
                 },
                 "long_lived_access_tokens": {
+                    "header": "Pitkäaikaiset käyttötunnussanomat",
+                    "learn_auth_requests": "Opi tekemään tunnistautuneita kutsuja.",
                     "created_at": "Luotu {date}",
+                    "delete_failed": "Käyttötunnussanoman poistaminen epäonnistui.",
                     "create": "Luo token",
+                    "create_failed": "Käyttötunnussanoman luominen epäonnistui.",
                     "prompt_name": "Nimi?",
                     "prompt_copy_token": "Kopioi käyttöoikeuskoodi. Sitä ei näytetä uudelleen.",
+                    "empty_state": "Sinulla ei ole vielä pitkäaikaisia käyttötunnussanomia",
                     "last_used": "Viimeksi käytetty {date} sijainnista {location}",
                     "not_used": "Ei ole koskaan käytetty"
                 },
@@ -593,6 +601,7 @@
                     "submit": "Lähetä"
                 },
                 "mfa": {
+                    "header": "Monivaiheisen tunnistautumisen moduulit",
                     "disable": "Poista käytöstä",
                     "enable": "Ota käyttöön",
                     "confirm_disable": "Haluatko varmasti poistaa {nimi}?"
@@ -624,7 +633,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Kaksivaiheinen tunnistuskoodi"
-                                    }
+                                    },
+                                    "description": "Avaa **{mfa_module_name}** laitteessasi nähdäksesi kaksivaiheisen tunnistautumisen koodisi ja vahvistaaksesi identiteettisi:"
                                 }
                             },
                             "error": {
@@ -640,14 +650,23 @@
                                 "init": {
                                     "data": {
                                         "password": "API-salasana"
-                                    }
+                                    },
+                                    "description": "Ole hyvä ja syötä API-salasanasi http-asetuksissa:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kaksivaiheisen tunnistautumisen koodi"
+                                    },
+                                    "description": "Avaa **{mfa_module_name}** laitteessasi nähdäksesi kaksivaiheisen tunnistautumisen koodisi ja vahvistaaksesi identiteettisi:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Virheellinen API-salasana"
+                                "invalid_auth": "Virheellinen API-salasana",
+                                "invalid_code": "Virheellinen tunnistautumiskoodi"
                             },
                             "abort": {
-                                "no_api_password_set": "API-salasanaa ei ole asetettu."
+                                "no_api_password_set": "API-salasanaa ei ole asetettu.",
+                                "login_expired": "Istunto vanhentunut, ole hyvä ja kirjaudu uudelleen."
                             }
                         },
                         "trusted_networks": {
