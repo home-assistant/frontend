@@ -529,7 +529,7 @@
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
-                    "description_login": "以{email}登入",
+                    "description_login": "登入帳號：{email}",
                     "description_not_login": "未登入"
                 },
                 "integrations": {

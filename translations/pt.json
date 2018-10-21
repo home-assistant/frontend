@@ -535,11 +535,21 @@
                 "integrations": {
                     "caption": "Integrações",
                     "description": "Gerir dispositivos e serviços ligados",
+                    "discovered": "Detetados",
+                    "configured": "Configurado",
                     "new": "Configurar uma nova integração",
+                    "configure": "Configurar",
                     "none": "Nada configurado ainda",
                     "config_entry": {
                         "no_devices": "Esta integração não possui dispositivos.",
-                        "no_device": "Entidades sem dispositivos"
+                        "no_device": "Entidades sem dispositivos",
+                        "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
+                        "restart_confirm": "Reinicialize o HA para remover esta integração",
+                        "manuf": "por {fabricante]",
+                        "hub": "Ligado via",
+                        "firmware": "",
+                        "device_unavailable": "Dispositivo indisponível",
+                        "entity_unavailable": "Entidade indisponível"
                     }
                 }
             },
@@ -822,6 +832,10 @@
                 }
             },
             "water_heater": {
+                "currently": "Atualmente",
+                "on_off": "Ligado \/ desligado",
+                "target_temperature": "Temperatura pretendida",
+                "operation": "Operação",
                 "away_mode": "Modo ausente"
             }
         },
