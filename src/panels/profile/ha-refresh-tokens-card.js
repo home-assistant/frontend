@@ -75,7 +75,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return this.localize(
       "ui.panel.profile.refresh_tokens.created_at",
       "date",
-      formatDateTime(new Date(created), this.language)
+      formatDateTime(new Date(created), this.hass.language)
     );
   }
 
@@ -84,7 +84,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
       ? this.localize(
           "ui.panel.profile.refresh_tokens.last_used",
           "date",
-          formatDateTime(new Date(item.last_used_at), this.language),
+          formatDateTime(new Date(item.last_used_at), this.hass.language),
           "location",
           item.last_used_ip
         )
