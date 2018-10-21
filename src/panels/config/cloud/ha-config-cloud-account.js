@@ -213,7 +213,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         "{periodEnd}",
         formatDateTime(
           new Date(subInfo.plan_renewal_date * 1000),
-          this.language
+          this.hass.language
         )
       );
     }

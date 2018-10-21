@@ -88,7 +88,7 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return this.localize(
       "ui.panel.profile.long_lived_access_tokens.created_at",
       "date",
-      formatDateTime(new Date(created), this.language)
+      formatDateTime(new Date(created), this.hass.language)
     );
   }
 
