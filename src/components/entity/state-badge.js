@@ -93,6 +93,7 @@ class StateBadge extends PolymerElement {
           errorMessage = `Type error: state-badge expected number, but type of ${
             newVal.entity_id
           }.attributes.brightness is ${typeof brightness} (${brightness})`;
+          // eslint-disable-next-line
           console.warn(errorMessage);
         }
         // lowest brighntess will be around 50% (that's pretty dark)
