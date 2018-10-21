@@ -259,7 +259,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
       const item = items[0];
       const date = data.datasets[item.datasetIndex].data[item.index].x;
 
-      return formatDateTime(date, this.language);
+      return formatDateTime(date, this.hass.language);
     };
 
     const chartOptions = {

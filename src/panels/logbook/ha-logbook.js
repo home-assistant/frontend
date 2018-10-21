@@ -86,11 +86,11 @@ class HaLogbook extends EventsMixin(PolymerElement) {
   }
 
   _formatTime(date) {
-    return formatTime(new Date(date), this.language);
+    return formatTime(new Date(date), this.hass.language);
   }
 
   _formatDate(date) {
-    return formatDate(new Date(date), this.language);
+    return formatDate(new Date(date), this.hass.language);
   }
 
   _needHeader(change, index) {

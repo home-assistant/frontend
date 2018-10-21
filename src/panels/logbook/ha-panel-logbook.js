@@ -106,7 +106,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
             disabled='[[isLoading]]'
             required
           ></vaadin-date-picker>
-  
+
           <paper-dropdown-menu
             label-float
             label="[[localize('ui.panel.logbook.period')]]"
@@ -121,7 +121,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
               <paper-item>[[localize('ui.duration.week', 'count', 1)]]</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
-  
+
           <ha-entity-picker
             hass="[[hass]]"
             value="{{_entityId}}"
@@ -200,7 +200,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     // We are unable to parse date because we use intl api to render date
     this.$.picker.set("i18n.parseDate", null);
     this.$.picker.set("i18n.formatDate", (date) =>
-      formatDate(new Date(date.year, date.month, date.day), this.language)
+      formatDate(new Date(date.year, date.month, date.day), this.hass.language)
     );
   }
 
