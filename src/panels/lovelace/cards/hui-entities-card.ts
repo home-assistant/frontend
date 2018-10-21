@@ -36,31 +36,21 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   protected config?: Config;
   protected configEntities?: EntityConfig[];
 
-  // set hass(hass) {
-  //   console.log("here");
-  //   this._hass = hass;
-
-  //   console.log(this.shadowRoot);
-  //   console.log(
-  //     this.shadowRoot && this.shadowRoot.querySelector("ha-card")
-  //       ? this.shadowRoot
-  //           .querySelector("ha-card")!
-  //           .querySelectorAll("#states > div > *")
-  //       : ""
-  //   );
-  //   if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
-  //     this.shadowRoot
-  //       .querySelector("ha-card")!
-  //       .querySelectorAll("#states > div > *")
-  //       .forEach((element: any) => {
-  //         element.hass = hass;
-  //       });
-  //   }
-  // }
+  set hass(hass) {
+    this._hass = hass;
+    if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
+      this.shadowRoot
+        .querySelector("ha-card")!
+        .querySelectorAll("#states > div > *")
+        .forEach((element: any) => {
+          element.hass = hass;
+        });
+    }
+  }
 
   static get properties(): PropertyDeclarations {
     return {
-      hass: {},
+      _hass: {},
       config: {},
     };
   }
@@ -74,8 +64,6 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public setConfig(config: Config) {
-    console.log(config);
-
     const entities = processConfigEntities(config.entities);
     for (const entity of entities) {
       if (
@@ -100,7 +88,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   }
 
   protected render() {
-    if (!this.config || !this.hass) {
+    if (!this.config || !this._hass) {
       return html``;
     }
     const { show_header_toggle, title } = this.config;
@@ -119,7 +107,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
                   ? html``
                   : html`
                   <hui-entities-toggle
-                    .hass="${this.hass}"
+                    .hass="${this._hass}"
                     .entities="${this.configEntities!.map(
                       (conf) => conf.entity
                     )}"
@@ -174,7 +162,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
 
   private renderEntity(entityConf) {
     const element = createRowElement(entityConf);
-    element.hass = this.hass;
+    element.hass = this._hass;
     element.entityConf = entityConf;
     if (
       entityConf.entity &&
