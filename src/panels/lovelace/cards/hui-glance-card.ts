@@ -32,6 +32,7 @@ interface Config extends LovelaceConfig {
   title?: string;
   theme?: string;
   entities: EntityConfig[];
+  columns?: number;
 }
 
 export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
@@ -63,10 +64,8 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       }
     }
 
-    const columnWidth =
-      config.entities.length > 4 ? "20%" : `${100 / config.entities.length}%`;
-
-    this.style.setProperty("--glance-column-width", columnWidth);
+    const columns = config.columns || Math.min(config.entities.length, 5);
+    this.style.setProperty("--glance-column-width", `${100 / columns}%`);
 
     this.configEntities = entities;
 
