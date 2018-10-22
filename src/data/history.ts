@@ -13,40 +13,73 @@ const LINE_ATTRIBUTES_TO_KEEP = [
   "target_temp_high",
 ];
 
-type LineChartState = {
+interface LineChartState {
   state: string;
   last_changed: string;
   attributes?: { [key: string]: any };
-};
+}
 
-type LineChartEntity = {
+interface LineChartEntity {
   domain: string;
   name: string;
   entity_id: string;
   states: LineChartState[];
-};
+}
 
-type LineChartUnit = {
+interface LineChartUnit {
   unit: string;
   identifier: string;
   data: LineChartEntity[];
-};
+}
 
-type TimelineState = {
+interface TimelineState {
   state_localize: string;
   state: string;
   last_changed: string;
-};
+}
 
-type TimelineEntity = {
+interface TimelineEntity {
   name: string;
   entity_id: string;
   data: TimelineState[];
-};
+}
 
-type HistoryResult = {
+interface HistoryResult {
   line: LineChartUnit[];
   timeline: TimelineEntity[];
+}
+
+export const fetchRecent = (
+  hass,
+  entityId,
+  startTime,
+  endTime,
+  skipInitialState = false
+): Promise<HassEntity[][]> => {
+  let url = "history/period";
+  if (startTime) {
+    url += "/" + startTime.toISOString();
+  }
+  url += "?filter_entity_id=" + entityId;
+  if (endTime) {
+    url += "&end_time=" + endTime.toISOString();
+  }
+  if (skipInitialState) {
+    url += "&skip_initial_state";
+  }
+
+  return hass.callApi("GET", url);
+};
+
+export const fetchDate = (
+  hass: HomeAssistant,
+  startTime: Date,
+  endTime: Date
+): Promise<HassEntity[][]> => {
+  return hass.callApi(
+    "GET",
+    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}`
+  );
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
@@ -92,7 +125,7 @@ const processLineChartEntities = (
   for (const states of entities) {
     const last: HassEntity = states[states.length - 1];
     const domain = computeStateDomain(last);
-    let processedStates: LineChartState[] = [];
+    const processedStates: LineChartState[] = [];
 
     for (const state of states) {
       let processedState: LineChartState;
@@ -163,7 +196,7 @@ export const computeHistory = (
       (state) => "unit_of_measurement" in state.attributes
     );
 
-    let unit: string | undefined = undefined;
+    let unit: string | undefined;
 
     if (stateWithUnit) {
       unit = stateWithUnit.attributes.unit_of_measurement;
@@ -191,35 +224,76 @@ export const computeHistory = (
   return { line: unitStates, timeline: timelineDevices };
 };
 
-export const fetchRecent = (
-  hass,
-  entityId,
-  startTime,
-  endTime,
-  skipInitialState = false
-): Promise<HassEntity[][]> => {
-  let url = "history/period";
-  if (startTime) {
-    url += "/" + startTime.toISOString();
-  }
-  url += "?filter_entity_id=" + entityId;
-  if (endTime) {
-    url += "&end_time=" + endTime.toISOString();
-  }
-  if (skipInitialState) {
-    url += "&skip_initial_state";
-  }
-
-  return hass.callApi("GET", url);
+export const mergeLine = (
+  historyLines: LineChartUnit[],
+  cacheLines: LineChartUnit[]
+) => {
+  historyLines.forEach((line) => {
+    const unit = line.unit;
+    const oldLine = cacheLines.find((cacheLine) => cacheLine.unit === unit);
+    if (oldLine) {
+      line.data.forEach((entity) => {
+        const oldEntity = oldLine.data.find(
+          (cacheEntity) => entity.entity_id === cacheEntity.entity_id
+        );
+        if (oldEntity) {
+          oldEntity.states = oldEntity.states.concat(entity.states);
+        } else {
+          oldLine.data.push(entity);
+        }
+      });
+    } else {
+      cacheLines.push(line);
+    }
+  });
 };
 
-export const fetchDate = (
-  hass: HomeAssistant,
-  startTime: Date,
-  endTime: Date
-): Promise<HassEntity[][]> => {
-  return hass.callApi(
-    "GET",
-    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}`
+export const mergeTimeline = (
+  historyTimelines: TimelineEntity[],
+  cacheTimelines: TimelineEntity[]
+) => {
+  historyTimelines.forEach((timeline) => {
+    const oldTimeline = cacheTimelines.find(
+      (cacheTimeline) => cacheTimeline.entity_id === timeline.entity_id
+    );
+    if (oldTimeline) {
+      oldTimeline.data = oldTimeline.data.concat(timeline.data);
+    } else {
+      cacheTimelines.push(timeline);
+    }
+  });
+};
+
+export const pruneArray = (originalStartTime: Date, arr) => {
+  if (arr.length === 0) {
+    return arr;
+  }
+  const changedAfterStartTime = arr.findIndex(
+    (state) => new Date(state.last_changed) > originalStartTime
   );
+  if (changedAfterStartTime === 0) {
+    // If all changes happened after originalStartTime then we are done.
+    return arr;
+  }
+
+  // If all changes happened at or before originalStartTime. Use last index.
+  const updateIndex =
+    changedAfterStartTime === -1 ? arr.length - 1 : changedAfterStartTime - 1;
+  arr[updateIndex].last_changed = originalStartTime;
+  return arr.slice(updateIndex);
+};
+
+export const pruneStartTime = (
+  originalStartTime: Date,
+  cacheData: HistoryResult
+) => {
+  cacheData.line.forEach((line) => {
+    line.data.forEach((entity) => {
+      entity.states = pruneArray(originalStartTime, entity.states);
+    });
+  });
+
+  cacheData.timeline.forEach((timeline) => {
+    timeline.data = pruneArray(originalStartTime, timeline.data);
+  });
 };

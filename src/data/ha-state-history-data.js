@@ -4,7 +4,14 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 import LocalizeMixin from "../mixins/localize-mixin.js";
 
-import { computeHistory, fetchRecent, fetchDate } from "./history";
+import {
+  computeHistory,
+  fetchRecent,
+  fetchDate,
+  mergeLine,
+  mergeTimeline,
+  pruneStartTime,
+} from "./history";
 
 const RECENT_THRESHOLD = 60000; // 1 minute
 const RECENT_CACHE = {};
@@ -170,70 +177,6 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     return this.getRecentWithCache(entityId, cacheConfig, localize, language);
   }
 
-  mergeLine(historyLines, cacheLines) {
-    historyLines.forEach((line) => {
-      const unit = line.unit;
-      const oldLine = cacheLines.find((cacheLine) => cacheLine.unit === unit);
-      if (oldLine) {
-        line.data.forEach((entity) => {
-          const oldEntity = oldLine.data.find(
-            (cacheEntity) => entity.entity_id === cacheEntity.entity_id
-          );
-          if (oldEntity) {
-            oldEntity.states = oldEntity.states.concat(entity.states);
-          } else {
-            oldLine.data.push(entity);
-          }
-        });
-      } else {
-        cacheLines.push(line);
-      }
-    });
-  }
-
-  mergeTimeline(historyTimelines, cacheTimelines) {
-    historyTimelines.forEach((timeline) => {
-      const oldTimeline = cacheTimelines.find(
-        (cacheTimeline) => cacheTimeline.entity_id === timeline.entity_id
-      );
-      if (oldTimeline) {
-        oldTimeline.data = oldTimeline.data.concat(timeline.data);
-      } else {
-        cacheTimelines.push(timeline);
-      }
-    });
-  }
-
-  pruneArray(originalStartTime, arr) {
-    if (arr.length === 0) return arr;
-    const changedAfterStartTime = arr.findIndex((state) => {
-      const lastChanged = new Date(state.last_changed);
-      return lastChanged > originalStartTime;
-    });
-    if (changedAfterStartTime === 0) {
-      // If all changes happened after originalStartTime then we are done.
-      return arr;
-    }
-
-    // If all changes happened at or before originalStartTime. Use last index.
-    const updateIndex =
-      changedAfterStartTime === -1 ? arr.length - 1 : changedAfterStartTime - 1;
-    arr[updateIndex].last_changed = originalStartTime;
-    return arr.slice(updateIndex);
-  }
-
-  pruneStartTime(originalStartTime, cacheData) {
-    cacheData.line.forEach((line) => {
-      line.data.forEach((entity) => {
-        entity.states = this.pruneArray(originalStartTime, entity.states);
-      });
-    });
-
-    cacheData.timeline.forEach((timeline) => {
-      timeline.data = this.pruneArray(originalStartTime, timeline.data);
-    });
-  }
-
   getRecentWithCache(entityId, cacheConfig, localize, language) {
     const cacheKey = cacheConfig.cacheKey;
     const endTime = new Date();
@@ -271,10 +214,10 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       )
       // Merge old and new.
       .then((stateHistory) => {
-        this.mergeLine(stateHistory.line, cache.data.line);
-        this.mergeTimeline(stateHistory.timeline, cache.data.timeline);
+        mergeLine(stateHistory.line, cache.data.line);
+        mergeTimeline(stateHistory.timeline, cache.data.timeline);
         if (appendingToCache) {
-          this.pruneStartTime(originalStartTime, cache.data);
+          pruneStartTime(originalStartTime, cache.data);
         }
         return cache.data;
       })
