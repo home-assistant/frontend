@@ -13,32 +13,32 @@ const LINE_ATTRIBUTES_TO_KEEP = [
   "target_temp_high",
 ];
 
-interface LineChartState {
+export interface LineChartState {
   state: string;
   last_changed: string;
   attributes?: { [key: string]: any };
 }
 
-interface LineChartEntity {
+export interface LineChartEntity {
   domain: string;
   name: string;
   entity_id: string;
   states: LineChartState[];
 }
 
-interface LineChartUnit {
+export interface LineChartUnit {
   unit: string;
   identifier: string;
   data: LineChartEntity[];
 }
 
-interface TimelineState {
+export interface TimelineState {
   state_localize: string;
   state: string;
   last_changed: string;
 }
 
-interface TimelineEntity {
+export interface TimelineEntity {
   name: string;
   entity_id: string;
   data: TimelineState[];
@@ -222,78 +222,4 @@ export const computeHistory = (
   );
 
   return { line: unitStates, timeline: timelineDevices };
-};
-
-export const mergeLine = (
-  historyLines: LineChartUnit[],
-  cacheLines: LineChartUnit[]
-) => {
-  historyLines.forEach((line) => {
-    const unit = line.unit;
-    const oldLine = cacheLines.find((cacheLine) => cacheLine.unit === unit);
-    if (oldLine) {
-      line.data.forEach((entity) => {
-        const oldEntity = oldLine.data.find(
-          (cacheEntity) => entity.entity_id === cacheEntity.entity_id
-        );
-        if (oldEntity) {
-          oldEntity.states = oldEntity.states.concat(entity.states);
-        } else {
-          oldLine.data.push(entity);
-        }
-      });
-    } else {
-      cacheLines.push(line);
-    }
-  });
-};
-
-export const mergeTimeline = (
-  historyTimelines: TimelineEntity[],
-  cacheTimelines: TimelineEntity[]
-) => {
-  historyTimelines.forEach((timeline) => {
-    const oldTimeline = cacheTimelines.find(
-      (cacheTimeline) => cacheTimeline.entity_id === timeline.entity_id
-    );
-    if (oldTimeline) {
-      oldTimeline.data = oldTimeline.data.concat(timeline.data);
-    } else {
-      cacheTimelines.push(timeline);
-    }
-  });
-};
-
-export const pruneArray = (originalStartTime: Date, arr) => {
-  if (arr.length === 0) {
-    return arr;
-  }
-  const changedAfterStartTime = arr.findIndex(
-    (state) => new Date(state.last_changed) > originalStartTime
-  );
-  if (changedAfterStartTime === 0) {
-    // If all changes happened after originalStartTime then we are done.
-    return arr;
-  }
-
-  // If all changes happened at or before originalStartTime. Use last index.
-  const updateIndex =
-    changedAfterStartTime === -1 ? arr.length - 1 : changedAfterStartTime - 1;
-  arr[updateIndex].last_changed = originalStartTime;
-  return arr.slice(updateIndex);
-};
-
-export const pruneStartTime = (
-  originalStartTime: Date,
-  cacheData: HistoryResult
-) => {
-  cacheData.line.forEach((line) => {
-    line.data.forEach((entity) => {
-      entity.states = pruneArray(originalStartTime, entity.states);
-    });
-  });
-
-  cacheData.timeline.forEach((timeline) => {
-    timeline.data = pruneArray(originalStartTime, timeline.data);
-  });
 };

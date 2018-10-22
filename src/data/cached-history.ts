@@ -1,10 +1,9 @@
 import {
   computeHistory,
   fetchRecent,
-  mergeLine,
-  mergeTimeline,
-  pruneStartTime,
   HistoryResult,
+  TimelineEntity,
+  LineChartUnit,
 } from "./history";
 import { HomeAssistant } from "../types";
 import { LocalizeFunc } from "../mixins/localize-base-mixin";
@@ -35,6 +34,43 @@ const RECENT_THRESHOLD = 60000; // 1 minute
 const RECENT_CACHE: { [cacheKey: string]: RecentCacheResults } = {};
 const stateHistoryCache: { [cacheKey: string]: CachedResults } = {};
 
+// Cached type 1 unction. Without cache config.
+export const getRecent = (
+  hass: HomeAssistant,
+  entityId: string,
+  startTime: Date,
+  endTime: Date,
+  localize: LocalizeFunc,
+  language: string
+) => {
+  const cacheKey = entityId;
+  const cache = RECENT_CACHE[cacheKey];
+
+  if (
+    cache &&
+    Date.now() - cache.created < RECENT_THRESHOLD &&
+    cache.language === language
+  ) {
+    return cache.data;
+  }
+
+  const prom = fetchRecent(hass, entityId, startTime, endTime).then(
+    (stateHistory) => computeHistory(hass, stateHistory, localize, language),
+    (err) => {
+      delete RECENT_CACHE[entityId];
+      throw err;
+    }
+  );
+
+  RECENT_CACHE[cacheKey] = {
+    created: Date.now(),
+    language,
+    data: prom,
+  };
+  return prom;
+};
+
+// Cache type 2 functionality
 function getEmptyCache(
   language: string,
   startTime: Date,
@@ -127,37 +163,73 @@ export const getRecentWithCache = (
   return cache.prom;
 };
 
-export const getRecent = (
-  hass: HomeAssistant,
-  entityId: string,
-  startTime: Date,
-  endTime: Date,
-  localize: LocalizeFunc,
-  language: string
+const mergeLine = (
+  historyLines: LineChartUnit[],
+  cacheLines: LineChartUnit[]
 ) => {
-  const cacheKey = entityId;
-  const cache = RECENT_CACHE[cacheKey];
+  historyLines.forEach((line) => {
+    const unit = line.unit;
+    const oldLine = cacheLines.find((cacheLine) => cacheLine.unit === unit);
+    if (oldLine) {
+      line.data.forEach((entity) => {
+        const oldEntity = oldLine.data.find(
+          (cacheEntity) => entity.entity_id === cacheEntity.entity_id
+        );
+        if (oldEntity) {
+          oldEntity.states = oldEntity.states.concat(entity.states);
+        } else {
+          oldLine.data.push(entity);
+        }
+      });
+    } else {
+      cacheLines.push(line);
+    }
+  });
+};
 
-  if (
-    cache &&
-    Date.now() - cache.created < RECENT_THRESHOLD &&
-    cache.language === language
-  ) {
-    return cache.data;
+const mergeTimeline = (
+  historyTimelines: TimelineEntity[],
+  cacheTimelines: TimelineEntity[]
+) => {
+  historyTimelines.forEach((timeline) => {
+    const oldTimeline = cacheTimelines.find(
+      (cacheTimeline) => cacheTimeline.entity_id === timeline.entity_id
+    );
+    if (oldTimeline) {
+      oldTimeline.data = oldTimeline.data.concat(timeline.data);
+    } else {
+      cacheTimelines.push(timeline);
+    }
+  });
+};
+
+const pruneArray = (originalStartTime: Date, arr) => {
+  if (arr.length === 0) {
+    return arr;
+  }
+  const changedAfterStartTime = arr.findIndex(
+    (state) => new Date(state.last_changed) > originalStartTime
+  );
+  if (changedAfterStartTime === 0) {
+    // If all changes happened after originalStartTime then we are done.
+    return arr;
   }
 
-  const prom = fetchRecent(hass, entityId, startTime, endTime).then(
-    (stateHistory) => computeHistory(hass, stateHistory, localize, language),
-    (err) => {
-      delete RECENT_CACHE[entityId];
-      throw err;
-    }
-  );
+  // If all changes happened at or before originalStartTime. Use last index.
+  const updateIndex =
+    changedAfterStartTime === -1 ? arr.length - 1 : changedAfterStartTime - 1;
+  arr[updateIndex].last_changed = originalStartTime;
+  return arr.slice(updateIndex);
+};
 
-  RECENT_CACHE[cacheKey] = {
-    created: Date.now(),
-    language,
-    data: prom,
-  };
-  return prom;
+const pruneStartTime = (originalStartTime: Date, cacheData: HistoryResult) => {
+  cacheData.line.forEach((line) => {
+    line.data.forEach((entity) => {
+      entity.states = pruneArray(originalStartTime, entity.states);
+    });
+  });
+
+  cacheData.timeline.forEach((timeline) => {
+    timeline.data = pruneArray(originalStartTime, timeline.data);
+  });
 };
