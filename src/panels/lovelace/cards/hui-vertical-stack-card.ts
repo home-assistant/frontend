@@ -13,22 +13,19 @@ class HuiVerticalStackCard extends LitElement
   implements LovelaceCard {
   protected hass?: HomeAssistant;
   protected config: Config;
-  private elements: LovelaceCard[];
 
   static get properties() {
     return {
-      hass: {
-        observer: "_hassChanged",
-      },
       config: {},
     };
   }
 
   public getCardSize() {
     let totalSize = 0;
-    this.elements.forEach((element) => {
+    for (const element of this.shadowRoot.querySelectorAll('#root > *')) {
       totalSize += computeCardSize(element);
-    });
+    };
+
     return totalSize;
   }
 
@@ -38,10 +35,6 @@ class HuiVerticalStackCard extends LitElement
     }
 
     this.config = config;
-
-    if (this.shadowRoot) {
-      this._buildConfig();
-    }
   }
 
   protected render() {
@@ -52,7 +45,7 @@ class HuiVerticalStackCard extends LitElement
     return html`
       ${this.renderStyle()}
       <div id="root">
-        ${this.elements!.map(element => element)}
+        ${this.config.cards.map(card => createCardElement(card, this.hass))}
       </div>
     `;
   }
@@ -77,20 +70,13 @@ class HuiVerticalStackCard extends LitElement
     `;
   }
 
-  private _buildConfig() {
-    this.elements = [];
-    this.config.cards.forEach((card) => {
-      const element = createCardElement(card);
-      element.hass = this.hass;
-      this.elements.push(element);
-    });
-  }
-
-  private _hassChanged(hass) {
-    this.elements.forEach((element) => {
-      element.hass = hass;
-    });
-  }
+  // TODO updating hass on an element appears to update overall hass and gets me in a loop
+  // set hass(hass: HomeAssistant) {
+  //   this.hass = hass;
+  //   for (const el of this.shadowRoot.querySelectorAll('#root > *')) {
+  //     el.hass = hass;
+  //   };
+  // }
 }
 
 declare global {
