@@ -2,119 +2,20 @@ import { timeOut } from "@polymer/polymer/lib/utils/async.js";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import computeStateName from "../common/entity/compute_state_name.js";
-import computeStateDomain from "../common/entity/compute_state_domain.js";
-import computeStateDisplay from "../common/entity/compute_state_display.js";
 import LocalizeMixin from "../mixins/localize-mixin.js";
+
+import { computeHistory, fetchRecent, fetchDate } from "./history";
 
 const RECENT_THRESHOLD = 60000; // 1 minute
 const RECENT_CACHE = {};
-const DOMAINS_USE_LAST_UPDATED = ["thermostat", "climate", "water_heater"];
-const LINE_ATTRIBUTES_TO_KEEP = [
-  "temperature",
-  "current_temperature",
-  "target_temp_low",
-  "target_temp_high",
-];
 const stateHistoryCache = {};
 
-function computeHistory(hass, stateHistory, localize, language) {
-  const lineChartDevices = {};
-  const timelineDevices = [];
-  if (!stateHistory) {
-    return { line: [], timeline: [] };
-  }
-
-  stateHistory.forEach((stateInfo) => {
-    if (stateInfo.length === 0) {
-      return;
-    }
-
-    const stateWithUnit = stateInfo.find(
-      (state) => "unit_of_measurement" in state.attributes
-    );
-
-    let unit = false;
-    if (stateWithUnit) {
-      unit = stateWithUnit.attributes.unit_of_measurement;
-    } else if (computeStateDomain(stateInfo[0]) === "climate") {
-      unit = hass.config.unit_system.temperature;
-    } else if (computeStateDomain(stateInfo[0]) === "water_heater") {
-      unit = hass.config.unit_system.temperature;
-    }
-
-    if (!unit) {
-      timelineDevices.push({
-        name: computeStateName(stateInfo[0]),
-        entity_id: stateInfo[0].entity_id,
-        data: stateInfo
-          .map((state) => ({
-            state_localize: computeStateDisplay(localize, state, language),
-            state: state.state,
-            last_changed: state.last_changed,
-          }))
-          .filter((element, index, arr) => {
-            if (index === 0) return true;
-            return element.state !== arr[index - 1].state;
-          }),
-      });
-    } else if (unit in lineChartDevices) {
-      lineChartDevices[unit].push(stateInfo);
-    } else {
-      lineChartDevices[unit] = [stateInfo];
-    }
-  });
-
-  const unitStates = Object.keys(lineChartDevices).map((unit) => ({
-    unit: unit,
-    identifier: lineChartDevices[unit]
-      .map((states) => states[0].entity_id)
-      .join(""),
-    data: lineChartDevices[unit].map((states) => {
-      const last = states[states.length - 1];
-      const domain = computeStateDomain(last);
-      return {
-        domain: domain,
-        name: computeStateName(last),
-        entity_id: last.entity_id,
-        states: states
-          .map((state) => {
-            const result = {
-              state: state.state,
-              last_changed: state.last_changed,
-            };
-            if (DOMAINS_USE_LAST_UPDATED.includes(domain)) {
-              result.last_changed = state.last_updated;
-            }
-            LINE_ATTRIBUTES_TO_KEEP.forEach((attr) => {
-              if (attr in state.attributes) {
-                result.attributes = result.attributes || {};
-                result.attributes[attr] = state.attributes[attr];
-              }
-            });
-            return result;
-          })
-          .filter((element, index, arr) => {
-            // Remove data point if it is equal to previous point and next point.
-            if (index === 0 || index === arr.length - 1) return true;
-            function compare(obj1, obj2) {
-              if (obj1.state !== obj2.state) return false;
-              if (!obj1.attributes && !obj2.attributes) return true;
-              if (!obj1.attributes || !obj2.attributes) return false;
-              return LINE_ATTRIBUTES_TO_KEEP.every(
-                (attr) => obj1.attributes[attr] === obj2.attributes[attr]
-              );
-            }
-            return (
-              !compare(element, arr[index - 1]) ||
-              !compare(element, arr[index + 1])
-            );
-          }),
-      };
-    }),
-  }));
-
-  return { line: unitStates, timeline: timelineDevices };
+function getEmptyCache(language) {
+  return {
+    prom: Promise.resolve({ line: [], timeline: [] }),
+    language: language,
+    data: { line: [], timeline: [] },
+  };
 }
 
 /*
@@ -225,7 +126,10 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
 
     if (filterType === "date") {
       if (!startTime || !endTime) return;
-      data = this.getDate(startTime, endTime, localize, language);
+
+      data = fetchDate(this.hass, startTime, endTime).then((dateHistory) =>
+        computeHistory(this.hass, dateHistory, localize, language)
+      );
     } else if (filterType === "recent-entity") {
       if (!entityId) return;
       if (cacheConfig) {
@@ -247,14 +151,6 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       this._setData(stateHistory);
       this._setIsLoading(false);
     });
-  }
-
-  getEmptyCache(language) {
-    return {
-      prom: Promise.resolve({ line: [], timeline: [] }),
-      language: language,
-      data: { line: [], timeline: [] },
-    };
   }
 
   getRecentWithCacheRefresh(entityId, cacheConfig, localize, language) {
@@ -360,12 +256,12 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
         return cache.prom;
       }
     } else {
-      cache = stateHistoryCache[cacheKey] = this.getEmptyCache(language);
+      cache = stateHistoryCache[cacheKey] = getEmptyCache(language);
     }
     // Use Promise.all in order to make sure the old and the new fetches have both completed.
     const prom = Promise.all([
       cache.prom,
-      this.fetchRecent(entityId, startTime, endTime, appendingToCache),
+      fetchRecent(this.hass, entityId, startTime, endTime, appendingToCache),
     ])
       // Use only data from the new fetch. Old fetch is already stored in cache.data
       .then((oldAndNew) => oldAndNew[1])
@@ -405,7 +301,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       return cache.data;
     }
 
-    const prom = this.fetchRecent(entityId, startTime, endTime).then(
+    const prom = fetchRecent(this.hass, entityId, startTime, endTime).then(
       (stateHistory) =>
         computeHistory(this.hass, stateHistory, localize, language),
       () => {
@@ -419,37 +315,6 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       language: language,
       data: prom,
     };
-    return prom;
-  }
-
-  fetchRecent(entityId, startTime, endTime, skipInitialState = false) {
-    let url = "history/period";
-    if (startTime) {
-      url += "/" + startTime.toISOString();
-    }
-    url += "?filter_entity_id=" + entityId;
-    if (endTime) {
-      url += "&end_time=" + endTime.toISOString();
-    }
-    if (skipInitialState) {
-      url += "&skip_initial_state";
-    }
-
-    return this.hass.callApi("GET", url);
-  }
-
-  getDate(startTime, endTime, localize, language) {
-    const filter =
-      startTime.toISOString() + "?end_time=" + endTime.toISOString();
-
-    const prom = this.hass
-      .callApi("GET", "history/period/" + filter)
-      .then(
-        (stateHistory) =>
-          computeHistory(this.hass, stateHistory, localize, language),
-        () => null
-      );
-
     return prom;
   }
 }

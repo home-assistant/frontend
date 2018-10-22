@@ -3,7 +3,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 import "../components/state-history-charts.js";
-import "../data/ha-state-history-data.js";
+import "../data/ha-state-history-data";
 
 import computeStateName from "../common/entity/compute_state_name.js";
 import EventsMixin from "../mixins/events-mixin.js";
