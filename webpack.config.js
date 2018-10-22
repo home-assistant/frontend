@@ -64,6 +64,10 @@ function createConfig(isProdBuild, latestBuild) {
       rules: [
         babelLoaderConfig({ latestBuild }),
         {
+          test: /\.css$/,
+          use: "raw-loader",
+        },
+        {
           test: /\.(html)$/,
           use: {
             loader: "html-loader",
@@ -190,8 +194,8 @@ function createConfig(isProdBuild, latestBuild) {
         },
       }),
       new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery'
+        $: "jquery",
+        jQuery: "jquery",
       }),
       new HtmlWebpackPlugin({
         inject: false,
