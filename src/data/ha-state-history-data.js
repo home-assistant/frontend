@@ -219,6 +219,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     if (!localize) {
       return;
     }
+    this._madeFirstCall = true;
     const language = this.hass.language;
     let data;
 
