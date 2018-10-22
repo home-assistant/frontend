@@ -44,7 +44,7 @@ interface TimelineEntity {
   data: TimelineState[];
 }
 
-interface HistoryResult {
+export interface HistoryResult {
   line: LineChartUnit[];
   timeline: TimelineEntity[];
 }

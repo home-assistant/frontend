@@ -4,26 +4,8 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 import LocalizeMixin from "../mixins/localize-mixin.js";
 
-import {
-  computeHistory,
-  fetchRecent,
-  fetchDate,
-  mergeLine,
-  mergeTimeline,
-  pruneStartTime,
-} from "./history";
-
-const RECENT_THRESHOLD = 60000; // 1 minute
-const RECENT_CACHE = {};
-const stateHistoryCache = {};
-
-function getEmptyCache(language) {
-  return {
-    prom: Promise.resolve({ line: [], timeline: [] }),
-    language: language,
-    data: { line: [], timeline: [] },
-  };
-}
+import { computeHistory, fetchDate } from "./history";
+import { getRecent, getRecentWithCache } from "./cached-history";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -147,7 +129,14 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
           language
         );
       } else {
-        data = this.getRecent(entityId, startTime, endTime, localize, language);
+        data = getRecent(
+          this.hass,
+          entityId,
+          startTime,
+          endTime,
+          localize,
+          language
+        );
       }
     } else {
       return;
@@ -167,98 +156,24 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     }
     if (cacheConfig.refresh) {
       this._refreshTimeoutId = window.setInterval(() => {
-        this.getRecentWithCache(entityId, cacheConfig, localize, language).then(
-          (stateHistory) => {
-            this._setData(Object.assign({}, stateHistory));
-          }
-        );
+        getRecentWithCache(
+          this.hass,
+          entityId,
+          cacheConfig,
+          localize,
+          language
+        ).then((stateHistory) => {
+          this._setData(Object.assign({}, stateHistory));
+        });
       }, cacheConfig.refresh * 1000);
     }
-    return this.getRecentWithCache(entityId, cacheConfig, localize, language);
-  }
-
-  getRecentWithCache(entityId, cacheConfig, localize, language) {
-    const cacheKey = cacheConfig.cacheKey;
-    const endTime = new Date();
-    const originalStartTime = new Date(endTime);
-    originalStartTime.setHours(
-      originalStartTime.getHours() - cacheConfig.hoursToShow
+    return getRecentWithCache(
+      this.hass,
+      entityId,
+      cacheConfig,
+      localize,
+      language
     );
-    let startTime = originalStartTime;
-    let appendingToCache = false;
-    let cache = stateHistoryCache[cacheKey];
-    if (
-      cache &&
-      startTime >= cache.startTime &&
-      startTime <= cache.endTime &&
-      cache.language === language
-    ) {
-      startTime = cache.endTime;
-      appendingToCache = true;
-      if (endTime <= cache.endTime) {
-        return cache.prom;
-      }
-    } else {
-      cache = stateHistoryCache[cacheKey] = getEmptyCache(language);
-    }
-    // Use Promise.all in order to make sure the old and the new fetches have both completed.
-    const prom = Promise.all([
-      cache.prom,
-      fetchRecent(this.hass, entityId, startTime, endTime, appendingToCache),
-    ])
-      // Use only data from the new fetch. Old fetch is already stored in cache.data
-      .then((oldAndNew) => oldAndNew[1])
-      // Convert data into format state-history-chart-* understands.
-      .then((stateHistory) =>
-        computeHistory(this.hass, stateHistory, localize, language)
-      )
-      // Merge old and new.
-      .then((stateHistory) => {
-        mergeLine(stateHistory.line, cache.data.line);
-        mergeTimeline(stateHistory.timeline, cache.data.timeline);
-        if (appendingToCache) {
-          pruneStartTime(originalStartTime, cache.data);
-        }
-        return cache.data;
-      })
-      .catch((err) => {
-        /* eslint-disable no-console */
-        console.error(err);
-        stateHistoryCache[cacheKey] = undefined;
-      });
-    cache.prom = prom;
-    cache.startTime = originalStartTime;
-    cache.endTime = endTime;
-    return prom;
-  }
-
-  getRecent(entityId, startTime, endTime, localize, language) {
-    const cacheKey = entityId;
-    const cache = RECENT_CACHE[cacheKey];
-
-    if (
-      cache &&
-      Date.now() - cache.created < RECENT_THRESHOLD &&
-      cache.language === language
-    ) {
-      return cache.data;
-    }
-
-    const prom = fetchRecent(this.hass, entityId, startTime, endTime).then(
-      (stateHistory) =>
-        computeHistory(this.hass, stateHistory, localize, language),
-      () => {
-        RECENT_CACHE[entityId] = false;
-        return null;
-      }
-    );
-
-    RECENT_CACHE[cacheKey] = {
-      created: Date.now(),
-      language: language,
-      data: prom,
-    };
-    return prom;
   }
 }
 customElements.define("ha-state-history-data", HaStateHistoryData);
