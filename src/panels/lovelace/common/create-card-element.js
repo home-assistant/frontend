@@ -69,7 +69,7 @@ function _createErrorElement(error, config) {
   return _createElement("hui-error-card", createErrorCardConfig(error, config));
 }
 
-export default function createCardElement(config) {
+export default function createCardElement(config, hass = undefined) {
   if (!config || typeof config !== "object" || !config.type) {
     return _createErrorElement("No card type configured.", config);
   }
@@ -104,5 +104,11 @@ export default function createCardElement(config) {
     );
   }
 
-  return _createElement(`hui-${config.type}-card`, config);
+  const element = _createElement(`hui-${config.type}-card`, config);
+
+  if (hass) {
+    element.hass = hass;
+  }
+
+  return element;
 }
