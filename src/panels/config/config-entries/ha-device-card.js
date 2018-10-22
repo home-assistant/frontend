@@ -25,14 +25,13 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
-      paper-card {
-        display: block;
-        padding-bottom: 8px;
+      :host(:not([narrow])) .device-entities {
+        max-height: 400px;
+        overflow: auto;
       }
-      .device-row {
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 8px;
+      paper-card {
+        flex: 1 0 100%;
+        padding-bottom: 10px;
       }
       .device {
         width: 30%;
@@ -79,18 +78,20 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         </template>
       </div>
 
-      <template is='dom-repeat' items='[[_computeDeviceEntities(hass, device, entities)]]' as='entity'>
-        <paper-icon-item on-click='_openMoreInfo'>
-          <state-badge
-            state-obj="[[_computeStateObj(entity, hass)]]"
-            slot='item-icon'
-          ></state-badge>
-          <paper-item-body>
-            <div class='name'>[[_computeEntityName(entity, hass)]]</div>
-            <div class='secondary entity-id'>[[entity.entity_id]]</div>
-          </paper-item-body>
-        </paper-icon-item>
-      </template>
+      <div class='device-entities'>
+        <template is='dom-repeat' items='[[_computeDeviceEntities(hass, device, entities)]]' as='entity'>
+          <paper-icon-item on-click='_openMoreInfo'>
+            <state-badge
+              state-obj="[[_computeStateObj(entity, hass)]]"
+              slot='item-icon'
+            ></state-badge>
+            <paper-item-body>
+              <div class='name'>[[_computeEntityName(entity, hass)]]</div>
+              <div class='secondary entity-id'>[[entity.entity_id]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+        </template>
+      </div>
     </paper-card>
 
     `;
@@ -102,6 +103,10 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       devices: Array,
       entities: Array,
       hass: Object,
+      narrow: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       _childDevices: {
         type: Array,
         computed: "_computeChildDevices(device, devices)",
