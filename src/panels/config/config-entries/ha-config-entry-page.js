@@ -23,20 +23,14 @@ class HaConfigEntryPage extends NavigateMixin(
       display: flex;
       flex-wrap: wrap;
       padding: 4px;
+      justify-content: center;
     }
-    ha-device-card, ha-ce-entities-card {
-      flex: 1;
-      min-width: 300px;
-      max-width: 300px;
-      margin: 8px;
-
-    }
-    @media(max-width: 600px) {
-      ha-device-card {
-        max-width: 500px;
-        margin-left: auto;
-        margin-right: auto;
-      }
+    .card {
+      box-sizing: border-box;
+      display: flex;
+      flex: 1 0 300px;
+      max-width: 500px;
+      padding: 8px;
     }
   </style>
   <hass-subpage header='[[configEntry.title]]'>
@@ -51,17 +45,21 @@ class HaConfigEntryPage extends NavigateMixin(
       </template>
       <template is='dom-repeat' items='[[_configEntryDevices]]' as='device'>
         <ha-device-card
+          class="card"
           hass='[[hass]]'
           devices='[[devices]]'
           device='[[device]]'
           entities='[[entities]]'
+          narrow='[[narrow]]'
         ></ha-device-card>
       </template>
       <template is='dom-if' if='[[_noDeviceEntities.length]]'>
         <ha-ce-entities-card
+          class="card"
           heading="[[localize('ui.panel.config.integrations.config_entry.no_device')]]"
           entities='[[_noDeviceEntities]]'
           hass='[[hass]]'
+          narrow='[[narrow]]'
         ></ha-ce-entities-card>
       </template>
     </div>
@@ -73,6 +71,7 @@ class HaConfigEntryPage extends NavigateMixin(
     return {
       hass: Object,
       isWide: Boolean,
+      narrow: Boolean,
       configEntry: {
         type: Object,
         value: null,
