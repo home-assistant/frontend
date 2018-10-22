@@ -150,7 +150,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       labels.push(entityDisplay);
     });
 
-    const formatTooltipLabel = function(item, data) {
+    const formatTooltipLabel = (item, data) => {
       const values = data.datasets[item.datasetIndex].data[item.index];
 
       const start = formatDateTime(values[0], this.hass.language);
