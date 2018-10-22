@@ -21,6 +21,7 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
       entries='[[_entries]]'
       entities='[[_entities]]'
       devices='[[_devices]]'
+      narrow='[[narrow]]'
     ></ha-config-entry-page>
   </template>
   <template is='dom-if' if='[[!_configEntry]]'>
@@ -39,6 +40,7 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
     return {
       hass: Object,
       isWide: Boolean,
+      narrow: Boolean,
       route: Object,
 
       _configEntry: {
