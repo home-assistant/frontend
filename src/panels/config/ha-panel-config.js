@@ -106,6 +106,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         page-name='integrations'
         hass='[[hass]]'
         is-wide='[[isWide]]'
+        narrow='[[narrow]]'
       ></ha-config-entries>
     </template>
 
