@@ -11,8 +11,8 @@ interface Config extends LovelaceConfig {
 
 class HuiVerticalStackCard extends LitElement
   implements LovelaceCard {
-  protected hass?: HomeAssistant;
   protected config: Config;
+  private mHass: HomeAssistant;
 
   static get properties() {
     return {
@@ -45,7 +45,7 @@ class HuiVerticalStackCard extends LitElement
     return html`
       ${this.renderStyle()}
       <div id="root">
-        ${this.config.cards.map(card => createCardElement(card, this.hass))}
+        ${this.config.cards.map(card => createCardElement(card, this.mHass))}
       </div>
     `;
   }
@@ -70,13 +70,12 @@ class HuiVerticalStackCard extends LitElement
     `;
   }
 
-  // TODO updating hass on an element appears to update overall hass and gets me in a loop
-  // set hass(hass: HomeAssistant) {
-  //   this.hass = hass;
-  //   for (const el of this.shadowRoot.querySelectorAll('#root > *')) {
-  //     el.hass = hass;
-  //   };
-  // }
+  set hass(hass: HomeAssistant) {
+    this.mHass = hass;
+    for (const el of this.shadowRoot.querySelectorAll('#root > *')) {
+      el.hass = hass;
+    };
+  }
 }
 
 declare global {
