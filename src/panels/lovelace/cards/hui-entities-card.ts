@@ -39,7 +39,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
     if (this.shadowRoot) {
       this.shadowRoot
         .querySelectorAll("#states > *")
-        .forEach((element: any) => {
+        .forEach((element: unknown) => {
           (element as EntityRow).hass = hass;
         });
     }
