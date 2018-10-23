@@ -10,6 +10,7 @@ import "../../../components/ha-card.js";
 import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types.js";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { clearItems, fetchItems, addItem, completeItem, saveEdit } from "../../../data/shopping_list";
 
 interface Config extends LovelaceConfig {
   title?: string;
@@ -36,12 +37,28 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public getCardSize() {
-    return 1;
+    return (this.config ? (this.config.title ? 1 : 0) : 0) + (this.items ? this.items.length : 0);
   }
 
   public setConfig(config: Config) {
     this.config = config;
     this.items = [];
+    this._fetchData();
+  }
+
+  public connectedCallback() {
+    if (!this.hass) {
+      return;
+    }
+
+    super.connectedCallback();
+    this.hass.connection
+      .subscribeEvents(this._fetchData, "shopping_list_updated")
+      .then(() => this._fetchData());
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
   }
 
   protected render() {
@@ -49,14 +66,14 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
       return html``;
     }
 
-    // TODO Localize 'Add Item' text
+    // TODO placeholder='${this.localize('ui.panel.shopping-list.add_item')}' is coming back with an empty value
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this.config.title}">
         <div class="addRow">
           <paper-input
             id='addBox'
-            placeholder='Add Item'
+            placeholder='Add Me'
             @keydown='${(e) => this._addKeyPress(e)}'
             no-label-float
           ></paper-input>
@@ -67,13 +84,12 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
           ></paper-icon-button>
           <paper-icon-button
             slot="item-icon"
-            icon="mdi:notification-clear-all"
-            @click='${(e) => this._clearCompleted()}'
+            icon="hass:notification-clear-all"
+            @click='${() => this._clearItems()}'
           ></paper-icon-button>
         </div>
 
-      ${Object.values(this.items).map(item =>
-        html`
+      ${this.items!.map((item) => html`
         <paper-icon-item>
           <paper-checkbox
             slot="item-icon"
@@ -85,7 +101,7 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
             <paper-input
               id='editBox'
               no-label-float
-              value='${item.name}'
+              .value='${item.name}'
               @change='${(e) => this._saveEdit(e, item.id)}'
             ></paper-input>
           </paper-item-body>
@@ -131,80 +147,59 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private connectedCallback() {
-    super.connectedCallback();
-    this._fetchData = this._fetchData.bind(this);
-
-    this.hass.connection
-      .subscribeEvents(this._fetchData, "shopping_list_updated")
-      .then(
-        function(unsub) {
-          this._unsubEvents = unsub;
-        }.bind(this)
-      );
-    this._fetchData();
-  }
-
-  private disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubEvents) {
-      this._unsubEvents();
+  private _fetchData() {
+    if (this.hass) {
+      fetchItems(this.hass).then((items: {}) => this._assignItems(items));
     }
   }
 
-  private _fetchData() {
-    this.hass.callApi("GET", "shopping_list").then(
-      function(items) {
-        items.reverse();
-        this.items = items;
-      }.bind(this)
-    );
+  private _assignItems(items: {}) {
+    this.items = items as ListItem[];
+    this.items!.reverse();
   }
 
   private _itemCompleteTapped(ev, id) {
     ev.stopPropagation();
-    this.hass
-      .callApi("POST", "shopping_list/item/" + id, {
-        'complete': ev.target.checked,
-      })
-      .catch(() => this._fetchData());
+    if (this.hass) {
+      completeItem(this.hass, id, ev.target.checked).catch(() => this._fetchData());
+    }
   }
 
   private _addItem(ev) {
-    if (!this.shadowRoot.querySelector('#addBox').value) {
-      return;
-    }
+    if (this.shadowRoot && this.shadowRoot.querySelector("#addBox")) {
+      const root = this.shadowRoot.querySelector("#addBox") as HTMLInputElement;
+      const name = root.value;
 
-    this.hass.callApi("POST", "shopping_list/item", {
-      'name': this.shadowRoot.querySelector('#addBox').value,
-    }).catch(() => this._fetchData());
+      if (this.hass) {
+        addItem(this.hass, name).catch(() => this._fetchData());
+      }
 
-    this.shadowRoot.querySelector('#addBox').value = "";
-    // Presence of 'ev' means tap on "add" button.
-    if (ev) {
-      setTimeout(() => this.shadowRoot.querySelector('#addBox').focus(), 10);
+      root.value = "";
+      // Presence of 'ev' means tap on "add" button.
+      if (ev) {
+        setTimeout(() => root.focus(), 10);
+      }
     }
   }
 
-  private _addKeyPress(ev, id, name) {
+  private _addKeyPress(ev) {
     if (ev.keyCode === 13) {
-      this._addItem();
+      this._addItem(ev);
     }
   }
 
   private _saveEdit(ev, id) {
-    this.hass.callApi("POST", "shopping_list/item/" + id, {
-      'name': ev.target.value,
-    })
-    .catch(() => this._fetchData());
-
-    if (ev) {
-      setTimeout(() => ev.target.blur(), 10);
+    if (this.hass && ev.target.value) {
+      saveEdit(this.hass, id, ev.target.value).catch(() => this._fetchData());
     }
+
+    setTimeout(() => ev.target.blur(), 10);
   }
 
-  private _clearCompleted() {
-    this.hass.callApi("POST", "shopping_list/clear_completed");
+  private _clearItems() {
+    if (this.hass) {
+      clearItems(this.hass).catch(() => this._fetchData());
+    }
   }
 }
 
