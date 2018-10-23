@@ -1,3 +1,5 @@
+import { HomeAssistant } from "../../types";
+
 export interface LovelaceConfig {
   type: string;
 }
