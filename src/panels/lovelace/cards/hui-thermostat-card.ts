@@ -257,7 +257,7 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
 
   // ClassMap not working nor .icon
   private _renderIcon(mode, currentMode) {
-    return `<ha-icon
+    return html`<ha-icon
       class="${currentMode === mode ? "selected-icon" : ""}"
       id="${mode}"
       @click="${this._handleModeClick}"
