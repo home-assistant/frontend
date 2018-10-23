@@ -12,7 +12,7 @@ import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
 
 import "../../components/ha-menu-button.js";
 import "../../components/state-history-charts.js";
-import "../../data/ha-state-history-data.js";
+import "../../data/ha-state-history-data";
 import "../../resources/ha-date-picker-style.js";
 import "../../resources/ha-style.js";
 
