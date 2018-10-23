@@ -94,6 +94,7 @@ function findIcons(path, iconsetName) {
     }
   }
   mapFiles(path, ".js", processFile);
+  mapFiles(path, ".ts", processFile);
   return Array.from(icons);
 }
 
