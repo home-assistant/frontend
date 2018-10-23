@@ -255,7 +255,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
       Array.prototype.push.apply(datasets, data);
     });
 
-    const formatTooltipTitle = function(items, data) {
+    const formatTooltipTitle = (items, data) => {
       const item = items[0];
       const date = data.datasets[item.datasetIndex].data[item.index].x;
 
