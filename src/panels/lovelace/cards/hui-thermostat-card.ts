@@ -25,13 +25,6 @@ const thermostatConfig = {
   showTooltip: true,
 };
 
-const modeColor = {
-  auto: "green",
-  heat: "#FF8100",
-  cool: "#2b9af9",
-  off: "#8a8a8a",
-};
-
 const modeIcons = {
   auto: "mdi:autorenew",
   heat: "hass:fire",
@@ -49,6 +42,7 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   protected hass?: HomeAssistant;
   protected config?: Config;
+  protected roundSlider: any;
 
   static get properties() {
     return {
@@ -70,9 +64,12 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   }
 
   protected render() {
+    const stateObj = this.hass!.states[this.config!.entity];
+    const mode = stateObj.attributes.operation_mode;
     return html`
       ${this.renderStyle()}
-      <ha-card>
+      <ha-card
+        class="${mode}">
         <div
           .hass="${this.hass}"
           .config="${this.config}"
@@ -112,14 +109,16 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
       tooltipFormat: this.tooltip.bind(this),
       change: this.setTemperature.bind(this),
     });
+    this.roundSlider = $("#thermostat", this.shadowRoot).data("roundSlider");
   }
 
   protected updated(changedProps) {
     const stateObj = this.hass!.states[this.config!.entity];
 
-    $("#thermostat", this.shadowRoot).roundSlider({
-      value: stateObj.attributes.temperature,
-    });
+    this.roundSlider.setValue(stateObj.attributes.temperature);
+    this.shadowRoot!.querySelector(".current-mode")!.innerHTML = this.localize(
+      `state.climate.${stateObj.state}`
+    );
   }
 
   private renderStyle() {
@@ -151,24 +150,27 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
         display: inline-block;
         margin: 0 10px;
       }
+      .modes ha-icon.selected-icon {
+        color: var(--mode-color);
+      }
       .auto {
-        color: green !important;
+        --mode-color: green;
       }
       .cool {
-        color: #2b9af9 !important;
+        --mode-color: #2b9af9;
       }
       .heat {
-        color: #FF8100 !important;
+        --mode-color: #FF8100;
       }
       .off {
-        color: #8a8a8a !important;
+        --mode-color: #8a8a8a;
       }
       #thermostat {
         margin: 0 auto;
         padding-top: 25px;
       }
       #thermostat .rs-range-color  {
-        background-color: ${modeColor[stateObj.attributes.operation_mode]};
+        background-color: var(--mode-color, var(--disabled-text-color));
       }
       #thermostat .rs-path-color  {
           background-color: #d6d6d6;
@@ -179,11 +181,11 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
           border: 2px solid #d6d6d6;
       }
       #thermostat .rs-handle.rs-focus  {
-          border-color: ${modeColor[stateObj.attributes.operation_mode]};
+          border-color: var(--mode-color, var(--disabled-text-color));
       }
       #thermostat .rs-handle:after  {
-          border-color: ${modeColor[stateObj.attributes.operation_mode]};
-          background-color: ${modeColor[stateObj.attributes.operation_mode]};
+          border-color: var(--mode-color, var(--disabled-text-color));
+          background-color: var(--mode-color, var(--disabled-text-color));
       }
       #thermostat .rs-border  {
           border-color: transparent;
@@ -256,10 +258,10 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   // ClassMap not working nor .icon
   private renderIcon(mode, currentMode) {
     return `<ha-icon
-      class="${currentMode === mode ? mode : ""}"
+      class="${currentMode === mode ? "selected-icon" : ""}"
       id="${mode}"
       @click="${this._handleModeClick}"
-      .icon="${modeIcons[mode]}"
+      icon="${modeIcons[mode]}"
     ></ha-icon>`;
     // class="${classMap({ mode: currentMode === mode })}"
   }
