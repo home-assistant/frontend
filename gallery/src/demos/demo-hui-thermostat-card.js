@@ -6,10 +6,10 @@ import provideHass from "../data/provide_hass.js";
 import "../components/demo-cards.js";
 
 const ENTITIES = [
-    getEntity("climate", "ecobee", "auto", {
-      friendly_name: "Thermostat",
-    }),
-  ];
+  getEntity("climate", "ecobee", "auto", {
+    friendly_name: "Thermostat",
+  }),
+];
 
 const CONFIGS = [
   {

@@ -1,7 +1,9 @@
 import { html, LitElement } from "@polymer/lit-element";
+import { classMap } from "lit-html/directives/classMap.js";
 import roundSliderStyle from "round-slider/dist/roundslider.min.css";
 
 import "../../../components/ha-card.js";
+import "../../../components/ha-icon.js";
 import "../../../resources/jquery.roundslider";
 
 import { HomeAssistant } from "../../../types.js";
@@ -20,7 +22,6 @@ const thermostatConfig = {
   width: 5,
   lineCap: "round",
   handleSize: "+10",
-  handleShape: "dot",
   showTooltip: true,
 };
 
@@ -36,31 +37,6 @@ const modeIcons = {
   heat: "hass:fire",
   cool: "hass:snowflake",
   off: "mdi:fan-off",
-};
-
-const thermostatState = {
-  entity_id: "climate.thermostat",
-  state: "cool",
-  attributes: {
-    current_temperature: 73,
-    min_temp: 50,
-    max_temp: 90,
-    temperature: 70,
-    target_temp_high: 75,
-    target_temp_low: 65,
-    fan_mode: "Auto Low",
-    fan_list: ["On Low", "On High", "Auto Low", "Auto High", "Off"],
-    operation_mode: "cool",
-    operation_list: ["heat", "cool", "auto", "off"],
-    hold_mode: "home",
-    swing_mode: "Auto",
-    swing_list: ["Auto", "1", "2", "3", "Off"],
-    unit_of_measurement: "°F",
-    friendly_name: "Ecobee",
-    supported_features: 1014,
-  },
-  last_changed: "2018-07-19T10:44:46.200333+00:00",
-  last_updated: "2018-07-19T10:44:46.200333+00:00",
 };
 
 interface Config extends LovelaceConfig {
@@ -94,10 +70,6 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   }
 
   protected render() {
-    const thermostat = { "climate.thermostat": thermostatState };
-    this.hass!.states = { ...thermostat, ...this.hass!.states };
-    const stateObj = this.hass!.states[this.config!.entity];
-
     return html`
       ${this.renderStyle()}
       <ha-card>
@@ -107,57 +79,21 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
           .localize="${this.localize}"
           id="thermostat"
         ></div>
-        <div class="climate-info">
-          <div id="set-temperature">${stateObj.attributes.temperature}</div>
-          <div class="current-mode">${this.localize(
-            `state.climate.${stateObj.state}`
-          )}ing</div>
-          <div class="modes">
-            <ha-icon
-              class="${
-                stateObj.attributes.operation_mode === "auto"
-                  ? "selected-icon"
-                  : ""
-              }"
-              entity="${stateObj.entity_id}"
-              id="auto"
-              @click="${this.handleModeClick}"
-              icon="${modeIcons.auto}"
-            ></ha-icon>
-            <ha-icon
-              class="${
-                stateObj.attributes.operation_mode === "heat"
-                  ? "selected-icon"
-                  : ""
-              }"
-              id="heat"
-              @click="${this.handleModeClick}"
-              icon="${modeIcons.heat}"></ha-icon>
-            <ha-icon
-              class="${
-                stateObj.attributes.operation_mode === "cool"
-                  ? "selected-icon"
-                  : ""
-              }"
-              id="cool"
-              @click="${this.handleModeClick}"
-              icon="${modeIcons.cool}"></ha-icon>
-            <ha-icon
-              class="${
-                stateObj.attributes.operation_mode === "off"
-                  ? "selected-icon"
-                  : ""
-              }"
-              id="off"
-              @click="${this.handleModeClick}"
-              icon="${modeIcons.off}"></ha-icon>
-          </div>
-        </div>
       </ha-card>
     `;
   }
 
-  protected updated(changedProperties) {
+  protected shouldUpdate(changedProps) {
+    if (changedProps.get("hass")) {
+      return changedProps.get("hass").states[this.config!.entity] !==
+        this.hass!.states[this.config!.entity]
+        ? true
+        : false;
+    }
+    return changedProps;
+  }
+
+  protected firstUpdated(changedProps) {
     const stateObj = this.hass!.states[this.config!.entity];
 
     $("#thermostat", this.shadowRoot).roundSlider({
@@ -173,9 +109,16 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
       lineCap: thermostatConfig.lineCap,
       showTooltip: thermostatConfig.showTooltip,
       editableTooltip: false,
-      value: stateObj.attributes.temperature,
       tooltipFormat: this.tooltip.bind(this),
       change: this.setTemperature.bind(this),
+    });
+  }
+
+  protected updated(changedProps) {
+    const stateObj = this.hass!.states[this.config!.entity];
+
+    $("#thermostat", this.shadowRoot).roundSlider({
+      value: stateObj.attributes.temperature,
     });
   }
 
@@ -183,107 +126,124 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
     const stateObj = this.hass!.states[this.config!.entity];
 
     return html`
-    <style>
-
-    ha-card {
-      overflow: hidden;
-    }
-
-    .modes {
-      padding-top: 5px;
-    }
-
-    .title {
-      font-size: ${Math.round($(this).outerWidth() / 18)}px;
-      padding-bottom: 40px;
-    }
-
-    .climate-info {
-      position: absolute;
-      bottom: -3%;
-      left: 50%;
-      transform: translate(-50%,-50%);
-      z-index: 5;
-      text-align: center;
-    }
-
-    .modes ha-icon {
-      color: var(--disabled-text-color);
-      cursor: pointer;
-      padding: 0 10px;
-    }
-
-    .modes .selected-icon {
-      color: ${modeColor[stateObj.attributes.operation_mode]};
-    }
-
-    #thermostat {
-      margin: 0 auto;
-      padding-top: 25px;
-    }
-
-   #thermostat .rs-range-color  {
-      background-color: ${modeColor[stateObj.attributes.operation_mode]};
-    }
-    #thermostat .rs-path-color  {
-        background-color: #d6d6d6;
-    }
-    #thermostat .rs-handle  {
-        background-color: #FFF;
-        padding: 7px;
-        border: 2px solid #d6d6d6;
-    }
-    #thermostat .rs-handle.rs-focus  {
-        border-color: ${modeColor[stateObj.attributes.operation_mode]};
-    }
-    #thermostat .rs-handle:after  {
-        border-color: ${modeColor[stateObj.attributes.operation_mode]};
-        background-color: ${modeColor[stateObj.attributes.operation_mode]};
-    }
-    #thermostat .rs-border  {
-        border-color: transparent;
-    }
-
-    #set-temperature {
-      font-size: ${Math.round($(this).outerWidth() / 20)}px;
-      padding-bottom: 5px;
-    }
-
-    .current-temperature {
-      margin-top: 18px;
-      margin-bottom: 50px;
-    }
-
-    .current-temperature-text {
-      padding-left: 15px;
-    }
-
-    .uom {
-      font-size: 20px;
-      vertical-align: top;
-    }
-
-    .current-mode {
-      font-size: ${Math.round($(this).outerWidth() / 30)}px;
-      padding-bottom: 5px;
-      color: var(--secondary-text-color);
-    }
-    #thermostat .full .rs-tooltip {
-    }
-    </style>
     <style>${roundSliderStyle}</style>
+    <style>
+      ha-card {
+        overflow: hidden;
+      }
+      .modes {
+        display: inline-flex;
+      }
+      .title {
+        font-size: 28px;
+        padding-bottom: 40px;
+      }
+      .climate-info {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        z-index: 5;
+        text-align: center;
+      }
+      .modes ha-icon {
+        color: var(--disabled-text-color);
+        cursor: pointer;
+        display: inline-block;
+        margin: 0 10px;
+      }
+      .auto {
+        color: green !important;
+      }
+      .cool {
+        color: #2b9af9 !important;
+      }
+      .heat {
+        color: #FF8100 !important;
+      }
+      .off {
+        color: #8a8a8a !important;
+      }
+      #thermostat {
+        margin: 0 auto;
+        padding-top: 25px;
+      }
+      #thermostat .rs-range-color  {
+        background-color: ${modeColor[stateObj.attributes.operation_mode]};
+      }
+      #thermostat .rs-path-color  {
+          background-color: #d6d6d6;
+      }
+      #thermostat .rs-handle  {
+          background-color: #FFF;
+          padding: 7px;
+          border: 2px solid #d6d6d6;
+      }
+      #thermostat .rs-handle.rs-focus  {
+          border-color: ${modeColor[stateObj.attributes.operation_mode]};
+      }
+      #thermostat .rs-handle:after  {
+          border-color: ${modeColor[stateObj.attributes.operation_mode]};
+          background-color: ${modeColor[stateObj.attributes.operation_mode]};
+      }
+      #thermostat .rs-border  {
+          border-color: transparent;
+      }
+      #set-temperature {
+        font-size: 25px;
+        padding-bottom: 5px;
+      }
+      .current-temperature {
+        margin-top: 18px;
+        margin-bottom: 50px;
+      }
+      .current-temperature-text {
+        padding-left: 15px;
+      }
+      .uom {
+        font-size: 20px;
+        vertical-align: top;
+      }
+      .current-mode {
+        font-size: 17px;
+        color: var(--secondary-text-color);
+      }
+      .rs-tooltip {
+        color: var(--primary-text-color);
+      }
+      .full .rs-tooltip {
+        top: 45%;
+        left: 50%;
+      }
+      .rs-tooltip-text {
+        font-size: 71px;
+        border-radius: 7px;
+        text-align: center;
+      }
+    </style>
     `;
+    // TODO: Need to create a dynamic way of styling rs-range-color as well as dynamic text sizing (Use resizeObserver)
+    // TODO: Localize to verbage Auto, Heating Cooling etc when not idling
   }
 
   private tooltip(e) {
     const stateObj = this.hass!.states[this.config!.entity];
-    $("#set-temperature", this.shadowRoot).text(e.value);
     return `<div class="title">Upstairs</div>
       <div class="current-temperature"><span class="current-temperature-text">${
         stateObj.attributes.current_temperature
-      }</span><span class="uom">${
-      stateObj.attributes.unit_of_measurement
-    }</span></div>`;
+      }</span><span class="uom">&deg;F</span></div>
+      <div class="climate-info">
+      <div id="set-temperature">${e.value}</div>
+      <div class="current-mode">${this.localize(
+        `state.climate.${stateObj.state}`
+      )}</div>
+      <div class="modes">
+        ${stateObj.attributes.operation_list
+          .map((mode) =>
+            this.renderIcon(mode, stateObj.attributes.operation_mode)
+          )
+          .join("")}
+      </div>
+    </div>`; // TODO: Need to localize Unit of Measurement
   }
 
   private setTemperature(e) {
@@ -293,21 +253,21 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
     });
   }
 
-  private renderIcon(mode, stateObj) {
-    return html`<ha-icon
-      class="${stateObj.current === mode ? mode : ""}"
-      .mode="${mode}"
-      .entity="${stateObj.entity}"
-      @click="${this.handleModeClick}"
-      icon="${modeIcons[mode]}"
+  // ClassMap not working nor .icon
+  private renderIcon(mode, currentMode) {
+    return `<ha-icon
+      class="${currentMode === mode ? mode : ""}"
+      id="${mode}"
+      @click="${this._handleModeClick}"
+      .icon="${modeIcons[mode]}"
     ></ha-icon>`;
+    // class="${classMap({ mode: currentMode === mode })}"
   }
 
-  private handleModeClick(e: MouseEvent) {
-    thermostatState.attributes.operation_mode = e.currentTarget!.id;
-    thermostatState.state = e.currentTarget!.id;
+  // TODO: Need to find out why this isn't working
+  private _handleModeClick(e: MouseEvent) {
     this.hass!.callService("climate", "set_operation_mode", {
-      entity_id: e.currentTarget!.entity,
+      entity_id: this.config.entity,
       mode: e.currentTarget!.id,
     });
   }
