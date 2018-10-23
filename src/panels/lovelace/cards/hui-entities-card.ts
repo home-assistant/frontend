@@ -6,7 +6,7 @@ import "../components/hui-entities-toggle.js";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const.js";
 import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig, EntityRow } from "../types.js";
+import { LovelaceCard, LovelaceConfig } from "../types.js";
 import createRowElement from "../common/create-row-element.js";
 import computeDomain from "../../../common/entity/compute_domain.js";
 import processConfigEntities from "../common/process-config-entities";
@@ -32,7 +32,7 @@ interface Config extends LovelaceConfig {
 
 class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  protected hass?: HomeAssistant;
+  protected _hass?: HomeAssistant;
   protected config?: Config;
   protected configEntities?: EntityConfig[];
 
@@ -50,7 +50,6 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
 
   static get properties(): PropertyDeclarations {
     return {
-      _hass: {},
       config: {},
     };
   }
