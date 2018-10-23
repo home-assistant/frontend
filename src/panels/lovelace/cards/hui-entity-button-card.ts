@@ -26,7 +26,7 @@ interface Config extends LovelaceConfig {
 
 class HuiEntityButtonCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  protected hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   protected config?: Config;
 
   static get properties(): PropertyDeclarations {
