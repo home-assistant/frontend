@@ -11,11 +11,9 @@ import createRowElement from "../common/create-row-element.js";
 import computeDomain from "../../../common/entity/compute_domain.js";
 import processConfigEntities from "../common/process-config-entities";
 import { HomeAssistant } from "../../../types.js";
+import { EntityConfig, EntityRow } from "../entity-rows/types.js";
 
-interface EntityConfig {
-  name?: string;
-  icon?: string;
-  entity: string;
+interface ConfigEntity extends EntityConfig {
   type?: string;
   secondary_info: "entity-id" | "last-changed";
   action_name?: string;
@@ -27,23 +25,22 @@ interface EntityConfig {
 interface Config extends LovelaceConfig {
   show_header_toggle?: boolean;
   title?: string;
-  entities: EntityConfig[];
+  entities: ConfigEntity[];
 }
 
 class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   protected _hass?: HomeAssistant;
   protected config?: Config;
-  protected configEntities?: EntityConfig[];
+  protected configEntities?: ConfigEntity[];
 
   set hass(hass) {
     this._hass = hass;
-    if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
+    if (this.shadowRoot) {
       this.shadowRoot
-        .querySelector("ha-card")!
-        .querySelectorAll("#states > div > *")
+        .querySelectorAll("#states > *")
         .forEach((element: any) => {
-          element.hass = hass;
+          (element as EntityRow).hass = hass;
         });
     }
   }
@@ -133,10 +130,10 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
         #states {
           margin: -4px 0;
         }
-        #states > div {
+        #states > * {
           margin: 4px 0;
         }
-        #states > div > * {
+        #states > * {
           overflow: hidden;
         }
         .header {
@@ -168,19 +165,19 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
       !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
     ) {
       element.classList.add("state-card-dialog");
-      element.onclick = this.handleClick;
+      // element.onclick = this.handleClick;
+      element.addEventListener("click", this.handleClick);
     }
 
     return html`
-      <div>
       ${element}
-      </div>
     `;
   }
 
   private handleClick(ev: MouseEvent) {
-    const config = (ev.currentTarget as any).entityConf as EntityConfig;
+    const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     const entityId = config.entity;
+    console.log("clicked");
 
     fireEvent(this, "hass-more-info", { entityId });
   }
