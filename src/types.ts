@@ -47,7 +47,7 @@ export interface Translation {
 
 export interface HomeAssistant {
   auth: Auth;
-  conn: Connection;
+  connection: Connection;
   connected: boolean;
   states: HassEntities;
   config: HassConfig;
