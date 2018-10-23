@@ -37,7 +37,7 @@ interface Config extends LovelaceConfig {
 
 export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  protected hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   protected config?: Config;
   protected configEntities?: EntityConfig[];
 
