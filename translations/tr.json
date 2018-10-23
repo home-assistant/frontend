@@ -80,8 +80,8 @@
                 "on": "Güvensiz"
             },
             "presence": {
-                "off": "[%key:state::device_tracker::dışarda%]",
-                "on": "[%key:state::device_tracker::ev%]"
+                "off": "Dışarda",
+                "on": "Evde"
             },
             "battery": {
                 "off": "Normal",
@@ -250,7 +250,7 @@
             "arming": "Etkinleştir",
             "disarming": "Etkisiz",
             "triggered": "Tetiklendi",
-            "armed_custom_bypass": "[%key:state_badge::alarm_control_panel::alarm_kuruldu%]"
+            "armed_custom_bypass": "Etkin"
         },
         "device_tracker": {
             "home": "Evde",
@@ -318,11 +318,66 @@
                 "automation": {
                     "caption": "Otomasyon",
                     "description": "Otomasyonları oluşturun ve düzenleyin",
+                    "picker": {
+                        "header": "Otomasyon Düzenleyici"
+                    },
                     "editor": {
                         "triggers": {
+                            "delete": "Sil",
                             "type": {
+                                "sun": {
+                                    "event": "Olay:"
+                                },
+                                "zone": {
+                                    "zone": "Bölge",
+                                    "event": "Olay:"
+                                },
                                 "state": {
                                     "for": "İçin"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "duplicate": "Kopya",
+                            "delete": "Sil",
+                            "delete_confirm": "Silmek istediğinizden emin misiniz?",
+                            "unsupported_condition": "Desteklenmeyen durum: {durum}",
+                            "type": {
+                                "state": {
+                                    "label": "Durum",
+                                    "state": "Durum"
+                                },
+                                "numeric_state": {
+                                    "label": "Sayısal durum",
+                                    "above": "Üzerinde",
+                                    "below": "Altında",
+                                    "value_template": "Değer şablonu (isteğe bağlı)"
+                                },
+                                "sun": {
+                                    "label": "Güneş"
+                                },
+                                "template": {
+                                    "label": "Şablon",
+                                    "value_template": "Değer şablonu"
+                                },
+                                "time": {
+                                    "label": "Zaman"
+                                },
+                                "zone": {
+                                    "entity": "Konumlu girdi"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "duplicate": "Kopya",
+                            "delete": "Sil",
+                            "type": {
+                                "delay": {
+                                    "delay": "Gecikme"
+                                },
+                                "event": {
+                                    "event": "Olay:",
+                                    "service_data": "Hizmet verisi"
                                 }
                             }
                         }
@@ -363,6 +418,12 @@
                 }
             },
             "profile": {
+                "push_notifications": {
+                    "description": "Bu cihaza bildirimler gönder"
+                },
+                "refresh_tokens": {
+                    "description": "Her yenileme jetonu bir oturum açma oturumunu temsil eder. Yenileme jetonları, çıkış yapmak istediğinizde otomatik olarak kaldırılacaktır. Aşağıdaki yenileme jetonları hesabınız için şu anda aktif."
+                },
                 "long_lived_access_tokens": {
                     "not_used": "Hiç kullanılmamış"
                 },
@@ -400,7 +461,7 @@
         },
         "duration": {
             "day": "{count}{count, plural,\n  one { gün }\n  other { gün }\n}",
-            "week": "{count}{count, plural,\n  one { hafta }\n  other { hafta }\n}",
+            "week": "{say}{say, çoğul,\n  bir { hafta }\n  diğer { hafta }\n}",
             "second": "{count}{count, plural,\n  one { saniye }\n  other { saniye }\n}"
         },
         "login-form": {
@@ -422,6 +483,9 @@
                 "operation": "İşlem",
                 "away_mode": "Dışarıda modu"
             }
+        },
+        "auth_store": {
+            "confirm": "Girişi kaydet"
         }
     },
     "domain": {
@@ -433,7 +497,7 @@
         "climate": "İklim",
         "configurator": "Yapılandırıcı",
         "conversation": "Konuşma",
-        "cover": "Kapak",
+        "cover": "Panjur",
         "device_tracker": "Cihaz izleyici",
         "fan": "Fan",
         "history_graph": "Geçmiş grafiği",
