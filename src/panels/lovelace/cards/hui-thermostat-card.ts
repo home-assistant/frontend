@@ -107,7 +107,7 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
       showTooltip: thermostatConfig.showTooltip,
       editableTooltip: false,
       tooltipFormat: this.tooltip.bind(this),
-      change: this.setTemperature.bind(this),
+      change: this._setTemperature.bind(this),
     });
     this.roundSlider = $("#thermostat", this.shadowRoot).data("roundSlider");
   }
@@ -241,14 +241,14 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
       <div class="modes">
         ${stateObj.attributes.operation_list
           .map((mode) =>
-            this.renderIcon(mode, stateObj.attributes.operation_mode)
+            this._renderIcon(mode, stateObj.attributes.operation_mode)
           )
           .join("")}
       </div>
     </div>`; // TODO: Need to localize Unit of Measurement
   }
 
-  private setTemperature(e) {
+  private _setTemperature(e) {
     this.hass!.callService("climate", "set_temperature", {
       entity_id: this.config!.entity,
       temperature: e.value,
@@ -256,7 +256,7 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   }
 
   // ClassMap not working nor .icon
-  private renderIcon(mode, currentMode) {
+  private _renderIcon(mode, currentMode) {
     return `<ha-icon
       class="${currentMode === mode ? "selected-icon" : ""}"
       id="${mode}"
@@ -269,7 +269,7 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   // TODO: Need to find out why this isn't working
   private _handleModeClick(e: MouseEvent) {
     this.hass!.callService("climate", "set_operation_mode", {
-      entity_id: this.config.entity,
+      entity_id: this.config!.entity,
       mode: e.currentTarget!.id,
     });
   }
