@@ -11,6 +11,8 @@ import {
   LocalizeMixin,
 } from "./localize-base-mixin";
 
+const empty = () => "";
+
 export const HassLocalizeLitMixin = <T extends LitElement>(
   superClass: Constructor<T>
 ): Constructor<T & LocalizeMixin> =>
@@ -24,6 +26,12 @@ export const HassLocalizeLitMixin = <T extends LitElement>(
         hass: {},
         localize: {},
       };
+    }
+
+    constructor() {
+      super();
+      // This will prevent undefined errors if called before connected to DOM.
+      this.localize = empty;
     }
 
     public connectedCallback(): void {

@@ -155,7 +155,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
 
   static get observers() {
     return [
-      "filterChangedDebouncer(filterType, entityId, startTime, endTime, cacheConfig, localize, language)",
+      "filterChangedDebouncer(filterType, entityId, startTime, endTime, cacheConfig, localize)",
     ];
   }
 
@@ -167,8 +167,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       this.startTime,
       this.endTime,
       this.cacheConfig,
-      this.localize,
-      this.hass.language
+      this.localize
     );
   }
 
@@ -188,8 +187,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
         this.startTime,
         this.endTime,
         this.cacheConfig,
-        this.localize,
-        this.hass.language
+        this.localize
       );
     }
   }
@@ -210,13 +208,19 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     startTime,
     endTime,
     cacheConfig,
-    localize,
-    language
+    localize
   ) {
-    if (!this.hass) return;
-    if (cacheConfig && !cacheConfig.cacheKey) return;
-    if (!localize || !language) return;
+    if (!this.hass) {
+      return;
+    }
+    if (cacheConfig && !cacheConfig.cacheKey) {
+      return;
+    }
+    if (!localize) {
+      return;
+    }
     this._madeFirstCall = true;
+    const language = this.hass.language;
     let data;
 
     if (filterType === "date") {
