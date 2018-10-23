@@ -26,7 +26,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return html`
     <style>
       :host(:not([narrow])) .device-entities {
-        max-height: 400px;
+        max-height: 225px;
         overflow: auto;
       }
       paper-card {
