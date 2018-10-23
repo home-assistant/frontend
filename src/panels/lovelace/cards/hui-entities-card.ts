@@ -177,7 +177,6 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   private handleClick(ev: MouseEvent) {
     const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     const entityId = config.entity;
-    console.log("clicked");
 
     fireEvent(this, "hass-more-info", { entityId });
   }
