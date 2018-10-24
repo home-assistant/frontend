@@ -165,9 +165,7 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
       element.addEventListener("click", () => this._handleClick(entityConf));
     }
 
-    return html`
-      ${element}
-    `;
+    return element;
   }
 
   private _handleClick(entityConf: ConfigEntity) {
