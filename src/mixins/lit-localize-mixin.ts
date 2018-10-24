@@ -6,18 +6,18 @@ import {
 } from "@polymer/lit-element";
 import { HomeAssistant } from "../types";
 import {
-  LocalizeBaseMixin,
+  localizeBaseMixin,
   LocalizeFunc,
   LocalizeMixin,
 } from "./localize-base-mixin";
 
 const empty = () => "";
 
-export const HassLocalizeLitMixin = <T extends LitElement>(
+export const hassLocalizeLitMixin = <T extends LitElement>(
   superClass: Constructor<T>
 ): Constructor<T & LocalizeMixin> =>
   // @ts-ignore
-  class extends LocalizeBaseMixin(superClass) {
+  class extends localizeBaseMixin(superClass) {
     protected hass?: HomeAssistant;
     protected localize!: LocalizeFunc;
 
