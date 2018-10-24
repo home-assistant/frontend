@@ -24,5 +24,5 @@ export type EntityRowConfig =
 
 export interface EntityRow {
   hass: HomeAssistant;
-  setConfig(config: EntityConfig);
+  setConfig(config: EntityRowConfig);
 }
