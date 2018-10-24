@@ -36,13 +36,11 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
 
   set hass(hass) {
     this._hass = hass;
-    if (this.shadowRoot) {
-      this.shadowRoot
-        .querySelectorAll("#states > *")
-        .forEach((element: unknown) => {
-          (element as EntityRow).hass = hass;
-        });
-    }
+    this.shadowRoot!.querySelectorAll("#states > *").forEach(
+      (element: unknown) => {
+        (element as EntityRow).hass = hass;
+      }
+    );
   }
 
   static get properties(): PropertyDeclarations {
@@ -159,14 +157,12 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
   private renderEntity(entityConf) {
     const element = createRowElement(entityConf);
     element.hass = this._hass;
-    element.entityConf = entityConf;
     if (
       entityConf.entity &&
       !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
     ) {
       element.classList.add("state-card-dialog");
-      // element.onclick = this.handleClick;
-      element.addEventListener("click", this.handleClick);
+      element.addEventListener("click", () => this._handleClick(entityConf));
     }
 
     return html`
@@ -174,9 +170,8 @@ class HuiEntitiesCard extends HassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private handleClick(ev: MouseEvent) {
-    const config = (ev.currentTarget as any).entityConf as ConfigEntity;
-    const entityId = config.entity;
+  private _handleClick(entityConf: ConfigEntity) {
+    const entityId = entityConf.entity;
 
     fireEvent(this, "hass-more-info", { entityId });
   }
