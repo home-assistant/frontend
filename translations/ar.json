@@ -13,7 +13,8 @@
         "dev-templates": "نماذج",
         "dev-mqtt": "MQTT",
         "dev-info": "معلومات",
-        "calendar": "التقويم"
+        "calendar": "التقويم",
+        "profile": "الملف الشخصي"
     },
     "state": {
         "default": {
@@ -365,7 +366,8 @@
                                 "state": {
                                     "label": "الحالة",
                                     "from": "من",
-                                    "to": "إلى"
+                                    "to": "إلى",
+                                    "for": "لـ"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -510,6 +512,31 @@
                         "deactivate_user": "إلغاء تنشيط المستخدم",
                         "delete_user": "حذف المستخدم"
                     }
+                },
+                "cloud": {
+                    "caption": "كلاود هوم اسيستينت",
+                    "description_login": "تم تسجيل الدخول كـ {email}",
+                    "description_not_login": "لم يتم تسجيل الدخول"
+                },
+                "integrations": {
+                    "caption": "تكاملات",
+                    "description": "إدارة الأجهزة والخدمات المتصلة",
+                    "discovered": "مكتشف",
+                    "configured": "تم الإعداد",
+                    "new": "إعداد تكامل جديد",
+                    "configure": "إعداد",
+                    "none": "لم يتم الإعداد بعد",
+                    "config_entry": {
+                        "no_devices": "هذا التكامل لا يوجد لديه الأجهزة.",
+                        "no_device": "عناصر بدون أجهزة",
+                        "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
+                        "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل",
+                        "manuf": "بواسطة {manufacturer}",
+                        "hub": "متصل من خلال",
+                        "firmware": "نظام التشغيل {version}",
+                        "device_unavailable": "الجهاز غير متوفر",
+                        "entity_unavailable": "العنصر غير متوفر"
+                    }
                 }
             },
             "profile": {
@@ -530,6 +557,38 @@
                     "error_no_theme": "لا توجد تصاميم متاحة.",
                     "link_promo": "تعرف على التصاميم",
                     "dropdown_label": "التصميم"
+                },
+                "refresh_tokens": {
+                    "last_used": "آخر استخدام بتاريخ {date} من {location}",
+                    "not_used": "لم يتم استخدامها ابدأ"
+                },
+                "long_lived_access_tokens": {
+                    "last_used": "آخر استخدام بتاريخ {date} من {location}",
+                    "not_used": "لم يتم استخدامها ابدأ"
+                },
+                "current_user": "أنت مسجّل الدخول حاليًا كـ {fullName} .",
+                "is_owner": "أنت مالك",
+                "logout": "تسجيل الخروج",
+                "change_password": {
+                    "header": "تغيير كلمة السر",
+                    "current_password": "كلمة السر الحالية",
+                    "new_password": "كلمة السر الجديدة",
+                    "confirm_new_password": "تأكيد كلمة السر الجديدة",
+                    "error_required": "مطلوب",
+                    "submit": "إرسال"
+                },
+                "mfa": {
+                    "header": "وحدات التحقق متعددة العوامل",
+                    "disable": "تعطيل",
+                    "enable": "تفعيل",
+                    "confirm_disable": "هل تريد حقا الغاء تفعيل {name}؟"
+                },
+                "mfa_setup": {
+                    "title_aborted": "تم الإلغاء",
+                    "title_success": "تم بنجاح",
+                    "step_done": "تم التنصيب لـ {step}",
+                    "close": "إغلاق",
+                    "submit": "إرسال"
                 }
             },
             "page-onboarding": {
@@ -599,6 +658,13 @@
                     "turn_on": "تشغيل",
                     "turn_off": "إيقاف"
                 }
+            },
+            "water_heater": {
+                "currently": "حاليا",
+                "on_off": "إيقاف\/تشغيل",
+                "target_temperature": "درجة الحرارة المستهدفة",
+                "operation": "تشغيل",
+                "away_mode": "حالة خارج المنزل"
             }
         },
         "components": {
