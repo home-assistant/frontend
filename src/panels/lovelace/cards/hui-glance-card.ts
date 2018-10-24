@@ -13,7 +13,7 @@ import "../../../components/ha-card.js";
 import "../../../components/ha-icon.js";
 
 import { fireEvent } from "../../../common/dom/fire_event.js";
-import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types.js";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 
@@ -35,7 +35,7 @@ interface Config extends LovelaceConfig {
   columns?: number;
 }
 
-export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
+export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
   protected config?: Config;
@@ -49,7 +49,9 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
   }
 
   public getCardSize() {
-    return (this.config!.title ? 1 : 0) + Math.ceil(this.configEntities!.length / 5);
+    return (
+      (this.config!.title ? 1 : 0) + Math.ceil(this.configEntities!.length / 5)
+    );
   }
 
   public setConfig(config: Config) {
@@ -86,7 +88,9 @@ export class HuiGlanceCard extends HassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-          ${this.configEntities!.map(entityConf => this.renderEntity(entityConf))}
+          ${this.configEntities!.map((entityConf) =>
+            this.renderEntity(entityConf)
+          )}
         </div>
       </ha-card>
     `;
