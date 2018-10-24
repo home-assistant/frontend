@@ -10,13 +10,20 @@ import "../../../components/ha-card.js";
 import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types.js";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
-import { clearItems, fetchItems, addItem, completeItem, saveEdit } from "../../../data/shopping_list";
+import {
+  clearItems,
+  fetchItems,
+  addItem,
+  completeItem,
+  saveEdit,
+} from "../../../data/shopping_list";
+import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceConfig {
   title?: string;
 }
 
-interface ListItem {
+export interface ShoppingListItem {
   id: number;
   name: string;
   complete: boolean;
@@ -24,29 +31,31 @@ interface ListItem {
 
 class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  protected hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   protected config?: Config;
-  private items?: ListItem[];
+  private items?: ShoppingListItem[];
 
   static get properties() {
     return {
-      hass: {},
       config: {},
-      items: [],
+      items: {},
     };
   }
 
-  public getCardSize() {
-    return (this.config ? (this.config.title ? 1 : 0) : 0) + (this.items ? this.items.length : 0);
+  public getCardSize(): number {
+    return (
+      (this.config ? (this.config.title ? 1 : 0) : 0) +
+      (this.items ? this.items.length : 3)
+    );
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     this.config = config;
     this.items = [];
     this._fetchData();
   }
 
-  public connectedCallback() {
+  public connectedCallback(): void {
     if (!this.hass) {
       return;
     }
@@ -57,23 +66,22 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
       .then(() => this._fetchData());
   }
 
-  public disconnectedCallback() {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (!this.config || !this.hass) {
       return html``;
     }
 
-    // TODO placeholder='${this.localize('ui.panel.shopping-list.add_item')}' is coming back with an empty value
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this.config.title}">
         <div class="addRow">
           <paper-input
             id='addBox'
-            placeholder='Add Me'
+            placeholder='${this.localize("ui.panel.shopping-list.add_item")}'
             @keydown='${(e) => this._addKeyPress(e)}'
             no-label-float
           ></paper-input>
@@ -89,29 +97,32 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
           ></paper-icon-button>
         </div>
 
-      ${this.items!.map((item) => html`
+      ${this.items!.map(
+        (item) => html`
         <paper-icon-item>
           <paper-checkbox
             slot="item-icon"
             ?checked=${item.complete}
-            @click='${(e) => this._itemCompleteTapped(e, item.id)}'
+            .itemId=${item.id}
+            @click='${(e) => this._itemCompleteTapped(e)}'
             tabindex='0'
           ></paper-checkbox>
           <paper-item-body>
             <paper-input
-              id='editBox'
               no-label-float
               .value='${item.name}'
-              @change='${(e) => this._saveEdit(e, item.id)}'
+              .itemId=${item.id}
+              @change='${(e) => this._saveEdit(e)}'
             ></paper-input>
           </paper-item-body>
         </paper-icon-item>
-        `)}
+        `
+      )}
       </ha-card>
     `;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         .addRow {
@@ -147,27 +158,26 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _fetchData() {
+  private async _fetchData(): Promise<ShoppingListItem[]> {
     if (this.hass) {
-      fetchItems(this.hass).then((items: {}) => this._assignItems(items));
+      this.items = await fetchItems(this.hass);
+      this.items.reverse();
     }
+
+    return this.items!;
   }
 
-  private _assignItems(items: {}) {
-    this.items = items as ListItem[];
-    this.items!.reverse();
+  private _itemCompleteTapped(ev): void {
+    completeItem(this.hass!, ev.target.itemId, ev.target.checked).catch(() =>
+      this._fetchData()
+    );
   }
 
-  private _itemCompleteTapped(ev, id) {
-    ev.stopPropagation();
-    if (this.hass) {
-      completeItem(this.hass, id, ev.target.checked).catch(() => this._fetchData());
-    }
-  }
-
-  private _addItem(ev) {
-    if (this.shadowRoot && this.shadowRoot.querySelector("#addBox")) {
-      const root = this.shadowRoot.querySelector("#addBox") as HTMLInputElement;
+  private _addItem(ev): void {
+    if (this.shadowRoot!.querySelector("#addBox")) {
+      const root = this.shadowRoot!.querySelector(
+        "#addBox"
+      ) as HTMLInputElement;
       const name = root.value;
 
       if (this.hass) {
@@ -182,21 +192,21 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
     }
   }
 
-  private _addKeyPress(ev) {
+  private _addKeyPress(ev): void {
     if (ev.keyCode === 13) {
       this._addItem(ev);
     }
   }
 
-  private _saveEdit(ev, id) {
-    if (this.hass && ev.target.value) {
-      saveEdit(this.hass, id, ev.target.value).catch(() => this._fetchData());
-    }
+  private _saveEdit(ev): void {
+    saveEdit(this.hass!, ev.target.itemId, ev.target.value).catch(() =>
+      this._fetchData()
+    );
 
     setTimeout(() => ev.target.blur(), 10);
   }
 
-  private _clearItems() {
+  private _clearItems(): void {
     if (this.hass) {
       clearItems(this.hass).catch(() => this._fetchData());
     }
