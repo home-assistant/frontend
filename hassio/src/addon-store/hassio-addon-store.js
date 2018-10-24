@@ -53,7 +53,7 @@ class HassioAddonStore extends PolymerElement {
     if (b.slug === "core") {
       return 1;
     }
-    return a.name < b.name ? -1 : 1;
+    return a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1;
   }
 
   computeAddons(repo) {
