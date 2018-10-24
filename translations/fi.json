@@ -529,6 +529,7 @@
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
+                    "description_login": "Kirjautunut sisään {email}",
                     "description_not_login": "Et ole kirjautunut"
                 },
                 "integrations": {
@@ -544,6 +545,7 @@
                         "no_device": "Kokonaisuudet ilman laitteita",
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
+                        "manuf": "{manufacturer}",
                         "hub": "Yhdistetty kautta",
                         "firmware": "Laiteohjelmisto: {version}",
                         "device_unavailable": "laite ei saatavissa",
@@ -590,6 +592,7 @@
                     "last_used": "Viimeksi käytetty {date} sijainnista {location}",
                     "not_used": "Ei ole koskaan käytetty"
                 },
+                "current_user": "Olet tällä hetkellä kirjautuneena tunnuksella {fullName}.",
                 "is_owner": "Olet omistaja.",
                 "logout": "Kirjaudu ulos",
                 "change_password": {
@@ -609,6 +612,7 @@
                 "mfa_setup": {
                     "title_aborted": "Keskeytetty",
                     "title_success": "Onnistui!",
+                    "step_done": "Asetus tehty {step}",
                     "close": "Sulje",
                     "submit": "Lähetä"
                 }
