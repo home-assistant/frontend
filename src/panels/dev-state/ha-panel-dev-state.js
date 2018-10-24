@@ -102,7 +102,6 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
             label="State attributes (JSON, optional)"
             autocapitalize='none'
             autocomplete='off'
-            autocorrect='off'
             spellcheck='false'
             value='{{_stateAttributes}}'></paper-textarea>
           <paper-button on-click='handleSetState' raised>Set State</paper-button>
