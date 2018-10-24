@@ -11,7 +11,7 @@ interface Config extends LovelaceConfig {
 
 export default class HuiStackCard extends LitElement implements LovelaceCard {
     protected config?: Config;
-    private mhass?: HomeAssistant;
+    private _hass?: HomeAssistant;
 
     static get properties() {
         return {
@@ -20,10 +20,10 @@ export default class HuiStackCard extends LitElement implements LovelaceCard {
     }
 
     set hass(hass: HomeAssistant) {
-        this.mhass = hass;
+        this._hass = hass;
         for (const el of this.shadowRoot!.querySelectorAll("#root > *")) {
             const element = el as LovelaceCard;
-            element.hass = this.mhass;
+            element.hass = this._hass;
         }
     }
 
@@ -57,7 +57,7 @@ export default class HuiStackCard extends LitElement implements LovelaceCard {
 
     private createCardElement(card: LovelaceConfig): LovelaceCard {
         const element = createCardElement(card) as LovelaceCard;
-        element.hass = this.mhass;
+        element.hass = this._hass;
         return element;
     }
 }
