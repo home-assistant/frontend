@@ -10,8 +10,7 @@ interface Config extends LovelaceConfig {
   url: string;
 }
 
-export class HuiIframeCard extends LitElement
-  implements LovelaceCard {
+export class HuiIframeCard extends LitElement implements LovelaceCard {
   protected config?: Config;
 
   static get properties() {
