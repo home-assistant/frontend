@@ -398,7 +398,7 @@
                                     "label": "Estado numérico",
                                     "above": "Acima",
                                     "below": "Abaixo",
-                                    "value_template": "Modelo do valor (opcional)"
+                                    "value_template": "Valor para o modelo (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -443,7 +443,7 @@
                                     "label": "Estado numérico",
                                     "above": "Acima",
                                     "below": "Abaixo",
-                                    "value_template": "Modelo do valor (opcional)"
+                                    "value_template": "Valor para o modelo (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -522,8 +522,8 @@
                     "editor": {
                         "rename_user": "Alterar nome do utilizador",
                         "change_password": "Alterar palavra-passe",
-                        "activate_user": "Activar utilizador",
-                        "deactivate_user": "Desactivar utilizador",
+                        "activate_user": "Ativar utilizador",
+                        "deactivate_user": "Desativar utilizador",
                         "delete_user": "Apagar utilizador"
                     }
                 },
@@ -544,7 +544,7 @@
                         "no_devices": "Esta integração não possui dispositivos.",
                         "no_device": "Entidades sem dispositivos",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
-                        "restart_confirm": "Reinicialize o HA para remover esta integração",
+                        "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
                         "manuf": "por {fabricante]",
                         "hub": "Ligado via",
                         "firmware": "",
@@ -574,7 +574,7 @@
                     "dropdown_label": "Tema"
                 },
                 "refresh_tokens": {
-                    "header": "",
+                    "header": "Atualizar Tokens",
                     "description": "Cada \"refresh token\" representa a uma sessão de utilizador. Os \"refresh tokens\" serão automáticamente removidos quando clicar sair. Os seguintes \"refresh tokens\" estão activos para a sua conta.",
                     "token_title": "Atualizar o token de {clientId}",
                     "created_at": "Criado a {date}",
@@ -808,7 +808,7 @@
             },
             "climate": {
                 "currently": "Atualmente",
-                "on_off": "Lig. \/ Des.",
+                "on_off": "Ligado \/ desligado",
                 "target_temperature": "Temperatura pretendida",
                 "target_humidity": "Humidade pretendida",
                 "operation": "Operação",
