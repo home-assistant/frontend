@@ -35,7 +35,7 @@ export interface LocalizeMixin {
   localize: LocalizeFunc;
 }
 
-export const LocalizeBaseMixin = (superClass) =>
+export const localizeBaseMixin = (superClass) =>
   class extends superClass {
     /**
      * Returns a computed `localize` method, based on the current `language`.
