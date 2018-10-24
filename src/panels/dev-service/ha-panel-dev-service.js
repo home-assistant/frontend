@@ -122,7 +122,6 @@ class HaPanelDevService extends PolymerElement {
           value='{{serviceData}}'
           autocapitalize='none'
           autocomplete='off'
-          autocorrect='off'
           spellcheck='false'
         ></paper-textarea>
         <paper-button
