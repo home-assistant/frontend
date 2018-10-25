@@ -61,10 +61,12 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     if (this.hass) {
       super.connectedCallback();
       this.hass.connection
-        .subscribeEvents(this._fetchData, "shopping_list_updated")
-        .then((unsub: () => Promise<void>): void => {
-          this._unsubEvents = unsub;
-        });
+        .subscribeEvents(() => this._fetchData(), "shopping_list_updated")
+        .then(
+          (unsub: () => Promise<void>): void => {
+            this._unsubEvents = unsub;
+          }
+        );
       this._fetchData();
     }
   }
