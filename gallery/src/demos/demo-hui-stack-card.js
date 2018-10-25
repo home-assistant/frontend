@@ -1,7 +1,39 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
+import getEntity from "../data/entity.js";
+import provideHass from "../data/provide_hass.js";
 import "../components/demo-cards.js";
+
+const ENTITIES = [
+  getEntity("light", "kitchen_lights", "on", {
+    friendly_name: "Kitchen Lights",
+  }),
+  getEntity("device_tracker", "demo_paulus", "work", {
+    source_type: "gps",
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: "Paulus",
+  }),
+  getEntity("device_tracker", "demo_anne_therese", "school", {
+    source_type: "gps",
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: "Anne Therese",
+  }),
+  getEntity("device_tracker", "demo_home_boy", "home", {
+    source_type: "gps",
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: "Home Boy",
+  }),
+];
 
 const CONFIGS = [
   {
@@ -59,7 +91,10 @@ const CONFIGS = [
 class DemoStack extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
+      <demo-cards
+        id='demos'
+        configs="[[_configs]]"
+      ></demo-cards>
     `;
   }
 
@@ -70,6 +105,12 @@ class DemoStack extends PolymerElement {
         value: CONFIGS,
       },
     };
+  }
+
+  ready() {
+    super.ready();
+    const hass = provideHass(this.$.demos);
+    hass.addEntities(ENTITIES);
   }
 }
 
