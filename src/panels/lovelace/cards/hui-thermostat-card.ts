@@ -35,6 +35,10 @@ interface Config extends LovelaceConfig {
   entity: string;
 }
 
+function formatTemp(temps) {
+  return temps.filter(Boolean).join("-");
+}
+
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
@@ -64,11 +68,15 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass.states[this.config.entity];
-    const sizeClass = this.clientWidth > 450 ? "large" : "small";
+    const broadCard = this.clientWidth > 450;
     return html`
       ${this.renderStyle()}
       <ha-card
-        class="${stateObj.attributes.operation_mode} ${sizeClass}">
+        class="${classMap({
+          [stateObj.attributes.operation_mode]: true,
+          large: broadCard,
+          small: !broadCard,
+        })}">
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
@@ -78,9 +86,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
                 stateObj.attributes.current_temperature
               }
                 <span class="uom">${
-                  this.hass.config.unit_system
-                    ? this.hass.config.unit_system.temperature
-                    : "&deg;F"
+                  this.hass.config.unit_system.temperature
                 }</span>
               </span>
             </div>
@@ -131,26 +137,31 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated() {
-    const stateObj = this.hass!.states[this.config!.entity];
+    const attrs = this.hass!.states[this.config!.entity].attributes;
 
-    const _value =
-      stateObj.attributes.target_temp_low &&
-      stateObj.attributes.target_temp_high
-        ? `${stateObj.attributes.target_temp_low}, ${
-            stateObj.attributes.target_temp_high
-          }`
-        : stateObj.attributes.temperature;
+    let sliderValue;
+    let uiValue;
+
+    if (attrs.target_temp_low && attrs.target_temp_high) {
+      sliderValue = `${attrs.target_temp_low}, ${attrs.target_temp_high}`;
+      uiValue = formatTemp([attrs.target_temp_low, attrs.target_temp_high]);
+    } else {
+      sliderValue = uiValue = attrs.temperature;
+    }
 
     jQuery("#thermostat", this.shadowRoot).roundSlider({
-      value: _value,
+      value: sliderValue,
     });
-    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = _value;
+    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = uiValue;
   }
 
   private renderStyle() {
     return html`
     ${roundSliderStyle}
     <style>
+      :host {
+        display: block;
+      }
       ha-card {
         overflow: hidden;
       }
@@ -281,7 +292,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _dragEvent(e) {
-    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = e.value;
+    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = formatTemp(
+      e.value.split(",")
+    );
   }
 
   private _setTemperature(e) {

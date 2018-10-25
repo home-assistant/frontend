@@ -99,6 +99,21 @@ export class CoverEntity extends Entity {
   }
 }
 
+export class ClimateEntity extends Entity {
+  async handleService(domain, service, data) {
+    if (domain !== this.domain) return;
+
+    if (service === "set_operation_mode") {
+      this.update(
+        data.operation_mode == "heat" ? "heat" : data.operation_mode,
+        Object.assign(this.attributes, {
+          operation_mode: data.operation_mode,
+        })
+      );
+    }
+  }
+}
+
 export class GroupEntity extends Entity {
   async handleService(domain, service, data) {
     if (!["homeassistant", this.domain].includes(domain)) return;
@@ -115,6 +130,7 @@ export class GroupEntity extends Entity {
 }
 
 const TYPES = {
+  climate: ClimateEntity,
   light: LightEntity,
   lock: LockEntity,
   cover: CoverEntity,
