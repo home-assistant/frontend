@@ -1,4 +1,5 @@
 import { html } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 import computeCardSize from "../common/compute-card-size.js";
 
@@ -12,17 +13,20 @@ interface Config extends LovelaceConfig {
 class HuiHorizontalStackCard extends HuiStackCard implements LovelaceCard {
   protected config?: Config;
 
-  public getCardSize() {
-    let size = 1;
-    for (const element of this.shadowRoot!.querySelectorAll("#root > *")) {
-      const elSize = computeCardSize(element);
-      size = elSize > size ? elSize : size;
+  public getCardSize(): number {
+    let totalSize = 0;
+
+    if (this._cards) {
+      for (const element of this._cards) {
+        const elementSize = computeCardSize(element);
+        totalSize = elementSize > totalSize ? elementSize : totalSize;
+      }
     }
 
-    return size;
+    return totalSize;
   }
 
-  protected renderStyle() {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         #root {

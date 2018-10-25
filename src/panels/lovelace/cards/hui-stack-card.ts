@@ -1,4 +1,5 @@
 import { html, LitElement } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 import createCardElement from "../common/create-card-element.js";
 
@@ -9,55 +10,58 @@ interface Config extends LovelaceConfig {
     cards: LovelaceConfig[];
 }
 
-export default class HuiStackCard extends LitElement implements LovelaceCard {
-    protected config?: Config;
-    private _hass?: HomeAssistant;
+export default abstract class HuiStackCard extends LitElement
+  implements LovelaceCard {
+  protected config?: Config;
+  protected _cards?: LovelaceCard[];
+  private _hass?: HomeAssistant;
 
-    static get properties() {
-        return {
-            config: {},
-        };
+  static get properties() {
+    return {
+      config: {},
+    };
+  }
+
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
+
+    if (!this._cards) {
+      return;
     }
 
-    set hass(hass: HomeAssistant) {
-        this._hass = hass;
-        for (const el of this.shadowRoot!.querySelectorAll("#root > *")) {
-            const element = el as LovelaceCard;
-            element.hass = this._hass;
-        }
+    for (const element of this._cards) {
+      element.hass = this._hass;
+    }
+  }
+
+  public getCardSize(): number {
+    return 1;
+  }
+
+  public setConfig(config: Config): void {
+    if (!config || !config.cards || !Array.isArray(config.cards)) {
+      throw new Error("Card config incorrect");
+    }
+    this.config = config;
+    this._cards = config.cards.map((card) => {
+      const element = createCardElement(card) as LovelaceCard;
+      element.hass = this._hass;
+      return element;
+    });
+  }
+
+  protected render(): TemplateResult {
+    if (!this.config) {
+      return html``;
     }
 
-    public getCardSize() {
-        return 1;
-    }
-
-    public setConfig(config: Config) {
-        if (!config || !config.cards || !Array.isArray(config.cards)) {
-            throw new Error("Card config incorrect");
-        }
-        this.config = config;
-    }
-
-    protected render() {
-        if (!this.config) {
-            return html``;
-        }
-
-        return html`
+    return html`
       ${this.renderStyle()}
       <div id="root">
-        ${this.config.cards.map((card) => this.createCardElement(card))}
+        ${this._cards}
       </div>
     `;
-    }
+  }
 
-    protected renderStyle() {
-        return html``;
-    }
-
-    private createCardElement(card: LovelaceConfig): LovelaceCard {
-        const element = createCardElement(card) as LovelaceCard;
-        element.hass = this._hass;
-        return element;
-    }
+  protected abstract renderStyle(): TemplateResult;
 }
