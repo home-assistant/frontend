@@ -71,7 +71,7 @@ export default (elements, { initialStates = {} } = {}) => {
     },
 
     async callApi(method, path, parameters) {
-      const path = restResponses[path];
+      const callback = restResponses[path];
 
       return callback
         ? callback(method, path, parameters)
