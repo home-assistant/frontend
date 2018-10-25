@@ -12,6 +12,7 @@ interface Config extends LovelaceConfig {
 
 class HuiVerticalStackCard extends LitElement implements LovelaceCard {
   protected config?: Config;
+  private _cards?: LovelaceCard[];
   private _hass?: HomeAssistant;
 
   static get properties() {
@@ -22,15 +23,24 @@ class HuiVerticalStackCard extends LitElement implements LovelaceCard {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    for (const el of this.shadowRoot!.querySelectorAll("#root > *")) {
-      const element = el as LovelaceCard;
+
+    if (!this._cards) {
+      return;
+    }
+
+    for (const element of this._cards) {
       element.hass = this._hass;
     }
   }
 
   public getCardSize() {
     let totalSize = 0;
-    for (const element of this.shadowRoot!.querySelectorAll("#root > *")) {
+
+    if (!this._cards) {
+      return totalSize;
+    }
+
+    for (const element of this._cards) {
       totalSize += computeCardSize(element);
     }
 
@@ -42,6 +52,11 @@ class HuiVerticalStackCard extends LitElement implements LovelaceCard {
       throw new Error("Card config incorrect");
     }
     this.config = config;
+    this._cards = config.cards.map((card) => {
+      const element = createCardElement(card) as LovelaceCard;
+      element.hass = this._hass;
+      return element;
+    });
   }
 
   protected render() {
@@ -52,7 +67,7 @@ class HuiVerticalStackCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <div id="root">
-        ${this.config.cards.map((card) => this.createCardElement(card))}
+        ${this._cards!}
       </div>
     `;
   }
@@ -75,12 +90,6 @@ class HuiVerticalStackCard extends LitElement implements LovelaceCard {
         }
       </style>
     `;
-  }
-
-  private createCardElement(card: LovelaceConfig): LovelaceCard {
-    const element = createCardElement(card) as LovelaceCard;
-    element.hass = this._hass;
-    return element;
   }
 }
 
