@@ -20,18 +20,41 @@ const ENTITIES = [
     hold_mode: "home",
     swing_mode: "Auto",
     swing_list: ["Auto", "1", "2", "3", "Off"],
-    unit_of_measurement: "°F",
     friendly_name: "Ecobee",
+    supported_features: 1014,
+  }),
+  getEntity("climate", "nest", "heat", {
+    current_temperature: 17,
+    min_temp: 15,
+    max_temp: 25,
+    temperature: 19,
+    fan_mode: "Auto Low",
+    fan_list: ["On Low", "On High", "Auto Low", "Auto High", "Off"],
+    operation_mode: "heat",
+    operation_list: ["heat", "cool", "auto", "off"],
+    hold_mode: "home",
+    swing_mode: "Auto",
+    swing_list: ["Auto", "1", "2", "3", "Off"],
+    friendly_name: "Nest",
     supported_features: 1014,
   }),
 ];
 
 const CONFIGS = [
   {
-    heading: "Basic example",
+    heading: "Range example",
     config: `
 - type: thermostat
   entity: climate.ecobee
+- type: thermostat
+  entity: climate.nest
+    `,
+  },
+  {
+    heading: "Single temp example",
+    config: `
+- type: thermostat
+  entity: climate.nest
     `,
   },
 ];

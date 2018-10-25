@@ -12,8 +12,6 @@ import { LovelaceCard, LovelaceConfig } from "../types.js";
 
 const thermostatConfig = {
   radius: 150,
-  min: 50,
-  max: 90,
   step: 1,
   circleShape: "pie",
   sliderType: "min-range",
@@ -134,6 +132,16 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
     });
+
+    console.log({
+      ...thermostatConfig,
+      radius: this.clientWidth / 3,
+      min: stateObj.attributes.min_temp,
+      max: stateObj.attributes.max_temp,
+      sliderType: _sliderType,
+      change: (value) => this._setTemperature(value),
+      drag: (value) => this._dragEvent(value),
+    });
   }
 
   protected updated() {
@@ -182,7 +190,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         --mode-color: #8a8a8a;
       }
       .large {
-        --thermostat-padding: 25px 0;
+        --thermostat-padding-top: 25px;
+        --thermostat-margin-bottom: 36px;
         --title-font-size: 28px;
         --title-margin-top: 20%;
         --climate-info-margin-top: 17%;
@@ -197,7 +206,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         --set-temperature-padding-bottom: 5px;
       }
       .small {
-        --thermostat-padding: 15px 0;
+        --thermostat-padding-top: 15px;
+        --thermostat-margin-bottom: -20px;
         --title-font-size: 18px;
         --title-margin-top: 20%;
         --climate-info-margin-top: 7.5%;
@@ -212,8 +222,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         --set-temperature-padding-bottom: 0px;
       }
       #thermostat {
-        margin: 0 auto;
-        padding: var(--thermostat-padding);
+        margin: 0 auto var(--thermostat-margin-bottom);
+        padding-top: var(--thermostat-padding-top);
       }
       #thermostat .rs-range-color  {
         background-color: var(--mode-color, var(--disabled-text-color));
@@ -241,10 +251,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       }
       #tooltip {
         position: absolute;
-        width: 100%;
-        height: 100%;
         top: 0;
         left: 0;
+        right: 0;
         text-align: center;
         z-index: 15;
       }
@@ -293,7 +302,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
   private _dragEvent(e) {
     this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = formatTemp(
-      e.value.split(",")
+      String(e.value).split(",")
     );
   }
 
