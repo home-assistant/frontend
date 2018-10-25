@@ -1,4 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html } from "@polymer/lit-element";
 import "./jquery";
 import "round-slider";
 import roundSliderCSS from "round-slider/dist/roundslider.min.css";

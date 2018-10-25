@@ -132,16 +132,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
     });
-
-    console.log({
-      ...thermostatConfig,
-      radius: this.clientWidth / 3,
-      min: stateObj.attributes.min_temp,
-      max: stateObj.attributes.max_temp,
-      sliderType: _sliderType,
-      change: (value) => this._setTemperature(value),
-      drag: (value) => this._dragEvent(value),
-    });
   }
 
   protected updated() {

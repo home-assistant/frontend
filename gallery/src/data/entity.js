@@ -105,7 +105,7 @@ export class ClimateEntity extends Entity {
 
     if (service === "set_operation_mode") {
       this.update(
-        data.operation_mode == "heat" ? "heat" : data.operation_mode,
+        data.operation_mode === "heat" ? "heat" : data.operation_mode,
         Object.assign(this.attributes, {
           operation_mode: data.operation_mode,
         })
