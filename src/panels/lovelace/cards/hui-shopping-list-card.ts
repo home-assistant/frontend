@@ -62,7 +62,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       super.connectedCallback();
       this.hass.connection
         .subscribeEvents(this._fetchData, "shopping_list_updated")
-        .then(function(this: HuiShoppingListCard, unsub: () => Promise<void>) {
+        .then((unsub: () => Promise<void>): void => {
           this._unsubEvents = unsub;
         });
       this._fetchData();
@@ -88,7 +88,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         <div class="addRow">
           <paper-input
             id='addBox'
-            placeholder='${this.localize("ui.panel.shopping-list.add_item")}'
+            placeholder='${this.localize("ui.card.shopping-list.add_item")}'
             @keydown='${this._addKeyPress}'
             no-label-float
           ></paper-input>
@@ -104,9 +104,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           ></paper-icon-button>
         </div>
 
-      ${repeat(
-        this.items!,
-        (item) => html`
+      ${repeat(this.items!, (item) => html`
         <paper-icon-item>
           <paper-checkbox
             slot="item-icon"
@@ -124,8 +122,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
             ></paper-input>
           </paper-item-body>
         </paper-icon-item>
-        `
-      )}
+        `)}
       </ha-card>
     `;
   }
@@ -187,7 +184,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         "#addBox"
       ) as HTMLInputElement;
 
-      if (this.hass) {
+      if (this.hass && root.value.length > 0) {
         addItem(this.hass, root.value).catch(() => this._fetchData());
       }
 
