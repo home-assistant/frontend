@@ -5,7 +5,7 @@ import "../cards/hui-conditional-card.ts";
 import "../cards/hui-entities-card.js";
 import "../cards/hui-entity-button-card.ts";
 import "../cards/hui-entity-filter-card.js";
-import "../cards/hui-error-card.js";
+import "../cards/hui-error-card.ts";
 import "../cards/hui-glance-card.ts";
 import "../cards/hui-history-graph-card.js";
 import "../cards/hui-horizontal-stack-card.js";
