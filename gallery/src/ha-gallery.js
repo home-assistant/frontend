@@ -152,14 +152,14 @@ class HaGallery extends PolymerElement {
     super.ready();
 
     this.addEventListener("show-notification", (ev) =>
-      this.$.notifications.showNotification(ev.detail.message)
+      this.$.notifications.showDialog({ message: ev.detail.message })
     );
 
     this.addEventListener("hass-more-info", (ev) => {
       if (ev.detail.entityId) {
-        this.$.notifications.showNotification(
-          `Showing more info for ${ev.detail.entityId}`
-        );
+        this.$.notifications.showDialog({
+          message: `Showing more info for ${ev.detail.entityId}`,
+        });
       }
     });
 

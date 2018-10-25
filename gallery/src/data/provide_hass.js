@@ -1,6 +1,7 @@
 import { fireEvent } from "../../../src/common/dom/fire_event.js";
 
-import demoConfig from "./demo_config.js";
+import { demoConfig } from "./demo_config.js";
+import { demoServices } from "./demo_services";
 import demoResources from "./demo_resources.js";
 
 const ensureArray = (val) => (Array.isArray(val) ? val : [val]);
@@ -22,9 +23,11 @@ export default (elements, { initialStates = {} } = {}) => {
   updateHass({
     // Home Assistant properties
     config: demoConfig,
+    services: demoServices,
     language: "en",
     resources: demoResources,
     states: initialStates,
+    themes: {},
 
     // Mock properties
     mockEntities: entities,

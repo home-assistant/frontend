@@ -177,7 +177,6 @@ class DemoEntities extends PolymerElement {
     return html`
       <demo-cards
         id='demos'
-        hass='[[hass]]'
         configs="[[_configs]]"
       ></demo-cards>
     `;
@@ -189,7 +188,6 @@ class DemoEntities extends PolymerElement {
         type: Object,
         value: CONFIGS,
       },
-      hass: Object,
     };
   }
 
