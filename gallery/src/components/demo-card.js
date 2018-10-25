@@ -3,7 +3,8 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import JsYaml from "js-yaml";
 
 import HomeAssistant from "../data/hass.js";
-import demoConfig from "../data/demo_config.js";
+import { demoConfig } from "../data/demo_config.js";
+import { demoServices } from "../data/demo_services";
 import demoResources from "../data/demo_resources.js";
 import demoStates from "../data/demo_states.js";
 import createCardElement from "../../../src/panels/lovelace/common/create-card-element.js";
@@ -73,6 +74,7 @@ class DemoCard extends PolymerElement {
     } else {
       const hass = new HomeAssistant(demoStates);
       hass.config = demoConfig;
+      hass.services = demoServices;
       hass.resources = demoResources;
       hass.language = "en";
       hass.states = demoStates;
