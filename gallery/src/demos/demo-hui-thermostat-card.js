@@ -21,10 +21,10 @@ const CONFIGS = [
   },
 ];
 
-class DemoEntityButtonEntity extends PolymerElement {
+class DemoThermostatEntity extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards id='demos' hass='[[hass]]' configs="[[_configs]]"></demo-cards>
+      <demo-cards configs="[[_configs]]"></demo-cards>
     `;
   }
 
@@ -34,15 +34,8 @@ class DemoEntityButtonEntity extends PolymerElement {
         type: Object,
         value: CONFIGS,
       },
-      hass: Object,
     };
-  }
-
-  ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
-    hass.addEntities(ENTITIES);
   }
 }
 
-customElements.define("demo-hui-entity-button-card", DemoEntityButtonEntity);
+customElements.define("demo-hui-thermostat-card", DemoThermostatEntity);

@@ -78,7 +78,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
                 stateObj.attributes.current_temperature
               }
                 <span class="uom">${
-                  this.hass.config.unit_system.temperature
+                  this.hass.config.unit_system
+                    ? this.hass.config.unit_system.temperature
+                    : "&deg;F"
                 }</span>
               </span>
             </div>
