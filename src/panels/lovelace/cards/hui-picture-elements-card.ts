@@ -4,13 +4,13 @@ import createHuiElement from "../common/create-hui-element.js";
 
 import { LovelaceCard, LovelaceConfig } from "../types";
 import { HomeAssistant } from "../../../types.js";
-import { ElementConfig } from "../elements/types.js";
+import { LovelaceElementConfig } from "../elements/types.js";
 import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceConfig {
   title?: string;
   image: string;
-  elements: ElementConfig[];
+  elements: LovelaceElementConfig[];
 }
 
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
@@ -48,16 +48,16 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this.config || !this.config.image || !this.config.elements) {
+    if (!this.config) {
       return html``;
     }
 
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this.config.title}">
-        <img src="${this.config.image}">
         <div id="root">
-          ${this.config.elements.map((elementConfig: ElementConfig) =>
+          <img src="${this.config.image}">
+          ${this.config.elements.map((elementConfig: LovelaceElementConfig) =>
             this._createHuiElement(elementConfig)
           )}
         </div>
@@ -87,7 +87,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _createHuiElement(elementConfig: ElementConfig): LovelaceCard {
+  private _createHuiElement(elementConfig: LovelaceElementConfig): LovelaceCard {
     const element = createHuiElement(elementConfig) as LovelaceCard;
     element.hass = this._hass;
     element.classList.add("element");
