@@ -14,7 +14,6 @@ const thermostatConfig = {
   radius: 150,
   step: 1,
   circleShape: "pie",
-  sliderType: "min-range",
   startAngle: 315,
   width: 5,
   lineCap: "round",
@@ -66,7 +65,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass.states[this.config.entity];
-    const broadCard = this.clientWidth > 450;
+    const broadCard = this.clientWidth > 400;
     return html`
       ${this.renderStyle()}
       <ha-card
@@ -181,7 +180,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       }
       .large {
         --thermostat-padding-top: 25px;
-        --thermostat-margin-bottom: 36px;
+        --thermostat-margin-bottom: 25px;
         --title-font-size: 28px;
         --title-margin-top: 20%;
         --climate-info-margin-top: 17%;
@@ -192,12 +191,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         --current-temperature-text-padding-left: 15px;
         --uom-font-size: 20px;
         --uom-margin-left: -18px;
-        --current-mode-font-size: 20px;
+        --current-mode-font-size: 18px;
         --set-temperature-padding-bottom: 5px;
       }
       .small {
         --thermostat-padding-top: 15px;
-        --thermostat-margin-bottom: -20px;
+        --thermostat-margin-bottom: 15px;
         --title-font-size: 18px;
         --title-margin-top: 20%;
         --climate-info-margin-top: 7.5%;
@@ -244,6 +243,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         top: 0;
         left: 0;
         right: 0;
+        height: 100%;
         text-align: center;
         z-index: 15;
       }
