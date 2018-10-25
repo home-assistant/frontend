@@ -1,15 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-import getEntity from "../data/entity.js";
-import provideHass from "../data/provide_hass.js";
 import "../components/demo-cards.js";
-
-const ENTITIES = [
-  getEntity("climate", "ecobee", "auto", {
-    friendly_name: "Thermostat",
-  }),
-];
 
 const CONFIGS = [
   {
