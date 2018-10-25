@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../../types.js";
+import { HomeAssistant } from "../../types";
 
 export interface LovelaceConfig {
   type: string;

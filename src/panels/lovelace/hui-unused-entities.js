@@ -4,7 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import computeUnusedEntities from "./common/compute-unused-entities.js";
 import createCardElement from "./common/create-card-element.js";
 
-import "./cards/hui-entities-card.js";
+import "./cards/hui-entities-card.ts";
 
 class HuiUnusedEntities extends PolymerElement {
   static get template() {
