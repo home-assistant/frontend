@@ -43,6 +43,16 @@ const ENTITIES = [
 
 const CONFIGS = [
   {
+    heading: "Controller",
+    config: `
+- type: entities
+  entities:
+  - light.bed_light
+  - light.ceiling_lights
+  - light.kitchen_lights
+    `,
+  },
+  {
     heading: "Basic",
     config: `
 - type: entity-filter
@@ -55,7 +65,7 @@ const CONFIGS = [
     - light.kitchen_lights
   state_filter:
     - "on"
-    - not_home
+    - home
     `,
   },
   {
