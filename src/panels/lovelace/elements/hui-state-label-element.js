@@ -7,6 +7,7 @@ import "../../../components/entity/ha-state-label-badge.js";
 
 import LocalizeMixin from "../../../mixins/localize-mixin.js";
 import ElementClickMixin from "../mixins/element-click-mixin.js";
+import { longPressBind } from "../common/directives/long-press-directive";
 
 /*
  * @appliesMixin ElementClickMixin
@@ -45,7 +46,13 @@ class HuiStateLabelElement extends LocalizeMixin(
 
   ready() {
     super.ready();
-    this.registerMouse(this._config);
+    longPressBind(this);
+    this.addEventListener("ha-click", () =>
+      this.handleClick(this.hass, this._config, false)
+    );
+    this.addEventListener("ha-hold", () =>
+      this.handleClick(this.hass, this._config, true)
+    );
   }
 
   setConfig(config) {
