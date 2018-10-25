@@ -7,7 +7,7 @@ import "../../../components/ha-icon.js";
 import "../../../resources/jquery.roundslider";
 
 import { HomeAssistant } from "../../../types.js";
-import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 
 const thermostatConfig = {
@@ -17,7 +17,6 @@ const thermostatConfig = {
   step: 1,
   circleShape: "pie",
   sliderType: "min-range",
-  value: 70,
   startAngle: 315,
   width: 5,
   lineCap: "round",
@@ -26,23 +25,20 @@ const thermostatConfig = {
 };
 
 const modeIcons = {
-  auto: "mdi:autorenew",
+  auto: "hass:autorenew",
   heat: "hass:fire",
   cool: "hass:snowflake",
-  off: "mdi:fan-off",
+  off: "hass:fan-off",
 };
 
 interface Config extends LovelaceConfig {
   entity: string;
 }
 
-let loaded: Promise<void>;
-
-export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
+export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
   protected config?: Config;
-  protected roundSlider: any;
 
   static get properties() {
     return {
@@ -64,28 +60,30 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   }
 
   protected render() {
-    const stateObj = this.hass!.states[this.config!.entity];
-    const sizeClass = this.clientWidth > 450 ? "large" : "small"; // Use Class Map
+    if (!this.hass || !this.config) {
+      return html``;
+    }
+    const stateObj = this.hass.states[this.config.entity];
+    const sizeClass = this.clientWidth > 450 ? "large" : "small";
     return html`
       ${this.renderStyle()}
       <ha-card
         class="${stateObj.attributes.operation_mode} ${sizeClass}">
         <div id="root">
-          <div
-            .hass="${this.hass}"
-            .config="${this.config}"
-            .localize="${this.localize}"
-            id="thermostat"
-          ></div>
+          <div id="thermostat"></div>
           <div id="tooltip">
             <div class="title">Upstairs</div>
             <div class="current-temperature">
               <span class="current-temperature-text">${
                 stateObj.attributes.current_temperature
-              }</span><span class="uom">&deg;F</span>
+              }
+                <span class="uom">${
+                  this.hass.config.unit_system.temperature
+                }</span>
+              </span>
             </div>
             <div class="climate-info">
-            <div id="set-temperature">${stateObj.attributes.temperature}</div>
+            <div id="set-temperature"></div>
             <div class="current-mode">${this.localize(
               `state.climate.${stateObj.state}`
             )}</div>
@@ -110,34 +108,41 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
     return changedProps;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated() {
     const stateObj = this.hass!.states[this.config!.entity];
 
+    const _sliderType =
+      stateObj.attributes.target_temp_low &&
+      stateObj.attributes.target_temp_high
+        ? "range"
+        : "min-range";
+
     $("#thermostat", this.shadowRoot).roundSlider({
+      ...thermostatConfig,
       radius: this.clientWidth / 3,
-      min: stateObj.attributes.min_temp || thermostatConfig.min,
-      max: stateObj.attributes.max_temp || thermostatConfig.max,
-      step: thermostatConfig.step,
-      circleShape: thermostatConfig.circleShape,
-      sliderType: thermostatConfig.sliderType,
-      startAngle: thermostatConfig.startAngle,
-      width: thermostatConfig.width,
-      handleSize: thermostatConfig.handleSize,
-      lineCap: thermostatConfig.lineCap,
-      showTooltip: thermostatConfig.showTooltip,
+      min: stateObj.attributes.min_temp,
+      max: stateObj.attributes.max_temp,
+      sliderType: _sliderType,
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
     });
-    this.roundSlider = $("#thermostat", this.shadowRoot).data("roundSlider");
   }
 
-  protected updated(changedProps) {
+  protected updated() {
     const stateObj = this.hass!.states[this.config!.entity];
 
-    this.roundSlider.setValue(stateObj.attributes.temperature);
-    this.shadowRoot!.querySelector(".current-mode")!.innerHTML = this.localize(
-      `state.climate.${stateObj.state}`
-    );
+    const _value =
+      stateObj.attributes.target_temp_low &&
+      stateObj.attributes.target_temp_high
+        ? `${stateObj.attributes.target_temp_low}, ${
+            stateObj.attributes.target_temp_high
+          }`
+        : stateObj.attributes.temperature;
+
+    $("#thermostat", this.shadowRoot).roundSlider({
+      value: _value,
+    });
+    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = _value;
   }
 
   private renderStyle() {
@@ -150,34 +155,6 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
       #root {
         position: relative;
         overflow: hidden;
-      }
-      #tooltip {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        text-align: center;
-        z-index: 15;
-      }
-      .title {
-        font-size: var(--title-font-size);
-        margin-top: var(--title-margin-top);
-      }
-      .climate-info {
-        margin-top: var(--climate-info-margin-top);
-      }
-      .modes {
-        margin-top: var(--modes-margin-top);
-      }
-      .modes ha-icon {
-        color: var(--disabled-text-color);
-        cursor: pointer;
-        display: inline-block;
-        margin: 0 10px;
-      }
-      .modes ha-icon.selected-icon {
-        color: var(--mode-color);
       }
       .auto {
         --mode-color: green;
@@ -202,6 +179,7 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
         --current-temperature-margin-top: 10%;
         --current-temperature-text-padding-left: 15px;
         --uom-font-size: 20px;
+        --uom-margin-left: -18px;
         --current-mode-font-size: 20px;
         --set-temperature-padding-bottom: 5px;
       }
@@ -216,6 +194,7 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
         --current-temperature-margin-top: 5%;
         --current-temperature-text-padding-left: 7px;
         --uom-font-size: 12px;
+        --uom-margin-left: -5px;
         --current-mode-font-size: 14px;
         --set-temperature-padding-bottom: 0px;
       }
@@ -244,9 +223,44 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
       #thermostat .rs-border  {
         border-color: transparent;
       }
+      #thermostat .rs-bar.rs-transition.rs-first, .rs-bar.rs-transition.rs-second{
+        z-index: 20 !important;
+      }
+      #tooltip {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        text-align: center;
+        z-index: 15;
+      }
       #set-temperature {
         font-size: var(--set-temperature-font-size);
         padding-bottom: var(--set-temperature-padding-bottom);
+      }
+      .title {
+        font-size: var(--title-font-size);
+        margin-top: var(--title-margin-top);
+      }
+      .climate-info {
+        margin-top: var(--climate-info-margin-top);
+      }
+      .current-mode {
+        font-size: var(--current-mode-font-size);
+        color: var(--secondary-text-color);
+      }
+      .modes {
+        margin-top: var(--modes-margin-top);
+      }
+      .modes ha-icon {
+        color: var(--disabled-text-color);
+        cursor: pointer;
+        display: inline-block;
+        margin: 0 10px;
+      }
+      .modes ha-icon.selected-icon {
+        color: var(--mode-color);
       }
       .current-temperature {
         margin-top: var(--current-temperature-margin-top);
@@ -258,17 +272,10 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
       .uom {
         font-size: var(--uom-font-size);
         vertical-align: top;
-      }
-      .current-mode {
-        font-size: var(--current-mode-font-size);
-        color: var(--secondary-text-color);
-      }
-      .rs-bar.rs-transition.rs-first {
-        z-index: 20 !important;
+        margin-left: var(--uom-margin-left);
       }
     </style>
     `;
-    // TODO: Localize to verbage Auto, Heating Cooling etc when not idling
   }
 
   private _dragEvent(e) {
@@ -276,10 +283,30 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
   }
 
   private _setTemperature(e) {
-    this.hass!.callService("climate", "set_temperature", {
-      entity_id: this.config!.entity,
-      temperature: e.value,
-    });
+    const stateObj = this.hass!.states[this.config!.entity];
+    if (
+      stateObj.attributes.target_temp_low &&
+      stateObj.attributes.target_temp_high
+    ) {
+      if (e.handle.index === 1) {
+        this.hass!.callService("climate", "set_temperature", {
+          entity_id: this.config!.entity,
+          target_temp_low: e.handle.value,
+          target_temp_high: stateObj.attributes.target_temp_high,
+        });
+      } else {
+        this.hass!.callService("climate", "set_temperature", {
+          entity_id: this.config!.entity,
+          target_temp_low: stateObj.attributes.target_temp_low,
+          target_temp_high: e.handle.value,
+        });
+      }
+    } else {
+      this.hass!.callService("climate", "set_temperature", {
+        entity_id: this.config!.entity,
+        temperature: e.value,
+      });
+    }
   }
 
   private _renderIcon(mode, currentMode) {
@@ -291,7 +318,6 @@ export class HuiThermostatCard extends HassLocalizeLitMixin(LitElement)
     ></ha-icon>`;
   }
 
-  // TODO: Need to find out why this isn't working
   private _handleModeClick(e: MouseEvent) {
     this.hass!.callService("climate", "set_operation_mode", {
       entity_id: this.config!.entity,
