@@ -34,9 +34,7 @@ export default abstract class HuiStackCard extends LitElement
     }
   }
 
-  public getCardSize(): number {
-    return 1;
-  }
+  public abstract getCardSize(): number;
 
   public setConfig(config: Config): void {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
