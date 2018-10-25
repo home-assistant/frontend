@@ -193,10 +193,6 @@ function createConfig(isProdBuild, latestBuild) {
             "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf",
         },
       }),
-      new webpack.ProvidePlugin({
-        $: "jquery",
-        jQuery: "jquery",
-      }),
       new HtmlWebpackPlugin({
         inject: false,
         template: "./src/html/index.html.template",

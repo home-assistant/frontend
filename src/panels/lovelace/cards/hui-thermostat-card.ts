@@ -1,10 +1,10 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap.js";
-import roundSliderStyle from "round-slider/dist/roundslider.min.css";
+import { jQuery } from "../../../resources/jquery";
 
 import "../../../components/ha-card.js";
 import "../../../components/ha-icon.js";
-import "../../../resources/jquery.roundslider";
+import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 
 import { HomeAssistant } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
@@ -119,7 +119,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         ? "range"
         : "min-range";
 
-    $("#thermostat", this.shadowRoot).roundSlider({
+    jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
       radius: this.clientWidth / 3,
       min: stateObj.attributes.min_temp,
@@ -141,7 +141,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           }`
         : stateObj.attributes.temperature;
 
-    $("#thermostat", this.shadowRoot).roundSlider({
+    jQuery("#thermostat", this.shadowRoot).roundSlider({
       value: _value,
     });
     this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = _value;
@@ -149,7 +149,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
   private renderStyle() {
     return html`
-    <style>${roundSliderStyle}</style>
+    ${roundSliderStyle}
     <style>
       ha-card {
         overflow: hidden;
@@ -323,7 +323,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   private _handleModeClick(e: MouseEvent) {
     this.hass!.callService("climate", "set_operation_mode", {
       entity_id: this.config!.entity,
-      operation_mode: e.currentTarget!.mode,
+      operation_mode: (e.currentTarget as any).mode,
     });
   }
 }

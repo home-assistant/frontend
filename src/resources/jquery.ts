@@ -1,3 +1,5 @@
-import jQuery from "jquery";
+import jQuery_ from "jquery";
 
-(window as any).jQuery = jQuery;
+(window as any).jQuery = jQuery_;
+
+export const jQuery = jQuery_;
