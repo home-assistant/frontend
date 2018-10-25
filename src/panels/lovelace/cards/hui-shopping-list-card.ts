@@ -1,4 +1,5 @@
 import { html, LitElement } from "@polymer/lit-element";
+import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-checkbox/paper-checkbox.js";
 import "@polymer/paper-icon-button/paper-icon-button.js";
 import "@polymer/paper-input/paper-input.js";
@@ -7,7 +8,7 @@ import "@polymer/paper-item/paper-item-body.js";
 
 import "../../../components/ha-card.js";
 
-import { HassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types.js";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import {
@@ -29,11 +30,12 @@ export interface ShoppingListItem {
   complete: boolean;
 }
 
-class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
+class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
   protected config?: Config;
   private items?: ShoppingListItem[];
+  private _unsubEvents?: () => Promise<void>;
 
   static get properties() {
     return {
@@ -55,19 +57,24 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
     this._fetchData();
   }
 
-  public connectedCallback(): void {
-    if (!this.hass) {
-      return;
+  public connectedCallback() {
+    if (this.hass) {
+      super.connectedCallback();
+      this.hass.connection
+        .subscribeEvents(this._fetchData, "shopping_list_updated")
+        .then(function(this: HuiShoppingListCard, unsub: () => Promise<void>) {
+          this._unsubEvents = unsub;
+        });
+      this._fetchData();
     }
-
-    super.connectedCallback();
-    this.hass.connection
-      .subscribeEvents(this._fetchData, "shopping_list_updated")
-      .then(() => this._fetchData());
   }
 
-  public disconnectedCallback(): void {
+  public disconnectedCallback() {
     super.disconnectedCallback();
+
+    if (this._unsubEvents) {
+      this._unsubEvents();
+    }
   }
 
   protected render(): TemplateResult {
@@ -82,29 +89,30 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
           <paper-input
             id='addBox'
             placeholder='${this.localize("ui.panel.shopping-list.add_item")}'
-            @keydown='${(e) => this._addKeyPress(e)}'
+            @keydown='${this._addKeyPress}'
             no-label-float
           ></paper-input>
           <paper-icon-button
             slot="item-icon"
             icon="hass:plus"
-            @click='${(e) => this._addItem(e)}'
+            @click='${this._addItem}'
           ></paper-icon-button>
           <paper-icon-button
             slot="item-icon"
             icon="hass:notification-clear-all"
-            @click='${() => this._clearItems()}'
+            @click='${this._clearItems}'
           ></paper-icon-button>
         </div>
 
-      ${this.items!.map(
+      ${repeat(
+        this.items!,
         (item) => html`
         <paper-icon-item>
           <paper-checkbox
             slot="item-icon"
             ?checked=${item.complete}
             .itemId=${item.id}
-            @click='${(e) => this._itemCompleteTapped(e)}'
+            @click='${this._itemCompleteTapped}'
             tabindex='0'
           ></paper-checkbox>
           <paper-item-body>
@@ -112,7 +120,7 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
               no-label-float
               .value='${item.name}'
               .itemId=${item.id}
-              @change='${(e) => this._saveEdit(e)}'
+              @change='${this._saveEdit}'
             ></paper-input>
           </paper-item-body>
         </paper-icon-item>
@@ -178,10 +186,9 @@ class HuiShoppingListCard extends HassLocalizeLitMixin(LitElement)
       const root = this.shadowRoot!.querySelector(
         "#addBox"
       ) as HTMLInputElement;
-      const name = root.value;
 
       if (this.hass) {
-        addItem(this.hass, name).catch(() => this._fetchData());
+        addItem(this.hass, root.value).catch(() => this._fetchData());
       }
 
       root.value = "";
