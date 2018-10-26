@@ -18,6 +18,10 @@ module.exports = {
     rules: [
       babelLoaderConfig({ latestBuild: true }),
       {
+        test: /\.css$/,
+        use: "raw-loader",
+      },
+      {
         test: /\.(html)$/,
         use: {
           loader: "html-loader",
