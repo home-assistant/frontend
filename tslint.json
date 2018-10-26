@@ -1,6 +1,12 @@
 {
-  "extends": ["tslint:latest", "tslint-eslint-rules", "tslint-config-prettier"],
+  "extends": [
+    "tslint-plugin-prettier",
+    "tslint:latest",
+    "tslint-eslint-rules",
+    "tslint-config-prettier"
+  ],
   "rules": {
+    "prettier": true,
     "interface-name": false,
     "no-submodule-imports": false,
     "ordered-imports": false,

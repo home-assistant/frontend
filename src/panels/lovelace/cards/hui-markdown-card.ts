@@ -11,8 +11,7 @@ interface Config extends LovelaceConfig {
   title?: string;
 }
 
-export class HuiMarkdownCard extends LitElement
-  implements LovelaceCard {
+export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   protected config?: Config;
 
   static get properties() {
