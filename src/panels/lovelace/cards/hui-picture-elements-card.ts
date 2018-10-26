@@ -1,11 +1,11 @@
 import { html, LitElement } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 import createHuiElement from "../common/create-hui-element.js";
 
 import { LovelaceCard, LovelaceConfig } from "../types";
 import { HomeAssistant } from "../../../types.js";
-import { LovelaceElementConfig } from "../elements/types.js";
-import { TemplateResult } from "lit-html";
+import { LovelaceElementConfig, LovelaceElement } from "../elements/types.js";
 
 interface Config extends LovelaceConfig {
   title?: string;
@@ -14,19 +14,19 @@ interface Config extends LovelaceConfig {
 }
 
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
-  protected config?: Config;
+  protected _config?: Config;
   private _hass?: HomeAssistant;
 
   static get properties() {
     return {
-      config: {},
+      _config: {},
     };
   }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
     for (const el of this.shadowRoot!.querySelectorAll("#root > *")) {
-      const element = el as LovelaceCard;
+      const element = el as LovelaceElement;
       element.hass = this._hass;
     }
   }
@@ -44,20 +44,20 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Configuration: elements required");
     }
 
-    this.config = config;
+    this._config = config;
   }
 
   protected render(): TemplateResult {
-    if (!this.config) {
+    if (!this._config) {
       return html``;
     }
 
     return html`
       ${this.renderStyle()}
-      <ha-card .header="${this.config.title}">
+      <ha-card .header="${this._config.title}">
         <div id="root">
-          <img src="${this.config.image}">
-          ${this.config.elements.map((elementConfig: LovelaceElementConfig) =>
+          <img src="${this._config.image}">
+          ${this._config.elements.map((elementConfig: LovelaceElementConfig) =>
             this._createHuiElement(elementConfig)
           )}
         </div>
@@ -87,8 +87,10 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _createHuiElement(elementConfig: LovelaceElementConfig): LovelaceCard {
-    const element = createHuiElement(elementConfig) as LovelaceCard;
+  private _createHuiElement(
+    elementConfig: LovelaceElementConfig
+  ): LovelaceElement {
+    const element = createHuiElement(elementConfig) as LovelaceElement;
     element.hass = this._hass;
     element.classList.add("element");
 
