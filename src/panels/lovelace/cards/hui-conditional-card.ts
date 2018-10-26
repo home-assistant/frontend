@@ -19,7 +19,7 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
   protected card?: LovelaceCard;
 
   public setConfig(config) {
-    if(
+    if (
       !config.card ||
       !config.conditions ||
       !Array.isArray(config.conditions) ||
@@ -37,22 +37,28 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
   }
 
   set hass(hass: HomeAssistant) {
-    const visible = this.config &&
+    const visible =
+      this.config &&
       this.config.conditions.every((c) => {
-      if (!(c.entity in hass.states)) { return false; }
-      if (c.state) { return hass.states[c.entity].state === c.state; }
-      return hass.states[c.entity].state !== c.state_not;
-    });
+        if (!(c.entity in hass.states)) {
+          return false;
+        }
+        if (c.state) {
+          return hass.states[c.entity].state === c.state;
+        }
+        return hass.states[c.entity].state !== c.state_not;
+      });
 
-    if (visible && this.card) { this.card.hass = hass; }
+    if (visible && this.card) {
+      this.card.hass = hass;
+    }
 
-    this.style.setProperty("display", visible? "" : "none");
+    this.style.setProperty("display", visible ? "" : "none");
   }
 
   public getCardSize() {
     return computeCardSize(this.card);
   }
-
 }
 
 declare global {
