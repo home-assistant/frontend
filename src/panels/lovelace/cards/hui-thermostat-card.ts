@@ -65,7 +65,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass.states[this.config.entity];
-    const broadCard = this.clientWidth > 400;
+    const broadCard = this.clientWidth > 390;
     return html`
       ${this.renderStyle()}
       <ha-card
