@@ -8,7 +8,7 @@ import "../cards/hui-entity-filter-card.js";
 import "../cards/hui-error-card.ts";
 import "../cards/hui-glance-card.ts";
 import "../cards/hui-history-graph-card.js";
-import "../cards/hui-horizontal-stack-card.js";
+import "../cards/hui-horizontal-stack-card.ts";
 import "../cards/hui-iframe-card.ts";
 import "../cards/hui-map-card.js";
 import "../cards/hui-markdown-card.ts";
