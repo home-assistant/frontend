@@ -33,27 +33,27 @@ export interface ShoppingListItem {
 class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
-  protected config?: Config;
-  private items?: ShoppingListItem[];
+  protected _config?: Config;
+  private _items?: ShoppingListItem[];
   private _unsubEvents?: () => Promise<void>;
 
   static get properties() {
     return {
-      config: {},
-      items: {},
+      _config: {},
+      _items: {},
     };
   }
 
   public getCardSize(): number {
     return (
-      (this.config ? (this.config.title ? 1 : 0) : 0) +
-      (this.items ? this.items.length : 3)
+      (this._config ? (this._config.title ? 1 : 0) : 0) +
+      (this._items ? this._items.length : 3)
     );
   }
 
   public setConfig(config: Config): void {
-    this.config = config;
-    this.items = [];
+    this._config = config;
+    this._items = [];
     this._fetchData();
   }
 
@@ -80,13 +80,13 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected render(): TemplateResult {
-    if (!this.config || !this.hass) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
     return html`
       ${this.renderStyle()}
-      <ha-card .header="${this.config.title}">
+      <ha-card .header="${this._config.title}">
         <div class="addRow">
           <paper-input
             id='addBox'
@@ -106,7 +106,9 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           ></paper-icon-button>
         </div>
 
-      ${repeat(this.items!, (item) => html`
+      ${repeat(
+        this._items!,
+        (item) => html`
         <paper-icon-item>
           <paper-checkbox
             slot="item-icon"
@@ -124,7 +126,8 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
             ></paper-input>
           </paper-item-body>
         </paper-icon-item>
-        `)}
+        `
+      )}
       </ha-card>
     `;
   }
@@ -167,11 +170,11 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
 
   private async _fetchData(): Promise<ShoppingListItem[]> {
     if (this.hass) {
-      this.items = await fetchItems(this.hass);
-      this.items.reverse();
+      this._items = await fetchItems(this.hass);
+      this._items.reverse();
     }
 
-    return this.items!;
+    return this._items!;
   }
 
   private _itemCompleteTapped(ev): void {
@@ -180,7 +183,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     );
   }
 
-  private _addItem(ev): void {
+  private _addItem(): void {
     if (this.shadowRoot!.querySelector("#addBox")) {
       const root = this.shadowRoot!.querySelector(
         "#addBox"
@@ -191,16 +194,13 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       }
 
       root.value = "";
-      // Presence of 'ev' means tap on "add" button.
-      if (ev) {
-        setTimeout(() => root.focus(), 10);
-      }
+      setTimeout(() => root.focus(), 10);
     }
   }
 
   private _addKeyPress(ev): void {
     if (ev.keyCode === 13) {
-      this._addItem(ev);
+      this._addItem();
     }
   }
 
