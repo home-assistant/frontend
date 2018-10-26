@@ -81,7 +81,7 @@
                 "on": "Inseguro"
             },
             "presence": {
-                "off": "Casa Vacía",
+                "off": "Casa vacía",
                 "on": "Casa"
             },
             "battery": {
@@ -431,7 +431,7 @@
                             "add": "Añadir condición",
                             "duplicate": "Duplicar",
                             "delete": "Borrar",
-                            "delete_confirm": "¿Está seguro de querer borrar?",
+                            "delete_confirm": "¿Seguro que quieres eliminarlo?",
                             "unsupported_condition": "Condición no admitida: {condition}",
                             "type_select": "Tipo de condición",
                             "type": {
@@ -456,7 +456,7 @@
                                 },
                                 "template": {
                                     "label": "Plantilla",
-                                    "value_template": "Plantilla del valor"
+                                    "value_template": "Valor de la plantilla"
                                 },
                                 "time": {
                                     "label": "Hora",

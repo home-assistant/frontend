@@ -611,7 +611,7 @@
                     "submit": "Esita"
                 },
                 "mfa": {
-                    "header": "Kaheastmelise autentimise moodulid",
+                    "header": "Mitmeastmelise autentimise moodulid",
                     "disable": "Keela",
                     "enable": "Luba",
                     "confirm_disable": "Oled kindel, et soovid keelata kasutaja {nimi}?"
@@ -619,7 +619,7 @@
                 "mfa_setup": {
                     "title_aborted": "Katkestatud",
                     "title_success": "Korras!",
-                    "step_done": "Seadistamine tehtud {step} jaoks",
+                    "step_done": "{step} seadistatud",
                     "close": "Sulge",
                     "submit": "Esita"
                 }
@@ -667,7 +667,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Kaheastmeline autentimiskood"
+                                        "code": "Kaheastmelise autentimise kood"
                                     },
                                     "description": "Ava oma seadmes **{mfa_module_name}**, et näha oma kahetasemelise autentimise koodi ja tõendada oma isikut:"
                                 }
