@@ -7,7 +7,7 @@ import { navigate } from "../common/navigate";
  */
 export default dedupingMixin(
   (superClass) =>
-    class extends EventsMixin(superClass) {
+    class extends superClass {
       navigate(...args) {
         navigate(this, ...args);
       }
