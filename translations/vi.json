@@ -24,16 +24,16 @@
             "unavailable": "Không có sẵn"
         },
         "alarm_control_panel": {
-            "armed": "Vũ trang",
+            "armed": "Kích hoạt an ninh",
             "disarmed": "Vô hiệu hóa",
-            "armed_home": "Vũ trang khi ở nhà",
-            "armed_away": "Vũ trang khi đi vắng",
-            "armed_night": "Vũ trang đêm",
+            "armed_home": "Bảo vệ ở nhà",
+            "armed_away": "Bảo vệ đi vắng",
+            "armed_night": "An ninh ban đêm",
             "pending": "Đang chờ xử lý",
-            "arming": "Vũ trang",
+            "arming": "Kích hoạt",
             "disarming": "Giải giáp",
             "triggered": "Kích hoạt",
-            "armed_custom_bypass": "Tùy chỉnh bỏ qua Vũ trang"
+            "armed_custom_bypass": "Tùy chỉnh bỏ qua An ninh"
         },
         "automation": {
             "off": "Tắt",
@@ -734,9 +734,9 @@
             "alarm_control_panel": {
                 "code": "Mã số",
                 "clear_code": "Xóa",
-                "disarm": "Không vũ trang",
-                "arm_home": "An ninh khi ở nhà",
-                "arm_away": "An ninh khi đi vắng"
+                "disarm": "Vô hiệu hoá",
+                "arm_home": "An ninh ở nhà",
+                "arm_away": "An ninh đi vắng"
             },
             "automation": {
                 "last_triggered": "Kích hoạt lần cuối",
