@@ -7,7 +7,7 @@ import { LovelaceCard, LovelaceConfig } from "../types";
 import { HomeAssistant } from "../../../types";
 
 interface Config extends LovelaceConfig {
-    cards: LovelaceConfig[];
+  cards: LovelaceConfig[];
 }
 
 export default abstract class HuiStackCard extends LitElement
