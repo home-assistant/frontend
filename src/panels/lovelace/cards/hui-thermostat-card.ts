@@ -67,15 +67,17 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
     const stateObj = this.hass.states[this.config.entity];
     const broadCard = this.clientWidth > 390;
+    const mode = modeIcons[stateObj.attributes.operation_mode]
+      ? stateObj.attributes.operation_mode
+      : "unknown-mode";
     return html`
       ${this.renderStyle()}
       <ha-card
         class="${classMap({
-          [stateObj.attributes.operation_mode]: true,
+          [mode]: true,
           large: broadCard,
           small: !broadCard,
           "no-title": !this.config.title,
-          "unknown-mode": !modeIcons[stateObj.attributes.operation_mode],
         })}">
         <div id="root">
           <div id="thermostat"></div>
@@ -97,7 +99,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
             )}</div>
             <div class="modes">
               ${stateObj.attributes.operation_list.map((modeItem) =>
-                this._renderIcon(modeItem, stateObj.attributes.operation_mode)
+                this._renderIcon(modeItem, mode)
               )}
             </div>
           </div>
