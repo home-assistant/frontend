@@ -20,6 +20,7 @@ import "../cards/hui-picture-glance-card";
 import "../cards/hui-plant-status-card.js";
 import "../cards/hui-sensor-card.js";
 import "../cards/hui-vertical-stack-card.ts";
+import "../cards/hui-thermostat-card.ts";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-gauge-card.js";
 
@@ -46,6 +47,7 @@ const CARD_TYPES = new Set([
   "picture-glance",
   "plant-status",
   "sensor",
+  "thermostat",
   "vertical-stack",
   "weather-forecast",
 ]);
