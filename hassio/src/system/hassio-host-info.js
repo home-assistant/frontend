@@ -31,7 +31,6 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
       }
       .info {
         width: 100%;
-        margin-bottom: 20px;
       }
       .info td:nth-child(2) {
         text-align: right;
@@ -42,6 +41,9 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
       }
       paper-button.info {
         max-width: calc(50% - 12px);
+      }
+      table.info {
+        margin-bottom: 10px;
       }
     </style>
     <paper-card>

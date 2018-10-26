@@ -32,9 +32,6 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
       .info td:nth-child(2) {
         text-align: right;
       }
-      table.info {
-        margin-bottom: 10px;
-      }
       .errors {
         color: var(--google-red-500);
         margin-top: 16px;
