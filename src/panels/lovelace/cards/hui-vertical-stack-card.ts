@@ -1,38 +1,12 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html } from "@polymer/lit-element";
 
 import computeCardSize from "../common/compute-card-size.js";
-import createCardElement from "../common/create-card-element.js";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
-import { HomeAssistant } from "../../../types";
+import { LovelaceCard } from "../types";
+import { HuiStackCard } from "./hui-stack-card.js";
+import { TemplateResult } from "lit-html";
 
-interface Config extends LovelaceConfig {
-  cards: LovelaceConfig[];
-}
-
-class HuiVerticalStackCard extends LitElement implements LovelaceCard {
-  protected config?: Config;
-  private _cards?: LovelaceCard[];
-  private _hass?: HomeAssistant;
-
-  static get properties() {
-    return {
-      config: {},
-    };
-  }
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-
-    if (!this._cards) {
-      return;
-    }
-
-    for (const element of this._cards) {
-      element.hass = this._hass;
-    }
-  }
-
+class HuiVerticalStackCard extends HuiStackCard implements LovelaceCard {
   public getCardSize() {
     let totalSize = 0;
 
@@ -47,32 +21,7 @@ class HuiVerticalStackCard extends LitElement implements LovelaceCard {
     return totalSize;
   }
 
-  public setConfig(config: Config) {
-    if (!config || !config.cards || !Array.isArray(config.cards)) {
-      throw new Error("Card config incorrect");
-    }
-    this.config = config;
-    this._cards = config.cards.map((card) => {
-      const element = createCardElement(card) as LovelaceCard;
-      element.hass = this._hass;
-      return element;
-    });
-  }
-
-  protected render() {
-    if (!this.config) {
-      return html``;
-    }
-
-    return html`
-      ${this.renderStyle()}
-      <div id="root">
-        ${this._cards!}
-      </div>
-    `;
-  }
-
-  private renderStyle() {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         #root {

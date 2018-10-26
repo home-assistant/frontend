@@ -3,16 +3,10 @@ import { TemplateResult } from "lit-html";
 
 import computeCardSize from "../common/compute-card-size.js";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
-import HuiStackCard from "./hui-stack-card";
-
-interface Config extends LovelaceConfig {
-  cards: LovelaceConfig[];
-}
+import { LovelaceCard } from "../types";
+import { HuiStackCard } from "./hui-stack-card";
 
 class HuiHorizontalStackCard extends HuiStackCard implements LovelaceCard {
-  protected config?: Config;
-
   public getCardSize(): number {
     let totalSize = 0;
 
