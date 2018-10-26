@@ -1,7 +1,31 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
+import getEntity from "../data/entity.js";
+import provideHass from "../data/provide_hass.js";
 import "../components/demo-cards.js";
+
+const ENTITIES = [
+  getEntity("light", "bed_light", "on", {
+    friendly_name: "Bed Light",
+  }),
+  getEntity("group", "all_lights", "on", {
+    entity_id: ["light.bed_light"],
+    order: 8,
+    friendly_name: "All Lights",
+  }),
+  getEntity("camera", "demo_camera", "idle", {
+    access_token:
+      "2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
+    friendly_name: "Demo camera",
+    entity_picture:
+      "/api/camera_proxy/camera.demo_camera?token=2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
+  }),
+  getEntity("binary_sensor", "movement_backyard", "on", {
+    friendly_name: "Movement Backyard",
+    device_class: "motion",
+  }),
+];
 
 const CONFIGS = [
   {
@@ -56,7 +80,10 @@ const CONFIGS = [
 class DemoPicElements extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
+      <demo-cards
+        id='demos'
+        configs="[[_configs]]"
+      ></demo-cards>
     `;
   }
 
@@ -67,6 +94,12 @@ class DemoPicElements extends PolymerElement {
         value: CONFIGS,
       },
     };
+  }
+
+  ready() {
+    super.ready();
+    const hass = provideHass(this.$.demos);
+    hass.addEntities(ENTITIES);
   }
 }
 
