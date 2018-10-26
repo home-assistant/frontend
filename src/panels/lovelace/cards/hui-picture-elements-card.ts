@@ -27,7 +27,9 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     this._hass = hass;
     for (const el of this.shadowRoot!.querySelectorAll("#root > *")) {
       const element = el as LovelaceElement;
-      element.hass = this._hass;
+      if (this._hass) {
+        element.hass = this._hass;
+      }
     }
   }
 
