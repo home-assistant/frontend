@@ -90,6 +90,7 @@ class HaCards extends PolymerElement {
     .badges {
       font-size: 85%;
       text-align: center;
+      padding-top: 15px;
     }
 
     .column {
