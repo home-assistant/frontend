@@ -3,10 +3,9 @@ import { TemplateResult } from "lit-html";
 
 import computeCardSize from "../common/compute-card-size.js";
 
-import { LovelaceCard } from "../types";
 import { HuiStackCard } from "./hui-stack-card";
 
-class HuiHorizontalStackCard extends HuiStackCard implements LovelaceCard {
+class HuiHorizontalStackCard extends HuiStackCard {
   public getCardSize(): number {
     let totalSize = 0;
 

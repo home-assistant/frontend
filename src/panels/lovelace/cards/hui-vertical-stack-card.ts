@@ -2,11 +2,10 @@ import { html } from "@polymer/lit-element";
 
 import computeCardSize from "../common/compute-card-size.js";
 
-import { LovelaceCard } from "../types";
 import { HuiStackCard } from "./hui-stack-card.js";
 import { TemplateResult } from "lit-html";
 
-class HuiVerticalStackCard extends HuiStackCard implements LovelaceCard {
+class HuiVerticalStackCard extends HuiStackCard {
   public getCardSize() {
     let totalSize = 0;
 
