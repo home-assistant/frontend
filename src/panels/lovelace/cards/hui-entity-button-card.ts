@@ -13,6 +13,7 @@ import { styleMap } from "lit-html/directives/styleMap.js";
 import { HomeAssistant } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { longPress } from "../common/directives/long-press-directive";
 
 interface Config extends LovelaceConfig {
   entity: string;
@@ -20,6 +21,7 @@ interface Config extends LovelaceConfig {
   icon?: string;
   theme?: string;
   tap_action?: "toggle" | "call-service" | "more-info";
+  hold_action?: "toggle" | "call-service" | "more-info";
   service?: string;
   service_data?: object;
 }
@@ -62,7 +64,11 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
 
     return html`
       ${this.renderStyle()}
-      <ha-card @click="${this.handleClick}">
+      <ha-card
+        @ha-click="${() => this.handleClick(false)}"
+        @ha-hold="${() => this.handleClick(true)}"
+        .longPress="${longPress()}"
+      >
         ${
           !stateObj
             ? html`<div class="not-found">Entity not available: ${
@@ -157,7 +163,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private handleClick() {
+  private handleClick(hold) {
     const config = this.config;
     if (!config) {
       return;
@@ -167,11 +173,12 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
       return;
     }
     const entityId = stateObj.entity_id;
-    switch (config.tap_action) {
+    const action = hold ? config.hold_action : config.tap_action || "more-info";
+    switch (action) {
       case "toggle":
         toggleEntity(this.hass, entityId);
         break;
-      case "call-service": {
+      case "call-service":
         if (!config.service) {
           return;
         }
@@ -179,9 +186,10 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
         const serviceData = { entity_id: entityId, ...config.service_data };
         this.hass!.callService(domain, service, serviceData);
         break;
-      }
-      default:
+      case "more-info":
         fireEvent(this, "hass-more-info", { entityId });
+        break;
+      default:
     }
   }
 }

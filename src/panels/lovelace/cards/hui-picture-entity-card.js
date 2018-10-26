@@ -11,6 +11,7 @@ import toggleEntity from "../common/entity/toggle-entity.js";
 
 import EventsMixin from "../../../mixins/events-mixin.js";
 import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import { longPressBind } from "../common/directives/long-press-directive";
 
 const UNAVAILABLE = "Unavailable";
 
@@ -51,7 +52,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
       </style>
 
-      <ha-card id='card' on-click="_cardClicked">
+      <ha-card id='card'>
         <hui-image
           hass="[[hass]]"
           image="[[_config.image]]"
@@ -112,6 +113,14 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._config = config;
   }
 
+  ready() {
+    super.ready();
+    const card = this.shadowRoot.querySelector("#card");
+    longPressBind(card);
+    card.addEventListener("ha-click", () => this._cardClicked(false));
+    card.addEventListener("ha-hold", () => this._cardClicked(true));
+  }
+
   _hassChanged(hass) {
     const config = this._config;
     const entityId = config.entity;
@@ -163,16 +172,22 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return config.show_name === false && config.show_state !== false;
   }
 
-  _cardClicked() {
+  _cardClicked(hold) {
     const config = this._config;
     const entityId = config.entity;
 
     if (!(entityId in this.hass.states)) return;
 
-    if (config.tap_action === "toggle") {
-      toggleEntity(this.hass, entityId);
-    } else {
-      this.fire("hass-more-info", { entityId });
+    const action = hold ? config.hold_action : config.tap_action || "more-info";
+
+    switch (action) {
+      case "toggle":
+        toggleEntity(this.hass, entityId);
+        break;
+      case "more-info":
+        this.fire("hass-more-info", { entityId });
+        break;
+      default:
     }
   }
 
