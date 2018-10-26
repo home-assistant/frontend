@@ -31,7 +31,6 @@ const modeIcons = {
 
 interface Config extends LovelaceConfig {
   entity: string;
-  title: string;
 }
 
 function formatTemp(temps) {
