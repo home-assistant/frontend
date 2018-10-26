@@ -23,7 +23,7 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
           width: 100%;
         }
         .card-content {
-          height: 100%;
+          height: auto;
         }
       }
       .info {
