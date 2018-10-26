@@ -64,6 +64,10 @@ function createConfig(isProdBuild, latestBuild) {
       rules: [
         babelLoaderConfig({ latestBuild }),
         {
+          test: /\.css$/,
+          use: "raw-loader",
+        },
+        {
           test: /\.(html)$/,
           use: {
             loader: "html-loader",
