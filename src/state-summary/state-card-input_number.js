@@ -41,7 +41,7 @@ class StateCardInputNumber extends mixinBehaviors(
     <div class="horizontal justified layout" id="input_number_card">
       ${this.stateInfoTemplate}
       <ha-slider min="[[min]]" max="[[max]]" value="{{value}}" step="[[step]]" hidden="[[hiddenslider]]" pin="" on-change="selectedValueChanged" on-click="stopPropagation" id="slider" ignore-bar-touch="">
-      </paper-slider>
+      </ha-slider>
       <paper-input no-label-float="" auto-validate="" pattern="[0-9]+([\\.][0-9]+)?" step="[[step]]" min="[[min]]" max="[[max]]" value="{{value}}" type="number" on-change="selectedValueChanged" on-click="stopPropagation" hidden="[[hiddenbox]]">
       </paper-input>
       <div class="state" hidden="[[hiddenbox]]">[[stateObj.attributes.unit_of_measurement]]</div>
