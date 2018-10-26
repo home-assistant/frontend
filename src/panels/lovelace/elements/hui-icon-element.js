@@ -4,6 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../../../components/ha-icon.js";
 
 import ElementClickMixin from "../mixins/element-click-mixin.js";
+import { longPressBind } from "../common/directives/long-press-directive";
 
 /*
  * @appliesMixin ElementClickMixin
@@ -32,7 +33,13 @@ class HuiIconElement extends ElementClickMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.registerMouse(this._config);
+    longPressBind(this);
+    this.addEventListener("ha-click", () =>
+      this.handleClick(this.hass, this._config, false)
+    );
+    this.addEventListener("ha-hold", () =>
+      this.handleClick(this.hass, this._config, true)
+    );
   }
 
   setConfig(config) {
