@@ -9,6 +9,7 @@ import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
 
 const thermostatConfig = {
   radius: 150,
@@ -77,12 +78,11 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           [mode]: true,
           large: broadCard,
           small: !broadCard,
-          "no-title": !this.config.title,
         })}">
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">${this.config.title}</div>
+            <div class="title">${computeStateName(stateObj)}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">${
                 stateObj.attributes.current_temperature
