@@ -156,7 +156,9 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
 
   private renderEntity(entityConf) {
     const element = createRowElement(entityConf);
-    element.hass = this._hass;
+    if (this._hass) {
+      element.hass = this._hass;
+    }
     if (
       entityConf.entity &&
       !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
