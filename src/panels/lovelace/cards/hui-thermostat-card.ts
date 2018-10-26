@@ -30,6 +30,7 @@ const modeIcons = {
 
 interface Config extends LovelaceConfig {
   entity: string;
+  title: string;
 }
 
 function formatTemp(temps) {
@@ -73,11 +74,13 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           [stateObj.attributes.operation_mode]: true,
           large: broadCard,
           small: !broadCard,
+          "no-title": !this.config.title,
+          "unknown-mode": !modeIcons[stateObj.attributes.operation_mode],
         })}">
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">Upstairs</div>
+            <div class="title">${this.config.title}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">${
                 stateObj.attributes.current_temperature
@@ -177,6 +180,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       }
       .off {
         --mode-color: #8a8a8a;
+      }
+      .unknown-mode {
+        --mode-color: #bac;
+      }
+      .no-title {
+        --title-margin-top: 33% !important;
       }
       .large {
         --thermostat-padding-top: 25px;
@@ -324,6 +333,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _renderIcon(mode, currentMode) {
+    if (!modeIcons[mode]) {
+      return html``;
+    }
     return html`<ha-icon
       class="${classMap({ "selected-icon": currentMode === mode })}"
       .mode="${mode}"
