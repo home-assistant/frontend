@@ -26,11 +26,12 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
           width: 100%;
         }
         .card-content {
-          height: 100%;
+          height: auto;
         }
       }
       .info {
         width: 100%;
+        margin-bottom: 20px;
       }
       .info td:nth-child(2) {
         text-align: right;
