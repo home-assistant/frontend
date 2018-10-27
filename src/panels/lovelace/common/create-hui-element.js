@@ -1,4 +1,4 @@
-import "../elements/hui-icon-element.js";
+import "../elements/hui-icon-element";
 import "../elements/hui-image-element.js";
 import "../elements/hui-service-button-element.js";
 import "../elements/hui-state-badge-element.js";
