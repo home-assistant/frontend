@@ -29,3 +29,6 @@ export const addItem = (hass: HomeAssistant, name: string): Promise<{}> =>
 
 export const clearItems = (hass: HomeAssistant): Promise<{}> =>
   hass.callApi("POST", "shopping_list/clear_completed");
+
+export const deleteItem = (hass: HomeAssistant, itemId: number): Promise<{}> =>
+  hass.callApi("GET", "shopping_list/delete/" + itemId);

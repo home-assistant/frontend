@@ -17,6 +17,7 @@ import {
   addItem,
   completeItem,
   saveEdit,
+  deleteItem,
 } from "../../../data/shopping_list";
 import { TemplateResult } from "lit-html";
 
@@ -109,12 +110,12 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       ${repeat(
         this._items!,
         (item) => html`
-        <paper-icon-item>
-          <paper-checkbox
+        <div class="editRow">
+        <paper-checkbox
             slot="item-icon"
             ?checked=${item.complete}
             .itemId=${item.id}
-            @click='${this._itemCompleteTapped}'
+            @click='${this._completeItem}'
             tabindex='0'
           ></paper-checkbox>
           <paper-item-body>
@@ -125,7 +126,13 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
               @change='${this._saveEdit}'
             ></paper-input>
           </paper-item-body>
-        </paper-icon-item>
+          <paper-icon-button
+            slot="item-icon"
+            .itemId=${item.id}
+            icon="hass:delete"
+            @click='${this._deleteItem}'
+          ></paper-icon-button>
+        </div>
         `
       )}
       </ha-card>
@@ -135,15 +142,10 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   private renderStyle(): TemplateResult {
     return html`
       <style>
-        .addRow {
+        .addRow, .editRow {
           padding-left: 16px;
-          display: inline-block;
-        }
-        .addRow > paper-icon-button {
-          display: inline-block;
-        }
-        .addRow > paper-input {
-          display: inline-block;
+          display: flex;
+          flex-direction: row;
         }
         paper-icon-item {
           border-top: 1px solid var(--divider-color);
@@ -177,7 +179,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     return this._items!;
   }
 
-  private _itemCompleteTapped(ev): void {
+  private _completeItem(ev): void {
     completeItem(this.hass!, ev.target.itemId, ev.target.checked).catch(() =>
       this._fetchData()
     );
@@ -216,6 +218,10 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     if (this.hass) {
       clearItems(this.hass).catch(() => this._fetchData());
     }
+  }
+
+  private _deleteItem(ev): void {
+    deleteItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
   }
 }
 
