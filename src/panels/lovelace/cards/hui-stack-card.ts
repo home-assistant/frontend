@@ -10,15 +10,14 @@ interface Config extends LovelaceConfig {
   cards: LovelaceConfig[];
 }
 
-export default abstract class HuiStackCard extends LitElement
-  implements LovelaceCard {
-  protected config?: Config;
+export abstract class HuiStackCard extends LitElement implements LovelaceCard {
   protected _cards?: LovelaceCard[];
+  private _config?: Config;
   private _hass?: HomeAssistant;
 
   static get properties() {
     return {
-      config: {},
+      _config: {},
     };
   }
 
@@ -40,16 +39,18 @@ export default abstract class HuiStackCard extends LitElement
     if (!config || !config.cards || !Array.isArray(config.cards)) {
       throw new Error("Card config incorrect");
     }
-    this.config = config;
+    this._config = config;
     this._cards = config.cards.map((card) => {
       const element = createCardElement(card) as LovelaceCard;
-      element.hass = this._hass;
+      if (this._hass) {
+        element.hass = this._hass;
+      }
       return element;
     });
   }
 
   protected render(): TemplateResult {
-    if (!this.config) {
+    if (!this._config) {
       return html``;
     }
 
