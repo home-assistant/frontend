@@ -11,8 +11,8 @@ interface Config extends LovelaceConfig {
 }
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {
-  private _config?: Config;
   protected _cards?: LovelaceCard[];
+  private _config?: Config;
   private _hass?: HomeAssistant;
 
   static get properties() {
