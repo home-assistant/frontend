@@ -9,6 +9,7 @@ import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
 
 const thermostatConfig = {
   radius: 150,
@@ -66,18 +67,21 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
     const stateObj = this.hass.states[this.config.entity];
     const broadCard = this.clientWidth > 390;
+    const mode = modeIcons[stateObj.attributes.operation_mode]
+      ? stateObj.attributes.operation_mode
+      : "unknown-mode";
     return html`
       ${this.renderStyle()}
       <ha-card
         class="${classMap({
-          [stateObj.attributes.operation_mode]: true,
+          [mode]: true,
           large: broadCard,
           small: !broadCard,
         })}">
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">Upstairs</div>
+            <div class="title">${computeStateName(stateObj)}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">${
                 stateObj.attributes.current_temperature
@@ -94,7 +98,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
             )}</div>
             <div class="modes">
               ${stateObj.attributes.operation_list.map((modeItem) =>
-                this._renderIcon(modeItem, stateObj.attributes.operation_mode)
+                this._renderIcon(modeItem, mode)
               )}
             </div>
           </div>
@@ -105,10 +109,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
   protected shouldUpdate(changedProps) {
     if (changedProps.get("hass")) {
-      return changedProps.get("hass").states[this.config!.entity] !==
+      return (
+        changedProps.get("hass").states[this.config!.entity] !==
         this.hass!.states[this.config!.entity]
-        ? true
-        : false;
+      );
     }
     return changedProps;
   }
@@ -177,6 +181,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       }
       .off {
         --mode-color: #8a8a8a;
+      }
+      .unknown-mode {
+        --mode-color: #bac;
+      }
+      .no-title {
+        --title-margin-top: 33% !important;
       }
       .large {
         --thermostat-padding-top: 25px;
@@ -324,6 +334,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _renderIcon(mode, currentMode) {
+    if (!modeIcons[mode]) {
+      return html``;
+    }
     return html`<ha-icon
       class="${classMap({ "selected-icon": currentMode === mode })}"
       .mode="${mode}"
