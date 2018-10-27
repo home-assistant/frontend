@@ -82,6 +82,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       open="{{notificationsOpen}}"
       narrow="[[narrow]]"
     ></hui-notification-drawer>
+    <hui-edit-card-drawer
+      hass="[[hass]]"
+      cards="[[cards]]"
+      open="{{editOpen}}"
+      narrow="[[narrow]]"
+    ></hui-edit-card-drawer>
     <ha-app-layout id="layout">
       <app-header slot="header" effects="waterfall" fixed condenses>
         <app-toolbar>
@@ -102,6 +108,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
             <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
               <paper-item on-click="_handleRefresh">Refresh</paper-item>
               <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
+              <paper-item on-click="_editCardOpen">Edit Card</paper-item>
               <paper-item on-click="_handleHelp">Help</paper-item>
             </paper-listbox>
           </paper-menu-button>
@@ -168,6 +175,22 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       _notifications: {
         type: Array,
         computed: "_updateNotifications(hass.states, _persistentNotifications)",
+      },
+
+      editMode: {
+        type: Boolean,
+        value: false,
+        observer: "_editModeChanged",
+      },
+
+      editOpen: {
+        type: Boolean,
+        value: false,
+      },
+
+      cards: {
+        type: Array,
+        value: [],
       },
 
       routeData: Object,
@@ -255,6 +278,14 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
+  _editCardOpen() {
+    this.editMode = true;
+  }
+
+  _editModeChanged() {
+    this._selectView(this._curView);
+  }
+
   _handleViewSelected(ev) {
     const index = ev.detail.selected;
     if (index !== this._curView) {
@@ -284,10 +315,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
+        view.editMode = this.editMode;
       } else {
         view = document.createElement("hui-view");
         view.config = viewConfig;
         view.columns = this.columns;
+        view.editMode = this.editMode;
       }
       if (viewConfig.background) background = viewConfig.background;
     }
