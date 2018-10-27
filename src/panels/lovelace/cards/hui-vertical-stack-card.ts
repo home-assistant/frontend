@@ -2,7 +2,7 @@ import { html } from "@polymer/lit-element";
 
 import computeCardSize from "../common/compute-card-size.js";
 
-import { HuiStackCard } from "./hui-stack-card.js";
+import { HuiStackCard } from "./hui-stack-card";
 import { TemplateResult } from "lit-html";
 
 class HuiVerticalStackCard extends HuiStackCard {
