@@ -4,6 +4,7 @@ import "../../../components/buttons/ha-call-service-button.js";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types.js";
 import { HomeAssistant } from "../../../types.js";
+import { TemplateResult } from "lit-html";
 
 export class HuiServiceButtonElement extends LitElement
   implements LovelaceElement {
@@ -16,7 +17,7 @@ export class HuiServiceButtonElement extends LitElement
     return { _config: {} };
   }
 
-  public setConfig(config: LovelaceElementConfig) {
+  public setConfig(config: LovelaceElementConfig): void {
     if (!config || !config.service) {
       throw Error("Invalid Configuration: 'service' required");
     }
@@ -36,7 +37,7 @@ export class HuiServiceButtonElement extends LitElement
     this._config = config;
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }
@@ -52,7 +53,7 @@ export class HuiServiceButtonElement extends LitElement
     `;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         ha-call-service-button {
