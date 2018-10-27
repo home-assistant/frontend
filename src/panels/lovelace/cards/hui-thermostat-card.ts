@@ -26,7 +26,7 @@ const modeIcons = {
   auto: "hass:autorenew",
   heat: "hass:fire",
   cool: "hass:snowflake",
-  off: "hass:fan-off",
+  off: "hass:power",
 };
 
 interface Config extends LovelaceConfig {
