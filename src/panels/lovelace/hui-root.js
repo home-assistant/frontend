@@ -82,12 +82,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       open="{{notificationsOpen}}"
       narrow="[[narrow]]"
     ></hui-notification-drawer>
-    <hui-edit-card-drawer
+    <hui-edit-card-modal
       hass="[[hass]]"
-      cards="[[cards]]"
-      open="{{editOpen}}"
-      narrow="[[narrow]]"
-    ></hui-edit-card-drawer>
+      open="{{editMode}}"
+      card="{{selectedCard}}"
+    </hui-edit-card-modal>
     <ha-app-layout id="layout">
       <app-header slot="header" effects="waterfall" fixed condenses>
         <app-toolbar>
@@ -183,15 +182,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         observer: "_editModeChanged",
       },
 
-      editOpen: {
-        type: Boolean,
-        value: false,
-      },
-
-      cards: {
-        type: Array,
-        value: [],
-      },
+      selectedCard: Object,
 
       routeData: Object,
     };
