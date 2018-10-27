@@ -8,6 +8,7 @@ import NavigateMixin from "../../../mixins/navigate-mixin.js";
 
 import "./ha-user-picker.js";
 import "./ha-user-editor.js";
+import { fireEvent } from "../../../common/dom/fire_event.js";
 
 /*
  * @appliesMixin NavigateMixin
@@ -68,8 +69,8 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   _checkRoute(route) {
     if (!route || route.path.substr(0, 6) !== "/users") return;
 
-    // prevent list gettung under toolbar
-    this.fire("iron-resize");
+    // prevent list getting under toolbar
+    fireEvent(this, "iron-resize");
 
     this._debouncer = Debouncer.debounce(
       this._debouncer,

@@ -52,7 +52,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
           <template is="dom-if" if="[[computeIsLoaded(hass, 'cloud')]]">
             <paper-card>
               <a href='/config/cloud' tabindex="-1">
-                <paper-item on-click="_navigate">
+                <paper-item>
                   <paper-item-body two-line="">
                     [[localize('ui.panel.config.cloud.caption')]]
                     <template is="dom-if" if="[[cloudStatus.logged_in]]">
