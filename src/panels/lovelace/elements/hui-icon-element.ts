@@ -40,8 +40,8 @@ export class HuiIconElement extends hassLocalizeLitMixin(LitElement)
       <ha-icon
         .icon="${this._config.icon}"
         .title="${computeTooltip(this.hass!, this._config)}"
-        @ha-click="${(ev) => handleClick(ev, this.hass!, this._config!, false)}"
-        @ha-hold="${(ev) => handleClick(ev, this.hass!, this._config!, true)}"
+        @ha-click="${() => handleClick(this, this.hass!, this._config!, false)}"
+        @ha-hold="${() => handleClick(this, this.hass!, this._config!, true)}"
         .longPress="${longPress()}"
       ></ha-icon>
     `;
