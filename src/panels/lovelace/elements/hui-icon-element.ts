@@ -8,6 +8,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceElement, LovelaceElementConfig } from "./types.js";
 import { HomeAssistant } from "../../../types.js";
+import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceElementConfig {
   icon: string;
@@ -22,7 +23,7 @@ export class HuiIconElement extends hassLocalizeLitMixin(LitElement)
     return { hass: {}, _config: {} };
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     if (!config.icon) {
       throw Error("Invalid Configuration: 'icon' required");
     }
@@ -30,7 +31,7 @@ export class HuiIconElement extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }
@@ -47,7 +48,7 @@ export class HuiIconElement extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         :host {
