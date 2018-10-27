@@ -60,11 +60,13 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             <div class='gauge-b'></div>
             <div class='gauge-c' id='gauge'></div>
             <div class='gauge-data'>
-              <div id='percent'>${stateObj.state}</div>
+              <div id='percent'>${stateObj.state}
+              ${this._config!.unit_of_measurement ||
+                stateObj.attributes.unit_of_measurement ||
+                ""}
+              </div>
               <div id='title'>${this._config.title}
-                ${this._config!.unit_of_measurement ||
-                  stateObj.attributes.unit_of_measurement ||
-                  ""}
+
               </div>
             </div>
           </div>
