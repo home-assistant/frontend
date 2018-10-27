@@ -47,7 +47,6 @@ export class HuiEditCardModal extends EventsMixin(
         background: rgba(105, 105, 105, 0.7);
       }
     </style>
-
     <div id="overlay" on-click="_closeDialog"></div>
     <paper-dialog id="configModal">
       <h2>Card Configuration</h2>
