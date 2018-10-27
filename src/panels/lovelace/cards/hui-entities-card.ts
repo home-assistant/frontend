@@ -31,8 +31,8 @@ interface Config extends LovelaceConfig {
 class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   protected _hass?: HomeAssistant;
-  protected config?: Config;
-  protected configEntities?: ConfigEntity[];
+  protected _config?: Config;
+  protected _configEntities?: ConfigEntity[];
 
   set hass(hass) {
     this._hass = hass;
@@ -45,16 +45,16 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
 
   static get properties(): PropertyDeclarations {
     return {
-      config: {},
+      _config: {},
     };
   }
 
   public getCardSize() {
-    if (!this.config) {
+    if (!this._config) {
       return 0;
     }
     // +1 for the header
-    return (this.config.title ? 1 : 0) + this.config.entities.length;
+    return (this._config.title ? 1 : 0) + this._config.entities.length;
   }
 
   public setConfig(config: Config) {
@@ -77,15 +77,15 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
       }
     }
 
-    this.config = config;
-    this.configEntities = entities;
+    this._config = config;
+    this._configEntities = entities;
   }
 
   protected render() {
-    if (!this.config || !this._hass) {
+    if (!this._config || !this._hass) {
       return html``;
     }
-    const { show_header_toggle, title } = this.config;
+    const { show_header_toggle, title } = this._config;
 
     return html`
       ${this.renderStyle()}
@@ -102,7 +102,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
                   : html`
                   <hui-entities-toggle
                     .hass="${this._hass}"
-                    .entities="${this.configEntities!.map(
+                    .entities="${this._configEntities!.map(
                       (conf) => conf.entity
                     )}"
                   >
@@ -111,7 +111,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
             </div>`
         }
         <div id="states">
-          ${this.configEntities!.map((entityConf) =>
+          ${this._configEntities!.map((entityConf) =>
             this.renderEntity(entityConf)
           )}
         </div>
@@ -156,7 +156,9 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
 
   private renderEntity(entityConf) {
     const element = createRowElement(entityConf);
-    element.hass = this._hass;
+    if (this._hass) {
+      element.hass = this._hass;
+    }
     if (
       entityConf.entity &&
       !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
