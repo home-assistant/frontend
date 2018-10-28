@@ -28,11 +28,11 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this.hass!.states[this._config!.entity!]) {
+    if (!this._config || !this.hass!.states[this._config.entity!]) {
       return html``;
     }
 
-    const state = this.hass!.states[this._config!.entity!];
+    const state = this.hass!.states[this._config.entity!];
     return html`
       ${this.renderStyle()}
       <state-badge
