@@ -15,7 +15,7 @@ import "../entity-rows/hui-timer-entity-row.js";
 import "../entity-rows/hui-toggle-entity-row.js";
 
 import "../special-rows/hui-call-service-row.js";
-import "../special-rows/hui-divider-row.js";
+import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row.js";
 import "../special-rows/hui-weblink-row.js";
 
