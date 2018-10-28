@@ -102,6 +102,10 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           ></paper-icon-button>
           <paper-icon-button
             slot="item-icon"
+            icon="hass:check-all"
+          ></paper-icon-button>
+          <paper-icon-button
+            slot="item-icon"
             icon="hass:notification-clear-all"
             @click='${this._clearItems}'
           ></paper-icon-button>
@@ -111,7 +115,12 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         this._items!,
         (item) => html`
         <div class="editRow">
-        <paper-checkbox
+          <paper-icon-button
+            slot="item-icon"
+            .itemId=${item.id}
+            icon="hass:drag-vertical"
+          ></paper-icon-button>
+          <paper-checkbox
             slot="item-icon"
             ?checked=${item.complete}
             .itemId=${item.id}
@@ -129,7 +138,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           <paper-icon-button
             slot="item-icon"
             .itemId=${item.id}
-            icon="hass:delete"
+            icon="hass:close"
             @click='${this._deleteItem}'
           ></paper-icon-button>
         </div>
@@ -143,9 +152,11 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     return html`
       <style>
         .addRow, .editRow {
-          padding-left: 16px;
           display: flex;
           flex-direction: row;
+        }
+        .addRow {
+          padding-left: 16px;
         }
         paper-icon-item {
           border-top: 1px solid var(--divider-color);
