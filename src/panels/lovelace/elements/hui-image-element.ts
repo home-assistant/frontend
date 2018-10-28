@@ -45,15 +45,15 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <hui-image
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .entity="${this._config.entity}"
         .image="${this._config.image}"
-        .state-image="${this._config.state_image}"
-        .camera-image="${this._config.camera_image}"
-        .filter="${this._config.filter}"
-        .state-filter="${this._config.state_filter}"
+        .stateImage=${this._config.state_image}
+        .cameraImage=${this._config.camera_image}
+        .filter=${this._config.filter}
+        .stateFilter=${this._config.state_filter}
         .title="${computeTooltip(this.hass!, this._config)}"
-        .aspect-ratio="${this._config.aspect_ratio}"
+        .aspectRatio="${this._config.aspect_ratio}"
         @ha-click="${() => handleClick(this, this.hass!, this._config!, false)}"
         @ha-hold="${() => handleClick(this, this.hass!, this._config!, true)}"
         .longPress="${longPress()}"
