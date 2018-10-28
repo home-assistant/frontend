@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
-import "../entity-rows/hui-climate-entity-row.js";
+import "../entity-rows/hui-climate-entity-row";
 import "../entity-rows/hui-cover-entity-row.js";
 import "../entity-rows/hui-group-entity-row.js";
 import "../entity-rows/hui-input-number-entity-row.js";
