@@ -21,9 +21,11 @@ class HuiWeblinkRow extends LitElement implements EntityRow {
       throw new Error("Invalid Configuration: 'url' required");
     }
 
-    config.icon = config.icon || "hass:link";
-    config.name = config.name || config.url;
-    this._config = config;
+    this._config = {
+      icon: "hass:link",
+      name: config.url,
+      ...config,
+    };
   }
 
   protected render(): TemplateResult {
