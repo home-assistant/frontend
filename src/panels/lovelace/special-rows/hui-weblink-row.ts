@@ -16,11 +16,13 @@ class HuiWeblinkRow extends LitElement implements EntityRow {
     };
   }
 
-  public setConfig(config): void {
-    if (!config || !config.icon || !config.name || !config.url) {
-      throw new Error("Error in card configuration.");
+  public setConfig(config: WeblinkConfig): void {
+    if (!config || !config.url) {
+      throw new Error("Invalid Configuration: 'url' required");
     }
 
+    config.icon = config.icon || "hass:link";
+    config.name = config.name || config.url;
     this._config = config;
   }
 
