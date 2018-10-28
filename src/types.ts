@@ -5,6 +5,8 @@ import {
   Connection,
   MessageBase,
   HassEntity,
+  HassEntityBase,
+  HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 
 export interface Credential {
@@ -87,8 +89,8 @@ export interface HomeAssistant {
   callWS: <T>(msg: MessageBase) => Promise<T>;
 }
 
-export type ClimateEntity = HassEntity & {
-  attributes: {
+export type ClimateEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
     current_temperature: number;
     min_temp: number;
     max_temp: number;
