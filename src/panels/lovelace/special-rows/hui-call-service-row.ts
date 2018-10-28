@@ -25,8 +25,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
       !config.icon ||
       !config.name ||
       !config.action_name ||
-      !config.service ||
-      !config.service_data
+      !config.service
     ) {
       throw new Error("Error in card configuration.");
     }
@@ -46,7 +45,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
           ${this._config.name}
         </div>
         <paper-button
-          @click="${() => callService(this._config, this.hass)}"
+          @click="${this._callService}"
         >${this._config.action_name}</paper-button>
       </div>
     `;
@@ -83,6 +82,10 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
         }
       </style>
     `;
+  }
+
+  private _callService() {
+    callService(this._config, this.hass);
   }
 }
 
