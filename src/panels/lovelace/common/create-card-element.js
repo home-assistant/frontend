@@ -22,7 +22,7 @@ import "../cards/hui-sensor-card.js";
 import "../cards/hui-vertical-stack-card.ts";
 import "../cards/hui-thermostat-card.ts";
 import "../cards/hui-weather-forecast-card";
-import "../cards/hui-gauge-card.js";
+import "../cards/hui-gauge-card";
 
 import createErrorCardConfig from "./create-error-card-config.js";
 
