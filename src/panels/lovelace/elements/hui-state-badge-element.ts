@@ -25,11 +25,15 @@ export class HuiStateBadgeElement extends LitElement
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this.hass!.states[this._config.entity!]) {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.hass.states[this._config.entity!]
+    ) {
       return html``;
     }
 
-    const state = this.hass!.states[this._config.entity!];
+    const state = this.hass.states[this._config.entity!];
     return html`
       <ha-state-label-badge
         .hass=${this.hass}
