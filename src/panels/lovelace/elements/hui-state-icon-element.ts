@@ -1,4 +1,5 @@
 import { html, LitElement } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 import "../../../components/entity/state-badge.js";
 
@@ -8,7 +9,6 @@ import { longPress } from "../common/directives/long-press-directive";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceElement, LovelaceElementConfig } from "./types.js";
 import { HomeAssistant } from "../../../types.js";
-import { TemplateResult } from "lit-html";
 
 export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
   implements LovelaceElement {
@@ -28,7 +28,11 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this.hass!.states[this._config.entity!]) {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.hass.states[this._config.entity!]
+    ) {
       return html``;
     }
 
@@ -38,8 +42,8 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
       <state-badge
         .stateObj=${state}
         .title="${computeTooltip(this.hass!, this._config)}"
-        @ha-click="${() => handleClick(this, this.hass!, this._config!, false)}"
-        @ha-hold="${() => handleClick(this, this.hass!, this._config!, true)}"
+        @ha-click="${this._handleClick}"
+        @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       ></state-badge>
     `;
@@ -53,6 +57,14 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
         }
       </style>
     `;
+  }
+
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
