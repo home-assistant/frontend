@@ -4,6 +4,8 @@ import {
   Auth,
   Connection,
   MessageBase,
+  HassEntityBase,
+  HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 
 export interface Credential {
@@ -85,3 +87,27 @@ export interface HomeAssistant {
   sendWS: (msg: MessageBase) => Promise<void>;
   callWS: <T>(msg: MessageBase) => Promise<T>;
 }
+
+export type ClimateEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    current_temperature: number;
+    min_temp: number;
+    max_temp: number;
+    temperature: number;
+    target_temp_step?: number;
+    target_temp_high?: number;
+    target_temp_low?: number;
+    target_humidity?: number;
+    target_humidity_low?: number;
+    target_humidity_high?: number;
+    fan_mode?: string;
+    fan_list?: string[];
+    operation_mode?: string;
+    operation_list?: string[];
+    hold_mode?: string;
+    swing_mode?: string;
+    swing_list?: string[];
+    away_mode?: "on" | "off";
+    aux_heat?: "on" | "off";
+  };
+};
