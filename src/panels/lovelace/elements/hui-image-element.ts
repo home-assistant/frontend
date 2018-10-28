@@ -76,4 +76,11 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-image-element": HuiImageElement;
+  }
+}
+
 customElements.define("hui-image-element", HuiImageElement);
