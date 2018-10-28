@@ -27,7 +27,7 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -39,7 +39,7 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
       >
         <ha-climate-state
           .hass=${this.hass}
-          .stateObj=${this.hass!.states[this._config!.entity]}
+          .stateObj=${this.hass.states[this._config.entity]}
         ></ha-climate-state>
       </hui-generic-entity-row>
     `;
