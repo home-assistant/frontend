@@ -36,7 +36,7 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <state-badge
-        .state-obj=${state}
+        .stateObj=${state}
         .title="${computeTooltip(this.hass!, this._config)}"
         @ha-click="${() => handleClick(this, this.hass!, this._config!, false)}"
         @ha-hold="${() => handleClick(this, this.hass!, this._config!, true)}"
@@ -54,8 +54,6 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
       </style>
     `;
   }
-
-  // TODO Update the state object when hass updates if it has changed?
 }
 
 declare global {
