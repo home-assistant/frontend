@@ -1,6 +1,7 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { EntityRow, DividerConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
+import { TemplateResult } from "lit-html";
 
 class HuiDividerRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
@@ -27,7 +28,7 @@ class HuiDividerRow extends LitElement implements EntityRow {
     this._config = config;
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }
@@ -38,7 +39,7 @@ class HuiDividerRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         div {
