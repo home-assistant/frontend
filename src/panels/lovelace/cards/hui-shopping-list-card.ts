@@ -92,13 +92,13 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           <paper-input
             id='addBox'
             placeholder='${this.localize("ui.card.shopping-list.add_item")}'
-            @keydown='${this._addKeyPress}'
+            @keydown=${this._addKeyPress}
             no-label-float
           ></paper-input>
           <paper-icon-button
             slot="item-icon"
             icon="hass:plus"
-            @click='${this._addItem}'
+            @click=${this._addItem}
           ></paper-icon-button>
           <paper-icon-button
             slot="item-icon"
@@ -107,15 +107,18 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           <paper-icon-button
             slot="item-icon"
             icon="hass:notification-clear-all"
-            @click='${this._clearItems}'
+            @click=${this._clearItems}
           ></paper-icon-button>
         </div>
 
       ${repeat(
         this._items!,
         (item) => html`
-        <div class="editRow">
+        <div class="editRow"
+          @hover=${this._showEditOptions}
+        >
           <paper-icon-button
+            class="editOption"
             slot="item-icon"
             .itemId=${item.id}
             icon="hass:drag-vertical"
@@ -124,7 +127,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
             slot="item-icon"
             ?checked=${item.complete}
             .itemId=${item.id}
-            @click='${this._completeItem}'
+            @click=${this._completeItem}
             tabindex='0'
           ></paper-checkbox>
           <paper-item-body>
@@ -132,14 +135,15 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
               no-label-float
               .value='${item.name}'
               .itemId=${item.id}
-              @change='${this._saveEdit}'
+              @change=${this._saveEdit}
             ></paper-input>
           </paper-item-body>
           <paper-icon-button
+            class="editOption"
             slot="item-icon"
             .itemId=${item.id}
             icon="hass:close"
-            @click='${this._deleteItem}'
+            @click=${this._deleteItem}
           ></paper-icon-button>
         </div>
         `
@@ -157,6 +161,12 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         }
         .addRow {
           padding-left: 16px;
+        }
+        .editOption {
+            display: none;
+        }
+        .editRow:hover + .editOption {
+            display: block;
         }
         paper-icon-item {
           border-top: 1px solid var(--divider-color);
@@ -233,6 +243,10 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
 
   private _deleteItem(ev): void {
     deleteItem(this.hass!, ev.target.itemId).catch(() => this._fetchData());
+  }
+
+  private _showEditOptions(ev): void {
+    const row = ev.target;
   }
 }
 
