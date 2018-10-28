@@ -23,7 +23,7 @@ import {
 import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceConfig {
-  title: string;
+  title?: string;
 }
 
 export interface ShoppingListItem {
@@ -47,11 +47,13 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   public getCardSize(): number {
-    return 1 + (this._items ? this._items.length : 3);
+    return (
+      (this._config ? (this._config.title ? 1 : 0) : 0) +
+      (this._items ? this._items.length : 3)
+    );
   }
 
   public setConfig(config: Config): void {
-    config.title = config.title || "Shopping List";
     this._config = config;
     this._items = [];
     this._fetchData();
@@ -87,31 +89,28 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
-        <div class="fabDiv">
-          <paper-fab
-            icon="hass:plus"
-            @click=${this._addItem}
-          ></paper-fab>
-          <paper-fab
-            mini
-            class="moreOptions"
-            icon="hass:notification-clear-all"
-            @click=${this._clearItems}
-          ></paper-fab>
-          <paper-fab
-            mini
-            class="moreOptions"
-            icon="hass:check-all"
-          ></paper-fab>
-        </div>
-        <!--<div class="addRow">
+        <div class="addRow">
           <paper-input
             id='addBox'
             placeholder='${this.localize("ui.card.shopping-list.add_item")}'
             @keydown=${this._addKeyPress}
             no-label-float
           ></paper-input>
-        </div>-->
+          <paper-icon-button
+            slot="item-icon"
+            icon="hass:plus"
+            @click=${this._addItem}
+          ></paper-icon-button>
+          <paper-icon-button
+            slot="item-icon"
+            icon="hass:check-all"
+          ></paper-icon-button>
+          <paper-icon-button
+            slot="item-icon"
+            icon="hass:notification-clear-all"
+            @click=${this._clearItems}
+          ></paper-icon-button>
+        </div>
 
       ${repeat(
         this._items!,
@@ -155,9 +154,6 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   private renderStyle(): TemplateResult {
     return html`
       <style>
-        ha-card {
-          min-height: 180px;
-        }
         .addRow, .editRow {
           display: flex;
           flex-direction: row;
@@ -170,23 +166,6 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         }
         .editRow:hover > .editOption {
             visibility: visible;
-        }
-        .fabDiv {
-          float: right;
-          margin-right: 20px;
-          margin-top: -60px;
-        }
-        paper-fab {
-          display: block;
-          position: relative;
-        }
-        .moreOptions {
-          visibility: hidden;
-          margin-top: 7px;
-          margin-left: 7px;
-        }
-        .fabDiv:hover > .moreOptions {
-          visibility: visible;
         }
         paper-icon-item {
           border-top: 1px solid var(--divider-color);
