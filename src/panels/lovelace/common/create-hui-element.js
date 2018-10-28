@@ -3,7 +3,7 @@ import "../elements/hui-image-element.js";
 import "../elements/hui-service-button-element.js";
 import "../elements/hui-state-badge-element.js";
 import "../elements/hui-state-icon-element.js";
-import "../elements/hui-state-label-element.js";
+import "../elements/hui-state-label-element";
 
 import { fireEvent } from "../../../common/dom/fire_event.js";
 import createErrorCardConfig from "./create-error-card-config.js";
