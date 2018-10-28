@@ -14,7 +14,7 @@ interface Config extends LovelaceConfig {
 }
 
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
-  protected _config?: Config;
+  private _config?: Config;
   private _hass?: HomeAssistant;
 
   static get properties() {
@@ -99,6 +99,12 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     });
 
     return element;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-picture-elements-card": HuiPictureElementsCard;
   }
 }
 
