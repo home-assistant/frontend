@@ -12,8 +12,8 @@ export interface SectionConfig {
   label: string;
 }
 export interface WeblinkConfig {
-  name: string;
-  icon: string;
+  name?: string;
+  icon?: string;
   url: string;
 }
 export type EntityRowConfig =
