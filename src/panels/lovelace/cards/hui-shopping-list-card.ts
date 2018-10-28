@@ -114,9 +114,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       ${repeat(
         this._items!,
         (item) => html`
-        <div class="editRow"
-          @hover=${this._showEditOptions}
-        >
+        <div class="editRow">
           <paper-icon-button
             class="editOption"
             slot="item-icon"
@@ -166,7 +164,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
             display: none;
         }
         .editRow:hover + .editOption {
-            display: block;
+            display: inline;
         }
         paper-icon-item {
           border-top: 1px solid var(--divider-color);
