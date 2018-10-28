@@ -69,11 +69,6 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
           !entity.action_name)
       ) {
         throw new Error("Missing required property when type is call-service");
-      } else if (
-        entity.type === "weblink" &&
-        (!entity.name || !entity.icon || !entity.url)
-      ) {
-        throw new Error("Missing required property when type is weblink");
       }
     }
 
