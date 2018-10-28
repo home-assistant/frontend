@@ -161,10 +161,10 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           padding-left: 16px;
         }
         .editOption {
-            display: none;
+            visibility: hidden;
         }
-        .editRow:hover + .editOption {
-            display: inline;
+        .editRow:hover > .editOption {
+            visibility: visible;
         }
         paper-icon-item {
           border-top: 1px solid var(--divider-color);
