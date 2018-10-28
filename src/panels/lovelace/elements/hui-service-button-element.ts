@@ -1,10 +1,10 @@
 import { html, LitElement } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 import "../../../components/buttons/ha-call-service-button.js";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types.js";
 import { HomeAssistant } from "../../../types.js";
-import { TemplateResult } from "lit-html";
 
 export class HuiServiceButtonElement extends LitElement
   implements LovelaceElement {
