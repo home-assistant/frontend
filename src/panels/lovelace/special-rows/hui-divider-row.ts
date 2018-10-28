@@ -18,13 +18,6 @@ class HuiDividerRow extends LitElement implements EntityRow {
       throw new Error("Error in card configuration.");
     }
 
-    if (!config.style) {
-      config.style = {
-        height: "1px",
-        "background-color": "var(--secondary-text-color)",
-      };
-    }
-
     this._config = config;
   }
 
@@ -34,19 +27,22 @@ class HuiDividerRow extends LitElement implements EntityRow {
     }
 
     return html`
-      ${this.renderStyle()}
-      <div></div>
+      ${this._createDivider()}
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        div {
-          ${this._config!.style}
-        }
-      </style>
-    `;
+  private _createDivider(): HTMLElement {
+    const el = document.createElement("div");
+    const style = this._config!.style || {
+      height: "1px",
+      "background-color": "var(--secondary-text-color)",
+    };
+
+    Object.keys(style).forEach((prop) => {
+      el.style.setProperty(prop, style[prop]);
+    });
+
+    return el;
   }
 }
 
