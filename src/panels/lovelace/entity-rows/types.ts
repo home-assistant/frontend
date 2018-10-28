@@ -23,6 +23,6 @@ export type EntityRowConfig =
   | WeblinkConfig;
 
 export interface EntityRow {
-  hass: HomeAssistant;
+  hass?: HomeAssistant;
   setConfig(config: EntityRowConfig);
 }

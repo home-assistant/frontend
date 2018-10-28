@@ -6,7 +6,7 @@ import "../../../components/ha-card.js";
 import "../../../components/ha-icon.js";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 
-import { HomeAssistant } from "../../../types.js";
+import { HomeAssistant, ClimateEntity } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
@@ -26,7 +26,7 @@ const modeIcons = {
   auto: "hass:autorenew",
   heat: "hass:fire",
   cool: "hass:snowflake",
-  off: "hass:fan-off",
+  off: "hass:power",
 };
 
 interface Config extends LovelaceConfig {
@@ -65,10 +65,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     if (!this.hass || !this.config) {
       return html``;
     }
-    const stateObj = this.hass.states[this.config.entity];
+    const stateObj = this.hass.states[this.config.entity] as ClimateEntity;
     const broadCard = this.clientWidth > 390;
-    const mode = modeIcons[stateObj.attributes.operation_mode]
-      ? stateObj.attributes.operation_mode
+    const mode = modeIcons[stateObj.attributes.operation_mode || ""]
+      ? stateObj.attributes.operation_mode!
       : "unknown-mode";
     return html`
       ${this.renderStyle()}
@@ -97,7 +97,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
               `state.climate.${stateObj.state}`
             )}</div>
             <div class="modes">
-              ${stateObj.attributes.operation_list.map((modeItem) =>
+              ${(stateObj.attributes.operation_list || []).map((modeItem) =>
                 this._renderIcon(modeItem, mode)
               )}
             </div>
@@ -118,7 +118,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected firstUpdated() {
-    const stateObj = this.hass!.states[this.config!.entity];
+    const stateObj = this.hass!.states[this.config!.entity] as ClimateEntity;
 
     const _sliderType =
       stateObj.attributes.target_temp_low &&
@@ -138,16 +138,24 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated() {
-    const attrs = this.hass!.states[this.config!.entity].attributes;
+    const stateObj = this.hass!.states[this.config!.entity] as ClimateEntity;
 
     let sliderValue;
     let uiValue;
 
-    if (attrs.target_temp_low && attrs.target_temp_high) {
-      sliderValue = `${attrs.target_temp_low}, ${attrs.target_temp_high}`;
-      uiValue = formatTemp([attrs.target_temp_low, attrs.target_temp_high]);
+    if (
+      stateObj.attributes.target_temp_low &&
+      stateObj.attributes.target_temp_high
+    ) {
+      sliderValue = `${stateObj.attributes.target_temp_low}, ${
+        stateObj.attributes.target_temp_high
+      }`;
+      uiValue = formatTemp([
+        stateObj.attributes.target_temp_low,
+        stateObj.attributes.target_temp_high,
+      ]);
     } else {
-      sliderValue = uiValue = attrs.temperature;
+      sliderValue = uiValue = stateObj.attributes.temperature;
     }
 
     jQuery("#thermostat", this.shadowRoot).roundSlider({
@@ -307,7 +315,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _setTemperature(e) {
-    const stateObj = this.hass!.states[this.config!.entity];
+    const stateObj = this.hass!.states[this.config!.entity] as ClimateEntity;
     if (
       stateObj.attributes.target_temp_low &&
       stateObj.attributes.target_temp_high
