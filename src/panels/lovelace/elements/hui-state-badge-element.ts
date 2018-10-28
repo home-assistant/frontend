@@ -16,10 +16,6 @@ export class HuiStateBadgeElement extends LitElement
     return { hass: {}, _config: {} };
   }
 
-  static get observers() {
-    return ["_updateBadge(hass, _config)"];
-  }
-
   public setConfig(config: LovelaceElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
@@ -29,11 +25,11 @@ export class HuiStateBadgeElement extends LitElement
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || !this.hass.states[this._config!.entity!]) {
+    if (!this._config || !this.hass!.states[this._config.entity!]) {
       return html``;
     }
 
-    const state = this.hass.states[this._config!.entity!];
+    const state = this.hass!.states[this._config.entity!];
     return html`
       <ha-state-label-badge
         .hass=${this.hass}
@@ -43,4 +39,11 @@ export class HuiStateBadgeElement extends LitElement
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-state-badge-element": HuiStateBadgeElement;
+  }
+}
+
 customElements.define("hui-state-badge-element", HuiStateBadgeElement);
