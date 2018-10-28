@@ -16,11 +16,19 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
+export interface CallServiceConfig {
+  name: string;
+  icon: string;
+  action_name: string;
+  service: string;
+  service_data: string;
+}
 export type EntityRowConfig =
   | EntityConfig
   | DividerConfig
   | SectionConfig
-  | WeblinkConfig;
+  | WeblinkConfig
+  | CallServiceConfig;
 
 export interface EntityRow {
   hass?: HomeAssistant;
