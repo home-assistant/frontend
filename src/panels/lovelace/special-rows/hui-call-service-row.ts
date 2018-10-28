@@ -15,7 +15,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
   static get properties() {
     return {
       hass: {},
-      config: {},
+      _config: {},
     };
   }
 
