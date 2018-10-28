@@ -15,6 +15,13 @@ interface Config extends LovelaceConfig {
   severity?: object;
 }
 
+const severityMap = {
+  red: "var(--label-badge-red)",
+  green: "var(--label-badge-green)",
+  yellow: "var(--label-badge-yellow)",
+  normal: "var(--label-badge-blue)",
+};
+
 class HuiGaugeCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
@@ -27,7 +34,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize() {
-    return 1;
+    return 2;
   }
 
   public setConfig(config) {
@@ -41,19 +48,23 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config) {
+    if (!this._config || !this.hass) {
       return html``;
     }
-    const stateObj = this.hass!.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity];
+    let error;
+    if (!stateObj) {
+      error = "Entity not available: " + this._config.entity;
+    } else if (isNaN(Number(stateObj.state))) {
+      error = "Entity is non-numeric: " + this._config.entity;
+    }
 
     return html`
     ${this.renderStyle()}
-    <ha-card  @click="${this._handleClick}">
+    <ha-card @click="${this._handleClick}">
     ${
-      !stateObj
-        ? html`<div class="not-found">Entity not available: ${
-            this._config.entity
-          }</div>`
+      error
+        ? html`<div class="not-found">${error}</div>`
         : html`
           <div class='container'>
             <div class='gauge-a'></div>
@@ -61,7 +72,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             <div class='gauge-c' id='gauge'></div>
             <div class='gauge-data'>
               <div id='percent'>${stateObj.state}
-              ${this._config!.unit_of_measurement ||
+              ${this._config.unit_of_measurement ||
                 stateObj.attributes.unit_of_measurement ||
                 ""}
               </div>
@@ -83,42 +94,40 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         this.hass!.states[this._config!.entity]
       );
     }
+    if (changedProps.get("_config")) {
+      return changedProps.get("_config") !== this._config;
+    }
     return changedProps;
   }
 
-  protected firstUpdated() {
-    const stateObj = this.hass!.states[this._config!.entity];
-
-    if (isNaN(Number(stateObj.state))) {
-      this.shadowRoot!.querySelector("title")!.classList.add("not-found");
-      this.shadowRoot!.querySelector("title")!.innerHTML =
-        "Entity is non-numeric: " + this._config!.entity;
-    }
-  }
-
   protected updated() {
-    const stateObj = this.hass!.states[this._config!.entity];
-    const turn = this._translateTurn(stateObj.state, this._config);
-
-    this.shadowRoot!.getElementById(
-      "gauge"
-    )!.style.transform = `rotate(${turn}turn)`;
-
-    this.shadowRoot!.getElementById(
-      "gauge"
-    )!.style.backgroundColor = this._computeSeverity(
-      stateObj.state,
-      this._config!.severity
-    );
-
-    if (this.clientWidth < 200) {
-      (this.shadowRoot!.querySelector(
-        "ha-card"
-      )! as HTMLElement).style.setProperty(
-        "--base-unit",
-        this.clientWidth / 5 + "px"
-      );
+    if (
+      !this._config ||
+      !this.hass ||
+      !this.shadowRoot!.getElementById("gauge")
+    ) {
+      return;
     }
+    const stateObj = this.hass.states[this._config.entity];
+    if (isNaN(Number(stateObj.state))) {
+      return;
+    }
+
+    const turn = this._translateTurn(Number(stateObj.state), this._config);
+
+    this.shadowRoot!.getElementById(
+      "gauge"
+    )!.style.cssText = `transform: rotate(${turn}turn); background-color: ${this._computeSeverity(
+      stateObj.state,
+      this._config.severity!
+    )}`;
+
+    (this.shadowRoot!.querySelector(
+      "ha-card"
+    )! as HTMLElement).style.setProperty(
+      "--base-unit",
+      this._computeBaseUnit()
+    );
   }
 
   private renderStyle() {
@@ -201,14 +210,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _computeSeverity(stateValue, sections) {
+  private _computeSeverity(stateValue: string, sections: object) {
     const numberValue = Number(stateValue);
-    const severityMap = {
-      red: "var(--label-badge-red)",
-      green: "var(--label-badge-green)",
-      yellow: "var(--label-badge-yellow)",
-      normal: "var(--label-badge-blue)",
-    };
 
     if (!sections) {
       return severityMap.normal;
@@ -239,9 +242,15 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return severityMap.normal;
   }
 
-  private _translateTurn(value, config) {
-    const maxTurnValue = Math.min(Math.max(value, config.min), config.max);
-    return (5 * (maxTurnValue - config.min)) / (config.max - config.min) / 10;
+  private _translateTurn(value: number, config: Config) {
+    const maxTurnValue = Math.min(Math.max(value, config.min!), config.max!);
+    return (
+      (5 * (maxTurnValue - config.min!)) / (config.max! - config.min!) / 10
+    );
+  }
+
+  private _computeBaseUnit() {
+    return this.clientWidth < 200 ? this.clientWidth / 5 + "px" : "50px";
   }
 
   private _handleClick() {
