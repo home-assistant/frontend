@@ -1,4 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+} from "@polymer/lit-element";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import { HomeAssistant } from "../../../types.js";
 import isValidEntityId from "../../../common/entity/valid_entity_id.js";
@@ -87,17 +92,17 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps) {
+  protected shouldUpdate(changedProps: PropertyValues) {
     if (changedProps.get("hass")) {
       return (
-        changedProps.get("hass").states[this._config!.entity] !==
+        (changedProps.get("hass") as any).states[this._config!.entity] !==
         this.hass!.states[this._config!.entity]
       );
     }
     if (changedProps.get("_config")) {
       return changedProps.get("_config") !== this._config;
     }
-    return changedProps;
+    return (changedProps as unknown) as boolean;
   }
 
   protected updated() {
