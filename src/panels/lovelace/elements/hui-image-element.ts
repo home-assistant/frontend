@@ -54,8 +54,8 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
         .stateFilter=${this._config.state_filter}
         .title="${computeTooltip(this.hass!, this._config)}"
         .aspectRatio="${this._config.aspect_ratio}"
-        @ha-click="${() => handleClick(this, this.hass!, this._config!, false)}"
-        @ha-hold="${() => handleClick(this, this.hass!, this._config!, true)}"
+        @ha-click="${this._handleClick}"
+        @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       ></hui-image>
     `;
@@ -74,6 +74,14 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
         }
       </style>
     `;
+  }
+
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
