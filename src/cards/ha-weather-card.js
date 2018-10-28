@@ -78,7 +78,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         .forecast {
-          margin-top: 24px;
+          margin-top: 16px;
           display: flex;
           justify-content: space-between;
         }
@@ -89,7 +89,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         .forecast .icon {
-          margin: 8px 0;
+          margin: 4px 0;
           text-align: center;
         }
 
