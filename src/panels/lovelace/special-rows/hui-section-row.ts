@@ -15,7 +15,7 @@ class HuiSectionRow extends LitElement implements EntityRow {
     };
   }
 
-  public setConfig(config): void {
+  public setConfig(config: SectionConfig): void {
     if (!config) {
       throw new Error("Error in card configuration.");
     }
@@ -33,7 +33,7 @@ class HuiSectionRow extends LitElement implements EntityRow {
       <div class=divider></div>
       ${
         this._config.label
-          ? html`<div class=label>${this._config.label}</div>`
+          ? html`<div class="label">${this._config.label}</div>`
           : html``
       }
     `;
