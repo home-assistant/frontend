@@ -2,7 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 import "../../components/entity/ha-state-label-badge.js";
-import "./components/hui-card-options";
+import "./components/hui-card-options.ts";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element.js";
 
@@ -135,17 +135,17 @@ class HUIView extends PolymerElement {
     const elements = config.cards.map((cardConfig) => {
       const element = createCardElement(cardConfig);
       element.hass = this.hass;
-      if (this.editMode) {
-        const wrapper = document.createElement("hui-card-options");
-        wrapper.hass = this.hass;
-        wrapper.card = cardConfig;
-        wrapper.editMode = this.editMode;
-        wrapper.appendChild(element);
-        console.log(wrapper);
-
-        return wrapper;
+      if (!this.editMode) {
+        return element;
       }
-      return element;
+
+      const wrapper = document.createElement("hui-card-options");
+      wrapper.hass = this.hass;
+      wrapper.card = cardConfig;
+      wrapper.editMode = this.editMode;
+      wrapper.appendChild(element);
+
+      return wrapper;
     });
 
     let columns = [];
