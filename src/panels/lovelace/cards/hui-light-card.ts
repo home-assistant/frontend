@@ -1,4 +1,9 @@
-import { html, LitElement, PropertyValues } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyValues,
+  PropertyDeclarations,
+} from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 import { styleMap } from "lit-html/directives/styleMap.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
@@ -40,18 +45,18 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   private _config?: Config;
   private _brightnessTimout?: number;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _config: {},
     };
   }
 
-  public getCardSize() {
+  public getCardSize(): number {
     return 2;
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     if (!config.entity || config.entity.split(".")[0] !== "light") {
       throw new Error("Specify an entity from within the light domain.");
     }
@@ -59,7 +64,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
@@ -107,7 +112,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues) {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.get("hass")) {
       return (
         (changedProps.get("hass") as any).states[this._config!.entity] !==
@@ -117,7 +122,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     return (changedProps as unknown) as boolean;
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     const brightness = this.hass!.states[this._config!.entity].attributes
       .brightness;
     jQuery("#light", this.shadowRoot).roundSlider({
@@ -131,7 +136,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
       (Math.round((brightness / 254) * 100) || 0) + "%";
   }
 
-  protected updated() {
+  protected updated(): void {
     const attrs = this.hass!.states[this._config!.entity].attributes;
 
     jQuery("#light", this.shadowRoot).roundSlider({
@@ -243,18 +248,18 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _dragEvent(e) {
+  private _dragEvent(e: any): void {
     this.shadowRoot!.querySelector(".brightness")!.innerHTML = e.value + "%";
   }
 
-  private _showBrightness() {
+  private _showBrightness(): void {
     clearTimeout(this._brightnessTimout);
     this.shadowRoot!.querySelector(".brightness")!.classList.add(
       "show_brightness"
     );
   }
 
-  private _hideBrightness() {
+  private _hideBrightness(): void {
     this._brightnessTimout = window.setTimeout(() => {
       this.shadowRoot!.querySelector(".brightness")!.classList.remove(
         "show_brightness"
@@ -262,7 +267,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     }, 500);
   }
 
-  private _setBrightness(e) {
+  private _setBrightness(e: any): void {
     this.hass!.callService("light", "turn_on", {
       entity_id: this._config!.entity,
       brightness_pct: e.value,
@@ -288,7 +293,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleClick(hold: boolean) {
+  private _handleClick(hold: boolean): void {
     const entityId = this._config!.entity;
 
     if (hold) {
