@@ -22,7 +22,7 @@ export class HuiCardOptions extends LitElement {
       fireEvent(this, "register-dialog", {
         dialogShowEvent: "show-edit-card",
         dialogTag: "ha-dialog-edit-card",
-        dialogImport: () => import("./ha-dialog-edit-card.ts"),
+        dialogImport: () => import("./ha-dialog-edit-card"),
       });
     }
   }
