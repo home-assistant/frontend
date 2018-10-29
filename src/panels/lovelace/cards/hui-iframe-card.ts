@@ -1,8 +1,9 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 
 import "../../../components/ha-card.js";
 
 import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceConfig {
   aspect_ratio?: string;
@@ -11,42 +12,42 @@ interface Config extends LovelaceConfig {
 }
 
 export class HuiIframeCard extends LitElement implements LovelaceCard {
-  protected config?: Config;
+  protected _config?: Config;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
-      config: {},
+      _config: {},
     };
   }
 
-  public getCardSize() {
+  public getCardSize(): number {
     return 1 + this.offsetHeight / 50;
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     if (!config.url) {
       throw new Error("URL required");
     }
 
-    this.config = config;
+    this._config = config;
   }
 
-  protected render() {
-    if (!this.config) {
+  protected render(): TemplateResult {
+    if (!this._config) {
       return html``;
     }
 
     return html`
       ${this.renderStyle()}
-      <ha-card .header="${this.config.title}">
+      <ha-card .header="${this._config.title}">
         <div id="root">
-          <iframe src="${this.config.url}"></iframe>
+          <iframe src="${this._config.url}"></iframe>
         </div>
       </ha-card>
     `;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         ha-card {
@@ -55,7 +56,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
         #root {
           width: 100%;
           position: relative;
-          padding-top: ${this.config!.aspect_ratio || "50%"};
+          padding-top: ${this._config!.aspect_ratio || "50%"};
         }
         iframe {
           position: absolute;
