@@ -26,6 +26,25 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--paper-item-icon-color);
         }
 
+        .header {
+          font-family: var(--paper-font-headline_-_font-family);
+          -webkit-font-smoothing: var(--paper-font-headline_-_-webkit-font-smoothing);
+          font-size: var(--paper-font-headline_-_font-size);
+          font-weight: var(--paper-font-headline_-_font-weight);
+          letter-spacing: var(--paper-font-headline_-_letter-spacing);
+          line-height: var(--paper-font-headline_-_line-height);
+          text-rendering: var(--paper-font-common-expensive-kerning_-_text-rendering);
+          opacity: var(--dark-primary-opacity);
+          padding: 24px 16px 16px;
+          display: flex;
+        }
+
+        .name {
+          margin-left: 16px;
+          font-size: 16px;
+          color: var(--secondary-text-color);
+        }
+
         .now {
           display: flex;
           justify-content: space-between;
@@ -58,12 +77,8 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           top: 4px;
         }
 
-        .now-text {
-          font-size: 24px;
-        }
-
         .forecast {
-          margin-top: 24px;
+          margin-top: 16px;
           display: flex;
           justify-content: space-between;
         }
@@ -74,7 +89,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         .forecast .icon {
-          margin: 8px 0;
+          margin: 4px 0;
           text-align: center;
         }
 
@@ -88,7 +103,13 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--secondary-text-color);
         }
       </style>
-      <ha-card header="[[stateObj.attributes.friendly_name]]">
+      <ha-card>
+        <div class="header">
+          [[computeState(stateObj.state, localize)]]
+          <div class="name">
+            [[stateObj.attributes.friendly_name]]
+          </div>
+        </div>
         <div class="content">
           <div class="now">
             <div class="main">
@@ -119,9 +140,6 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 </div>
               </template>
             </div>
-          </div>
-          <div class="now-text">
-            [[computeState(stateObj.state, localize)]]
           </div>
           <template is="dom-if" if="[[forecast]]">
             <div class="forecast">
