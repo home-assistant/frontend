@@ -10,6 +10,7 @@ import "../cards/hui-glance-card.ts";
 import "../cards/hui-history-graph-card.js";
 import "../cards/hui-horizontal-stack-card.ts";
 import "../cards/hui-iframe-card.ts";
+import "../cards/hui-light-card";
 import "../cards/hui-map-card.js";
 import "../cards/hui-markdown-card.ts";
 import "../cards/hui-media-control-card.js";
@@ -38,6 +39,7 @@ const CARD_TYPES = new Set([
   "history-graph",
   "horizontal-stack",
   "iframe",
+  "light",
   "map",
   "markdown",
   "media-control",

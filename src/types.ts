@@ -111,3 +111,12 @@ export type ClimateEntity = HassEntityBase & {
     aux_heat?: "on" | "off";
   };
 };
+
+export type LightEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    min_mireds: number;
+    max_mireds: number;
+    friendly_name: string;
+    brightness: number;
+  };
+};
