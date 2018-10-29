@@ -39,9 +39,9 @@ export class HuiCardOptions extends LitElement {
     <div>
       <slot></slot>
       <div class="actions">
-        <paper-button noink raised id="${
-          this.cardID
-        }" @click="${this._editCard()}">Edit</paper-button>
+        <paper-button noink raised .cardID="${this.cardID}" @click="${
+      this._editCard
+    }">Edit</paper-button>
       </div>
     </div>
     `;
