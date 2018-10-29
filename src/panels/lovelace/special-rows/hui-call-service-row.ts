@@ -34,7 +34,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
 
     return html`
       ${this.renderStyle()}
-      <ha-icon icon="${this._config.icon}"></ha-icon>
+      <ha-icon .icon="${this._config.icon}"></ha-icon>
       <div class="flex">
         <div>
           ${this._config.name}
