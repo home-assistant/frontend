@@ -16,8 +16,9 @@ import "../entity-rows/hui-toggle-entity-row.js";
 
 import "../special-rows/hui-call-service-row.js";
 import "../special-rows/hui-divider-row";
-import "../special-rows/hui-section-row.js";
+import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
+
 
 import createErrorCardConfig from "./create-error-card-config.js";
 
