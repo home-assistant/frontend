@@ -13,6 +13,7 @@ import { HomeAssistant, LightEntity } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import { longPress } from "../common/directives/long-press-directive";
+import { TemplateResult } from "lit-html";
 
 const lightConfig = {
   radius: 80,
@@ -138,107 +139,107 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     });
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
     ${roundSliderStyle}
-    <style>
-      :host {
-        display: block;
-      }
-      ha-card {
-        position: relative;
-        overflow: hidden;
-      }
-      #tooltip {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 100%;
-        text-align: center;
-        z-index: 15;
-      }
-      .icon-state {
-        display: block;
-        margin: auto;
-        width: 100%;
-        height: 100%;
-        transform: translate(0,25%);
-      }
-      #light {
-        margin: 0 auto;
-        padding-top: 16px;
-        padding-bottom: 16px;
-      }
-      #light .rs-bar.rs-transition.rs-first, .rs-bar.rs-transition.rs-second{
-        z-index: 20 !important;
-      }
-      #light .rs-range-color  {
-        background-color: var(--primary-color);
-      }
-      #light .rs-path-color  {
-          background-color: #d6d6d6;
-      }
-      #light .rs-handle  {
-          background-color: #FFF;
-          padding: 7px;
-          border: 2px solid #d6d6d6;
-      }
-      #light .rs-handle.rs-focus  {
-          border-color:var(--primary-color);
-      }
-      #light .rs-handle:after  {
-          border-color: var(--primary-color);
+      <style>
+        :host {
+          display: block;
+        }
+        ha-card {
+          position: relative;
+          overflow: hidden;
+        }
+        #tooltip {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 100%;
+          text-align: center;
+          z-index: 15;
+        }
+        .icon-state {
+          display: block;
+          margin: auto;
+          width: 100%;
+          height: 100%;
+          transform: translate(0,25%);
+        }
+        #light {
+          margin: 0 auto;
+          padding-top: 16px;
+          padding-bottom: 16px;
+        }
+        #light .rs-bar.rs-transition.rs-first, .rs-bar.rs-transition.rs-second{
+          z-index: 20 !important;
+        }
+        #light .rs-range-color  {
           background-color: var(--primary-color);
-      }
-      #light .rs-border  {
-        border-color: transparent;
-      }
-      ha-icon {
-        margin: auto;
-        width: 76px;
-        height: 76px;
-        color: var(--paper-item-icon-color, #44739e);
-        cursor: pointer;
-      }
-      ha-icon[data-state=on] {
-        color: var(--paper-item-icon-active-color, #FDD835);
-      }
-      ha-icon[data-state=unavailable] {
-        color: var(--state-icon-unavailable-color);
-      }
-      .name {
-        padding-top: 40px;
-        font-size: 1.2rem;
-      }
-      .brightness {
-        font-size: 1.2rem;
-        position: absolute;
-        margin: 0 auto;
-        left: 50%;
-        top: 10%;
-        transform: translate(-50%);
-        opacity: 0;
-        transition: opacity .5s ease-in-out;
-        -moz-transition: opacity .5s ease-in-out;
-        -webkit-transition: opacity .5s ease-in-out;
-        cursor: pointer;
-        color: white;
-        text-shadow:
-          -1px -1px 0 #000,
-          1px -1px 0 #000,
-          -1px 1px 0 #000,
-          1px 1px 0 #000;
-      }
-      .show_brightness {
-        opacity: 1;
-      }
-      .not-found {
-        flex: 1;
-        background-color: yellow;
-        padding: 8px;
-      }
-    </style>
+        }
+        #light .rs-path-color  {
+            background-color: #d6d6d6;
+        }
+        #light .rs-handle  {
+            background-color: #FFF;
+            padding: 7px;
+            border: 2px solid #d6d6d6;
+        }
+        #light .rs-handle.rs-focus  {
+            border-color:var(--primary-color);
+        }
+        #light .rs-handle:after  {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+        }
+        #light .rs-border  {
+          border-color: transparent;
+        }
+        ha-icon {
+          margin: auto;
+          width: 76px;
+          height: 76px;
+          color: var(--paper-item-icon-color, #44739e);
+          cursor: pointer;
+        }
+        ha-icon[data-state=on] {
+          color: var(--paper-item-icon-active-color, #FDD835);
+        }
+        ha-icon[data-state=unavailable] {
+          color: var(--state-icon-unavailable-color);
+        }
+        .name {
+          padding-top: 40px;
+          font-size: 1.2rem;
+        }
+        .brightness {
+          font-size: 1.2rem;
+          position: absolute;
+          margin: 0 auto;
+          left: 50%;
+          top: 10%;
+          transform: translate(-50%);
+          opacity: 0;
+          transition: opacity .5s ease-in-out;
+          -moz-transition: opacity .5s ease-in-out;
+          -webkit-transition: opacity .5s ease-in-out;
+          cursor: pointer;
+          color: white;
+          text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
+        }
+        .show_brightness {
+          opacity: 1;
+        }
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
+        }
+      </style>
     `;
   }
 
@@ -268,7 +269,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     });
   }
 
-  private _computeBrightness(stateObj: LightEntity) {
+  private _computeBrightness(stateObj: LightEntity): string {
     if (!stateObj.attributes.brightness) {
       return "";
     }
@@ -276,7 +277,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     return `brightness(${(brightness + 245) / 5}%)`;
   }
 
-  private _computeColor(stateObj: LightEntity) {
+  private _computeColor(stateObj: LightEntity): string {
     if (!stateObj.attributes.hs_color) {
       return "";
     }
