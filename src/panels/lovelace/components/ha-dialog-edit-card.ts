@@ -30,7 +30,7 @@ export class HuiEditCardModal extends LitElement {
 
   protected render() {
     return html`
-      <style include="paper-material-styles">
+      <style>
         :host {
           bottom: 0;
           left: 0;
@@ -73,10 +73,7 @@ export class HuiEditCardModal extends LitElement {
     this.open = false;
   }
 
-  private _updateConfig() {
-    if (!this.hass) {
-      return;
-    }
+  private async _updateConfig() {
     const newCardConfig = this.shadowRoot!.querySelector("paper-textarea")!
       .value;
 
@@ -84,20 +81,24 @@ export class HuiEditCardModal extends LitElement {
       this.open = false;
       return;
     }
-    this.hass.callWS({
-      type: "lovelace/config/card/update",
-      card_id: this.card.id,
-      card_config: newCardConfig,
-    });
-    this.open = false;
+    try {
+      await this.hass!.callWS({
+        type: "lovelace/config/card/update",
+        card_id: this.card.id,
+        card_config: newCardConfig,
+      });
+      this.open = false;
+    } catch (err) {
+      alert(`Saving failed: ${err.reason}`);
+    }
   }
 
-  private _getCardConfig() {
+  private async _setCardConfig() {
     if (!this.card || !this.hass) {
       return;
     }
 
-    this.cardConfig = this.hass
+    this.cardConfig = await this.hass
       .callWS({
         type: "lovelace/config/card/get",
         card_id: this.card.id,
@@ -107,16 +108,8 @@ export class HuiEditCardModal extends LitElement {
       });
   }
 
-  private _openChanged(open) {
-    if (!this.shadowRoot) {
-      return;
-    }
-    this._getCardConfig();
-    if (this.open) {
-      this.shadowRoot.getElementById("overlay")!.classList.add("open");
-    } else {
-      this.shadowRoot.getElementById("overlay")!.classList.remove("open");
-    }
+  private _openChanged() {
+    this._setCardConfig();
   }
 }
 customElements.define("hui-edit-card-modal", HuiEditCardModal);
