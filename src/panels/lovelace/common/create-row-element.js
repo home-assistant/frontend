@@ -19,7 +19,6 @@ import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
 
-
 import createErrorCardConfig from "./create-error-card-config.js";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
