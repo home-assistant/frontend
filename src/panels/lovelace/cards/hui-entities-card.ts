@@ -128,9 +128,9 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
           margin: -4px 0;
         }
         #states > * {
-          margin: 4px 0;
+          margin: 8px 0;
         }
-        #states > * {
+        #states > div > * {
           overflow: hidden;
         }
         .header {
@@ -166,7 +166,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
       element.addEventListener("click", () => this._handleClick(entityConf));
     }
 
-    return element;
+    return html`<div>${element}</div>`;
   }
 
   private _handleClick(entityConf: ConfigEntity) {
