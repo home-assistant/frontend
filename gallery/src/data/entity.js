@@ -55,7 +55,9 @@ export class LightEntity extends Entity {
 
     if (service === "turn_on") {
       // eslint-disable-next-line
-      const { brightness, hs_color } = data;
+      let { brightness, hs_color, brightness_pct } = data;
+      // eslint-disable-next-line
+      brightness = (255 * brightness_pct) / 100;
       this.update(
         "on",
         Object.assign(this.attributes, {

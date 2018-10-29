@@ -37,7 +37,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
-  private _brightnessTimout?: NodeJS.Timer;
+  private _brightnessTimout?: number;
 
   static get properties() {
     return {
@@ -254,7 +254,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _hideBrightness() {
-    this._brightnessTimout = setTimeout(() => {
+    this._brightnessTimout = window.setTimeout(() => {
       this.shadowRoot!.querySelector(".brightness")!.classList.remove(
         "show_brightness"
       );
