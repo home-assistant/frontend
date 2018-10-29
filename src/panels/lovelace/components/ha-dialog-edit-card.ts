@@ -14,7 +14,7 @@ import { HomeAssistant } from "../../../types";
 export class HuiEditCardModal extends LitElement {
   protected hass?: HomeAssistant;
   private open?: boolean;
-  private card?: any;
+  private cardId?: any;
   private cardConfig?: any;
   private _dialogClosedCallback?: () => void;
 
@@ -22,10 +22,18 @@ export class HuiEditCardModal extends LitElement {
     return {
       hass: {},
       open: {},
-      cardID: {},
+      cardId: {},
       cardConfig: {},
       _dialogClosedCallback: {},
     };
+  }
+
+  public showDialog({ hass, cardID }) {
+    this.hass = hass;
+    this.cardId = cardID;
+    this.open = true;
+
+    this._setCardConfig();
   }
 
   protected render() {
@@ -55,8 +63,7 @@ export class HuiEditCardModal extends LitElement {
           background: rgba(105, 105, 105, 0.7);
         }
       </style>
-      <div id="overlay" on-click="_closeDialog"></div>
-      <paper-dialog id="configModal">
+      <paper-dialog id="dialog" with-backdrop="" .opened="${this.open}">
         <h2>Card Configuration</h2>
         <paper-dialog-scrollable>
           <paper-textarea value="${this.cardConfig}"></paper-textarea>
@@ -84,7 +91,7 @@ export class HuiEditCardModal extends LitElement {
     try {
       await this.hass!.callWS({
         type: "lovelace/config/card/update",
-        card_id: this.card.id,
+        card_id: this.cardId,
         card_config: newCardConfig,
       });
       this.open = false;
@@ -94,22 +101,18 @@ export class HuiEditCardModal extends LitElement {
   }
 
   private async _setCardConfig() {
-    if (!this.card || !this.hass) {
+    if (!this.cardId || !this.hass) {
       return;
     }
 
     this.cardConfig = await this.hass
       .callWS({
         type: "lovelace/config/card/get",
-        card_id: this.card.id,
+        card_id: this.cardId,
       })
       .then((resp) => {
         this.cardConfig = resp;
       });
-  }
-
-  private _openChanged() {
-    this._setCardConfig();
   }
 }
 customElements.define("hui-edit-card-modal", HuiEditCardModal);

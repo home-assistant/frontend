@@ -50,9 +50,6 @@ export class HuiCardOptions extends LitElement {
     fireEvent(this, "show-edit-card", {
       hass: this.hass,
       cardID: this.cardID,
-      _dialogClosedCallback: async () => {
-        fireEvent(this, "config-refresh");
-      },
     });
   }
 }
