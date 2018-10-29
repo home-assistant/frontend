@@ -20,16 +20,11 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
   }
 
   public setConfig(config: CallServiceConfig): void {
-    if (
-      !config ||
-      !config.icon ||
-      !config.name ||
-      !config.action_name ||
-      !config.service
-    ) {
+    if (!config || !config.name || !config.service) {
       throw new Error("Error in card configuration.");
     }
-    this._config = config;
+
+    this._config = { icon: "hass:remote", action_name: "Run", ...config };
   }
 
   protected render(): TemplateResult {

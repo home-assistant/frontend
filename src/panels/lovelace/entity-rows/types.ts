@@ -12,14 +12,14 @@ export interface SectionConfig {
   label: string;
 }
 export interface WeblinkConfig {
-  name: string;
-  icon: string;
+  name?: string;
+  icon?: string;
   url: string;
 }
 export interface CallServiceConfig {
   name: string;
-  icon: string;
-  action_name: string;
+  icon?: string;
+  action_name?: string;
   service: string;
   service_data?: string;
 }
