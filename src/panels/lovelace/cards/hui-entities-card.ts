@@ -6,12 +6,13 @@ import "../components/hui-entities-toggle.js";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
-import createRowElement from "../common/create-row-element.js";
-import computeDomain from "../../../common/entity/compute_domain.js";
-import processConfigEntities from "../common/process-config-entities";
 import { HomeAssistant } from "../../../types.js";
 import { EntityConfig, EntityRow } from "../entity-rows/types.js";
+import { LovelaceCard, LovelaceConfig } from "../types.js";
+import processConfigEntities from "../common/process-config-entities";
+import createRowElement from "../common/create-row-element.js";
+import computeDomain from "../../../common/entity/compute_domain.js";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
 
 interface ConfigEntity extends EntityConfig {
   type?: string;
@@ -26,6 +27,7 @@ interface Config extends LovelaceConfig {
   show_header_toggle?: boolean;
   title?: string;
   entities: ConfigEntity[];
+  theme?: string;
 }
 
 class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
@@ -72,7 +74,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
       }
     }
 
-    this._config = config;
+    this._config = { theme: "default", ...config };
     this._configEntities = entities;
   }
 
@@ -81,6 +83,8 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const { show_header_toggle, title } = this._config;
+
+    applyThemesOnElement(this, this._hass.themes, this._config.theme);
 
     return html`
       ${this.renderStyle()}
