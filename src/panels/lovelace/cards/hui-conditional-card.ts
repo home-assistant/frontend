@@ -57,7 +57,9 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
 
     if (visible) {
       this._card.hass = hass;
-      this.appendChild(this._card);
+      if (!this._card.parentElement) {
+        this.appendChild(this._card);
+      }
     } else if (this._card.parentElement) {
       this.removeChild(this._card);
     }
