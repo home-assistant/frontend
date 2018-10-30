@@ -1,4 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+} from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
 
 import "../../../components/ha-card.js";
 import "../components/hui-entities-toggle.js";
@@ -34,13 +40,19 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
   protected _config?: Config;
   protected _configEntities?: ConfigEntity[];
 
-  set hass(hass) {
+  set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this.shadowRoot!.querySelectorAll("#states > *").forEach(
+    this.shadowRoot!.querySelectorAll("#states > div > *").forEach(
       (element: unknown) => {
         (element as EntityRow).hass = hass;
       }
     );
+    const entitiesToggle = this.shadowRoot!.querySelector(
+      "hui-entities-toggle"
+    );
+    if (entitiesToggle) {
+      (entitiesToggle as any).hass = hass;
+    }
   }
 
   static get properties(): PropertyDeclarations {
@@ -49,7 +61,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     };
   }
 
-  public getCardSize() {
+  public getCardSize(): number {
     if (!this._config) {
       return 0;
     }
@@ -57,7 +69,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     return (this._config.title ? 1 : 0) + this._config.entities.length;
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     const entities = processConfigEntities(config.entities);
     for (const entity of entities) {
       if (
@@ -81,7 +93,13 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     this._configEntities = entities;
   }
 
-  protected render() {
+  protected updated(_changedProperties: PropertyValues): void {
+    if (this._hass && this._config) {
+      applyThemesOnElement(this, this._hass.themes, this._config.theme);
+    }
+  }
+
+  protected render(): TemplateResult {
     if (!this._config || !this._hass) {
       return html``;
     }
@@ -105,8 +123,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
                     .entities="${this._configEntities!.map(
                       (conf) => conf.entity
                     )}"
-                  >
-                  </hui-entities-toggle>`
+                  ></hui-entities-toggle>`
               }
             </div>`
         }
@@ -119,7 +136,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         ha-card {
@@ -154,7 +171,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderEntity(entityConf) {
+  private renderEntity(entityConf: ConfigEntity): TemplateResult {
     const element = createRowElement(entityConf);
     if (this._hass) {
       element.hass = this._hass;
@@ -170,9 +187,8 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     return element;
   }
 
-  private _handleClick(entityConf: ConfigEntity) {
+  private _handleClick(entityConf: ConfigEntity): void {
     const entityId = entityConf.entity;
-
     fireEvent(this, "hass-more-info", { entityId });
   }
 }
