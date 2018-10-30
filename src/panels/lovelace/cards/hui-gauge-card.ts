@@ -6,11 +6,11 @@ import {
 } from "@polymer/lit-element";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import { HomeAssistant } from "../../../types.js";
-import isValidEntityId from "../../../common/entity/valid_entity_id.js";
 import { fireEvent } from "../../../common/dom/fire_event.js";
+import { TemplateResult } from "lit-html";
+import isValidEntityId from "../../../common/entity/valid_entity_id.js";
 
 import "../../../components/ha-card.js";
-import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceConfig {
   entity: string;
@@ -103,7 +103,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (changedProps.get("_config")) {
       return changedProps.get("_config") !== this._config;
     }
-    return (changedProps as unknown) as boolean;
+    return true;
   }
 
   protected updated(): void {
