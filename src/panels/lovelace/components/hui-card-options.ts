@@ -16,6 +16,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   public connectedCallback() {
+    super.connectedCallback();
     if (!registeredDialog) {
       registeredDialog = true;
       fireEvent(this, "register-dialog", {
