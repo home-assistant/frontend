@@ -264,4 +264,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-gauge-card": HuiGaugeCard;
+  }
+}
+
 customElements.define("hui-gauge-card", HuiGaugeCard);
