@@ -7,12 +7,12 @@ import { HomeAssistant } from "../../../types.js";
 let registeredDialog = false;
 
 export class HuiCardOptions extends LitElement {
+  public cardId?: string;
   protected hass?: HomeAssistant;
-  private cardID?: string;
+
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      cardID: { type: String },
     };
   }
 
@@ -30,26 +30,31 @@ export class HuiCardOptions extends LitElement {
   protected render() {
     return html`
     <style>
-      .actions {
+      div {
         border-top: 1px solid #e8e8e8;
         padding: 5px 16px;
         background: var(--paper-card-background-color, white);
+        box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
+        text-align: right;
+      }
+      paper-button {
+        color: var(--primary-color);
+        font-weight: 500;
       }
     </style>
+    <slot></slot>
     <div>
-      <slot></slot>
-      <div class="actions">
-        <paper-button noink raised .cardID="${this.cardID}" @click="${
-      this._editCard
-    }">Edit</paper-button>
-      </div>
+      <paper-button
+        @click="${this._editCard}"
+      >EDIT</paper-button>
     </div>
     `;
   }
   private _editCard() {
     fireEvent(this, "show-edit-card", {
       hass: this.hass,
-      cardID: this.cardID,
+      cardId: this.cardId,
+      reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }
 }

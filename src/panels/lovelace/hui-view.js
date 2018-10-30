@@ -7,6 +7,7 @@ import "./components/hui-card-options.ts";
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element.js";
 
 import createCardElement from "./common/create-card-element";
+import computeCardSize from "./common/compute-card-size";
 
 class HUIView extends PolymerElement {
   static get template() {
@@ -132,21 +133,25 @@ class HUIView extends PolymerElement {
       return;
     }
 
-    const elements = config.cards.map((cardConfig) => {
+    const elements = [];
+    const elementsToAppend = [];
+    for (const cardConfig of config.cards) {
       const element = createCardElement(cardConfig);
       element.hass = this.hass;
+      elements.push(element);
+
       if (!this.editMode) {
-        return element;
+        elementsToAppend.push(element);
+        continue;
       }
 
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
-      wrapper.card = cardConfig;
+      wrapper.cardId = cardConfig.id;
       wrapper.editMode = this.editMode;
       wrapper.appendChild(element);
-
-      return wrapper;
-    });
+      elementsToAppend.push(wrapper);
+    }
 
     let columns = [];
     const columnEntityCount = [];
@@ -173,15 +178,10 @@ class HUIView extends PolymerElement {
       return minIndex;
     }
 
-    elements.forEach((el) => {
-      // Trigger custom elements to build up DOM. This is needed for some elements
-      // that use the DOM to decide their height. We don't have to clean this up
-      // because a DOM element can only be in 1 position, so it will be removed from
-      // 'this' and added to the correct column afterwards.
-      this.appendChild(el);
-      const cardSize =
-        typeof el.getCardSize === "function" ? el.getCardSize() : 1;
-      columns[getColumnIndex(cardSize)].push(el);
+    elements.forEach((el, index) => {
+      const cardSize = computeCardSize(el);
+      // Element to append might be the wrapped card when we're editing.
+      columns[getColumnIndex(cardSize)].push(elementsToAppend[index]);
     });
 
     // Remove empty columns

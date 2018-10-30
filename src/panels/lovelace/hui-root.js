@@ -84,29 +84,40 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     ></hui-notification-drawer>
     <ha-app-layout id="layout">
       <app-header slot="header" effects="waterfall" fixed condenses>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[_computeTitle(config)]]</div>
-          <hui-notifications-button
-            hass="[[hass]]"
-            notifications-open="{{notificationsOpen}}"
-            notifications="[[_notifications]]"
-          ></hui-notifications-button>
-          <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
-          <paper-menu-button
-            no-animations
-            horizontal-align="right"
-            horizontal-offset="-5"
-          >
-            <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
-            <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
-              <paper-item on-click="_handleRefresh">Refresh</paper-item>
-              <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
-              <paper-item on-click="_editCardOpen">Edit Card</paper-item>
-              <paper-item on-click="_handleHelp">Help</paper-item>
-            </paper-listbox>
-          </paper-menu-button>
-        </app-toolbar>
+        <template is='dom-if' if="[[!_editMode]]">
+          <app-toolbar>
+            <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+            <div main-title>[[_computeTitle(config)]]</div>
+            <hui-notifications-button
+              hass="[[hass]]"
+              notifications-open="{{notificationsOpen}}"
+              notifications="[[_notifications]]"
+            ></hui-notifications-button>
+            <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
+            <paper-menu-button
+              no-animations
+              horizontal-align="right"
+              horizontal-offset="-5"
+            >
+              <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
+              <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
+                <paper-item on-click="_handleRefresh">Refresh</paper-item>
+                <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
+                <paper-item on-click="_editModeEnable">Configure UI</paper-item>
+                <paper-item on-click="_handleHelp">Help</paper-item>
+              </paper-listbox>
+            </paper-menu-button>
+          </app-toolbar>
+        </template>
+        <template is='dom-if' if="[[_editMode]]">
+          <app-toolbar>
+            <paper-icon-button
+              icon='hass:close'
+              on-click='_editModeDisable'
+            ></paper-icon-button>
+            <div main-title>Edit UI</div>
+          </app-toolbar>
+        </template>
 
         <div sticky hidden$="[[_computeTabsHidden(config.views)]]">
           <paper-tabs scrollable selected="[[_curView]]" on-iron-activate="_handleViewSelected">
@@ -171,7 +182,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         computed: "_updateNotifications(hass.states, _persistentNotifications)",
       },
 
-      editMode: {
+      _editMode: {
         type: Boolean,
         value: false,
         observer: "_editModeChanged",
@@ -264,8 +275,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
-  _editCardOpen() {
-    this.editMode = true;
+  _editModeEnable() {
+    this._editMode = true;
+  }
+
+  _editModeDisable() {
+    this._editMode = false;
   }
 
   _editModeChanged() {
@@ -301,12 +316,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
-        view.editMode = this.editMode;
+        view.editMode = this._editMode;
       } else {
         view = document.createElement("hui-view");
         view.config = viewConfig;
         view.columns = this.columns;
-        view.editMode = this.editMode;
+        view.editMode = this._editMode;
       }
       if (viewConfig.background) background = viewConfig.background;
     }

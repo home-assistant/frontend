@@ -4,69 +4,61 @@ import { fireEvent } from "../../../common/dom/fire_event.js";
 import "@polymer/paper-button/paper-button.js";
 import "@polymer/paper-icon-button/paper-icon-button.js";
 import "@polymer/paper-checkbox/paper-checkbox.js";
-import "@polymer/paper-dialog/paper-dialog.js";
 import "@polymer/paper-item/paper-item.js";
 import "@polymer/paper-listbox/paper-listbox.js";
 import "@polymer/paper-menu-button/paper-menu-button.js";
 import "@polymer/paper-input/paper-textarea.js";
+import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog.js";
 import { HomeAssistant } from "../../../types";
+import { getCardConfig } from "../common/data";
 
 export class HuiEditCardModal extends LitElement {
   protected hass?: HomeAssistant;
   private open?: boolean;
-  private cardId?: any;
-  private cardConfig?: any;
-  private _dialogClosedCallback?: () => void;
+  private _cardId?: string;
+  private _cardConfig?: any;
+  private _reloadLovelace?: () => void;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      open: {},
-      cardId: {},
-      cardConfig: {},
+      open: {
+        type: Boolean,
+      },
+      cardId: {
+        type: Number,
+      },
+      _cardConfig: {},
       _dialogClosedCallback: {},
     };
   }
 
-  public showDialog({ hass, cardID }) {
+  public async showDialog({ hass, cardId, reloadLovelace }) {
     this.hass = hass;
-    this.cardId = cardID;
     this.open = true;
+    this._cardId = cardId;
+    this._reloadLovelace = reloadLovelace;
+    this._cardConfig = await getCardConfig(hass, cardId);
+    await this.updateComplete;
+    // This will center the dialog with the updated config
+    fireEvent(this._dialog, "iron-resize");
+  }
 
-    this._setCardConfig();
+  private get _dialog(): PaperDialogElement {
+    return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
   protected render() {
     return html`
       <style>
-        :host {
-          bottom: 0;
-          left: 0;
-          position: absolute;
-          right: 0;
-          top: 0;
-        }
         paper-dialog {
           width: 650px;
         }
-        #overlay {
-          display: none;
-        }
-        #overlay.open {
-          bottom: 0;
-          display: block;
-          left: 0;
-          position: absolute;
-          right: 0;
-          top: 0;
-          z-index: 15;
-          background: rgba(105, 105, 105, 0.7);
-        }
       </style>
-      <paper-dialog id="dialog" with-backdrop="" .opened="${this.open}">
+      <paper-dialog with-backdrop .opened="${this.open}">
         <h2>Card Configuration</h2>
         <paper-dialog-scrollable>
-          <paper-textarea value="${this.cardConfig}"></paper-textarea>
+          <paper-textarea value="${this._cardConfig}"></paper-textarea>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._closeDialog}">Cancel</paper-button>
@@ -84,35 +76,21 @@ export class HuiEditCardModal extends LitElement {
     const newCardConfig = this.shadowRoot!.querySelector("paper-textarea")!
       .value;
 
-    if (this.cardConfig === newCardConfig) {
+    if (this._cardConfig === newCardConfig) {
       this.open = false;
       return;
     }
     try {
       await this.hass!.callWS({
         type: "lovelace/config/card/update",
-        card_id: this.cardId,
+        card_id: this._cardId,
         card_config: newCardConfig,
       });
       this.open = false;
+      this._reloadLovelace!();
     } catch (err) {
       alert(`Saving failed: ${err.reason}`);
     }
   }
-
-  private async _setCardConfig() {
-    if (!this.cardId || !this.hass) {
-      return;
-    }
-
-    this.cardConfig = await this.hass
-      .callWS({
-        type: "lovelace/config/card/get",
-        card_id: this.cardId,
-      })
-      .then((resp) => {
-        this.cardConfig = resp;
-      });
-  }
 }
-customElements.define("hui-edit-card-modal", HuiEditCardModal);
+customElements.define("ha-dialog-edit-card", HuiEditCardModal);
