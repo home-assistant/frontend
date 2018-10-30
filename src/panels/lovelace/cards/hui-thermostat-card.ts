@@ -256,6 +256,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       #thermostat .rs-bar.rs-transition.rs-first, .rs-bar.rs-transition.rs-second{
         z-index: 20 !important;
       }
+      #thermostat .rs-inner.rs-bg-color.rs-border,
+      #thermostat .rs-overlay.rs-transition.rs-bg-color {
+        background-color: var(--paper-card-background-color, white);
+      }
       #tooltip {
         position: absolute;
         top: 0;
@@ -264,6 +268,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         height: 100%;
         text-align: center;
         z-index: 15;
+        color: var(--primary-text-color);
       }
       #set-temperature {
         font-size: var(--set-temperature-font-size);
