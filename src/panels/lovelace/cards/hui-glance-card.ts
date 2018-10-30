@@ -51,8 +51,11 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   }
 
   public getCardSize() {
+    const columns =
+      this.config!.columns || Math.min(this.config!.entities.length, 5);
     return (
-      (this.config!.title ? 1 : 0) + Math.ceil(this.configEntities!.length / 5)
+      (this.config!.title ? 1 : 0) +
+      2 * Math.ceil(this.configEntities!.length / columns)
     );
   }
 
