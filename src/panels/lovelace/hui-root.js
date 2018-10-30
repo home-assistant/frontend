@@ -188,8 +188,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         observer: "_editModeChanged",
       },
 
-      selectedCard: Object,
-
       routeData: Object,
     };
   }

@@ -89,4 +89,11 @@ export class HuiEditCardModal extends LitElement {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-dialog-edit-card": HuiEditCardModal;
+  }
+}
+
 customElements.define("ha-dialog-edit-card", HuiEditCardModal);
