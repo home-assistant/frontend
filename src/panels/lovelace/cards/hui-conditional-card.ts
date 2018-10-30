@@ -29,6 +29,10 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
       throw new Error("Error in card configuration.");
     }
 
+    if (this._card && this._card.parentElement) {
+      this.removeChild(this._card);
+    }
+
     this._config = config;
     this._card = createCardElement(config.card);
     if (this._hass) {
