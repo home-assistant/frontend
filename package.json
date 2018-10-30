@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@material/mwc-ripple": "^0.3.1",
-    "@mdi/svg": "^2.7.94",
+    "@mdi/svg": "^3.0.39",
     "@polymer/app-layout": "^3.0.1",
     "@polymer/app-localize-behavior": "^3.0.1",
     "@polymer/app-route": "^3.0.2",
