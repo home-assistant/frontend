@@ -3,6 +3,7 @@ import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "@polymer/paper-button/paper-button.js";
 import "@polymer/paper-input/paper-textarea.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
 import "@polymer/paper-dialog/paper-dialog.js";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
@@ -10,7 +11,13 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog.js";
 import { HomeAssistant } from "../../../types";
 import { getCardConfig, updateCardConfig } from "../common/data";
 
-export class HuiEditCardModal extends LitElement {
+import "./hui-yaml-editor";
+import "./hui-yaml-card-preview";
+// This is not a duplicate import, one is for types, one is for element.
+// tslint:disable-next-line
+import { HuiYAMLCardPreview } from "./hui-yaml-card-preview";
+
+export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
   private _cardId?: string;
   private _cardConfig?: string;
@@ -31,6 +38,7 @@ export class HuiEditCardModal extends LitElement {
     this.hass = hass;
     this._cardId = cardId;
     this._reloadLovelace = reloadLovelace;
+    this._cardConfig = "";
     this._loadConfig();
     // Wait till dialog is rendered.
     await this.updateComplete;
@@ -39,6 +47,10 @@ export class HuiEditCardModal extends LitElement {
 
   private get _dialog(): PaperDialogElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
+  }
+
+  private get _previewEl(): HuiYAMLCardPreview {
+    return this.shadowRoot!.querySelector("hui-yaml-card-preview")!;
   }
 
   protected render() {
@@ -50,15 +62,26 @@ export class HuiEditCardModal extends LitElement {
       </style>
       <paper-dialog with-backdrop>
         <h2>Card Configuration</h2>
-        <paper-textarea
-          value="${this._cardConfig}"
-        ></paper-textarea>
+        <paper-dialog-scrollable>
+          <hui-yaml-editor
+            .yaml="${this._cardConfig}"
+            @yaml-changed="${this._handleYamlChanged}"
+          ></hui-yaml-editor>
+          <hui-yaml-card-preview
+            .hass="${this.hass}"
+            .yaml="${this._cardConfig}"
+          ></hui-yaml-card-preview>
+        </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._closeDialog}">Cancel</paper-button>
           <paper-button @click="${this._updateConfig}">Save</paper-button>
         </div>
       </paper-dialog>
     `;
+  }
+
+  private _handleYamlChanged(ev) {
+    this._previewEl.yaml = ev.detail.yaml;
   }
 
   private _closeDialog() {
@@ -73,8 +96,8 @@ export class HuiEditCardModal extends LitElement {
   }
 
   private async _updateConfig() {
-    const newCardConfig = this.shadowRoot!.querySelector("paper-textarea")!
-      .value;
+    const newCardConfig = this.shadowRoot!.querySelector("hui-yaml-editor")!
+      .yaml;
 
     if (this._cardConfig === newCardConfig) {
       this._dialog.close();
@@ -92,8 +115,8 @@ export class HuiEditCardModal extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-dialog-edit-card": HuiEditCardModal;
+    "hui-dialog-edit-card": HuiDialogEditCard;
   }
 }
 
-customElements.define("ha-dialog-edit-card", HuiEditCardModal);
+customElements.define("hui-dialog-edit-card", HuiDialogEditCard);

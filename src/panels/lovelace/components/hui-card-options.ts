@@ -21,8 +21,8 @@ export class HuiCardOptions extends LitElement {
       registeredDialog = true;
       fireEvent(this, "register-dialog", {
         dialogShowEvent: "show-edit-card",
-        dialogTag: "ha-dialog-edit-card",
-        dialogImport: () => import("./ha-dialog-edit-card"),
+        dialogTag: "hui-dialog-edit-card",
+        dialogImport: () => import("../editor/hui-dialog-edit-card"),
       });
     }
   }
