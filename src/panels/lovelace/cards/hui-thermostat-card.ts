@@ -39,7 +39,7 @@ interface Config extends LovelaceConfig {
   entity: string;
 }
 
-function formatTemp(temps: string[]): string {
+function formatTemp(temps: number[]): string {
   return temps.filter(Boolean).join("-");
 }
 
