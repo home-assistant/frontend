@@ -1,5 +1,9 @@
+import { html, LitElement } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
+
 import computeCardSize from "../common/compute-card-size.js";
 import createCardElement from "../common/create-card-element.js";
+
 import { HomeAssistant } from "../../../types.js";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 
@@ -14,34 +18,23 @@ interface Config extends LovelaceConfig {
   conditions: Condition[];
 }
 
-class HuiConditionalCard extends HTMLElement implements LovelaceCard {
-  protected config?: Config;
-  protected card?: LovelaceCard;
+class HuiConditionalCard extends LitElement implements LovelaceCard {
+  private _card?: LovelaceCard;
+  private _hass?: HomeAssistant;
+  private _config?: Config;
 
-  public setConfig(config) {
-    if (
-      !config.card ||
-      !config.conditions ||
-      !Array.isArray(config.conditions) ||
-      !config.conditions.every((c) => c.entity && (c.state || c.state_not))
-    ) {
-      throw new Error("Error in card configuration.");
-    }
-
-    this.config = config;
-    this.card = createCardElement(config.card);
-    if (this.card) {
-      this.appendChild(this.card);
-      if (this.hass) {
-        this.card.hass = this.hass;
-      }
-    }
+  static get properties() {
+    return {
+      _config: {},
+    };
   }
 
   set hass(hass: HomeAssistant) {
+    this._hass = hass;
+
     const visible =
-      this.config &&
-      this.config.conditions.every((c) => {
+      this._config &&
+      this._config.conditions.every((c) => {
         if (!(c.entity in hass.states)) {
           return false;
         }
@@ -51,15 +44,43 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
         return hass.states[c.entity].state !== c.state_not;
       });
 
-    if (visible && this.card) {
-      this.card.hass = hass;
+    if (this._card) {
+      this._card.hass = this._hass;
     }
 
     this.style.setProperty("display", visible ? "" : "none");
   }
 
-  public getCardSize() {
-    return computeCardSize(this.card);
+  public getCardSize(): number {
+    return computeCardSize(this._card);
+  }
+
+  public setConfig(config: Config): void {
+    if (
+      !config.card ||
+      !config.conditions ||
+      !Array.isArray(config.conditions) ||
+      !config.conditions.every(
+        (c) =>
+          c.hasOwnProperty("entity") &&
+          (c.hasOwnProperty("state") || c.hasOwnProperty("state_not"))
+      )
+    ) {
+      throw new Error("Error in card configuration.");
+    }
+
+    this._card = createCardElement(config.card);
+    this._config = config;
+  }
+
+  protected render(): TemplateResult {
+    if (!this._card) {
+      return html``;
+    }
+
+    return html`
+      ${this._card}
+    `;
   }
 }
 
