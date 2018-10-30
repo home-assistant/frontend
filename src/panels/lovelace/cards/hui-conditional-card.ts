@@ -61,9 +61,8 @@ class HuiConditionalCard extends LitElement implements LovelaceCard {
       !config.conditions ||
       !Array.isArray(config.conditions) ||
       !config.conditions.every(
-        (c) =>
-          c.hasOwnProperty("entity") &&
-          (c.hasOwnProperty("state") || c.hasOwnProperty("state_not"))
+        (condition) =>
+          !!condition.entity && (!!condition.state || !!condition.state_not)
       )
     ) {
       throw new Error("Error in card configuration.");
@@ -74,10 +73,6 @@ class HuiConditionalCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this._card) {
-      return html``;
-    }
-
     return html`
       ${this._card}
     `;
