@@ -1,4 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import computeCardSize from "../common/compute-card-size.js";
@@ -23,7 +23,7 @@ class HuiConditionalCard extends LitElement implements LovelaceCard {
   private _hass?: HomeAssistant;
   private _config?: Config;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       _config: {},
     };
