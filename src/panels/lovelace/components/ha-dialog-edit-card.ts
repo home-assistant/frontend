@@ -10,7 +10,7 @@ import "@polymer/paper-menu-button/paper-menu-button.js";
 import "@polymer/paper-input/paper-textarea.js";
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog.js";
 import { HomeAssistant } from "../../../types";
-import { getCardConfig } from "../common/data";
+import { getCardConfig, updateCardConfig } from "../common/data";
 
 export class HuiEditCardModal extends LitElement {
   protected hass?: HomeAssistant;
@@ -81,11 +81,7 @@ export class HuiEditCardModal extends LitElement {
       return;
     }
     try {
-      await this.hass!.callWS({
-        type: "lovelace/config/card/update",
-        card_id: this._cardId,
-        card_config: newCardConfig,
-      });
+      await updateCardConfig(this.hass!, this._cardId!, newCardConfig);
       this.open = false;
       this._reloadLovelace!();
     } catch (err) {
