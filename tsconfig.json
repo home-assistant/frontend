@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "lib": ["es2017", "dom", "dom.iterable"],
     "noEmit": true,
@@ -10,6 +10,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strict": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "skipLibCheck": true
   }
 }
