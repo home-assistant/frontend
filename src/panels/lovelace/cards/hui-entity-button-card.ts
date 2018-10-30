@@ -57,20 +57,24 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.get("hass")) {
+    const newHass = changedProps.get("hass") as any;
+    if (!changedProps.has("_config") && newHass) {
       return (
-        (changedProps.get("hass") as any).states[this._config!.entity] !==
+        newHass.states[this._config!.entity] !==
         this.hass!.states[this._config!.entity]
       );
     }
-    return (changedProps as unknown) as boolean;
+    if (changedProps.has("_config")) {
+      return true;
+    }
+    return true;
   }
 
   protected render(): TemplateResult {
-    if (!this._config) {
+    if (!this._config || !this.hass) {
       return html``;
     }
-    const stateObj = this.hass!.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity];
 
     return html`
       ${this.renderStyle()}

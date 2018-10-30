@@ -90,18 +90,21 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.get("hass") && this._configEntities) {
+    const newHass = changedProps.get("hass") as any;
+    if (!changedProps.has("_config") && newHass && this._configEntities) {
       for (const entity of this._configEntities) {
         if (
-          (changedProps.get("hass") as any).states[entity.entity] !==
-          this.hass!.states[entity.entity]
+          newHass.states[entity.entity] !== this.hass!.states[entity.entity]
         ) {
           return true;
         }
       }
       return false;
     }
-    return (changedProps as unknown) as boolean;
+    if (changedProps.has("_config")) {
+      return true;
+    }
+    return true;
   }
 
   protected render(): TemplateResult {
