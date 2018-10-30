@@ -12,7 +12,9 @@
         "dev-events": "Događaji",
         "dev-templates": "Predlošci",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informacije"
+        "dev-info": "Informacije",
+        "calendar": "Kalendar",
+        "profile": "Profil"
     },
     "state": {
         "default": {
@@ -89,6 +91,17 @@
             "problem": {
                 "off": "OK",
                 "on": "Problem"
+            },
+            "cold": {
+                "off": "Normalno"
+            },
+            "door": {
+                "off": "Zatvoreno",
+                "on": "Otvori"
+            },
+            "lock": {
+                "off": "Zaključano",
+                "on": "Otključano"
             }
         },
         "calendar": {
@@ -208,6 +221,17 @@
                 "initializing": "Inicijalizacija ({query_stage})",
                 "dead": "Mrtav ({query_stage})"
             }
+        },
+        "weather": {
+            "cloudy": "Oblačno",
+            "fog": "Magla",
+            "lightning": "Munja",
+            "partlycloudy": "Djelomično oblačno",
+            "pouring": "Lije",
+            "rainy": "Kišovito",
+            "snowy": "Snježno",
+            "sunny": "Sunčano",
+            "windy": "Vjetrovito"
         }
     },
     "state_badge": {
@@ -239,15 +263,312 @@
                 "add_item": "Dodaj stavku",
                 "microphone_tip": "Dodirnite mikrofon u gornjem desnom kutu i recite “Add candy to my shopping list”"
             },
+            "logbook": {
+                "showing_entries": "Prikaži entitete za"
+            },
             "config": {
+                "core": {
+                    "section": {
+                        "core": {
+                            "header": "Konfiguracija i kontrola poslužitelja"
+                        }
+                    }
+                },
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "automation": {
+                    "picker": {
+                        "header": "Urednik Automatizacije "
+                    },
+                    "editor": {
+                        "actions": {
+                            "duplicate": "Dupliciraj",
+                            "delete": "Obriši",
+                            "delete_confirm": "Sigurno želite pobrisati?",
+                            "unsupported_action": "Nepodržana radnja: {action}",
+                            "type": {
+                                "delay": {
+                                    "delay": "Odgodi"
+                                },
+                                "event": {
+                                    "label": "Pokreni događaj",
+                                    "event": "Event:",
+                                    "service_data": "Servisni podaci"
+                                }
+                            }
+                        },
+                        "triggers": {
+                            "type": {
+                                "state": {
+                                    "for": "Za"
+                                }
+                            }
+                        }
+                    }
+                },
+                "users": {
+                    "caption": "Korisnici",
+                    "description": "Upravljanje korisnicima"
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Prijavljeni ste kao {email}",
+                    "description_not_login": "Niste prijavljeni"
+                },
+                "integrations": {
+                    "caption": "integracije",
+                    "description": "Upravljanje povezanim uređajima i uslugama",
+                    "discovered": "Otkriven",
+                    "configured": "Konfiguriran",
+                    "new": "Postavite novu integraciju",
+                    "configure": "Konfiguriranje",
+                    "none": "Još ništa nije konfigurirano",
+                    "config_entry": {
+                        "no_devices": "Ova integracija nema uređaje.",
+                        "no_device": "Entiteti bez uređaja",
+                        "delete_confirm": "Jeste li sigurni da želite izbrisati tu integraciju?",
+                        "restart_confirm": "Ponovo pokrenite Home Assistant da biste dovršili uklanjanje ove integracije",
+                        "manuf": "od {manufacturer}",
+                        "hub": "Povezan putem",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "uređaj nije dostupan",
+                        "entity_unavailable": "entitet nije dostupan"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push Obavijesti",
+                    "description": "Slanje obavijesti na ovaj uređaj.",
+                    "error_load_platform": "Konfigurirajte notify.html5.",
+                    "error_use_https": "Zahtijeva SSL omogućen za sučelje.",
+                    "push_notifications": "Push obavijesti",
+                    "link_promo": "Saznajte više"
+                },
+                "language": {
+                    "header": "Jezik",
+                    "link_promo": "Pomognite prevođenju",
+                    "dropdown_label": "Jezik"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Nema dostupnih tema.",
+                    "link_promo": "Saznajte o temama",
+                    "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Osvježi token",
+                    "description": "Svaki token za osvježavanje predstavlja sesiju za prijavu. Tokeni osvježavanja bit će automatski uklonjeni kada kliknete odjava. Trenutačno su aktivni sljedeći tokeni za osvježavanje vašeg računa.",
+                    "token_title": "Osvježi token za {clientId}",
+                    "created_at": "Izrađeno na {date}",
+                    "confirm_delete": "Jeste li sigurni da želite izbrisati pristupni token za {name} ?",
+                    "delete_failed": "Nije uspjelo brisanje pristupnog tokena.",
+                    "last_used": "Posljednje upotrijebljeno na {date} od {location}",
+                    "not_used": "Nikada nije bio korišten",
+                    "current_token_tooltip": "Nije moguće izbrisati trenutni token za osvježavanje"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Tokeni dugog življenja",
+                    "description": "Izradite dugotrajne tokene za pristup kako biste omogućili da vaše skripte stupaju u interakciju sa vašim primjerom Home Assistant-a. Svaki token će vrijediti 10 godina od stvaranja.  Sljedeći tokeni dugogodišnjeg pristupa su trenutno aktivni",
+                    "learn_auth_requests": "Saznajte kako obaviti provjeru autentičnosti zahtjeva.",
+                    "created_at": "Izrađeno na {date}",
+                    "confirm_delete": "Jeste li sigurni da želite izbrisati pristupni token za {name} ?",
+                    "delete_failed": "Nije uspjelo brisanje pristupnog tokena.",
+                    "create": "Izradite token",
+                    "create_failed": "Nije uspjelo stvaranje pristupnog tokena.",
+                    "prompt_name": "Ime?",
+                    "prompt_copy_token": "Kopirajte pristupni token. Neće se više prikazati.",
+                    "empty_state": "Još nemate dugovječnih tokena pristupa.",
+                    "last_used": "Posljednje upotrijebljeno na {date} od {location}",
+                    "not_used": "Nikada nije bio korišten"
+                },
+                "current_user": "Trenutačno ste prijavljeni kao {fullName} .",
+                "is_owner": "Vi ste vlasnik.",
+                "logout": "Odjava",
+                "change_password": {
+                    "header": "Promijeni lozinku",
+                    "current_password": "Trenutna lozinka",
+                    "new_password": "Nova lozinka",
+                    "confirm_new_password": "Potvrdite novu lozinku",
+                    "error_required": "Potreban",
+                    "submit": "podnijeti"
+                },
+                "mfa": {
+                    "header": "Višefaktorski moduli za provjeru autentičnosti",
+                    "disable": "Onemogući",
+                    "enable": "Omogući",
+                    "confirm_disable": "Jeste li sigurni da želite onemogućiti {name} ?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Prekinut",
+                    "title_success": "Uspješno!",
+                    "step_done": "Postavka gotova za",
+                    "close": "Zatvoriti",
+                    "submit": "podnijeti"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Inicijalizacija",
+                "authorizing_client": "Dati ćete {clientId} pristup svojoj instanci pomoćnika Home Assistant.",
+                "logging_in_with": "Prijavite se sa **{authProviderName}**.",
+                "pick_auth_provider": "Ili se prijavite sa",
+                "abort_intro": "Prijava je prekinuta",
+                "form": {
+                    "working": "Molimo pričekajte",
+                    "unknown_error": "Nešto je pošlo po zlu",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Korisničko ime"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kôd autentifikacije s dva faktora"
+                                    },
+                                    "description": "Otvorite ** {mfa_module_name} ** na svojem uređaju da biste vidjeli kôd za autentifikaciju s dva faktora i potvrdili svoj identitet:"
+                                }
+                            },
+                            "error": {
+                                "invalid_code": "Pogrešan kod za provjeru autentičnosti "
+                            },
+                            "abort": {
+                                "login_expired": "Sesija istekla, prijavite se ponovo."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "description": "Unesite API lozinku u svoj http config:"
+                                }
+                            },
+                            "abort": {
+                                "login_expired": "Sesija istekla, molim vas prijavite se ponovno."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "Odaberite korisnika kojim se želite prijaviti:"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "username": "Korisničko ime",
+                        "password": "Lozinka"
+                    },
+                    "create_account": "Stvorite račun",
+                    "error": {
+                        "required_fields": "Ispunite sva potrebna polja"
+                    }
                 }
             }
         },
         "sidebar": {
             "log_out": "Odjava",
             "developer_tools": "Razvojni alati"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {dan}\n  other {dani}\n}",
+            "week": "{count} {count, plural,\n  one {tjedan}\n  other {tjedni}\n}",
+            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekunde}\n}"
+        },
+        "card": {
+            "scene": {
+                "activate": "Aktivirati"
+            },
+            "script": {
+                "execute": "Izvršiti"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Tlak zraka",
+                    "humidity": "Vlažnost",
+                    "temperature": "Temperatura",
+                    "visibility": "Vidljivost",
+                    "wind_speed": "Brzina vjetra"
+                },
+                "cardinal_direction": {
+                    "n": "N"
+                }
+            },
+            "alarm_control_panel": {
+                "code": "Kod"
+            },
+            "fan": {
+                "speed": "Brzina",
+                "direction": "Smjer"
+            },
+            "light": {
+                "brightness": "Svjetlina",
+                "color_temperature": "Temperatura boje",
+                "white_value": "Bijela vrijednost",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Tekst u govor",
+                "source": "Izvor",
+                "sound_mode": "Način zvuka"
+            },
+            "climate": {
+                "currently": "Trenutno",
+                "on_off": "Uključivanje \/ isključivanje",
+                "target_temperature": "Ciljana temperatura",
+                "target_humidity": "Ciljana vlažnost",
+                "operation": "operacija",
+                "fan_mode": "Način rada s ventilatorom",
+                "swing_mode": "Swing način rada",
+                "away_mode": "Način rada: Odsutan"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "zaključati",
+                "unlock": "Otključati"
+            },
+            "vacuum": {
+                "actions": {
+                    "start_cleaning": "Započnite čišćenje",
+                    "turn_on": "Uključiti",
+                    "turn_off": "Isključiti"
+                }
+            },
+            "water_heater": {
+                "currently": "Trenutno",
+                "on_off": "Uključeno\/Isključeno",
+                "target_temperature": "Ciljana temperatura",
+                "operation": "Operacija",
+                "away_mode": "Način rada: Odsutan"
+            }
+        },
+        "components": {
+            "history_charts": {
+                "loading_history": "Učitavanje povijesti stanja ...",
+                "no_history_found": "Nije pronađena povijest stanja."
+            }
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Spremi",
+                "name": "Ime"
+            }
+        },
+        "auth_store": {
+            "ask": "Želite li spremiti ovu prijavu?",
+            "decline": "Ne hvala",
+            "confirm": "Spremi prijavu"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Kliknite gumb za konfiguriranje {entity}",
+            "empty": "Nema obavijesti",
+            "title": "Obavijesti"
         }
     },
     "domain": {
