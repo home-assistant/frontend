@@ -1,3 +1,6 @@
+import { CloudWebhook } from "../../../data/cloud";
+import { Webhook } from "../../../data/webhook";
+
 export interface EntityFilter {
   include_domains: string[];
   include_entities: string[];
@@ -19,6 +22,7 @@ export type CloudStatusLoggedIn = CloudStatusBase & {
     google_enabled: boolean;
     alexa_enabled: boolean;
     google_allow_unlock: boolean;
+    webhooks: { [webhookId: string]: CloudWebhook };
   };
 };
 
@@ -26,4 +30,10 @@ export type CloudStatus = CloudStatusBase | CloudStatusLoggedIn;
 
 export interface SubscriptionInfo {
   human_description: string;
+}
+
+export interface WebhookDialogParams {
+  webhook: Webhook;
+  cloudhook: CloudWebhook;
+  disableHook: () => void;
 }

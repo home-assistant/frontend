@@ -24,6 +24,10 @@ export class CloudAlexaPref extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this.cloudStatus) {
+      return html``;
+    }
+
     const enabled = this.cloudStatus!.prefs.alexa_enabled;
 
     return html`
