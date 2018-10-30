@@ -160,8 +160,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         stateObj.attributes.target_temp_high
       }`;
       uiValue = formatTemp([
-        stateObj.attributes.target_temp_low,
-        stateObj.attributes.target_temp_high,
+        String(stateObj.attributes.target_temp_low),
+        String(stateObj.attributes.target_temp_high),
       ]);
     } else {
       sliderValue = uiValue = stateObj.attributes.temperature;
