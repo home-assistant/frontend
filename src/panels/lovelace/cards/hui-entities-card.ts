@@ -73,18 +73,6 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     const entities = processConfigEntities(config.entities);
-    for (const entity of entities) {
-      if (
-        entity.type === "call-service" &&
-        (!entity.service ||
-          !entity.name ||
-          !entity.icon ||
-          !entity.service_data ||
-          !entity.action_name)
-      ) {
-        throw new Error("Missing required property when type is call-service");
-      }
-    }
 
     this._config = { theme: "default", ...config };
     this._configEntities = entities;
