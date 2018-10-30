@@ -118,6 +118,6 @@ export type LightEntity = HassEntityBase & {
     max_mireds: number;
     friendly_name: string;
     brightness: number;
-    hs_color: string[];
+    hs_color: number[];
   };
 };
