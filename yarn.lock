@@ -756,10 +756,10 @@
   resolved "https://registry.yarnpkg.com/@material/theme/-/theme-0.40.1.tgz#3cc3f1bf87ee9581df03e347a1979e53ae617221"
   integrity sha512-cH1CsGIDisEQ2oroZhLTypV0Ir00x3WIwFXnPo7qv3832tuIDkZY623U3rUax6KNPz4Hh1j0tNpTwgrNZwvwWA==
 
-"@mdi/svg@^2.7.94":
-  version "2.8.94"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-2.8.94.tgz#574da5953fb8ccd58b660d95061d43add53f5704"
-  integrity sha512-Xhn8aSGji5XZ8DeWe8fiugooUmfdi+5IzkRkCaaUZGRAkmPaN+KTc9mEEvHTAwONcawzOmPiiVOfTXQai1n6og==
+"@mdi/svg@^3.0.39":
+  version "3.0.39"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-3.0.39.tgz#6a2d50e5650f758a3a8f6ab294cd272c9408fcda"
+  integrity sha512-kX1CeG+6r9t0ickn+RwxAtIcO6WVZ7v3ashWJ4WRKd68O7WyUTJuqfzdMjHtVtKn5k4ItrZDo9sf1NflWrX+tQ==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
