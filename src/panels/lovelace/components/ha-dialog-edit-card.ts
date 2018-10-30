@@ -16,7 +16,7 @@ export class HuiEditCardModal extends LitElement {
   protected hass?: HomeAssistant;
   private open?: boolean;
   private _cardId?: string;
-  private _cardConfig?: any;
+  private _cardConfig?: string;
   private _reloadLovelace?: () => void;
 
   static get properties(): PropertyDeclarations {
