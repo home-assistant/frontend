@@ -38,7 +38,7 @@ class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
       allow-custom-value="[[allowCustomEntity]]"
       on-change='_fireChanged'
     >
-      <paper-input 
+      <paper-input
         autofocus="[[autofocus]]"
         label="[[_computeLabel(label, localize)]]"
         class="input"
@@ -55,6 +55,7 @@ class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <style>
           paper-icon-item {
             margin: -10px;
+            padding: 0;
           }
         </style>
         <paper-icon-item>

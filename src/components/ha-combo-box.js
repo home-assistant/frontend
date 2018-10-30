@@ -38,6 +38,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
         <style>
             paper-item {
               margin: -5px -10px;
+              padding: 0;
             }
         </style>
         <paper-item>[[_computeItemLabel(item, itemLabelPath)]]</paper-item>
