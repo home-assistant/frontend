@@ -120,3 +120,45 @@ export default class CoverEntity {
     this.hass.callService("cover", service, data);
   }
 }
+
+export function supportsOpen(stateObj) {
+  return (stateObj.attributes.supported_features & 1) !== 0;
+}
+
+export function supportsClose(stateObj) {
+  return (stateObj.attributes.supported_features & 2) !== 0;
+}
+
+export function supportsSetPosition(stateObj) {
+  return (stateObj.attributes.supported_features & 4) !== 0;
+}
+
+export function supportsStop(stateObj) {
+  return (stateObj.attributes.supported_features & 8) !== 0;
+}
+
+export function supportsOpenTilt(stateObj) {
+  return (stateObj.attributes.supported_features & 16) !== 0;
+}
+
+export function supportsCloseTilt(stateObj) {
+  return (stateObj.attributes.supported_features & 32) !== 0;
+}
+
+export function supportsStopTilt(stateObj) {
+  return (stateObj.attributes.supported_features & 64) !== 0;
+}
+
+export function supportsSetTiltPosition(stateObj) {
+  return (stateObj.attributes.supported_features & 128) !== 0;
+}
+
+export function isTiltOnly(stateObj) {
+  var supportsCover =
+    supportsOpen(stateObj) || supportsClose(stateObj) || supportsStop(stateObj);
+  var supportsTilt =
+    supportsOpenTilt(stateObj) ||
+    supportsCloseTilt(stateObj) ||
+    supportsStopTilt(stateObj);
+  return supportsTilt && !supportsCover;
+}

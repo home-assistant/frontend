@@ -5,14 +5,13 @@ import "../components/hui-generic-entity-row.js";
 import "../../../components/ha-cover-controls.js";
 import "../../../components/ha-cover-tilt-controls.js";
 
-import CoverEntity from "../../../util/cover-model.js";
+import { isTiltOnly } from "../../../util/cover-model.js";
 import { HomeAssistant } from "../../../types.js";
 import { EntityRow, EntityConfig } from "./types.js";
 
 class HuiCoverEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
-  private _cover?: CoverEntity;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -33,13 +32,6 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
       return html``;
     }
 
-    if (!this._cover) {
-      this._cover = new CoverEntity(
-        this.hass,
-        this.hass.states[this._config.entity]
-      );
-    }
-
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row
@@ -47,7 +39,7 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
         .config=${this._config}
       >
       ${
-        this._cover.isTiltOnly
+        isTiltOnly(this.hass.states[this._config.entity])
           ? html`
             <ha-cover-tilt-controls
               .hass=${this.hass}
