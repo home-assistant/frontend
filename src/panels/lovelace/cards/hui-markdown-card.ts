@@ -1,10 +1,11 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap.js";
 
 import "../../../components/ha-card.js";
 import "../../../components/ha-markdown.js";
 
 import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceConfig {
   content: string;
@@ -12,45 +13,45 @@ interface Config extends LovelaceConfig {
 }
 
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
-  protected config?: Config;
+  private _config?: Config;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
-      config: {},
+      _config: {},
     };
   }
 
-  public getCardSize() {
-    return this.config!.content.split("\n").length;
+  public getCardSize(): number {
+    return this._config!.content.split("\n").length;
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     if (!config.content) {
       throw new Error("Invalid Configuration: Content Required");
     }
 
-    this.config = config;
+    this._config = config;
   }
 
-  protected render() {
-    if (!this.config) {
+  protected render(): TemplateResult {
+    if (!this._config) {
       return html``;
     }
 
     return html`
       ${this.renderStyle()}
-      <ha-card .header="${this.config.title}">
+      <ha-card .header="${this._config.title}">
         <ha-markdown
           class="markdown ${classMap({
-            "no-header": !this.config.title,
+            "no-header": !this._config.title,
           })}"
-          .content="${this.config.content}"
+          .content="${this._config.content}"
         ></ha-markdown>
       </ha-card>
     `;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         :host {

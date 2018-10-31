@@ -9,11 +9,11 @@ interface Config extends LovelaceConfig {
 }
 
 class HuiErrorCard extends LitElement implements LovelaceCard {
-  protected config?: Config;
+  private _config?: Config;
 
   static get properties() {
     return {
-      config: {},
+      _config: {},
     };
   }
 
@@ -21,19 +21,19 @@ class HuiErrorCard extends LitElement implements LovelaceCard {
     return 4;
   }
 
-  public setConfig(config): void {
-    this.config = config;
+  public setConfig(config: Config): void {
+    this._config = config;
   }
 
   protected render(): TemplateResult {
-    if (!this.config) {
+    if (!this._config) {
       return html``;
     }
 
     return html`
       ${this.renderStyle()}
-      ${this.config.error}
-      <pre>${this._toStr(this.config.origConfig)}</pre>
+      ${this._config.error}
+      <pre>${this._toStr(this._config.origConfig)}</pre>
     `;
   }
 
