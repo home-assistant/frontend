@@ -182,25 +182,31 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       }
       ha-card {
         overflow: hidden;
+        --rail-border-color: transparent;
+        --auto-color: green;
+        --cool-color: #2b9af9;
+        --heat-color: #FF8100;
+        --off-color: #8a8a8a;
+        --unknown-color: #bac;
       }
       #root {
         position: relative;
         overflow: hidden;
       }
       .auto {
-        --mode-color: green;
+        --mode-color: var(--auto-color);
       }
       .cool {
-        --mode-color: #2b9af9;
+        --mode-color: var(--cool-color);
       }
       .heat {
-        --mode-color: #FF8100;
+        --mode-color: var(--heat-color);
       }
       .off {
-        --mode-color: #8a8a8a;
+        --mode-color: var(--off-color);
       }
       .unknown-mode {
-        --mode-color: #bac;
+        --mode-color: var(--unknown-color);
       }
       .no-title {
         --title-margin-top: 33% !important;
@@ -245,12 +251,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         background-color: var(--mode-color, var(--disabled-text-color));
       }
       #thermostat .rs-path-color  {
-          background-color: #d6d6d6;
+          background-color: var(--disabled-text-color);
       }
       #thermostat .rs-handle  {
-          background-color: #FFF;
+          background-color: var(--paper-card-background-color, white);
           padding: 7px;
-          border: 2px solid #d6d6d6;
+          border: 2px solid var(--disabled-text-color);
       }
       #thermostat .rs-handle.rs-focus  {
           border-color: var(--mode-color, var(--disabled-text-color));
@@ -260,10 +266,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           background-color: var(--mode-color, var(--disabled-text-color));
       }
       #thermostat .rs-border  {
-        border-color: transparent;
+        border-color: var(--rail-border-color);
       }
       #thermostat .rs-bar.rs-transition.rs-first, .rs-bar.rs-transition.rs-second{
         z-index: 20 !important;
+      }
+      #thermostat .rs-inner.rs-bg-color.rs-border,
+      #thermostat .rs-overlay.rs-transition.rs-bg-color {
+        background-color: var(--paper-card-background-color, white);
       }
       #tooltip {
         position: absolute;
@@ -273,6 +283,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         height: 100%;
         text-align: center;
         z-index: 15;
+        color: var(--primary-text-color);
       }
       #set-temperature {
         font-size: var(--set-temperature-font-size);
