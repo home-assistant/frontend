@@ -1,6 +1,6 @@
-import computeStateName from "../../common/entity/compute_state_name";
-import { HomeAssistant } from "../../types";
-import { LovelaceElementConfig } from "../../panels/lovelace/elements/types";
+import computeStateName from "../../../common/entity/compute_state_name";
+import { HomeAssistant } from "../../../types";
+import { LovelaceElementConfig } from "../elements/types";
 
 export const computeTooltip = (
   hass: HomeAssistant,
