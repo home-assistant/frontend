@@ -2,9 +2,9 @@ import { html, LitElement } from "@polymer/lit-element";
 
 import "../../../components/entity/ha-state-label-badge.js";
 
-import { computeTooltip } from "../../../common/string/compute-tooltip";
 import computeStateDisplay from "../../../common/entity/compute_state_display.js";
-import { handleClick } from "../../../common/dom/handle-click";
+import { computeTooltip } from "../common/compute-tooltip";
+import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceElement, LovelaceElementConfig } from "./types.js";
