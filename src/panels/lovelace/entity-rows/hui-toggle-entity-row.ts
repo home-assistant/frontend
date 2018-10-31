@@ -39,8 +39,8 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
 
     return html`
       <hui-generic-entity-row
-        hass=${this.hass}
-        config=${this._config}
+        .hass=${this.hass}
+        .config=${this._config}
       >
         ${
           stateObj.state === "on" || stateObj.state === "off"
