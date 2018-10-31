@@ -154,6 +154,15 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
         ha-card {
           position: relative;
           overflow: hidden;
+          --brightness-font-color: white;
+          --brightness-font-text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
+          --name-font-size: 1.2rem;
+          --brightness-font-size: 1.2rem;
+          --rail-border-color: transparent;
         }
         #tooltip {
           position: absolute;
@@ -183,12 +192,12 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
           background-color: var(--primary-color);
         }
         #light .rs-path-color  {
-            background-color: #d6d6d6;
+            background-color: var(--disabled-text-color);
         }
         #light .rs-handle  {
-            background-color: #FFF;
+            background-color: var(--paper-card-background-color, white);
             padding: 7px;
-            border: 2px solid #d6d6d6;
+            border: 2px solid var(--disabled-text-color);
         }
         #light .rs-handle.rs-focus  {
             border-color:var(--primary-color);
@@ -198,7 +207,11 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
             background-color: var(--primary-color);
         }
         #light .rs-border  {
-          border-color: transparent;
+          border-color: var(--rail-border-color);
+        }
+        #light .rs-inner.rs-bg-color.rs-border,
+        #light .rs-overlay.rs-transition.rs-bg-color {
+          background-color: var(--paper-card-background-color, white);
         }
         ha-icon {
           margin: auto;
@@ -215,10 +228,10 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
         }
         .name {
           padding-top: 40px;
-          font-size: 1.2rem;
+          font-size: var(--name-font-size);
         }
         .brightness {
-          font-size: 1.2rem;
+          font-size: var(--brightness-font-size);
           position: absolute;
           margin: 0 auto;
           left: 50%;
@@ -229,12 +242,8 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
           -moz-transition: opacity .5s ease-in-out;
           -webkit-transition: opacity .5s ease-in-out;
           cursor: pointer;
-          color: white;
-          text-shadow:
-            -1px -1px 0 #000,
-            1px -1px 0 #000,
-            -1px 1px 0 #000,
-            1px 1px 0 #000;
+          color: var(--brightness-font-color);
+          text-shadow: var(--brightness-font-text-shadow)
         }
         .show_brightness {
           opacity: 1;
