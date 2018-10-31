@@ -1,8 +1,8 @@
-import { HomeAssistant } from "../../types";
-import { LovelaceElementConfig } from "../../panels/lovelace/elements/types";
-import { fireEvent } from "../dom/fire_event.js";
-import { navigate } from "../../common/navigate";
-import toggleEntity from "../../../src/panels/lovelace/common/entity/toggle-entity";
+import { HomeAssistant } from "../../../types";
+import { LovelaceElementConfig } from "../elements/types";
+import { fireEvent } from "../../../common/dom/fire_event.js";
+import { navigate } from "../../../common/navigate";
+import toggleEntity from "../../../../src/panels/lovelace/common/entity/toggle-entity";
 
 export const handleClick = (
   node: HTMLElement,
