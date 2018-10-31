@@ -1,4 +1,9 @@
-import { html, LitElement } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+} from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap.js";
 import { jQuery } from "../../../resources/jquery";
 
@@ -10,6 +15,7 @@ import { HomeAssistant, ClimateEntity } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
+import { TemplateResult } from "lit-html";
 
 const thermostatConfig = {
   radius: 150,
@@ -33,39 +39,39 @@ interface Config extends LovelaceConfig {
   entity: string;
 }
 
-function formatTemp(temps) {
+function formatTemp(temps: string[]): string {
   return temps.filter(Boolean).join("-");
 }
 
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
-  protected config?: Config;
+  private _config?: Config;
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      config: {},
+      _config: {},
     };
   }
 
-  public getCardSize() {
+  public getCardSize(): number {
     return 4;
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     if (!config.entity || config.entity.split(".")[0] !== "climate") {
       throw new Error("Specify an entity from within the climate domain.");
     }
 
-    this.config = config;
+    this._config = config;
   }
 
-  protected render() {
-    if (!this.hass || !this.config) {
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) {
       return html``;
     }
-    const stateObj = this.hass.states[this.config.entity] as ClimateEntity;
+    const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
     const broadCard = this.clientWidth > 390;
     const mode = modeIcons[stateObj.attributes.operation_mode || ""]
       ? stateObj.attributes.operation_mode!
@@ -107,18 +113,21 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  protected shouldUpdate(changedProps) {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.get("hass")) {
       return (
-        changedProps.get("hass").states[this.config!.entity] !==
-        this.hass!.states[this.config!.entity]
+        (changedProps.get("hass") as any).states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
       );
     }
-    return changedProps;
+    if (changedProps.has("_config")) {
+      return true;
+    }
+    return true;
   }
 
-  protected firstUpdated() {
-    const stateObj = this.hass!.states[this.config!.entity] as ClimateEntity;
+  protected firstUpdated(): void {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     const _sliderType =
       stateObj.attributes.target_temp_low &&
@@ -137,8 +146,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     });
   }
 
-  protected updated() {
-    const stateObj = this.hass!.states[this.config!.entity] as ClimateEntity;
+  protected updated(): void {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     let sliderValue;
     let uiValue;
@@ -151,8 +160,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         stateObj.attributes.target_temp_high
       }`;
       uiValue = formatTemp([
-        stateObj.attributes.target_temp_low,
-        stateObj.attributes.target_temp_high,
+        String(stateObj.attributes.target_temp_low),
+        String(stateObj.attributes.target_temp_high),
       ]);
     } else {
       sliderValue = uiValue = stateObj.attributes.temperature;
@@ -164,7 +173,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = uiValue;
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
     ${roundSliderStyle}
     <style>
@@ -308,40 +317,40 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _dragEvent(e) {
+  private _dragEvent(e): void {
     this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = formatTemp(
       String(e.value).split(",")
     );
   }
 
-  private _setTemperature(e) {
-    const stateObj = this.hass!.states[this.config!.entity] as ClimateEntity;
+  private _setTemperature(e): void {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
     if (
       stateObj.attributes.target_temp_low &&
       stateObj.attributes.target_temp_high
     ) {
       if (e.handle.index === 1) {
         this.hass!.callService("climate", "set_temperature", {
-          entity_id: this.config!.entity,
+          entity_id: this._config!.entity,
           target_temp_low: e.handle.value,
           target_temp_high: stateObj.attributes.target_temp_high,
         });
       } else {
         this.hass!.callService("climate", "set_temperature", {
-          entity_id: this.config!.entity,
+          entity_id: this._config!.entity,
           target_temp_low: stateObj.attributes.target_temp_low,
           target_temp_high: e.handle.value,
         });
       }
     } else {
       this.hass!.callService("climate", "set_temperature", {
-        entity_id: this.config!.entity,
+        entity_id: this._config!.entity,
         temperature: e.value,
       });
     }
   }
 
-  private _renderIcon(mode, currentMode) {
+  private _renderIcon(mode: string, currentMode: string): TemplateResult {
     if (!modeIcons[mode]) {
       return html``;
     }
@@ -353,9 +362,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     ></ha-icon>`;
   }
 
-  private _handleModeClick(e: MouseEvent) {
+  private _handleModeClick(e: MouseEvent): void {
     this.hass!.callService("climate", "set_operation_mode", {
-      entity_id: this.config!.entity,
+      entity_id: this._config!.entity,
       operation_mode: (e.currentTarget as any).mode,
     });
   }
