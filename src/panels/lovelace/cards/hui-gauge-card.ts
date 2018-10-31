@@ -6,8 +6,9 @@ import {
 } from "@polymer/lit-element";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import { HomeAssistant } from "../../../types.js";
-import isValidEntityId from "../../../common/entity/valid_entity_id.js";
 import { fireEvent } from "../../../common/dom/fire_event.js";
+import { TemplateResult } from "lit-html";
+import isValidEntityId from "../../../common/entity/valid_entity_id.js";
 
 import "../../../components/ha-card.js";
 
@@ -38,11 +39,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     };
   }
 
-  public getCardSize() {
+  public getCardSize(): number {
     return 2;
   }
 
-  public setConfig(config) {
+  public setConfig(config: Config): void {
     if (!config || !config.entity) {
       throw new Error("Invalid card configuration");
     }
@@ -52,7 +53,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._config = { min: 0, max: 100, ...config };
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -92,7 +93,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues) {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.get("hass")) {
       return (
         (changedProps.get("hass") as any).states[this._config!.entity] !==
@@ -102,10 +103,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (changedProps.get("_config")) {
       return changedProps.get("_config") !== this._config;
     }
-    return (changedProps as unknown) as boolean;
+    return true;
   }
 
-  protected updated() {
+  protected updated(): void {
     if (
       !this._config ||
       !this.hass ||
@@ -135,7 +136,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         ha-card {
@@ -215,7 +216,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _computeSeverity(stateValue: string, sections: object) {
+  private _computeSeverity(stateValue: string, sections: object): string {
     const numberValue = Number(stateValue);
 
     if (!sections) {
@@ -247,19 +248,25 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return severityMap.normal;
   }
 
-  private _translateTurn(value: number, config: Config) {
+  private _translateTurn(value: number, config: Config): number {
     const maxTurnValue = Math.min(Math.max(value, config.min!), config.max!);
     return (
       (5 * (maxTurnValue - config.min!)) / (config.max! - config.min!) / 10
     );
   }
 
-  private _computeBaseUnit() {
+  private _computeBaseUnit(): string {
     return this.clientWidth < 200 ? this.clientWidth / 5 + "px" : "50px";
   }
 
-  private _handleClick() {
+  private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-gauge-card": HuiGaugeCard;
   }
 }
 
