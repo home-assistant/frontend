@@ -112,7 +112,13 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated(_changedProperties: PropertyValues): void {
-    if (this.hass && this._config) {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    if (
+      !_changedProperties.get("hass") ||
+      (_changedProperties.get("hass") as any).themes !== this.hass.themes
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
