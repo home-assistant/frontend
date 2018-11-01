@@ -89,6 +89,28 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     }
   }
 
+  public getElementConfig(config: any, hass: HomeAssistant): TemplateResult {
+    if (!config || !hass) {
+      return html``;
+    }
+    return html`
+      <paper-input label="Title" value="${config.title}"></paper-input>
+      ${config.entities.map((entityConf) => {
+        return html`
+          <ha-entity-picker
+            hass="${hass}"
+            value="${entityConf.entity || entityConf}"
+            allow-custom-entity
+          ></ha-entity-picker>
+        `;
+      })}
+      <paper-checkbox ?checked="${config.show_name !==
+        false}">Show Entity's Name?</paper-checkbox>
+      <paper-checkbox ?checked="${config.show_state !==
+        false}">Show Entity's state-text?</paper-checkbox>
+    `;
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("_config")) {
       return true;
