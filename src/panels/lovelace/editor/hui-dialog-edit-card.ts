@@ -1,5 +1,4 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event.js";
 import yaml from "js-yaml";
 
 import "@polymer/paper-checkbox/paper-checkbox.js";
@@ -12,6 +11,7 @@ import "@polymer/paper-dialog/paper-dialog.js";
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { HomeAssistant } from "../../../types";
 import { getCardConfig, updateCardConfig } from "../common/data";
+import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../../../components/entity/ha-entity-picker";
 import "./hui-yaml-editor";
@@ -19,13 +19,13 @@ import "./hui-yaml-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiYAMLCardPreview } from "./hui-yaml-card-preview";
-import { TemplateResult } from "lit-html";
+import { LovelaceCardEditor } from "../types";
 
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
   private _cardId?: string;
   private _cardConfig?: string;
-  private _elementConfig?: TemplateResult;
+  private _elementConfig?: LovelaceCardEditor;
   private _reloadLovelace?: () => void;
   private _showUIEditor?: boolean;
 
@@ -75,7 +75,7 @@ export class HuiDialogEditCard extends LitElement {
         <h2>Card Configuration</h2>
         <paper-dialog-scrollable>
           ${
-            this._showUIEditor
+            this._showUIEditor && this._elementConfig
               ? html`<div class="element-editor">${this._elementConfig}</div>`
               : html`
               <hui-yaml-editor
@@ -127,18 +127,20 @@ export class HuiDialogEditCard extends LitElement {
   private async _loadElementConfig() {
     const conf = yaml.safeLoad(this._cardConfig);
     const elClass = customElements.get(`hui-${conf.type}-card`);
-    const element = document.createElement(`hui-${conf.type}-card`);
 
     try {
-      console.log(this.hass);
-      console.log(conf);
-
-      this._elementConfig = (element as any).getElementConfig(conf, this.hass);
+      this._elementConfig = await elClass.getElementConfig();
     } catch (err) {
       // No Element Config Function on Element
       this._showUIEditor = false;
       return;
     }
+    if (!this._elementConfig) {
+      this._showUIEditor = false;
+      return;
+    }
+    this._elementConfig!.setConfig(conf);
+    this._elementConfig!.hass = this.hass;
   }
 
   private async _updateConfig() {
