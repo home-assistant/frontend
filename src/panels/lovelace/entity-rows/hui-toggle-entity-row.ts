@@ -31,7 +31,7 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || !this._config) {
+    if (!this._config || !this.hass || !this.hass.states[this._config.entity]) {
       return html``;
     }
 
@@ -51,15 +51,11 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
             ></ha-entity-toggle>`
             : html`
             <div>
-              ${this._computeState(stateObj)}
+              ${computeStateDisplay(this.localize, stateObj)}
             </div>`
         }
       </hui-generic-entity-row>
     `;
-  }
-
-  private _computeState(stateObj: HassEntity) {
-    return stateObj && computeStateDisplay(this.localize, stateObj);
   }
 }
 
