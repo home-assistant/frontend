@@ -516,7 +516,7 @@ class HaChartBase extends mixinBehaviors(
   static getColorGenerator(staticColors, startIndex) {
     // Known colors for static data,
     // should add for very common state string manually.
-    // Palette modified from http://google.github.io/palette/ mpn65, Apache 2.0
+    // Palette modified from http://google.github.io/palette.js/ mpn65, Apache 2.0
     const palette = [
       "ff0029",
       "66a61e",

@@ -267,7 +267,7 @@
             "data:text/javascript;charset=utf-8," +
               encodeURIComponent(
                 a.textContent +
-                  ("\n//# sourceURL=" + b + (d ? "-" + d : "") + "\n")
+                  ("\n//# sourceURL=" + b + (d ? "-" + d : "") + ".js\n")
               )
           ),
           (a.textContent = ""),
