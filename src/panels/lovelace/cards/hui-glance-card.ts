@@ -1,21 +1,21 @@
 import { html, LitElement } from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap.js";
+import { classMap } from "lit-html/directives/classMap";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
+import computeStateDisplay from "../../../common/entity/compute_state_display";
+import computeStateName from "../../../common/entity/compute_state_name";
 import processConfigEntities from "../common/process-config-entities";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
-import toggleEntity from "../common/entity/toggle-entity.js";
+import toggleEntity from "../common/entity/toggle-entity";
 
-import "../../../components/entity/state-badge.js";
-import "../../../components/ha-card.js";
-import "../../../components/ha-icon.js";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../types.js";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCard, LovelaceConfig } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 
 interface EntityConfig {

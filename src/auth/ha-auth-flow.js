@@ -1,8 +1,8 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/paper-button/paper-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import "../components/ha-form.js";
-import LocalizeLiteMixin from "../mixins/localize-lite-mixin.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/paper-button/paper-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "../components/ha-form";
+import LocalizeLiteMixin from "../mixins/localize-lite-mixin";
 
 class HaAuthFlow extends LocalizeLiteMixin(PolymerElement) {
   static get template() {

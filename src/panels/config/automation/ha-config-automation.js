@@ -1,11 +1,11 @@
-import "@polymer/app-route/app-route.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./ha-automation-editor.js";
-import "./ha-automation-picker.js";
+import "./ha-automation-editor";
+import "./ha-automation-picker";
 
-import computeStateDomain from "../../../common/entity/compute_state_domain.js";
+import computeStateDomain from "../../../common/entity/compute_state_domain";
 
 class HaConfigAutomation extends PolymerElement {
   static get template() {

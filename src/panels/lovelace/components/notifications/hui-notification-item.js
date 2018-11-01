@@ -1,8 +1,8 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import computeDomain from "../../../../common/entity/compute_domain.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import computeDomain from "../../../../common/entity/compute_domain";
 
-import "./hui-configurator-notification-item.js";
-import "./hui-persistent-notification-item.js";
+import "./hui-configurator-notification-item";
+import "./hui-persistent-notification-item";
 
 export class HuiNotificationItem extends PolymerElement {
   static get properties() {

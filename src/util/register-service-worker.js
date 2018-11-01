@@ -1,5 +1,5 @@
 const serviceWorkerUrl =
-  __BUILD__ === "latest" ? "/service_worker.js" : "/service_worker_es5.js";
+  __BUILD__ === "latest" ? "/service_worker" : "/service_worker_es5";
 
 export default () => {
   if (!("serviceWorker" in navigator)) return;
@@ -14,7 +14,7 @@ export default () => {
           !__DEV__
         ) {
           // Notify users here of a new frontend being available.
-          import("./show-new-frontend-toast.js").then((mod) =>
+          import("./show-new-frontend-toast").then((mod) =>
             mod.default(installingWorker)
           );
         }

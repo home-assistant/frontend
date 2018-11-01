@@ -1,28 +1,28 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./more-info-alarm_control_panel.js";
-import "./more-info-automation.js";
-import "./more-info-camera.js";
-import "./more-info-climate.js";
-import "./more-info-configurator.js";
-import "./more-info-cover.js";
-import "./more-info-default.js";
-import "./more-info-fan.js";
-import "./more-info-group.js";
-import "./more-info-history_graph.js";
-import "./more-info-input_datetime.js";
-import "./more-info-light.js";
-import "./more-info-lock.js";
-import "./more-info-media_player.js";
-import "./more-info-script.js";
-import "./more-info-sun.js";
-import "./more-info-updater.js";
-import "./more-info-vacuum.js";
-import "./more-info-water_heater.js";
-import "./more-info-weather.js";
+import "./more-info-alarm_control_panel";
+import "./more-info-automation";
+import "./more-info-camera";
+import "./more-info-climate";
+import "./more-info-configurator";
+import "./more-info-cover";
+import "./more-info-default";
+import "./more-info-fan";
+import "./more-info-group";
+import "./more-info-history_graph";
+import "./more-info-input_datetime";
+import "./more-info-light";
+import "./more-info-lock";
+import "./more-info-media_player";
+import "./more-info-script";
+import "./more-info-sun";
+import "./more-info-updater";
+import "./more-info-vacuum";
+import "./more-info-water_heater";
+import "./more-info-weather";
 
-import stateMoreInfoType from "../../../common/entity/state_more_info_type.js";
-import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater.js";
+import stateMoreInfoType from "../../../common/entity/state_more_info_type";
+import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
 
 class MoreInfoContent extends PolymerElement {
   static get properties() {

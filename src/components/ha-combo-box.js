@@ -1,11 +1,11 @@
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-item/paper-item.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@vaadin/vaadin-combo-box/vaadin-combo-box-light.js";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
 
-import EventsMixin from "../mixins/events-mixin.js";
+import EventsMixin from "../mixins/events-mixin";
 
 class HaComboBox extends EventsMixin(PolymerElement) {
   static get template() {

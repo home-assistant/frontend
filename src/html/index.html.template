@@ -44,7 +44,7 @@
       <div id='ha-init-skeleton'></div>
     </home-assistant>
     <% if (!latestBuild) { %>
-      <script src="/static/custom-elements-es5-adapter.js"></script>
+      <script src="/static/custom-elements-es5-adapter"></script>
       <script src="<%= compatibility %>"></script>
     <% } %>
     <script>
@@ -54,7 +54,7 @@
       if (!webComponentsSupported) {
         (function() {
           var e = document.createElement('script');
-          e.src = '/static/webcomponents-bundle.js';
+          e.src = '/static/webcomponents-bundle';
           document.write(e.outerHTML);
         }());
       }

@@ -1,11 +1,11 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import "../../../components/ha-climate-state.js";
-import "../components/hui-generic-entity-row.js";
+import "../../../components/ha-climate-state";
+import "../components/hui-generic-entity-row";
 
-import { HomeAssistant } from "../../../types.js";
-import { EntityRow, EntityConfig } from "./types.js";
+import { HomeAssistant } from "../../../types";
+import { EntityRow, EntityConfig } from "./types";
 
 class HuiClimateEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;

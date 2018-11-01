@@ -1,12 +1,12 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
-import { timeOut } from "@polymer/polymer/lib/utils/async.js";
-import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 
-import formatTime from "../../common/datetime/format_time.js";
+import formatTime from "../../common/datetime/format_time";
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
 
@@ -198,7 +198,7 @@ class HaChartBase extends mixinBehaviors(
     }
 
     if (scriptsLoaded === null) {
-      scriptsLoaded = import(/* webpackChunkName: "load_chart" */ "../../resources/ha-chart-scripts.js");
+      scriptsLoaded = import(/* webpackChunkName: "load_chart" */ "../../resources/ha-chart-scripts");
     }
     scriptsLoaded.then((ChartModule) => {
       this.ChartClass = ChartModule.default;
@@ -516,7 +516,7 @@ class HaChartBase extends mixinBehaviors(
   static getColorGenerator(staticColors, startIndex) {
     // Known colors for static data,
     // should add for very common state string manually.
-    // Palette modified from http://google.github.io/palette.js/ mpn65, Apache 2.0
+    // Palette modified from http://google.github.io/palette/ mpn65, Apache 2.0
     const palette = [
       "ff0029",
       "66a61e",

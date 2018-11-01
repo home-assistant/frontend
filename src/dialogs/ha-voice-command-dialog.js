@@ -1,10 +1,10 @@
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import DialogMixin from "../mixins/dialog-mixin.js";
+import DialogMixin from "../mixins/dialog-mixin";
 
 /*
  * @appliesMixin DialogMixin

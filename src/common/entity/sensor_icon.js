@@ -1,6 +1,6 @@
 /** Return an icon representing a sensor state. */
-import { UNIT_C, UNIT_F } from "../const.js";
-import domainIcon from "./domain_icon.js";
+import { UNIT_C, UNIT_F } from "../const";
+import domainIcon from "./domain_icon";
 
 const fixedDeviceClassIcons = {
   humidity: "hass:water-percent",

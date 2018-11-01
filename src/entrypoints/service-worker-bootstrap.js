@@ -1,2 +1,2 @@
 /* global importScripts */
-importScripts("/static/service-worker-hass.js");
+importScripts("/static/service-worker-hass");

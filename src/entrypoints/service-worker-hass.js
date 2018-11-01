@@ -18,7 +18,7 @@ function initRouting() {
   // Get manifest and service worker from network.
   workbox.routing.registerRoute(
     new RegExp(
-      `${location.host}/(service_worker.js|service_worker_es5.js|manifest.json)`
+      `${location.host}/(service_worker|service_worker_es5|manifest.json)`
     ),
     workbox.strategies.networkOnly()
   );

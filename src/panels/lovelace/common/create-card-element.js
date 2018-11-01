@@ -1,31 +1,31 @@
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-import "../cards/hui-alarm-panel-card.js";
+import "../cards/hui-alarm-panel-card";
 import "../cards/hui-conditional-card.ts";
 import "../cards/hui-entities-card.ts";
 import "../cards/hui-entity-button-card.ts";
-import "../cards/hui-entity-filter-card.js";
+import "../cards/hui-entity-filter-card";
 import "../cards/hui-error-card.ts";
 import "../cards/hui-glance-card.ts";
-import "../cards/hui-history-graph-card.js";
+import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card.ts";
 import "../cards/hui-iframe-card.ts";
 import "../cards/hui-light-card";
-import "../cards/hui-map-card.js";
+import "../cards/hui-map-card";
 import "../cards/hui-markdown-card.ts";
-import "../cards/hui-media-control-card.js";
-import "../cards/hui-picture-card.js";
+import "../cards/hui-media-control-card";
+import "../cards/hui-picture-card";
 import "../cards/hui-picture-elements-card";
 import "../cards/hui-picture-entity-card";
 import "../cards/hui-picture-glance-card";
-import "../cards/hui-plant-status-card.js";
-import "../cards/hui-sensor-card.js";
+import "../cards/hui-plant-status-card";
+import "../cards/hui-sensor-card";
 import "../cards/hui-vertical-stack-card.ts";
 import "../cards/hui-thermostat-card.ts";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-gauge-card";
 
-import createErrorCardConfig from "./create-error-card-config.js";
+import createErrorCardConfig from "./create-error-card-config";
 
 const CARD_TYPES = new Set([
   "alarm-panel",

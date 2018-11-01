@@ -4,17 +4,17 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap.js";
+import { classMap } from "lit-html/directives/classMap";
 import { jQuery } from "../../../resources/jquery";
 
-import "../../../components/ha-card.js";
-import "../../../components/ha-icon.js";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 
-import { HomeAssistant, ClimateEntity } from "../../../types.js";
+import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
+import { LovelaceCard, LovelaceConfig } from "../types";
+import computeStateName from "../../../common/entity/compute_state_name";
 import { TemplateResult } from "lit-html";
 
 const thermostatConfig = {

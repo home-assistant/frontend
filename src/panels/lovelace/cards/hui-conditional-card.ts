@@ -1,7 +1,7 @@
-import computeCardSize from "../common/compute-card-size.js";
-import createCardElement from "../common/create-card-element.js";
-import { HomeAssistant } from "../../../types.js";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
+import computeCardSize from "../common/compute-card-size";
+import createCardElement from "../common/create-card-element";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCard, LovelaceConfig } from "../types";
 
 interface Condition {
   entity: string;

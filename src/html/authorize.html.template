@@ -34,7 +34,7 @@
       <ha-authorize><p>Initializing</p></ha-authorize>
     </div>
     <% if (!latestBuild) { %>
-      <script src="/static/custom-elements-es5-adapter.js"></script>
+      <script src="/static/custom-elements-es5-adapter"></script>
       <script src="<%= compatibility %>"></script>
     <% } %>
     <script>
@@ -45,7 +45,7 @@
       'content' in document.createElement('template'));
     if (!webComponentsSupported) {
       var e = document.createElement('script');
-      e.src = '/static/webcomponents-bundle.js';
+      e.src = '/static/webcomponents-bundle';
       document.write(e.outerHTML);
     }
     </script>

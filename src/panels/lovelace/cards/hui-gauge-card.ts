@@ -4,13 +4,13 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
-import { HomeAssistant } from "../../../types.js";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { LovelaceCard, LovelaceConfig } from "../types";
+import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { TemplateResult } from "lit-html";
-import isValidEntityId from "../../../common/entity/valid_entity_id.js";
+import isValidEntityId from "../../../common/entity/valid_entity_id";
 
-import "../../../components/ha-card.js";
+import "../../../components/ha-card";
 
 interface Config extends LovelaceConfig {
   entity: string;

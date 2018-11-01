@@ -1,18 +1,18 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-import "../../../components/ha-card.js";
+import "../../../components/ha-card";
 
-import toggleEntity from "../common/entity/toggle-entity.js";
-import isValidEntityId from "../../../common/entity/valid_entity_id.js";
-import stateIcon from "../../../common/entity/state_icon.js";
-import computeStateDomain from "../../../common/entity/compute_state_domain.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
-import { styleMap } from "lit-html/directives/styleMap.js";
-import { HomeAssistant } from "../../../types.js";
+import toggleEntity from "../common/entity/toggle-entity";
+import isValidEntityId from "../../../common/entity/valid_entity_id";
+import stateIcon from "../../../common/entity/state_icon";
+import computeStateDomain from "../../../common/entity/compute_state_domain";
+import computeStateName from "../../../common/entity/compute_state_name";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { styleMap } from "lit-html/directives/styleMap";
+import { HomeAssistant } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { LovelaceCard, LovelaceConfig } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 
 interface Config extends LovelaceConfig {

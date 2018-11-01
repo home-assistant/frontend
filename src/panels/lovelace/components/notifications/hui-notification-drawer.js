@@ -1,14 +1,14 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./hui-notification-item.js";
+import "./hui-notification-item";
 
-import EventsMixin from "../../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../../mixins/localize-mixin.js";
+import EventsMixin from "../../../../mixins/events-mixin";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -31,7 +31,7 @@ export class HuiNotificationDrawer extends EventsMixin(
       :host([hidden]) {
         display: none;
       }
- 
+
       .container {
         align-items: stretch;
         background: var(--sidebar-background-color, var(--primary-background-color));
@@ -83,12 +83,12 @@ export class HuiNotificationDrawer extends EventsMixin(
         top: 0;
         z-index: 5;
       }
- 
+
       .notifications {
         overflow-y: auto;
         padding-top: 16px;
       }
-      
+
       .notification {
         padding: 0 16px 16px;
       }

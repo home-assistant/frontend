@@ -1,13 +1,13 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-input/paper-textarea.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog.js";
+import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { HomeAssistant } from "../../../types";
 import { getCardConfig, updateCardConfig } from "../common/data";
 

@@ -1,20 +1,20 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card.js";
-import "../../../components/ha-icon.js";
-import "../components/hui-image.js";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+import "../components/hui-image";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import { DOMAINS_TOGGLE } from "../../../common/const.js";
-import stateIcon from "../../../common/entity/state_icon.js";
-import toggleEntity from "../common/entity/toggle-entity.js";
+import computeStateDisplay from "../../../common/entity/compute_state_display";
+import computeStateName from "../../../common/entity/compute_state_name";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import stateIcon from "../../../common/entity/state_icon";
+import toggleEntity from "../common/entity/toggle-entity";
 import processConfigEntities from "../common/process-config-entities";
 
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 import computeDomain from "../../../common/entity/compute_domain";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);

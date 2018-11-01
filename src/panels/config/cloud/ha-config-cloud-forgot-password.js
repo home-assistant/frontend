@@ -1,12 +1,12 @@
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-input/paper-input.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/buttons/ha-progress-button.js";
-import "../../../layouts/hass-subpage.js";
-import "../../../resources/ha-style.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
+import "../../../components/buttons/ha-progress-button";
+import "../../../layouts/hass-subpage";
+import "../../../resources/ha-style";
+import EventsMixin from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

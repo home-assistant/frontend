@@ -1,6 +1,6 @@
 import yaml from "js-yaml";
 
-import "@polymer/paper-input/paper-textarea.js";
+import "@polymer/paper-input/paper-textarea";
 
 import createCardElement from "../common/create-card-element";
 import createErrorCardConfig from "../common/create-error-card-config";

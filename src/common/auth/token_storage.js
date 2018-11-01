@@ -1,6 +1,6 @@
 const storage = window.localStorage || {};
 
-// So that core.js and main app hit same shared object.
+// So that core and main app hit same shared object.
 let tokenCache = window.__tokenCache;
 if (!tokenCache) {
   tokenCache = window.__tokenCache = {
