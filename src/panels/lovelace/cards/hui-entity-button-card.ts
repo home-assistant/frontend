@@ -4,6 +4,7 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
+import { HassEntityBase } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
 import "../../../components/ha-card.js";
@@ -15,11 +16,12 @@ import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
 import { styleMap } from "lit-html/directives/styleMap.js";
-import { HomeAssistant } from "../../../types.js";
+import { HomeAssistant, LightEntity } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import { longPress } from "../common/directives/long-press-directive";
 import { TemplateResult } from "lit-html";
+import { HassEntity } from "home-assistant-js-websocket";
 
 interface Config extends LovelaceConfig {
   entity: string;
@@ -57,15 +59,15 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    const newHass = changedProps.get("hass") as any;
-    if (!changedProps.has("_config") && newHass) {
-      return (
-        newHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (changedProps.has("_config")) {
       return true;
+    }
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
     }
     return true;
   }
@@ -115,10 +117,8 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     if (!this._config || !this.hass) {
       return;
     }
-    if (
-      !_changedProperties.get("hass") ||
-      (_changedProperties.get("hass") as any).themes !== this.hass.themes
-    ) {
+    const oldHass = _changedProperties.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
@@ -163,7 +163,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _computeBrightness(stateObj: any): string {
+  private _computeBrightness(stateObj: HassEntityBase | LightEntity): string {
     if (!stateObj.attributes.brightness) {
       return "";
     }
@@ -171,7 +171,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     return `brightness(${(brightness + 245) / 5}%)`;
   }
 
-  private _computeColor(stateObj: any): string {
+  private _computeColor(stateObj: HassEntityBase | LightEntity): string {
     if (!stateObj.attributes.hs_color) {
       return "";
     }
