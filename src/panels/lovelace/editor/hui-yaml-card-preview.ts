@@ -41,6 +41,25 @@ export class HuiYAMLCardPreview extends HTMLElement {
 
     this.appendChild(element);
   }
+
+  // Set to type any for now. Need to add Config type
+  set config(config: any) {
+    if (!config) {
+      return;
+    }
+
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+
+    const element = createCardElement(config);
+
+    if (this._hass) {
+      element.hass = this._hass;
+    }
+
+    this.appendChild(element);
+  }
 }
 
 declare global {

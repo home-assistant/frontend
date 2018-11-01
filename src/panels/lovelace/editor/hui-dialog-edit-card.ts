@@ -1,7 +1,7 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import yaml from "js-yaml";
+import { until } from "lit-html/directives/until";
 
-import "@polymer/paper-checkbox/paper-checkbox.js";
 import "@polymer/paper-button/paper-button.js";
 import "@polymer/paper-input/paper-textarea.js";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
@@ -103,6 +103,16 @@ export class HuiDialogEditCard extends LitElement {
     this._previewEl.yaml = ev.detail.yaml;
   }
 
+  private _handleConfigChanged(ev) {
+    console.log("Config Changed");
+
+    if (!this._previewEl) {
+      return;
+    }
+
+    this._previewEl.config = ev.detail.config;
+  }
+
   private _closeDialog() {
     this._dialog.close();
   }
@@ -139,8 +149,11 @@ export class HuiDialogEditCard extends LitElement {
       this._showUIEditor = false;
       return;
     }
-    this._elementConfig!.setConfig(conf);
-    this._elementConfig!.hass = this.hass;
+    this._elementConfig.setConfig(conf);
+    this._elementConfig.hass = this.hass;
+    this._elementConfig.addEventListener("config-changed", (ev) =>
+      this._handleConfigChanged(ev)
+    );
   }
 
   private async _updateConfig() {
