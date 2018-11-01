@@ -5,7 +5,8 @@ import {
   PropertyValues,
 } from "@polymer/lit-element";
 import { HassEntityBase } from "home-assistant-js-websocket";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { TemplateResult } from "lit-html";
+import { styleMap } from "lit-html/directives/styleMap.js";
 
 import "../../../components/ha-card.js";
 
@@ -15,13 +16,11 @@ import stateIcon from "../../../common/entity/state_icon.js";
 import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
-import { styleMap } from "lit-html/directives/styleMap.js";
 import { HomeAssistant, LightEntity } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import { longPress } from "../common/directives/long-press-directive";
-import { TemplateResult } from "lit-html";
-import { HassEntity } from "home-assistant-js-websocket";
+import { fireEvent } from "../../../common/dom/fire_event.js";
 
 interface Config extends LovelaceConfig {
   entity: string;
@@ -59,10 +58,11 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (changedProps.has("_config")) {
       return true;
     }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass) {
       return (
         oldHass.states[this._config!.entity] !==
@@ -113,11 +113,11 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  protected updated(_changedProperties: PropertyValues): void {
+  protected updated(changedProps: PropertyValues): void {
     if (!this._config || !this.hass) {
       return;
     }
-    const oldHass = _changedProperties.get("hass") as HomeAssistant | undefined;
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.themes !== this.hass.themes) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }

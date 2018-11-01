@@ -90,10 +90,11 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (changedProps.has("_config")) {
       return true;
     }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._configEntities) {
       for (const entity of this._configEntities) {
         if (
@@ -103,9 +104,6 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
         }
       }
       return false;
-    }
-    if (changedProps.has("_config")) {
-      return true;
     }
     return true;
   }
@@ -128,11 +126,12 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  protected updated(_changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues): void {
     if (!this._config || !this.hass) {
       return;
     }
-    const oldHass = _changedProperties.get("hass") as HomeAssistant | undefined;
+
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.themes !== this.hass.themes) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
