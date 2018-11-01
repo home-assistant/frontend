@@ -32,6 +32,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       paper-card {
         flex: 1 0 100%;
         padding-bottom: 10px;
+        min-width: 0;
       }
       .device {
         width: 30%;

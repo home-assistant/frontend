@@ -29,6 +29,7 @@ class HaConfigEntryPage extends NavigateMixin(
       box-sizing: border-box;
       display: flex;
       flex: 1 0 300px;
+      min-width: 0;
       max-width: 500px;
       padding: 8px;
     }
