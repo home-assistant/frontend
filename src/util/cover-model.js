@@ -121,37 +121,24 @@ export default class CoverEntity {
   }
 }
 
-export function supportsOpen(stateObj) {
-  return (stateObj.attributes.supported_features & 1) !== 0;
-}
+const support = (stateObj, feature) =>
+  (stateObj.attributes.supported_features & feature) !== 0;
 
-export function supportsClose(stateObj) {
-  return (stateObj.attributes.supported_features & 2) !== 0;
-}
+export const supportsOpen = (stateObj) => support(stateObj, 1);
 
-export function supportsSetPosition(stateObj) {
-  return (stateObj.attributes.supported_features & 4) !== 0;
-}
+export const supportsClose = (stateObj) => support(stateObj, 2);
 
-export function supportsStop(stateObj) {
-  return (stateObj.attributes.supported_features & 8) !== 0;
-}
+export const supportsSetPosition = (stateObj) => support(stateObj, 4);
 
-export function supportsOpenTilt(stateObj) {
-  return (stateObj.attributes.supported_features & 16) !== 0;
-}
+export const supportsStop = (stateObj) => support(stateObj, 8);
 
-export function supportsCloseTilt(stateObj) {
-  return (stateObj.attributes.supported_features & 32) !== 0;
-}
+export const supportsOpenTilt = (stateObj) => support(stateObj, 16);
 
-export function supportsStopTilt(stateObj) {
-  return (stateObj.attributes.supported_features & 64) !== 0;
-}
+export const supportsCloseTilt = (stateObj) => support(stateObj, 32);
 
-export function supportsSetTiltPosition(stateObj) {
-  return (stateObj.attributes.supported_features & 128) !== 0;
-}
+export const supportsStopTilt = (stateObj) => support(stateObj, 64);
+
+export const supportsSetTiltPosition = (stateObj) => support(stateObj, 128);
 
 export function isTiltOnly(stateObj) {
   var supportsCover =

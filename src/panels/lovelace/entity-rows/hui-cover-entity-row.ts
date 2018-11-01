@@ -28,7 +28,7 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || !this._config) {
+    if (!this._config || !this.hass || !this.hass.states[this._config.entity]) {
       return html``;
     }
 
