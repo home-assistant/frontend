@@ -12,6 +12,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import hasConfigOrEntityChanged from "../common/has-changed";
 
 import "../../../components/ha-card";
 
@@ -98,18 +99,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.get("_config")) {
-      return changedProps.get("_config") !== this._config;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
-    return true;
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues): void {

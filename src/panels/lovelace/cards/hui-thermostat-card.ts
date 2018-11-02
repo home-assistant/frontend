@@ -10,6 +10,7 @@ import { jQuery } from "../../../resources/jquery";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
+import hasConfigOrEntityChanged from "../common/has-changed";
 
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
@@ -117,19 +118,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
-
-    return true;
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected firstUpdated(): void {

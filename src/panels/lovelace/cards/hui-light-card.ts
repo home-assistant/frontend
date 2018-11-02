@@ -18,6 +18,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import hasConfigOrEntityChanged from "../common/has-changed";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -116,18 +117,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
-    return true;
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected firstUpdated(): void {
