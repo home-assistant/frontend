@@ -1,14 +1,14 @@
-import "@polymer/app-route/app-route.js";
-import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./hass-loading-screen.js";
-import "./hass-error-screen.js";
+import "./hass-loading-screen";
+import "./hass-error-screen";
 import { importHref } from "../resources/html-import/import-href";
 
-import dynamicContentUpdater from "../common/dom/dynamic_content_updater.js";
-import NavigateMixin from "../mixins/navigate-mixin.js";
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
+import NavigateMixin from "../mixins/navigate-mixin";
 
 const loaded = {};
 

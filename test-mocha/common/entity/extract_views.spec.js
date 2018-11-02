@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import extractViews from "../../../src/common/entity/extract_views.js";
+import extractViews from "../../../src/common/entity/extract_views";
 
 import { createEntities, createView } from "./test_util";
 

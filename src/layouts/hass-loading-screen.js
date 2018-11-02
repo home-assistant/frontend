@@ -1,10 +1,10 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-spinner/paper-spinner.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/ha-menu-button.js";
+import "../components/ha-menu-button";
 
 class HassLoadingScreen extends PolymerElement {
   static get template() {

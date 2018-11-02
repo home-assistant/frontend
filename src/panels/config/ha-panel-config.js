@@ -1,13 +1,13 @@
-import "@polymer/app-route/app-route.js";
-import "@polymer/iron-media-query/iron-media-query.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import "@polymer/iron-media-query/iron-media-query";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../layouts/hass-error-screen.js";
+import "../../layouts/hass-error-screen";
 
-import isComponentLoaded from "../../common/config/is_component_loaded.js";
-import EventsMixin from "../../mixins/events-mixin.js";
-import NavigateMixin from "../../mixins/navigate-mixin.js";
+import isComponentLoaded from "../../common/config/is_component_loaded";
+import EventsMixin from "../../mixins/events-mixin";
+import NavigateMixin from "../../mixins/navigate-mixin";
 
 import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation.js");
 import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud.js");

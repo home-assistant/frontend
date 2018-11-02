@@ -1,3 +1,3 @@
-import "../components/ha-iconset-svg.js";
-import "../resources/roboto.js";
-import "../onboarding/ha-onboarding.js";
+import "../components/ha-iconset-svg";
+import "../resources/roboto";
+import "../onboarding/ha-onboarding";

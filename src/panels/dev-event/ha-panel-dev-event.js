@@ -1,17 +1,17 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-input/paper-textarea.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-textarea";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/ha-menu-button.js";
-import "../../resources/ha-style.js";
-import "./events-list.js";
-import EventsMixin from "../../mixins/events-mixin.js";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
+import "./events-list";
+import EventsMixin from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

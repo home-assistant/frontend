@@ -4,7 +4,7 @@ const config = require("./config.js");
 const { babelLoaderConfig } = require("../config/babel.js");
 
 const isProdBuild = process.env.NODE_ENV === "production";
-const chunkFilename = isProdBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
+const chunkFilename = isProdBuild ? "chunk.[chunkhash].js" : "[name].chunk";
 
 module.exports = {
   mode: isProdBuild ? "production" : "development",

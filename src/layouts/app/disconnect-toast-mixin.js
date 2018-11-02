@@ -1,4 +1,4 @@
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 export default (superClass) =>
   class extends LocalizeMixin(superClass) {

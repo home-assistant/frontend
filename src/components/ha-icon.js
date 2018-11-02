@@ -1,4 +1,4 @@
-import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/iron-icon/iron-icon";
 
 const IronIconClass = customElements.get("iron-icon");
 

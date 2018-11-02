@@ -1,15 +1,15 @@
-import "@polymer/paper-item/paper-icon-item.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-card/paper-card.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../layouts/hass-subpage.js";
+import "../../../layouts/hass-subpage";
 
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixIn from "../../../mixins/localize-mixin.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import "../../../components/entity/state-badge.js";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixIn from "../../../mixins/localize-mixin";
+import computeStateName from "../../../common/entity/compute_state_name";
+import "../../../components/entity/state-badge";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;

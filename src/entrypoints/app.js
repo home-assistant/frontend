@@ -1,20 +1,20 @@
 // Load polyfill first so HTML imports start resolving
 /* eslint-disable import/first */
-import "../resources/html-import/polyfill.js";
-import "@polymer/app-route/app-location.js";
-import "@polymer/app-route/app-route.js";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-styles/typography.js";
-import { setPassiveTouchGestures } from "@polymer/polymer/lib/utils/settings.js";
+import "../resources/html-import/polyfill";
+import "@polymer/app-route/app-location";
+import "@polymer/app-route/app-route";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-styles/typography";
+import { setPassiveTouchGestures } from "@polymer/polymer/lib/utils/settings";
 
 import "../util/legacy-support";
-import "../resources/roboto.js";
+import "../resources/roboto";
 
 // For MDI icons. Needs to be part of main bundle or else it won't hook
 // properly into iron-meta, which is used to transfer iconsets to iron-icon.
-import "../components/ha-iconset-svg.js";
+import "../components/ha-iconset-svg";
 
-import "../layouts/app/home-assistant.js";
+import "../layouts/app/home-assistant";
 
 /* polyfill for paper-dropdown */
 setTimeout(

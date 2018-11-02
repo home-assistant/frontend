@@ -1,17 +1,17 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-attributes.js";
-import "../../../components/ha-color-picker.js";
-import "../../../components/ha-labeled-slider.js";
+import "../../../components/ha-attributes";
+import "../../../components/ha-color-picker";
+import "../../../components/ha-labeled-slider";
 
 import featureClassNames from "../../../common/entity/feature_class_names";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 const FEATURE_CLASS_NAMES = {
   1: "has-brightness",

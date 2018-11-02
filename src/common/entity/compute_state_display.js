@@ -1,7 +1,7 @@
-import computeStateDomain from "./compute_state_domain.js";
-import formatDateTime from "../datetime/format_date_time.js";
-import formatDate from "../datetime/format_date.js";
-import formatTime from "../datetime/format_time.js";
+import computeStateDomain from "./compute_state_domain";
+import formatDateTime from "../datetime/format_date_time";
+import formatDate from "../datetime/format_date";
+import formatTime from "../datetime/format_time";
 
 export default function computeStateDisplay(localize, stateObj, language) {
   if (!stateObj._stateDisplay) {

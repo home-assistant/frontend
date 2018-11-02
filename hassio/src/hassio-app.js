@@ -1,8 +1,8 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./hassio-main.js";
-import "./resources/hassio-icons.js";
+import "./hassio-main";
+import "./resources/hassio-icons";
 
 class HassioApp extends PolymerElement {
   static get template() {

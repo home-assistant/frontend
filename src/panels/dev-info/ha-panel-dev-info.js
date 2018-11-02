@@ -1,24 +1,24 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import "@polymer/paper-dialog/paper-dialog.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/buttons/ha-call-service-button.js";
-import "../../components/ha-menu-button.js";
-import "../../resources/ha-style.js";
+import "../../components/buttons/ha-call-service-button";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
 
-import formatDateTime from "../../common/datetime/format_date_time.js";
-import formatTime from "../../common/datetime/format_time.js";
+import formatDateTime from "../../common/datetime/format_date_time";
+import formatTime from "../../common/datetime/format_time";
 
-import EventsMixin from "../../mixins/events-mixin.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import EventsMixin from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 let registeredDialog = false;
 

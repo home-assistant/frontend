@@ -1,5 +1,5 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import EventsMixin from "../mixins/events-mixin.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import EventsMixin from "../mixins/events-mixin";
 
 let loaded = null;
 

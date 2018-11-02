@@ -1,22 +1,22 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-input/paper-textarea.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-tabs/paper-tab.js";
-import "@polymer/paper-tabs/paper-tabs.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/ha-menu-button.js";
-import "../../resources/ha-style.js";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
 
-import formatDateTime from "../../common/datetime/format_date_time.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
-import EventsMixin from "../../mixins/events-mixin.js";
+import formatDateTime from "../../common/datetime/format_date_time";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import EventsMixin from "../../mixins/events-mixin";
 
 let registeredDialog = false;
 

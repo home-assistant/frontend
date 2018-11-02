@@ -1,13 +1,13 @@
-import "@polymer/polymer/lib/elements/dom-if.js";
-import "@polymer/polymer/lib/elements/dom-repeat.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/polymer/lib/elements/dom-if";
+import "@polymer/polymer/lib/elements/dom-repeat";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/ha-markdown.js";
+import "../components/ha-markdown";
 
-import LocalizeLiteMixin from "../mixins/localize-lite-mixin.js";
+import LocalizeLiteMixin from "../mixins/localize-lite-mixin";
 
-import "./ha-auth-flow.js";
+import "./ha-auth-flow";
 
 class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   static get template() {

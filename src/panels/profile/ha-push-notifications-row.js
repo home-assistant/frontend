@@ -1,15 +1,15 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/iron-label/iron-label.js";
-import "@polymer/paper-card/paper-card.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/iron-label/iron-label";
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import isComponentLoaded from "../../common/config/is_component_loaded.js";
-import { pushSupported } from "../../components/ha-push-notifications-toggle.js";
+import isComponentLoaded from "../../common/config/is_component_loaded";
+import { pushSupported } from "../../components/ha-push-notifications-toggle";
 
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
-import "./ha-settings-row.js";
+import "./ha-settings-row";
 
 /*
  * @appliesMixin LocalizeMixin

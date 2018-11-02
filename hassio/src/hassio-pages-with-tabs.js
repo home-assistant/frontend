@@ -1,24 +1,24 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-tabs/paper-tab.js";
-import "@polymer/paper-tabs/paper-tabs.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../src/components/ha-menu-button.js";
-import "../../src/resources/ha-style.js";
-import "./addon-store/hassio-addon-store.js";
-import "./dashboard/hassio-dashboard.js";
-import "./hassio-markdown-dialog.js";
-import "./snapshots/hassio-snapshot.js";
-import "./snapshots/hassio-snapshots.js";
-import "./system/hassio-system.js";
+import "../../src/components/ha-menu-button";
+import "../../src/resources/ha-style";
+import "./addon-store/hassio-addon-store";
+import "./dashboard/hassio-dashboard";
+import "./hassio-markdown-dialog";
+import "./snapshots/hassio-snapshot";
+import "./snapshots/hassio-snapshots";
+import "./system/hassio-system";
 
-import scrollToTarget from "../../src/common/dom/scroll-to-target.js";
+import scrollToTarget from "../../src/common/dom/scroll-to-target";
 
-import NavigateMixin from "../../src/mixins/navigate-mixin.js";
+import NavigateMixin from "../../src/mixins/navigate-mixin";
 
 class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   static get template() {

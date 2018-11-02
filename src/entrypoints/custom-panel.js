@@ -1,7 +1,7 @@
-import { loadJS } from "../common/dom/load_resource.js";
-import loadCustomPanel from "../util/custom-panel/load-custom-panel.js";
-import createCustomPanelElement from "../util/custom-panel/create-custom-panel-element.js";
-import setCustomPanelProperties from "../util/custom-panel/set-custom-panel-properties.js";
+import { loadJS } from "../common/dom/load_resource";
+import loadCustomPanel from "../util/custom-panel/load-custom-panel";
+import createCustomPanelElement from "../util/custom-panel/create-custom-panel-element";
+import setCustomPanelProperties from "../util/custom-panel/set-custom-panel-properties";
 
 const webComponentsSupported =
   "customElements" in window &&

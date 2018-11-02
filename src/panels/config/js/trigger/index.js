@@ -1,9 +1,9 @@
 import { h, Component } from "preact";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-button/paper-button";
 
-import TriggerRow from "./trigger_row.js";
-import StateTrigger from "./state.js";
+import TriggerRow from "./trigger_row";
+import StateTrigger from "./state";
 
 export default class Trigger extends Component {
   constructor() {

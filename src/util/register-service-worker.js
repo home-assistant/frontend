@@ -1,5 +1,5 @@
 const serviceWorkerUrl =
-  __BUILD__ === "latest" ? "/service_worker.js" : "/service_worker_es5.js";
+  __BUILD__ === "latest" ? "/service_worker.js" : "/service_worker_es5";
 
 export default () => {
   if (!("serviceWorker" in navigator)) return;

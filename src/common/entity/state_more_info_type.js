@@ -1,5 +1,5 @@
-import computeStateDomain from "./compute_state_domain.js";
-import { DOMAINS_HIDE_MORE_INFO, DOMAINS_WITH_MORE_INFO } from "../const.js";
+import computeStateDomain from "./compute_state_domain";
+import { DOMAINS_HIDE_MORE_INFO, DOMAINS_WITH_MORE_INFO } from "../const";
 
 export default function stateMoreInfoType(stateObj) {
   const domain = computeStateDomain(stateObj);

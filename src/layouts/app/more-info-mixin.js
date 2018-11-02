@@ -1,4 +1,4 @@
-import { afterNextRender } from "@polymer/polymer/lib/utils/render-status.js";
+import { afterNextRender } from "@polymer/polymer/lib/utils/render-status";
 
 export default (superClass) =>
   class extends superClass {

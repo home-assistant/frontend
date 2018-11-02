@@ -1,7 +1,7 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 class NotificationManager extends LocalizeMixin(PolymerElement) {
   static get template() {

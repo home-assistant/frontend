@@ -1,21 +1,21 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-tooltip/paper-tooltip.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-item/paper-item-body.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-tooltip/paper-tooltip";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/entity/ha-state-icon.js";
-import "../../../layouts/hass-subpage.js";
-import "../../../resources/ha-style.js";
+import "../../../components/entity/ha-state-icon";
+import "../../../layouts/hass-subpage";
+import "../../../resources/ha-style";
 
-import "../ha-config-section.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
+import "../ha-config-section";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import computeStateName from "../../../common/entity/compute_state_name";
 
 let registeredDialog = false;
 

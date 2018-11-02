@@ -1,10 +1,10 @@
-import "@polymer/polymer/lib/elements/dom-if.js";
-import "@polymer/polymer/lib/elements/dom-repeat.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-button/paper-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import localizeLiteMixin from "../mixins/localize-lite-mixin.js";
+import "@polymer/polymer/lib/elements/dom-if";
+import "@polymer/polymer/lib/elements/dom-repeat";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-button/paper-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import localizeLiteMixin from "../mixins/localize-lite-mixin";
 
 class HaOnboarding extends localizeLiteMixin(PolymerElement) {
   static get template() {

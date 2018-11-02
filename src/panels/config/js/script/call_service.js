@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
-import "../../../../components/ha-service-picker.js";
+import "../../../../components/ha-service-picker";
 
-import JSONTextArea from "../json_textarea.js";
+import JSONTextArea from "../json_textarea";
 
 export default class CallServiceAction extends Component {
   constructor() {
