@@ -1,12 +1,12 @@
 import { LitElement, html, svg } from "@polymer/lit-element";
 
-import "../../../components/ha-card.js";
-import "../../../components/ha-icon.js";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import stateIcon from "../../../common/entity/state_icon.js";
+import computeStateName from "../../../common/entity/compute_state_name";
+import stateIcon from "../../../common/entity/state_icon";
 
-import EventsMixin from "../../../mixins/events-mixin.js";
+import EventsMixin from "../../../mixins/events-mixin";
 
 class HuiSensorCard extends EventsMixin(LitElement) {
   set hass(hass) {

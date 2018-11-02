@@ -1,15 +1,15 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-progress/paper-progress.js";
-import "@polymer/paper-styles/element-styles/paper-material-styles.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-progress/paper-progress";
+import "@polymer/paper-styles/element-styles/paper-material-styles";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import HassMediaPlayerEntity from "../util/hass-media-player-model.js";
+import HassMediaPlayerEntity from "../util/hass-media-player-model";
 
-import computeStateName from "../common/entity/compute_state_name.js";
-import EventsMixin from "../mixins/events-mixin.js";
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import computeStateName from "../common/entity/compute_state_name";
+import EventsMixin from "../mixins/events-mixin";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

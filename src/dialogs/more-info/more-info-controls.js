@@ -1,21 +1,21 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/state-history-charts.js";
+import "../../components/state-history-charts";
 import "../../data/ha-state-history-data";
-import "../../resources/ha-style.js";
-import "../../state-summary/state-card-content.js";
+import "../../resources/ha-style";
+import "../../state-summary/state-card-content";
 
-import "./controls/more-info-content.js";
+import "./controls/more-info-content";
 
-import computeStateName from "../../common/entity/compute_state_name.js";
-import computeStateDomain from "../../common/entity/compute_state_domain.js";
-import isComponentLoaded from "../../common/config/is_component_loaded.js";
-import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const.js";
-import EventsMixin from "../../mixins/events-mixin.js";
+import computeStateName from "../../common/entity/compute_state_name";
+import computeStateDomain from "../../common/entity/compute_state_domain";
+import isComponentLoaded from "../../common/config/is_component_loaded";
+import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
+import EventsMixin from "../../mixins/events-mixin";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*

@@ -1,8 +1,8 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-button/paper-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-button/paper-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HassErrorScreen extends PolymerElement {
   static get template() {

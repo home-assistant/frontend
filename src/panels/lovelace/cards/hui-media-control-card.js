@@ -1,6 +1,6 @@
-import "../../../cards/ha-media_player-card.js";
+import "../../../cards/ha-media_player-card";
 
-import LegacyWrapperCard from "./hui-legacy-wrapper-card.js";
+import LegacyWrapperCard from "./hui-legacy-wrapper-card";
 
 class HuiMediaControlCard extends LegacyWrapperCard {
   constructor() {

@@ -1,4 +1,4 @@
-import IntlMessageFormat from "intl-messageformat/src/main.js";
+import IntlMessageFormat from "intl-messageformat/src/main";
 
 /**
  * Adapted from Polymer app-localize-behavior.

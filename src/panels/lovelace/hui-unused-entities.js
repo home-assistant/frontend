@@ -1,8 +1,8 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import computeUnusedEntities from "./common/compute-unused-entities.js";
-import createCardElement from "./common/create-card-element.js";
+import computeUnusedEntities from "./common/compute-unused-entities";
+import createCardElement from "./common/create-card-element";
 
 import "./cards/hui-entities-card.ts";
 

@@ -1,4 +1,4 @@
-import { fetchWithAuth } from "./fetch-with-auth.js";
+import { fetchWithAuth } from "./fetch-with-auth";
 
 /* eslint-disable no-throw-literal */
 

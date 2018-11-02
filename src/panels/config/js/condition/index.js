@@ -1,8 +1,8 @@
 import { h, Component } from "preact";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-button/paper-button";
 
-import ConditionRow from "./condition_row.js";
+import ConditionRow from "./condition_row";
 
 export default class Condition extends Component {
   constructor() {

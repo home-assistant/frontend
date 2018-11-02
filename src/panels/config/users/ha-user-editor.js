@@ -1,12 +1,12 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../layouts/hass-subpage.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
+import "../../../layouts/hass-subpage";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
+import EventsMixin from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

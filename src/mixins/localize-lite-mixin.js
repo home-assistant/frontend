@@ -1,12 +1,9 @@
 /**
  * Lite mixin to add localization without depending on the Hass object.
  */
-import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin.js";
+import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin";
 import { localizeBaseMixin } from "./localize-base-mixin";
-import {
-  getActiveTranslation,
-  getTranslation,
-} from "../util/hass-translation.js";
+import { getActiveTranslation, getTranslation } from "../util/hass-translation";
 
 /**
  * @polymerMixin

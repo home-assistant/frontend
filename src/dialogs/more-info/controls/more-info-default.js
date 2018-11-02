@@ -1,7 +1,7 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-attributes.js";
+import "../../../components/ha-attributes";
 
 class MoreInfoDefault extends PolymerElement {
   static get template() {

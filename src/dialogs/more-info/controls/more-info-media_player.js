@@ -1,19 +1,19 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-paper-slider.js";
-import HassMediaPlayerEntity from "../../../util/hass-media-player-model.js";
+import "../../../components/ha-paper-slider";
+import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
-import isComponentLoaded from "../../../common/config/is_component_loaded.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import isComponentLoaded from "../../../common/config/is_component_loaded";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

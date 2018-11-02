@@ -9,9 +9,9 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
-import { AppStorageBehavior } from "@polymer/app-storage/app-storage-behavior.js";
-import { Polymer } from "@polymer/polymer/lib/legacy/polymer-fn.js";
-import "@polymer/polymer/polymer-legacy.js";
+import { AppStorageBehavior } from "@polymer/app-storage/app-storage-behavior";
+import { Polymer } from "@polymer/polymer/lib/legacy/polymer-fn";
+import "@polymer/polymer/polymer-legacy";
 
 /**
  * app-localstorage-document synchronizes storage between an in-memory

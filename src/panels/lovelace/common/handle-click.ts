@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig } from "../elements/types";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import toggleEntity from "../../../../src/panels/lovelace/common/entity/toggle-entity";
 

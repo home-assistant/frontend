@@ -1,13 +1,13 @@
 import { h, Component } from "preact";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
 
-import CallServiceAction from "./call_service.js";
-import ConditionAction from "./condition.js";
-import DelayAction from "./delay.js";
-import EventAction from "./event.js";
-import WaitAction from "./wait.js";
+import CallServiceAction from "./call_service";
+import ConditionAction from "./condition";
+import DelayAction from "./delay";
+import EventAction from "./event";
+import WaitAction from "./wait";
 
 const TYPES = {
   service: CallServiceAction,

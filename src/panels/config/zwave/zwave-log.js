@@ -1,15 +1,15 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-checkbox/paper-checkbox.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-dialog/paper-dialog.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import isPwa from "../../../common/config/is_pwa.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import EventsMixin from "../../../mixins/events-mixin";
+import isPwa from "../../../common/config/is_pwa";
 
-import "../ha-config-section.js";
+import "../ha-config-section";
 
 let registeredDialog = false;
 
@@ -42,7 +42,7 @@ class OzwLog extends EventsMixin(PolymerElement) {
           </paper-input>
         </div>
         <div class="card-actions">
-          <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>   
+          <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>
           <paper-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</paper-button>
       </paper-card>
     </ha-config-section>
@@ -133,7 +133,7 @@ class OzwLog extends EventsMixin(PolymerElement) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-ozwlog-dialog",
         dialogTag: "zwave-log-dialog",
-        dialogImport: () => import("./zwave-log-dialog.js"),
+        dialogImport: () => import("./zwave-log-dialog"),
       });
     }
   }

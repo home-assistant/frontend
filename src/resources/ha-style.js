@@ -1,5 +1,5 @@
-import "@polymer/paper-styles/paper-styles.js";
-import "@polymer/polymer/polymer-legacy.js";
+import "@polymer/paper-styles/paper-styles";
+import "@polymer/polymer/polymer-legacy";
 
 const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");

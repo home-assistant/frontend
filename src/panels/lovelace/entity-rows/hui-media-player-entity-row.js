@@ -1,10 +1,10 @@
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/hui-generic-entity-row.js";
+import "../components/hui-generic-entity-row";
 
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 const SUPPORT_PAUSE = 1;
 const SUPPORT_NEXT_TRACK = 32;
@@ -58,7 +58,7 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
       </template>
       <template is="dom-if" if="[[_isOff(_stateObj.state)]]">
         <div>[[_computeState(_stateObj.state)]]</div>
-      </template> 
+      </template>
 
       <div slot="secondary">
         [[_computeMediaTitle(_stateObj)]]

@@ -1,12 +1,12 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-dialog/paper-dialog.js";
-import "@polymer/paper-spinner/paper-spinner.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../resources/ha-style.js";
+import "../../../resources/ha-style";
 
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

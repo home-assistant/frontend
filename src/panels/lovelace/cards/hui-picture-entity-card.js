@@ -1,16 +1,16 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card.js";
-import "../components/hui-image.js";
+import "../../../components/ha-card";
+import "../components/hui-image";
 
-import computeDomain from "../../../common/entity/compute_domain.js";
-import computeStateDisplay from "../../../common/entity/compute_state_display.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import toggleEntity from "../common/entity/toggle-entity.js";
+import computeDomain from "../../../common/entity/compute_domain";
+import computeStateDisplay from "../../../common/entity/compute_state_display";
+import computeStateName from "../../../common/entity/compute_state_name";
+import toggleEntity from "../common/entity/toggle-entity";
 
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 import { longPressBind } from "../common/directives/long-press-directive";
 
 const UNAVAILABLE = "Unavailable";

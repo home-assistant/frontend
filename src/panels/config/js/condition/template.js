@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
-import "../../../../components/ha-textarea.js";
+import "../../../../components/ha-textarea";
 
-import { onChangeEvent } from "../../../../common/preact/event.js";
+import { onChangeEvent } from "../../../../common/preact/event";
 
 export default class TemplateCondition extends Component {
   constructor() {
