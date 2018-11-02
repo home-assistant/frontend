@@ -1,11 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-spinner/paper-spinner.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import LocalizeMixin from "../mixins/localize-mixin.js";
-import EventsMixin from "../mixins/events-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin";
+import EventsMixin from "../mixins/events-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

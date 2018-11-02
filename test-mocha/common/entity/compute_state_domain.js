@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import computeStateDomain from "../../../src/common/entity/compute_state_domain.js";
+import computeStateDomain from "../../../src/common/entity/compute_state_domain";
 
 describe("computeStateDomain", () => {
   it("Detects sensor domain", () => {

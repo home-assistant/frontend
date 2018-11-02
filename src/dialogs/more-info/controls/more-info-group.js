@@ -1,11 +1,11 @@
-import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../state-summary/state-card-content.js";
+import "../../../state-summary/state-card-content";
 
 import computeStateDomain from "../../../common/entity/compute_state_domain";
-import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater.js";
+import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
 
 class MoreInfoGroup extends PolymerElement {
   static get template() {

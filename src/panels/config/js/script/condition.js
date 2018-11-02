@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 
-import StateCondition from "../condition/state.js";
-import ConditionEdit from "../condition/condition_edit.js";
+import StateCondition from "../condition/state";
+import ConditionEdit from "../condition/condition_edit";
 
 export default class ConditionAction extends Component {
   // eslint-disable-next-line

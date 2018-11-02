@@ -1,10 +1,10 @@
-import "@polymer/paper-styles/element-styles/paper-material-styles.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-styles/element-styles/paper-material-styles";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import computeStateName from "../common/entity/compute_state_name.js";
-import EventsMixin from "../mixins/events-mixin.js";
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import computeStateName from "../common/entity/compute_state_name";
+import EventsMixin from "../mixins/events-mixin";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 const UPDATE_INTERVAL = 10000; // ms
 /*

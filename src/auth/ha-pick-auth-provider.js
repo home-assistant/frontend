@@ -1,10 +1,10 @@
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-item/paper-item-body.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../mixins/events-mixin.js";
-import LocalizeLiteMixin from "../mixins/localize-lite-mixin.js";
+import EventsMixin from "../mixins/events-mixin";
+import LocalizeLiteMixin from "../mixins/localize-lite-mixin";
 
 /*
  * @appliesMixin EventsMixin

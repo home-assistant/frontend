@@ -1,23 +1,23 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-spinner/paper-spinner.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@vaadin/vaadin-date-picker/vaadin-date-picker";
 
-import "../../components/ha-menu-button.js";
-import "../../components/entity/ha-entity-picker.js";
-import "../../resources/ha-date-picker-style.js";
-import "../../resources/ha-style.js";
+import "../../components/ha-menu-button";
+import "../../components/entity/ha-entity-picker";
+import "../../resources/ha-date-picker-style";
+import "../../resources/ha-style";
 
-import "./ha-logbook-data.js";
-import "./ha-logbook.js";
+import "./ha-logbook-data";
+import "./ha-logbook";
 
-import formatDate from "../../common/datetime/format_date.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import formatDate from "../../common/datetime/format_date";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

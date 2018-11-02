@@ -1,16 +1,16 @@
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-item/paper-icon-item.js";
-import "@polymer/paper-item/paper-item-body.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@vaadin/vaadin-combo-box/vaadin-combo-box-light.js";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item-body";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
 
-import "./state-badge.js";
+import "./state-badge";
 
-import computeStateName from "../../common/entity/compute_state_name.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
-import EventsMixin from "../../mixins/events-mixin.js";
+import computeStateName from "../../common/entity/compute_state_name";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import EventsMixin from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

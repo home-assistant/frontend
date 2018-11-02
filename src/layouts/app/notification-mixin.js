@@ -6,7 +6,7 @@ export default (superClass) =>
         dialogShowEvent: "hass-notification",
         dialogTag: "notification-manager",
         dialogImport: () =>
-          import(/* webpackChunkName: "notification-manager" */ "../../managers/notification-manager.js"),
+          import(/* webpackChunkName: "notification-manager" */ "../../managers/notification-manager"),
       });
     }
   };

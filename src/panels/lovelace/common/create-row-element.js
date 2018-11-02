@@ -1,25 +1,25 @@
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 import "../entity-rows/hui-climate-entity-row";
-import "../entity-rows/hui-cover-entity-row.js";
-import "../entity-rows/hui-group-entity-row.js";
-import "../entity-rows/hui-input-number-entity-row.js";
-import "../entity-rows/hui-input-select-entity-row.js";
-import "../entity-rows/hui-input-text-entity-row.js";
-import "../entity-rows/hui-lock-entity-row.js";
-import "../entity-rows/hui-media-player-entity-row.js";
-import "../entity-rows/hui-scene-entity-row.js";
-import "../entity-rows/hui-script-entity-row.js";
-import "../entity-rows/hui-text-entity-row.js";
-import "../entity-rows/hui-timer-entity-row.js";
-import "../entity-rows/hui-toggle-entity-row.js";
+import "../entity-rows/hui-cover-entity-row";
+import "../entity-rows/hui-group-entity-row";
+import "../entity-rows/hui-input-number-entity-row";
+import "../entity-rows/hui-input-select-entity-row";
+import "../entity-rows/hui-input-text-entity-row";
+import "../entity-rows/hui-lock-entity-row";
+import "../entity-rows/hui-media-player-entity-row";
+import "../entity-rows/hui-scene-entity-row";
+import "../entity-rows/hui-script-entity-row";
+import "../entity-rows/hui-text-entity-row";
+import "../entity-rows/hui-timer-entity-row";
+import "../entity-rows/hui-toggle-entity-row";
 
 import "../special-rows/hui-call-service-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
 
-import createErrorCardConfig from "./create-error-card-config.js";
+import createErrorCardConfig from "./create-error-card-config";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const SPECIAL_TYPES = new Set([

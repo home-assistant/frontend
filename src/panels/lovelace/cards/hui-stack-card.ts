@@ -1,7 +1,7 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import createCardElement from "../common/create-card-element.js";
+import createCardElement from "../common/create-card-element";
 
 import { LovelaceCard, LovelaceConfig } from "../types";
 import { HomeAssistant } from "../../../types";

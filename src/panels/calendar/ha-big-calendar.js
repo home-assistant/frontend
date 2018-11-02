@@ -1,5 +1,5 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 /* eslint-disable */
 import { render } from "react-dom";
@@ -7,9 +7,9 @@ import React from "react";
 /* eslint-enable */
 import BigCalendar from "react-big-calendar";
 import moment from "moment";
-import EventsMixin from "../../mixins/events-mixin.js";
+import EventsMixin from "../../mixins/events-mixin";
 
-import "../../resources/ha-style.js";
+import "../../resources/ha-style";
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
 

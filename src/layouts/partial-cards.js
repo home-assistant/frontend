@@ -1,28 +1,28 @@
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-scroll-effects/effects/waterfall.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/app-route/app-route.js";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/iron-pages/iron-pages.js";
-import "@polymer/paper-tabs/paper-tab.js";
-import "@polymer/paper-tabs/paper-tabs.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-route/app-route";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/iron-pages/iron-pages";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/ha-cards.js";
-import "../components/ha-icon.js";
-import "../components/ha-menu-button.js";
-import "../components/ha-start-voice-button.js";
+import "../components/ha-cards";
+import "../components/ha-icon";
+import "../components/ha-menu-button";
+import "../components/ha-start-voice-button";
 
-import "./ha-app-layout.js";
+import "./ha-app-layout";
 
-import extractViews from "../common/entity/extract_views.js";
-import getViewEntities from "../common/entity/get_view_entities.js";
-import computeStateName from "../common/entity/compute_state_name.js";
-import computeStateDomain from "../common/entity/compute_state_domain.js";
-import computeLocationName from "../common/config/location_name.js";
-import NavigateMixin from "../mixins/navigate-mixin.js";
-import EventsMixin from "../mixins/events-mixin.js";
+import extractViews from "../common/entity/extract_views";
+import getViewEntities from "../common/entity/get_view_entities";
+import computeStateName from "../common/entity/compute_state_name";
+import computeStateDomain from "../common/entity/compute_state_domain";
+import computeLocationName from "../common/config/location_name";
+import NavigateMixin from "../mixins/navigate-mixin";
+import EventsMixin from "../mixins/events-mixin";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const ALWAYS_SHOW_DOMAIN = ["persistent_notification", "configurator"];

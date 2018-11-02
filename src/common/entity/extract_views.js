@@ -1,4 +1,4 @@
-import { DEFAULT_VIEW_ENTITY_ID } from "../const.js";
+import { DEFAULT_VIEW_ENTITY_ID } from "../const";
 
 // Return an ordered array of available views
 export default function extractViews(entities) {

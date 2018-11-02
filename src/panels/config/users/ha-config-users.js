@@ -1,14 +1,14 @@
-import "@polymer/app-route/app-route.js";
-import { timeOut } from "@polymer/polymer/lib/utils/async.js";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
-import "./ha-user-picker.js";
-import "./ha-user-editor.js";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import "./ha-user-picker";
+import "./ha-user-editor";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 /*
  * @appliesMixin NavigateMixin

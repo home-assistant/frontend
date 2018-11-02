@@ -1,11 +1,11 @@
 import { h, Component } from "preact";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-menu-button/paper-menu-button.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-menu-button/paper-menu-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
 
-import ConditionEdit from "./condition_edit.js";
+import ConditionEdit from "./condition_edit";
 
 export default class ConditionRow extends Component {
   constructor() {

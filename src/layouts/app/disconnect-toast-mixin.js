@@ -1,11 +1,11 @@
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 export default (superClass) =>
   class extends LocalizeMixin(superClass) {
     hassConnected() {
       super.hassConnected();
       // Need to load in advance because when disconnected, can't dynamically load code.
-      import(/* webpackChunkName: "ha-toast" */ "../../components/ha-toast.js");
+      import(/* webpackChunkName: "ha-toast" */ "../../components/ha-toast");
     }
 
     hassReconnected() {

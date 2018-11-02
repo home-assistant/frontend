@@ -1,1 +1,1 @@
-import "../resources/hass-icons.js";
+import "../resources/hass-icons";
