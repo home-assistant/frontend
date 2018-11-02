@@ -4,11 +4,14 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
+
 import { LovelaceCard, LovelaceConfig } from "../types";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { TemplateResult } from "lit-html";
+
 import isValidEntityId from "../../../common/entity/valid_entity_id";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/ha-card";
 
@@ -19,6 +22,7 @@ interface Config extends LovelaceConfig {
   min?: number;
   max?: number;
   severity?: object;
+  theme?: string;
 }
 
 const severityMap = {
@@ -50,7 +54,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (!isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }
-    this._config = { min: 0, max: 100, ...config };
+    this._config = { min: 0, max: 100, theme: "default", ...config };
   }
 
   protected render(): TemplateResult {
@@ -94,19 +98,21 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.get("hass")) {
-      return (
-        (changedProps.get("hass") as any).states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
     if (changedProps.get("_config")) {
       return changedProps.get("_config") !== this._config;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
     }
     return true;
   }
 
-  protected updated(): void {
+  protected updated(changedProps: PropertyValues): void {
     if (
       !this._config ||
       !this.hass ||
@@ -134,6 +140,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       "--base-unit",
       this._computeBaseUnit()
     );
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   private renderStyle(): TemplateResult {
