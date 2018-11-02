@@ -360,7 +360,7 @@
                         "introduction": "Crie automatizações para tornar a sua casa viva",
                         "default_name": "Nova Automação",
                         "save": "Guardar",
-                        "unsaved_confirm": "Você tem alterações não guardas. Tem a certeza de que quer sair?",
+                        "unsaved_confirm": "Existem alterações não guardas. Tem a certeza de que quer sair?",
                         "alias": "Nome",
                         "triggers": {
                             "header": "Gatilhos",
@@ -528,7 +528,7 @@
                     }
                 },
                 "cloud": {
-                    "caption": "",
+                    "caption": "Home Assistant Cloud",
                     "description_login": "Ligado como {email}",
                     "description_not_login": "Não está ligado"
                 },
@@ -545,9 +545,9 @@
                         "no_device": "Entidades sem dispositivos",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
-                        "manuf": "por {fabricante]",
+                        "manuf": "por {manufacturer}",
                         "hub": "Ligado via",
-                        "firmware": "",
+                        "firmware": "Firmware: {version}",
                         "device_unavailable": "Dispositivo indisponível",
                         "entity_unavailable": "Entidade indisponível"
                     }
@@ -619,14 +619,14 @@
                 "mfa_setup": {
                     "title_aborted": "Abortado",
                     "title_success": "Sucesso!",
-                    "step_done": "Configuração concluida para {step}",
+                    "step_done": "Configuração concluída para {step}",
                     "close": "Fechar",
                     "submit": "Enviar"
                 }
             },
             "page-authorize": {
                 "initializing": "A inicializar",
-                "authorizing_client": "Você está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
+                "authorizing_client": "Está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
                 "logging_in_with": "Iniciar a sessão com **{authProviderName}**.",
                 "pick_auth_provider": "Ou faça login com",
                 "abort_intro": "Login abortado",
@@ -756,22 +756,22 @@
                     "wind_speed": "Vel. do vento"
                 },
                 "cardinal_direction": {
-                    "e": "",
-                    "ene": "",
-                    "ese": "",
-                    "n": "",
-                    "ne": "",
-                    "nne": "",
-                    "nw": "",
-                    "nnw": "",
-                    "s": "",
-                    "se": "",
-                    "sse": "",
-                    "ssw": "",
-                    "sw": "",
-                    "w": "",
-                    "wnw": "",
-                    "wsw": ""
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
                 },
                 "forecast": "Previsão"
             },
