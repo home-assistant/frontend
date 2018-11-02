@@ -1,21 +1,27 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap.js";
+import {
+  html,
+  LitElement,
+  PropertyValues,
+  PropertyDeclarations,
+} from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
+import { classMap } from "lit-html/directives/classMap";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
+import computeStateDisplay from "../../../common/entity/compute_state_display";
+import computeStateName from "../../../common/entity/compute_state_name";
 import processConfigEntities from "../common/process-config-entities";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
-import toggleEntity from "../common/entity/toggle-entity.js";
+import toggleEntity from "../common/entity/toggle-entity";
 
-import "../../../components/entity/state-badge.js";
-import "../../../components/ha-card.js";
-import "../../../components/ha-icon.js";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../types.js";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCard, LovelaceConfig } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 
 interface EntityConfig {
@@ -40,27 +46,25 @@ interface Config extends LovelaceConfig {
 export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
-  protected config?: Config;
-  protected configEntities?: EntityConfig[];
+  private _config?: Config;
+  private _configEntities?: EntityConfig[];
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      config: {},
+      _config: {},
     };
   }
 
-  public getCardSize() {
-    const columns =
-      this.config!.columns || Math.min(this.config!.entities.length, 5);
+  public getCardSize(): number {
     return (
-      (this.config!.title ? 1 : 0) +
-      2 * Math.ceil(this.configEntities!.length / columns)
+      (this._config!.title ? 1 : 0) +
+      Math.ceil(this._configEntities!.length / 5)
     );
   }
 
-  public setConfig(config: Config) {
-    this.config = { theme: "default", ...config };
+  public setConfig(config: Config): void {
+    this._config = { theme: "default", ...config };
     const entities = processConfigEntities(config.entities);
 
     for (const entity of entities) {
@@ -78,26 +82,43 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     const columns = config.columns || Math.min(config.entities.length, 5);
     this.style.setProperty("--glance-column-width", `${100 / columns}%`);
 
-    this.configEntities = entities;
+    this._configEntities = entities;
 
     if (this.hass) {
       this.requestUpdate();
     }
   }
 
-  protected render() {
-    if (!this.config || !this.hass) {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass && this._configEntities) {
+      for (const entity of this._configEntities) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return true;
+  }
+
+  protected render(): TemplateResult {
+    if (!this._config || !this.hass) {
       return html``;
     }
-    const { title } = this.config;
-
-    applyThemesOnElement(this, this.hass!.themes, this.config.theme);
+    const { title } = this._config;
 
     return html`
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-          ${this.configEntities!.map((entityConf) =>
+          ${this._configEntities!.map((entityConf) =>
             this.renderEntity(entityConf)
           )}
         </div>
@@ -105,7 +126,18 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderStyle() {
+  protected updated(changedProperties: PropertyValues): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         .entities {
@@ -147,7 +179,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderEntity(entityConf) {
+  private renderEntity(entityConf): TemplateResult {
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
@@ -165,7 +197,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
         .longPress="${longPress()}"
       >
         ${
-          this.config!.show_name !== false
+          this._config!.show_name !== false
             ? html`<div class="name">${
                 "name" in entityConf
                   ? entityConf.name
@@ -178,7 +210,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
           .overrideIcon="${entityConf.icon}"
         ></state-badge>
         ${
-          this.config!.show_state !== false
+          this._config!.show_state !== false
             ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
             : ""
         }
@@ -186,7 +218,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private handleClick(ev: MouseEvent, hold) {
+  private handleClick(ev: MouseEvent, hold: boolean): void {
     const config = (ev.currentTarget as any).entityConf as EntityConfig;
     const entityId = config.entity;
     const action = hold ? config.hold_action : config.tap_action || "more-info";

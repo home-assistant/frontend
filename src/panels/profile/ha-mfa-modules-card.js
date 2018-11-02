@@ -1,14 +1,14 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../resources/ha-style.js";
+import "../../resources/ha-style";
 
-import EventsMixin from "../../mixins/events-mixin.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import EventsMixin from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 let registeredDialog = false;
 
@@ -89,7 +89,7 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-mfa-module-setup-flow",
         dialogTag: "ha-mfa-module-setup-flow",
-        dialogImport: () => import("./ha-mfa-module-setup-flow.js"),
+        dialogImport: () => import("./ha-mfa-module-setup-flow"),
       });
     }
   }

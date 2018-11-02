@@ -1,6 +1,6 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../mixins/events-mixin.js";
+import EventsMixin from "../mixins/events-mixin";
 
 /* eslint-disable no-console */
 const DEBUG = false;

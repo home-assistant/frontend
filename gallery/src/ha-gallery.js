@@ -1,15 +1,15 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../src/managers/notification-manager.js";
+import "../../src/managers/notification-manager";
 
 const DEMOS = require.context("./demos", true, /^(.*\.(js$))[^.]*$/im);
 

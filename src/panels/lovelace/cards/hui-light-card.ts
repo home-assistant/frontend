@@ -4,19 +4,19 @@ import {
   PropertyValues,
   PropertyDeclarations,
 } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event.js";
-import { styleMap } from "lit-html/directives/styleMap.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import stateIcon from "../../../common/entity/state_icon.js";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { styleMap } from "lit-html/directives/styleMap";
+import computeStateName from "../../../common/entity/compute_state_name";
+import stateIcon from "../../../common/entity/state_icon";
 import { jQuery } from "../../../resources/jquery";
 
-import "../../../components/ha-card.js";
-import "../../../components/ha-icon.js";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 
-import { HomeAssistant, LightEntity } from "../../../types.js";
+import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { LovelaceCard, LovelaceConfig } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { TemplateResult } from "lit-html";
 

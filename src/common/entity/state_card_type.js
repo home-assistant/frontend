@@ -1,6 +1,6 @@
-import canToggleState from "./can_toggle_state.js";
-import computeStateDomain from "./compute_state_domain.js";
-import { DOMAINS_WITH_CARD } from "../const.js";
+import canToggleState from "./can_toggle_state";
+import computeStateDomain from "./compute_state_domain";
+import { DOMAINS_WITH_CARD } from "../const";
 
 export default function stateCardType(hass, stateObj) {
   if (stateObj.state === "unavailable") {

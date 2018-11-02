@@ -4,6 +4,7 @@ const config = require("./config.js");
 const { babelLoaderConfig } = require("../config/babel.js");
 
 const isProdBuild = process.env.NODE_ENV === "production";
+const isCI = process.env.CI === "true";
 const chunkFilename = isProdBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
 
 module.exports = {
@@ -37,6 +38,7 @@ module.exports = {
         },
       }),
     isProdBuild &&
+      isCI &&
       new CompressionPlugin({
         cache: true,
         exclude: [/\.js\.map$/, /\.LICENSE$/, /\.py$/, /\.txt$/],

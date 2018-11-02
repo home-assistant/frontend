@@ -1,11 +1,11 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import hassAttributeUtil from "../../../util/hass-attributes-util.js";
-import "./ha-form-customize-attributes.js";
+import hassAttributeUtil from "../../../util/hass-attributes-util";
+import "./ha-form-customize-attributes";
 
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 

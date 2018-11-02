@@ -6,19 +6,19 @@ import {
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import "../../../components/ha-card.js";
-import "../components/hui-entities-toggle.js";
+import "../../../components/ha-card";
+import "../components/hui-entities-toggle";
 
-import { fireEvent } from "../../../common/dom/fire_event.js";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const.js";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../types.js";
-import { EntityConfig, EntityRow } from "../entity-rows/types.js";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { HomeAssistant } from "../../../types";
+import { EntityConfig, EntityRow } from "../entity-rows/types";
+import { LovelaceCard, LovelaceConfig } from "../types";
 import processConfigEntities from "../common/process-config-entities";
-import createRowElement from "../common/create-row-element.js";
-import computeDomain from "../../../common/entity/compute_domain.js";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
+import createRowElement from "../common/create-row-element";
+import computeDomain from "../../../common/entity/compute_domain";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 interface ConfigEntity extends EntityConfig {
   type?: string;

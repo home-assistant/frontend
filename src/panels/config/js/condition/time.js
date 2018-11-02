@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
-import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-input/paper-input";
 
-import { onChangeEvent } from "../../../../common/preact/event.js";
+import { onChangeEvent } from "../../../../common/preact/event";
 
 export default class TimeCondition extends Component {
   constructor() {

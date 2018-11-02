@@ -1,12 +1,12 @@
-import "@polymer/paper-card/paper-card.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/state-history-charts.js";
+import "../components/state-history-charts";
 import "../data/ha-state-history-data";
 
-import computeStateName from "../common/entity/compute_state_name.js";
-import EventsMixin from "../mixins/events-mixin.js";
+import computeStateName from "../common/entity/compute_state_name";
+import EventsMixin from "../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

@@ -1,11 +1,11 @@
 import { html, LitElement } from "@polymer/lit-element";
-import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-button/paper-button";
 
-import "../../../components/ha-icon.js";
+import "../../../components/ha-icon";
 
-import callService from "../common/call-service.js";
-import { EntityRow, CallServiceConfig } from "../entity-rows/types.js";
-import { HomeAssistant } from "../../../types.js";
+import callService from "../common/call-service";
+import { EntityRow, CallServiceConfig } from "../entity-rows/types";
+import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
 
 class HuiCallServiceRow extends LitElement implements EntityRow {

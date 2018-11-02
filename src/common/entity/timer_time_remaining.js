@@ -1,4 +1,4 @@
-import durationToSeconds from "../datetime/duration_to_seconds.js";
+import durationToSeconds from "../datetime/duration_to_seconds";
 
 export default function timerTimeRemaining(stateObj) {
   let timeRemaining = durationToSeconds(stateObj.attributes.remaining);

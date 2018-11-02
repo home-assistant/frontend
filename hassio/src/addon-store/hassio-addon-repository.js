@@ -1,10 +1,10 @@
-import "@polymer/paper-card/paper-card.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/hassio-card-content.js";
-import "../resources/hassio-style.js";
-import NavigateMixin from "../../../src/mixins/navigate-mixin.js";
+import "../components/hassio-card-content";
+import "../resources/hassio-style";
+import NavigateMixin from "../../../src/mixins/navigate-mixin";
 
 class HassioAddonRepository extends NavigateMixin(PolymerElement) {
   static get template() {

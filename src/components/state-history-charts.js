@@ -1,11 +1,11 @@
-import "@polymer/paper-spinner/paper-spinner.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./state-history-chart-line.js";
-import "./state-history-chart-timeline.js";
+import "./state-history-chart-line";
+import "./state-history-chart-timeline";
 
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
   static get template() {

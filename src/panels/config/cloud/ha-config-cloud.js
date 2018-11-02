@@ -1,15 +1,15 @@
-import "@polymer/app-route/app-route.js";
-import { timeOut } from "@polymer/polymer/lib/utils/async.js";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../ha-config-section.js";
-import "./ha-config-cloud-account.js";
-import "./ha-config-cloud-forgot-password.js";
-import "./ha-config-cloud-login.js";
-import "./ha-config-cloud-register.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import "../ha-config-section";
+import "./ha-config-cloud-account";
+import "./ha-config-cloud-forgot-password";
+import "./ha-config-cloud-login";
+import "./ha-config-cloud-register";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
 const LOGGED_IN_URLS = ["/cloud/account"];
 const NOT_LOGGED_IN_URLS = [

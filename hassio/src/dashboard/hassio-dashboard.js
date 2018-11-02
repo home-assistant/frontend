@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./hassio-addons.js";
-import "./hassio-hass-update.js";
-import EventsMixin from "../../../src/mixins/events-mixin.js";
+import "./hassio-addons";
+import "./hassio-hass-update";
+import EventsMixin from "../../../src/mixins/events-mixin";
 
 class HassioDashboard extends EventsMixin(PolymerElement) {
   static get template() {

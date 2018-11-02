@@ -1,6 +1,6 @@
-import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin.js";
-import { PaperDialogBehavior } from "@polymer/paper-dialog-behavior/paper-dialog-behavior.js";
-import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class.js";
+import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin";
+import { PaperDialogBehavior } from "@polymer/paper-dialog-behavior/paper-dialog-behavior";
+import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import EventsMixin from "./events-mixin";
 /**
  * @polymerMixin

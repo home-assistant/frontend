@@ -1,20 +1,20 @@
-import "@polymer/app-layout/app-drawer-layout/app-drawer-layout.js";
-import "@polymer/app-layout/app-drawer/app-drawer.js";
-import "@polymer/app-route/app-route.js";
-import "@polymer/iron-media-query/iron-media-query.js";
-import "@polymer/iron-pages/iron-pages.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
+import "@polymer/app-layout/app-drawer/app-drawer";
+import "@polymer/app-route/app-route";
+import "@polymer/iron-media-query/iron-media-query";
+import "@polymer/iron-pages/iron-pages";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../util/ha-url-sync.js";
+import "../util/ha-url-sync";
 
-import "./partial-cards.js";
-import "./partial-panel-resolver.js";
-import EventsMixin from "../mixins/events-mixin.js";
-import NavigateMixin from "../mixins/navigate-mixin.js";
+import "./partial-cards";
+import "./partial-panel-resolver";
+import EventsMixin from "../mixins/events-mixin";
+import NavigateMixin from "../mixins/navigate-mixin";
 
-import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar.js");
-import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog.js");
+import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
+import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 

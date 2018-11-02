@@ -1,16 +1,16 @@
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-toggle-button/paper-toggle-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-toggle-button/paper-toggle-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/components/buttons/ha-call-api-button.js";
-import "../../../src/components/ha-markdown.js";
-import "../../../src/resources/ha-style.js";
-import EventsMixin from "../../../src/mixins/events-mixin.js";
+import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/ha-markdown";
+import "../../../src/resources/ha-style";
+import EventsMixin from "../../../src/mixins/events-mixin";
 
-import "../components/hassio-card-content.js";
+import "../components/hassio-card-content";
 
 class HassioAddonInfo extends EventsMixin(PolymerElement) {
   static get template() {

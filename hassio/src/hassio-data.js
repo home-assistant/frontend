@@ -1,4 +1,4 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HassioData extends PolymerElement {
   static get properties() {

@@ -1,8 +1,8 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import hassAttributeUtil from "../util/hass-attributes-util.js";
+import hassAttributeUtil from "../util/hass-attributes-util";
 
 class HaAttributes extends PolymerElement {
   static get template() {

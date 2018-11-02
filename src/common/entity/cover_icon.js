@@ -1,5 +1,5 @@
 /** Return an icon representing a cover state. */
-import domainIcon from "./domain_icon.js";
+import domainIcon from "./domain_icon";
 
 export default function coverIcon(state) {
   var open = state.state && state.state !== "closed";

@@ -1,4 +1,4 @@
-import "@polymer/iron-iconset-svg/iron-iconset-svg.js";
+import "@polymer/iron-iconset-svg/iron-iconset-svg";
 
 const IronIconsetClass = customElements.get("iron-iconset-svg");
 
