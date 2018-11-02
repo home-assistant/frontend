@@ -4,7 +4,7 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
-import { HassEntityBase } from "home-assistant-js-websocket";
+import { HassEntity } from "home-assistant-js-websocket";
 import { TemplateResult } from "lit-html";
 import { styleMap } from "lit-html/directives/styleMap.js";
 
@@ -163,7 +163,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _computeBrightness(stateObj: HassEntityBase | LightEntity): string {
+  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
     if (!stateObj.attributes.brightness) {
       return "";
     }
@@ -171,7 +171,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     return `brightness(${(brightness + 245) / 5}%)`;
   }
 
-  private _computeColor(stateObj: HassEntityBase | LightEntity): string {
+  private _computeColor(stateObj: HassEntity | LightEntity): string {
     if (!stateObj.attributes.hs_color) {
       return "";
     }
