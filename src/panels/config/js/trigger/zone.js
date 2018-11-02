@@ -1,11 +1,11 @@
 import { h, Component } from "preact";
-import "@polymer/paper-radio-button/paper-radio-button.js";
-import "@polymer/paper-radio-group/paper-radio-group.js";
-import "../../../../components/entity/ha-entity-picker.js";
+import "@polymer/paper-radio-button/paper-radio-button";
+import "@polymer/paper-radio-group/paper-radio-group";
+import "../../../../components/entity/ha-entity-picker";
 
-import { onChangeEvent } from "../../../../common/preact/event.js";
-import hasLocation from "../../../../common/entity/has_location.js";
-import computeStateDomain from "../../../../common/entity/compute_state_domain.js";
+import { onChangeEvent } from "../../../../common/preact/event";
+import hasLocation from "../../../../common/entity/has_location";
+import computeStateDomain from "../../../../common/entity/compute_state_domain";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";

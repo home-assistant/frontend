@@ -1,12 +1,12 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/hui-generic-entity-row.js";
-import "../../../components/entity/ha-entity-toggle.js";
+import "../components/hui-generic-entity-row";
+import "../../../components/entity/ha-entity-toggle";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display.js";
-import { DOMAINS_TOGGLE } from "../../../common/const.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import computeStateDisplay from "../../../common/entity/compute_state_display";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

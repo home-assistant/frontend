@@ -1,7 +1,7 @@
 import translationMetadata from "../../../build-translations/translationMetadata.json";
-import { getTranslation } from "../../util/hass-translation.js";
+import { getTranslation } from "../../util/hass-translation";
 
-import { storeState } from "../../util/ha-pref-storage.js";
+import { storeState } from "../../util/ha-pref-storage";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.

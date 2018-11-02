@@ -1,9 +1,9 @@
 import { h, Component } from "preact";
-import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-input/paper-input";
 
-import "../../../../components/ha-textarea.js";
+import "../../../../components/ha-textarea";
 
-import { onChangeEvent } from "../../../../common/preact/event.js";
+import { onChangeEvent } from "../../../../common/preact/event";
 
 export default class WaitAction extends Component {
   constructor() {

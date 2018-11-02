@@ -1,10 +1,10 @@
 import { h, Component } from "preact";
-import "@polymer/paper-input/paper-input.js";
-import "../../../../components/ha-textarea.js";
+import "@polymer/paper-input/paper-input";
+import "../../../../components/ha-textarea";
 
-import "../../../../components/entity/ha-entity-picker.js";
+import "../../../../components/entity/ha-entity-picker";
 
-import { onChangeEvent } from "../../../../common/preact/event.js";
+import { onChangeEvent } from "../../../../common/preact/event";
 
 export default class NumericStateTrigger extends Component {
   constructor() {

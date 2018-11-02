@@ -1,7 +1,7 @@
-import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event.js";
-import { HomeAssistant } from "../../../types.js";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../types";
 
 let registeredDialog = false;
 

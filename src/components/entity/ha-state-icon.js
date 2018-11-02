@@ -1,8 +1,8 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../ha-icon.js";
-import stateIcon from "../../common/entity/state_icon.js";
+import "../ha-icon";
+import stateIcon from "../../common/entity/state_icon";
 
 class HaStateIcon extends PolymerElement {
   static get template() {

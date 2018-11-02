@@ -1,20 +1,20 @@
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-fab/paper-fab.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-fab/paper-fab";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { h, render } from "preact";
 
-import "../../../layouts/ha-app-layout.js";
+import "../../../layouts/ha-app-layout";
 
-import Script from "../js/script.js";
-import unmountPreact from "../../../common/preact/unmount.js";
+import Script from "../js/script";
+import unmountPreact from "../../../common/preact/unmount";
 
-import computeObjectId from "../../../common/entity/compute_object_id.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import computeObjectId from "../../../common/entity/compute_object_id";
+import computeStateName from "../../../common/entity/compute_state_name";
+import NavigateMixin from "../../../mixins/navigate-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);

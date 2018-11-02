@@ -1,8 +1,8 @@
-import { fireEvent } from "../../../src/common/dom/fire_event.js";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 
-import { demoConfig } from "./demo_config.js";
+import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";
-import demoResources from "./demo_resources.js";
+import demoResources from "./demo_resources";
 
 const ensureArray = (val) => (Array.isArray(val) ? val : [val]);
 

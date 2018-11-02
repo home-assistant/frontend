@@ -1,27 +1,27 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-button/paper-button";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/ha-menu-button.js";
-import "../../resources/ha-style.js";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
 
-import EventsMixin from "../../mixins/events-mixin.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import EventsMixin from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
-import "./ha-change-password-card.js";
-import "./ha-mfa-modules-card.js";
-import "./ha-refresh-tokens-card.js";
-import "./ha-long-lived-access-tokens-card.js";
+import "./ha-change-password-card";
+import "./ha-mfa-modules-card";
+import "./ha-refresh-tokens-card";
+import "./ha-long-lived-access-tokens-card";
 
-import "./ha-pick-language-row.js";
-import "./ha-pick-theme-row.js";
-import "./ha-push-notifications-row.js";
+import "./ha-pick-language-row";
+import "./ha-pick-theme-row";
+import "./ha-push-notifications-row";
 
 /*
  * @appliesMixin EventsMixin

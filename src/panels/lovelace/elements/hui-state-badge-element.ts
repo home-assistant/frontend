@@ -1,10 +1,10 @@
 import { html, LitElement } from "@polymer/lit-element";
 
-import "../../../components/entity/ha-state-label-badge.js";
+import "../../../components/entity/ha-state-label-badge";
 
 import computeStateName from "../../../common/entity/compute_state_name";
-import { LovelaceElement, LovelaceElementConfig } from "./types.js";
-import { HomeAssistant } from "../../../types.js";
+import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
 
 export class HuiStateBadgeElement extends LitElement

@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import getViewEntities from "../../../src/common/entity/get_view_entities.js";
+import getViewEntities from "../../../src/common/entity/get_view_entities";
 
 import {
   createEntities,

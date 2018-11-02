@@ -1,18 +1,18 @@
 import { h, Component } from "preact";
 
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 
-import EventTrigger from "./event.js";
-import HassTrigger from "./homeassistant.js";
-import MQTTTrigger from "./mqtt.js";
-import NumericStateTrigger from "./numeric_state.js";
-import StateTrigger from "./state.js";
-import SunTrigger from "./sun.js";
-import TemplateTrigger from "./template.js";
-import TimeTrigger from "./time.js";
-import ZoneTrigger from "./zone.js";
+import EventTrigger from "./event";
+import HassTrigger from "./homeassistant";
+import MQTTTrigger from "./mqtt";
+import NumericStateTrigger from "./numeric_state";
+import StateTrigger from "./state";
+import SunTrigger from "./sun";
+import TemplateTrigger from "./template";
+import TimeTrigger from "./time";
+import ZoneTrigger from "./zone";
 
 const TYPES = {
   event: EventTrigger,

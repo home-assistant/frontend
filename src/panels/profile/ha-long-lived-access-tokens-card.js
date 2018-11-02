@@ -1,14 +1,14 @@
-import "@polymer/paper-button/paper-button.js";
+import "@polymer/paper-button/paper-button";
 
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import EventsMixin from "../../mixins/events-mixin.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
-import formatDateTime from "../../common/datetime/format_date_time.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import EventsMixin from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import formatDateTime from "../../common/datetime/format_date_time";
 
-import "../../resources/ha-style.js";
+import "../../resources/ha-style";
 
-import "./ha-settings-row.js";
+import "./ha-settings-row";
 
 /*
  * @appliesMixin EventsMixin

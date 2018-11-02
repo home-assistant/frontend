@@ -1,10 +1,10 @@
-import "@polymer/polymer/lib/utils/debounce.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin";
 
-import "./entity/ha-chart-base.js";
+import "./entity/ha-chart-base";
 
 import formatDateTime from "../common/datetime/format_date_time";
 

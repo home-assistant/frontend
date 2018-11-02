@@ -1,10 +1,10 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../../mixins/events-mixin.js";
-import NavigateMixin from "../../mixins/navigate-mixin.js";
-import loadCustomPanel from "../../util/custom-panel/load-custom-panel.js";
-import createCustomPanelElement from "../../util/custom-panel/create-custom-panel-element.js";
-import setCustomPanelProperties from "../../util/custom-panel/set-custom-panel-properties.js";
+import EventsMixin from "../../mixins/events-mixin";
+import NavigateMixin from "../../mixins/navigate-mixin";
+import loadCustomPanel from "../../util/custom-panel/load-custom-panel";
+import createCustomPanelElement from "../../util/custom-panel/create-custom-panel-element";
+import setCustomPanelProperties from "../../util/custom-panel/set-custom-panel-properties";
 
 /*
  * Mixins are used by ifram to communicate with main frontend.

@@ -1,10 +1,10 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/entity/ha-state-label-badge.js";
+import "../../components/entity/ha-state-label-badge";
 import "./components/hui-card-options.ts";
 
-import applyThemesOnElement from "../../common/dom/apply_themes_on_element.js";
+import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
 import createCardElement from "./common/create-card-element";
 import computeCardSize from "./common/compute-card-size";
