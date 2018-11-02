@@ -24,7 +24,7 @@ export default (superClass) =>
           const el = document.createElement("ha-store-auth-card");
           this.shadowRoot.appendChild(el);
           this.provideHass(el);
-          import(/* webpackChunkName: "ha-store-auth-card" */ "../../dialogs/ha-store-auth-card.js");
+          import(/* webpackChunkName: "ha-store-auth-card" */ "../../dialogs/ha-store-auth-card");
         }
       });
     }

@@ -14,7 +14,7 @@ export default () => {
           !__DEV__
         ) {
           // Notify users here of a new frontend being available.
-          import("./show-new-frontend-toast.js").then((mod) =>
+          import("./show-new-frontend-toast").then((mod) =>
             mod.default(installingWorker)
           );
         }

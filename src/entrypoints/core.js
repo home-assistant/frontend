@@ -17,7 +17,7 @@ const isExternal = location.search.includes("external_auth=1");
 
 const authProm = isExternal
   ? () =>
-      import("../common/auth/external_auth.js").then(
+      import("../common/auth/external_auth").then(
         (mod) => new mod.default(hassUrl)
       )
   : () =>

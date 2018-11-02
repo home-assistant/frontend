@@ -14,7 +14,7 @@ window.loadES5Adapter = () => {
   if (!es5Loaded) {
     es5Loaded = Promise.all([
       loadJS(`${__STATIC_PATH__}custom-elements-es5-adapter.js`).catch(),
-      import(/* webpackChunkName: "compat" */ "./compatibility.js"),
+      import(/* webpackChunkName: "compat" */ "./compatibility"),
     ]);
   }
   return es5Loaded;

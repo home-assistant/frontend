@@ -6,12 +6,12 @@ const JS_CACHE = {};
 export default function loadCustomPanel(panelConfig) {
   if (panelConfig.html_url) {
     const toLoad = [
-      import(/* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href.js"),
+      import(/* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href"),
     ];
 
     if (!panelConfig.embed_iframe) {
       toLoad.push(
-        import(/* webpackChunkName: "legacy-support" */ "../legacy-support.js")
+        import(/* webpackChunkName: "legacy-support" */ "../legacy-support")
       );
     }
 

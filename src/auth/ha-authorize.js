@@ -87,7 +87,7 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
     if (query.state) props.oauth2State = query.state;
     this.setProperties(props);
 
-    import(/* webpackChunkName: "pick-auth-provider" */ "../auth/ha-pick-auth-provider.js");
+    import(/* webpackChunkName: "pick-auth-provider" */ "../auth/ha-pick-auth-provider");
 
     // Fetch auth providers
     try {

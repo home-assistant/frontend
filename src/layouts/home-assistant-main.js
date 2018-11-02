@@ -13,8 +13,8 @@ import "./partial-panel-resolver";
 import EventsMixin from "../mixins/events-mixin";
 import NavigateMixin from "../mixins/navigate-mixin";
 
-import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar.js");
-import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog.js");
+import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
+import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 

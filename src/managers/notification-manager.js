@@ -32,7 +32,7 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    import(/* webpackChunkName: "ha-toast" */ "../components/ha-toast.js");
+    import(/* webpackChunkName: "ha-toast" */ "../components/ha-toast");
   }
 
   showDialog({ message }) {

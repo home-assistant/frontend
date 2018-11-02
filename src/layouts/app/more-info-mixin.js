@@ -8,7 +8,7 @@ export default (superClass) =>
 
       // Load it once we are having the initial rendering done.
       afterNextRender(null, () =>
-        import(/* webpackChunkName: "more-info-dialog" */ "../../dialogs/ha-more-info-dialog.js")
+        import(/* webpackChunkName: "more-info-dialog" */ "../../dialogs/ha-more-info-dialog")
       );
     }
 

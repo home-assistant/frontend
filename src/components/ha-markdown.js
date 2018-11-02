@@ -34,7 +34,7 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
     this._resize = () => this.fire("iron-resize");
 
     if (!loaded) {
-      loaded = import(/* webpackChunkName: "load_markdown" */ "../resources/load_markdown.js");
+      loaded = import(/* webpackChunkName: "load_markdown" */ "../resources/load_markdown");
     }
     loaded
       .then(

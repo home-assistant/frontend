@@ -10,7 +10,7 @@ class HaIcon extends IronIconClass {
 
     if (!loaded && this._iconsetName === "mdi") {
       loaded = true;
-      import(/* webpackChunkName: "mdi-icons" */ "../resources/mdi-icons.js");
+      import(/* webpackChunkName: "mdi-icons" */ "../resources/mdi-icons");
     }
   }
 }
