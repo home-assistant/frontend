@@ -1,14 +1,14 @@
 import { html, LitElement } from "@polymer/lit-element";
 
-import "../../../components/entity/ha-state-label-badge.js";
+import "../../../components/entity/ha-state-label-badge";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display.js";
+import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceElement, LovelaceElementConfig } from "./types.js";
-import { HomeAssistant } from "../../../types.js";
+import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceElementConfig {

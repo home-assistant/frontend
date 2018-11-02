@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card.js";
+import "../../../components/ha-card";
 
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
 /*
  * @appliesMixin NavigateMixin

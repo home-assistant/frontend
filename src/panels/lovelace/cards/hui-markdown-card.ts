@@ -1,10 +1,10 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap.js";
+import { classMap } from "lit-html/directives/classMap";
 
-import "../../../components/ha-card.js";
-import "../../../components/ha-markdown.js";
+import "../../../components/ha-card";
+import "../../../components/ha-markdown";
 
-import { LovelaceCard, LovelaceConfig } from "../types.js";
+import { LovelaceCard, LovelaceConfig } from "../types";
 import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceConfig {

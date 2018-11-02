@@ -2,7 +2,7 @@ import { html, LitElement } from "@polymer/lit-element";
 import { EntityRow, SectionConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
-import "../../../components/ha-icon.js";
+import "../../../components/ha-icon";
 import { TemplateResult } from "lit-html";
 
 class HuiSectionRow extends LitElement implements EntityRow {
