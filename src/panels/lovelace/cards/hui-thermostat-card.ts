@@ -31,6 +31,7 @@ const modeIcons = {
 
 interface Config extends LovelaceConfig {
   entity: string;
+  title: string | null;
 }
 
 function formatTemp(temps) {
@@ -66,6 +67,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass.states[this.config.entity] as ClimateEntity;
+    const title = this.config.title == null ? this.config.title : computeStateName(stateObj);
     const broadCard = this.clientWidth > 390;
     const mode = modeIcons[stateObj.attributes.operation_mode || ""]
       ? stateObj.attributes.operation_mode!
@@ -81,7 +83,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">${computeStateName(stateObj)}</div>
+            <div class="title">${title}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">${
                 stateObj.attributes.current_temperature
