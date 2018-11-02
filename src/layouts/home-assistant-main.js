@@ -132,7 +132,6 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   computeRTL(hass) {
-    console.log(hass.translationMetadata.translations[hass.selectedLanguage]);
     return (
       hass.translationMetadata.translations[hass.selectedLanguage].isRTL ||
       false
