@@ -530,13 +530,13 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Connesso come {email}",
-                    "description_not_login": "Accesso non effettuato"
+                    "description_not_login": "Non loggato"
                 },
                 "integrations": {
                     "caption": "integrazioni",
                     "description": "Gestisci dispositivi e servizi connessi",
                     "discovered": "Scoperto",
-                    "configured": "Configura",
+                    "configured": "Configurato",
                     "new": "Configura una nuova integrazione",
                     "configure": "Configura",
                     "none": "Non hai ancora configurato niente",
@@ -574,9 +574,9 @@
                     "dropdown_label": "Tema"
                 },
                 "refresh_tokens": {
-                    "header": "Aggiorna i token",
+                    "header": "Token di aggiornamento",
                     "description": "Ogni token di aggiornamento rappresenta una sessione di accesso. I token di aggiornamento verranno rimossi automaticamente quando si fa clic su Disconnetti. I seguenti token di aggiornamento sono attualmente attivi per il tuo account.",
-                    "token_title": "Aggiorna token per {clientId}",
+                    "token_title": "Token di aggiornamento per {clientId}",
                     "created_at": "Creato il {date}",
                     "confirm_delete": "Sei sicuro di voler eliminare il token di aggiornamento per {name} ?",
                     "delete_failed": "Impossibile eliminare il token di aggiornamento.",
@@ -862,7 +862,7 @@
             },
             "history_charts": {
                 "loading_history": "Caricamento storico",
-                "no_history_found": "Nesuno storico trovato"
+                "no_history_found": "Nessuno storico trovato"
             }
         },
         "notification_toast": {

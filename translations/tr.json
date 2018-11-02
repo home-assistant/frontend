@@ -204,7 +204,7 @@
             "on": "Açık"
         },
         "scene": {
-            "scening": "sahneler"
+            "scening": "senaryolar"
         },
         "script": {
             "off": "Kapalı",
@@ -516,7 +516,7 @@
         "plant": "Bitki",
         "proximity": "Yakınlık",
         "remote": "Uzaktan Kumanda",
-        "scene": "Sahne",
+        "scene": "Senaryo",
         "script": "Senaryo",
         "sensor": "Sensör",
         "sun": "Güneş",
