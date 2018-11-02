@@ -48,10 +48,12 @@ function createConfig(isProdBuild, latestBuild) {
   };
 
   if (latestBuild) {
-    entry["service-worker-hass"] = "./src/entrypoints/service-worker-hass";
+    entry["service-worker-hass"] = "./src/entrypoints/service-worker-hass.js";
   }
 
-  const chunkFilename = isProdBuild ? "[chunkhash].chunk.js" : "[name].chunk";
+  const chunkFilename = isProdBuild
+    ? "[chunkhash].chunk.js"
+    : "[name].chunk.js";
 
   return {
     mode: isProdBuild ? "production" : "development",
