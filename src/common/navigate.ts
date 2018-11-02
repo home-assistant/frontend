@@ -1,4 +1,4 @@
-import { fireEvent } from "./dom/fire_event.js";
+import { fireEvent } from "./dom/fire_event";
 
 export const navigate = (
   node: HTMLElement,

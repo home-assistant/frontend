@@ -1,7 +1,7 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-import "@polymer/paper-input/paper-textarea.js";
+import "@polymer/paper-input/paper-textarea";
 
 export class HuiYAMLEditor extends LitElement {
   public yaml?: string;

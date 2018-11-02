@@ -8,14 +8,14 @@ import {
 
 import translationMetadata from "../../../build-translations/translationMetadata.json";
 
-import LocalizeMixin from "../../mixins/localize-mixin.js";
-import EventsMixin from "../../mixins/events-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import EventsMixin from "../../mixins/events-mixin";
 
-import { getState } from "../../util/ha-pref-storage.js";
-import { getActiveTranslation } from "../../util/hass-translation.js";
-import { fetchWithAuth } from "../../util/fetch-with-auth.js";
-import hassCallApi from "../../util/hass-call-api.js";
-import computeStateName from "../../common/entity/compute_state_name.js";
+import { getState } from "../../util/ha-pref-storage";
+import { getActiveTranslation } from "../../util/hass-translation";
+import { fetchWithAuth } from "../../util/fetch-with-auth";
+import hassCallApi from "../../util/hass-call-api";
+import computeStateName from "../../common/entity/compute_state_name";
 import { subscribePanels } from "../../data/ws-panels";
 
 export default (superClass) =>

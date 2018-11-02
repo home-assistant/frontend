@@ -1,9 +1,9 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/entity/state-info.js";
-import "../components/ha-water_heater-state.js";
+import "../components/entity/state-info";
+import "../components/ha-water_heater-state";
 
 class StateCardWaterHeater extends PolymerElement {
   static get template() {

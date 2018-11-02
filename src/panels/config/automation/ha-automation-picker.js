@@ -1,21 +1,21 @@
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-fab/paper-fab.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-fab/paper-fab";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-markdown.js";
-import "../../../layouts/ha-app-layout.js";
+import "../../../components/ha-markdown";
+import "../../../layouts/ha-app-layout";
 
-import "../ha-config-section.js";
+import "../ha-config-section";
 
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
+import NavigateMixin from "../../../mixins/navigate-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import computeStateName from "../../../common/entity/compute_state_name";
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin

@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import "../../../components/ha-textarea.js";
+import "../../../components/ha-textarea";
 
 export default class JSONTextArea extends Component {
   constructor(props) {

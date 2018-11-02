@@ -1,14 +1,14 @@
 import { h, Component } from "preact";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
 
-import NumericStateCondition from "./numeric_state.js";
-import StateCondition from "./state.js";
-import SunCondition from "./sun.js";
-import TemplateCondition from "./template.js";
-import TimeCondition from "./time.js";
-import ZoneCondition from "./zone.js";
+import NumericStateCondition from "./numeric_state";
+import StateCondition from "./state";
+import SunCondition from "./sun";
+import TemplateCondition from "./template";
+import TimeCondition from "./time";
+import ZoneCondition from "./zone";
 
 const TYPES = {
   state: StateCondition,

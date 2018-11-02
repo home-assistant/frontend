@@ -1,11 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/ha-card.js";
-import "../components/ha-icon.js";
+import "../components/ha-card";
+import "../components/ha-icon";
 
-import computeStateName from "../common/entity/compute_state_name.js";
-import EventsMixin from "../mixins/events-mixin.js";
+import computeStateName from "../common/entity/compute_state_name";
+import EventsMixin from "../mixins/events-mixin";
 
 class HaPlantCard extends EventsMixin(PolymerElement) {
   static get template() {

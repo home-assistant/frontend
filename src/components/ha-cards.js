@@ -1,16 +1,16 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { timeOut } from "@polymer/polymer/lib/utils/async.js";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../cards/ha-badges-card.js";
-import "../cards/ha-card-chooser.js";
-import "./ha-demo-badge.js";
+import "../cards/ha-badges-card";
+import "../cards/ha-card-chooser";
+import "./ha-demo-badge";
 
-import computeStateDomain from "../common/entity/compute_state_domain.js";
-import splitByGroups from "../common/entity/split_by_groups.js";
-import getGroupEntities from "../common/entity/get_group_entities.js";
+import computeStateDomain from "../common/entity/compute_state_domain";
+import splitByGroups from "../common/entity/split_by_groups";
+import getGroupEntities from "../common/entity/get_group_entities";
 
 // mapping domain to size of the card.
 const DOMAINS_WITH_CARD = {

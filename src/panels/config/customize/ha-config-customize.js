@@ -1,20 +1,20 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../resources/ha-style.js";
+import "../../../resources/ha-style";
 
-import "../ha-config-section.js";
-import "../ha-entity-config.js";
-import "./ha-form-customize.js";
+import "../ha-config-section";
+import "../ha-entity-config";
+import "./ha-form-customize";
 
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import computeStateDomain from "../../../common/entity/compute_state_domain.js";
-import sortByName from "../../../common/entity/states_sort_by_name.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import computeStateName from "../../../common/entity/compute_state_name";
+import computeStateDomain from "../../../common/entity/compute_state_domain";
+import sortByName from "../../../common/entity/states_sort_by_name";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

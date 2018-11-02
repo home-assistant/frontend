@@ -1,13 +1,13 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-spinner/paper-spinner.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-spinner/paper-spinner";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import computeStateName from "../../common/entity/compute_state_name.js";
+import computeStateName from "../../common/entity/compute_state_name";
 
 class HaEntityConfig extends PolymerElement {
   static get template() {

@@ -1,20 +1,20 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-checkbox/paper-checkbox.js";
-import "@polymer/paper-item/paper-item.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 import moment from "moment";
 import dates from "react-big-calendar/lib/utils/dates";
 
-import "../../components/ha-menu-button.js";
-import "../../resources/ha-style.js";
-import "./ha-big-calendar.js";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
+import "./ha-big-calendar";
 
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 const DEFAULT_VIEW = "month";
 

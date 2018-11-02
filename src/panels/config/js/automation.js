@@ -1,13 +1,13 @@
 import { h, Component } from "preact";
 
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-input/paper-input.js";
-import "../ha-config-section.js";
-import "../../../components/ha-markdown.js";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-input/paper-input";
+import "../ha-config-section";
+import "../../../components/ha-markdown";
 
-import Trigger from "./trigger/index.js";
-import Condition from "./condition/index.js";
-import Script from "./script/index.js";
+import Trigger from "./trigger/index";
+import Condition from "./condition/index";
+import Script from "./script/index";
 
 export default class Automation extends Component {
   constructor() {

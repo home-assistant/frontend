@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/state-summary/state-card-content.js";
-import "../../../src/dialogs/more-info/controls/more-info-content.js";
-import "../../../src/components/ha-card.js";
+import "../../../src/state-summary/state-card-content";
+import "../../../src/dialogs/more-info/controls/more-info-content";
+import "../../../src/components/ha-card";
 
 class DemoMoreInfo extends PolymerElement {
   static get template() {

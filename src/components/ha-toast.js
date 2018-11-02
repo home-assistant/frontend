@@ -1,4 +1,4 @@
-import "@polymer/paper-toast/paper-toast.js";
+import "@polymer/paper-toast/paper-toast";
 
 const PaperToast = customElements.get("paper-toast");
 

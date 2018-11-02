@@ -1,23 +1,23 @@
-import "@polymer/app-route/app-route.js";
-import "@polymer/iron-media-query/iron-media-query.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import "@polymer/iron-media-query/iron-media-query";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../layouts/hass-error-screen.js";
+import "../../layouts/hass-error-screen";
 
-import isComponentLoaded from "../../common/config/is_component_loaded.js";
-import EventsMixin from "../../mixins/events-mixin.js";
-import NavigateMixin from "../../mixins/navigate-mixin.js";
+import isComponentLoaded from "../../common/config/is_component_loaded";
+import EventsMixin from "../../mixins/events-mixin";
+import NavigateMixin from "../../mixins/navigate-mixin";
 
-import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation.js");
-import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud.js");
-import(/* webpackChunkName: "panel-config-config" */ "./config-entries/ha-config-entries.js");
-import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core.js");
-import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize.js");
-import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard.js");
-import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script.js");
-import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users.js");
-import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave.js");
+import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation");
+import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud");
+import(/* webpackChunkName: "panel-config-config" */ "./config-entries/ha-config-entries");
+import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core");
+import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize");
+import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard");
+import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script");
+import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users");
+import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave");
 
 /*
  * @appliesMixin EventsMixin

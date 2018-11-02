@@ -1,5 +1,5 @@
-import { STATES_OFF } from "../../../../common/const.js";
-import computeDomain from "../../../../common/entity/compute_domain.js";
+import { STATES_OFF } from "../../../../common/const";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 export default function turnOnOffEntities(hass, entityIds, turnOn = true) {
   const domainsToCall = {};

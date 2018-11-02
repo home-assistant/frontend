@@ -7,17 +7,17 @@ import {
   ERR_INVALID_AUTH,
 } from "home-assistant-js-websocket";
 
-import { loadTokens, saveTokens } from "../common/auth/token_storage.js";
-import { subscribePanels } from "../data/ws-panels.js";
-import { subscribeThemes } from "../data/ws-themes.js";
-import { subscribeUser } from "../data/ws-user.js";
+import { loadTokens, saveTokens } from "../common/auth/token_storage";
+import { subscribePanels } from "../data/ws-panels";
+import { subscribeThemes } from "../data/ws-themes";
+import { subscribeUser } from "../data/ws-user";
 
 const hassUrl = `${location.protocol}//${location.host}`;
 const isExternal = location.search.includes("external_auth=1");
 
 const authProm = isExternal
   ? () =>
-      import("../common/auth/external_auth.js").then(
+      import("../common/auth/external_auth").then(
         (mod) => new mod.default(hassUrl)
       )
   : () =>

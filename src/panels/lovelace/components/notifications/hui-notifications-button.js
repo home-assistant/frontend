@@ -1,11 +1,11 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../../../../mixins/events-mixin.js";
+import EventsMixin from "../../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -17,7 +17,7 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
       :host {
         position: relative;
       }
- 
+
       .indicator {
         position: absolute;
         top: 10px;

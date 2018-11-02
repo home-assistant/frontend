@@ -1,14 +1,14 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./ha-camera-card.js";
-import "./ha-entities-card.js";
-import "./ha-history_graph-card.js";
-import "./ha-media_player-card.js";
-import "./ha-persistent_notification-card.js";
-import "./ha-plant-card.js";
-import "./ha-weather-card.js";
+import "./ha-camera-card";
+import "./ha-entities-card";
+import "./ha-history_graph-card";
+import "./ha-media_player-card";
+import "./ha-persistent_notification-card";
+import "./ha-plant-card";
+import "./ha-weather-card";
 
-import dynamicContentUpdater from "../common/dom/dynamic_content_updater.js";
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
 
 class HaCardChooser extends PolymerElement {
   static get properties() {

@@ -1,15 +1,15 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-input/paper-textarea.js";
-import "@polymer/paper-spinner/paper-spinner.js";
-import { timeOut } from "@polymer/polymer/lib/utils/async.js";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-spinner/paper-spinner";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/ha-menu-button.js";
-import "../../resources/ha-style.js";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
 
 class HaPanelDevTemplate extends PolymerElement {
   static get template() {

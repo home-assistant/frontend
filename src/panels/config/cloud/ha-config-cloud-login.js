@@ -1,20 +1,20 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-ripple/paper-ripple.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-ripple/paper-ripple";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/buttons/ha-progress-button.js";
-import "../../../layouts/hass-subpage.js";
-import "../../../resources/ha-style.js";
+import "../../../components/buttons/ha-progress-button";
+import "../../../layouts/hass-subpage";
+import "../../../resources/ha-style";
 
-import "../ha-config-section.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import "../ha-config-section";
+import EventsMixin from "../../../mixins/events-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
 /*
  * @appliesMixin NavigateMixin
