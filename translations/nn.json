@@ -334,7 +334,7 @@
                             },
                             "server_management": {
                                 "heading": "Serveradministrasjon",
-                                "introduction": "Kontroller Home Assistant serveren din... frå Home Assistant.",
+                                "introduction": "Kontroller Home Assistant-serveren din... frå Home Assistant.",
                                 "restart": "Omstart",
                                 "stop": "Stopp"
                             }
