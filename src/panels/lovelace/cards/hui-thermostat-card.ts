@@ -10,8 +10,8 @@ import { jQuery } from "../../../resources/jquery";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
-import hasConfigOrEntityChanged from "../common/has-changed";
 
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";

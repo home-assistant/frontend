@@ -18,7 +18,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import hasConfigOrEntityChanged from "../common/has-changed";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";

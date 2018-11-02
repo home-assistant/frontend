@@ -1,7 +1,11 @@
 import { HomeAssistant } from "../../../types";
+import { PropertyValues } from "@polymer/lit-element";
 
 // Check if config or Entity changed
-export default function hasConfigOrEntityChanged(element, changedProps) {
+export function hasConfigOrEntityChanged(
+  element: any,
+  changedProps: PropertyValues
+): boolean {
   if (changedProps.has("_config")) {
     return true;
   }
