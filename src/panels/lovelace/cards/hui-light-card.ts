@@ -4,21 +4,24 @@ import {
   PropertyValues,
   PropertyDeclarations,
 } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { styleMap } from "lit-html/directives/styleMap";
-import computeStateName from "../../../common/entity/compute_state_name";
-import stateIcon from "../../../common/entity/state_icon";
 import { jQuery } from "../../../resources/jquery";
-
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
-
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
-import { TemplateResult } from "lit-html";
+
+import stateIcon from "../../../common/entity/state_icon";
+import computeStateName from "../../../common/entity/compute_state_name";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
 const lightConfig = {
   radius: 80,
@@ -37,6 +40,7 @@ const lightConfig = {
 interface Config extends LovelaceConfig {
   entity: string;
   name?: string;
+  theme?: string;
 }
 
 export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
@@ -61,7 +65,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
       throw new Error("Specify an entity from within the light domain.");
     }
 
-    this._config = config;
+    this._config = { theme: "default", ...config };
   }
 
   protected render(): TemplateResult {
@@ -113,13 +117,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.get("hass")) {
-      return (
-        (changedProps.get("hass") as any).states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
-    return (changedProps as unknown) as boolean;
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected firstUpdated(): void {
@@ -136,12 +134,21 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
       (Math.round((brightness / 254) * 100) || 0) + "%";
   }
 
-  protected updated(): void {
+  protected updated(changedProps: PropertyValues): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+
     const attrs = this.hass!.states[this._config!.entity].attributes;
 
     jQuery("#light", this.shadowRoot).roundSlider({
       value: Math.round((attrs.brightness / 254) * 100) || 0,
     });
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   private renderStyle(): TemplateResult {
