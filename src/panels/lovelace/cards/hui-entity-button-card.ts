@@ -1,5 +1,12 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+} from "@polymer/lit-element";
+import { HassEntity } from "home-assistant-js-websocket";
+import { TemplateResult } from "lit-html";
+import { styleMap } from "lit-html/directives/styleMap.js";
 
 import "../../../components/ha-card.js";
 
@@ -9,11 +16,11 @@ import stateIcon from "../../../common/entity/state_icon.js";
 import computeStateDomain from "../../../common/entity/compute_state_domain.js";
 import computeStateName from "../../../common/entity/compute_state_name.js";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
-import { styleMap } from "lit-html/directives/styleMap.js";
-import { HomeAssistant } from "../../../types.js";
+import { HomeAssistant, LightEntity } from "../../../types.js";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types.js";
 import { longPress } from "../common/directives/long-press-directive";
+import { fireEvent } from "../../../common/dom/fire_event.js";
 
 interface Config extends LovelaceConfig {
   entity: string;
@@ -29,38 +36,47 @@ interface Config extends LovelaceConfig {
 class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
-  protected config?: Config;
+  private _config?: Config;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      config: {},
+      _config: {},
     };
   }
 
-  public getCardSize() {
+  public getCardSize(): number {
     return 2;
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     if (!isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }
 
-    this.config = { theme: "default", ...config };
-
-    if (this.hass) {
-      this.requestUpdate();
-    }
+    this._config = { theme: "default", ...config };
   }
 
-  protected render() {
-    if (!this.config) {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
+    }
+    return true;
+  }
+
+  protected render(): TemplateResult {
+    if (!this._config || !this.hass) {
       return html``;
     }
-    const stateObj = this.hass!.states[this.config.entity];
-
-    applyThemesOnElement(this, this.hass!.themes, this.config.theme);
+    const stateObj = this.hass.states[this._config.entity];
 
     return html`
       ${this.renderStyle()}
@@ -72,7 +88,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
         ${
           !stateObj
             ? html`<div class="not-found">Entity not available: ${
-                this.config.entity
+                this._config.entity
               }</div>`
             : html`
               <paper-button>
@@ -80,20 +96,14 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
                   <ha-icon
                     data-domain="${computeStateDomain(stateObj)}"
                     data-state="${stateObj.state}"
-                    .icon="${
-                      this.config.icon ? this.config.icon : stateIcon(stateObj)
-                    }"
+                    .icon="${this._config.icon || stateIcon(stateObj)}"
                     style="${styleMap({
                       filter: this._computeBrightness(stateObj),
                       color: this._computeColor(stateObj),
                     })}"
                   ></ha-icon>
                   <span>
-                    ${
-                      this.config.name
-                        ? this.config.name
-                        : computeStateName(stateObj)
-                    }
+                    ${this._config.name || computeStateName(stateObj)}
                   </span>
                 </div>
               </paper-button>
@@ -103,7 +113,17 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderStyle() {
+  protected updated(changedProps: PropertyValues): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
+  private renderStyle(): TemplateResult {
     return html`
     <style>
       ha-icon {
@@ -143,7 +163,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _computeBrightness(stateObj) {
+  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
     if (!stateObj.attributes.brightness) {
       return "";
     }
@@ -151,20 +171,19 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     return `brightness(${(brightness + 245) / 5}%)`;
   }
 
-  private _computeColor(stateObj) {
+  private _computeColor(stateObj: HassEntity | LightEntity): string {
     if (!stateObj.attributes.hs_color) {
       return "";
     }
-    const hue = stateObj.attributes.hs_color[0];
-    const sat = stateObj.attributes.hs_color[1];
+    const { hue, sat } = stateObj.attributes.hs_color;
     if (sat <= 10) {
       return "";
     }
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private handleClick(hold) {
-    const config = this.config;
+  private handleClick(hold: boolean): void {
+    const config = this._config;
     if (!config) {
       return;
     }
