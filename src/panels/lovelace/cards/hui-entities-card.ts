@@ -18,6 +18,7 @@ import computeDomain from "../../../common/entity/compute_domain.js";
 import processConfigEntities from "../common/process-config-entities";
 import { HomeAssistant } from "../../../types.js";
 import { EntityConfig, EntityRow } from "../entity-rows/types.js";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 interface ConfigEntity extends EntityConfig {
   type?: string;
@@ -32,6 +33,7 @@ interface Config extends LovelaceConfig {
   show_header_toggle?: boolean;
   title?: string;
   entities: ConfigEntity[];
+  theme?: string;
 }
 
 class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
