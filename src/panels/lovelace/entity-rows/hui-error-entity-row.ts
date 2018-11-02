@@ -18,7 +18,7 @@ class HuiErrorEntityRow extends LitElement {
     return html`
       ${this.renderStyle()}
       <div>
-        Entity not available: ${this.entity}
+        Entity not available: ${this.entity || ""}
       </div>
     `;
   }
@@ -26,8 +26,8 @@ class HuiErrorEntityRow extends LitElement {
   private renderStyle(): TemplateResult {
     return html`
       <style>
-        div {
-          flex: 1;
+        :host {
+          display: block;
           background-color: yellow;
           padding: 8px;
         }
