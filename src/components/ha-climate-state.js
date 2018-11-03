@@ -32,9 +32,11 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
     </style>
 
     <div class="target">
-      <span class="state-label">
-        [[_localizeState(stateObj.state)]]
-      </span>
+      <template is="dom-if" if="[[_hasKnownState(stateObj.state)]]">
+        <span class="state-label">
+          [[_localizeState(stateObj.state)]]
+        </span>
+      </template>
       [[computeTarget(hass, stateObj)]]
     </div>
 
@@ -99,6 +101,10 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
     }
 
     return "";
+  }
+
+  _hasKnownState(state) {
+    return state !== "unknown";
   }
 
   _localizeState(state) {
