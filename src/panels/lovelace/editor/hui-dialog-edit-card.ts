@@ -47,8 +47,7 @@ export class HuiDialogEditCard extends LitElement {
     this._reloadLovelace = reloadLovelace;
     this._cardConfig = "";
     this._showUIEditor = true;
-    // await this._loadConfig();
-    // await this._loadElementConfig();
+    this._elementConfig = undefined;
     // Wait till dialog is rendered.
     await this.updateComplete;
     this._dialog.open();
@@ -63,7 +62,6 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   protected render() {
-    console.log(this._elementConfig);
     return html`
       <style>
         paper-dialog {
@@ -78,16 +76,18 @@ export class HuiDialogEditCard extends LitElement {
         <paper-dialog-scrollable>
           ${
             // Look to see if this has already be done if yes dont use until just render this._elementConfig
-            this._showUIEditor
+            this._showUIEditor && !this._elementConfig
               ? html`<div class="element-editor">${until(
                   this._loadConfig().then(() => this._loadElementConfig()),
                   html`<span>Loading...</span>`
                 )}</div>`
-              : html`
-              <hui-yaml-editor
-                .yaml="${this._cardConfig}"
-                @yaml-changed="${this._handleYamlChanged}"
-              ></hui-yaml-editor>`
+              : this._showUIEditor
+                ? html`<div class="element-editor">${this._elementConfig}</div>`
+                : html`
+                  <hui-yaml-editor
+                    .yaml="${this._cardConfig}"
+                    @yaml-changed="${this._handleYamlChanged}"
+                  ></hui-yaml-editor>`
           }
           <hui-yaml-card-preview
             .hass="${this.hass}"
@@ -118,11 +118,7 @@ export class HuiDialogEditCard extends LitElement {
       return;
     }
 
-    if (type === "js") {
-      this._previewEl.config = changedProps;
-    } else {
-      this._previewEl.yaml = changedProps;
-    }
+    this._previewEl.value = { format: type, value: changedProps };
   }
 
   private _closeDialog() {
@@ -154,11 +150,11 @@ export class HuiDialogEditCard extends LitElement {
     } catch (err) {
       // No Element Config Function on Element
       this._showUIEditor = false;
-      return;
+      return undefined;
     }
     if (!elementConfig) {
       this._showUIEditor = false;
-      return;
+      return undefined;
     }
     elementConfig.setConfig(conf);
     elementConfig.hass = this.hass;

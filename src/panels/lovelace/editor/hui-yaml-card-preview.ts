@@ -7,6 +7,11 @@ import createErrorCardConfig from "../common/create-error-card-config";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 
+interface ConfigValue {
+  format: string;
+  value: any;
+}
+
 export class HuiYAMLCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
 
@@ -53,6 +58,35 @@ export class HuiYAMLCardPreview extends HTMLElement {
     }
 
     const element = createCardElement(config);
+
+    if (this._hass) {
+      element.hass = this._hass;
+    }
+
+    this.appendChild(element);
+  }
+
+  set value(configValue: ConfigValue) {
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+
+    if (configValue.value === "") {
+      return;
+    }
+
+    let conf;
+    if (configValue.format === "yaml") {
+      try {
+        conf = yaml.safeLoad(configValue.value);
+      } catch (err) {
+        conf = createErrorCardConfig(`Invalid YAML: ${err.message}`, undefined);
+      }
+    } else {
+      conf = configValue.value;
+    }
+
+    const element = createCardElement(conf);
 
     if (this._hass) {
       element.hass = this._hass;
