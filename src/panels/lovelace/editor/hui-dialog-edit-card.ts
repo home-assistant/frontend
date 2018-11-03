@@ -1,6 +1,6 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import yaml from "js-yaml";
-import { until } from "lit-html/directives/until";
+import { when } from "lit-html/directives/when";
 
 import "@polymer/paper-button/paper-button.js";
 import "@polymer/paper-input/paper-textarea.js";
@@ -27,7 +27,7 @@ export class HuiDialogEditCard extends LitElement {
   private _cardConfig?: string;
   private _elementConfig?: LovelaceCardEditor;
   private _reloadLovelace?: () => void;
-  private _showUIEditor?: boolean;
+  private _editorToggle?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -37,7 +37,8 @@ export class HuiDialogEditCard extends LitElement {
       },
       _cardConfig: {},
       _dialogClosedCallback: {},
-      _showUIEditor: {},
+      _elementConfig: {},
+      _editorToggle: {},
     };
   }
 
@@ -46,8 +47,9 @@ export class HuiDialogEditCard extends LitElement {
     this._cardId = cardId;
     this._reloadLovelace = reloadLovelace;
     this._cardConfig = "";
-    this._showUIEditor = true;
+    this._editorToggle = true;
     this._elementConfig = undefined;
+    this._loadConfig().then(() => this._loadElementConfig());
     // Wait till dialog is rendered.
     await this.updateComplete;
     this._dialog.open();
@@ -76,14 +78,13 @@ export class HuiDialogEditCard extends LitElement {
         <paper-dialog-scrollable>
           ${
             // Look to see if this has already be done if yes dont use until just render this._elementConfig
-            this._showUIEditor && !this._elementConfig
-              ? html`<div class="element-editor">${until(
-                  this._loadConfig().then(() => this._loadElementConfig()),
-                  html`<span>Loading...</span>`
+            this._editorToggle
+              ? html`<div class="element-editor">${when(
+                  this._elementConfig,
+                  () => this._elementConfig,
+                  () => html`Loading...`
                 )}</div>`
-              : this._showUIEditor
-                ? html`<div class="element-editor">${this._elementConfig}</div>`
-                : html`
+              : html`
                   <hui-yaml-editor
                     .yaml="${this._cardConfig}"
                     @yaml-changed="${this._handleYamlChanged}"
@@ -109,6 +110,11 @@ export class HuiDialogEditCard extends LitElement {
     `;
   }
 
+  protected updated() {
+    // This will center the dialog with the updated config
+    fireEvent(this._dialog, "iron-resize");
+  }
+
   private _handleYamlChanged(ev) {
     this._handleConfigChanged("yaml", ev.detail.yaml);
   }
@@ -129,40 +135,37 @@ export class HuiDialogEditCard extends LitElement {
     if (!this._elementConfig) {
       return;
     }
-    this._showUIEditor = !this._showUIEditor;
-    // This will center the dialog with the updated config
-    fireEvent(this._dialog, "iron-resize");
+    this._editorToggle = !this._editorToggle;
   }
 
   private async _loadConfig() {
     this._cardConfig = await getCardConfig(this.hass!, this._cardId!);
     await this.updateComplete;
-    // This will center the dialog with the updated config
-    fireEvent(this._dialog, "iron-resize");
   }
 
-  private async _loadElementConfig(): Promise<LovelaceCardEditor> {
+  private async _loadElementConfig(): Promise<void> {
     const conf = yaml.safeLoad(this._cardConfig);
     const elClass = customElements.get(`hui-${conf.type}-card`);
     let elementConfig;
+
     try {
       elementConfig = await elClass.getConfigElement();
     } catch (err) {
       // No Element Config Function on Element
-      this._showUIEditor = false;
-      return undefined;
+      this._editorToggle = false;
+      this._elementConfig = null;
     }
     if (!elementConfig) {
-      this._showUIEditor = false;
-      return undefined;
+      this._editorToggle = false;
+      this._elementConfig = null;
     }
+
     elementConfig.setConfig(conf);
     elementConfig.hass = this.hass;
     elementConfig.addEventListener("config-changed", (ev) =>
       this._handleConfigChanged("js", ev.detail.config)
     );
     this._elementConfig = elementConfig;
-    return elementConfig;
   }
 
   private async _updateConfig() {
