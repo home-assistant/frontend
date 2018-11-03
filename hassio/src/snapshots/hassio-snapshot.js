@@ -1,14 +1,14 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-checkbox/paper-checkbox.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import "@polymer/paper-dialog/paper-dialog.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-input/paper-input.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/resources/ha-style.js";
+import "../../../src/resources/ha-style";
 
 class HassioSnapshot extends PolymerElement {
   static get template() {

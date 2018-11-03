@@ -1,11 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior.js";
-import "@polymer/paper-input/paper-input.js";
-import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
+import "@polymer/paper-input/paper-input";
+import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/entity/state-info.js";
+import "../components/entity/state-info";
 import "../components/ha-slider";
 
 class StateCardInputNumber extends mixinBehaviors(

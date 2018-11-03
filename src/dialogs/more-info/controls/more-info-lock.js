@@ -1,11 +1,11 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-input/paper-input.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-attributes.js";
+import "../../../components/ha-attributes";
 
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

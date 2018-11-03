@@ -133,7 +133,7 @@
         "climate": {
             "off": "Off",
             "on": "On",
-            "heat": "Chaleur",
+            "heat": "Chauffe",
             "cool": "Frais",
             "idle": "Inactif",
             "auto": "Auto",

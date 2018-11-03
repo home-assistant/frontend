@@ -15,6 +15,7 @@ if (!version) {
   throw Error("Version not found");
 }
 const VERSION = version[0];
+const isCI = process.env.CI === "true";
 
 const generateJSPage = (entrypoint, latestBuild) => {
   return new HtmlWebpackPlugin({
@@ -159,6 +160,7 @@ function createConfig(isProdBuild, latestBuild) {
         path.resolve(__dirname, "src/util/empty.js")
       ),
       isProdBuild &&
+        !isCI &&
         new CompressionPlugin({
           cache: true,
           exclude: [/\.js\.map$/, /\.LICENSE$/, /\.py$/, /\.txt$/],

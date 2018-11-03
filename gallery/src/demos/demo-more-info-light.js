@@ -1,13 +1,13 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/dialogs/more-info/controls/more-info-content.js";
-import "../../../src/components/ha-card.js";
+import "../../../src/dialogs/more-info/controls/more-info-content";
+import "../../../src/components/ha-card";
 
-import getEntity from "../data/entity.js";
-import provideHass from "../data/provide_hass.js";
+import getEntity from "../data/entity";
+import provideHass from "../data/provide_hass";
 
-import "../components/demo-more-infos.js";
+import "../components/demo-more-infos";
 
 /* eslint-disable no-unused-vars */
 

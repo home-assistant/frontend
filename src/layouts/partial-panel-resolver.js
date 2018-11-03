@@ -1,14 +1,14 @@
-import "@polymer/app-route/app-route.js";
-import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./hass-loading-screen.js";
-import "./hass-error-screen.js";
+import "./hass-loading-screen";
+import "./hass-error-screen";
 import { importHref } from "../resources/html-import/import-href";
 
-import dynamicContentUpdater from "../common/dom/dynamic_content_updater.js";
-import NavigateMixin from "../mixins/navigate-mixin.js";
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
+import NavigateMixin from "../mixins/navigate-mixin";
 
 const loaded = {};
 
@@ -19,75 +19,75 @@ function ensureLoaded(panel) {
   // Name each panel we support here, that way Webpack knows about it.
   switch (panel) {
     case "config":
-      imported = import(/* webpackChunkName: "panel-config" */ "../panels/config/ha-panel-config.js");
+      imported = import(/* webpackChunkName: "panel-config" */ "../panels/config/ha-panel-config");
       break;
 
     case "custom":
-      imported = import(/* webpackChunkName: "panel-custom" */ "../panels/custom/ha-panel-custom.js");
+      imported = import(/* webpackChunkName: "panel-custom" */ "../panels/custom/ha-panel-custom");
       break;
 
     case "dev-event":
-      imported = import(/* webpackChunkName: "panel-dev-event" */ "../panels/dev-event/ha-panel-dev-event.js");
+      imported = import(/* webpackChunkName: "panel-dev-event" */ "../panels/dev-event/ha-panel-dev-event");
       break;
 
     case "dev-info":
-      imported = import(/* webpackChunkName: "panel-dev-info" */ "../panels/dev-info/ha-panel-dev-info.js");
+      imported = import(/* webpackChunkName: "panel-dev-info" */ "../panels/dev-info/ha-panel-dev-info");
       break;
 
     case "dev-mqtt":
-      imported = import(/* webpackChunkName: "panel-dev-mqtt" */ "../panels/dev-mqtt/ha-panel-dev-mqtt.js");
+      imported = import(/* webpackChunkName: "panel-dev-mqtt" */ "../panels/dev-mqtt/ha-panel-dev-mqtt");
       break;
 
     case "dev-service":
-      imported = import(/* webpackChunkName: "panel-dev-service" */ "../panels/dev-service/ha-panel-dev-service.js");
+      imported = import(/* webpackChunkName: "panel-dev-service" */ "../panels/dev-service/ha-panel-dev-service");
       break;
 
     case "dev-state":
-      imported = import(/* webpackChunkName: "panel-dev-state" */ "../panels/dev-state/ha-panel-dev-state.js");
+      imported = import(/* webpackChunkName: "panel-dev-state" */ "../panels/dev-state/ha-panel-dev-state");
       break;
 
     case "dev-template":
-      imported = import(/* webpackChunkName: "panel-dev-template" */ "../panels/dev-template/ha-panel-dev-template.js");
+      imported = import(/* webpackChunkName: "panel-dev-template" */ "../panels/dev-template/ha-panel-dev-template");
       break;
 
     case "lovelace":
-      imported = import(/* webpackChunkName: "panel-lovelace" */ "../panels/lovelace/ha-panel-lovelace.js");
+      imported = import(/* webpackChunkName: "panel-lovelace" */ "../panels/lovelace/ha-panel-lovelace");
       break;
 
     case "history":
-      imported = import(/* webpackChunkName: "panel-history" */ "../panels/history/ha-panel-history.js");
+      imported = import(/* webpackChunkName: "panel-history" */ "../panels/history/ha-panel-history");
       break;
 
     case "iframe":
-      imported = import(/* webpackChunkName: "panel-iframe" */ "../panels/iframe/ha-panel-iframe.js");
+      imported = import(/* webpackChunkName: "panel-iframe" */ "../panels/iframe/ha-panel-iframe");
       break;
 
     case "kiosk":
-      imported = import(/* webpackChunkName: "panel-kiosk" */ "../panels/kiosk/ha-panel-kiosk.js");
+      imported = import(/* webpackChunkName: "panel-kiosk" */ "../panels/kiosk/ha-panel-kiosk");
       break;
 
     case "logbook":
-      imported = import(/* webpackChunkName: "panel-logbook" */ "../panels/logbook/ha-panel-logbook.js");
+      imported = import(/* webpackChunkName: "panel-logbook" */ "../panels/logbook/ha-panel-logbook");
       break;
 
     case "mailbox":
-      imported = import(/* webpackChunkName: "panel-mailbox" */ "../panels/mailbox/ha-panel-mailbox.js");
+      imported = import(/* webpackChunkName: "panel-mailbox" */ "../panels/mailbox/ha-panel-mailbox");
       break;
 
     case "map":
-      imported = import(/* webpackChunkName: "panel-map" */ "../panels/map/ha-panel-map.js");
+      imported = import(/* webpackChunkName: "panel-map" */ "../panels/map/ha-panel-map");
       break;
 
     case "profile":
-      imported = import(/* webpackChunkName: "panel-profile" */ "../panels/profile/ha-panel-profile.js");
+      imported = import(/* webpackChunkName: "panel-profile" */ "../panels/profile/ha-panel-profile");
       break;
 
     case "shopping-list":
-      imported = import(/* webpackChunkName: "panel-shopping-list" */ "../panels/shopping-list/ha-panel-shopping-list.js");
+      imported = import(/* webpackChunkName: "panel-shopping-list" */ "../panels/shopping-list/ha-panel-shopping-list");
       break;
 
     case "calendar":
-      imported = import(/* webpackChunkName: "panel-calendar" */ "../panels/calendar/ha-panel-calendar.js");
+      imported = import(/* webpackChunkName: "panel-calendar" */ "../panels/calendar/ha-panel-calendar");
       break;
 
     default:

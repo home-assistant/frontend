@@ -1,15 +1,15 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-tooltip/paper-tooltip.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-tooltip/paper-tooltip";
 
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../../components/ha-relative-time.js";
-import "../../../../components/ha-markdown.js";
-import "./hui-notification-item-template.js";
+import "../../../../components/ha-relative-time";
+import "../../../../components/ha-markdown";
+import "./hui-notification-item-template";
 
-import LocalizeMixin from "../../../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -31,9 +31,9 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(
     </style>
     <hui-notification-item-template>
       <span slot="header">[[_computeTitle(notification)]]</span>
-      
+
       <ha-markdown content="[[notification.message]]"></ha-markdown>
-      
+
       <div class="time">
         <span>
           <ha-relative-time

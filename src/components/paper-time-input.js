@@ -16,12 +16,12 @@ Custom property | Description | Default
 `--paper-time-input-cotnainer` | Mixin applied to the inputs | `{}`
 `--paper-time-dropdown-input-cotnainer` | Mixin applied to the dropdown input | `{}`
 */
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class PaperTimeInput extends PolymerElement {
   static get template() {

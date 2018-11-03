@@ -1,6 +1,6 @@
-import applyThemesOnElement from "../../common/dom/apply_themes_on_element.js";
-import { storeState } from "../../util/ha-pref-storage.js";
-import { subscribeThemes } from "../../data/ws-themes.js";
+import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
+import { storeState } from "../../util/ha-pref-storage";
+import { subscribeThemes } from "../../data/ws-themes";
 
 export default (superClass) =>
   class extends superClass {

@@ -1,11 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/entity/state-info.js";
-import "../components/ha-cover-controls.js";
-import "../components/ha-cover-tilt-controls.js";
-import CoverEntity from "../util/cover-model.js";
+import "../components/entity/state-info";
+import "../components/ha-cover-controls";
+import "../components/ha-cover-tilt-controls";
+import CoverEntity from "../util/cover-model";
 
 class StateCardCover extends PolymerElement {
   static get template() {

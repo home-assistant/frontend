@@ -1,12 +1,12 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/iron-icon/iron-icon.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/iron-icon/iron-icon";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import formatTime from "../../common/datetime/format_time.js";
-import formatDate from "../../common/datetime/format_date.js";
-import EventsMixin from "../../mixins/events-mixin.js";
-import domainIcon from "../../common/entity/domain_icon.js";
+import formatTime from "../../common/datetime/format_time";
+import formatDate from "../../common/datetime/format_date";
+import EventsMixin from "../../mixins/events-mixin";
+import domainIcon from "../../common/entity/domain_icon";
 
 /*
  * @appliesMixin EventsMixin

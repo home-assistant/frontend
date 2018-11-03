@@ -1,8 +1,8 @@
-import "@polymer/paper-toggle-button/paper-toggle-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-toggle-button/paper-toggle-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../mixins/events-mixin.js";
+import EventsMixin from "../mixins/events-mixin";
 
 export const pushSupported =
   "serviceWorker" in navigator &&

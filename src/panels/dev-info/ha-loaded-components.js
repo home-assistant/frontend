@@ -1,11 +1,11 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import "@polymer/paper-dialog/paper-dialog.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../resources/ha-style.js";
+import "../../resources/ha-style";
 
-import EventsMixin from "../../mixins/events-mixin.js";
+import EventsMixin from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

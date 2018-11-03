@@ -1,16 +1,16 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-input/paper-input.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../../mixins/events-mixin.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
+import EventsMixin from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
-import computeStateName from "../../common/entity/compute_state_name.js";
-import computeDomain from "../../common/entity/compute_domain.js";
-import isComponentLoaded from "../../common/config/is_component_loaded.js";
+import computeStateName from "../../common/entity/compute_state_name";
+import computeDomain from "../../common/entity/compute_domain";
+import isComponentLoaded from "../../common/config/is_component_loaded";
 
 /*
  * @appliesMixin EventsMixin

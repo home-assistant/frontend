@@ -1,16 +1,16 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-input/paper-input.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/buttons/ha-call-service-button.js";
-import "../../../resources/ha-style.js";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../resources/ha-style";
 
-import "../ha-config-section.js";
+import "../ha-config-section";
 
-import isComponentLoaded from "../../../common/config/is_component_loaded.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import isComponentLoaded from "../../../common/config/is_component_loaded";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

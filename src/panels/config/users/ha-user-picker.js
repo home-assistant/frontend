@@ -1,15 +1,15 @@
-import "@polymer/paper-fab/paper-fab.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-item/paper-item-body.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-fab/paper-fab";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item-body";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../layouts/hass-subpage.js";
+import "../../../layouts/hass-subpage";
 
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
+import EventsMixin from "../../../mixins/events-mixin";
 
 let registeredDialog = false;
 
@@ -90,7 +90,7 @@ class HaUserPicker extends EventsMixin(
       this.fire("register-dialog", {
         dialogShowEvent: "show-add-user",
         dialogTag: "ha-dialog-add-user",
-        dialogImport: () => import("./ha-dialog-add-user.js"),
+        dialogImport: () => import("./ha-dialog-add-user"),
       });
     }
   }

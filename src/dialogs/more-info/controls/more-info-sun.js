@@ -1,11 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-relative-time.js";
+import "../../../components/ha-relative-time";
 
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import formatTime from "../../../common/datetime/format_time.js";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import formatTime from "../../../common/datetime/format_time";
 
 class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   static get template() {

@@ -1,13 +1,13 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
 
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./hui-notification-item-template.js";
+import "./hui-notification-item-template";
 
-import EventsMixin from "../../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../../mixins/localize-mixin.js";
+import EventsMixin from "../../../../mixins/events-mixin";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -20,12 +20,12 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(
     return html`
     <hui-notification-item-template>
       <span slot="header">[[localize('domain.configurator')]]</span>
-      
-      <div>[[_getMessage(notification)]]</div> 
-      
-      <paper-button 
-        slot="actions" 
-        class="primary" 
+
+      <div>[[_getMessage(notification)]]</div>
+
+      <paper-button
+        slot="actions"
+        class="primary"
         on-click="_handleClick"
       >[[_localizeState(notification.state)]]</paper-button>
     </hui-notification-item-template>

@@ -1,24 +1,24 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./state-card-climate.js";
-import "./state-card-configurator.js";
-import "./state-card-cover.js";
-import "./state-card-display.js";
-import "./state-card-input_number.js";
-import "./state-card-input_select.js";
-import "./state-card-input_text.js";
-import "./state-card-lock.js";
-import "./state-card-media_player.js";
-import "./state-card-scene.js";
-import "./state-card-script.js";
-import "./state-card-timer.js";
-import "./state-card-toggle.js";
-import "./state-card-vacuum.js";
-import "./state-card-water_heater.js";
-import "./state-card-weblink.js";
+import "./state-card-climate";
+import "./state-card-configurator";
+import "./state-card-cover";
+import "./state-card-display";
+import "./state-card-input_number";
+import "./state-card-input_select";
+import "./state-card-input_text";
+import "./state-card-lock";
+import "./state-card-media_player";
+import "./state-card-scene";
+import "./state-card-script";
+import "./state-card-timer";
+import "./state-card-toggle";
+import "./state-card-vacuum";
+import "./state-card-water_heater";
+import "./state-card-weblink";
 
-import stateCardType from "../common/entity/state_card_type.js";
-import dynamicContentUpdater from "../common/dom/dynamic_content_updater.js";
+import stateCardType from "../common/entity/state_card_type";
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
 
 class StateCardContent extends PolymerElement {
   static get properties() {

@@ -1,13 +1,13 @@
-import "@polymer/app-route/app-route.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
-import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import "@polymer/app-route/app-route";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { timeOut } from "@polymer/polymer/lib/utils/async";
 
-import "./ha-config-entries-dashboard.js";
-import "./ha-config-entry-page.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
-import compare from "../../../common/string/compare.js";
+import "./ha-config-entries-dashboard";
+import "./ha-config-entry-page";
+import NavigateMixin from "../../../mixins/navigate-mixin";
+import compare from "../../../common/string/compare";
 
 class HaConfigEntries extends NavigateMixin(PolymerElement) {
   static get template() {

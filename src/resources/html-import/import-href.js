@@ -1,5 +1,5 @@
 /* eslint-disable */
-import "./polyfill.js";
+import "./polyfill";
 /**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.

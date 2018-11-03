@@ -1,11 +1,11 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import createHuiElement from "../common/create-hui-element.js";
+import createHuiElement from "../common/create-hui-element";
 
 import { LovelaceCard, LovelaceConfig } from "../types";
-import { HomeAssistant } from "../../../types.js";
-import { LovelaceElementConfig, LovelaceElement } from "../elements/types.js";
+import { HomeAssistant } from "../../../types";
+import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 
 interface Config extends LovelaceConfig {
   title?: string;
@@ -14,7 +14,7 @@ interface Config extends LovelaceConfig {
 }
 
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
-  protected _config?: Config;
+  private _config?: Config;
   private _hass?: HomeAssistant;
 
   static get properties() {
@@ -99,6 +99,12 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     });
 
     return element;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-picture-elements-card": HuiPictureElementsCard;
   }
 }
 

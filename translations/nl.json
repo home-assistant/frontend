@@ -545,9 +545,9 @@
                         "no_device": "Entiteiten zonder apparaten",
                         "delete_confirm": "Weet u zeker dat u deze integratie wilt verwijderen?",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
-                        "manuf": "door {fabrikant}",
+                        "manuf": "door {manufacturer}",
                         "hub": "Verbonden via",
-                        "firmware": "Firmware: {versie}",
+                        "firmware": "Firmware: {version}",
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar"
                     }

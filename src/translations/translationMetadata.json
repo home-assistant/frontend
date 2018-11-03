@@ -1,149 +1,150 @@
 {
-	"ar": {
-		"nativeName": "العربية"
-	},
-	"bg": {
-		"nativeName": "Български"
-	},
-	"bs": {
-		"nativeName": "Bosanski"
-	},
-	"ca": {
-		"nativeName": "Català"
-	},
-	"cs": {
-		"nativeName": "Čeština"
-	},
-	"cy": {
-		"nativeName": "Cymraeg"
-	},
-	"da": {
-		"nativeName": "Dansk"
-	},
-	"de": {
-		"nativeName": "Deutsch"
-	},
-	"el": {
-		"nativeName": "Ελληνικά"
-	},
-	"en": {
-		"nativeName": "English"
-	},
-	"es": {
-		"nativeName": "Español"
-	},
-	"es-419": {
-		"nativeName": "Español (Latin America)"
-	},
-	"et": {
-		"nativeName": "Eesti"
-	},
-	"fa": {
-		"nativeName": "فارسی"
-	},
-	"fi": {
-		"nativeName": "Suomi"
-	},
-	"fr": {
-		"nativeName": "Français"
-	},
-	"gsw": {
-		"nativeName": "Schwiizerdütsch"
-	},
-	"he": {
-		"nativeName": "עברית"
-	},
-	"hi": {
-		"nativeName": "हिन्दी"
-	},
-	"hr": {
-		"nativeName": "Hrvatski"
-	},
-	"hu": {
-		"nativeName": "Magyar"
-	},
-	"id": {
-		"nativeName": "Indonesia"
-	},
-	"it": {
-		"nativeName": "Italiano"
-	},
-	"ja": {
-		"nativeName": "日本語"
-	},
-	"ko": {
-		"nativeName": "한국어"
-	},
-	"lb": {
-		"nativeName": "Lëtzebuergesch"
-	},
-	"lt": {
-		"nativeName": "Lietuvių"
-	},
-	"lv": {
-		"nativeName": "Latviešu"
-	},
-	"nl": {
-		"nativeName": "Nederlands"
-	},
-	"nn": {
-		"nativeName": "Norsk Nynorsk"
-	},
-	"no": {
-		"nativeName": "Norsk"
-	},
-	"pl": {
-		"nativeName": "Polski"
-	},
-	"pt": {
-		"nativeName": "Português"
-	},
-	"pt-BR": {
-		"nativeName": "Português (BR)"
-	},
-	"ro": {
-		"nativeName": "Română"
-	},
-	"ru": {
-		"nativeName": "Русский"
-	},
-	"sk": {
-		"nativeName": "Slovenčina"
-	},
-	"sl": {
-		"nativeName": "Slovenščina"
-	},
-	"sr": {
-		"nativeName": "Српски"
-	},
-	"sr-Latn": {
-		"nativeName": "Srpski"
-	},
-	"sv": {
-		"nativeName": "Svenska"
-	},
-	"ta": {
-		"nativeName": "தமிழ்"
-	},
-	"te": {
-		"nativeName": "తెలుగు"
-	},
-	"th": {
-		"nativeName": "ภาษาไทย"
-	},
-	"tr": {
-		"nativeName": "Türkçe"
-	},
-	"uk": {
-		"nativeName": "Українська"
-	},
-	"vi": {
-		"nativeName": "Tiếng Việt"
-	},
-	"zh-Hans": {
-		"nativeName": "简体中文"
-	},
-	"zh-Hant": {
-		"nativeName": "繁體中文"
-	}
+  "ar": {
+    "nativeName": "العربية"
+  },
+  "bg": {
+    "nativeName": "Български"
+  },
+  "bs": {
+    "nativeName": "Bosanski"
+  },
+  "ca": {
+    "nativeName": "Català"
+  },
+  "cs": {
+    "nativeName": "Čeština"
+  },
+  "cy": {
+    "nativeName": "Cymraeg"
+  },
+  "da": {
+    "nativeName": "Dansk"
+  },
+  "de": {
+    "nativeName": "Deutsch"
+  },
+  "el": {
+    "nativeName": "Ελληνικά"
+  },
+  "en": {
+    "nativeName": "English"
+  },
+  "es": {
+    "nativeName": "Español"
+  },
+  "es-419": {
+    "nativeName": "Español (Latin America)"
+  },
+  "et": {
+    "nativeName": "Eesti"
+  },
+  "fa": {
+    "nativeName": "فارسی"
+  },
+  "fi": {
+    "nativeName": "Suomi"
+  },
+  "fr": {
+    "nativeName": "Français"
+  },
+  "gsw": {
+    "nativeName": "Schwiizerdütsch"
+  },
+  "he": {
+    "nativeName": "עברית",
+    "isRTL": true
+  },
+  "hi": {
+    "nativeName": "हिन्दी"
+  },
+  "hr": {
+    "nativeName": "Hrvatski"
+  },
+  "hu": {
+    "nativeName": "Magyar"
+  },
+  "id": {
+    "nativeName": "Indonesia"
+  },
+  "it": {
+    "nativeName": "Italiano"
+  },
+  "ja": {
+    "nativeName": "日本語"
+  },
+  "ko": {
+    "nativeName": "한국어"
+  },
+  "lb": {
+    "nativeName": "Lëtzebuergesch"
+  },
+  "lt": {
+    "nativeName": "Lietuvių"
+  },
+  "lv": {
+    "nativeName": "Latviešu"
+  },
+  "nl": {
+    "nativeName": "Nederlands"
+  },
+  "nn": {
+    "nativeName": "Norsk Nynorsk"
+  },
+  "no": {
+    "nativeName": "Norsk"
+  },
+  "pl": {
+    "nativeName": "Polski"
+  },
+  "pt": {
+    "nativeName": "Português"
+  },
+  "pt-BR": {
+    "nativeName": "Português (BR)"
+  },
+  "ro": {
+    "nativeName": "Română"
+  },
+  "ru": {
+    "nativeName": "Русский"
+  },
+  "sk": {
+    "nativeName": "Slovenčina"
+  },
+  "sl": {
+    "nativeName": "Slovenščina"
+  },
+  "sr": {
+    "nativeName": "Српски"
+  },
+  "sr-Latn": {
+    "nativeName": "Srpski"
+  },
+  "sv": {
+    "nativeName": "Svenska"
+  },
+  "ta": {
+    "nativeName": "தமிழ்"
+  },
+  "te": {
+    "nativeName": "తెలుగు"
+  },
+  "th": {
+    "nativeName": "ภาษาไทย"
+  },
+  "tr": {
+    "nativeName": "Türkçe"
+  },
+  "uk": {
+    "nativeName": "Українська"
+  },
+  "vi": {
+    "nativeName": "Tiếng Việt"
+  },
+  "zh-Hans": {
+    "nativeName": "简体中文"
+  },
+  "zh-Hant": {
+    "nativeName": "繁體中文"
+  }
 }

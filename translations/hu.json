@@ -594,7 +594,7 @@
                     "create": "Token Létrehozása",
                     "create_failed": "Nem sikerült létrehozni a hozzáférési tokent.",
                     "prompt_name": "Név?",
-                    "prompt_copy_token": "Másold a hozzáférési tokened. Nem fog újra megjelenni.",
+                    "prompt_copy_token": "Most másold ki a hozzáférési tokened! Erre később nem lesz lehetőséged.",
                     "empty_state": "Még nincsenek hosszú életű hozzáférési tokenjeid.",
                     "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt"

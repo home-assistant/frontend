@@ -1,8 +1,8 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./ha-progress-button.js";
-import EventsMixin from "../../mixins/events-mixin.js";
+import "./ha-progress-button";
+import EventsMixin from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

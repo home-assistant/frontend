@@ -1,6 +1,6 @@
-import "../../../cards/ha-camera-card.js";
+import "../../../cards/ha-camera-card";
 
-import LegacyWrapperCard from "./hui-legacy-wrapper-card.js";
+import LegacyWrapperCard from "./hui-legacy-wrapper-card";
 
 class HuiWeatherForecastCard extends LegacyWrapperCard {
   constructor() {
