@@ -178,16 +178,6 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private async _updateConfig() {
-    const newCardConfig = this.shadowRoot!.querySelector("hui-yaml-editor")!
-      .yaml;
-
-    // if (this._cardConfig === newCardConfig) {
-    //   this._dialog.close();
-    //   return;
-    // }
-    console.log(this._cardConfig);
-    console.log(newCardConfig);
-
     try {
       await updateCardConfig(this.hass!, this._cardId!, this._cardConfig);
       this._dialog.close();
