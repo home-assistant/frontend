@@ -86,8 +86,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       <ha-card .header="${this._config.title}">
       ${repeat(
         this._items!,
-        (item) => item.id,
-        (item, index) =>
+        (item) =>
           !item.complete
             ? html`
         <div class="editRow">
@@ -128,8 +127,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         <div class="divider"></div>
       ${repeat(
         this._items!,
-        (item) => item.id,
-        (item, index) =>
+        (item) =>
           item.complete
             ? html`
         <div class="completedRow">
