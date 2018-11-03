@@ -7426,10 +7426,10 @@ hoek@4.x.x:
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.1.tgz#9634502aa12c445dd5a7c5734b572bb8738aacbb"
   integrity sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==
 
-home-assistant-js-websocket@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.2.0.tgz#b28e21697b7bc00e64999fffb6d5963a838e8ff6"
-  integrity sha512-jfQb5U2SBrjaJs3gjcWHB4SqLrn+mm6k2a2HGazQCs4LkdCNlJ/na/lTMVH0z6fRg4kHkSa7/hr2iAm3uj5WFg==
+home-assistant-js-websocket@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.2.2.tgz#b7526cff543a7c25c0b2e76b7ce66cf436749053"
+  integrity sha512-tlAjvIiJ6jlBEVVORB1QX+k+SKU4pxsdMQm1XE8NtnvO9lBKkO+aY7VOW14ZuSIbaJRmOY9YQ9Te41oL4J3sLQ==
 
 home-or-tmp@^2.0.0:
   version "2.0.0"
