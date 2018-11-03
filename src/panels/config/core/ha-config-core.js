@@ -1,15 +1,15 @@
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../layouts/hass-subpage.js";
-import "../../../resources/ha-style.js";
+import "../../../layouts/hass-subpage";
+import "../../../resources/ha-style";
 
-import "./ha-config-section-core.js";
+import "./ha-config-section-core";
 
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

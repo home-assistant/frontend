@@ -133,7 +133,7 @@
         "climate": {
             "off": "wyłączony",
             "on": "włączony",
-            "heat": "ogrzewanie",
+            "heat": "grzanie",
             "cool": "chłodzenie",
             "idle": "nieaktywny",
             "auto": "automatyczny",

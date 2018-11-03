@@ -1,12 +1,12 @@
-import "@polymer/app-route/app-route.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-route/app-route";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./ha-script-editor.js";
-import "./ha-script-picker.js";
+import "./ha-script-editor";
+import "./ha-script-picker";
 
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import computeStateDomain from "../../../common/entity/compute_state_domain.js";
+import computeStateName from "../../../common/entity/compute_state_name";
+import computeStateDomain from "../../../common/entity/compute_state_domain";
 
 class HaConfigScript extends PolymerElement {
   static get template() {

@@ -1,35 +1,35 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-scroll-effects/effects/waterfall.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/app-route/app-route.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-menu-button/paper-menu-button.js";
-import "@polymer/paper-tabs/paper-tab.js";
-import "@polymer/paper-tabs/paper-tabs.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-route/app-route";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-menu-button/paper-menu-button";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
 
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import scrollToTarget from "../../common/dom/scroll-to-target.js";
+import scrollToTarget from "../../common/dom/scroll-to-target";
 
-import EventsMixin from "../../mixins/events-mixin.js";
-import NavigateMixin from "../../mixins/navigate-mixin.js";
+import EventsMixin from "../../mixins/events-mixin";
+import NavigateMixin from "../../mixins/navigate-mixin";
 
-import "../../layouts/ha-app-layout.js";
-import "../../components/ha-start-voice-button.js";
-import "../../components/ha-icon.js";
-import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource.js";
+import "../../layouts/ha-app-layout";
+import "../../components/ha-start-voice-button";
+import "../../components/ha-icon";
+import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
-import "./components/notifications/hui-notification-drawer.js";
-import "./components/notifications/hui-notifications-button.js";
-import "./hui-unused-entities.js";
-import "./hui-view.js";
-import debounce from "../../common/util/debounce.js";
+import "./components/notifications/hui-notification-drawer";
+import "./components/notifications/hui-notifications-button";
+import "./hui-unused-entities";
+import "./hui-view";
+import debounce from "../../common/util/debounce";
 
-import createCardElement from "./common/create-card-element.js";
+import createCardElement from "./common/create-card-element";
 import computeNotifications from "./common/compute-notifications";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
@@ -84,28 +84,40 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     ></hui-notification-drawer>
     <ha-app-layout id="layout">
       <app-header slot="header" effects="waterfall" fixed condenses>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[_computeTitle(config)]]</div>
-          <hui-notifications-button
-            hass="[[hass]]"
-            notifications-open="{{notificationsOpen}}"
-            notifications="[[_notifications]]"
-          ></hui-notifications-button>
-          <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
-          <paper-menu-button
-            no-animations
-            horizontal-align="right"
-            horizontal-offset="-5"
-          >
-            <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
-            <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
-              <paper-item on-click="_handleRefresh">Refresh</paper-item>
-              <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
-              <paper-item on-click="_handleHelp">Help</paper-item>
-            </paper-listbox>
-          </paper-menu-button>
-        </app-toolbar>
+        <template is='dom-if' if="[[!_editMode]]">
+          <app-toolbar>
+            <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+            <div main-title>[[_computeTitle(config)]]</div>
+            <hui-notifications-button
+              hass="[[hass]]"
+              notifications-open="{{notificationsOpen}}"
+              notifications="[[_notifications]]"
+            ></hui-notifications-button>
+            <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
+            <paper-menu-button
+              no-animations
+              horizontal-align="right"
+              horizontal-offset="-5"
+            >
+              <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
+              <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
+                <paper-item on-click="_handleRefresh">Refresh</paper-item>
+                <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
+                <paper-item on-click="_editModeEnable">Configure UI (alpha)</paper-item>
+                <paper-item on-click="_handleHelp">Help</paper-item>
+              </paper-listbox>
+            </paper-menu-button>
+          </app-toolbar>
+        </template>
+        <template is='dom-if' if="[[_editMode]]">
+          <app-toolbar>
+            <paper-icon-button
+              icon='hass:close'
+              on-click='_editModeDisable'
+            ></paper-icon-button>
+            <div main-title>Edit UI</div>
+          </app-toolbar>
+        </template>
 
         <div sticky hidden$="[[_computeTabsHidden(config.views)]]">
           <paper-tabs scrollable selected="[[_curView]]" on-iron-activate="_handleViewSelected">
@@ -168,6 +180,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       _notifications: {
         type: Array,
         computed: "_updateNotifications(hass.states, _persistentNotifications)",
+      },
+
+      _editMode: {
+        type: Boolean,
+        value: false,
+        observer: "_editModeChanged",
       },
 
       routeData: Object,
@@ -255,6 +273,18 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
+  _editModeEnable() {
+    this._editMode = true;
+  }
+
+  _editModeDisable() {
+    this._editMode = false;
+  }
+
+  _editModeChanged() {
+    this._selectView(this._curView);
+  }
+
   _handleViewSelected(ev) {
     const index = ev.detail.selected;
     if (index !== this._curView) {
@@ -284,10 +314,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
+        view.editMode = this._editMode;
       } else {
         view = document.createElement("hui-view");
         view.config = viewConfig;
         view.columns = this.columns;
+        view.editMode = this._editMode;
       }
       if (viewConfig.background) background = viewConfig.background;
     }
@@ -333,7 +365,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           break;
 
         case "html":
-          import(/* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href.js").then(
+          import(/* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href").then(
             ({ importHref }) => importHref(resource.url)
           );
           break;

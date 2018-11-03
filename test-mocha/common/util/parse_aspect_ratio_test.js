@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import parseAspectRatio from "../../../src/common/util/parse-aspect-ratio.js";
+import parseAspectRatio from "../../../src/common/util/parse-aspect-ratio";
 
 describe("parseAspectRatio", () => {
   const ratio16by9 = { w: 16, h: 9 };

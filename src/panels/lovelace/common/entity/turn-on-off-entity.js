@@ -1,4 +1,4 @@
-import computeDomain from "../../../../common/entity/compute_domain.js";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 export default function turnOnOffEntity(hass, entityId, turnOn = true) {
   const stateDomain = computeDomain(entityId);

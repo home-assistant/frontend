@@ -1,35 +1,35 @@
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-input/paper-input.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/buttons/ha-call-service-button.js";
-import "../../../components/ha-menu-button.js";
-import "../../../components/ha-service-description.js";
-import "../../../layouts/ha-app-layout.js";
-import "../../../resources/ha-style.js";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-menu-button";
+import "../../../components/ha-service-description";
+import "../../../layouts/ha-app-layout";
+import "../../../resources/ha-style";
 
-import "../ha-config-section.js";
-import "../ha-form-style.js";
-import "./zwave-groups.js";
-import "./zwave-log.js";
-import "./zwave-network.js";
-import "./zwave-node-config.js";
-import "./zwave-usercodes.js";
-import "./zwave-values.js";
-import "./zwave-node-protection.js";
+import "../ha-config-section";
+import "../ha-form-style";
+import "./zwave-groups";
+import "./zwave-log";
+import "./zwave-network";
+import "./zwave-node-config";
+import "./zwave-usercodes";
+import "./zwave-values";
+import "./zwave-node-protection";
 
-import sortByName from "../../../common/entity/states_sort_by_name.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import computeStateDomain from "../../../common/entity/compute_state_domain.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import sortByName from "../../../common/entity/states_sort_by_name";
+import computeStateName from "../../../common/entity/compute_state_name";
+import computeStateDomain from "../../../common/entity/compute_state_domain";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -297,7 +297,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             selected-node="[[selectedNode]]"
             protection="[[_protection]]"
           ></zwave-node-protection>
-        </template> 
+        </template>
 
         <!--User Codes-->
         <template is="dom-if" if="{{hasNodeUserCodes}}">

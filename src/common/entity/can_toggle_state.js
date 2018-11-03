@@ -1,5 +1,5 @@
-import canToggleDomain from "./can_toggle_domain.js";
-import computeStateDomain from "./compute_state_domain.js";
+import canToggleDomain from "./can_toggle_domain";
+import computeStateDomain from "./compute_state_domain";
 
 export default function canToggleState(hass, stateObj) {
   const domain = computeStateDomain(stateObj);

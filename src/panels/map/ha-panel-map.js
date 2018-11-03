@@ -1,17 +1,17 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 import Leaflet from "leaflet";
 
-import "../../components/ha-menu-button.js";
-import "../../components/ha-icon.js";
+import "../../components/ha-menu-button";
+import "../../components/ha-icon";
 
-import "./ha-entity-marker.js";
+import "./ha-entity-marker";
 
-import computeStateDomain from "../../common/entity/compute_state_domain.js";
-import computeStateName from "../../common/entity/compute_state_name.js";
-import LocalizeMixin from "../../mixins/localize-mixin.js";
-import setupLeafletMap from "../../common/dom/setup-leaflet-map.js";
+import computeStateDomain from "../../common/entity/compute_state_domain";
+import computeStateName from "../../common/entity/compute_state_name";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import setupLeafletMap from "../../common/dom/setup-leaflet-map";
 
 Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
 

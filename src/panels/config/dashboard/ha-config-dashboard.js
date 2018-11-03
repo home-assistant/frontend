@@ -1,21 +1,21 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-menu-button.js";
+import "../../../components/ha-menu-button";
 
-import "../ha-config-section.js";
-import "./ha-config-navigation.js";
+import "../ha-config-section";
+import "./ha-config-navigation";
 
-import isComponentLoaded from "../../../common/config/is_component_loaded.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import isComponentLoaded from "../../../common/config/is_component_loaded";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -52,7 +52,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
           <template is="dom-if" if="[[computeIsLoaded(hass, 'cloud')]]">
             <paper-card>
               <a href='/config/cloud' tabindex="-1">
-                <paper-item on-click="_navigate">
+                <paper-item>
                   <paper-item-body two-line="">
                     [[localize('ui.panel.config.cloud.caption')]]
                     <template is="dom-if" if="[[cloudStatus.logged_in]]">

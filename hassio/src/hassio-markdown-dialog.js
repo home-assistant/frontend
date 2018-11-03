@@ -1,12 +1,12 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import "@polymer/paper-dialog/paper-dialog.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../src/components/ha-markdown.js";
-import "../../src/resources/ha-style.js";
+import "../../src/components/ha-markdown";
+import "../../src/resources/ha-style";
 
 class HassioMarkdownDialog extends PolymerElement {
   static get template() {

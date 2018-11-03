@@ -1,14 +1,14 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-input/paper-input.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/polymer/polymer-legacy.js";
-import "@vaadin/vaadin-date-picker/vaadin-date-picker.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/polymer/polymer-legacy";
+import "@vaadin/vaadin-date-picker/vaadin-date-picker";
 
-import "../../../components/ha-relative-time.js";
-import "../../../components/paper-time-input.js";
+import "../../../components/ha-relative-time";
+import "../../../components/paper-time-input";
 
-import attributeClassNames from "../../../common/entity/attribute_class_names.js";
+import attributeClassNames from "../../../common/entity/attribute_class_names";
 
 class DatetimeInput extends PolymerElement {
   static get template() {

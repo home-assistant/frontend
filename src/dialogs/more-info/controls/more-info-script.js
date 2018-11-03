@@ -1,6 +1,6 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class MoreInfoScript extends PolymerElement {
   static get template() {

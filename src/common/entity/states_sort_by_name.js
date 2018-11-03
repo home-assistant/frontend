@@ -5,7 +5,7 @@
  *   const states = [state1, state2]
  *   states.sort(statesSortByName);
  */
-import computeStateName from "./compute_state_name.js";
+import computeStateName from "./compute_state_name";
 
 export default function sortStatesByName(entityA, entityB) {
   const nameA = computeStateName(entityA);

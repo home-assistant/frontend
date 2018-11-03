@@ -1,16 +1,16 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-item/paper-icon-item.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "./ha-icon.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "./ha-icon";
 
-import "../util/hass-translation.js";
-import LocalizeMixin from "../mixins/localize-mixin.js";
-import isComponentLoaded from "../common/config/is_component_loaded.js";
+import "../util/hass-translation";
+import LocalizeMixin from "../mixins/localize-mixin";
+import isComponentLoaded from "../common/config/is_component_loaded";
 
 /*
  * @appliesMixin LocalizeMixin

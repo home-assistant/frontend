@@ -12,17 +12,25 @@ export interface SectionConfig {
   label: string;
 }
 export interface WeblinkConfig {
-  name: string;
-  icon: string;
+  name?: string;
+  icon?: string;
   url: string;
+}
+export interface CallServiceConfig {
+  name: string;
+  icon?: string;
+  action_name?: string;
+  service: string;
+  service_data?: string;
 }
 export type EntityRowConfig =
   | EntityConfig
   | DividerConfig
   | SectionConfig
-  | WeblinkConfig;
+  | WeblinkConfig
+  | CallServiceConfig;
 
 export interface EntityRow {
-  hass: HomeAssistant;
+  hass?: HomeAssistant;
   setConfig(config: EntityRowConfig);
 }

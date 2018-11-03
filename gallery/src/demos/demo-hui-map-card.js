@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import getEntity from "../data/entity.js";
-import provideHass from "../data/provide_hass.js";
-import "../components/demo-cards.js";
+import getEntity from "../data/entity";
+import provideHass from "../data/provide_hass";
+import "../components/demo-cards";
 
 const ENTITIES = [
   getEntity("device_tracker", "demo_paulus", "not_home", {

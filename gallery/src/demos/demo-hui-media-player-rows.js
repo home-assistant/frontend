@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import getEntity from "../data/entity.js";
-import provideHass from "../data/provide_hass.js";
-import "../components/demo-cards.js";
+import getEntity from "../data/entity";
+import provideHass from "../data/provide_hass";
+import "../components/demo-cards";
 
 const ENTITIES = [
   getEntity("media_player", "bedroom", "playing", {
@@ -65,7 +65,7 @@ const CONFIGS = [
     - entity: media_player.living_room
       name: Pause, No skip, tvshow
     - entity: media_player.android_cast
-      name: Screen casting 
+      name: Screen casting
     - entity: media_player.lounge_room
       name: Chromcast Idle
     - entity: media_player.theater

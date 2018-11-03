@@ -6,18 +6,18 @@ import {
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import "../../../components/ha-card.js";
-import "../components/hui-entities-toggle.js";
+import "../../../components/ha-card";
+import "../components/hui-entities-toggle";
 
-import { fireEvent } from "../../../common/dom/fire_event.js";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const.js";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types.js";
-import createRowElement from "../common/create-row-element.js";
-import computeDomain from "../../../common/entity/compute_domain.js";
+import { HomeAssistant } from "../../../types";
+import { EntityConfig, EntityRow } from "../entity-rows/types";
+import { LovelaceCard, LovelaceConfig } from "../types";
 import processConfigEntities from "../common/process-config-entities";
-import { HomeAssistant } from "../../../types.js";
-import { EntityConfig, EntityRow } from "../entity-rows/types.js";
+import createRowElement from "../common/create-row-element";
+import computeDomain from "../../../common/entity/compute_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 interface ConfigEntity extends EntityConfig {
@@ -73,25 +73,8 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     const entities = processConfigEntities(config.entities);
-    for (const entity of entities) {
-      if (
-        entity.type === "call-service" &&
-        (!entity.service ||
-          !entity.name ||
-          !entity.icon ||
-          !entity.service_data ||
-          !entity.action_name)
-      ) {
-        throw new Error("Missing required property when type is call-service");
-      } else if (
-        entity.type === "weblink" &&
-        (!entity.name || !entity.icon || !entity.url)
-      ) {
-        throw new Error("Missing required property when type is weblink");
-      }
-    }
 
-    this._config = config;
+    this._config = { theme: "default", ...config };
     this._configEntities = entities;
   }
 

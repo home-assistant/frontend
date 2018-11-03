@@ -1,5 +1,5 @@
-import computeDomain from "./compute_domain.js";
-import getGroupEntities from "./get_group_entities.js";
+import computeDomain from "./compute_domain";
+import getGroupEntities from "./get_group_entities";
 
 // Return an object containing all entities that the view will show
 // including embedded groups.

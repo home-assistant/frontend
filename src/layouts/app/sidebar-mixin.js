@@ -1,4 +1,4 @@
-import { storeState } from "../../util/ha-pref-storage.js";
+import { storeState } from "../../util/ha-pref-storage";
 
 export default (superClass) =>
   class extends superClass {
