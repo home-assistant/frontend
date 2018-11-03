@@ -104,7 +104,7 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
   }
 
   _hasKnownState(state) {
-    return state != 'unknown' && state != null;
+    return state != 'unknown';
   }
 
   _localizeState(state) {
