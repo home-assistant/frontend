@@ -2,6 +2,7 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 import "@polymer/paper-input/paper-textarea";
+import { TemplateResult } from "lit-html";
 
 export class HuiYAMLEditor extends LitElement {
   public yaml?: string;
@@ -12,7 +13,7 @@ export class HuiYAMLEditor extends LitElement {
     };
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     return html`
       <style>
         paper-textarea {
@@ -26,9 +27,10 @@ export class HuiYAMLEditor extends LitElement {
     `;
   }
 
-  private _valueChanged(ev) {
-    this.yaml = ev.target.value;
-    fireEvent(this, "yaml-changed", { yaml: ev.target.value });
+  private _valueChanged(ev: MouseEvent): void {
+    const target = ev.target! as any;
+    this.yaml = target.value;
+    fireEvent(this, "yaml-changed", { yaml: target.value });
   }
 }
 

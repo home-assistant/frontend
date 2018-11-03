@@ -1,4 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "@polymer/paper-checkbox/paper-checkbox.js";
 
 import processConfigEntities from "../common/process-config-entities";
@@ -12,6 +12,7 @@ import "../../../components/entity/state-badge.js";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card.js";
 import "../../../components/ha-icon.js";
+import { TemplateResult } from "lit-html";
 
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
@@ -19,21 +20,21 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   private _config?: Config;
   private _configEntities?: EntityConfig[];
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _config: {},
     };
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     this._config = config;
     const entities = processConfigEntities(config.entities);
 
     this._configEntities = entities;
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -61,7 +62,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderEntity(entityConf) {
+  private renderEntity(entityConf: EntityConfig): TemplateResult {
     return html`
       <ha-entity-picker
         hass="${this.hass}"
@@ -71,17 +72,19 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _valueChanged(ev) {
+  private _valueChanged(ev: MouseEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
 
+    const target = ev.target! as any;
+
     // Paper-checkbox's use Checked, Their value is always "on" /shrug
     const newValue =
-      ev.target.checked !== undefined ? ev.target.checked : ev.target.value;
+      target.checked !== undefined ? target.checked : target.value;
 
     // Unsure why I could not grab a propery value ".configValue='show_name'" and ev.target.configValue wasnt working
-    this._config[ev.target.id] = newValue;
+    this._config[target.id] = newValue;
 
     fireEvent(this, "config-changed", {
       config: this._config,

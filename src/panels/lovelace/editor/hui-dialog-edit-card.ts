@@ -19,6 +19,7 @@ import "./hui-yaml-card-preview";
 // tslint:disable-next-line
 import { HuiYAMLCardPreview } from "./hui-yaml-card-preview";
 import { LovelaceCardEditor, LovelaceConfig } from "../types";
+import { TemplateResult } from "lit-html";
 
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
@@ -62,7 +63,7 @@ export class HuiDialogEditCard extends LitElement {
     return this.shadowRoot!.querySelector("hui-yaml-card-preview")!;
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     return html`
       <style>
         paper-dialog {
@@ -108,13 +109,13 @@ export class HuiDialogEditCard extends LitElement {
     `;
   }
 
-  protected updated() {
+  protected updated(): void {
     // This will center the dialog with the updated config
     fireEvent(this._dialog, "iron-resize");
   }
 
-  private _handleYamlChanged(ev) {
-    this._handleConfigChanged("yaml", ev.detail.yaml);
+  private _handleYamlChanged(ev: MouseEvent): void {
+    this._handleConfigChanged("yaml", (ev.detail as any).yaml);
   }
 
   private _handleConfigChanged(
@@ -177,7 +178,7 @@ export class HuiDialogEditCard extends LitElement {
     this._elementConfig = elementConfig;
   }
 
-  private async _updateConfig() {
+  private async _updateConfig(): Promise<void> {
     try {
       await updateCardConfig(this.hass!, this._cardId!, this._cardConfig);
       this._dialog.close();
