@@ -52,7 +52,9 @@ const connProm = async (auth) => {
     }
     // We can get invalid auth if auth tokens were stored that are no longer valid
     // Clear stored tokens.
-    if (!isExternal) saveTokens(null);
+    if (!isExternal) {
+      saveTokens(null);
+    }
     auth = await authProm();
     const conn = await createConnection({ auth });
     return { auth, conn };
@@ -63,7 +65,9 @@ window.hassConnection = authProm().then(connProm);
 
 // Start fetching some of the data that we will need.
 window.hassConnection.then(({ conn }) => {
-  const noop = () => {};
+  const noop = () => {
+    // do nothing
+  };
   subscribeEntities(conn, noop);
   subscribeConfig(conn, noop);
   subscribeServices(conn, noop);

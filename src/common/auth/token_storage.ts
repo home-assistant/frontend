@@ -28,12 +28,14 @@ export function askWrite() {
   );
 }
 
-export function saveTokens(tokens: AuthData) {
+export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
   if (tokenCache.writeEnabled) {
     try {
       storage.hassTokens = JSON.stringify(tokens);
-    } catch (err) {} // eslint-disable-line
+    } catch (err) {
+      // write failed, ignore it. Happens if storage is full or private mode.
+    }
   }
 }
 

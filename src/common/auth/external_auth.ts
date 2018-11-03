@@ -6,14 +6,14 @@ import { Auth } from "home-assistant-js-websocket";
 const CALLBACK_SET_TOKEN = "externalAuthSetToken";
 const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";
 
-type BasePayload = {
+interface BasePayload {
   callback: string;
-};
+}
 
-type RefreshTokenResponse = {
+interface RefreshTokenResponse {
   access_token: string;
   expires_in: number;
-};
+}
 
 declare global {
   interface Window {
@@ -53,7 +53,7 @@ export default class ExternalAuth extends Auth {
     });
   }
 
-  async refreshAccessToken() {
+  public async refreshAccessToken() {
     const responseProm = new Promise<RefreshTokenResponse>(
       (resolve, reject) => {
         window[CALLBACK_SET_TOKEN] = (success, data) =>
@@ -80,7 +80,7 @@ export default class ExternalAuth extends Auth {
     this.data.expires = tokens.expires_in * 1000 + Date.now();
   }
 
-  async revoke() {
+  public async revoke() {
     const responseProm = new Promise((resolve, reject) => {
       window[CALLBACK_REVOKE_TOKEN] = (success, data) =>
         success ? resolve(data) : reject(data);
