@@ -4,37 +4,19 @@ import "@polymer/paper-checkbox/paper-checkbox.js";
 import processConfigEntities from "../common/process-config-entities";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types.js";
-import { LovelaceConfig, LovelaceCardEditor } from "../types.js";
+import { LovelaceCardEditor } from "../types.js";
 import { fireEvent } from "../../../common/dom/fire_event.js";
+import { Config, EntityConfig } from "../cards/hui-glance-card";
 
 import "../../../components/entity/state-badge.js";
 import "../../../components/ha-card.js";
 import "../../../components/ha-icon.js";
 
-interface EntityConfig {
-  name: string;
-  icon: string;
-  entity: string;
-  tap_action: "toggle" | "call-service" | "more-info";
-  hold_action?: "toggle" | "call-service" | "more-info";
-  service?: string;
-  service_data?: object;
-}
-
-interface Config extends LovelaceConfig {
-  show_name?: boolean;
-  show_state?: boolean;
-  title?: string;
-  theme?: string;
-  entities: EntityConfig[];
-  columns?: number;
-}
-
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
   public hass?: HomeAssistant;
-  protected _config?: Config;
-  protected _configEntities?: EntityConfig[];
+  private _config?: Config;
+  private _configEntities?: EntityConfig[];
 
   static get properties() {
     return {

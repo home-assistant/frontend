@@ -23,7 +23,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-interface EntityConfig {
+export interface EntityConfig {
   name: string;
   icon: string;
   entity: string;
@@ -33,7 +33,7 @@ interface EntityConfig {
   service_data?: object;
 }
 
-interface Config extends LovelaceConfig {
+export interface Config extends LovelaceConfig {
   show_name?: boolean;
   show_state?: boolean;
   title?: string;
@@ -44,7 +44,7 @@ interface Config extends LovelaceConfig {
 
 export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  public static async getElementConfig(): Promise<LovelaceCardEditor> {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }

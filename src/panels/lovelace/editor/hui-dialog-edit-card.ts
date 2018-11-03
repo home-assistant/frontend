@@ -47,7 +47,8 @@ export class HuiDialogEditCard extends LitElement {
     this._reloadLovelace = reloadLovelace;
     this._cardConfig = "";
     this._showUIEditor = true;
-    this._loadConfig();
+    // await this._loadConfig();
+    // await this._loadElementConfig();
     // Wait till dialog is rendered.
     await this.updateComplete;
     this._dialog.open();
@@ -62,6 +63,7 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   protected render() {
+    console.log(this._elementConfig);
     return html`
       <style>
         paper-dialog {
@@ -75,8 +77,12 @@ export class HuiDialogEditCard extends LitElement {
         <h2>Card Configuration</h2>
         <paper-dialog-scrollable>
           ${
-            this._showUIEditor && this._elementConfig
-              ? html`<div class="element-editor">${this._elementConfig}</div>`
+            // Look to see if this has already be done if yes dont use until just render this._elementConfig
+            this._showUIEditor
+              ? html`<div class="element-editor">${until(
+                  this._loadConfig().then(() => this._loadElementConfig()),
+                  html`<span>Loading...</span>`
+                )}</div>`
               : html`
               <hui-yaml-editor
                 .yaml="${this._cardConfig}"
@@ -89,28 +95,34 @@ export class HuiDialogEditCard extends LitElement {
           ></hui-yaml-card-preview>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button @click="${
-            this._toggleEditor
-          }">Toggle Editor</paper-button>
-          <paper-button @click="${this._closeDialog}">Cancel</paper-button>
-          <paper-button @click="${this._updateConfig}">Save</paper-button>
+          <paper-button
+            @click="${this._toggleEditor}"
+          >Toggle Editor</paper-button>
+          <paper-button
+            @click="${this._closeDialog}"
+          >Cancel</paper-button>
+          <paper-button
+            @click="${this._updateConfig}"'
+          >Save</paper-button>
         </div>
       </paper-dialog>
     `;
   }
 
   private _handleYamlChanged(ev) {
-    this._previewEl.yaml = ev.detail.yaml;
+    this._handleConfigChanged("yaml", ev.detail.yaml);
   }
 
-  private _handleConfigChanged(ev) {
-    console.log("Config Changed");
-
+  private _handleConfigChanged(type: string, changedProps: any): void {
     if (!this._previewEl) {
       return;
     }
 
-    this._previewEl.config = ev.detail.config;
+    if (type === "js") {
+      this._previewEl.config = changedProps;
+    } else {
+      this._previewEl.yaml = changedProps;
+    }
   }
 
   private _closeDialog() {
@@ -128,32 +140,33 @@ export class HuiDialogEditCard extends LitElement {
 
   private async _loadConfig() {
     this._cardConfig = await getCardConfig(this.hass!, this._cardId!);
-    this._loadElementConfig();
     await this.updateComplete;
     // This will center the dialog with the updated config
     fireEvent(this._dialog, "iron-resize");
   }
 
-  private async _loadElementConfig() {
+  private async _loadElementConfig(): Promise<LovelaceCardEditor> {
     const conf = yaml.safeLoad(this._cardConfig);
     const elClass = customElements.get(`hui-${conf.type}-card`);
-
+    let elementConfig;
     try {
-      this._elementConfig = await elClass.getElementConfig();
+      elementConfig = await elClass.getConfigElement();
     } catch (err) {
       // No Element Config Function on Element
       this._showUIEditor = false;
       return;
     }
-    if (!this._elementConfig) {
+    if (!elementConfig) {
       this._showUIEditor = false;
       return;
     }
-    this._elementConfig.setConfig(conf);
-    this._elementConfig.hass = this.hass;
-    this._elementConfig.addEventListener("config-changed", (ev) =>
-      this._handleConfigChanged(ev)
+    elementConfig.setConfig(conf);
+    elementConfig.hass = this.hass;
+    elementConfig.addEventListener("config-changed", (ev) =>
+      this._handleConfigChanged("js", ev.detail.config)
     );
+    this._elementConfig = elementConfig;
+    return elementConfig;
   }
 
   private async _updateConfig() {
