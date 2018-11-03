@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import emptyImageBase64 from "../../../common/empty_image_base64.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
+import computeStateName from "../../../common/entity/compute_state_name";
+import emptyImageBase64 from "../../../common/empty_image_base64";
+import EventsMixin from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

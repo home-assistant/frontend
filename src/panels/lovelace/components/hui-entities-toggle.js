@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/paper-toggle-button/paper-toggle-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
-import { DOMAINS_TOGGLE } from "../../../common/const.js";
-import turnOnOffEntities from "../common/entity/turn-on-off-entities.js";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import turnOnOffEntities from "../common/entity/turn-on-off-entities";
 
 class HuiEntitiesToggle extends PolymerElement {
   static get template() {

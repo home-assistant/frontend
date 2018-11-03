@@ -1,19 +1,19 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout.js";
-import "@polymer/app-layout/app-header/app-header.js";
-import "@polymer/app-layout/app-toolbar/app-toolbar.js";
-import "@polymer/app-route/app-route.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-route/app-route";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/components/ha-menu-button.js";
-import "../../../src/resources/ha-style.js";
-import "../hassio-markdown-dialog.js";
-import "./hassio-addon-audio.js";
-import "./hassio-addon-config.js";
-import "./hassio-addon-info.js";
-import "./hassio-addon-logs.js";
-import "./hassio-addon-network.js";
+import "../../../src/components/ha-menu-button";
+import "../../../src/resources/ha-style";
+import "../hassio-markdown-dialog";
+import "./hassio-addon-audio";
+import "./hassio-addon-config";
+import "./hassio-addon-info";
+import "./hassio-addon-logs";
+import "./hassio-addon-network";
 
 class HassioAddonView extends PolymerElement {
   static get template() {

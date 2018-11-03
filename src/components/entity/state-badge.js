@@ -1,9 +1,9 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../ha-icon.js";
-import computeStateDomain from "../../common/entity/compute_state_domain.js";
-import stateIcon from "../../common/entity/state_icon.js";
+import "../ha-icon";
+import computeStateDomain from "../../common/entity/compute_state_domain";
+import stateIcon from "../../common/entity/state_icon";
 
 class StateBadge extends PolymerElement {
   static get template() {

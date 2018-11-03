@@ -1,10 +1,10 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
 
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../../components/ha-card.js";
+import "../../../../components/ha-card";
 
 export class HuiNotificationItemTemplate extends PolymerElement {
   static get template() {
@@ -13,7 +13,7 @@ export class HuiNotificationItemTemplate extends PolymerElement {
       .contents {
         padding: 16px;
       }
-   
+
       ha-card .header {
         @apply --paper-font-headline;
         color: var(--primary-text-color);

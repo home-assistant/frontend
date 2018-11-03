@@ -1,8 +1,8 @@
-import "@polymer/paper-button/paper-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 const STATES_INTERCEPTABLE = {
   cleaning: {

@@ -1,7 +1,7 @@
 import { html } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import computeCardSize from "../common/compute-card-size.js";
+import computeCardSize from "../common/compute-card-size";
 
 import { HuiStackCard } from "./hui-stack-card";
 

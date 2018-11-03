@@ -1,17 +1,17 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/entity/ha-entity-toggle.js";
-import "../components/ha-card.js";
-import "../state-summary/state-card-content.js";
+import "../components/entity/ha-entity-toggle";
+import "../components/ha-card";
+import "../state-summary/state-card-content";
 
-import computeStateDomain from "../common/entity/compute_state_domain.js";
-import computeStateName from "../common/entity/compute_state_name.js";
-import stateMoreInfoType from "../common/entity/state_more_info_type.js";
-import canToggleState from "../common/entity/can_toggle_state.js";
-import EventsMixin from "../mixins/events-mixin.js";
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import computeStateDomain from "../common/entity/compute_state_domain";
+import computeStateName from "../common/entity/compute_state_name";
+import stateMoreInfoType from "../common/entity/state_more_info_type";
+import canToggleState from "../common/entity/can_toggle_state";
+import EventsMixin from "../mixins/events-mixin";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {

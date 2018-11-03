@@ -1,4 +1,4 @@
-import "@polymer/iron-icon/iron-icon.js";
+import "@polymer/iron-icon/iron-icon";
 
 const IronIconClass = customElements.get("iron-icon");
 
@@ -10,7 +10,7 @@ class HaIcon extends IronIconClass {
 
     if (!loaded && this._iconsetName === "mdi") {
       loaded = true;
-      import(/* webpackChunkName: "mdi-icons" */ "../resources/mdi-icons.js");
+      import(/* webpackChunkName: "mdi-icons" */ "../resources/mdi-icons");
     }
   }
 }

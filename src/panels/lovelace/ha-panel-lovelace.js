@@ -1,10 +1,10 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/paper-button/paper-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/paper-button/paper-button";
 
-import "../../layouts/hass-loading-screen.js";
-import "../../layouts/hass-error-screen.js";
-import "./hui-root.js";
+import "../../layouts/hass-loading-screen";
+import "../../layouts/hass-error-screen";
+import "./hui-root";
 
 class Lovelace extends PolymerElement {
   static get template() {

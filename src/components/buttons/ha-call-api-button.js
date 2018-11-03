@@ -1,7 +1,7 @@
 import { LitElement, html } from "@polymer/lit-element";
 
-import "./ha-progress-button.js";
-import { fireEvent } from "../../common/dom/fire_event.js";
+import "./ha-progress-button";
+import { fireEvent } from "../../common/dom/fire_event";
 
 class HaCallApiButton extends LitElement {
   render() {

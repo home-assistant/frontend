@@ -1,12 +1,12 @@
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/buttons/ha-call-api-button.js";
-import "../../../components/buttons/ha-call-service-button.js";
-import "../../../components/ha-service-description.js";
-import "../ha-config-section.js";
+import "../../../components/buttons/ha-call-api-button";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
 
 class ZwaveNetwork extends PolymerElement {
   static get template() {

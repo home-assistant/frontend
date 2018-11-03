@@ -1,17 +1,17 @@
-import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../resources/ha-style.js";
+import "../resources/ha-style";
 
-import "./more-info/more-info-controls.js";
-import "./more-info/more-info-settings.js";
+import "./more-info/more-info-controls";
+import "./more-info/more-info-settings";
 
 import computeStateDomain from "../common/entity/compute_state_domain";
-import isComponentLoaded from "../common/config/is_component_loaded.js";
+import isComponentLoaded from "../common/config/is_component_loaded";
 
-import DialogMixin from "../mixins/dialog-mixin.js";
+import DialogMixin from "../mixins/dialog-mixin";
 
 /*
  * @appliesMixin DialogMixin

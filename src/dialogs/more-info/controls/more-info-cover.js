@@ -1,16 +1,16 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-cover-tilt-controls.js";
-import "../../../components/ha-labeled-slider.js";
-import CoverEntity from "../../../util/cover-model.js";
+import "../../../components/ha-cover-tilt-controls";
+import "../../../components/ha-labeled-slider";
+import CoverEntity from "../../../util/cover-model";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
 import featureClassNames from "../../../common/entity/feature_class_names";
 
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 const FEATURE_CLASS_NAMES = {
   128: "has-set_tilt_position",

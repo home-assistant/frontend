@@ -1,8 +1,8 @@
 import { h, Component } from "preact";
-import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-input/paper-input";
 
-import JSONTextArea from "../json_textarea.js";
-import { onChangeEvent } from "../../../../common/preact/event.js";
+import JSONTextArea from "../json_textarea";
+import { onChangeEvent } from "../../../../common/preact/event";
 
 export default class EventAction extends Component {
   constructor() {

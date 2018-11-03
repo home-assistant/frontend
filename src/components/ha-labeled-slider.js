@@ -1,8 +1,8 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./ha-paper-slider.js";
-import "./ha-icon.js";
+import "./ha-paper-slider";
+import "./ha-icon";
 
 class HaLabeledSlider extends PolymerElement {
   static get template() {

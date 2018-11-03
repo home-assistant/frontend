@@ -1,10 +1,10 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/hui-generic-entity-row.js";
+import "../components/hui-generic-entity-row";
 
-import timerTimeRemaining from "../../../common/entity/timer_time_remaining.js";
-import secondsToDuration from "../../../common/datetime/seconds_to_duration.js";
+import timerTimeRemaining from "../../../common/entity/timer_time_remaining";
+import secondsToDuration from "../../../common/datetime/seconds_to_duration";
 
 class HuiTimerEntityRow extends PolymerElement {
   static get template() {

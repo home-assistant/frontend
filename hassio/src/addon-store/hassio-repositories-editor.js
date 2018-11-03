@@ -1,12 +1,12 @@
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-input/paper-input.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-input/paper-input";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/components/buttons/ha-call-api-button.js";
-import "../components/hassio-card-content.js";
-import "../resources/hassio-style.js";
+import "../../../src/components/buttons/ha-call-api-button";
+import "../components/hassio-card-content";
+import "../resources/hassio-style";
 
 class HassioRepositoriesEditor extends PolymerElement {
   static get template() {

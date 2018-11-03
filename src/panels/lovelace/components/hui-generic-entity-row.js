@@ -1,11 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/entity/state-badge.js";
-import "../../../components/ha-relative-time.js";
-import "../../../components/ha-icon.js";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-relative-time";
+import "../../../components/ha-icon";
 
-import computeStateName from "../../../common/entity/compute_state_name.js";
+import computeStateName from "../../../common/entity/compute_state_name";
 
 class HuiGenericEntityRow extends PolymerElement {
   static get template() {

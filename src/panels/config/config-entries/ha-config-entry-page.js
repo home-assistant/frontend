@@ -1,17 +1,17 @@
-import "@polymer/paper-card/paper-card.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-card/paper-card";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../layouts/hass-subpage.js";
+import "../../../layouts/hass-subpage";
 
-import "../../../components/entity/state-badge.js";
-import compare from "../../../common/string/compare.js";
+import "../../../components/entity/state-badge";
+import compare from "../../../common/string/compare";
 
-import "./ha-device-card.js";
-import "./ha-ce-entities-card.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
+import "./ha-device-card";
+import "./ha-ce-entities-card";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import NavigateMixin from "../../../mixins/navigate-mixin";
 
 class HaConfigEntryPage extends NavigateMixin(
   EventsMixin(LocalizeMixin(PolymerElement))
@@ -29,6 +29,7 @@ class HaConfigEntryPage extends NavigateMixin(
       box-sizing: border-box;
       display: flex;
       flex: 1 0 300px;
+      min-width: 0;
       max-width: 500px;
       padding: 8px;
     }

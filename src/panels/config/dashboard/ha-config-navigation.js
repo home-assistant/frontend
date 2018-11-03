@@ -1,14 +1,14 @@
-import "@polymer/iron-icon/iron-icon.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-item/paper-item.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import NavigateMixin from "../../../mixins/navigate-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import NavigateMixin from "../../../mixins/navigate-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
-import isComponentLoaded from "../../../common/config/is_component_loaded.js";
+import isComponentLoaded from "../../../common/config/is_component_loaded";
 
 const CORE_PAGES = ["core", "customize"];
 /*

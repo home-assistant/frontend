@@ -1,5 +1,5 @@
 // Parse array of entity objects from config
-import isValidEntityId from "../../../common/entity/valid_entity_id.js";
+import isValidEntityId from "../../../common/entity/valid_entity_id";
 
 export default function processConfigEntities(entities) {
   if (!entities || !Array.isArray(entities)) {

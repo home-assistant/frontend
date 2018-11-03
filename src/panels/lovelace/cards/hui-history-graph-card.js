@@ -1,11 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card.js";
-import "../../../components/state-history-charts.js";
+import "../../../components/ha-card";
+import "../../../components/state-history-charts";
 import "../../../data/ha-state-history-data";
 
-import processConfigEntities from "../common/process-config-entities.js";
+import processConfigEntities from "../common/process-config-entities";
 
 class HuiHistoryGraphCard extends PolymerElement {
   static get template() {

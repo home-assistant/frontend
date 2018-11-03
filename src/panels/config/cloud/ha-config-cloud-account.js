@@ -1,19 +1,19 @@
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-card/paper-card.js";
-import "@polymer/paper-item/paper-item-body.js";
-import "@polymer/paper-toggle-button/paper-toggle-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-toggle-button/paper-toggle-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/buttons/ha-call-api-button.js";
-import "../../../layouts/hass-subpage.js";
-import "../../../resources/ha-style.js";
+import "../../../components/buttons/ha-call-api-button";
+import "../../../layouts/hass-subpage";
+import "../../../resources/ha-style";
 
-import "../ha-config-section.js";
+import "../ha-config-section";
 
-import formatDateTime from "../../../common/datetime/format_date_time.js";
-import EventsMixin from "../../../mixins/events-mixin.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import formatDateTime from "../../../common/datetime/format_date_time";
+import EventsMixin from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin

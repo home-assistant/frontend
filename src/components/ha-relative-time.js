@@ -1,9 +1,9 @@
-import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import relativeTime from "../common/datetime/relative_time.js";
+import relativeTime from "../common/datetime/relative_time";
 
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
