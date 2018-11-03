@@ -72,9 +72,9 @@ export default class CoverEntity {
   }
 
   get isTiltOnly() {
-    var supportsCover =
+    const supportsCover =
       this.supportsOpen || this.supportsClose || this.supportsStop;
-    var supportsTilt =
+    const supportsTilt =
       this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
     return supportsTilt && !supportsCover;
   }
@@ -141,9 +141,9 @@ export const supportsStopTilt = (stateObj) => support(stateObj, 64);
 export const supportsSetTiltPosition = (stateObj) => support(stateObj, 128);
 
 export function isTiltOnly(stateObj) {
-  var supportsCover =
+  const supportsCover =
     supportsOpen(stateObj) || supportsClose(stateObj) || supportsStop(stateObj);
-  var supportsTilt =
+  const supportsTilt =
     supportsOpenTilt(stateObj) ||
     supportsCloseTilt(stateObj) ||
     supportsStopTilt(stateObj);

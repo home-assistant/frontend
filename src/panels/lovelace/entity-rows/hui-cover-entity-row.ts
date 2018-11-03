@@ -21,14 +21,14 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
   }
 
   public setConfig(config: EntityConfig): void {
-    if (!config || !config.entity) {
-      throw new Error("Entity not configured.");
+    if (!config) {
+      throw new Error("Configuration error");
     }
     this._config = config;
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.hass.states[this._config.entity]) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
@@ -39,17 +39,23 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
         .config=${this._config}
       >
       ${
-        isTiltOnly(this.hass.states[this._config.entity])
+        this.hass.states[this._config.entity]
           ? html`
-            <ha-cover-tilt-controls
-              .hass=${this.hass}
-              .stateObj=${this.hass.states[this._config.entity]}
-            ></ha-cover-tilt-controls>`
-          : html`
-            <ha-cover-controls
-              .hass=${this.hass}
-              .stateObj=${this.hass.states[this._config.entity]}
-            ></ha-cover-controls>`
+            ${
+              isTiltOnly(this.hass.states[this._config.entity])
+                ? html`
+                  <ha-cover-tilt-controls
+                    .hass=${this.hass}
+                    .stateObj=${this.hass.states[this._config.entity]}
+                  ></ha-cover-tilt-controls>`
+                : html`
+                  <ha-cover-controls
+                    .hass=${this.hass}
+                    .stateObj=${this.hass.states[this._config.entity]}
+                  ></ha-cover-controls>`
+            }
+          `
+          : html``
       }
       </hui-generic-entity-row>
     `;
