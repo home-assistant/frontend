@@ -9,9 +9,12 @@ cd "$(dirname "$0")/.."
 # Install node modules
 yarn install
 
+# Verify everything is ok
+tsc
+
 script/build_frontend
 
 rm -rf dist
 python3 setup.py sdist
-python3 -m twine upload dist/* 
+python3 -m twine upload dist/*
 
