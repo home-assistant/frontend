@@ -103,7 +103,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
               <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
                 <paper-item on-click="_handleRefresh">Refresh</paper-item>
                 <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
-                <paper-item on-click="_editModeEnable">Configure UI</paper-item>
+                <paper-item on-click="_editModeEnable">Configure UI (alpha)</paper-item>
                 <paper-item on-click="_handleHelp">Help</paper-item>
               </paper-listbox>
             </paper-menu-button>
