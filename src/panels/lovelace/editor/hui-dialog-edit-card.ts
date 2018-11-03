@@ -13,13 +13,12 @@ import { HomeAssistant } from "../../../types";
 import { getCardConfig, updateCardConfig } from "../common/data";
 import { fireEvent } from "../../../common/dom/fire_event.js";
 
-import "../../../components/entity/ha-entity-picker";
 import "./hui-yaml-editor";
 import "./hui-yaml-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiYAMLCardPreview } from "./hui-yaml-card-preview";
-import { LovelaceCardEditor } from "../types";
+import { LovelaceCardEditor, LovelaceConfig } from "../types";
 
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
@@ -77,7 +76,6 @@ export class HuiDialogEditCard extends LitElement {
         <h2>Card Configuration</h2>
         <paper-dialog-scrollable>
           ${
-            // Look to see if this has already be done if yes dont use until just render this._elementConfig
             this._editorToggle
               ? html`<div class="element-editor">${when(
                   this._elementConfig,
@@ -85,10 +83,10 @@ export class HuiDialogEditCard extends LitElement {
                   () => html`Loading...`
                 )}</div>`
               : html`
-                  <hui-yaml-editor
-                    .yaml="${this._cardConfig}"
-                    @yaml-changed="${this._handleYamlChanged}"
-                  ></hui-yaml-editor>`
+              <hui-yaml-editor
+                .yaml="${this._cardConfig}"
+                @yaml-changed="${this._handleYamlChanged}"
+              ></hui-yaml-editor>`
           }
           <hui-yaml-card-preview
             .hass="${this.hass}"
@@ -119,28 +117,36 @@ export class HuiDialogEditCard extends LitElement {
     this._handleConfigChanged("yaml", ev.detail.yaml);
   }
 
-  private _handleConfigChanged(type: string, changedProps: any): void {
+  private _handleConfigChanged(
+    format: string,
+    value: LovelaceConfig | string
+  ): void {
     if (!this._previewEl) {
       return;
     }
 
-    this._previewEl.value = { format: type, value: changedProps };
+    if (format === "js") {
+      this._cardConfig = yaml.safeDump(value);
+    } else if (this._elementConfig) {
+      this._elementConfig.setConfig(yaml.safeLoad(value));
+    }
+
+    this._previewEl.value = { format, value };
   }
 
-  private _closeDialog() {
+  private _closeDialog(): void {
     this._dialog.close();
   }
 
-  private _toggleEditor() {
-    if (!this._elementConfig) {
+  private _toggleEditor(): void {
+    if (this._elementConfig === null) {
       return;
     }
     this._editorToggle = !this._editorToggle;
   }
 
-  private async _loadConfig() {
+  private async _loadConfig(): Promise<void> {
     this._cardConfig = await getCardConfig(this.hass!, this._cardId!);
-    await this.updateComplete;
   }
 
   private async _loadElementConfig(): Promise<void> {
@@ -154,10 +160,13 @@ export class HuiDialogEditCard extends LitElement {
       // No Element Config Function on Element
       this._editorToggle = false;
       this._elementConfig = null;
+      return;
     }
+
     if (!elementConfig) {
       this._editorToggle = false;
       this._elementConfig = null;
+      return;
     }
 
     elementConfig.setConfig(conf);
@@ -172,12 +181,15 @@ export class HuiDialogEditCard extends LitElement {
     const newCardConfig = this.shadowRoot!.querySelector("hui-yaml-editor")!
       .yaml;
 
-    if (this._cardConfig === newCardConfig) {
-      this._dialog.close();
-      return;
-    }
+    // if (this._cardConfig === newCardConfig) {
+    //   this._dialog.close();
+    //   return;
+    // }
+    console.log(this._cardConfig);
+    console.log(newCardConfig);
+
     try {
-      await updateCardConfig(this.hass!, this._cardId!, newCardConfig);
+      await updateCardConfig(this.hass!, this._cardId!, this._cardConfig);
       this._dialog.close();
       this._reloadLovelace!();
     } catch (err) {

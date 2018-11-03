@@ -9,6 +9,7 @@ import { fireEvent } from "../../../common/dom/fire_event.js";
 import { Config, EntityConfig } from "../cards/hui-glance-card";
 
 import "../../../components/entity/state-badge.js";
+import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card.js";
 import "../../../components/ha-icon.js";
 
