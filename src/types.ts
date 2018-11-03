@@ -40,6 +40,11 @@ export interface Theme {
   "accent-color": string;
 }
 
+export interface Themes {
+  default_theme: string;
+  themes: { [key: string]: Theme };
+}
+
 export interface Panel {
   component_name: string;
   config?: { [key: string]: any };
@@ -48,9 +53,21 @@ export interface Panel {
   url_path: string;
 }
 
+export interface Panels {
+  [name: string]: Panel;
+}
+
 export interface Translation {
   nativeName: string;
   fingerprints: { [fragment: string]: string };
+}
+
+export interface Notification {
+  notification_id: string;
+  message: string;
+  title: string;
+  status: "read" | "unread";
+  created_at: string;
 }
 
 export interface HomeAssistant {
@@ -59,11 +76,8 @@ export interface HomeAssistant {
   connected: boolean;
   states: HassEntities;
   config: HassConfig;
-  themes: {
-    default_theme: string;
-    themes: { [key: string]: Theme };
-  };
-  panels: { [key: string]: Panel };
+  themes: Themes;
+  panels: Panels;
   panelUrl: string;
   language: string;
   resources: { [key: string]: any };

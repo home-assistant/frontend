@@ -1,12 +1,14 @@
-import { createCollection, getUser } from "home-assistant-js-websocket";
+import {
+  createCollection,
+  getUser,
+  Connection,
+} from "home-assistant-js-websocket";
+import { User } from "../types";
 
-export interface User {
-  id: string;
-  is_owner: boolean;
-  name: string;
-}
-
-export const subscribeUser = (conn, onChange) =>
+export const subscribeUser = (
+  conn: Connection,
+  onChange: (user: User) => void
+) =>
   createCollection<User>(
     "_usr",
     // the getUser command is mistyped in current verrsion of HAWS.
