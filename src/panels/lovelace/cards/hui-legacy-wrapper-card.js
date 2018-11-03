@@ -1,5 +1,5 @@
-import createErrorCardConfig from "../common/create-error-card-config.js";
-import computeDomain from "../../../common/entity/compute_domain.js";
+import createErrorCardConfig from "../common/create-error-card-config";
+import computeDomain from "../../../common/entity/compute_domain";
 
 export default class LegacyWrapperCard extends HTMLElement {
   constructor(tag, domain) {

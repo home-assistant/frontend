@@ -3,7 +3,7 @@
  *
  * Optionally pass in a state to influence the domain icon.
  */
-import { DEFAULT_DOMAIN_ICON } from "../const.js";
+import { DEFAULT_DOMAIN_ICON } from "../const";
 
 const fixedIcons = {
   alert: "hass:alert",

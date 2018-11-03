@@ -1,20 +1,20 @@
-import "@polymer/app-layout/app-drawer-layout/app-drawer-layout.js";
-import "@polymer/app-layout/app-drawer/app-drawer.js";
-import "@polymer/app-route/app-route.js";
-import "@polymer/iron-media-query/iron-media-query.js";
-import "@polymer/iron-pages/iron-pages.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
+import "@polymer/app-layout/app-drawer/app-drawer";
+import "@polymer/app-route/app-route";
+import "@polymer/iron-media-query/iron-media-query";
+import "@polymer/iron-pages/iron-pages";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../util/ha-url-sync.js";
+import "../util/ha-url-sync";
 
-import "./partial-cards.js";
-import "./partial-panel-resolver.js";
-import EventsMixin from "../mixins/events-mixin.js";
-import NavigateMixin from "../mixins/navigate-mixin.js";
+import "./partial-cards";
+import "./partial-panel-resolver";
+import EventsMixin from "../mixins/events-mixin";
+import NavigateMixin from "../mixins/navigate-mixin";
 
-import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar.js");
-import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog.js");
+import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
+import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
@@ -26,6 +26,9 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
       color: var(--primary-text-color);
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    :host([rtl]) {
+      direction: rtl;
     }
     iron-pages, ha-sidebar {
       /* allow a light tap highlight on the actual interface elements  */
@@ -42,7 +45,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   </iron-media-query>
 
   <app-drawer-layout fullbleed="" force-narrow="[[computeForceNarrow(narrow, dockedSidebar)]]" responsive-width="0">
-    <app-drawer id="drawer" slot="drawer" disable-swipe="[[_computeDisableSwipe(hass)]]" swipe-open="[[!_computeDisableSwipe(hass)]]" persistent="[[dockedSidebar]]">
+    <app-drawer align="start" id="drawer" slot="drawer" disable-swipe="[[_computeDisableSwipe(hass)]]" swipe-open="[[!_computeDisableSwipe(hass)]]" persistent="[[dockedSidebar]]">
       <ha-sidebar narrow="[[narrow]]" hass="[[hass]]" default-page="[[_defaultPage]]"></ha-sidebar>
     </app-drawer>
 
@@ -68,6 +71,11 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
       dockedSidebar: {
         type: Boolean,
         computed: "computeDockedSidebar(hass)",
+      },
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "computeRTL(hass)",
       },
     };
   }
@@ -121,6 +129,13 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   computeDockedSidebar(hass) {
     return hass.dockedSidebar;
+  }
+
+  computeRTL(hass) {
+    return (
+      hass.translationMetadata.translations[hass.selectedLanguage].isRTL ||
+      false
+    );
   }
 
   _computeDisableSwipe(hass) {

@@ -1,10 +1,10 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/paper-input/paper-input.js";
-import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior.js";
-import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/paper-input/paper-input";
+import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
+import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 
-import "../components/hui-generic-entity-row.js";
+import "../components/hui-generic-entity-row";
 import "../../../components/ha-slider";
 
 class HuiInputNumberEntityRow extends mixinBehaviors(

@@ -1,11 +1,11 @@
-import "@polymer/polymer/lib/utils/debounce.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./entity/ha-chart-base.js";
+import "./entity/ha-chart-base";
 
-import LocalizeMixin from "../mixins/localize-mixin.js";
-import formatDateTime from "../common/datetime/format_date_time.js";
+import LocalizeMixin from "../mixins/localize-mixin";
+import formatDateTime from "../common/datetime/format_date_time";
 
 class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
   static get template() {

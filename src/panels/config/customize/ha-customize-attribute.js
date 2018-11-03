@@ -1,14 +1,14 @@
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import hassAttributeUtil from "../../../util/hass-attributes-util.js";
-import "../ha-form-style.js";
-import "./types/ha-customize-array.js";
-import "./types/ha-customize-boolean.js";
-import "./types/ha-customize-icon.js";
-import "./types/ha-customize-key-value.js";
-import "./types/ha-customize-string.js";
+import hassAttributeUtil from "../../../util/hass-attributes-util";
+import "../ha-form-style";
+import "./types/ha-customize-array";
+import "./types/ha-customize-boolean";
+import "./types/ha-customize-icon";
+import "./types/ha-customize-key-value";
+import "./types/ha-customize-string";
 
 class HaCustomizeAttribute extends PolymerElement {
   static get template() {

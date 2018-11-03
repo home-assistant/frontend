@@ -1,13 +1,13 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 import JsYaml from "js-yaml";
 
-import HomeAssistant from "../data/hass.js";
-import { demoConfig } from "../data/demo_config.js";
+import HomeAssistant from "../data/hass";
+import { demoConfig } from "../data/demo_config";
 import { demoServices } from "../data/demo_services";
-import demoResources from "../data/demo_resources.js";
-import demoStates from "../data/demo_states.js";
-import createCardElement from "../../../src/panels/lovelace/common/create-card-element.js";
+import demoResources from "../data/demo_resources";
+import demoStates from "../data/demo_states";
+import createCardElement from "../../../src/panels/lovelace/common/create-card-element";
 
 class DemoCard extends PolymerElement {
   static get template() {

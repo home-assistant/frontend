@@ -1,4 +1,4 @@
-import IntlMessageFormat from "intl-messageformat/src/main.js";
+import IntlMessageFormat from "intl-messageformat/src/main";
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -88,7 +88,11 @@ export const localizeBaseMixin = (superClass) =>
           argObject[args[i]] = args[i + 1];
         }
 
-        return translatedMessage.format(argObject);
+        try {
+          return translatedMessage.format(argObject);
+        } catch (err) {
+          return "Translation " + err;
+        }
       };
     }
 

@@ -1,13 +1,13 @@
 /** Return an icon representing a state. */
-import { DEFAULT_DOMAIN_ICON } from "../const.js";
+import { DEFAULT_DOMAIN_ICON } from "../const";
 
-import computeDomain from "./compute_domain.js";
-import domainIcon from "./domain_icon.js";
+import computeDomain from "./compute_domain";
+import domainIcon from "./domain_icon";
 
-import binarySensorIcon from "./binary_sensor_icon.js";
-import coverIcon from "./cover_icon.js";
-import sensorIcon from "./sensor_icon.js";
-import inputDateTimeIcon from "./input_dateteime_icon.js";
+import binarySensorIcon from "./binary_sensor_icon";
+import coverIcon from "./cover_icon";
+import sensorIcon from "./sensor_icon";
+import inputDateTimeIcon from "./input_dateteime_icon";
 
 const domainIcons = {
   binary_sensor: binarySensorIcon,

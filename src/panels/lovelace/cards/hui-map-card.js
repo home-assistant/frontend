@@ -1,15 +1,15 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/paper-icon-button/paper-icon-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/paper-icon-button/paper-icon-button";
 import Leaflet from "leaflet";
 
-import "../../map/ha-entity-marker.js";
+import "../../map/ha-entity-marker";
 
-import setupLeafletMap from "../../../common/dom/setup-leaflet-map.js";
-import processConfigEntities from "../common/process-config-entities.js";
-import computeStateDomain from "../../../common/entity/compute_state_domain.js";
-import computeStateName from "../../../common/entity/compute_state_name.js";
-import debounce from "../../../common/util/debounce.js";
+import setupLeafletMap from "../../../common/dom/setup-leaflet-map";
+import processConfigEntities from "../common/process-config-entities";
+import computeStateDomain from "../../../common/entity/compute_state_domain";
+import computeStateName from "../../../common/entity/compute_state_name";
+import debounce from "../../../common/util/debounce";
 
 Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
 

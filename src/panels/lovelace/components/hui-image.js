@@ -1,11 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "@polymer/paper-toggle-button/paper-toggle-button.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
-import { STATES_OFF } from "../../../common/const.js";
-import LocalizeMixin from "../../../mixins/localize-mixin.js";
+import { STATES_OFF } from "../../../common/const";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
-import parseAspectRatio from "../../../common/util/parse-aspect-ratio.js";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";

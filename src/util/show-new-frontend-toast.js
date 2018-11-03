@@ -1,5 +1,5 @@
-import "@polymer/paper-button/paper-button.js";
-import "../components/ha-toast.js";
+import "@polymer/paper-button/paper-button";
+import "../components/ha-toast";
 
 export default (installingWorker) => {
   const toast = document.createElement("ha-toast");

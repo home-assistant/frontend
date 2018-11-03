@@ -1,12 +1,12 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
-import { html } from "@polymer/polymer/lib/utils/html-tag.js";
-import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/entity/state-info.js";
-import LocalizeMixin from "../mixins/localize-mixin.js";
+import "../components/entity/state-info";
+import LocalizeMixin from "../mixins/localize-mixin";
 
-import computeStateDisplay from "../common/entity/compute_state_display.js";
-import attributeClassNames from "../common/entity/attribute_class_names.js";
+import computeStateDisplay from "../common/entity/compute_state_display";
+import attributeClassNames from "../common/entity/attribute_class_names";
 
 /*
  * @appliesMixin LocalizeMixin
