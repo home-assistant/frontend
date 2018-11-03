@@ -27,6 +27,9 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0,0,0,0);
     }
+    :host([rtl]) {
+      direction: rtl;
+    }
     iron-pages, ha-sidebar {
       /* allow a light tap highlight on the actual interface elements  */
       -webkit-tap-highlight-color: rgba(0,0,0,0.1);
@@ -42,7 +45,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   </iron-media-query>
 
   <app-drawer-layout fullbleed="" force-narrow="[[computeForceNarrow(narrow, dockedSidebar)]]" responsive-width="0">
-    <app-drawer id="drawer" slot="drawer" disable-swipe="[[_computeDisableSwipe(hass)]]" swipe-open="[[!_computeDisableSwipe(hass)]]" persistent="[[dockedSidebar]]">
+    <app-drawer align="start" id="drawer" slot="drawer" disable-swipe="[[_computeDisableSwipe(hass)]]" swipe-open="[[!_computeDisableSwipe(hass)]]" persistent="[[dockedSidebar]]">
       <ha-sidebar narrow="[[narrow]]" hass="[[hass]]" default-page="[[_defaultPage]]"></ha-sidebar>
     </app-drawer>
 
@@ -68,6 +71,11 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
       dockedSidebar: {
         type: Boolean,
         computed: "computeDockedSidebar(hass)",
+      },
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "computeRTL(hass)",
       },
     };
   }
@@ -121,6 +129,13 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   computeDockedSidebar(hass) {
     return hass.dockedSidebar;
+  }
+
+  computeRTL(hass) {
+    return (
+      hass.translationMetadata.translations[hass.selectedLanguage].isRTL ||
+      false
+    );
   }
 
   _computeDisableSwipe(hass) {
