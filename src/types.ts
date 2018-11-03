@@ -44,7 +44,6 @@ export interface Panel {
 
 export interface Translation {
   nativeName: string;
-  isRTL: boolean;
   fingerprints: { [fragment: string]: string };
 }
 
