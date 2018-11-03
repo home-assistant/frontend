@@ -21,6 +21,7 @@ import "../cards/hui-picture-glance-card";
 import "../cards/hui-plant-status-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-vertical-stack-card.ts";
+import "../cards/hui-shopping-list-card";
 import "../cards/hui-thermostat-card.ts";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-gauge-card";
@@ -49,6 +50,7 @@ const CARD_TYPES = new Set([
   "picture-glance",
   "plant-status",
   "sensor",
+  "shopping-list",
   "thermostat",
   "vertical-stack",
   "weather-forecast",
