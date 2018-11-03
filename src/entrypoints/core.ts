@@ -5,12 +5,21 @@ import {
   subscribeEntities,
   subscribeServices,
   ERR_INVALID_AUTH,
+  Auth,
+  Connection,
 } from "home-assistant-js-websocket";
 
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
+import { HomeAssistant } from "../types";
+
+declare global {
+  interface Window {
+    hassConnection: Promise<{ auth: Auth; conn: Connection }>;
+  }
+}
 
 const hassUrl = `${location.protocol}//${location.host}`;
 const isExternal = location.search.includes("external_auth=1");
@@ -33,7 +42,7 @@ const connProm = async (auth) => {
 
     // Clear url if we have been able to establish a connection
     if (location.search.includes("auth_callback=1")) {
-      history.replaceState(null, null, location.pathname);
+      history.replaceState(null, "", location.pathname);
     }
 
     return { auth, conn };
@@ -64,8 +73,12 @@ window.hassConnection.then(({ conn }) => {
 });
 
 window.addEventListener("error", (e) => {
-  const homeAssistant = document.querySelector("home-assistant");
-  if (homeAssistant && homeAssistant.hass && homeAssistant.hass.callService) {
+  const homeAssistant = document.querySelector("home-assistant") as any;
+  if (
+    homeAssistant &&
+    homeAssistant.hass &&
+    (homeAssistant.hass as HomeAssistant).callService
+  ) {
     homeAssistant.hass.callService("system_log", "write", {
       logger: `frontend.${
         __DEV__ ? "js_dev" : "js"

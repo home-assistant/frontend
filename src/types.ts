@@ -8,6 +8,12 @@ import {
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 
+declare global {
+  var __DEV__: boolean;
+  var __BUILD__: "latest" | "es5";
+  var __VERSION__: string;
+}
+
 export interface Credential {
   auth_provider_type: string;
   auth_provider_id: string;

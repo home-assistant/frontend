@@ -6,6 +6,34 @@ import { Auth } from "home-assistant-js-websocket";
 const CALLBACK_SET_TOKEN = "externalAuthSetToken";
 const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";
 
+type BasePayload = {
+  callback: string;
+};
+
+type RefreshTokenResponse = {
+  access_token: string;
+  expires_in: number;
+};
+
+declare global {
+  interface Window {
+    externalApp?: {
+      getExternalAuth(payload: BasePayload);
+      revokeExternalAuth(payload: BasePayload);
+    };
+    webkit?: {
+      messageHandlers: {
+        getExternalAuth: {
+          postMessage(payload: BasePayload);
+        };
+        revokeExternalAuth: {
+          postMessage(payload: BasePayload);
+        };
+      };
+    };
+  }
+}
+
 if (!window.externalApp && !window.webkit) {
   throw new Error(
     "External auth requires either externalApp or webkit defined on Window object."
@@ -14,21 +42,24 @@ if (!window.externalApp && !window.webkit) {
 
 export default class ExternalAuth extends Auth {
   constructor(hassUrl) {
-    super();
-
-    this.data = {
+    super({
       hassUrl,
+      clientId: "",
+      refresh_token: "",
       access_token: "",
+      expires_in: 0,
       // This will trigger connection to do a refresh right away
       expires: 0,
-    };
+    });
   }
 
   async refreshAccessToken() {
-    const responseProm = new Promise((resolve, reject) => {
-      window[CALLBACK_SET_TOKEN] = (success, data) =>
-        success ? resolve(data) : reject(data);
-    });
+    const responseProm = new Promise<RefreshTokenResponse>(
+      (resolve, reject) => {
+        window[CALLBACK_SET_TOKEN] = (success, data) =>
+          success ? resolve(data) : reject(data);
+      }
+    );
 
     // Allow promise to set resolve on window object.
     await 0;
@@ -38,16 +69,11 @@ export default class ExternalAuth extends Auth {
     if (window.externalApp) {
       window.externalApp.getExternalAuth(callbackPayload);
     } else {
-      window.webkit.messageHandlers.getExternalAuth.postMessage(
+      window.webkit!.messageHandlers.getExternalAuth.postMessage(
         callbackPayload
       );
     }
 
-    // Response we expect back:
-    // {
-    //   "access_token": "qwere",
-    //   "expires_in": 1800
-    // }
     const tokens = await responseProm;
 
     this.data.access_token = tokens.access_token;
@@ -68,7 +94,7 @@ export default class ExternalAuth extends Auth {
     if (window.externalApp) {
       window.externalApp.revokeExternalAuth(callbackPayload);
     } else {
-      window.webkit.messageHandlers.revokeExternalAuth.postMessage(
+      window.webkit!.messageHandlers.revokeExternalAuth.postMessage(
         callbackPayload
       );
     }
