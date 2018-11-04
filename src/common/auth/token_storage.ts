@@ -1,4 +1,17 @@
+import { AuthData } from "home-assistant-js-websocket";
+
 const storage = window.localStorage || {};
+
+declare global {
+  interface Window {
+    __tokenCache: {
+      // undefined: we haven't loaded yet
+      // null: none stored
+      tokens?: AuthData | null;
+      writeEnabled?: boolean;
+    };
+  }
+}
 
 // So that core.js and main app hit same shared object.
 let tokenCache = window.__tokenCache;
@@ -15,18 +28,22 @@ export function askWrite() {
   );
 }
 
-export function saveTokens(tokens) {
+export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
   if (tokenCache.writeEnabled) {
     try {
       storage.hassTokens = JSON.stringify(tokens);
-    } catch (err) {} // eslint-disable-line
+    } catch (err) {
+      // write failed, ignore it. Happens if storage is full or private mode.
+    }
   }
 }
 
 export function enableWrite() {
   tokenCache.writeEnabled = true;
-  saveTokens(tokenCache.tokens);
+  if (tokenCache.tokens) {
+    saveTokens(tokenCache.tokens);
+  }
 }
 
 export function loadTokens() {
