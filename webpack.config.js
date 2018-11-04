@@ -41,7 +41,7 @@ function createConfig(isProdBuild, latestBuild) {
     app: "./src/entrypoints/app.js",
     authorize: "./src/entrypoints/authorize.js",
     onboarding: "./src/entrypoints/onboarding.js",
-    core: "./src/entrypoints/core.js",
+    core: "./src/entrypoints/core.ts",
     compatibility: "./src/entrypoints/compatibility.js",
     "custom-panel": "./src/entrypoints/custom-panel.js",
     "hass-icons": "./src/entrypoints/hass-icons.js",
@@ -173,7 +173,7 @@ function createConfig(isProdBuild, latestBuild) {
         swDest: "service_worker.js",
         importWorkboxFrom: "local",
         include: [
-          /core.js$/,
+          /core.ts$/,
           /app.js$/,
           /custom-panel.js$/,
           /hass-icons.js$/,
