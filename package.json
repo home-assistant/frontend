@@ -73,7 +73,7 @@
     "es6-object-assign": "^1.1.0",
     "eslint-import-resolver-webpack": "^0.10.1",
     "fecha": "^2.3.3",
-    "home-assistant-js-websocket": "^3.1.5",
+    "home-assistant-js-websocket": "^3.2.4",
     "intl-messageformat": "^2.2.0",
     "jquery": "^3.3.1",
     "js-yaml": "^3.12.0",
