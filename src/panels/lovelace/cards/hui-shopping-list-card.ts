@@ -174,7 +174,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           display: flex;
           flex-direction: row;
         }
-        .addBox {
+        #addBox {
           padding-left: 11px;
         }
         .addRow {
