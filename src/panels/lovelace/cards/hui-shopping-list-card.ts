@@ -88,7 +88,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         <ha-icon
           id="clear"
           icon="hass:notification-clear-all"
-          .title="${this.localize("ui.card.shopping-list.clear_completed")}"
+          .title="${this.localize("ui.card.shopping-list.clear_items")}"
           @click=${this._clearItems}
         ></ha-icon>
       ${repeat(

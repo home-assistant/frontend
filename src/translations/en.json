@@ -395,7 +395,7 @@
         "execute": "Execute"
       },
       "shopping-list": {
-        "clear_completed": "Clear checked items",
+        "clear_items": "Clear checked items",
         "add_item": "Add item"
       },
       "vacuum": {
