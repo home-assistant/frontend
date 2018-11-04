@@ -1,4 +1,4 @@
-import { createCollection } from "home-assistant-js-websocket";
+import { createCollection, Connection } from "home-assistant-js-websocket";
 
 const fetchNotifications = (conn) =>
   conn.sendMessagePromise({
@@ -11,8 +11,11 @@ const subscribeUpdates = (conn, store) =>
     "persistent_notifications_updated"
   );
 
-export const subscribeNotifications = (conn, onChange) =>
-  createCollection(
+export const subscribeNotifications = (
+  conn: Connection,
+  onChange: (notifications: Notification[]) => void
+) =>
+  createCollection<Notification[]>(
     "_ntf",
     fetchNotifications,
     subscribeUpdates,
