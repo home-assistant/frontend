@@ -9,6 +9,7 @@ import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-button/paper-button";
 
 import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
@@ -29,7 +30,7 @@ interface Config extends LovelaceConfig {
 class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
-  protected _config?: Config;
+  private _config?: Config;
   private _items?: ShoppingListItem[];
   private _unsubEvents?: () => Promise<void>;
 
@@ -84,6 +85,12 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
+        <ha-icon
+          id="clear"
+          icon="hass:notification-clear-all"
+          .title="${this.localize("ui.card.shopping-list.clear_completed")}"
+          @click=${this._clearItems}
+        ></ha-icon>
       ${repeat(
         this._items!,
         (item) =>
@@ -151,9 +158,6 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         `
             : html``
       )}
-        <paper-button @click=${this._clearItems}>
-          ${this.localize("ui.card.shopping-list.clear_completed")}
-        </paper-button>
       </ha-card>
     `;
   }
@@ -161,12 +165,20 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   private renderStyle(): TemplateResult {
     return html`
       <style>
+        #clear {
+          float: right;
+          margin-top: -3em;
+          padding-right: 3em;
+        }
         .addRow, .editRow, .completedRow {
           display: flex;
           flex-direction: row;
         }
         .addBox {
           padding-left: 11px;
+        }
+        .addRow {
+          padding-left: 7px;
         }
         .addRow > paper-icon-button {
           color: var(--secondary-text-color);
@@ -178,7 +190,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           border-top: 0;
         }
         paper-checkbox {
-          padding: 11px;
+          padding: 11px 11px 11px 18px;
         }
         paper-input {
           --paper-input-container-underline: {
