@@ -25,9 +25,10 @@ export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
   private _cardId?: string;
   private _cardConfig?: string;
-  private _elementConfig?: LovelaceCardEditor;
+  private _elementConfig?: LovelaceCardEditor | null;
   private _reloadLovelace?: () => void;
   private _editorToggle?: boolean;
+  private _newConfigYaml?: string;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -77,7 +78,7 @@ export class HuiDialogEditCard extends LitElement {
         <h2>Card Configuration</h2>
         <paper-dialog-scrollable>
           ${
-            this._editorToggle
+            this._editorToggle && this._elementConfig !== null
               ? html`<div class="element-editor">${when(
                   this._elementConfig,
                   () => this._elementConfig,
@@ -127,7 +128,7 @@ export class HuiDialogEditCard extends LitElement {
     }
 
     if (format === "js") {
-      this._cardConfig = yaml.safeDump(value);
+      this._newConfigYaml = yaml.safeDump(value);
     } else if (this._elementConfig) {
       this._elementConfig.setConfig(yaml.safeLoad(value));
     }
@@ -140,9 +141,6 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _toggleEditor(): void {
-    if (this._elementConfig === null) {
-      return;
-    }
     this._editorToggle = !this._editorToggle;
   }
 
@@ -157,30 +155,24 @@ export class HuiDialogEditCard extends LitElement {
 
     try {
       elementConfig = await elClass.getConfigElement();
+      elementConfig.setConfig(conf);
+      elementConfig.hass = this.hass;
+      elementConfig.addEventListener("config-changed", (ev) =>
+        this._handleConfigChanged("js", ev.detail.config)
+      );
+      this._elementConfig = elementConfig;
     } catch (err) {
-      // No Element Config Function on Element
-      this._editorToggle = false;
       this._elementConfig = null;
-      return;
     }
-
-    if (!elementConfig) {
-      this._editorToggle = false;
-      this._elementConfig = null;
-      return;
-    }
-
-    elementConfig.setConfig(conf);
-    elementConfig.hass = this.hass;
-    elementConfig.addEventListener("config-changed", (ev) =>
-      this._handleConfigChanged("js", ev.detail.config)
-    );
-    this._elementConfig = elementConfig;
   }
 
   private async _updateConfig(): Promise<void> {
+    if (this._cardConfig === this._newConfigYaml) {
+      this._dialog.close();
+      return;
+    }
     try {
-      await updateCardConfig(this.hass!, this._cardId!, this._cardConfig);
+      await updateCardConfig(this.hass!, this._cardId!, this._newConfigYaml);
       this._dialog.close();
       this._reloadLovelace!();
     } catch (err) {

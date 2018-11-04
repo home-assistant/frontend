@@ -79,7 +79,6 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
 
     const target = ev.target! as any;
 
-    // Paper-checkbox's use Checked, Their value is always "on" /shrug
     const newValue =
       target.checked !== undefined ? target.checked : target.value;
 
