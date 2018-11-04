@@ -2,22 +2,15 @@ import { html, LitElement } from "@polymer/lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import { TemplateResult } from "lit-html";
 import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-button/paper-button";
 
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceConfig } from "../types";
 import {
-  clearItems,
   fetchItems,
-  addItem,
   completeItem,
   saveEdit,
   ShoppingListItem,
@@ -29,16 +22,24 @@ interface Config extends LovelaceConfig {
 
 class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  public hass?: HomeAssistant;
+  private _hass?: HomeAssistant;
   private _config?: Config;
   private _items?: ShoppingListItem[];
-  private _unsubEvents?: () => Promise<void>;
+  private _unsubEvents?: Promise<() => Promise<void>>;
 
   static get properties() {
     return {
       _config: {},
       _items: {},
     };
+  }
+
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
+
+    if (!this._unsubEvents) {
+      this.connectedCallback();
+    }
   }
 
   public getCardSize(): number {
@@ -57,14 +58,11 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   public connectedCallback(): void {
     super.connectedCallback();
 
-    if (this.hass) {
-      this.hass.connection
-        .subscribeEvents(() => this._fetchData(), "shopping_list_updated")
-        .then(
-          (unsub: () => Promise<void>): void => {
-            this._unsubEvents = unsub;
-          }
-        );
+    if (this._hass) {
+      this._unsubEvents = this._hass.connection.subscribeEvents(
+        () => this._fetchData(),
+        "shopping_list_updated"
+      );
       this._fetchData();
     }
   }
@@ -73,32 +71,27 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     super.disconnectedCallback();
 
     if (this._unsubEvents) {
-      this._unsubEvents();
+      this._unsubEvents.then((unsub) => unsub());
     }
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this._hass) {
       return html``;
     }
 
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
-        <ha-icon
-          id="clear"
-          icon="hass:notification-clear-all"
-          .title="${this.localize("ui.card.shopping-list.clear_items")}"
-          @click=${this._clearItems}
-        ></ha-icon>
       ${repeat(
         this._items!,
-        (item) =>
-          !item.complete
-            ? html`
+        (item) => item.id,
+        (item, index) =>
+          html`
         <div class="editRow">
           <paper-checkbox
             slot="item-icon"
+            id=${index}
             ?checked=${item.complete}
             .itemId=${item.id}
             @click=${this._completeItem}
@@ -114,49 +107,6 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           </paper-item-body>
         </div>
         `
-            : html``
-      )}
-        <div class="addRow">
-          <paper-icon-button
-            slot="item-icon"
-            icon="hass:plus"
-            @click=${this._addItem}
-          ></paper-icon-button>
-          <paper-item-body>
-            <paper-input
-              id='addBox'
-              placeholder='${this.localize("ui.card.shopping-list.add_item")}'
-              @keydown=${this._addKeyPress}
-              no-label-float
-            ></paper-input>
-          </paper-item-body>
-        </div>
-        <div class="divider"></div>
-      ${repeat(
-        this._items!,
-        (item) =>
-          item.complete
-            ? html`
-        <div class="completedRow">
-          <paper-checkbox
-            slot="item-icon"
-            ?checked=${item.complete}
-            .itemId=${item.id}
-            @click=${this._completeItem}
-            tabindex='0'
-          ></paper-checkbox>
-          <paper-item-body>
-            <paper-input
-              class="completeBox"
-              no-label-float
-              .value='${item.name}'
-              .itemId=${item.id}
-              @change=${this._saveEdit}
-            ></paper-input>
-          </paper-item-body>
-        </div>
-        `
-            : html``
       )}
       </ha-card>
     `;
@@ -165,29 +115,9 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   private renderStyle(): TemplateResult {
     return html`
       <style>
-        #clear {
-          float: right;
-          margin-top: -3em;
-          padding-right: 3em;
-        }
-        .addRow, .editRow, .completedRow {
+        .editRow {
           display: flex;
           flex-direction: row;
-        }
-        #addBox {
-          padding-left: 11px;
-        }
-        .addRow {
-          padding-left: 7px;
-        }
-        .addRow > paper-icon-button {
-          color: var(--secondary-text-color);
-        }
-        paper-icon-item {
-          border-top: 1px solid var(--divider-color);
-        }
-        paper-icon-item:first-child {
-          border-top: 0;
         }
         paper-checkbox {
           padding: 11px 11px 11px 18px;
@@ -205,62 +135,28 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           position: relative;
           top: 1px;
         }
-        .divider {
-          height: 1px;
-          background-color: var(--divider-color);
-          margin: 10px;
-        }
       </style>
     `;
   }
 
   private async _fetchData(): Promise<void> {
-    if (this.hass) {
-      this._items = await fetchItems(this.hass);
+    if (this._hass) {
+      this._items = await fetchItems(this._hass);
     }
   }
 
   private _completeItem(ev): void {
-    completeItem(this.hass!, ev.target.itemId, ev.target.checked).catch(() =>
+    completeItem(this._hass!, ev.target.itemId, ev.target.checked).catch(() =>
       this._fetchData()
     );
   }
 
-  private _addItem(ev): void {
-    if (this.shadowRoot!.querySelector("#addBox")) {
-      const root = this.shadowRoot!.querySelector(
-        "#addBox"
-      ) as HTMLInputElement;
-
-      if (this.hass && root.value.length > 0) {
-        addItem(this.hass, root.value).catch(() => this._fetchData());
-      }
-
-      root.value = "";
-      if (ev) {
-        root.focus();
-      }
-    }
-  }
-
-  private _addKeyPress(ev): void {
-    if (ev.keyCode === 13) {
-      this._addItem(null);
-    }
-  }
-
   private _saveEdit(ev): void {
-    saveEdit(this.hass!, ev.target.itemId, ev.target.value).catch(() =>
+    saveEdit(this._hass!, ev.target.itemId, ev.target.value).catch(() =>
       this._fetchData()
     );
 
     ev.target.blur();
-  }
-
-  private _clearItems(): void {
-    if (this.hass) {
-      clearItems(this.hass).catch(() => this._fetchData());
-    }
   }
 }
 

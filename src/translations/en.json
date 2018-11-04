@@ -394,10 +394,6 @@
       "script": {
         "execute": "Execute"
       },
-      "shopping-list": {
-        "clear_items": "Clear checked items",
-        "add_item": "Add item"
-      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",
