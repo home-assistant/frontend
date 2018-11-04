@@ -15,6 +15,10 @@ import formatDateTime from "../../../common/datetime/format_date_time";
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
+import { fetchSubscriptionInfo } from "./data";
+import "./cloud-alexa-pref";
+import "./cloud-google-pref";
+
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -60,14 +64,6 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
       paper-button {
         color: var(--primary-color);
         font-weight: 500;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      paper-card > paper-toggle-button {
-        position: absolute;
-        right: 8px;
-        top: 16px;
       }
     </style>
     <hass-subpage header="Home Assistant Cloud">
@@ -115,56 +111,15 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </p>
           </div>
 
-          <paper-card heading="Alexa">
-            <paper-toggle-button
-              checked='[[cloudStatus.alexa_enabled]]'
-              on-change='_alexaChanged'
-            ></paper-toggle-button>
-            <div class="card-content">
-              With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.
-              <ul>
-                <li>
-                  To activate, search in the Alexa app for the Home Assistant Smart Home skill.
-                </li>
-                <li>
-                  <a href="https://www.home-assistant.io/cloud/alexa/" target="_blank">
-                    Config documentation
-                  </a>
-                </li>
-              </ul>
-              <p><em>This integration requires an Alexa-enabled device like the Amazon Echo.</em></p>
-            </div>
-          </paper-card>
+          <cloud-alexa-pref
+            hass='[[hass]]'
+            cloud-status='[[cloudStatus]]'
+          ></cloud-alexa-pref>
 
-          <paper-card heading="Google Assistant">
-            <paper-toggle-button
-              checked='[[cloudStatus.google_enabled]]'
-              on-change='_googleChanged'
-            ></paper-toggle-button>
-            <div class="card-content">
-              With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.
-              <ul>
-                <li>
-                  <a href="https://assistant.google.com/services/a/uid/00000091fd5fb875" target="_blank">
-                    Activate the Home Assistant skill for Google Assistant
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.home-assistant.io/cloud/google_assistant/" target="_blank">
-                    Config documentation
-                  </a>
-                </li>
-              </ul>
-              <p><em>This integration requires a Google Assistant-enabled device like the Google Home or Android phone.</em></p>
-            </div>
-            <div class="card-actions">
-              <ha-call-api-button
-                hass="[[hass]]"
-                disabled='[[!cloudStatus.google_enabled]]'
-                path="cloud/google_actions/sync"
-              >Sync devices</ha-call-api-button>
-            </div>
-          </paper-card>
+          <cloud-google-pref
+            hass='[[hass]]'
+            cloud-status='[[cloudStatus]]'
+          ></cloud-google-pref>
         </ha-config-section>
       </div>
     </hass-subpage>
@@ -189,7 +144,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   async _fetchSubscriptionInfo() {
-    this._subscription = await this.hass.callWS({ type: "cloud/subscription" });
+    this._subscription = await fetchSubscriptionInfo;
     if (this._subscription.provider && this.cloudStatus.cloud !== "connected") {
       this.fire("ha-refresh-cloud-status");
     }
@@ -219,26 +174,6 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
 
     return description;
-  }
-
-  _alexaChanged(ev) {
-    this._handleToggleChange("alexa_enabled", ev.target);
-  }
-
-  _googleChanged(ev) {
-    this._handleToggleChange("google_enabled", ev.target);
-  }
-
-  async _handleToggleChange(property, element) {
-    try {
-      await this.hass.callWS({
-        type: "cloud/update_prefs",
-        [property]: element.checked,
-      });
-      this.fire("ha-refresh-cloud-status");
-    } catch (err) {
-      element.checked = !element.checked;
-    }
   }
 }
 
