@@ -1,4 +1,5 @@
-export interface ConfigValue {
-  format: string;
-  value: any;
+export interface YamlChangedEvent extends Event {
+  detail: {
+    yaml: string;
+  };
 }

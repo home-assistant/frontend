@@ -1,17 +1,18 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import yaml from "js-yaml";
 import { when } from "lit-html/directives/when";
+import { TemplateResult } from "lit-html";
 
-import "@polymer/paper-button/paper-button.js";
-import "@polymer/paper-input/paper-textarea.js";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js";
-import "@polymer/paper-dialog/paper-dialog.js";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { HomeAssistant } from "../../../types";
 import { getCardConfig, updateCardConfig } from "../common/data";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 import "./hui-yaml-editor";
 import "./hui-yaml-card-preview";
@@ -19,16 +20,18 @@ import "./hui-yaml-card-preview";
 // tslint:disable-next-line
 import { HuiYAMLCardPreview } from "./hui-yaml-card-preview";
 import { LovelaceCardEditor, LovelaceConfig } from "../types";
-import { TemplateResult } from "lit-html";
+import { YamlChangedEvent } from "./types";
+
+const CUSTOM_TYPE_PREFIX = "custom:";
 
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
   private _cardId?: string;
-  private _cardConfig?: string;
+  private _currentConfigYaml?: string;
+  private _originalConfigYaml?: string;
   private _elementConfig?: LovelaceCardEditor | null;
   private _reloadLovelace?: () => void;
   private _editorToggle?: boolean;
-  private _newConfigYaml?: string;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -36,7 +39,7 @@ export class HuiDialogEditCard extends LitElement {
       cardId: {
         type: Number,
       },
-      _cardConfig: {},
+      _currentConfigYaml: {},
       _dialogClosedCallback: {},
       _elementConfig: {},
       _editorToggle: {},
@@ -47,10 +50,11 @@ export class HuiDialogEditCard extends LitElement {
     this.hass = hass;
     this._cardId = cardId;
     this._reloadLovelace = reloadLovelace;
-    this._cardConfig = "";
+    this._currentConfigYaml = "";
     this._editorToggle = true;
     this._elementConfig = undefined;
-    this._loadConfig().then(() => this._loadElementConfig());
+    this._loadConfig().then(() => this._loadConfigElement());
+    this._originalConfigYaml = this._currentConfigYaml;
     // Wait till dialog is rendered.
     await this.updateComplete;
     this._dialog.open();
@@ -86,13 +90,13 @@ export class HuiDialogEditCard extends LitElement {
                 )}</div>`
               : html`
               <hui-yaml-editor
-                .yaml="${this._cardConfig}"
+                .yaml="${this._currentConfigYaml}"
                 @yaml-changed="${this._handleYamlChanged}"
               ></hui-yaml-editor>`
           }
           <hui-yaml-card-preview
             .hass="${this.hass}"
-            .yaml="${this._cardConfig}"
+            .yaml="${this._currentConfigYaml}"
           ></hui-yaml-card-preview>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -110,30 +114,23 @@ export class HuiDialogEditCard extends LitElement {
     `;
   }
 
-  protected updated(): void {
-    // This will center the dialog with the updated config
-    fireEvent(this._dialog, "iron-resize");
+  private _handleYamlChanged(ev: YamlChangedEvent): void {
+    this._updatePreview(ev.detail.yaml);
   }
 
-  private _handleYamlChanged(ev: MouseEvent): void {
-    this._handleConfigChanged("yaml", (ev.detail as any).yaml);
+  private _handleConfigChanged(value: LovelaceConfig): void {
+    this._currentConfigYaml = yaml.safeDump(value);
+    this._updatePreview(this._currentConfigYaml!);
   }
 
-  private _handleConfigChanged(
-    format: string,
-    value: LovelaceConfig | string
-  ): void {
+  private _updatePreview(value: string) {
     if (!this._previewEl) {
       return;
     }
-
-    if (format === "js") {
-      this._newConfigYaml = yaml.safeDump(value);
-    } else if (this._elementConfig) {
+    if (this._elementConfig) {
       this._elementConfig.setConfig(yaml.safeLoad(value));
     }
-
-    this._previewEl.value = { format, value };
+    this._previewEl.yaml = value;
   }
 
   private _closeDialog(): void {
@@ -145,34 +142,44 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private async _loadConfig(): Promise<void> {
-    this._cardConfig = await getCardConfig(this.hass!, this._cardId!);
+    this._currentConfigYaml = await getCardConfig(this.hass!, this._cardId!);
   }
 
-  private async _loadElementConfig(): Promise<void> {
-    const conf = yaml.safeLoad(this._cardConfig);
-    const elClass = customElements.get(`hui-${conf.type}-card`);
-    let elementConfig;
+  private async _loadConfigElement(): Promise<void> {
+    const conf = yaml.safeLoad(this._currentConfigYaml);
+    const tag = conf.type.startsWith(CUSTOM_TYPE_PREFIX)
+      ? conf.type.substr(CUSTOM_TYPE_PREFIX.length)
+      : `hui-${conf.type}-card`;
+    const elClass = customElements.get(tag);
 
+    let elementConfig;
     try {
       elementConfig = await elClass.getConfigElement();
       elementConfig.setConfig(conf);
       elementConfig.hass = this.hass;
       elementConfig.addEventListener("config-changed", (ev) =>
-        this._handleConfigChanged("js", ev.detail.config)
+        this._handleConfigChanged(ev.detail.config)
       );
       this._elementConfig = elementConfig;
     } catch (err) {
       this._elementConfig = null;
     }
+
+    // This will center the dialog with the updated config Element
+    fireEvent(this._dialog, "iron-resize");
   }
 
   private async _updateConfig(): Promise<void> {
-    if (this._cardConfig === this._newConfigYaml) {
+    if (this._currentConfigYaml === this._originalConfigYaml) {
       this._dialog.close();
       return;
     }
     try {
-      await updateCardConfig(this.hass!, this._cardId!, this._newConfigYaml);
+      await updateCardConfig(
+        this.hass!,
+        this._cardId!,
+        this._currentConfigYaml
+      );
       this._dialog.close();
       this._reloadLovelace!();
     } catch (err) {
