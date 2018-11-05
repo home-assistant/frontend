@@ -3,10 +3,9 @@ import { assert } from "chai";
 import computeStateDisplay from "../../../src/common/entity/compute_state_display";
 
 describe("computeStateDisplay", () => {
-  const localize = function(message, ...args) {
-    // Mock Localize function for testing
-    return message + (args.length ? ": " + args.join(",") : "");
-  };
+  // Mock Localize function for testing
+  const localize = (message, ...args) =>
+    message + (args.length ? ": " + args.join(",") : "");
 
   it("Localizes binary sensor defaults", () => {
     const stateObj = {
@@ -35,9 +34,10 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes binary sensor invalid device class", () => {
-    const altLocalize = function(message, ...args) {
-      if (message === "state.binary_sensor.invalid_device_class.off")
+    const altLocalize = (message, ...args) => {
+      if (message === "state.binary_sensor.invalid_device_class.off") {
         return null;
+      }
       return localize(message, ...args);
     };
     const stateObj = {
@@ -65,8 +65,10 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes unknown sensor value with units", () => {
-    const altLocalize = function(message, ...args) {
-      if (message === "state.sensor.unknown") return null;
+    const altLocalize = (message, ...args) => {
+      if (message === "state.sensor.unknown") {
+        return null;
+      }
       return localize(message, ...args);
     };
     const stateObj = {
@@ -83,8 +85,10 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes unavailable sensor value with units", () => {
-    const altLocalize = function(message, ...args) {
-      if (message === "state.sensor.unavailable") return null;
+    const altLocalize = (message, ...args) => {
+      if (message === "state.sensor.unavailable") {
+        return null;
+      }
       return localize(message, ...args);
     };
     const stateObj = {
@@ -101,8 +105,10 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes sensor value with component translation", () => {
-    const altLocalize = function(message, ...args) {
-      if (message !== "component.sensor.state.custom_state") return null;
+    const altLocalize = (message, ...args) => {
+      if (message !== "component.sensor.state.custom_state") {
+        return null;
+      }
       return localize(message, ...args);
     };
     const stateObj = {
@@ -220,8 +226,10 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes unavailable", () => {
-    const altLocalize = function(message, ...args) {
-      if (message === "state.sensor.unavailable") return null;
+    const altLocalize = (message, ...args) => {
+      if (message === "state.sensor.unavailable") {
+        return null;
+      }
       return localize(message, ...args);
     };
     const stateObj = {
@@ -236,7 +244,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes custom state", () => {
-    const altLocalize = function() {
+    const altLocalize = () => {
       // No matches can be found
       return null;
     };

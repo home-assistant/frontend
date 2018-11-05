@@ -8,7 +8,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "script/build_frontend",
-    "lint": "eslint src hassio/src gallery/src test-mocha && tslint -c tslint.json 'src/**/*.ts' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'test-mocha/**/*.ts' && polymer lint && tsc",
+    "lint": "eslint src hassio/src gallery/src && tslint 'src/**/*.ts' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'test-mocha/**/*.ts' && polymer lint && tsc",
     "mocha": "node_modules/.bin/ts-mocha -p test-mocha/tsconfig.test.json --opts test-mocha/mocha.opts",
     "test": "npm run lint && npm run mocha",
     "docker_build": "sh ./script/docker_run.sh build $npm_package_version",

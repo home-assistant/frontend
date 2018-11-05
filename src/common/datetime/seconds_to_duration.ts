@@ -1,4 +1,4 @@
-const leftPad = (number) => (number < 10 ? `0${number}` : number);
+const leftPad = (num) => (num < 10 ? `0${num}` : num);
 
 export default function secondsToDuration(d) {
   const h = Math.floor(d / 3600);

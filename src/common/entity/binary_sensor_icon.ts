@@ -1,7 +1,7 @@
 /** Return an icon representing a binary sensor state. */
 
 export default function binarySensorIcon(state) {
-  var activated = state.state && state.state === "off";
+  const activated = state.state && state.state === "off";
   switch (state.attributes.device_class) {
     case "battery":
       return activated ? "hass:battery" : "hass:battery-outline";

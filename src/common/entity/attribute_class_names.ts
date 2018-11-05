@@ -1,9 +1,12 @@
 export default function attributeClassNames(stateObj, attributes) {
-  if (!stateObj) return "";
+  if (!stateObj) {
+    return "";
+  }
   return attributes
-    .map(function(attribute) {
-      return attribute in stateObj.attributes ? "has-" + attribute : "";
-    })
+    .map(
+      (attribute) =>
+        attribute in stateObj.attributes ? "has-" + attribute : ""
+    )
     .filter((attr) => attr !== "")
     .join(" ");
 }
