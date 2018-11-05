@@ -168,22 +168,20 @@ export class HuiDialogEditCard extends LitElement {
 
     const elClass = customElements.get(tag);
     let configElement;
+
     try {
       configElement = await elClass.getConfigElement();
-      configElement.setConfig(conf);
-      configElement.hass = this.hass;
-      configElement.addEventListener("config-changed", (ev) =>
-        this._handleJSConfigChanged(ev.detail.config)
-      );
-      this._configValue = { format: "js", value: conf };
-      this._configElement = configElement;
     } catch (err) {
-      if (!(err instanceof TypeError)) {
-        // tslint:disable-next-line:no-console
-        console.error(err);
-      }
       this._configElement = null;
     }
+
+    configElement.setConfig(conf);
+    configElement.hass = this.hass;
+    configElement.addEventListener("config-changed", (ev) =>
+      this._handleJSConfigChanged(ev.detail.config)
+    );
+    this._configValue = { format: "js", value: conf };
+    this._configElement = configElement;
 
     // This will center the dialog with the updated config Element
     fireEvent(this._dialog, "iron-resize");
