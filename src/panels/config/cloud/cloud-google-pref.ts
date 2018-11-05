@@ -11,6 +11,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
 import { updatePref } from "./data";
 import { CloudStatusLoggedIn } from "./types";
+import "./cloud-exposed-entities";
 
 export class CloudGooglePref extends LitElement {
   public hass?: HomeAssistant;
@@ -24,11 +25,13 @@ export class CloudGooglePref extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const enabled = this.cloudStatus!.google_enabled;
+
     return html`
       ${this.renderStyle()}
       <paper-card heading="Google Assistant">
         <paper-toggle-button
-          .checked="${this.cloudStatus!.google_enabled}"
+          .checked="${enabled}"
           @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
@@ -46,11 +49,23 @@ export class CloudGooglePref extends LitElement {
             </li>
           </ul>
           <em>This integration requires a Google Assistant-enabled device like the Google Home or Android phone.</em>
+          ${
+            enabled
+              ? html`
+                <p>Exposed entities:</p>
+                <cloud-exposed-entities
+                  .hass="${this.hass}"
+                  .filter="${this.cloudStatus!.google_entities}"
+                  .supportedDomains="${this.cloudStatus!.google_domains}"
+                ></cloud-exposed-entities>
+              `
+              : ""
+          }
         </div>
         <div class="card-actions">
           <ha-call-api-button
             .hass="${this.hass}"
-            .disabled="${!this.cloudStatus!.google_enabled}"
+            .disabled="${!enabled}"
             path="cloud/google_actions/sync"
           >Sync devices</ha-call-api-button>
         </div>
