@@ -100,6 +100,8 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-typescript": "^7.1.0",
     "@gfx/zopfli": "^1.0.9",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
     "babel-eslint": "^10",
     "babel-loader": "^8.0.4",
     "babel-minify-webpack-plugin": "^0.3.1",
