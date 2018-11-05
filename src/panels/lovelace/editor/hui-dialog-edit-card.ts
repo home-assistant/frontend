@@ -29,7 +29,7 @@ export class HuiDialogEditCard extends LitElement {
   private _cardId?: string;
   private _currentConfigYaml?: string;
   private _originalConfigYaml?: string;
-  private _elementConfig?: LovelaceCardEditor | null;
+  private _configElement?: LovelaceCardEditor | null;
   private _reloadLovelace?: () => void;
   private _editorToggle?: boolean;
 
@@ -41,7 +41,7 @@ export class HuiDialogEditCard extends LitElement {
       },
       _currentConfigYaml: {},
       _dialogClosedCallback: {},
-      _elementConfig: {},
+      _configElement: {},
       _editorToggle: {},
     };
   }
@@ -52,7 +52,7 @@ export class HuiDialogEditCard extends LitElement {
     this._reloadLovelace = reloadLovelace;
     this._currentConfigYaml = "";
     this._editorToggle = true;
-    this._elementConfig = undefined;
+    this._configElement = undefined;
     this._loadConfig().then(() => this._loadConfigElement());
     this._originalConfigYaml = this._currentConfigYaml;
     // Wait till dialog is rendered.
@@ -82,10 +82,10 @@ export class HuiDialogEditCard extends LitElement {
         <h2>Card Configuration</h2>
         <paper-dialog-scrollable>
           ${
-            this._editorToggle && this._elementConfig !== null
+            this._editorToggle && this._configElement !== null
               ? html`<div class="element-editor">${when(
-                  this._elementConfig,
-                  () => this._elementConfig,
+                  this._configElement,
+                  () => this._configElement,
                   () => html`Loading...`
                 )}</div>`
               : html`
@@ -115,22 +115,21 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleYamlChanged(ev: YamlChangedEvent): void {
-    this._updatePreview(ev.detail.yaml);
+    this._updatePreview(yaml.safeLoad(ev.detail.yaml));
   }
 
   private _handleConfigChanged(value: LovelaceConfig): void {
-    this._currentConfigYaml = yaml.safeDump(value);
-    this._updatePreview(this._currentConfigYaml!);
+    if (this._configElement) {
+      this._configElement.setConfig(value);
+    }
+    this._updatePreview(value);
   }
 
-  private _updatePreview(value: string) {
+  private _updatePreview(value: LovelaceConfig) {
     if (!this._previewEl) {
       return;
     }
-    if (this._elementConfig) {
-      this._elementConfig.setConfig(yaml.safeLoad(value));
-    }
-    this._previewEl.yaml = value;
+    this._previewEl.config = value;
   }
 
   private _closeDialog(): void {
@@ -138,6 +137,11 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _toggleEditor(): void {
+    if (this._editorToggle) {
+      this._currentConfigYaml = yaml.safeDump(this._previewEl.config);
+    } else if (this._configElement) {
+      this._configElement.setConfig(this._previewEl.config);
+    }
     this._editorToggle = !this._editorToggle;
   }
 
@@ -147,22 +151,23 @@ export class HuiDialogEditCard extends LitElement {
 
   private async _loadConfigElement(): Promise<void> {
     const conf = yaml.safeLoad(this._currentConfigYaml);
+
     const tag = conf.type.startsWith(CUSTOM_TYPE_PREFIX)
       ? conf.type.substr(CUSTOM_TYPE_PREFIX.length)
       : `hui-${conf.type}-card`;
-    const elClass = customElements.get(tag);
 
-    let elementConfig;
+    const elClass = customElements.get(tag);
+    let configElement;
     try {
-      elementConfig = await elClass.getConfigElement();
-      elementConfig.setConfig(conf);
-      elementConfig.hass = this.hass;
-      elementConfig.addEventListener("config-changed", (ev) =>
+      configElement = await elClass.getConfigElement();
+      configElement.setConfig(conf);
+      configElement.hass = this.hass;
+      configElement.addEventListener("config-changed", (ev) =>
         this._handleConfigChanged(ev.detail.config)
       );
-      this._elementConfig = elementConfig;
+      this._configElement = configElement;
     } catch (err) {
-      this._elementConfig = null;
+      this._configElement = null;
     }
 
     // This will center the dialog with the updated config Element
@@ -170,6 +175,7 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private async _updateConfig(): Promise<void> {
+    this._currentConfigYaml = yaml.safeDump(this._previewEl.config);
     if (this._currentConfigYaml === this._originalConfigYaml) {
       this._dialog.close();
       return;

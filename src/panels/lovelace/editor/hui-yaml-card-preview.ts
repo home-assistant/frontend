@@ -1,13 +1,12 @@
-import yaml from "js-yaml";
 import "@polymer/paper-input/paper-textarea";
 
 import createCardElement from "../common/create-card-element";
-import createErrorCardConfig from "../common/create-error-card-config";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceConfig } from "../types";
 
 export class HuiYAMLCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
+  private _config?: LovelaceConfig;
 
   set hass(value: HomeAssistant) {
     this._hass = value;
@@ -16,29 +15,27 @@ export class HuiYAMLCardPreview extends HTMLElement {
     }
   }
 
-  set yaml(value: string) {
+  set config(config: LovelaceConfig) {
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
 
-    if (value === "") {
+    if (!config) {
       return;
     }
 
-    let conf;
-    try {
-      conf = yaml.safeLoad(value);
-    } catch (err) {
-      conf = createErrorCardConfig(`Invalid YAML: ${err.message}`, undefined);
-    }
-
-    const element = createCardElement(conf);
+    const element = createCardElement(config);
 
     if (this._hass) {
       element.hass = this._hass;
     }
 
     this.appendChild(element);
+    this._config = config;
+  }
+
+  get config() {
+    return this._config!;
   }
 }
 
