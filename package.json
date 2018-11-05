@@ -9,7 +9,7 @@
   "scripts": {
     "build": "script/build_frontend",
     "lint": "eslint src hassio/src gallery/src test-mocha && tslint -c tslint.json 'src/**/*.ts' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'test-mocha/**/*.ts' && polymer lint && tsc",
-    "mocha": "node_modules/.bin/mocha --opts test-mocha/mocha.opts",
+    "mocha": "node_modules/.bin/ts-mocha -p test-mocha/tsconfig.test.json --opts test-mocha/mocha.opts",
     "test": "npm run lint && npm run mocha",
     "docker_build": "sh ./script/docker_run.sh build $npm_package_version",
     "bash": "sh ./script/docker_run.sh bash $npm_package_version"
@@ -126,7 +126,6 @@
     "husky": "^1.1.0",
     "lint-staged": "^8.0.2",
     "merge-stream": "^1.0.1",
-    "mocha": "^5.2.0",
     "parse5": "^5.1.0",
     "polymer-analyzer": "^3.1.2",
     "polymer-bundler": "^4.0.2",
@@ -136,6 +135,7 @@
     "reify": "^0.18.1",
     "require-dir": "^1.0.0",
     "sinon": "^7.1.0",
+    "ts-mocha": "^2.0.0",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-eslint-rules": "^5.4.0",
