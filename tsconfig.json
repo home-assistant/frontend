@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "module": "esnext",
-    "moduleResolution": "node",
     "lib": ["es2017", "dom", "dom.iterable"],
     "noEmit": true,
     "noUnusedLocals": true,

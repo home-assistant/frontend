@@ -1,4 +1,4 @@
-import { generateFilter } from "../../../src/common/entity/entity_filter.js";
+import { generateFilter } from "../../../src/common/entity/entity_filter.ts";
 
 const assert = require("assert");
 
