@@ -20,7 +20,7 @@ import "./hui-yaml-card-preview";
 // tslint:disable-next-line
 import { HuiYAMLCardPreview } from "./hui-yaml-card-preview";
 import { LovelaceCardEditor, LovelaceConfig } from "../types";
-import { YamlChangedEvent } from "./types";
+import { YamlChangedEvent, ConfigValue } from "./types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 
@@ -32,6 +32,7 @@ export class HuiDialogEditCard extends LitElement {
   private _configElement?: LovelaceCardEditor | null;
   private _reloadLovelace?: () => void;
   private _editorToggle?: boolean;
+  private _configValue?: ConfigValue;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -55,6 +56,9 @@ export class HuiDialogEditCard extends LitElement {
     this._configElement = undefined;
     this._loadConfig().then(() => this._loadConfigElement());
     this._originalConfigYaml = this._currentConfigYaml;
+    if (!this._configElement) {
+      this._configValue = { format: "yaml", value: this._currentConfigYaml };
+    }
     // Wait till dialog is rendered.
     await this.updateComplete;
     this._dialog.open();
@@ -115,21 +119,23 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleYamlChanged(ev: YamlChangedEvent): void {
-    this._updatePreview(yaml.safeLoad(ev.detail.yaml));
+    this._configValue = { format: "yaml", value: ev.detail.yaml };
+    this._updatePreview(this._configValue);
   }
 
   private _handleConfigChanged(value: LovelaceConfig): void {
     if (this._configElement) {
       this._configElement.setConfig(value);
     }
-    this._updatePreview(value);
+    this._configValue = { format: "js", value };
+    this._updatePreview(this._configValue);
   }
 
-  private _updatePreview(value: LovelaceConfig) {
+  private _updatePreview(value: ConfigValue) {
     if (!this._previewEl) {
       return;
     }
-    this._previewEl.config = value;
+    this._previewEl.value = value;
   }
 
   private _closeDialog(): void {
@@ -137,10 +143,10 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _toggleEditor(): void {
-    if (this._editorToggle) {
-      this._currentConfigYaml = yaml.safeDump(this._previewEl.config);
-    } else if (this._configElement) {
-      this._configElement.setConfig(this._previewEl.config);
+    if (this._editorToggle && this._configValue!.format === "js") {
+      this._currentConfigYaml = yaml.safeDump(this._configValue!.value);
+    } else if (this._configElement && this._configValue!.format === "yaml") {
+      this._configElement.setConfig(yaml.safeLoad(this._configValue!.value));
     }
     this._editorToggle = !this._editorToggle;
   }
@@ -165,6 +171,7 @@ export class HuiDialogEditCard extends LitElement {
       configElement.addEventListener("config-changed", (ev) =>
         this._handleConfigChanged(ev.detail.config)
       );
+      this._configValue = { format: "js", value: conf };
       this._configElement = configElement;
     } catch (err) {
       this._configElement = null;
@@ -175,7 +182,11 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private async _updateConfig(): Promise<void> {
-    this._currentConfigYaml = yaml.safeDump(this._previewEl.config);
+    this._currentConfigYaml =
+      this._configValue!.format === "js"
+        ? yaml.safeDump(this._configValue!.value)
+        : this._configValue!.value;
+
     if (this._currentConfigYaml === this._originalConfigYaml) {
       this._dialog.close();
       return;
