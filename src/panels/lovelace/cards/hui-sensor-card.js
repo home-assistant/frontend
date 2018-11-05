@@ -138,7 +138,6 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   }
 
   _getPath(points) {
-    const SPACE = " ";
     let next;
     let Z;
     const X = 0;
@@ -146,20 +145,17 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     let path = "";
     let point = points[0];
 
-    path += "M" + point[X] + "," + point[Y];
-    const first = point;
+    path += `M ${point[X]},${point[Y]}`;
 
     for (let i = 0; i < points.length; i++) {
       next = points[i];
       Z = this._midPoint(point[X], point[Y], next[X], next[Y]);
-      path += SPACE + Z[X] + "," + Z[Y];
-      path += "Q" + Math.floor(next[X]) + "," + next[Y];
+      path += ` ${Z[X]},${Z[Y]}`;
+      path += ` Q${next[X]},${next[Y]}`;
       point = next;
     }
 
-    const second = points[1];
-    Z = this._midPoint(first[X], first[Y], second[X], second[Y]);
-    path += SPACE + Math.floor(next[X]) + "." + points[points.length - 1];
+    path += ` ${next[X]},${next[Y]}`;
     return path;
   }
 
