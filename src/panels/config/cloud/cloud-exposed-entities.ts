@@ -100,6 +100,7 @@ export class CloudExposedEntities extends LitElement {
       <style>
         ha-state-icon {
           color: var(--primary-text-color);
+          cursor: pointer;
         }
       </style>
     `;
