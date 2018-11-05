@@ -115,7 +115,9 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   }
 
   _getValueArr(items) {
-    return items.map((item) => Number(item.state) || 0);
+    return items
+      .map((item) => Number(item.state))
+      .filter((val) => !Number.isNaN(val));
   }
 
   _calcCoordinates(values, width, height) {
