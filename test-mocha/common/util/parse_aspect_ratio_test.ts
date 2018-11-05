@@ -1,4 +1,4 @@
-import assert from "assert";
+import * as assert from "assert";
 
 import parseAspectRatio from "../../../src/common/util/parse-aspect-ratio";
 

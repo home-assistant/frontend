@@ -1,4 +1,4 @@
-import assert from "assert";
+import * as assert from "assert";
 
 import splitByGroups from "../../../src/common/entity/split_by_groups";
 

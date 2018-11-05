@@ -1,4 +1,4 @@
-import assert from "assert";
+import * as assert from "assert";
 
 import getViewEntities from "../../../src/common/entity/get_view_entities";
 

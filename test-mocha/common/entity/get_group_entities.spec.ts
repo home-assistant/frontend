@@ -1,4 +1,4 @@
-import assert from "assert";
+import * as assert from "assert";
 
 import getGroupEntities from "../../../src/common/entity/get_group_entities";
 

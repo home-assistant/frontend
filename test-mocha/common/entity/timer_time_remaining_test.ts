@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import sinon from "sinon";
+import * as sinon from "sinon";
 
 import timerTimeRemaining from "../../../src/common/entity/timer_time_remaining";
 
