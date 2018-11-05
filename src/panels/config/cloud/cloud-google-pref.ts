@@ -28,8 +28,8 @@ export class CloudGooglePref extends LitElement {
       ${this.renderStyle()}
       <paper-card heading="Google Assistant">
         <paper-toggle-button
-          .checked='${this.cloudStatus!.google_enabled}'
-          @change='${this._toggleChanged}'
+          .checked="${this.cloudStatus!.google_enabled}"
+          @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
           With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.
@@ -50,7 +50,7 @@ export class CloudGooglePref extends LitElement {
         <div class="card-actions">
           <ha-call-api-button
             .hass="${this.hass}"
-            .disabled='${!this.cloudStatus!.google_enabled}'
+            .disabled="${!this.cloudStatus!.google_enabled}"
             path="cloud/google_actions/sync"
           >Sync devices</ha-call-api-button>
         </div>

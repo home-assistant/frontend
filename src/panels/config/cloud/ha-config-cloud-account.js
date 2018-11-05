@@ -112,13 +112,13 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </div>
 
           <cloud-alexa-pref
-            hass='[[hass]]'
-            cloud-status='[[cloudStatus]]'
+            hass="[[hass]]"
+            cloud-status="[[cloudStatus]]"
           ></cloud-alexa-pref>
 
           <cloud-google-pref
-            hass='[[hass]]'
-            cloud-status='[[cloudStatus]]'
+            hass="[[hass]]"
+            cloud-status="[[cloudStatus]]"
           ></cloud-google-pref>
         </ha-config-section>
       </div>

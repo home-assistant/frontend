@@ -27,8 +27,8 @@ export class CloudAlexaPref extends LitElement {
       ${this.renderStyle()}
       <paper-card heading="Alexa">
         <paper-toggle-button
-          .checked='${this.cloudStatus!.alexa_enabled}'
-          @change='${this._toggleChanged}'
+          .checked="${this.cloudStatus!.alexa_enabled}"
+          @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
           With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.
