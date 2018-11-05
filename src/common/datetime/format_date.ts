@@ -1,4 +1,4 @@
-import fecha from "fecha";
+import * as fecha from "fecha";
 
 // Check for support of native locale string options
 function toLocaleDateStringSupportsOptions() {
@@ -11,11 +11,10 @@ function toLocaleDateStringSupportsOptions() {
 }
 
 export default (toLocaleDateStringSupportsOptions()
-  ? (dateObj, locales) =>
+  ? (dateObj: Date, locales: string) =>
       dateObj.toLocaleDateString(locales, {
         year: "numeric",
         month: "long",
         day: "numeric",
       })
-  : // eslint-disable-next-line no-unused-vars
-    (dateObj, locales) => fecha.format(dateObj, "mediumDate"));
+  : (dateObj: Date) => fecha.format(dateObj, "mediumDate"));

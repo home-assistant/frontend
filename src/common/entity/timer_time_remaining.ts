@@ -4,8 +4,8 @@ export default function timerTimeRemaining(stateObj) {
   let timeRemaining = durationToSeconds(stateObj.attributes.remaining);
 
   if (stateObj.state === "active") {
-    const now = new Date();
-    const madeActive = new Date(stateObj.last_changed);
+    const now = new Date().getTime();
+    const madeActive = new Date(stateObj.last_changed).getTime();
     timeRemaining = Math.max(timeRemaining - (now - madeActive) / 1000, 0);
   }
 

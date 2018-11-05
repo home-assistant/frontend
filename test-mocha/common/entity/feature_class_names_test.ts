@@ -1,6 +1,7 @@
 import { assert } from "chai";
 
 import featureClassNames from "../../../src/common/entity/feature_class_names";
+import { HassEntity } from "home-assistant-js-websocket";
 
 describe("featureClassNames", () => {
   const classNames = {
@@ -12,11 +13,12 @@ describe("featureClassNames", () => {
 
   it("Skips null states", () => {
     const stateObj = null;
-    assert.strictEqual(featureClassNames(stateObj, classNames), "");
+    assert.strictEqual(featureClassNames(stateObj!, classNames), "");
   });
 
   it("Matches no features", () => {
-    const stateObj = {
+    // tslint:disable-next-line
+    const stateObj = <HassEntity>{
       attributes: {
         supported_features: 64,
       },
@@ -25,7 +27,8 @@ describe("featureClassNames", () => {
   });
 
   it("Matches one feature", () => {
-    const stateObj = {
+    // tslint:disable-next-line
+    const stateObj = <HassEntity>{
       attributes: {
         supported_features: 72,
       },
@@ -37,7 +40,8 @@ describe("featureClassNames", () => {
   });
 
   it("Matches two features", () => {
-    const stateObj = {
+    // tslint:disable-next-line
+    const stateObj = <HassEntity>{
       attributes: {
         supported_features: 73,
       },

@@ -27,7 +27,7 @@ export function createView(entity) {
   return createGroup(entity);
 }
 
-export function createLightEntity(isOn) {
+export function createLightEntity(isOn?) {
   mockState++;
   if (isOn === undefined) {
     isOn = Math.random() > 0.5;

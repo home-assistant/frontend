@@ -1,4 +1,4 @@
-import fecha from "fecha";
+import * as fecha from "fecha";
 
 // Check for support of native locale string options
 function toLocaleStringSupportsOptions() {
@@ -19,5 +19,4 @@ export default (toLocaleStringSupportsOptions()
         hour: "numeric",
         minute: "2-digit",
       })
-  : // eslint-disable-next-line no-unused-vars
-    (dateObj, locales) => fecha.format(dateObj, "haDateTime"));
+  : (dateObj) => fecha.format(dateObj, "haDateTime"));

@@ -44,7 +44,7 @@ const fixedIcons = {
   weblink: "hass:open-in-new",
 };
 
-export default function domainIcon(domain, state) {
+export default function domainIcon(domain: string, state?: string) {
   if (domain in fixedIcons) {
     return fixedIcons[domain];
   }
@@ -93,11 +93,10 @@ export default function domainIcon(domain, state) {
       }
 
     default:
-      /* eslint-disable no-console */
+      // tslint:disable-next-line
       console.warn(
         "Unable to find icon for domain " + domain + " (" + state + ")"
       );
-      /* eslint-enable no-console */
       return DEFAULT_DOMAIN_ICON;
   }
 }
