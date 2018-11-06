@@ -9,3 +9,8 @@ export interface LovelaceCard extends HTMLElement {
   getCardSize(): number;
   setConfig(config: LovelaceConfig): void;
 }
+
+export interface LovelaceCardEditor extends HTMLElement {
+  hass?: HomeAssistant;
+  setConfig(config: LovelaceConfig): void;
+}
