@@ -100,7 +100,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
                     ? html`<span class="uom">${
                         this.hass.config.unit_system.temperature
                       }</span>`
-                    : html``
+                    : ""
                 }
               </span>
             </div>
