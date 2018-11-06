@@ -105,7 +105,7 @@ export class HuiDialogEditCard extends LitElement {
             @click="${this._closeDialog}"
           >Cancel</paper-button>
           <paper-button
-            @click="${this._UpdateConfigInBackend}"'
+            @click="${this._updateConfigInBackend}"'
           >Save</paper-button>
         </div>
       </paper-dialog>
@@ -173,6 +173,7 @@ export class HuiDialogEditCard extends LitElement {
       configElement = await elClass.getConfigElement();
     } catch (err) {
       this._configElement = null;
+      return;
     }
 
     configElement.setConfig(conf);
@@ -187,7 +188,7 @@ export class HuiDialogEditCard extends LitElement {
     fireEvent(this._dialog, "iron-resize");
   }
 
-  private async _UpdateConfigInBackend(): Promise<void> {
+  private async _updateConfigInBackend(): Promise<void> {
     if (this._configValue!.format === "js") {
       this._configValue = {
         format: "yaml",
