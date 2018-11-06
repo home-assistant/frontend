@@ -1,4 +1,4 @@
-import * as fecha from "fecha";
+import fecha from "fecha";
 
 // Check for support of native locale string options
 function toLocaleTimeStringSupportsOptions() {
