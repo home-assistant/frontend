@@ -4,6 +4,7 @@ import { TemplateResult } from "lit-html";
 import "../components/hui-generic-entity-row";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
+import "./hui-error-entity-row";
 
 import { isTiltOnly } from "../../../util/cover-model";
 import { HomeAssistant } from "../../../types";
