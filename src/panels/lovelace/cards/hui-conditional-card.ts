@@ -67,6 +67,8 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
     } else if (this._card.parentElement) {
       this.removeChild(this._card);
     }
+    // This will hide the complete card so it won't get styled by parent
+    this.style.setProperty("display", visible ? "" : "none");
   }
 
   public getCardSize() {
