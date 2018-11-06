@@ -3,7 +3,7 @@ import { assert } from "chai";
 import canToggleDomain from "../../../src/common/entity/can_toggle_domain";
 
 describe("canToggleDomain", () => {
-  const hass = {
+  const hass: any = {
     services: {
       light: {
         turn_on: null, // Service keys only need to be present for test

@@ -8,7 +8,7 @@ describe("computeStateDisplay", () => {
     message + (args.length ? ": " + args.join(",") : "");
 
   it("Localizes binary sensor defaults", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "binary_sensor.test",
       state: "off",
       attributes: {},
@@ -20,7 +20,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes binary sensor device class", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "binary_sensor.test",
       state: "off",
       attributes: {
@@ -36,11 +36,11 @@ describe("computeStateDisplay", () => {
   it("Localizes binary sensor invalid device class", () => {
     const altLocalize = (message, ...args) => {
       if (message === "state.binary_sensor.invalid_device_class.off") {
-        return null;
+        return "";
       }
       return localize(message, ...args);
     };
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "binary_sensor.test",
       state: "off",
       attributes: {
@@ -54,7 +54,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes sensor value with units", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "sensor.test",
       state: "123",
       attributes: {
@@ -67,11 +67,11 @@ describe("computeStateDisplay", () => {
   it("Localizes unknown sensor value with units", () => {
     const altLocalize = (message, ...args) => {
       if (message === "state.sensor.unknown") {
-        return null;
+        return "";
       }
       return localize(message, ...args);
     };
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "sensor.test",
       state: "unknown",
       attributes: {
@@ -87,11 +87,11 @@ describe("computeStateDisplay", () => {
   it("Localizes unavailable sensor value with units", () => {
     const altLocalize = (message, ...args) => {
       if (message === "state.sensor.unavailable") {
-        return null;
+        return "";
       }
       return localize(message, ...args);
     };
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "sensor.test",
       state: "unavailable",
       attributes: {
@@ -107,11 +107,11 @@ describe("computeStateDisplay", () => {
   it("Localizes sensor value with component translation", () => {
     const altLocalize = (message, ...args) => {
       if (message !== "component.sensor.state.custom_state") {
-        return null;
+        return "";
       }
       return localize(message, ...args);
     };
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "sensor.test",
       state: "custom_state",
       attributes: {},
@@ -123,7 +123,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes input_datetime with full date time", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "input_datetime.test",
       state: "123",
       attributes: {
@@ -144,7 +144,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes input_datetime with date", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "input_datetime.test",
       state: "123",
       attributes: {
@@ -165,7 +165,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes input_datetime with time", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "input_datetime.test",
       state: "123",
       attributes: {
@@ -186,7 +186,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes zwave ready", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "zwave.test",
       state: "ready",
       attributes: {
@@ -200,7 +200,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes zwave initializing", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "zwave.test",
       state: "initializing",
       attributes: {
@@ -214,7 +214,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes cover open", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "cover.test",
       state: "open",
       attributes: {},
@@ -228,11 +228,11 @@ describe("computeStateDisplay", () => {
   it("Localizes unavailable", () => {
     const altLocalize = (message, ...args) => {
       if (message === "state.sensor.unavailable") {
-        return null;
+        return "";
       }
       return localize(message, ...args);
     };
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "sensor.test",
       state: "unavailable",
       attributes: {},
@@ -246,9 +246,9 @@ describe("computeStateDisplay", () => {
   it("Localizes custom state", () => {
     const altLocalize = () => {
       // No matches can be found
-      return null;
+      return "";
     };
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "sensor.test",
       state: "My Custom State",
       attributes: {},
@@ -260,7 +260,7 @@ describe("computeStateDisplay", () => {
   });
 
   it("Only calculates state display once per immutable state object", () => {
-    const stateObj = {
+    const stateObj: any = {
       entity_id: "cover.test",
       state: "open",
       attributes: {},

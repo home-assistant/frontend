@@ -1,6 +1,8 @@
+import { HassEntity } from "home-assistant-js-websocket";
+
 /** Return an icon representing a binary sensor state. */
 
-export default function binarySensorIcon(state) {
+export default function binarySensorIcon(state: HassEntity) {
   const activated = state.state && state.state === "off";
   switch (state.attributes.device_class) {
     case "battery":

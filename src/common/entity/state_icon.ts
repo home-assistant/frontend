@@ -1,4 +1,5 @@
 /** Return an icon representing a state. */
+import { HassEntity } from "home-assistant-js-websocket";
 import { DEFAULT_DOMAIN_ICON } from "../const";
 
 import computeDomain from "./compute_domain";
@@ -16,7 +17,7 @@ const domainIcons = {
   input_datetime: inputDateTimeIcon,
 };
 
-export default function stateIcon(state) {
+export default function stateIcon(state: HassEntity) {
   if (!state) {
     return DEFAULT_DOMAIN_ICON;
   }

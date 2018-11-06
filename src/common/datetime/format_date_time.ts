@@ -11,7 +11,7 @@ function toLocaleStringSupportsOptions() {
 }
 
 export default (toLocaleStringSupportsOptions()
-  ? (dateObj, locales) =>
+  ? (dateObj: Date, locales: string) =>
       dateObj.toLocaleString(locales, {
         year: "numeric",
         month: "long",
@@ -19,4 +19,4 @@ export default (toLocaleStringSupportsOptions()
         hour: "numeric",
         minute: "2-digit",
       })
-  : (dateObj) => fecha.format(dateObj, "haDateTime"));
+  : (dateObj: Date) => fecha.format(dateObj, "haDateTime"));

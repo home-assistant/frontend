@@ -1,4 +1,5 @@
 /** Return an icon representing a sensor state. */
+import { HassEntity } from "home-assistant-js-websocket";
 import { UNIT_C, UNIT_F } from "../const";
 import domainIcon from "./domain_icon";
 
@@ -9,17 +10,18 @@ const fixedDeviceClassIcons = {
   pressure: "hass:gauge",
 };
 
-export default function sensorIcon(state) {
+export default function sensorIcon(state: HassEntity) {
   const dclass = state.attributes.device_class;
 
-  if (dclass in fixedDeviceClassIcons) {
+  if (dclass && dclass in fixedDeviceClassIcons) {
     return fixedDeviceClassIcons[dclass];
   }
   if (dclass === "battery") {
-    if (isNaN(state.state)) {
+    const battery = Number(state.state);
+    if (isNaN(battery)) {
       return "hass:battery-unknown";
     }
-    const batteryRound = Math.round(state.state / 10) * 10;
+    const batteryRound = Math.round(battery / 10) * 10;
     if (batteryRound >= 100) {
       return "hass:battery";
     }

@@ -1,3 +1,2 @@
-export default function validEntityId(entityId) {
-  return /^(\w+)\.(\w+)$/.test(entityId);
-}
+const validEntityId = /^(\w+)\.(\w+)$/;
+export default validEntityId.test;

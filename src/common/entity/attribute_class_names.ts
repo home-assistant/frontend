@@ -1,4 +1,9 @@
-export default function attributeClassNames(stateObj, attributes) {
+import { HassEntity } from "home-assistant-js-websocket";
+
+export default function attributeClassNames(
+  stateObj: HassEntity,
+  attributes: string[]
+): string {
   if (!stateObj) {
     return "";
   }

@@ -11,7 +11,7 @@ describe("timerTimeRemaining", () => {
         attributes: {
           remaining: "0:01:05",
         },
-      }),
+      } as any),
       65
     );
   });
@@ -23,7 +23,7 @@ describe("timerTimeRemaining", () => {
         attributes: {
           remaining: "0:01:05",
         },
-      }),
+      } as any),
       65
     );
   });
@@ -44,7 +44,7 @@ describe("timerTimeRemaining", () => {
             remaining: "0:01:05",
           },
           last_changed: "2018-01-17T16:15:12Z",
-        }),
+        } as any),
         47
       );
     });

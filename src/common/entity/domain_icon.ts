@@ -44,7 +44,7 @@ const fixedIcons = {
   weblink: "hass:open-in-new",
 };
 
-export default function domainIcon(domain: string, state?: string) {
+export default function domainIcon(domain: string, state?: string): string {
   if (domain in fixedIcons) {
     return fixedIcons[domain];
   }

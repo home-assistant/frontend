@@ -6,12 +6,12 @@ describe("attributeClassNames", () => {
   const attrs = ["mock_attr1", "mock_attr2"];
 
   it("Skips null states", () => {
-    const stateObj = null;
+    const stateObj: any = null;
     assert.strictEqual(attributeClassNames(stateObj, attrs), "");
   });
 
   it("Matches no attrbutes", () => {
-    const stateObj = {
+    const stateObj: any = {
       attributes: {
         other_attr_1: 1,
         other_attr_2: 2,
@@ -21,7 +21,7 @@ describe("attributeClassNames", () => {
   });
 
   it("Matches one attrbute", () => {
-    const stateObj = {
+    const stateObj: any = {
       attributes: {
         other_attr_1: 1,
         other_attr_2: 2,
@@ -32,7 +32,7 @@ describe("attributeClassNames", () => {
   });
 
   it("Matches two attrbutes", () => {
-    const stateObj = {
+    const stateObj: any = {
       attributes: {
         other_attr_1: 1,
         other_attr_2: 2,

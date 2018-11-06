@@ -1,13 +1,9 @@
 import { assert } from "chai";
 
 import canToggleState from "../../../src/common/entity/can_toggle_state";
-import { HomeAssistant } from "../../../src/types";
-import { HassEntity } from "home-assistant-js-websocket";
 
 describe("canToggleState", () => {
-  // @ts-ignore
-  // tslint:disable-next-line
-  const hass = <HomeAssistant>{
+  const hass: any = {
     services: {
       light: {
         turn_on: null, // Service keys only need to be present for test
@@ -17,8 +13,7 @@ describe("canToggleState", () => {
   };
 
   it("Detects lights toggle", () => {
-    // tslint:disable-next-line
-    const stateObj = <HassEntity>{
+    const stateObj: any = {
       entity_id: "light.bla",
       state: "on",
     };
@@ -26,8 +21,7 @@ describe("canToggleState", () => {
   });
 
   it("Detects group with toggle", () => {
-    // tslint:disable-next-line
-    const stateObj = <HassEntity>{
+    const stateObj: any = {
       entity_id: "group.bla",
       state: "on",
     };
@@ -35,8 +29,7 @@ describe("canToggleState", () => {
   });
 
   it("Detects group without toggle", () => {
-    // tslint:disable-next-line
-    const stateObj = <HassEntity>{
+    const stateObj: any = {
       entity_id: "group.devices",
       state: "home",
     };
@@ -44,8 +37,7 @@ describe("canToggleState", () => {
   });
 
   it("Detects climate with toggle", () => {
-    // tslint:disable-next-line
-    const stateObj = <HassEntity>{
+    const stateObj: any = {
       entity_id: "climate.bla",
       attributes: {
         supported_features: 4096,
@@ -55,9 +47,11 @@ describe("canToggleState", () => {
   });
 
   it("Detects climate without toggle", () => {
-    // tslint:disable-next-line
-    const stateObj = <HassEntity>{
+    const stateObj: any = {
       entity_id: "climate.bla",
+      attributes: {
+        supported_features: 0,
+      },
     };
     assert.isFalse(canToggleState(hass, stateObj));
   });
