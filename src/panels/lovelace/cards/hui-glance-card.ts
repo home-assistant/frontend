@@ -7,24 +7,23 @@ import {
 import { TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/classMap";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display";
-import computeStateName from "../../../common/entity/compute_state_name";
-import processConfigEntities from "../common/process-config-entities";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event.js";
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+import { HomeAssistant } from "../../../types.js";
+import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types.js";
+import { longPress } from "../common/directives/long-press-directive";
 
-import toggleEntity from "../common/entity/toggle-entity";
+import computeStateDisplay from "../../../common/entity/compute_state_display.js";
+import computeStateName from "../../../common/entity/compute_state_name.js";
+import processConfigEntities from "../common/process-config-entities";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element.js";
+import toggleEntity from "../common/entity/toggle-entity.js";
 
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig } from "../types";
-import { longPress } from "../common/directives/long-press-directive";
-
-interface EntityConfig {
+export interface EntityConfig {
   name: string;
   icon: string;
   entity: string;
@@ -34,7 +33,7 @@ interface EntityConfig {
   service_data?: object;
 }
 
-interface Config extends LovelaceConfig {
+export interface Config extends LovelaceConfig {
   show_name?: boolean;
   show_state?: boolean;
   title?: string;
@@ -45,6 +44,11 @@ interface Config extends LovelaceConfig {
 
 export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/hui-glance-card-editor");
+    return document.createElement("hui-glance-card-editor");
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
   private _configEntities?: EntityConfig[];
