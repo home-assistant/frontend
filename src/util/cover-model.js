@@ -72,9 +72,9 @@ export default class CoverEntity {
   }
 
   get isTiltOnly() {
-    var supportsCover =
+    const supportsCover =
       this.supportsOpen || this.supportsClose || this.supportsStop;
-    var supportsTilt =
+    const supportsTilt =
       this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
     return supportsTilt && !supportsCover;
   }
@@ -119,4 +119,33 @@ export default class CoverEntity {
     data.entity_id = this.stateObj.entity_id;
     this.hass.callService("cover", service, data);
   }
+}
+
+const support = (stateObj, feature) =>
+  (stateObj.attributes.supported_features & feature) !== 0;
+
+export const supportsOpen = (stateObj) => support(stateObj, 1);
+
+export const supportsClose = (stateObj) => support(stateObj, 2);
+
+export const supportsSetPosition = (stateObj) => support(stateObj, 4);
+
+export const supportsStop = (stateObj) => support(stateObj, 8);
+
+export const supportsOpenTilt = (stateObj) => support(stateObj, 16);
+
+export const supportsCloseTilt = (stateObj) => support(stateObj, 32);
+
+export const supportsStopTilt = (stateObj) => support(stateObj, 64);
+
+export const supportsSetTiltPosition = (stateObj) => support(stateObj, 128);
+
+export function isTiltOnly(stateObj) {
+  const supportsCover =
+    supportsOpen(stateObj) || supportsClose(stateObj) || supportsStop(stateObj);
+  const supportsTilt =
+    supportsOpenTilt(stateObj) ||
+    supportsCloseTilt(stateObj) ||
+    supportsStopTilt(stateObj);
+  return supportsTilt && !supportsCover;
 }
