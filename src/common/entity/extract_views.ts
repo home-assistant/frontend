@@ -2,7 +2,7 @@ import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { DEFAULT_VIEW_ENTITY_ID } from "../const";
 
 // Return an ordered array of available views
-export default function extractViews(entities: HassEntities) {
+export default function extractViews(entities: HassEntities): HassEntity[] {
   const views: HassEntity[] = [];
 
   Object.keys(entities).forEach((entityId) => {
