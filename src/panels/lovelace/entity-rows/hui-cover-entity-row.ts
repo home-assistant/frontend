@@ -32,6 +32,15 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
       return html``;
     }
 
+    const stateObj = this.hass.states[this._config.entity];
+
+    if (!stateObj) {
+      return html`
+        <hui-error-entity-row
+          .entity=${this._config.entity}
+        ></hui-error-entity-row>`;
+    }
+
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row
@@ -39,23 +48,17 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
         .config=${this._config}
       >
       ${
-        this.hass.states[this._config.entity]
+        isTiltOnly(stateObj)
           ? html`
-            ${
-              isTiltOnly(this.hass.states[this._config.entity])
-                ? html`
-                  <ha-cover-tilt-controls
-                    .hass=${this.hass}
-                    .stateObj=${this.hass.states[this._config.entity]}
-                  ></ha-cover-tilt-controls>`
-                : html`
-                  <ha-cover-controls
-                    .hass=${this.hass}
-                    .stateObj=${this.hass.states[this._config.entity]}
-                  ></ha-cover-controls>`
-            }
-          `
-          : html``
+            <ha-cover-tilt-controls
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+            ></ha-cover-tilt-controls>`
+          : html`
+            <ha-cover-controls
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+            ></ha-cover-controls>`
       }
       </hui-generic-entity-row>
     `;
