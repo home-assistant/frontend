@@ -1,2 +1,2 @@
 const validEntityId = /^(\w+)\.(\w+)$/;
-export default validEntityId.test;
+export default (entityId: string) => validEntityId.test(entityId);
