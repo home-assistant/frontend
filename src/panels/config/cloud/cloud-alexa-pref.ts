@@ -10,6 +10,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
 import { updatePref } from "./data";
 import { CloudStatusLoggedIn } from "./types";
+import "./cloud-exposed-entities";
 
 export class CloudAlexaPref extends LitElement {
   public hass?: HomeAssistant;
@@ -23,11 +24,13 @@ export class CloudAlexaPref extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const enabled = this.cloudStatus!.alexa_enabled;
+
     return html`
       ${this.renderStyle()}
       <paper-card heading="Alexa">
         <paper-toggle-button
-          .checked="${this.cloudStatus!.alexa_enabled}"
+          .checked="${enabled}"
           @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
@@ -43,6 +46,18 @@ export class CloudAlexaPref extends LitElement {
             </li>
           </ul>
           <em>This integration requires an Alexa-enabled device like the Amazon Echo.</em>
+          ${
+            enabled
+              ? html`
+                <p>Exposed entities:</p>
+                <cloud-exposed-entities
+                  .hass="${this.hass}"
+                  .filter="${this.cloudStatus!.alexa_entities}"
+                  .supportedDomains="${this.cloudStatus!.alexa_domains}"
+                ></cloud-exposed-entities>
+              `
+              : ""
+          }
         </div>
       </paper-card>
     `;
