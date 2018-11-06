@@ -1,12 +1,12 @@
-import computeDomain from "./compute_domain.js";
+import computeDomain from "./compute_domain";
 
 export type FilterFunc = (entityId: string) => boolean;
 
 export const generateFilter = (
-  includeDomains: string[],
-  includeEntities: string[],
-  excludeDomains: string[],
-  excludeEntities: string[]
+  includeDomains?: string[],
+  includeEntities?: string[],
+  excludeDomains?: string[],
+  excludeEntities?: string[]
 ): FilterFunc => {
   const includeDomainsSet = new Set(includeDomains);
   const includeEntitiesSet = new Set(includeEntities);
@@ -37,8 +37,8 @@ export const generateFilter = (
 
   // Case 4 - both includes and excludes specified
   // Case 4a - include domain specified
-  //  - if domain is included, and entity not excluded, pass
-  //  - if domain is not included, and entity not included, fail
+  //  - if domain is included, pass if entity not excluded
+  //  - if domain is not included, pass if entity is included
   // note: if both include and exclude domains specified,
   //   the exclude domains are ignored
   if (includeDomainsSet.size) {
@@ -49,8 +49,8 @@ export const generateFilter = (
   }
 
   // Case 4b - exclude domain specified
-  //  - if domain is excluded, and entity not included, fail
-  //  - if domain is not excluded, and entity not excluded, pass
+  //  - if domain is excluded, pass if entity is included
+  //  - if domain is not excluded, pass if entity not excluded
   if (excludeDomainsSet.size) {
     return (entityId) =>
       excludeDomainsSet.has(computeDomain(entityId))
