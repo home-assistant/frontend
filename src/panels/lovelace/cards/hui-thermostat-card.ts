@@ -93,12 +93,15 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           <div id="tooltip">
             <div class="title">${computeStateName(stateObj)}</div>
             <div class="current-temperature">
-              <span class="current-temperature-text">${
-                stateObj.attributes.current_temperature
-              }
-                <span class="uom">${
-                  this.hass.config.unit_system.temperature
-                }</span>
+              <span class="current-temperature-text">
+                ${stateObj.attributes.current_temperature}
+                ${
+                  stateObj.attributes.current_temperature
+                    ? html`<span class="uom">${
+                        this.hass.config.unit_system.temperature
+                      }</span>`
+                    : ""
+                }
               </span>
             </div>
             <div class="climate-info">
