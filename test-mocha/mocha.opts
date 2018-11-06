@@ -1,4 +1,3 @@
 --recursive
---require reify
 --timeout 10000
-test-mocha
+test-mocha/**/*.ts
