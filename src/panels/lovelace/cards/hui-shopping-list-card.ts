@@ -36,10 +36,6 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-
-    if (!this._unsubEvents) {
-      this.connectedCallback();
-    }
   }
 
   public getCardSize(): number {
