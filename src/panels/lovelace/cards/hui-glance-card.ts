@@ -211,7 +211,11 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
         ></state-badge>
         ${
           this._config!.show_state !== false
-            ? html`<div>${computeStateDisplay(this.localize, stateObj)}</div>`
+            ? html`<div>${computeStateDisplay(
+                this.localize,
+                stateObj,
+                this.hass!.language
+              )}</div>`
             : ""
         }
       </div>
