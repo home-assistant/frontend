@@ -29,6 +29,12 @@ export default (elements, { initialStates = {} } = {}) => {
     resources: demoResources,
     states: initialStates,
     themes: {},
+    connection: {
+      subscribeEvents: async (callback, event) => {
+        console.log("subscribeEvents", event);
+        return () => console.log("unsubscribeEvents", event);
+      },
+    },
 
     // Mock properties
     mockEntities: entities,
