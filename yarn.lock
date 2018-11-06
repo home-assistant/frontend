@@ -6220,9 +6220,9 @@ fd-slicer@~1.1.0:
   dependencies:
     pend "~1.2.0"
 
-fecha@^2.3.3, "fecha@https://github.com/balloob/fecha/archive/51d14fd0eb4781e2ecf265d1c3080706259133b5.tar.gz":
-  version "2.3.3"
-  resolved "https://github.com/balloob/fecha/archive/51d14fd0eb4781e2ecf265d1c3080706259133b5.tar.gz#bfb1e49121dd7821601af35faf4fe93dbd19200a"
+fecha@^2.3.3, "fecha@https://github.com/balloob/fecha/archive/5b6ee2fc9f7a0470f0ea9ed1c079cf9fa148aa25.tar.gz":
+  version "3.0.0"
+  resolved "https://github.com/balloob/fecha/archive/5b6ee2fc9f7a0470f0ea9ed1c079cf9fa148aa25.tar.gz#de665a5224b24c3d2d5441affa9fd936d320b434"
 
 figgy-pudding@^3.1.0, figgy-pudding@^3.5.1:
   version "3.5.1"

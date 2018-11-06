@@ -1,13 +1,13 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import "../components/hui-generic-entity-row.js";
-import "../../../components/ha-cover-controls.js";
-import "../../../components/ha-cover-tilt-controls.js";
+import "../components/hui-generic-entity-row";
+import "../../../components/ha-cover-controls";
+import "../../../components/ha-cover-tilt-controls";
 
-import { isTiltOnly } from "../../../util/cover-model.js";
-import { HomeAssistant } from "../../../types.js";
-import { EntityRow, EntityConfig } from "./types.js";
+import { isTiltOnly } from "../../../util/cover-model";
+import { HomeAssistant } from "../../../types";
+import { EntityRow, EntityConfig } from "./types";
 
 class HuiCoverEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
