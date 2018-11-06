@@ -6,6 +6,7 @@ import {
   MessageBase,
   HassEntityBase,
   HassEntityAttributeBase,
+  HassServices,
 } from "home-assistant-js-websocket";
 
 declare global {
@@ -75,6 +76,7 @@ export interface HomeAssistant {
   connection: Connection;
   connected: boolean;
   states: HassEntities;
+  services: HassServices;
   config: HassConfig;
   themes: Themes;
   panels: Panels;
@@ -139,5 +141,15 @@ export type LightEntity = HassEntityBase & {
     friendly_name: string;
     brightness: number;
     hs_color: number[];
+  };
+};
+
+export type GroupEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    entity_id: string[];
+    order: number;
+    auto?: boolean;
+    view?: boolean;
+    control?: "hidden";
   };
 };
