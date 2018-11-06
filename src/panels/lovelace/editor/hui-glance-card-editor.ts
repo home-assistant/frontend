@@ -1,17 +1,17 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import "@polymer/paper-checkbox/paper-checkbox.js";
+import "@polymer/paper-checkbox/paper-checkbox";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../types.js";
-import { LovelaceCardEditor } from "../types.js";
-import { fireEvent } from "../../../common/dom/fire_event.js";
+import { HomeAssistant } from "../../../types";
+import { LovelaceCardEditor } from "../types";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { Config } from "../cards/hui-glance-card";
 
-import "../../../components/entity/state-badge.js";
+import "../../../components/entity/state-badge";
 import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-card.js";
-import "../../../components/ha-icon.js";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {

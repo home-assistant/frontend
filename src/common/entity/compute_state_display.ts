@@ -36,7 +36,7 @@ export default function computeStateDisplay(
       state._stateDisplay =
         state.state + " " + state.attributes.unit_of_measurement;
     } else if (domain === "input_datetime") {
-      let date;
+      let date: Date;
       if (!state.attributes.has_time) {
         date = new Date(
           state.attributes.year,
