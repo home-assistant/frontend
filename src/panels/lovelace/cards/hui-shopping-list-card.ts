@@ -22,7 +22,7 @@ interface Config extends LovelaceConfig {
 
 class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  private _hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   private _config?: Config;
   private _items?: ShoppingListItem[];
   private _unsubEvents?: Promise<() => Promise<void>>;
@@ -32,10 +32,6 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       _config: {},
       _items: {},
     };
-  }
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
   }
 
   public getCardSize(): number {
@@ -54,8 +50,8 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   public connectedCallback(): void {
     super.connectedCallback();
 
-    if (this._hass) {
-      this._unsubEvents = this._hass.connection.subscribeEvents(
+    if (this.hass) {
+      this._unsubEvents = this.hass.connection.subscribeEvents(
         () => this._fetchData(),
         "shopping_list_updated"
       );
@@ -72,7 +68,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this._hass) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
@@ -106,7 +102,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       )}
         <div class="divider"></div>
         <div class="label">
-          ${this.localize("ui.lovelace.shopping-list.checked_items")}
+          ${this.localize("ui.panel.lovelace.shopping-list.checked_items")}
         </div>
       ${repeat(
         this._items!.filter((item) => item.complete),
@@ -176,19 +172,19 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private async _fetchData(): Promise<void> {
-    if (this._hass) {
-      this._items = await fetchItems(this._hass);
+    if (this.hass) {
+      this._items = await fetchItems(this.hass);
     }
   }
 
   private _completeItem(ev): void {
-    completeItem(this._hass!, ev.target.itemId, ev.target.checked).catch(() =>
+    completeItem(this.hass!, ev.target.itemId, ev.target.checked).catch(() =>
       this._fetchData()
     );
   }
 
   private _saveEdit(ev): void {
-    saveEdit(this._hass!, ev.target.itemId, ev.target.value).catch(() =>
+    saveEdit(this.hass!, ev.target.itemId, ev.target.value).catch(() =>
       this._fetchData()
     );
 
