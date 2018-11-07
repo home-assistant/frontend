@@ -8,9 +8,11 @@ function patch(version) {
   return `${parts[0]}.${Number(parts[1]) + 1}`;
 }
 
-function today(version) {
+function today() {
   const now = new Date();
-  return `${now.getFullYear()}${now.getMonth() + 1}${now.getDate()}.0`;
+  return `${now.getFullYear()}${now.getMonth() + 1}${String(
+    now.getDate()
+  ).padStart(2, "0")}.0`;
 }
 
 const methods = {
