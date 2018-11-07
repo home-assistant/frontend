@@ -19,51 +19,53 @@ import isComponentLoaded from "../../common/config/is_component_loaded";
 class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      app-toolbar {
-        color: var(--more-info-header-color);
-        background-color: var(--more-info-header-background);
+      <style>
+        app-toolbar {
+          color: var(--more-info-header-color);
+          background-color: var(--more-info-header-background);
 
-        /* to fit save button */
-        padding-right: 0;
-      }
+          /* to fit save button */
+          padding-right: 0;
+        }
 
-      app-toolbar [main-title] {
-        @apply --ha-more-info-app-toolbar-title;
-      }
+        app-toolbar [main-title] {
+          @apply --ha-more-info-app-toolbar-title;
+        }
 
-      app-toolbar paper-button {
-        font-size: .8em;
-        margin: 0;
-      }
+        app-toolbar paper-button {
+          font-size: 0.8em;
+          margin: 0;
+        }
 
-      .form {
-        padding: 0 24px 24px;
-      }
-    </style>
+        .form {
+          padding: 0 24px 24px;
+        }
+      </style>
 
-    <app-toolbar>
-      <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
-      <div main-title="">[[_computeStateName(stateObj)]]</div>
-      <paper-button
-        on-click="_save"
-        disabled='[[_computeInvalid(_entityId)]]'
-      >[[localize('ui.dialogs.more_info_settings.save')]]</paper-button>
-    </app-toolbar>
+      <app-toolbar>
+        <paper-icon-button
+          icon="hass:arrow-left"
+          on-click="_backTapped"
+        ></paper-icon-button>
+        <div main-title="">[[_computeStateName(stateObj)]]</div>
+        <paper-button on-click="_save" disabled="[[_computeInvalid(_entityId)]]"
+          >[[localize('ui.dialogs.more_info_settings.save')]]</paper-button
+        >
+      </app-toolbar>
 
-    <div class="form">
-      <paper-input
-        value="{{_name}}"
-        label="[[localize('ui.dialogs.more_info_settings.name')]]"
-      ></paper-input>
-      <paper-input
-        value="{{_entityId}}"
-        label="[[localize('ui.dialogs.more_info_settings.entity_id')]]"
-        error-message="Domain needs to stay the same"
-        invalid='[[_computeInvalid(_entityId)]]'
-      ></paper-input>
-    </div>
-`;
+      <div class="form">
+        <paper-input
+          value="{{_name}}"
+          label="[[localize('ui.dialogs.more_info_settings.name')]]"
+        ></paper-input>
+        <paper-input
+          value="{{_entityId}}"
+          label="[[localize('ui.dialogs.more_info_settings.entity_id')]]"
+          error-message="Domain needs to stay the same"
+          invalid="[[_computeInvalid(_entityId)]]"
+        ></paper-input>
+      </div>
+    `;
   }
 
   static get properties() {

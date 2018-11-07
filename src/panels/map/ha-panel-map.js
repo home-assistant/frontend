@@ -21,20 +21,23 @@ Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
 class HaPanelMap extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-      #map {
-        height: calc(100% - 64px);
-        width: 100%;
-        z-index: 0;
-      }
-    </style>
+      <style include="ha-style">
+        #map {
+          height: calc(100% - 64px);
+          width: 100%;
+          z-index: 0;
+        }
+      </style>
 
-    <app-toolbar>
-      <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-      <div main-title>[[localize('panel.map')]]</div>
-    </app-toolbar>
+      <app-toolbar>
+        <ha-menu-button
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+        ></ha-menu-button>
+        <div main-title>[[localize('panel.map')]]</div>
+      </app-toolbar>
 
-    <div id='map'></div>
+      <div id="map"></div>
     `;
   }
 

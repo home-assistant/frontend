@@ -35,30 +35,41 @@ export class CloudGooglePref extends LitElement {
           @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
-          With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.
+          With the Google Assistant integration for Home Assistant Cloud you'll
+          be able to control all your Home Assistant devices via any Google
+          Assistant-enabled device.
           <ul>
             <li>
-              <a href="https://assistant.google.com/services/a/uid/00000091fd5fb875" target="_blank">
+              <a
+                href="https://assistant.google.com/services/a/uid/00000091fd5fb875"
+                target="_blank"
+              >
                 Activate the Home Assistant skill for Google Assistant
               </a>
             </li>
             <li>
-              <a href="https://www.home-assistant.io/cloud/google_assistant/" target="_blank">
+              <a
+                href="https://www.home-assistant.io/cloud/google_assistant/"
+                target="_blank"
+              >
                 Config documentation
               </a>
             </li>
           </ul>
-          <em>This integration requires a Google Assistant-enabled device like the Google Home or Android phone.</em>
+          <em
+            >This integration requires a Google Assistant-enabled device like
+            the Google Home or Android phone.</em
+          >
           ${
             enabled
               ? html`
-                <p>Exposed entities:</p>
-                <cloud-exposed-entities
-                  .hass="${this.hass}"
-                  .filter="${this.cloudStatus!.google_entities}"
-                  .supportedDomains="${this.cloudStatus!.google_domains}"
-                ></cloud-exposed-entities>
-              `
+                  <p>Exposed entities:</p>
+                  <cloud-exposed-entities
+                    .hass="${this.hass}"
+                    .filter="${this.cloudStatus!.google_entities}"
+                    .supportedDomains="${this.cloudStatus!.google_domains}"
+                  ></cloud-exposed-entities>
+                `
               : ""
           }
         </div>
@@ -67,7 +78,8 @@ export class CloudGooglePref extends LitElement {
             .hass="${this.hass}"
             .disabled="${!enabled}"
             path="cloud/google_actions/sync"
-          >Sync devices</ha-call-api-button>
+            >Sync devices</ha-call-api-button
+          >
         </div>
       </paper-card>
     `;

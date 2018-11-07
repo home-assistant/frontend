@@ -9,73 +9,96 @@ import EventsMixin from "../../../src/mixins/events-mixin";
 class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      paper-card {
-        display: inline-block;
-        width: 400px;
-      }
-      .card-content {
-        height: 200px;
-        color: var(--primary-text-color);
-      }
-      @media screen and (max-width: 830px) {
+      <style include="iron-flex ha-style">
         paper-card {
-          width: 100%;
+          display: inline-block;
+          width: 400px;
         }
         .card-content {
-          height: auto;
+          height: 200px;
+          color: var(--primary-text-color);
         }
-      }
-      .info {
-        width: 100%;
-      }
-      .info td:nth-child(2) {
-        text-align: right;
-      }
-      .errors {
-        color: var(--google-red-500);
-        margin-top: 16px;
-      }
-    </style>
-    <paper-card>
-      <div class="card-content">
-        <h2>Hass.io supervisor</h2>
-        <table class="info">
-          <tbody><tr>
-            <td>Version</td>
-            <td>
-              [[data.version]]
-            </td>
-          </tr>
-          <tr>
-            <td>Latest version</td>
-            <td>[[data.last_version]]</td>
-          </tr>
-          <template is="dom-if" if="[[!_equals(data.channel, &quot;stable&quot;)]]">
-            <tr>
-              <td>Channel</td>
-              <td>[[data.channel]]</td>
-            </tr>
+        @media screen and (max-width: 830px) {
+          paper-card {
+            width: 100%;
+          }
+          .card-content {
+            height: auto;
+          }
+        }
+        .info {
+          width: 100%;
+        }
+        .info td:nth-child(2) {
+          text-align: right;
+        }
+        .errors {
+          color: var(--google-red-500);
+          margin-top: 16px;
+        }
+      </style>
+      <paper-card>
+        <div class="card-content">
+          <h2>Hass.io supervisor</h2>
+          <table class="info">
+            <tbody>
+              <tr>
+                <td>Version</td>
+                <td>[[data.version]]</td>
+              </tr>
+              <tr>
+                <td>Latest version</td>
+                <td>[[data.last_version]]</td>
+              </tr>
+              <template
+                is="dom-if"
+                if="[[!_equals(data.channel, &quot;stable&quot;)]]"
+              >
+                <tr>
+                  <td>Channel</td>
+                  <td>[[data.channel]]</td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          <template is="dom-if" if="[[errors]]">
+            <div class="errors">Error: [[errors]]</div>
           </template>
-        </tbody></table>
-        <template is="dom-if" if="[[errors]]">
-          <div class="errors">Error: [[errors]]</div>
-        </template>
-      </div>
-      <div class="card-actions">
-        <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/reload">Reload</ha-call-api-button>
-        <template is="dom-if" if="[[computeUpdateAvailable(data)]]">
-          <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/update">Update</ha-call-api-button>
-        </template>
-        <template is="dom-if" if="[[_equals(data.channel, &quot;beta&quot;)]]">
-          <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/options" data="[[leaveBeta]]">Leave beta channel</ha-call-api-button>
-        </template>
-        <template is="dom-if" if="[[_equals(data.channel, &quot;stable&quot;)]]">
-          <paper-button on-click="_joinBeta" class="warning" title="Get beta updates for Home Assistant (RCs), supervisor and host">Join beta channel</paper-button>
-        </template>
-      </div>
-    </paper-card>
-`;
+        </div>
+        <div class="card-actions">
+          <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/reload"
+            >Reload</ha-call-api-button
+          >
+          <template is="dom-if" if="[[computeUpdateAvailable(data)]]">
+            <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/update"
+              >Update</ha-call-api-button
+            >
+          </template>
+          <template
+            is="dom-if"
+            if="[[_equals(data.channel, &quot;beta&quot;)]]"
+          >
+            <ha-call-api-button
+              hass="[[hass]]"
+              path="hassio/supervisor/options"
+              data="[[leaveBeta]]"
+              >Leave beta channel</ha-call-api-button
+            >
+          </template>
+          <template
+            is="dom-if"
+            if="[[_equals(data.channel, &quot;stable&quot;)]]"
+          >
+            <paper-button
+              on-click="_joinBeta"
+              class="warning"
+              title="Get beta updates for Home Assistant (RCs), supervisor and host"
+              >Join beta channel</paper-button
+            >
+          </template>
+        </div>
+      </paper-card>
+    `;
   }
 
   static get properties() {

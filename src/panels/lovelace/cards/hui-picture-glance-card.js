@@ -59,7 +59,7 @@ class HuiPictureGlanceCard extends NavigateMixin(
         ha-icon {
           cursor: pointer;
           padding: 8px;
-          color: #A9A9A9;
+          color: #a9a9a9;
         }
         ha-icon.state-on {
           color: white;
@@ -68,8 +68,8 @@ class HuiPictureGlanceCard extends NavigateMixin(
 
       <ha-card>
         <hui-image
-          class$='[[_computeImageClass(_config)]]'
-          on-click='_handleImageClick'
+          class$="[[_computeImageClass(_config)]]"
+          on-click="_handleImageClick"
           hass="[[hass]]"
           image="[[_config.image]]"
           state-image="[[_config.state_image]]"
@@ -82,7 +82,10 @@ class HuiPictureGlanceCard extends NavigateMixin(
             <div class="title">[[_config.title]]</div>
           </template>
           <div>
-            <template is="dom-repeat" items="[[_computeVisible(_entitiesDialog, hass.states)]]">
+            <template
+              is="dom-repeat"
+              items="[[_computeVisible(_entitiesDialog, hass.states)]]"
+            >
               <ha-icon
                 on-click="_openDialog"
                 class$="[[_computeButtonClass(item.entity, hass.states)]]"
@@ -92,7 +95,10 @@ class HuiPictureGlanceCard extends NavigateMixin(
             </template>
           </div>
           <div>
-            <template is="dom-repeat" items="[[_computeVisible(_entitiesToggle, hass.states)]]">
+            <template
+              is="dom-repeat"
+              items="[[_computeVisible(_entitiesToggle, hass.states)]]"
+            >
               <ha-icon
                 on-click="_callService"
                 class$="[[_computeButtonClass(item.entity, hass.states)]]"

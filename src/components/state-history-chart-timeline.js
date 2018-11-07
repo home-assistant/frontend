@@ -11,19 +11,21 @@ import formatDateTime from "../common/datetime/format_date_time";
 class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        display: block;
-        opacity: 0;
-        transition: opacity 0.3s ease-in-out;
-      }
-      :host([rendered]) {
-        opacity: 1;
-      }
-
-    </style>
-    <ha-chart-base data="[[chartData]]" rendered="{{rendered}}"></ha-chart-base>
-`;
+      <style>
+        :host {
+          display: block;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+        }
+        :host([rendered]) {
+          opacity: 1;
+        }
+      </style>
+      <ha-chart-base
+        data="[[chartData]]"
+        rendered="{{rendered}}"
+      ></ha-chart-base>
+    `;
   }
 
   static get properties() {

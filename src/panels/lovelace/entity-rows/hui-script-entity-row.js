@@ -14,10 +14,7 @@ class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       ${this.styleTemplate}
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
+      <hui-generic-entity-row hass="[[hass]]" config="[[_config]]">
         ${this.scriptControlTemplate}
       </hui-generic-entity-row>
     `;
@@ -29,7 +26,7 @@ class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin-right: -.57em;
+          margin-right: -0.57em;
         }
       </style>
     `;
@@ -38,10 +35,15 @@ class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
   static get scriptControlTemplate() {
     return html`
       <template is="dom-if" if="[[_stateObj.attributes.can_cancel]]">
-        <ha-entity-toggle state-obj="[[_stateObj]]" hass="[[hass]]"></ha-entity-toggle>
+        <ha-entity-toggle
+          state-obj="[[_stateObj]]"
+          hass="[[hass]]"
+        ></ha-entity-toggle>
       </template>
       <template is="dom-if" if="[[!_stateObj.attributes.can_cancel]]">
-        <paper-button on-click="_callService">[[localize('ui.card.script.execute')]]</paper-button>
+        <paper-button on-click="_callService"
+          >[[localize('ui.card.script.execute')]]</paper-button
+        >
       </template>
     `;
   }

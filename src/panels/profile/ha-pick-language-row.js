@@ -17,24 +17,39 @@ import "./ha-settings-row";
 class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      a { color: var(--primary-color); }
-    </style>
-    <ha-settings-row narrow='[[narrow]]'>
-      <span slot='heading'>[[localize('ui.panel.profile.language.header')]]</span>
-      <span slot='description'>
-        <a
-          href='https://developers.home-assistant.io/docs/en/internationalization_translation.html'
-          target='_blank'>[[localize('ui.panel.profile.language.link_promo')]]</a>
-      </span>
-      <paper-dropdown-menu label="[[localize('ui.panel.profile.language.dropdown_label')]]" dynamic-align="">
-        <paper-listbox slot="dropdown-content" attr-for-selected="language-tag" selected="{{languageSelection}}">
-          <template is="dom-repeat" items="[[languages]]">
-            <paper-item language-tag$="[[item.tag]]">[[item.nativeName]]</paper-item>
-          </template>
-        </paper-listbox>
-      </paper-dropdown-menu>
-    </ha-settings-row>
+      <style>
+        a {
+          color: var(--primary-color);
+        }
+      </style>
+      <ha-settings-row narrow="[[narrow]]">
+        <span slot="heading"
+          >[[localize('ui.panel.profile.language.header')]]</span
+        >
+        <span slot="description">
+          <a
+            href="https://developers.home-assistant.io/docs/en/internationalization_translation.html"
+            target="_blank"
+            >[[localize('ui.panel.profile.language.link_promo')]]</a
+          >
+        </span>
+        <paper-dropdown-menu
+          label="[[localize('ui.panel.profile.language.dropdown_label')]]"
+          dynamic-align=""
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            attr-for-selected="language-tag"
+            selected="{{languageSelection}}"
+          >
+            <template is="dom-repeat" items="[[languages]]">
+              <paper-item language-tag$="[[item.tag]]"
+                >[[item.nativeName]]</paper-item
+              >
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </ha-settings-row>
     `;
   }
 

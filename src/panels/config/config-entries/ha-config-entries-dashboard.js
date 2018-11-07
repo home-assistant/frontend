@@ -28,96 +28,115 @@ class HaConfigManagerDashboard extends LocalizeMixin(
 ) {
   static get template() {
     return html`
-  <style include="iron-flex ha-style">
-    paper-button {
-      color: var(--primary-color);
-      font-weight: 500;
-      top: 3px;
-      margin-right: -.57em;
-    }
-    paper-card:last-child {
-      margin-top: 12px;
-    }
-    .config-entry-row {
-      display: flex;
-      padding: 0 16px;
-    }
-    ha-state-icon {
-      cursor: pointer;
-    }
-    .configured a {
-      color: var(--primary-text-color);
-      text-decoration: none;
-    }
-  </style>
+      <style include="iron-flex ha-style">
+        paper-button {
+          color: var(--primary-color);
+          font-weight: 500;
+          top: 3px;
+          margin-right: -0.57em;
+        }
+        paper-card:last-child {
+          margin-top: 12px;
+        }
+        .config-entry-row {
+          display: flex;
+          padding: 0 16px;
+        }
+        ha-state-icon {
+          cursor: pointer;
+        }
+        .configured a {
+          color: var(--primary-text-color);
+          text-decoration: none;
+        }
+      </style>
 
-  <hass-subpage header="[[localize('ui.panel.config.integrations.caption')]]">
-    <template is="dom-if" if="[[progress.length]]">
-      <ha-config-section>
-        <span slot="header">[[localize('ui.panel.config.integrations.discovered')]]</span>
-        <paper-card>
-          <template is="dom-repeat" items="[[progress]]">
-            <div class="config-entry-row">
-              <paper-item-body>
-                [[_computeIntegrationTitle(localize, item.handler)]]
-              </paper-item-body>
-              <paper-button
-                on-click="_continueFlow"
-              >[[localize('ui.panel.config.integrations.configure')]]</paper-button>
-            </div>
-          </template>
-        </paper-card>
-      </ha-config-section>
-    </template>
-
-    <ha-config-section class='configured'>
-      <span slot="header">[[localize('ui.panel.config.integrations.configured')]]</span>
-      <paper-card>
-        <template is="dom-if" if="[[!entries.length]]">
-          <div class="config-entry-row">
-            <paper-item-body two-line>
-              <div>[[localize('ui.panel.config.integrations.none')]]</div>
-            </paper-item-body>
-          </div>
-        </template>
-        <template is="dom-repeat" items="[[entries]]">
-          <a href='/config/integrations/[[item.entry_id]]'>
-            <paper-item>
-              <paper-item-body two-line>
-                <div>[[_computeIntegrationTitle(localize, item.domain)]]: [[item.title]]</div>
-                <div secondary>
-                  <template is='dom-repeat' items='[[_computeConfigEntryEntities(hass, item, entities)]]'>
-                    <span>
-                      <ha-state-icon state-obj='[[item]]' on-click='_handleMoreInfo'></ha-state-icon>
-                      <paper-tooltip position="bottom">[[_computeStateName(item)]]</paper-tooltip>
-                    </span>
-                  </template>
+      <hass-subpage
+        header="[[localize('ui.panel.config.integrations.caption')]]"
+      >
+        <template is="dom-if" if="[[progress.length]]">
+          <ha-config-section>
+            <span slot="header"
+              >[[localize('ui.panel.config.integrations.discovered')]]</span
+            >
+            <paper-card>
+              <template is="dom-repeat" items="[[progress]]">
+                <div class="config-entry-row">
+                  <paper-item-body>
+                    [[_computeIntegrationTitle(localize, item.handler)]]
+                  </paper-item-body>
+                  <paper-button on-click="_continueFlow"
+                    >[[localize('ui.panel.config.integrations.configure')]]</paper-button
+                  >
                 </div>
-              </paper-item-body>
-              <iron-icon icon='hass:chevron-right'></iron-icon>
-            </paper-item>
-          </a>
+              </template>
+            </paper-card>
+          </ha-config-section>
         </template>
-      </paper-card>
-    </ha-config-section>
 
-    <ha-config-section>
-      <span slot="header">[[localize('ui.panel.config.integrations.new')]]</span>
-      <paper-card>
-        <template is="dom-repeat" items="[[handlers]]">
-          <div class="config-entry-row">
-            <paper-item-body>
-              [[_computeIntegrationTitle(localize, item)]]
-            </paper-item-body>
-            <paper-button
-              on-click="_createFlow"
-            >[[localize('ui.panel.config.integrations.configure')]]</paper-button>
-          </div>
-        </template>
-      </paper-card>
-    </ha-config-section>
-  </hass-subpage>
-`;
+        <ha-config-section class="configured">
+          <span slot="header"
+            >[[localize('ui.panel.config.integrations.configured')]]</span
+          >
+          <paper-card>
+            <template is="dom-if" if="[[!entries.length]]">
+              <div class="config-entry-row">
+                <paper-item-body two-line>
+                  <div>[[localize('ui.panel.config.integrations.none')]]</div>
+                </paper-item-body>
+              </div>
+            </template>
+            <template is="dom-repeat" items="[[entries]]">
+              <a href="/config/integrations/[[item.entry_id]]">
+                <paper-item>
+                  <paper-item-body two-line>
+                    <div>
+                      [[_computeIntegrationTitle(localize, item.domain)]]:
+                      [[item.title]]
+                    </div>
+                    <div secondary>
+                      <template
+                        is="dom-repeat"
+                        items="[[_computeConfigEntryEntities(hass, item, entities)]]"
+                      >
+                        <span>
+                          <ha-state-icon
+                            state-obj="[[item]]"
+                            on-click="_handleMoreInfo"
+                          ></ha-state-icon>
+                          <paper-tooltip position="bottom"
+                            >[[_computeStateName(item)]]</paper-tooltip
+                          >
+                        </span>
+                      </template>
+                    </div>
+                  </paper-item-body>
+                  <iron-icon icon="hass:chevron-right"></iron-icon>
+                </paper-item>
+              </a>
+            </template>
+          </paper-card>
+        </ha-config-section>
+
+        <ha-config-section>
+          <span slot="header"
+            >[[localize('ui.panel.config.integrations.new')]]</span
+          >
+          <paper-card>
+            <template is="dom-repeat" items="[[handlers]]">
+              <div class="config-entry-row">
+                <paper-item-body>
+                  [[_computeIntegrationTitle(localize, item)]]
+                </paper-item-body>
+                <paper-button on-click="_createFlow"
+                  >[[localize('ui.panel.config.integrations.configure')]]</paper-button
+                >
+              </div>
+            </template>
+          </paper-card>
+        </ha-config-section>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {

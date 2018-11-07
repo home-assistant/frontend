@@ -10,35 +10,42 @@ import EventsMixin from "../../mixins/events-mixin";
 class HaEntityMarker extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-positioning"></style>
-    <style>
-    .marker {
-      vertical-align: top;
-      position: relative;
-      display: block;
-      margin: 0 auto;
-      width: 2.5em;
-      text-align: center;
-      height: 2.5em;
-      line-height: 2.5em;
-      font-size: 1.5em;
-      border-radius: 50%;
-      border: 0.1em solid var(--ha-marker-color, var(--default-primary-color));
-      color: rgb(76, 76, 76);
-      background-color: white;
-    }
-    iron-image {
-      border-radius: 50%;
-    }
-    </style>
+      <style include="iron-positioning"></style>
+      <style>
+        .marker {
+          vertical-align: top;
+          position: relative;
+          display: block;
+          margin: 0 auto;
+          width: 2.5em;
+          text-align: center;
+          height: 2.5em;
+          line-height: 2.5em;
+          font-size: 1.5em;
+          border-radius: 50%;
+          border: 0.1em solid
+            var(--ha-marker-color, var(--default-primary-color));
+          color: rgb(76, 76, 76);
+          background-color: white;
+        }
+        iron-image {
+          border-radius: 50%;
+        }
+      </style>
 
-    <div class="marker">
-      <template is="dom-if" if="[[entityName]]">[[entityName]]</template>
-      <template is="dom-if" if="[[entityPicture]]">
-        <iron-image sizing="cover" class="fit" src="[[entityPicture]]"></iron-image>
-      </template>
-    </div>
-`;
+      <div class="marker">
+        <template is="dom-if" if="[[entityName]]"
+          >[[entityName]]</template
+        >
+        <template is="dom-if" if="[[entityPicture]]">
+          <iron-image
+            sizing="cover"
+            class="fit"
+            src="[[entityPicture]]"
+          ></iron-image>
+        </template>
+      </div>
+    `;
   }
 
   static get properties() {

@@ -13,99 +13,130 @@ import "../../../src/resources/ha-style";
 class HassioSnapshot extends PolymerElement {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      paper-dialog {
-        min-width: 350px;
-        font-size: 14px;
-        border-radius: 2px;
-      }
-      app-toolbar {
-        margin: 0;
-        padding: 0 16px;
-        color: var(--primary-text-color);
-        background-color: var(--secondary-background-color);
-      }
-      app-toolbar [main-title] {
-        margin-left: 16px;
-      }
-      paper-dialog-scrollable {
-        margin: 0;
-      }
-      paper-checkbox {
-        display: block;
-        margin: 4px;
-      }
-      @media all and (max-width: 450px), all and (max-height: 500px) {
+      <style include="ha-style-dialog">
         paper-dialog {
-          max-height: 100%;
-          height: 100%;
+          min-width: 350px;
+          font-size: 14px;
+          border-radius: 2px;
         }
         app-toolbar {
-          color: var(--text-primary-color);
-          background-color: var(--primary-color);
+          margin: 0;
+          padding: 0 16px;
+          color: var(--primary-text-color);
+          background-color: var(--secondary-background-color);
         }
-      }
-      .details {
-        color: var(--secondary-text-color);
-      }
-      .download {
-        color: var(--primary-color);
-      }
-      .warning,
-      .error {
-        color: var(--google-red-500);
-      }
-    </style>
-    <paper-dialog id="dialog" with-backdrop="" on-iron-overlay-closed="_dialogClosed">
-      <app-toolbar>
-        <paper-icon-button icon="hassio:close" dialog-dismiss=""></paper-icon-button>
-        <div main-title="">[[_computeName(snapshot)]]</div>
-      </app-toolbar>
-      <div class="details">
-        [[_computeType(snapshot.type)]] ([[_computeSize(snapshot.size)]])<br>
-        [[_formatDatetime(snapshot.date)]]
-      </div>
-      <div>Home Assistant:</div>
-      <paper-checkbox checked="{{restoreHass}}">
-        Home Assistant [[snapshot.homeassistant]]
-      </paper-checkbox>
-      <template is="dom-if" if="[[snapshot.addons.length]]">
-        <div>Folders:</div>
-        <template is="dom-repeat" items="[[snapshot.folders]]">
-          <paper-checkbox checked="{{item.checked}}">
-            [[item.name]]
-          </paper-checkbox>
-        </template>
-      </template>
-      <template is="dom-if" if="[[snapshot.addons.length]]">
-        <div>Add-ons:</div>
-        <paper-dialog-scrollable>
-          <template is="dom-repeat" items="[[snapshot.addons]]" sort="_sortAddons">
+        app-toolbar [main-title] {
+          margin-left: 16px;
+        }
+        paper-dialog-scrollable {
+          margin: 0;
+        }
+        paper-checkbox {
+          display: block;
+          margin: 4px;
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          paper-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+          app-toolbar {
+            color: var(--text-primary-color);
+            background-color: var(--primary-color);
+          }
+        }
+        .details {
+          color: var(--secondary-text-color);
+        }
+        .download {
+          color: var(--primary-color);
+        }
+        .warning,
+        .error {
+          color: var(--google-red-500);
+        }
+      </style>
+      <paper-dialog
+        id="dialog"
+        with-backdrop=""
+        on-iron-overlay-closed="_dialogClosed"
+      >
+        <app-toolbar>
+          <paper-icon-button
+            icon="hassio:close"
+            dialog-dismiss=""
+          ></paper-icon-button>
+          <div main-title="">[[_computeName(snapshot)]]</div>
+        </app-toolbar>
+        <div class="details">
+          [[_computeType(snapshot.type)]] ([[_computeSize(snapshot.size)]])<br />
+          [[_formatDatetime(snapshot.date)]]
+        </div>
+        <div>Home Assistant:</div>
+        <paper-checkbox checked="{{restoreHass}}">
+          Home Assistant [[snapshot.homeassistant]]
+        </paper-checkbox>
+        <template is="dom-if" if="[[snapshot.addons.length]]">
+          <div>Folders:</div>
+          <template is="dom-repeat" items="[[snapshot.folders]]">
             <paper-checkbox checked="{{item.checked}}">
               [[item.name]]
-              <span class="details">([[item.version]])</span>
             </paper-checkbox>
           </template>
-        </paper-dialog-scrollable>
-      </template>
-      <template is="dom-if" if="[[snapshot.protected]]">
-        <paper-input autofocus="" label="Password" type="password" value="{{snapshotPassword}}"></paper-input>
-      </template>
-      <template is="dom-if" if="[[error]]">
-        <p class="error">Error: [[error]]</p>
-      </template>
-      <div class="buttons">
-        <paper-icon-button icon="hassio:delete" on-click="_deleteClicked" class="warning" title="Delete snapshot"></paper-icon-button>
-        <a href="[[_computeDownloadUrl(snapshotSlug)]]" download="[[_computeDownloadName(snapshot)]]">
-          <paper-icon-button icon="hassio:download" class="download" title="Download snapshot"></paper-icon-button>
-        </a>
-        <paper-button on-click="_partialRestoreClicked">Restore selected</paper-button>
-        <template is="dom-if" if="[[_isFullSnapshot(snapshot.type)]]">
-          <paper-button on-click="_fullRestoreClicked">Wipe &amp; restore</paper-button>
         </template>
-      </div>
-    </paper-dialog>
-`;
+        <template is="dom-if" if="[[snapshot.addons.length]]">
+          <div>Add-ons:</div>
+          <paper-dialog-scrollable>
+            <template
+              is="dom-repeat"
+              items="[[snapshot.addons]]"
+              sort="_sortAddons"
+            >
+              <paper-checkbox checked="{{item.checked}}">
+                [[item.name]] <span class="details">([[item.version]])</span>
+              </paper-checkbox>
+            </template>
+          </paper-dialog-scrollable>
+        </template>
+        <template is="dom-if" if="[[snapshot.protected]]">
+          <paper-input
+            autofocus=""
+            label="Password"
+            type="password"
+            value="{{snapshotPassword}}"
+          ></paper-input>
+        </template>
+        <template is="dom-if" if="[[error]]">
+          <p class="error">Error: [[error]]</p>
+        </template>
+        <div class="buttons">
+          <paper-icon-button
+            icon="hassio:delete"
+            on-click="_deleteClicked"
+            class="warning"
+            title="Delete snapshot"
+          ></paper-icon-button>
+          <a
+            href="[[_computeDownloadUrl(snapshotSlug)]]"
+            download="[[_computeDownloadName(snapshot)]]"
+          >
+            <paper-icon-button
+              icon="hassio:download"
+              class="download"
+              title="Download snapshot"
+            ></paper-icon-button>
+          </a>
+          <paper-button on-click="_partialRestoreClicked"
+            >Restore selected</paper-button
+          >
+          <template is="dom-if" if="[[_isFullSnapshot(snapshot.type)]]">
+            <paper-button on-click="_fullRestoreClicked"
+              >Wipe &amp; restore</paper-button
+            >
+          </template>
+        </div>
+      </paper-dialog>
+    `;
   }
 
   static get properties() {

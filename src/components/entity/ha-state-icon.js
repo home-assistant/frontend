@@ -6,7 +6,9 @@ import stateIcon from "../../common/entity/state_icon";
 
 class HaStateIcon extends PolymerElement {
   static get template() {
-    return html`<ha-icon icon="[[computeIcon(stateObj)]]"></ha-icon>`;
+    return html`
+      <ha-icon icon="[[computeIcon(stateObj)]]"></ha-icon>
+    `;
   }
 
   static get properties() {

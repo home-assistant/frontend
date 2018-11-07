@@ -15,31 +15,37 @@ class Lovelace extends PolymerElement {
           font-weight: 500;
         }
       </style>
-      <template is='dom-if' if='[[_equal(_state, "loaded")]]' restamp>
+      <template is="dom-if" if="[[_equal(_state, &quot;loaded&quot;)]]" restamp>
         <hui-root
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
-          hass='[[hass]]'
+          hass="[[hass]]"
           route="[[route]]"
-          config='[[_config]]'
-          columns='[[_columns]]'
-          on-config-refresh='_fetchConfig'
+          config="[[_config]]"
+          columns="[[_columns]]"
+          on-config-refresh="_fetchConfig"
         ></hui-root>
       </template>
-      <template is='dom-if' if='[[_equal(_state, "loading")]]' restamp>
+      <template
+        is="dom-if"
+        if="[[_equal(_state, &quot;loading&quot;)]]"
+        restamp
+      >
         <hass-loading-screen
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
         ></hass-loading-screen>
       </template>
-      <template is='dom-if' if='[[_equal(_state, "error")]]' restamp>
+      <template is="dom-if" if="[[_equal(_state, &quot;error&quot;)]]" restamp>
         <hass-error-screen
-          title='Lovelace'
-          error='[[_errorMsg]]'
+          title="Lovelace"
+          error="[[_errorMsg]]"
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
         >
-          <paper-button on-click="_fetchConfig">Reload ui-lovelace.yaml</paper-button>
+          <paper-button on-click="_fetchConfig"
+            >Reload ui-lovelace.yaml</paper-button
+          >
         </hass-error-screen>
       </template>
     `;

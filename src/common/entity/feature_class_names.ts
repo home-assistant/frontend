@@ -12,10 +12,9 @@ export default function featureClassNames(
   const features = stateObj.attributes.supported_features;
 
   return Object.keys(classNames)
-    .map(
-      (feature) =>
-        // tslint:disable-next-line
-        (features & Number(feature)) !== 0 ? classNames[feature] : ""
+    .map((feature) =>
+      // tslint:disable-next-line
+      (features & Number(feature)) !== 0 ? classNames[feature] : ""
     )
     .filter((attr) => attr !== "")
     .join(" ");

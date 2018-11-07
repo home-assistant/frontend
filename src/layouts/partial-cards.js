@@ -34,72 +34,113 @@ const ALWAYS_SHOW_DOMAIN = ["persistent_notification", "configurator"];
 class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
-  <style include="iron-flex iron-positioning ha-style">
-    :host {
-      -ms-user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-    }
+      <style include="iron-flex iron-positioning ha-style">
+        :host {
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+        }
 
-    ha-app-layout {
-      min-height: 100%;
-      background-color: var(--secondary-background-color, #E5E5E5);
-    }
+        ha-app-layout {
+          min-height: 100%;
+          background-color: var(--secondary-background-color, #e5e5e5);
+        }
 
-    paper-tabs {
-      margin-left: 12px;
-      --paper-tabs-selection-bar-color: var(--text-primary-color, #FFF);
-      text-transform: uppercase;
-    }
-  </style>
-  <app-route route="{{route}}" pattern="/:view" data="{{routeData}}" active="{{routeMatch}}"></app-route>
-  <ha-app-layout id="layout">
-    <app-header effects="waterfall" condenses="" fixed="" slot="header">
-      <app-toolbar>
-        <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-        <div main-title="">[[computeTitle(views, defaultView, locationName)]]</div>
-        <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
-      </app-toolbar>
+        paper-tabs {
+          margin-left: 12px;
+          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
+          text-transform: uppercase;
+        }
+      </style>
+      <app-route
+        route="{{route}}"
+        pattern="/:view"
+        data="{{routeData}}"
+        active="{{routeMatch}}"
+      ></app-route>
+      <ha-app-layout id="layout">
+        <app-header effects="waterfall" condenses="" fixed="" slot="header">
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title="">
+              [[computeTitle(views, defaultView, locationName)]]
+            </div>
+            <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
+          </app-toolbar>
 
-      <div sticky="" hidden$="[[areTabsHidden(views, showTabs)]]">
-        <paper-tabs scrollable="" selected="[[currentView]]" attr-for-selected="data-entity" on-iron-activate="handleViewSelected">
-          <paper-tab data-entity="" on-click="scrollToTop">
-            <template is="dom-if" if="[[!defaultView]]">
-              Home
-            </template>
-            <template is="dom-if" if="[[defaultView]]">
-              <template is="dom-if" if="[[defaultView.attributes.icon]]">
-                <ha-icon title$="[[_computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></ha-icon>
+          <div sticky="" hidden$="[[areTabsHidden(views, showTabs)]]">
+            <paper-tabs
+              scrollable=""
+              selected="[[currentView]]"
+              attr-for-selected="data-entity"
+              on-iron-activate="handleViewSelected"
+            >
+              <paper-tab data-entity="" on-click="scrollToTop">
+                <template is="dom-if" if="[[!defaultView]]">
+                  Home
+                </template>
+                <template is="dom-if" if="[[defaultView]]">
+                  <template is="dom-if" if="[[defaultView.attributes.icon]]">
+                    <ha-icon
+                      title$="[[_computeStateName(defaultView)]]"
+                      icon="[[defaultView.attributes.icon]]"
+                    ></ha-icon>
+                  </template>
+                  <template is="dom-if" if="[[!defaultView.attributes.icon]]">
+                    [[_computeStateName(defaultView)]]
+                  </template>
+                </template>
+              </paper-tab>
+              <template is="dom-repeat" items="[[views]]">
+                <paper-tab
+                  data-entity$="[[item.entity_id]]"
+                  on-click="scrollToTop"
+                >
+                  <template is="dom-if" if="[[item.attributes.icon]]">
+                    <ha-icon
+                      title$="[[_computeStateName(item)]]"
+                      icon="[[item.attributes.icon]]"
+                    ></ha-icon>
+                  </template>
+                  <template is="dom-if" if="[[!item.attributes.icon]]">
+                    [[_computeStateName(item)]]
+                  </template>
+                </paper-tab>
               </template>
-              <template is="dom-if" if="[[!defaultView.attributes.icon]]">
-                [[_computeStateName(defaultView)]]
-              </template>
-            </template>
-          </paper-tab>
+            </paper-tabs>
+          </div>
+        </app-header>
+
+        <iron-pages
+          attr-for-selected="data-view"
+          selected="[[currentView]]"
+          selected-attribute="view-visible"
+        >
+          <ha-cards
+            data-view=""
+            states="[[viewStates]]"
+            columns="[[_columns]]"
+            hass="[[hass]]"
+            panel-visible="[[panelVisible]]"
+            ordered-group-entities="[[orderedGroupEntities]]"
+          ></ha-cards>
+
           <template is="dom-repeat" items="[[views]]">
-            <paper-tab data-entity$="[[item.entity_id]]" on-click="scrollToTop">
-              <template is="dom-if" if="[[item.attributes.icon]]">
-                <ha-icon title$="[[_computeStateName(item)]]" icon="[[item.attributes.icon]]"></ha-icon>
-              </template>
-              <template is="dom-if" if="[[!item.attributes.icon]]">
-                [[_computeStateName(item)]]
-              </template>
-            </paper-tab>
+            <ha-cards
+              data-view$="[[item.entity_id]]"
+              states="[[viewStates]]"
+              columns="[[_columns]]"
+              hass="[[hass]]"
+              panel-visible="[[panelVisible]]"
+              ordered-group-entities="[[orderedGroupEntities]]"
+            ></ha-cards>
           </template>
-        </paper-tabs>
-      </div>
-    </app-header>
-
-    <iron-pages attr-for-selected="data-view" selected="[[currentView]]" selected-attribute="view-visible">
-      <ha-cards data-view="" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]" ordered-group-entities="[[orderedGroupEntities]]"></ha-cards>
-
-      <template is="dom-repeat" items="[[views]]">
-        <ha-cards data-view$="[[item.entity_id]]" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]" ordered-group-entities="[[orderedGroupEntities]]"></ha-cards>
-      </template>
-
-    </iron-pages>
-  </ha-app-layout>
-`;
+        </iron-pages>
+      </ha-app-layout>
+    `;
   }
 
   static get properties() {

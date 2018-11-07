@@ -8,19 +8,36 @@ import CoverEntity from "../util/cover-model";
 class HaCoverTiltControls extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex"></style>
-    <style>
-      :host {
-        white-space: nowrap;
-      }
-      [invisible] {
-        visibility: hidden !important;
-      }
-    </style>
-    <paper-icon-button icon="hass:arrow-top-right" on-click="onOpenTiltTap" title="Open tilt" invisible$="[[!entityObj.supportsOpenTilt]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
-    <paper-icon-button icon="hass:stop" on-click="onStopTiltTap" invisible$="[[!entityObj.supportsStopTilt]]" title="Stop tilt"></paper-icon-button>
-    <paper-icon-button icon="hass:arrow-bottom-left" on-click="onCloseTiltTap" title="Close tilt" invisible$="[[!entityObj.supportsCloseTilt]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
-`;
+      <style include="iron-flex"></style>
+      <style>
+        :host {
+          white-space: nowrap;
+        }
+        [invisible] {
+          visibility: hidden !important;
+        }
+      </style>
+      <paper-icon-button
+        icon="hass:arrow-top-right"
+        on-click="onOpenTiltTap"
+        title="Open tilt"
+        invisible$="[[!entityObj.supportsOpenTilt]]"
+        disabled="[[computeOpenDisabled(stateObj, entityObj)]]"
+      ></paper-icon-button>
+      <paper-icon-button
+        icon="hass:stop"
+        on-click="onStopTiltTap"
+        invisible$="[[!entityObj.supportsStopTilt]]"
+        title="Stop tilt"
+      ></paper-icon-button>
+      <paper-icon-button
+        icon="hass:arrow-bottom-left"
+        on-click="onCloseTiltTap"
+        title="Close tilt"
+        invisible$="[[!entityObj.supportsCloseTilt]]"
+        disabled="[[computeClosedDisabled(stateObj, entityObj)]]"
+      ></paper-icon-button>
+    `;
   }
 
   static get properties() {

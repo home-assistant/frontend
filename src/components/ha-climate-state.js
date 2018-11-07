@@ -9,43 +9,41 @@ import LocalizeMixin from "../mixins/localize-mixin";
 class HaClimateState extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        white-space: nowrap;
-      }
+      <style>
+        :host {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          white-space: nowrap;
+        }
 
-      .target {
-        color: var(--primary-text-color);
-      }
+        .target {
+          color: var(--primary-text-color);
+        }
 
-      .current {
-        color: var(--secondary-text-color);
-      }
+        .current {
+          color: var(--secondary-text-color);
+        }
 
-      .state-label {
-        font-weight: bold;
-        text-transform: capitalize;
-      }
-    </style>
+        .state-label {
+          font-weight: bold;
+          text-transform: capitalize;
+        }
+      </style>
 
-    <div class="target">
-      <template is="dom-if" if="[[_hasKnownState(stateObj.state)]]">
-        <span class="state-label">
-          [[_localizeState(stateObj.state)]]
-        </span>
-      </template>
-      [[computeTarget(hass, stateObj)]]
-    </div>
-
-    <template is="dom-if" if="[[currentStatus]]">
-      <div class="current">
-        [[localize('ui.card.climate.currently')]]: [[currentStatus]]
+      <div class="target">
+        <template is="dom-if" if="[[_hasKnownState(stateObj.state)]]">
+          <span class="state-label"> [[_localizeState(stateObj.state)]] </span>
+        </template>
+        [[computeTarget(hass, stateObj)]]
       </div>
-    </template>
-`;
+
+      <template is="dom-if" if="[[currentStatus]]">
+        <div class="current">
+          [[localize('ui.card.climate.currently')]]: [[currentStatus]]
+        </div>
+      </template>
+    `;
   }
 
   static get properties() {

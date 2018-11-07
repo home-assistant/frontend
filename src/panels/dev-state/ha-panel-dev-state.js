@@ -19,132 +19,162 @@ import EventsMixin from "../../mixins/events-mixin";
 class HaPanelDevState extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-      :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
+      <style include="ha-style">
+        :host {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+        }
 
-      .content {
-        padding: 16px;
-      }
+        .content {
+          padding: 16px;
+        }
 
-      ha-entity-picker, .state-input, paper-textarea {
-        display: block;
-        max-width: 400px;
-      }
+        ha-entity-picker,
+        .state-input,
+        paper-textarea {
+          display: block;
+          max-width: 400px;
+        }
 
-      .entities th {
-        text-align: left;
-      }
+        .entities th {
+          text-align: left;
+        }
 
-      .entities tr {
-        vertical-align: top;
-      }
+        .entities tr {
+          vertical-align: top;
+        }
 
-      .entities tr:nth-child(odd) {
-        background-color: var(--table-row-background-color, #fff)
-      }
+        .entities tr:nth-child(odd) {
+          background-color: var(--table-row-background-color, #fff);
+        }
 
-      .entities tr:nth-child(even) {
-        background-color: var(--table-row-alternative-background-color, #eee)
-      }
-      .entities td {
-        padding: 4px;
-      }
-      .entities paper-icon-button {
-        height: 24px;
-        padding: 0;
-      }
-      .entities td:nth-child(3) {
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
+        .entities tr:nth-child(even) {
+          background-color: var(--table-row-alternative-background-color, #eee);
+        }
+        .entities td {
+          padding: 4px;
+        }
+        .entities paper-icon-button {
+          height: 24px;
+          padding: 0;
+        }
+        .entities td:nth-child(3) {
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
 
-      .entities a {
-        color: var(--primary-color);
-      }
-    </style>
+        .entities a {
+          color: var(--primary-color);
+        }
+      </style>
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>States</div>
-        </app-toolbar>
-      </app-header>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>States</div>
+          </app-toolbar>
+        </app-header>
 
-      <div class='content'>
-        <div>
-          <p>
-            Set the representation of a device within Home Assistant.<br />
-            This will not communicate with the actual device.
-          </p>
+        <div class="content">
+          <div>
+            <p>
+              Set the representation of a device within Home Assistant.<br />
+              This will not communicate with the actual device.
+            </p>
 
-          <ha-entity-picker
-            autofocus
-            hass="[[hass]]"
-            value="{{_entityId}}"
-            allow-custom-entity
-          ></ha-entity-picker>
-          <paper-input
-            label="State"
-            required
-            autocapitalize='none'
-            autocomplete='off'
-            autocorrect='off'
-            spellcheck='false'
-            value='{{_state}}'
-            class='state-input'
-          ></paper-input>
-          <paper-textarea
-            label="State attributes (JSON, optional)"
-            autocapitalize='none'
-            autocomplete='off'
-            spellcheck='false'
-            value='{{_stateAttributes}}'></paper-textarea>
-          <paper-button on-click='handleSetState' raised>Set State</paper-button>
-        </div>
+            <ha-entity-picker
+              autofocus
+              hass="[[hass]]"
+              value="{{_entityId}}"
+              allow-custom-entity
+            ></ha-entity-picker>
+            <paper-input
+              label="State"
+              required
+              autocapitalize="none"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+              value="{{_state}}"
+              class="state-input"
+            ></paper-input>
+            <paper-textarea
+              label="State attributes (JSON, optional)"
+              autocapitalize="none"
+              autocomplete="off"
+              spellcheck="false"
+              value="{{_stateAttributes}}"
+            ></paper-textarea>
+            <paper-button on-click="handleSetState" raised
+              >Set State</paper-button
+            >
+          </div>
 
-        <h1>Current entities</h1>
-        <table class='entities'>
-          <tr>
-            <th>Entity</th>
-            <th>State</th>
-            <th hidden$='[[narrow]]'>
-              Attributes
-              <paper-checkbox checked='{{_showAttributes}}'></paper-checkbox>
-            </th>
-          </tr>
-          <tr>
-            <th><paper-input label="Filter entities" type="search" value='{{_entityFilter}}'></paper-input></th>
-            <th><paper-input label="Filter states" type="search" value='{{_stateFilter}}'></paper-input></th>
-            <th hidden$='[[!computeShowAttributes(narrow, _showAttributes)]]'><paper-input label="Filter attributes" type="search" value='{{_attributeFilter}}'></paper-input></th>
-          </tr>
-          <tr hidden$='[[!computeShowEntitiesPlaceholder(_entities)]]'>
-            <td colspan="3">No entities</td>
-          </tr>
-          <template is='dom-repeat' items='[[_entities]]' as='entity'>
+          <h1>Current entities</h1>
+          <table class="entities">
             <tr>
-              <td>
-                <paper-icon-button
-                  on-click='entityMoreInfo'
-                  icon='hass:open-in-new'
-                  alt="More Info" title="More Info"
-                  >
-                </paper-icon-button>
-                <a href='#' on-click='entitySelected'>[[entity.entity_id]]</a>
-              </td>
-              <td>[[entity.state]]</td>
-              <template is='dom-if' if='[[computeShowAttributes(narrow, _showAttributes)]]'>
-                <td>[[attributeString(entity)]]</td>
-              </template>
+              <th>Entity</th>
+              <th>State</th>
+              <th hidden$="[[narrow]]">
+                Attributes
+                <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
+              </th>
             </tr>
-          </template>
-        </table>
-      </div>
-    </app-header-layout>
+            <tr>
+              <th>
+                <paper-input
+                  label="Filter entities"
+                  type="search"
+                  value="{{_entityFilter}}"
+                ></paper-input>
+              </th>
+              <th>
+                <paper-input
+                  label="Filter states"
+                  type="search"
+                  value="{{_stateFilter}}"
+                ></paper-input>
+              </th>
+              <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
+                <paper-input
+                  label="Filter attributes"
+                  type="search"
+                  value="{{_attributeFilter}}"
+                ></paper-input>
+              </th>
+            </tr>
+            <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
+              <td colspan="3">No entities</td>
+            </tr>
+            <template is="dom-repeat" items="[[_entities]]" as="entity">
+              <tr>
+                <td>
+                  <paper-icon-button
+                    on-click="entityMoreInfo"
+                    icon="hass:open-in-new"
+                    alt="More Info"
+                    title="More Info"
+                  >
+                  </paper-icon-button>
+                  <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
+                </td>
+                <td>[[entity.state]]</td>
+                <template
+                  is="dom-if"
+                  if="[[computeShowAttributes(narrow, _showAttributes)]]"
+                >
+                  <td>[[attributeString(entity)]]</td>
+                </template>
+              </tr>
+            </template>
+          </table>
+        </div>
+      </app-header-layout>
     `;
   }
 

@@ -18,14 +18,18 @@ const DEFAULT_VIEW = "month";
 class HaBigCalendar extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-      <link rel="stylesheet" href="/static/panels/calendar/react-big-calendar.css">
+      <link
+        rel="stylesheet"
+        href="/static/panels/calendar/react-big-calendar.css"
+      />
       <style>
         div#root {
           height: 100%;
           width: 100%;
         }
       </style>
-      <div id="root"></div>`;
+      <div id="root"></div>
+    `;
   }
 
   static get properties() {

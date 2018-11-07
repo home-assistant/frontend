@@ -40,7 +40,7 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <state-badge
-        .stateObj=${state}
+        .stateObj="${state}"
         .title="${computeTooltip(this.hass!, this._config)}"
         @ha-click="${this._handleClick}"
         @ha-hold="${this._handleHold}"

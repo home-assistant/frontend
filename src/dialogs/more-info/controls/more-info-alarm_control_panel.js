@@ -51,21 +51,85 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
         <template is="dom-if" if="[[_isNumber(_codeFormat)]]">
           <div class="pad">
             <div>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="1" raised>1</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="4" raised>4</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="7" raised>7</paper-button>
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="1"
+                raised
+                >1</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="4"
+                raised
+                >4</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="7"
+                raised
+                >7</paper-button
+              >
             </div>
             <div>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="2" raised>2</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="5" raised>5</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="8" raised>8</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="0" raised>0</paper-button>
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="2"
+                raised
+                >2</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="5"
+                raised
+                >5</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="8"
+                raised
+                >8</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="0"
+                raised
+                >0</paper-button
+              >
             </div>
             <div>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="3" raised>3</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="6" raised>6</paper-button>
-              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="9" raised>9</paper-button>
-              <paper-button on-click='_clearEnteredCode' disabled='[[!_inputEnabled]]' raised>
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="3"
+                raised
+                >3</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="6"
+                raised
+                >6</paper-button
+              >
+              <paper-button
+                on-click="_digitClicked"
+                disabled="[[!_inputEnabled]]"
+                data-digit="9"
+                raised
+                >9</paper-button
+              >
+              <paper-button
+                on-click="_clearEnteredCode"
+                disabled="[[!_inputEnabled]]"
+                raised
+              >
                 [[localize('ui.card.alarm_control_panel.clear_code')]]
               </paper-button>
             </div>
@@ -75,15 +139,31 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
 
       <div class="layout horizontal center-justified actions">
         <template is="dom-if" if="[[_disarmVisible]]">
-          <paper-button raised class="disarm" on-click="_callService" data-service="alarm_disarm" disabled="[[!_codeValid]]">
+          <paper-button
+            raised
+            class="disarm"
+            on-click="_callService"
+            data-service="alarm_disarm"
+            disabled="[[!_codeValid]]"
+          >
             [[localize('ui.card.alarm_control_panel.disarm')]]
           </paper-button>
         </template>
         <template is="dom-if" if="[[_armVisible]]">
-          <paper-button raised on-click="_callService" data-service="alarm_arm_home" disabled="[[!_codeValid]]">
+          <paper-button
+            raised
+            on-click="_callService"
+            data-service="alarm_arm_home"
+            disabled="[[!_codeValid]]"
+          >
             [[localize('ui.card.alarm_control_panel.arm_home')]]
           </paper-button>
-          <paper-button raised on-click="_callService" data-service="alarm_arm_away" disabled="[[!_codeValid]]">
+          <paper-button
+            raised
+            on-click="_callService"
+            data-service="alarm_arm_away"
+            disabled="[[!_codeValid]]"
+          >
             [[localize('ui.card.alarm_control_panel.arm_away')]]
           </paper-button>
         </template>

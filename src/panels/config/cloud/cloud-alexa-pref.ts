@@ -34,28 +34,36 @@ export class CloudAlexaPref extends LitElement {
           @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
-          With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.
+          With the Alexa integration for Home Assistant Cloud you'll be able to
+          control all your Home Assistant devices via any Alexa-enabled device.
           <ul>
             <li>
-              To activate, search in the Alexa app for the Home Assistant Smart Home skill.
+              To activate, search in the Alexa app for the Home Assistant Smart
+              Home skill.
             </li>
             <li>
-              <a href="https://www.home-assistant.io/cloud/alexa/" target="_blank">
+              <a
+                href="https://www.home-assistant.io/cloud/alexa/"
+                target="_blank"
+              >
                 Config documentation
               </a>
             </li>
           </ul>
-          <em>This integration requires an Alexa-enabled device like the Amazon Echo.</em>
+          <em
+            >This integration requires an Alexa-enabled device like the Amazon
+            Echo.</em
+          >
           ${
             enabled
               ? html`
-                <p>Exposed entities:</p>
-                <cloud-exposed-entities
-                  .hass="${this.hass}"
-                  .filter="${this.cloudStatus!.alexa_entities}"
-                  .supportedDomains="${this.cloudStatus!.alexa_domains}"
-                ></cloud-exposed-entities>
-              `
+                  <p>Exposed entities:</p>
+                  <cloud-exposed-entities
+                    .hass="${this.hass}"
+                    .filter="${this.cloudStatus!.alexa_entities}"
+                    .supportedDomains="${this.cloudStatus!.alexa_domains}"
+                  ></cloud-exposed-entities>
+                `
               : ""
           }
         </div>

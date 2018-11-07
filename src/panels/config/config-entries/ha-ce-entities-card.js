@@ -24,31 +24,31 @@ function computeEntityName(hass, entity) {
 class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      paper-card {
-        flex: 1 0 100%;
-        padding-bottom: 8px;
-      }
-      paper-icon-item {
-        cursor: pointer;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
-    </style>
-    <paper-card heading='[[heading]]'>
-      <template is='dom-repeat' items='[[entities]]' as='entity'>
-        <paper-icon-item on-click='_openMoreInfo'>
-          <state-badge
-            state-obj="[[_computeStateObj(entity, hass)]]"
-            slot='item-icon'
-          ></state-badge>
-          <paper-item-body>
-            <div class='name'>[[_computeEntityName(entity, hass)]]</div>
-            <div class='secondary entity-id'>[[entity.entity_id]]</div>
-          </paper-item-body>
-        </paper-icon-item>
-      </template>
-    </paper-card>
+      <style>
+        paper-card {
+          flex: 1 0 100%;
+          padding-bottom: 8px;
+        }
+        paper-icon-item {
+          cursor: pointer;
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+      </style>
+      <paper-card heading="[[heading]]">
+        <template is="dom-repeat" items="[[entities]]" as="entity">
+          <paper-icon-item on-click="_openMoreInfo">
+            <state-badge
+              state-obj="[[_computeStateObj(entity, hass)]]"
+              slot="item-icon"
+            ></state-badge>
+            <paper-item-body>
+              <div class="name">[[_computeEntityName(entity, hass)]]</div>
+              <div class="secondary entity-id">[[entity.entity_id]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+        </template>
+      </paper-card>
     `;
   }
 
