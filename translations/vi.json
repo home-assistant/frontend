@@ -510,12 +510,14 @@
                     "none": "Chưa có cấu hình nào",
                     "config_entry": {
                         "no_devices": "Bộ tích hợp này chưa có thiết bị nào",
+                        "no_device": "Các mục không có thiết bị",
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "restart_confirm": "Khởi động lại Home Assistant để hoàn tất xóa bộ tích hợp này",
                         "manuf": "bởi {manufacturer}",
                         "hub": "Đã kết nối qua",
                         "firmware": "Firmware: {version}",
-                        "device_unavailable": "thiết bị không khả dụng"
+                        "device_unavailable": "Thiết bị không khả dụng",
+                        "entity_unavailable": "Thiết bị không khả dụng"
                     }
                 }
             },
@@ -542,7 +544,8 @@
                 "refresh_tokens": {
                     "created_at": "Được tạo lúc {date}",
                     "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
-                    "not_used": "Chưa bao giờ được sử dụng"
+                    "not_used": "Chưa bao giờ được sử dụng",
+                    "current_token_tooltip": "Không thể xóa token truy cập"
                 },
                 "long_lived_access_tokens": {
                     "header": "Token truy cập thời hạn dài",
@@ -553,6 +556,7 @@
                     "create_failed": "Không thể tạo token truy cập.",
                     "prompt_name": "Tên?",
                     "prompt_copy_token": "Sao chép token truy cập của bạn. Nó sẽ không đươc hiển thị nữa.",
+                    "empty_state": "Bạn hiện tại chưa có token truy cập lâu dài",
                     "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
                     "not_used": "Chưa bao giờ được sử dụng"
                 },
@@ -736,7 +740,9 @@
                 "clear_code": "Xóa",
                 "disarm": "Vô hiệu hoá",
                 "arm_home": "An ninh ở nhà",
-                "arm_away": "An ninh đi vắng"
+                "arm_away": "An ninh đi vắng",
+                "arm_night": "An ninh ban đêm",
+                "armed_custom_bypass": "Bỏ qua tùy chỉnh"
             },
             "automation": {
                 "last_triggered": "Kích hoạt lần cuối",
@@ -788,7 +794,11 @@
                 }
             },
             "water_heater": {
-                "currently": "Hiện tại"
+                "currently": "Hiện tại",
+                "on_off": "Bật \/ tắt",
+                "target_temperature": "Nhiệt độ mục tiêu",
+                "operation": "Chế độ hoạt động",
+                "away_mode": "Chế độ đi vắng"
             }
         },
         "components": {

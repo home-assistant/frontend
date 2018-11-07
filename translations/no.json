@@ -381,7 +381,7 @@
                                     "label": "Tilstand",
                                     "from": "Fra",
                                     "to": "Til",
-                                    "for": "Fra"
+                                    "for": "For"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -530,7 +530,7 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Logget inn som {email}",
-                    "description_not_login": "Ikke logget på"
+                    "description_not_login": "Ikke pålogget"
                 },
                 "integrations": {
                     "caption": "Integrasjoner",
@@ -539,17 +539,17 @@
                     "configured": "Konfigurert",
                     "new": "Sett opp en ny integrasjon",
                     "configure": "Konfigurer",
-                    "none": "Ikke konfigurert enda",
+                    "none": "Ingenting er konfigurert enda",
                     "config_entry": {
                         "no_devices": "Denne integrasjonen har ingen enheter.",
-                        "no_device": "Enheten mangler input",
+                        "no_device": "Enheter uten enheter",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "manuf": "av {manufacturer}",
                         "hub": "Tilkoblet via",
                         "firmware": "Fastvare: {version}",
                         "device_unavailable": "enheten er utilgjengelig",
-                        "entity_unavailable": "enhet utilgjengelig"
+                        "entity_unavailable": "enheten er utilgjengelig"
                     }
                 }
             },
@@ -780,7 +780,9 @@
                 "clear_code": "Klarer",
                 "disarm": "Deaktiver",
                 "arm_home": "Armer hjemme",
-                "arm_away": "Armer bort"
+                "arm_away": "Armer bort",
+                "arm_night": "Armer natt",
+                "armed_custom_bypass": "Tilpasset bypass"
             },
             "automation": {
                 "last_triggered": "Sist utløst",
