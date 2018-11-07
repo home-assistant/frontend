@@ -10,51 +10,60 @@ import EventsMixin from "../../../src/mixins/events-mixin";
 class HassioAddonNetwork extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-      :host {
-        display: block;
-      }
-      paper-card {
-        display: block;
-      }
-      .errors {
-        color: var(--google-red-500);
-        margin-bottom: 16px;
-      }
-      .card-actions {
-        @apply --layout;
-        @apply --layout-justified;
-      }
-    </style>
-    <paper-card heading="Network">
-      <div class="card-content">
-        <template is="dom-if" if="[[error]]">
-          <div class="errors">[[error]]</div>
-        </template>
-
-        <table>
-          <tbody><tr>
-            <th>Container</th>
-            <th>Host</th>
-          </tr>
-          <template is="dom-repeat" items="[[config]]">
-            <tr>
-              <td>
-                [[item.container]]
-              </td>
-              <td>
-                <paper-input value="{{item.host}}" no-label-float=""></paper-input>
-              </td>
-            </tr>
+      <style include="ha-style">
+        :host {
+          display: block;
+        }
+        paper-card {
+          display: block;
+        }
+        .errors {
+          color: var(--google-red-500);
+          margin-bottom: 16px;
+        }
+        .card-actions {
+          @apply --layout;
+          @apply --layout-justified;
+        }
+      </style>
+      <paper-card heading="Network">
+        <div class="card-content">
+          <template is="dom-if" if="[[error]]">
+            <div class="errors">[[error]]</div>
           </template>
-        </tbody></table>
-      </div>
-      <div class="card-actions">
-        <ha-call-api-button class="warning" hass="[[hass]]" path="hassio/addons/[[addonSlug]]/options" data="[[resetData]]">Reset to defaults</ha-call-api-button>
-        <paper-button on-click="saveTapped">Save</paper-button>
-      </div>
-    </paper-card>
-`;
+
+          <table>
+            <tbody>
+              <tr>
+                <th>Container</th>
+                <th>Host</th>
+              </tr>
+              <template is="dom-repeat" items="[[config]]">
+                <tr>
+                  <td>[[item.container]]</td>
+                  <td>
+                    <paper-input
+                      value="{{item.host}}"
+                      no-label-float=""
+                    ></paper-input>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-actions">
+          <ha-call-api-button
+            class="warning"
+            hass="[[hass]]"
+            path="hassio/addons/[[addonSlug]]/options"
+            data="[[resetData]]"
+            >Reset to defaults</ha-call-api-button
+          >
+          <paper-button on-click="saveTapped">Save</paper-button>
+        </div>
+      </paper-card>
+    `;
   }
 
   static get properties() {

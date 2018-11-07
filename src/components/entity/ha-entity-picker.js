@@ -18,56 +18,70 @@ import EventsMixin from "../../mixins/events-mixin";
 class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      paper-input > paper-icon-button {
-        width: 24px;
-        height: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    </style>
-    <vaadin-combo-box-light
-      items="[[_states]]"
-      item-value-path="entity_id"
-      item-label-path="entity_id"
-      value="{{value}}"
-      opened="{{opened}}"
-      allow-custom-value="[[allowCustomEntity]]"
-      on-change='_fireChanged'
-    >
-      <paper-input
-        autofocus="[[autofocus]]"
-        label="[[_computeLabel(label, localize)]]"
-        class="input"
-        autocapitalize='none'
-        autocomplete='off'
-        autocorrect='off'
-        spellcheck='false'
-        value="[[value]]"
-        disabled="[[disabled]]">
-        <paper-icon-button slot="suffix" class="clear-button" icon="hass:close" no-ripple="" hidden$="[[!value]]">Clear</paper-icon-button>
-        <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden="[[!_states.length]]">Toggle</paper-icon-button>
-      </paper-input>
-      <template>
-        <style>
-          paper-icon-item {
-            margin: -10px;
-            padding: 0;
-          }
-        </style>
-        <paper-icon-item>
-          <state-badge state-obj="[[item]]" slot="item-icon"></state-badge>
-          <paper-item-body two-line="">
-            <div>[[_computeStateName(item)]]</div>
-            <div secondary="">[[item.entity_id]]</div>
-          </paper-item-body>
-        </paper-icon-item>
-      </template>
-    </vaadin-combo-box-light>
-`;
+      <style>
+        paper-input > paper-icon-button {
+          width: 24px;
+          height: 24px;
+          padding: 2px;
+          color: var(--secondary-text-color);
+        }
+        [hidden] {
+          display: none;
+        }
+      </style>
+      <vaadin-combo-box-light
+        items="[[_states]]"
+        item-value-path="entity_id"
+        item-label-path="entity_id"
+        value="{{value}}"
+        opened="{{opened}}"
+        allow-custom-value="[[allowCustomEntity]]"
+        on-change="_fireChanged"
+      >
+        <paper-input
+          autofocus="[[autofocus]]"
+          label="[[_computeLabel(label, localize)]]"
+          class="input"
+          autocapitalize="none"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          value="[[value]]"
+          disabled="[[disabled]]"
+        >
+          <paper-icon-button
+            slot="suffix"
+            class="clear-button"
+            icon="hass:close"
+            no-ripple=""
+            hidden$="[[!value]]"
+            >Clear</paper-icon-button
+          >
+          <paper-icon-button
+            slot="suffix"
+            class="toggle-button"
+            icon="[[_computeToggleIcon(opened)]]"
+            hidden="[[!_states.length]]"
+            >Toggle</paper-icon-button
+          >
+        </paper-input>
+        <template>
+          <style>
+            paper-icon-item {
+              margin: -10px;
+              padding: 0;
+            }
+          </style>
+          <paper-icon-item>
+            <state-badge state-obj="[[item]]" slot="item-icon"></state-badge>
+            <paper-item-body two-line="">
+              <div>[[_computeStateName(item)]]</div>
+              <div secondary="">[[item.entity_id]]</div>
+            </paper-item-body>
+          </paper-icon-item>
+        </template>
+      </vaadin-combo-box-light>
+    `;
   }
 
   static get properties() {

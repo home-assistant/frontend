@@ -52,7 +52,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
       </style>
 
-      <ha-card id='card'>
+      <ha-card id="card">
         <hui-image
           hass="[[hass]]"
           image="[[_config.image]]"
@@ -65,17 +65,13 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <div class="footer both">
             <div>[[_name]]</div>
             <div>[[_state]]</div>
-        </div>
+          </div>
         </template>
         <template is="dom-if" if="[[_showName(_config)]]">
-          <div class="footer">
-            [[_name]]
-          </div>
+          <div class="footer">[[_name]]</div>
         </template>
         <template is="dom-if" if="[[_showState(_config)]]">
-          <div class="footer state">
-            [[_state]]
-          </div>
+          <div class="footer state">[[_state]]</div>
         </template>
       </ha-card>
     `;

@@ -18,53 +18,56 @@ class HaUserEditor extends EventsMixin(
 ) {
   static get template() {
     return html`
-  <style>
-    paper-card {
-      display: block;
-      max-width: 600px;
-      margin: 0 auto 16px;
-    }
-    paper-card:first-child {
-      margin-top: 16px;
-    }
-    paper-card:last-child {
-      margin-bottom: 16px;
-    }
-  </style>
+      <style>
+        paper-card {
+          display: block;
+          max-width: 600px;
+          margin: 0 auto 16px;
+        }
+        paper-card:first-child {
+          margin-top: 16px;
+        }
+        paper-card:last-child {
+          margin-bottom: 16px;
+        }
+      </style>
 
-  <hass-subpage header="View user">
-    <paper-card heading="[[_computeName(user)]]">
-      <table class='card-content'>
-        <tr>
-          <td>ID</td>
-          <td>[[user.id]]</td>
-        </tr>
-        <tr>
-          <td>Owner</td>
-          <td>[[user.is_owner]]</td>
-        </tr>
-        <tr>
-          <td>Active</td>
-          <td>[[user.is_active]]</td>
-        </tr>
-        <tr>
-          <td>System generated</td>
-          <td>[[user.system_generated]]</td>
-        </tr>
-      </table>
-    </paper-card>
-    <paper-card>
-      <div class='card-actions'>
-        <paper-button on-click='_deleteUser' disabled='[[user.system_generated]]'>
-          [[localize('ui.panel.config.users.editor.delete_user')]]
-        </paper-button>
-        <template is='dom-if' if='[[user.system_generated]]'>
-          Unable to remove system generated users.
-        </template>
-      </div>
-    </paper-card>
-  </hass-subpage>
-`;
+      <hass-subpage header="View user">
+        <paper-card heading="[[_computeName(user)]]">
+          <table class="card-content">
+            <tr>
+              <td>ID</td>
+              <td>[[user.id]]</td>
+            </tr>
+            <tr>
+              <td>Owner</td>
+              <td>[[user.is_owner]]</td>
+            </tr>
+            <tr>
+              <td>Active</td>
+              <td>[[user.is_active]]</td>
+            </tr>
+            <tr>
+              <td>System generated</td>
+              <td>[[user.system_generated]]</td>
+            </tr>
+          </table>
+        </paper-card>
+        <paper-card>
+          <div class="card-actions">
+            <paper-button
+              on-click="_deleteUser"
+              disabled="[[user.system_generated]]"
+            >
+              [[localize('ui.panel.config.users.editor.delete_user')]]
+            </paper-button>
+            <template is="dom-if" if="[[user.system_generated]]">
+              Unable to remove system generated users.
+            </template>
+          </div>
+        </paper-card>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {

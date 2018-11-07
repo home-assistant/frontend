@@ -11,35 +11,44 @@ import "../../../components/buttons/ha-call-service-button";
 class ZwaveUsercodes extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .content {
-        margin-top: 24px;
-      }
-
-      paper-card {
-        display: block;
-        margin: 0 auto;
-        max-width: 600px;
-      }
-
-      .device-picker {
-        @apply --layout-horizontal;
-        @apply --layout-center-center;
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-bottom: 24px;
+      <style include="iron-flex ha-style">
+        .content {
+          margin-top: 24px;
         }
-    </style>
+
+        paper-card {
+          display: block;
+          margin: 0 auto;
+          max-width: 600px;
+        }
+
+        .device-picker {
+          @apply --layout-horizontal;
+          @apply --layout-center-center;
+          padding-left: 24px;
+          padding-right: 24px;
+          padding-bottom: 24px;
+        }
+      </style>
       <div class="content">
         <paper-card heading="Node user codes">
           <div class="device-picker">
-          <paper-dropdown-menu label="Code slot" dynamic-align="" class="flex">
-            <paper-listbox slot="dropdown-content" selected="{{_selectedUserCode}}">
-              <template is="dom-repeat" items="[[userCodes]]" as="state">
-                <paper-item>[[_computeSelectCaptionUserCodes(state)]]</paper-item>
-              </template>
-            </paper-listbox>
-          </paper-dropdown-menu>
+            <paper-dropdown-menu
+              label="Code slot"
+              dynamic-align=""
+              class="flex"
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                selected="{{_selectedUserCode}}"
+              >
+                <template is="dom-repeat" items="[[userCodes]]" as="state">
+                  <paper-item
+                    >[[_computeSelectCaptionUserCodes(state)]]</paper-item
+                  >
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
           </div>
 
           <template is="dom-if" if="[[_isUserCodeSelected(_selectedUserCode)]]">
@@ -49,7 +58,9 @@ class ZwaveUsercodes extends PolymerElement {
                 type="text"
                 allowed-pattern="[0-9,a-f,x,\\\\]"
                 maxlength="40"
-                minlength="16" value="{{_selectedUserCodeValue}}">
+                minlength="16"
+                value="{{_selectedUserCodeValue}}"
+              >
               </paper-input>
               <pre>Ascii: [[_computedCodeOutput]]</pre>
             </div>
@@ -58,21 +69,23 @@ class ZwaveUsercodes extends PolymerElement {
                 hass="[[hass]]"
                 domain="lock"
                 service="set_usercode"
-                service-data="[[_computeUserCodeServiceData(_selectedUserCodeValue, &quot;Add&quot;)]]">
+                service-data="[[_computeUserCodeServiceData(_selectedUserCodeValue, &quot;Add&quot;)]]"
+              >
                 Set Usercode
               </ha-call-service-button>
               <ha-call-service-button
                 hass="[[hass]]"
                 domain="lock"
                 service="clear_usercode"
-                service-data="[[_computeUserCodeServiceData(_selectedUserCode, &quot;Delete&quot;)]]">
+                service-data="[[_computeUserCodeServiceData(_selectedUserCode, &quot;Delete&quot;)]]"
+              >
                 Delete Usercode
               </ha-call-service-button>
             </div>
           </template>
         </paper-card>
       </div>
-`;
+    `;
   }
 
   static get properties() {

@@ -26,104 +26,113 @@ import "./cloud-google-pref";
 class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      [slot=introduction] {
-        margin: -1em 0;
-      }
-      [slot=introduction] a {
-        color: var(--primary-color);
-      }
-      .content {
-        padding-bottom: 24px;
-      }
-      paper-card {
-        display: block;
-      }
-      .account-row {
-        display: flex;
-        padding: 0 16px;
-      }
-      paper-button {
-        align-self: center;
-      }
-      .soon {
-        font-style: italic;
-        margin-top: 24px;
-        text-align: center;
-      }
-      .nowrap {
-        white-space: nowrap;;
-      }
-      .wrap {
-        white-space: normal;
-      }
-      .status {
-        text-transform: capitalize;
-        padding: 16px;
-      }
-      paper-button {
-        color: var(--primary-color);
-        font-weight: 500;
-      }
-    </style>
-    <hass-subpage header="Home Assistant Cloud">
-      <div class="content">
-        <ha-config-section is-wide="[[isWide]]">
-          <span slot="header">Home Assistant Cloud</span>
-          <div slot="introduction">
-            <p>
-              Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!
-            </p>
-          </div>
-
-          <paper-card heading="Nabu Casa Account">
-            <div class="account-row">
-              <paper-item-body two-line="">
-                [[cloudStatus.email]]
-                <div secondary="" class="wrap">
-                  [[_formatSubscription(_subscription)]]
-                </div>
-              </paper-item-body>
+      <style include="iron-flex ha-style">
+        [slot="introduction"] {
+          margin: -1em 0;
+        }
+        [slot="introduction"] a {
+          color: var(--primary-color);
+        }
+        .content {
+          padding-bottom: 24px;
+        }
+        paper-card {
+          display: block;
+        }
+        .account-row {
+          display: flex;
+          padding: 0 16px;
+        }
+        paper-button {
+          align-self: center;
+        }
+        .soon {
+          font-style: italic;
+          margin-top: 24px;
+          text-align: center;
+        }
+        .nowrap {
+          white-space: nowrap;
+        }
+        .wrap {
+          white-space: normal;
+        }
+        .status {
+          text-transform: capitalize;
+          padding: 16px;
+        }
+        paper-button {
+          color: var(--primary-color);
+          font-weight: 500;
+        }
+      </style>
+      <hass-subpage header="Home Assistant Cloud">
+        <div class="content">
+          <ha-config-section is-wide="[[isWide]]">
+            <span slot="header">Home Assistant Cloud</span>
+            <div slot="introduction">
+              <p>
+                Thank you for being part of Home Assistant Cloud. It's because
+                of people like you that we are able to make a great home
+                automation experience for everyone. Thank you!
+              </p>
             </div>
 
-            <div class="account-row">
-              <paper-item-body>
-                Cloud connection status
-              </paper-item-body>
-              <div class="status">[[cloudStatus.cloud]]</div>
+            <paper-card heading="Nabu Casa Account">
+              <div class="account-row">
+                <paper-item-body two-line="">
+                  [[cloudStatus.email]]
+                  <div secondary="" class="wrap">
+                    [[_formatSubscription(_subscription)]]
+                  </div>
+                </paper-item-body>
+              </div>
+
+              <div class="account-row">
+                <paper-item-body> Cloud connection status </paper-item-body>
+                <div class="status">[[cloudStatus.cloud]]</div>
+              </div>
+
+              <div class="card-actions">
+                <a href="https://account.nabucasa.com" target="_blank"
+                  ><paper-button>Manage Account</paper-button></a
+                >
+                <paper-button style="float: right" on-click="handleLogout"
+                  >Sign out</paper-button
+                >
+              </div>
+            </paper-card>
+          </ha-config-section>
+
+          <ha-config-section is-wide="[[isWide]]">
+            <span slot="header">Integrations</span>
+            <div slot="introduction">
+              <p>
+                Integrations for Home Assistant Cloud allow you to connect with
+                services in the cloud without having to expose your Home
+                Assistant instance publicly on the internet.
+              </p>
+              <p>
+                Check the website for
+                <a href="https://www.nabucasa.com" target="_blank"
+                  >all available features</a
+                >.
+              </p>
             </div>
 
-            <div class='card-actions'>
-              <a href='https://account.nabucasa.com' target='_blank'><paper-button>Manage Account</paper-button></a>
-              <paper-button style='float: right' on-click="handleLogout">Sign out</paper-button>
-            </div>
-          </paper-card>
-        </ha-config-section>
+            <cloud-alexa-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+            ></cloud-alexa-pref>
 
-        <ha-config-section is-wide="[[isWide]]">
-          <span slot="header">Integrations</span>
-          <div slot="introduction">
-            <p>
-              Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.
-            </p>
-            <p>
-              Check the website for <a href='https://www.nabucasa.com' target='_blank'>all available features</a>.
-            </p>
-          </div>
-
-          <cloud-alexa-pref
-            hass="[[hass]]"
-            cloud-status="[[cloudStatus]]"
-          ></cloud-alexa-pref>
-
-          <cloud-google-pref
-            hass="[[hass]]"
-            cloud-status="[[cloudStatus]]"
-          ></cloud-google-pref>
-        </ha-config-section>
-      </div>
-    </hass-subpage>
-`;
+            <cloud-google-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+            ></cloud-google-pref>
+          </ha-config-section>
+        </div>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {

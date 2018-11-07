@@ -7,27 +7,35 @@ import hassAttributeUtil from "../util/hass-attributes-util";
 class HaAttributes extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      .data-entry .value {
-        max-width: 200px;
-      }
-      .attribution {
-        color: var(--secondary-text-color);
-        text-align: right;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        .data-entry .value {
+          max-width: 200px;
+        }
+        .attribution {
+          color: var(--secondary-text-color);
+          text-align: right;
+        }
+      </style>
 
-    <div class="layout vertical">
-      <template is="dom-repeat" items="[[computeDisplayAttributes(stateObj, filtersArray)]]" as="attribute">
-        <div class="data-entry layout justified horizontal">
-          <div class="key">[[formatAttribute(attribute)]]</div>
-          <div class="value">[[formatAttributeValue(stateObj, attribute)]]</div>
+      <div class="layout vertical">
+        <template
+          is="dom-repeat"
+          items="[[computeDisplayAttributes(stateObj, filtersArray)]]"
+          as="attribute"
+        >
+          <div class="data-entry layout justified horizontal">
+            <div class="key">[[formatAttribute(attribute)]]</div>
+            <div class="value">
+              [[formatAttributeValue(stateObj, attribute)]]
+            </div>
+          </div>
+        </template>
+        <div class="attribution" hidden$="[[!computeAttribution(stateObj)]]">
+          [[computeAttribution(stateObj)]]
         </div>
-      </template>
-      <div class="attribution" hidden$="[[!computeAttribution(stateObj)]]">[[computeAttribution(stateObj)]]</div>
-    </div>
-`;
+      </div>
+    `;
   }
 
   static get properties() {

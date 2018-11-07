@@ -9,34 +9,48 @@ import NavigateMixin from "../../../src/mixins/navigate-mixin";
 class HassioAddonRepository extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style hassio-style">
-      paper-card {
-        cursor: pointer;
-      }
-      a.repo {
-        display: block;
-        color: var(--primary-text-color);
-      }
-    </style>
-    <template is="dom-if" if="[[addons.length]]">
-      <div class="card-group">
-        <div class="title">
-          [[repo.name]]
-          <div class="description">
-            Maintained by [[repo.maintainer]]
-            <a class="repo" href="[[repo.url]]" target="_blank">[[repo.url]]</a>
-          </div>
-        </div>
-        <template is="dom-repeat" items="[[addons]]" as="addon" sort="sortAddons">
-          <paper-card on-click="addonTapped">
-            <div class="card-content">
-              <hassio-card-content hass="[[hass]]" title="[[addon.name]]" description="[[addon.description]]" icon="[[computeIcon(addon)]]" icon-title="[[computeIconTitle(addon)]]" icon-class="[[computeIconClass(addon)]]"></hassio-card-content>
+      <style include="iron-flex ha-style hassio-style">
+        paper-card {
+          cursor: pointer;
+        }
+        a.repo {
+          display: block;
+          color: var(--primary-text-color);
+        }
+      </style>
+      <template is="dom-if" if="[[addons.length]]">
+        <div class="card-group">
+          <div class="title">
+            [[repo.name]]
+            <div class="description">
+              Maintained by [[repo.maintainer]]
+              <a class="repo" href="[[repo.url]]" target="_blank"
+                >[[repo.url]]</a
+              >
             </div>
-          </paper-card>
-        </template>
-      </div>
-    </template>
-`;
+          </div>
+          <template
+            is="dom-repeat"
+            items="[[addons]]"
+            as="addon"
+            sort="sortAddons"
+          >
+            <paper-card on-click="addonTapped">
+              <div class="card-content">
+                <hassio-card-content
+                  hass="[[hass]]"
+                  title="[[addon.name]]"
+                  description="[[addon.description]]"
+                  icon="[[computeIcon(addon)]]"
+                  icon-title="[[computeIconTitle(addon)]]"
+                  icon-class="[[computeIconClass(addon)]]"
+                ></hassio-card-content>
+              </div>
+            </paper-card>
+          </template>
+        </div>
+      </template>
+    `;
   }
 
   static get properties() {

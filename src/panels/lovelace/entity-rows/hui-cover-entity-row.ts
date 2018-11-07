@@ -38,29 +38,29 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
     if (!stateObj) {
       return html`
         <hui-error-entity-row
-          .entity=${this._config.entity}
-        ></hui-error-entity-row>`;
+          .entity="${this._config.entity}"
+        ></hui-error-entity-row>
+      `;
     }
 
     return html`
       ${this.renderStyle()}
-      <hui-generic-entity-row
-        .hass=${this.hass}
-        .config=${this._config}
-      >
-      ${
-        isTiltOnly(stateObj)
-          ? html`
-            <ha-cover-tilt-controls
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></ha-cover-tilt-controls>`
-          : html`
-            <ha-cover-controls
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></ha-cover-controls>`
-      }
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+        ${
+          isTiltOnly(stateObj)
+            ? html`
+                <ha-cover-tilt-controls
+                  .hass="${this.hass}"
+                  .stateObj="${stateObj}"
+                ></ha-cover-tilt-controls>
+              `
+            : html`
+                <ha-cover-controls
+                  .hass="${this.hass}"
+                  .stateObj="${stateObj}"
+                ></ha-cover-controls>
+              `
+        }
       </hui-generic-entity-row>
     `;
   }
@@ -70,7 +70,7 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
       <style>
         ha-cover-controls,
         ha-cover-tilt-controls {
-          margin-right: -.57em;
+          margin-right: -0.57em;
         }
       </style>
     `;

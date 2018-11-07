@@ -19,37 +19,37 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(
 ) {
   static get template() {
     return html`
-    <style>
-      .time {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 6px;
-      }
-      ha-relative-time {
-        color: var(--secondary-text-color);
-      }
-    </style>
-    <hui-notification-item-template>
-      <span slot="header">[[_computeTitle(notification)]]</span>
+      <style>
+        .time {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 6px;
+        }
+        ha-relative-time {
+          color: var(--secondary-text-color);
+        }
+      </style>
+      <hui-notification-item-template>
+        <span slot="header">[[_computeTitle(notification)]]</span>
 
-      <ha-markdown content="[[notification.message]]"></ha-markdown>
+        <ha-markdown content="[[notification.message]]"></ha-markdown>
 
-      <div class="time">
-        <span>
-          <ha-relative-time
-            hass="[[hass]]"
-            datetime="[[notification.created_at]]"
-          ></ha-relative-time>
-          <paper-tooltip>[[_computeTooltip(hass, notification)]]</paper-tooltip>
-        </span>
-      </div>
+        <div class="time">
+          <span>
+            <ha-relative-time
+              hass="[[hass]]"
+              datetime="[[notification.created_at]]"
+            ></ha-relative-time>
+            <paper-tooltip
+              >[[_computeTooltip(hass, notification)]]</paper-tooltip
+            >
+          </span>
+        </div>
 
-      <paper-button
-        slot="actions"
-        class="primary"
-        on-click="_handleDismiss"
-      >[[localize('ui.card.persistent_notification.dismiss')]]</paper-button>
-    </hui-notification-item-template>
+        <paper-button slot="actions" class="primary" on-click="_handleDismiss"
+          >[[localize('ui.card.persistent_notification.dismiss')]]</paper-button
+        >
+      </hui-notification-item-template>
     `;
   }
 

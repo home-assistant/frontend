@@ -13,10 +13,7 @@ class HuiSceneEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       ${this.styleTemplate}
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
+      <hui-generic-entity-row hass="[[hass]]" config="[[_config]]">
         ${this.sceneControlTemplate}
       </hui-generic-entity-row>
     `;
@@ -28,7 +25,7 @@ class HuiSceneEntityRow extends LocalizeMixin(PolymerElement) {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin-right: -.57em;
+          margin-right: -0.57em;
         }
       </style>
     `;

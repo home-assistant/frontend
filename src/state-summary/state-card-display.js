@@ -14,44 +14,45 @@ import attributeClassNames from "../common/entity/attribute_class_names";
 class StateCardDisplay extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
+      <style>
+        :host {
+          @apply --layout-horizontal;
+          @apply --layout-justified;
+          @apply --layout-baseline;
+        }
 
-      :host {
-        @apply --layout-horizontal;
-        @apply --layout-justified;
-        @apply --layout-baseline;
-      }
+        state-info {
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+        .state {
+          @apply --paper-font-body1;
+          color: var(--primary-text-color);
+          margin-left: 16px;
+          text-align: right;
+          max-width: 40%;
+          flex: 0 0 auto;
+        }
+        .state.has-unit_of_measurement {
+          white-space: nowrap;
+        }
+      </style>
 
-      state-info {
-        flex: 1 1 auto;
-        min-width: 0;
-      }
-      .state {
-        @apply --paper-font-body1;
-        color: var(--primary-text-color);
-        margin-left: 16px;
-        text-align: right;
-        max-width: 40%;
-        flex: 0 0 auto;
-      }
-      .state.has-unit_of_measurement {
-        white-space: nowrap;
-      }
-    </style>
-
-    ${this.stateInfoTemplate}
-    <div class$="[[computeClassNames(stateObj)]]">[[computeStateDisplay(localize, stateObj, language)]]</div>
-`;
+      ${this.stateInfoTemplate}
+      <div class$="[[computeClassNames(stateObj)]]">
+        [[computeStateDisplay(localize, stateObj, language)]]
+      </div>
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   static get properties() {

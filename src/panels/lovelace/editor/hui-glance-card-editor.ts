@@ -38,19 +38,22 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       <paper-input
         label="Title"
         value="${this._config!.title}"
-        .configValue=${"title"}
+        .configValue="${"title"}"
         @value-changed="${this._valueChanged}"
-      ></paper-input><br>
+      ></paper-input
+      ><br />
       <paper-checkbox
         ?checked="${this._config!.show_name !== false}"
-        .configValue=${"show_name"}
+        .configValue="${"show_name"}"
         @change="${this._valueChanged}"
-      >Show Entity's Name?</paper-checkbox><br><br>
+        >Show Entity's Name?</paper-checkbox
+      ><br /><br />
       <paper-checkbox
         ?checked="${this._config!.show_state !== false}"
-        .configValue=${"show_state"}
+        .configValue="${"show_state"}"
         @change="${this._valueChanged}"
-      >Show Entity's State Text?</paper-checkbox><br>
+        >Show Entity's State Text?</paper-checkbox
+      ><br />
     `;
   }
 
