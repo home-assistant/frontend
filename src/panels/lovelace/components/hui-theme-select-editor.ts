@@ -24,13 +24,12 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
     return html`
       ${this.renderStyle()}
       <paper-dropdown-menu
-        label="${this.localize("ui.panel.profile.themes.dropdown_label")}"
         dynamic-align
-        @value-changed="${this._changed}"
+        @value-changed=${this._changed}
       >
         <paper-listbox
           slot="dropdown-content"
-          selected="${this.value || "Backend-selected"}"
+          selected=${this.value || "Backend-selected"}
           attr-for-selected="theme"
         >
           ${themes.map((theme) => {
