@@ -1,14 +1,16 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
+import "@polymer/paper-button/paper-button";
 import "@polymer/paper-dialog/paper-dialog";
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
-import { migrateConfig } from "../common/data";
-import "@polymer/paper-button/paper-button";
-import { HomeAssistant } from "../../../types";
 
-export class HuiDialogMigrateCard extends LitElement {
+import { HomeAssistant } from "../../../types";
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+import { migrateConfig } from "../common/data";
+
+export class HuiDialogMigrate extends hassLocalizeLitMixin(LitElement) {
   protected hass?: HomeAssistant;
   private _reloadLovelace?: () => void;
 
@@ -38,22 +40,22 @@ export class HuiDialogMigrateCard extends LitElement {
         }
       </style>
       <paper-dialog with-backdrop>
-        <h2>Configuration Incompatible</h2>
+        <h2>${this.localize("ui.panel.lovelace.editor.migrate.header")}</h2>
         <div>
+          <p>${this.localize("ui.panel.lovelace.editor.migrate.para_no_id")}</p>
           <p>
-            This element doesn't have an ID. Please add an ID to this element in
-            'ui-lovelace.yaml'.
-          </p>
-          <p>
-            We can add ID's to all your cards and views automatically for you by
-            pressing the 'Migrate config' button.
+            ${this.localize("ui.panel.lovelace.editor.migrate.para_migrate")}
           </p>
         </div>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._migrateConfig}"
-            >Migrate config</paper-button
+            >${
+              this.localize("ui.panel.lovelace.editor.migrate.migrate_btn")
+            }</paper-button
           >
-          <paper-button @click="${this._closeDialog}">Cancel</paper-button>
+          <paper-button @click="${this._closeDialog}"
+            >${this.localize("ui.common.cancel")}</paper-button
+          >
         </div>
       </paper-dialog>
     `;
@@ -76,8 +78,8 @@ export class HuiDialogMigrateCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-migrate-card": HuiDialogMigrateCard;
+    "hui-dialog-migrate": HuiDialogMigrate;
   }
 }
 
-customElements.define("hui-dialog-migrate-card", HuiDialogMigrateCard);
+customElements.define("hui-dialog-migrate", HuiDialogMigrate);

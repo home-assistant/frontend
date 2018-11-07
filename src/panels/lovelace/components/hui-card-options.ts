@@ -25,9 +25,9 @@ export class HuiCardOptions extends LitElement {
         dialogImport: () => import("../editor/hui-dialog-edit-card"),
       });
       fireEvent(this, "register-dialog", {
-        dialogShowEvent: "show-migrate-card",
-        dialogTag: "hui-dialog-migrate-card",
-        dialogImport: () => import("../editor/hui-dialog-migrate-card"),
+        dialogShowEvent: "show-migrate",
+        dialogTag: "hui-dialog-migrate",
+        dialogImport: () => import("../editor/hui-dialog-migrate"),
       });
     }
   }
@@ -61,7 +61,7 @@ export class HuiCardOptions extends LitElement {
         reloadLovelace: () => fireEvent(this, "config-refresh"),
       });
     } else {
-      fireEvent(this, "show-migrate-card", {
+      fireEvent(this, "show-migrate", {
         hass: this.hass,
         reloadLovelace: () => fireEvent(this, "config-refresh"),
       });

@@ -936,6 +936,16 @@
             "required_fields": "Fill in all required fields"
           }
         }
+      },
+      "lovelace": {
+        "editor": {
+          "migrate": {
+            "header": "Configuration Incompatible",
+            "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
+            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
+            "migrate_btn": "Migrate config"
+          }
+        }
       }
     }
   }
