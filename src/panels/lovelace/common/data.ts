@@ -19,3 +19,8 @@ export const updateCardConfig = (
     card_id: cardId,
     card_config: config,
   });
+
+export const migrateConfig = (hass: HomeAssistant): Promise<void> =>
+  hass!.callWS({
+    type: "lovelace/config/migrate",
+  });

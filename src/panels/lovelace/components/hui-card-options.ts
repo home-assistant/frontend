@@ -24,6 +24,11 @@ export class HuiCardOptions extends LitElement {
         dialogTag: "hui-dialog-edit-card",
         dialogImport: () => import("../editor/hui-dialog-edit-card"),
       });
+      fireEvent(this, "register-dialog", {
+        dialogShowEvent: "show-migrate-card",
+        dialogTag: "hui-dialog-migrate-card",
+        dialogImport: () => import("../editor/hui-dialog-migrate-card"),
+      });
     }
   }
 
@@ -49,11 +54,18 @@ export class HuiCardOptions extends LitElement {
     `;
   }
   private _editCard() {
-    fireEvent(this, "show-edit-card", {
-      hass: this.hass,
-      cardId: this.cardId,
-      reloadLovelace: () => fireEvent(this, "config-refresh"),
-    });
+    if (this.cardId) {
+      fireEvent(this, "show-edit-card", {
+        hass: this.hass,
+        cardId: this.cardId,
+        reloadLovelace: () => fireEvent(this, "config-refresh"),
+      });
+    } else {
+      fireEvent(this, "show-migrate-card", {
+        hass: this.hass,
+        reloadLovelace: () => fireEvent(this, "config-refresh"),
+      });
+    }
   }
 }
 
