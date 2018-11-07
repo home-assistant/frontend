@@ -780,7 +780,8 @@
                 "clear_code": "Törlés",
                 "disarm": "Hatástalanít",
                 "arm_home": "Élesít (otthon)",
-                "arm_away": "Élesít (távozó)"
+                "arm_away": "Élesít (távozó)",
+                "arm_night": "Élesít (éjszakai)"
             },
             "automation": {
                 "last_triggered": "Utoljára aktiválva",

@@ -780,7 +780,9 @@
                 "clear_code": "Počisti",
                 "disarm": "Izklopi",
                 "arm_home": "Vklopi doma",
-                "arm_away": "Vklopi odsoten"
+                "arm_away": "Vklopi odsoten",
+                "arm_night": "Vklopi nočni način",
+                "armed_custom_bypass": "Po meri "
             },
             "automation": {
                 "last_triggered": "Nazadnje sprožen",

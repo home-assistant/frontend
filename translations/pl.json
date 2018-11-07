@@ -779,8 +779,10 @@
                 "code": "Kod",
                 "clear_code": "Wyczyść",
                 "disarm": "Rozbrojony",
-                "arm_home": "Uzbrojony (w domu)",
-                "arm_away": "Uzbrojony (nieobecny)"
+                "arm_home": "uzbrojony (w domu)",
+                "arm_away": "uzbrojony (nieobecny)",
+                "arm_night": "uzbrojony (noc)",
+                "armed_custom_bypass": "uzbrojony (częściowo)"
             },
             "automation": {
                 "last_triggered": "Ostatnie uruchomienie",
