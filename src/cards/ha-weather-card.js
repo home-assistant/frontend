@@ -111,8 +111,13 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="content">
           <div class="now">
             <div class="main">
-              <template is="dom-if" if="[[showWeatherIcon(stateObj.state)]]">
-                <ha-icon icon="[[getWeatherIcon(stateObj.state)]]"></ha-icon>
+              <template
+                is="dom-if"
+                if="[[showWeatherIcon(stateObj.attributes.condition_icon)]]"
+              >
+                <ha-icon
+                  icon="[[getWeatherIcon(stateObj.attributes.condition_icon)]]"
+                ></ha-icon>
               </template>
               <div class="temp">
                 [[stateObj.attributes.temperature]]<span
@@ -148,6 +153,12 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   [[getWind(stateObj.attributes.wind_speed,
                   stateObj.attributes.wind_bearing, localize)]]
                 </div>
+              </template>
+              <template
+                is="dom-if"
+                if="[[_showValue(stateObj.attributes.rain_forecast)]]"
+              >
+                <div>[[stateObj.attributes.rain_forecast]]</div>
               </template>
             </div>
           </div>
