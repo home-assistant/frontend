@@ -106,6 +106,16 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       throw new Error("No image source configured.");
     }
 
+    if (
+      (config.tap_action === "call-service" ||
+        config.hold_action === "call-service") &&
+      !config.service
+    ) {
+      throw new Error(
+        'Missing required property "service" when tap_action or hold_action is call-service'
+      );
+    }
+
     this._config = config;
   }
 
@@ -180,6 +190,11 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       case "toggle":
         toggleEntity(this.hass, entityId);
         break;
+      case "call-service": {
+        const [domain, service] = config.service.split(".", 2);
+        this.hass.callService(domain, service, config.service_data);
+        break;
+      }
       case "more-info":
         this.fire("hass-more-info", { entityId });
         break;
