@@ -1,14 +1,14 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import "../components/hui-generic-entity-row.js";
-import "../../../components/entity/ha-entity-toggle.js";
+import "../components/hui-generic-entity-row";
+import "../../../components/entity/ha-entity-toggle";
+import "./hui-error-entity-row";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display.js";
+import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../types.js";
-import { EntityRow, EntityConfig } from "./types.js";
-import { HassEntity } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../../../types";
+import { EntityRow, EntityConfig } from "./types";
 
 class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
   implements EntityRow {
@@ -23,19 +23,25 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
   }
 
   public setConfig(config: EntityConfig): void {
-    if (!config || !config.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+    if (!config) {
+      throw new Error("Configuration error");
     }
-
     this._config = config;
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this.hass || !this.hass.states[this._config.entity]) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
     const stateObj = this.hass.states[this._config.entity];
+
+    if (!stateObj) {
+      return html`
+        <hui-error-entity-row
+          .entity=${this._config.entity}
+        ></hui-error-entity-row>`;
+    }
 
     return html`
       <hui-generic-entity-row
@@ -51,7 +57,11 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
             ></ha-entity-toggle>`
             : html`
             <div>
-              ${computeStateDisplay(this.localize, stateObj)}
+              ${computeStateDisplay(
+                this.localize,
+                stateObj,
+                this.hass!.language
+              )}
             </div>`
         }
       </hui-generic-entity-row>
