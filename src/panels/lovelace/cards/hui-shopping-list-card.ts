@@ -162,7 +162,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         }
         .label {
           color: var(--primary-color);
-          margin-left: 16px;
+          margin-left: 17px;
           margin-bottom: 11px;
           margin-top: 11px;
         }
