@@ -16,157 +16,169 @@ const ERROR_SENTINEL = {};
 class HaPanelDevService extends PolymerElement {
   static get template() {
     return html`
-  <style include='ha-style'>
-    :host {
-      -ms-user-select: initial;
-      -webkit-user-select: initial;
-      -moz-user-select: initial;
-    }
+      <style include="ha-style">
+        :host {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+        }
 
-    .content {
-      padding: 16px;
-    }
+        .content {
+          padding: 16px;
+        }
 
-    .ha-form {
-      margin-right: 16px;
-      max-width: 400px;
-    }
+        .ha-form {
+          margin-right: 16px;
+          max-width: 400px;
+        }
 
-    .description {
-      margin-top: 24px;
-      white-space: pre-wrap;
-    }
+        .description {
+          margin-top: 24px;
+          white-space: pre-wrap;
+        }
 
-    .header {
-      @apply --paper-font-title;
-    }
+        .header {
+          @apply --paper-font-title;
+        }
 
-    .attributes th {
-      text-align: left;
-    }
+        .attributes th {
+          text-align: left;
+        }
 
-    .attributes tr {
-      vertical-align: top;
-    }
+        .attributes tr {
+          vertical-align: top;
+        }
 
-    .attributes tr:nth-child(odd) {
-      background-color: var(--table-row-background-color,#eee)
-    }
+        .attributes tr:nth-child(odd) {
+          background-color: var(--table-row-background-color, #eee);
+        }
 
-    .attributes tr:nth-child(even) {
-      background-color: var(--table-row-alternative-background-color,#eee)
-    }
+        .attributes tr:nth-child(even) {
+          background-color: var(--table-row-alternative-background-color, #eee);
+        }
 
-    .attributes td:nth-child(3) {
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+        .attributes td:nth-child(3) {
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
 
-    pre {
-      margin: 0;
-    }
+        pre {
+          margin: 0;
+        }
 
-    h1 {
-      white-space: normal;
-    }
+        h1 {
+          white-space: normal;
+        }
 
-    td {
-      padding: 4px;
-    }
+        td {
+          padding: 4px;
+        }
 
-    .error {
-      color: var(--google-red-500);
-    }
-  </style>
+        .error {
+          color: var(--google-red-500);
+        }
+      </style>
 
-  <app-header-layout has-scrolling-region>
-    <app-header slot="header" fixed>
-      <app-toolbar>
-        <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-        <div main-title>Services</div>
-      </app-toolbar>
-    </app-header>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>Services</div>
+          </app-toolbar>
+        </app-header>
 
-    <app-localstorage-document
-      key='panel-dev-service-state-domain-service'
-      data='{{domainService}}'>
-    </app-localstorage-document>
-    <app-localstorage-document
-      key='[[_computeServicedataKey(domainService)]]'
-      data='{{serviceData}}'>
-    </app-localstorage-document>
+        <app-localstorage-document
+          key="panel-dev-service-state-domain-service"
+          data="{{domainService}}"
+        >
+        </app-localstorage-document>
+        <app-localstorage-document
+          key="[[_computeServicedataKey(domainService)]]"
+          data="{{serviceData}}"
+        >
+        </app-localstorage-document>
 
-    <div class='content'>
-      <p>
-        The service dev tool allows you to call any available service in Home Assistant.
-      </p>
+        <div class="content">
+          <p>
+            The service dev tool allows you to call any available service in
+            Home Assistant.
+          </p>
 
-      <div class='ha-form'>
-        <ha-service-picker
-          hass='[[hass]]'
-          value='{{domainService}}'
-        ></ha-service-picker>
-        <template is='dom-if' if='[[_computeHasEntity(_attributes)]]'>
-          <ha-entity-picker
-            hass='[[hass]]'
-            value='[[_computeEntityValue(parsedJSON)]]'
-            on-change='_entityPicked'
-            disabled='[[!validJSON]]'
-            domain-filter='[[_computeEntityDomainFilter(_domain)]]'
-            allow-custom-entity
-          ></ha-entity-picker>
-        </template>
-        <paper-textarea
-          always-float-label
-          label='Service Data (JSON, optional)'
-          value='{{serviceData}}'
-          autocapitalize='none'
-          autocomplete='off'
-          spellcheck='false'
-        ></paper-textarea>
-        <paper-button
-          on-click='_callService'
-          raised
-          disabled='[[!validJSON]]'
-        >Call Service</paper-button>
-        <template is='dom-if' if='[[!validJSON]]'>
-            <span class='error'>Invalid JSON</span>
-        </template>
-      </div>
-
-      <template is='dom-if' if='[[!domainService]]'>
-        <h1>Select a service to see the description</h1>
-      </template>
-
-      <template is='dom-if' if='[[domainService]]'>
-        <template is='dom-if' if='[[!_description]]'>
-          <h1>No description is available</h1>
-        </template>
-        <template is='dom-if' if='[[_description]]'>
-          <h3>[[_description]]</h3>
-
-          <table class='attributes'>
-            <tr>
-              <th>Parameter</th>
-              <th>Description</th>
-              <th>Example</th>
-            </tr>
-            <template is='dom-if' if='[[!_attributes.length]]'>
-              <tr><td colspan='3'>This service takes no parameters.</td></tr>
+          <div class="ha-form">
+            <ha-service-picker
+              hass="[[hass]]"
+              value="{{domainService}}"
+            ></ha-service-picker>
+            <template is="dom-if" if="[[_computeHasEntity(_attributes)]]">
+              <ha-entity-picker
+                hass="[[hass]]"
+                value="[[_computeEntityValue(parsedJSON)]]"
+                on-change="_entityPicked"
+                disabled="[[!validJSON]]"
+                domain-filter="[[_computeEntityDomainFilter(_domain)]]"
+                allow-custom-entity
+              ></ha-entity-picker>
             </template>
-            <template is='dom-repeat' items='[[_attributes]]' as='attribute'>
-              <tr>
-                <td><pre>[[attribute.key]]</pre></td>
-                <td>[[attribute.description]]</td>
-                <td>[[attribute.example]]</td>
-              </tr>
+            <paper-textarea
+              always-float-label
+              label="Service Data (JSON, optional)"
+              value="{{serviceData}}"
+              autocapitalize="none"
+              autocomplete="off"
+              spellcheck="false"
+            ></paper-textarea>
+            <paper-button
+              on-click="_callService"
+              raised
+              disabled="[[!validJSON]]"
+              >Call Service</paper-button
+            >
+            <template is="dom-if" if="[[!validJSON]]">
+              <span class="error">Invalid JSON</span>
             </template>
-          </table>
-        </template>
-      </template>
-    </div>
+          </div>
 
-  </app-header-layout>
+          <template is="dom-if" if="[[!domainService]]">
+            <h1>Select a service to see the description</h1>
+          </template>
+
+          <template is="dom-if" if="[[domainService]]">
+            <template is="dom-if" if="[[!_description]]">
+              <h1>No description is available</h1>
+            </template>
+            <template is="dom-if" if="[[_description]]">
+              <h3>[[_description]]</h3>
+
+              <table class="attributes">
+                <tr>
+                  <th>Parameter</th>
+                  <th>Description</th>
+                  <th>Example</th>
+                </tr>
+                <template is="dom-if" if="[[!_attributes.length]]">
+                  <tr>
+                    <td colspan="3">This service takes no parameters.</td>
+                  </tr>
+                </template>
+                <template
+                  is="dom-repeat"
+                  items="[[_attributes]]"
+                  as="attribute"
+                >
+                  <tr>
+                    <td><pre>[[attribute.key]]</pre></td>
+                    <td>[[attribute.description]]</td>
+                    <td>[[attribute.example]]</td>
+                  </tr>
+                </template>
+              </table>
+            </template>
+          </template>
+        </div>
+      </app-header-layout>
     `;
   }
 

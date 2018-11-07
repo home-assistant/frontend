@@ -10,33 +10,33 @@ import secondsToDuration from "../common/datetime/seconds_to_duration";
 class StateCardTimer extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      .state {
-        @apply --paper-font-body1;
-        color: var(--primary-text-color);
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        .state {
+          @apply --paper-font-body1;
+          color: var(--primary-text-color);
 
-        margin-left: 16px;
-        text-align: right;
-        line-height: 40px;
-      }
-    </style>
+          margin-left: 16px;
+          text-align: right;
+          line-height: 40px;
+        }
+      </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <div class="state">[[_secondsToDuration(timeRemaining)]]</div>
-    </div>
-`;
+      <div class="horizontal justified layout">
+        ${this.stateInfoTemplate}
+        <div class="state">[[_secondsToDuration(timeRemaining)]]</div>
+      </div>
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   static get properties() {

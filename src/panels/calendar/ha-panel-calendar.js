@@ -46,8 +46,8 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         }
 
         div.all_calendars {
-    ￼     height: 20px;
-    ￼     text-align: center;
+          ￼height: 20px;
+          ￼text-align: center;
         }
 
         .iron-selected {
@@ -67,7 +67,10 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
             <div main-title>[[localize('panel.calendar')]]</div>
           </app-toolbar>
         </app-header>
@@ -84,9 +87,11 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
               >
                 <template is="dom-repeat" items="[[calendars]]">
                   <paper-item item-name="[[item.entity_id]]">
-                    <span class="calendar_color" style$="background-color: [[item.color]]"></span>
-                    <span class="calendar_color_spacer"></span>
-                    [[item.name]]
+                    <span
+                      class="calendar_color"
+                      style$="background-color: [[item.color]]"
+                    ></span>
+                    <span class="calendar_color_spacer"></span> [[item.name]]
                   </paper-item>
                 </template>
               </paper-listbox>
@@ -96,13 +101,15 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             <ha-big-calendar
               default-date="[[currentDate]]"
               default-view="[[currentView]]"
-              on-navigate='_handleNavigate'
-              on-view='_handleViewChanged'
-              events="[[events]]">
+              on-navigate="_handleNavigate"
+              on-view="_handleViewChanged"
+              events="[[events]]"
+            >
             </ha-big-calendar>
           </div>
         </div>
-      </app-header-layout>`;
+      </app-header-layout>
+    `;
   }
 
   static get properties() {

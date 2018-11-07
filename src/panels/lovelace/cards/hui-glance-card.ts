@@ -122,9 +122,11 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-          ${this._configEntities!.map((entityConf) =>
-            this.renderEntity(entityConf)
-          )}
+          ${
+            this._configEntities!.map((entityConf) =>
+              this.renderEntity(entityConf)
+            )
+          }
         </div>
       </ha-card>
     `;
@@ -187,9 +189,12 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
-      return html`<div class="entity not-found"><div class="name">${
-        entityConf.entity
-      }</div>Entity Not Available</div>`;
+      return html`
+        <div class="entity not-found">
+          <div class="name">${entityConf.entity}</div>
+          Entity Not Available
+        </div>
+      `;
     }
 
     return html`
@@ -202,11 +207,15 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
       >
         ${
           this._config!.show_name !== false
-            ? html`<div class="name">${
-                "name" in entityConf
-                  ? entityConf.name
-                  : computeStateName(stateObj)
-              }</div>`
+            ? html`
+                <div class="name">
+                  ${
+                    "name" in entityConf
+                      ? entityConf.name
+                      : computeStateName(stateObj)
+                  }
+                </div>
+              `
             : ""
         }
         <state-badge
@@ -215,11 +224,17 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
         ></state-badge>
         ${
           this._config!.show_state !== false
-            ? html`<div>${computeStateDisplay(
-                this.localize,
-                stateObj,
-                this.hass!.language
-              )}</div>`
+            ? html`
+                <div>
+                  ${
+                    computeStateDisplay(
+                      this.localize,
+                      stateObj,
+                      this.hass!.language
+                    )
+                  }
+                </div>
+              `
             : ""
         }
       </div>

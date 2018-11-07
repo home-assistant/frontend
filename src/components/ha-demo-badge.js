@@ -6,14 +6,18 @@ import "./ha-label-badge";
 class HaDemoBadge extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      :host {
-        --ha-label-badge-color: #dac90d;
-      }
-    </style>
+      <style>
+        :host {
+          --ha-label-badge-color: #dac90d;
+        }
+      </style>
 
-    <ha-label-badge icon="hass:emoticon" label="Demo" description=""></ha-label-badge>
-`;
+      <ha-label-badge
+        icon="hass:emoticon"
+        label="Demo"
+        description=""
+      ></ha-label-badge>
+    `;
   }
 }
 

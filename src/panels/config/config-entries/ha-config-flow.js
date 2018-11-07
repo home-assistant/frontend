@@ -22,99 +22,113 @@ let instance = 0;
 class HaConfigFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      .error {
-        color: red;
-      }
-      paper-dialog {
-        max-width: 500px;
-      }
-      ha-markdown {
-        word-break: break-word;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      ha-markdown img:first-child:last-child {
-        display: block;
-        margin: 0 auto;
-      }
-      .init-spinner {
-        padding: 10px 100px 34px;
-        text-align: center;
-      }
-      .submit-spinner {
-        margin-right: 16px;
-      }
-    </style>
-    <paper-dialog id="dialog" with-backdrop="" opened="{{_opened}}" on-opened-changed="_openedChanged">
-      <h2>
-        <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          Aborted
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          Success!
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-          [[_computeStepTitle(localize, _step)]]
-        </template>
-      </h2>
-      <paper-dialog-scrollable>
-        <template is="dom-if" if="[[_errorMsg]]">
-          <div class='error'>[[_errorMsg]]</div>
-        </template>
-        <template is="dom-if" if="[[!_step]]">
-          <div class='init-spinner'><paper-spinner active></paper-spinner></div>
-        </template>
-        <template is="dom-if" if="[[_step]]">
+      <style include="ha-style-dialog">
+        .error {
+          color: red;
+        }
+        paper-dialog {
+          max-width: 500px;
+        }
+        ha-markdown {
+          word-break: break-word;
+        }
+        ha-markdown a {
+          color: var(--primary-color);
+        }
+        ha-markdown img:first-child:last-child {
+          display: block;
+          margin: 0 auto;
+        }
+        .init-spinner {
+          padding: 10px 100px 34px;
+          text-align: center;
+        }
+        .submit-spinner {
+          margin-right: 16px;
+        }
+      </style>
+      <paper-dialog
+        id="dialog"
+        with-backdrop=""
+        opened="{{_opened}}"
+        on-opened-changed="_openedChanged"
+      >
+        <h2>
+          <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
+            Aborted
+          </template>
           <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-            <p>Created config for [[_step.title]]</p>
+            Success!
           </template>
-
-          <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
-            <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
-          </template>
-
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-            <ha-form
-              data="{{_stepData}}"
-              on-data-changed='_increaseCounter'
-              schema="[[_step.data_schema]]"
-              error="[[_step.errors]]"
-              compute-label="[[_computeLabelCallback(localize, _step)]]"
-              compute-error="[[_computeErrorCallback(localize, _step)]]"
-            ></ha-form>
+            [[_computeStepTitle(localize, _step)]]
           </template>
-        </template>
-      </paper-dialog-scrollable>
-      <div class="buttons">
-        <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          <paper-button on-click="_flowDone">Close</paper-button>
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          <paper-button on-click="_flowDone">Close</paper-button>
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-          <template is="dom-if" if="[[_loading]]">
-            <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
+        </h2>
+        <paper-dialog-scrollable>
+          <template is="dom-if" if="[[_errorMsg]]">
+            <div class="error">[[_errorMsg]]</div>
           </template>
-          <template is="dom-if" if="[[!_loading]]">
-            <div>
-              <paper-button
-                on-click="_submitStep"
-                disabled='[[!_canSubmit]]'
-              >Submit</paper-button>
-              <template is='dom-if' if='[[!_canSubmit]]'>
-                <paper-tooltip position="left">
-                  Not all required fields are filled in.
-                </paper-tooltip>
-              </template>
+          <template is="dom-if" if="[[!_step]]">
+            <div class="init-spinner">
+              <paper-spinner active></paper-spinner>
             </div>
           </template>
-        </template>
-      </div>
-    </paper-dialog>
-`;
+          <template is="dom-if" if="[[_step]]">
+            <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
+              <p>Created config for [[_step.title]]</p>
+            </template>
+
+            <template
+              is="dom-if"
+              if="[[_computeStepDescription(localize, _step)]]"
+            >
+              <ha-markdown
+                content="[[_computeStepDescription(localize, _step)]]"
+                allow-svg
+              ></ha-markdown>
+            </template>
+
+            <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
+              <ha-form
+                data="{{_stepData}}"
+                on-data-changed="_increaseCounter"
+                schema="[[_step.data_schema]]"
+                error="[[_step.errors]]"
+                compute-label="[[_computeLabelCallback(localize, _step)]]"
+                compute-error="[[_computeErrorCallback(localize, _step)]]"
+              ></ha-form>
+            </template>
+          </template>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+          <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
+            <paper-button on-click="_flowDone">Close</paper-button>
+          </template>
+          <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
+            <paper-button on-click="_flowDone">Close</paper-button>
+          </template>
+          <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
+            <template is="dom-if" if="[[_loading]]">
+              <div class="submit-spinner">
+                <paper-spinner active></paper-spinner>
+              </div>
+            </template>
+            <template is="dom-if" if="[[!_loading]]">
+              <div>
+                <paper-button on-click="_submitStep" disabled="[[!_canSubmit]]"
+                  >Submit</paper-button
+                >
+                <template is="dom-if" if="[[!_canSubmit]]">
+                  <paper-tooltip position="left">
+                    Not all required fields are filled in.
+                  </paper-tooltip>
+                </template>
+              </div>
+            </template>
+          </template>
+        </div>
+      </paper-dialog>
+    `;
   }
 
   static get properties() {

@@ -12,124 +12,128 @@ import DialogMixin from "../mixins/dialog-mixin";
 class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="paper-dialog-shared-styles">
-      iron-icon {
-        margin-right: 8px;
-      }
-
-      .content {
-        width: 450px;
-        min-height: 80px;
-        font-size: 18px;
-        padding: 16px;
-      }
-
-      .messages {
-        max-height: 50vh;
-        overflow: auto;
-      }
-
-      .messages::after {
-        content: "";
-        clear: both;
-        display: block;
-      }
-
-      .message {
-        clear: both;
-        margin: 8px 0;
-        padding: 8px;
-        border-radius: 15px;
-      }
-
-      .message.user {
-        margin-left: 24px;
-        float: right;
-        text-align: right;
-        border-bottom-right-radius: 0px;
-        background-color: var(--light-primary-color);
-        color: var(--primary-text-color);
-      }
-
-      .message.hass {
-        margin-right: 24px;
-        float: left;
-        border-bottom-left-radius: 0px;
-        background-color: var(--primary-color);
-        color: var(--text-primary-color);
-      }
-
-      .message.error {
-        background-color: var(--google-red-500);
-        color: var(--text-primary-color);
-      }
-
-      .icon {
-        text-align: center;
-      }
-
-      .icon paper-icon-button {
-        height: 52px;
-        width: 52px;
-      }
-
-      .interimTranscript {
-        color: darkgrey;
-      }
-
-      [hidden] {
-        display: none;
-      }
-
-      :host {
-        border-radius: 2px;
-      }
-
-      @media all and (max-width: 450px) {
-        :host {
-          margin: 0;
-          width: 100%;
-          max-height: calc(100% - 64px);
-
-          position: fixed !important;
-          bottom: 0px;
-          left: 0px;
-          right: 0px;
-          overflow: scroll;
-          border-bottom-left-radius: 0px;
-          border-bottom-right-radius: 0px;
+      <style include="paper-dialog-shared-styles">
+        iron-icon {
+          margin-right: 8px;
         }
 
         .content {
-          width: auto;
+          width: 450px;
+          min-height: 80px;
+          font-size: 18px;
+          padding: 16px;
         }
 
         .messages {
-          max-height: 68vh;
+          max-height: 50vh;
+          overflow: auto;
         }
-      }
-    </style>
 
-    <div class="content">
-      <div class="messages" id="messages">
-        <template is="dom-repeat" items="[[_conversation]]" as="message">
-          <div class$="[[_computeMessageClasses(message)]]">[[message.text]]</div>
-        </template>
-      </div>
-      <template is="dom-if" if="[[results]]">
-        <div class="messages">
-          <div class="message user">
-            <span>{{results.final}}</span>
-            <span class="interimTranscript">[[results.interim]]</span>
-            …
-          </div>
+        .messages::after {
+          content: "";
+          clear: both;
+          display: block;
+        }
+
+        .message {
+          clear: both;
+          margin: 8px 0;
+          padding: 8px;
+          border-radius: 15px;
+        }
+
+        .message.user {
+          margin-left: 24px;
+          float: right;
+          text-align: right;
+          border-bottom-right-radius: 0px;
+          background-color: var(--light-primary-color);
+          color: var(--primary-text-color);
+        }
+
+        .message.hass {
+          margin-right: 24px;
+          float: left;
+          border-bottom-left-radius: 0px;
+          background-color: var(--primary-color);
+          color: var(--text-primary-color);
+        }
+
+        .message.error {
+          background-color: var(--google-red-500);
+          color: var(--text-primary-color);
+        }
+
+        .icon {
+          text-align: center;
+        }
+
+        .icon paper-icon-button {
+          height: 52px;
+          width: 52px;
+        }
+
+        .interimTranscript {
+          color: darkgrey;
+        }
+
+        [hidden] {
+          display: none;
+        }
+
+        :host {
+          border-radius: 2px;
+        }
+
+        @media all and (max-width: 450px) {
+          :host {
+            margin: 0;
+            width: 100%;
+            max-height: calc(100% - 64px);
+
+            position: fixed !important;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            overflow: scroll;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+          }
+
+          .content {
+            width: auto;
+          }
+
+          .messages {
+            max-height: 68vh;
+          }
+        }
+      </style>
+
+      <div class="content">
+        <div class="messages" id="messages">
+          <template is="dom-repeat" items="[[_conversation]]" as="message">
+            <div class$="[[_computeMessageClasses(message)]]">
+              [[message.text]]
+            </div>
+          </template>
         </div>
-      </template>
-      <div class="icon" hidden$="[[results]]">
-        <paper-icon-button icon="hass:text-to-speech" on-click="startListening"></paper-icon-button>
+        <template is="dom-if" if="[[results]]">
+          <div class="messages">
+            <div class="message user">
+              <span>{{results.final}}</span>
+              <span class="interimTranscript">[[results.interim]]</span> …
+            </div>
+          </div>
+        </template>
+        <div class="icon" hidden$="[[results]]">
+          <paper-icon-button
+            icon="hass:text-to-speech"
+            on-click="startListening"
+          ></paper-icon-button>
+        </div>
       </div>
-    </div>
-`;
+    `;
   }
 
   static get properties() {

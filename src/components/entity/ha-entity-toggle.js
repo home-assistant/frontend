@@ -9,34 +9,48 @@ import computeStateDomain from "../../common/entity/compute_state_domain";
 class HaEntityToggle extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      :host {
-        white-space: nowrap;
-        min-width: 38px;
-      }
-      paper-icon-button {
-        color: var(--paper-icon-button-inactive-color, var(--primary-text-color));
-        transition: color .5s;
-      }
-      paper-icon-button[state-active] {
-        color: var(--paper-icon-button-active-color, var(--primary-color));
-      }
-      paper-toggle-button {
-        cursor: pointer;
-        --paper-toggle-button-label-spacing: 0;
-        padding: 13px 5px;
-        margin: -4px -5px;
-      }
-    </style>
+      <style>
+        :host {
+          white-space: nowrap;
+          min-width: 38px;
+        }
+        paper-icon-button {
+          color: var(
+            --paper-icon-button-inactive-color,
+            var(--primary-text-color)
+          );
+          transition: color 0.5s;
+        }
+        paper-icon-button[state-active] {
+          color: var(--paper-icon-button-active-color, var(--primary-color));
+        }
+        paper-toggle-button {
+          cursor: pointer;
+          --paper-toggle-button-label-spacing: 0;
+          padding: 13px 5px;
+          margin: -4px -5px;
+        }
+      </style>
 
-    <template is="dom-if" if="[[stateObj.attributes.assumed_state]]">
-      <paper-icon-button icon="hass:flash-off" on-click="turnOff" state-active$="[[!isOn]]"></paper-icon-button>
-      <paper-icon-button icon="hass:flash" on-click="turnOn" state-active$="[[isOn]]"></paper-icon-button>
-    </template>
-    <template is="dom-if" if="[[!stateObj.attributes.assumed_state]]">
-      <paper-toggle-button checked="[[toggleChecked]]" on-change="toggleChanged"></paper-toggle-button>
-    </template>
-`;
+      <template is="dom-if" if="[[stateObj.attributes.assumed_state]]">
+        <paper-icon-button
+          icon="hass:flash-off"
+          on-click="turnOff"
+          state-active$="[[!isOn]]"
+        ></paper-icon-button>
+        <paper-icon-button
+          icon="hass:flash"
+          on-click="turnOn"
+          state-active$="[[isOn]]"
+        ></paper-icon-button>
+      </template>
+      <template is="dom-if" if="[[!stateObj.attributes.assumed_state]]">
+        <paper-toggle-button
+          checked="[[toggleChecked]]"
+          on-change="toggleChanged"
+        ></paper-toggle-button>
+      </template>
+    `;
   }
 
   static get properties() {

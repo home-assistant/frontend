@@ -14,41 +14,46 @@ import LocalizeMixin from "../mixins/localize-mixin";
 class StateCardScript extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      paper-button {
-        color: var(--primary-color);
-        font-weight: 500;
-        top: 3px;
-        height: 37px;
-        margin-right: -.57em;
-      }
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        paper-button {
+          color: var(--primary-color);
+          font-weight: 500;
+          top: 3px;
+          height: 37px;
+          margin-right: -0.57em;
+        }
 
-      ha-entity-toggle {
-        margin-left: 16px;
-      }
-    </style>
+        ha-entity-toggle {
+          margin-left: 16px;
+        }
+      </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <template is="dom-if" if="[[stateObj.attributes.can_cancel]]">
-        <ha-entity-toggle state-obj="[[stateObj]]" hass="[[hass]]"></ha-entity-toggle>
-      </template>
-      <template is="dom-if" if="[[!stateObj.attributes.can_cancel]]">
-        <paper-button on-click="fireScript">[[localize('ui.card.script.execute')]]</paper-button>
-      </template>
-    </div>
-`;
+      <div class="horizontal justified layout">
+        ${this.stateInfoTemplate}
+        <template is="dom-if" if="[[stateObj.attributes.can_cancel]]">
+          <ha-entity-toggle
+            state-obj="[[stateObj]]"
+            hass="[[hass]]"
+          ></ha-entity-toggle>
+        </template>
+        <template is="dom-if" if="[[!stateObj.attributes.can_cancel]]">
+          <paper-button on-click="fireScript"
+            >[[localize('ui.card.script.execute')]]</paper-button
+          >
+        </template>
+      </div>
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   static get properties() {

@@ -106,9 +106,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <ha-card>
         <div class="header">
           [[computeState(stateObj.state, localize)]]
-          <div class="name">
-            [[stateObj.attributes.friendly_name]]
-          </div>
+          <div class="name">[[stateObj.attributes.friendly_name]]</div>
         </div>
         <div class="content">
           <div class="now">
@@ -117,26 +115,38 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 <ha-icon icon="[[getWeatherIcon(stateObj.state)]]"></ha-icon>
               </template>
               <div class="temp">
-                [[stateObj.attributes.temperature]]<span>[[getUnit('temperature')]]</span>
+                [[stateObj.attributes.temperature]]<span
+                  >[[getUnit('temperature')]]</span
+                >
               </div>
             </div>
             <div class="attributes">
-              <template is="dom-if" if="[[_showValue(stateObj.attributes.pressure)]]">
+              <template
+                is="dom-if"
+                if="[[_showValue(stateObj.attributes.pressure)]]"
+              >
                 <div>
                   [[localize('ui.card.weather.attributes.air_pressure')]]:
                   [[stateObj.attributes.pressure]] [[getUnit('air_pressure')]]
                 </div>
               </template>
-              <template is="dom-if" if="[[_showValue(stateObj.attributes.humidity)]]">
+              <template
+                is="dom-if"
+                if="[[_showValue(stateObj.attributes.humidity)]]"
+              >
                 <div>
                   [[localize('ui.card.weather.attributes.humidity')]]:
                   [[stateObj.attributes.humidity]] %
                 </div>
               </template>
-              <template is="dom-if" if="[[_showValue(stateObj.attributes.wind_speed)]]">
+              <template
+                is="dom-if"
+                if="[[_showValue(stateObj.attributes.wind_speed)]]"
+              >
                 <div>
                   [[localize('ui.card.weather.attributes.wind_speed')]]:
-                  [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
+                  [[getWind(stateObj.attributes.wind_speed,
+                  stateObj.attributes.wind_bearing, localize)]]
                 </div>
               </template>
             </div>
@@ -145,22 +155,31 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <div class="forecast">
               <template is="dom-repeat" items="[[forecast]]">
                 <div>
-                  <div class="weekday">[[computeDate(item.datetime)]]<br>
+                  <div class="weekday">
+                    [[computeDate(item.datetime)]]<br />
                     <template is="dom-if" if="[[!_showValue(item.templow)]]">
                       [[computeTime(item.datetime)]]
                     </template>
                   </div>
                   <template is="dom-if" if="[[_showValue(item.condition)]]">
                     <div class="icon">
-                      <ha-icon icon="[[getWeatherIcon(item.condition)]]"></ha-icon>
+                      <ha-icon
+                        icon="[[getWeatherIcon(item.condition)]]"
+                      ></ha-icon>
                     </div>
                   </template>
-                  <div class="temp">[[item.temperature]] [[getUnit('temperature')]]</div>
+                  <div class="temp">
+                    [[item.temperature]] [[getUnit('temperature')]]
+                  </div>
                   <template is="dom-if" if="[[_showValue(item.templow)]]">
-                    <div class="templow">[[item.templow]] [[getUnit('temperature')]]</div>
+                    <div class="templow">
+                      [[item.templow]] [[getUnit('temperature')]]
+                    </div>
                   </template>
                   <template is="dom-if" if="[[_showValue(item.precipitation)]]">
-                    <div class="precipitation">[[item.precipitation]] [[getUnit('precipitation')]]</div>
+                    <div class="precipitation">
+                      [[item.precipitation]] [[getUnit('precipitation')]]
+                    </div>
                   </template>
                 </div>
               </template>

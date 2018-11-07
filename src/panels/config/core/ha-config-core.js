@@ -17,28 +17,31 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class HaConfigCore extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .content {
-        padding-bottom: 32px;
-      }
+      <style include="iron-flex ha-style">
+        .content {
+          padding-bottom: 32px;
+        }
 
-      .border {
-        margin: 32px auto 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-        max-width: 1040px;
-      }
+        .border {
+          margin: 32px auto 0;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+          max-width: 1040px;
+        }
 
-      .narrow .border {
-        max-width: 640px;
-      }
-    </style>
+        .narrow .border {
+          max-width: 640px;
+        }
+      </style>
 
-    <hass-subpage header="[[localize('ui.panel.config.core.caption')]]">
-      <div class$="[[computeClasses(isWide)]]">
-        <ha-config-section-core is-wide="[[isWide]]" hass="[[hass]]"></ha-config-section-core>
-      </div>
-    </hass-subpage>
-`;
+      <hass-subpage header="[[localize('ui.panel.config.core.caption')]]">
+        <div class$="[[computeClasses(isWide)]]">
+          <ha-config-section-core
+            is-wide="[[isWide]]"
+            hass="[[hass]]"
+          ></ha-config-section-core>
+        </div>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {

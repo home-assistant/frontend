@@ -13,19 +13,28 @@ import attributeClassNames from "../../../common/entity/attribute_class_names";
 class DatetimeInput extends PolymerElement {
   static get template() {
     return html`
-    <div class$="[[computeClassNames(stateObj)]]">
-      <template is="dom-if" if="[[doesHaveDate(stateObj)]]" restamp="">
-        <div>
-          <vaadin-date-picker id="dateInput" on-value-changed="dateTimeChanged" label="Date" value="{{selectedDate}}"></vaadin-date-picker>
-        </div>
-      </template>
-      <template is="dom-if" if="[[doesHaveTime(stateObj)]]" restamp="">
-        <div>
-          <paper-time-input hour="{{selectedHour}}" min="{{selectedMinute}}" format="24"></paper-time-input>
-        </div>
-      </template>
-    </div>
-`;
+      <div class$="[[computeClassNames(stateObj)]]">
+        <template is="dom-if" if="[[doesHaveDate(stateObj)]]" restamp="">
+          <div>
+            <vaadin-date-picker
+              id="dateInput"
+              on-value-changed="dateTimeChanged"
+              label="Date"
+              value="{{selectedDate}}"
+            ></vaadin-date-picker>
+          </div>
+        </template>
+        <template is="dom-if" if="[[doesHaveTime(stateObj)]]" restamp="">
+          <div>
+            <paper-time-input
+              hour="{{selectedHour}}"
+              min="{{selectedMinute}}"
+              format="24"
+            ></paper-time-input>
+          </div>
+        </template>
+      </div>
+    `;
   }
 
   constructor() {

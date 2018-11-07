@@ -14,50 +14,81 @@ class StateCardInputNumber extends mixinBehaviors(
 ) {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      ha-slider {
-        margin-left: auto;
-      }
-      .state {
-        @apply --paper-font-body1;
-        color: var(--primary-text-color);
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        ha-slider {
+          margin-left: auto;
+        }
+        .state {
+          @apply --paper-font-body1;
+          color: var(--primary-text-color);
 
-        text-align: right;
-        line-height: 40px;
-      }
-      .sliderstate {
+          text-align: right;
+          line-height: 40px;
+        }
+        .sliderstate {
           min-width: 45px;
-      }
-      ha-slider[hidden] {
-        display: none !important;
-      }
-      paper-input {
-        text-align: right;
-        margin-left: auto;
-      }
-    </style>
+        }
+        ha-slider[hidden] {
+          display: none !important;
+        }
+        paper-input {
+          text-align: right;
+          margin-left: auto;
+        }
+      </style>
 
-    <div class="horizontal justified layout" id="input_number_card">
-      ${this.stateInfoTemplate}
-      <ha-slider min="[[min]]" max="[[max]]" value="{{value}}" step="[[step]]" hidden="[[hiddenslider]]" pin="" on-change="selectedValueChanged" on-click="stopPropagation" id="slider" ignore-bar-touch="">
-      </ha-slider>
-      <paper-input no-label-float="" auto-validate="" pattern="[0-9]+([\\.][0-9]+)?" step="[[step]]" min="[[min]]" max="[[max]]" value="{{value}}" type="number" on-change="selectedValueChanged" on-click="stopPropagation" hidden="[[hiddenbox]]">
-      </paper-input>
-      <div class="state" hidden="[[hiddenbox]]">[[stateObj.attributes.unit_of_measurement]]</div>
-      <div id="sliderstate" class="state sliderstate" hidden="[[hiddenslider]]">[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
-    </div>
-`;
+      <div class="horizontal justified layout" id="input_number_card">
+        ${this.stateInfoTemplate}
+        <ha-slider
+          min="[[min]]"
+          max="[[max]]"
+          value="{{value}}"
+          step="[[step]]"
+          hidden="[[hiddenslider]]"
+          pin=""
+          on-change="selectedValueChanged"
+          on-click="stopPropagation"
+          id="slider"
+          ignore-bar-touch=""
+        >
+        </ha-slider>
+        <paper-input
+          no-label-float=""
+          auto-validate=""
+          pattern="[0-9]+([\\.][0-9]+)?"
+          step="[[step]]"
+          min="[[min]]"
+          max="[[max]]"
+          value="{{value}}"
+          type="number"
+          on-change="selectedValueChanged"
+          on-click="stopPropagation"
+          hidden="[[hiddenbox]]"
+        >
+        </paper-input>
+        <div class="state" hidden="[[hiddenbox]]">
+          [[stateObj.attributes.unit_of_measurement]]
+        </div>
+        <div
+          id="sliderstate"
+          class="state sliderstate"
+          hidden="[[hiddenslider]]"
+        >
+          [[value]] [[stateObj.attributes.unit_of_measurement]]
+        </div>
+      </div>
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   ready() {

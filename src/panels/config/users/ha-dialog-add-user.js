@@ -14,61 +14,68 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      .error {
-        color: red;
-      }
-      paper-dialog {
-        max-width: 500px;
-      }
-      .username {
-        margin-top: -8px;
-      }
-    </style>
-    <paper-dialog id="dialog" with-backdrop opened="{{_opened}}" on-opened-changed="_openedChanged">
-      <h2>Add user</h2>
-      <div>
-        <template is="dom-if" if="[[_errorMsg]]">
-          <div class='error'>[[_errorMsg]]</div>
-        </template>
-        <paper-input
-          class='name'
-          label='Name'
-          value='{{_name}}'
-          required
-          auto-validate
-          autocapitalize='on'
-          error-message='Required'
-          on-blur='_maybePopulateUsername'
-        ></paper-input>
-        <paper-input
-          class='username'
-          label='Username'
-          value='{{_username}}'
-          required
-          auto-validate
-          autocapitalize='none'
-          error-message='Required'
-        ></paper-input>
-        <paper-input
-          label='Password'
-          type='password'
-          value='{{_password}}'
-          required
-          auto-validate
-          error-message='Required'
-        ></paper-input>
-      </div>
-      <div class="buttons">
-        <template is="dom-if" if="[[_loading]]">
-          <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
-        </template>
-        <template is="dom-if" if="[[!_loading]]">
-          <paper-button on-click="_createUser">Create</paper-button>
-        </template>
-      </div>
-    </paper-dialog>
-`;
+      <style include="ha-style-dialog">
+        .error {
+          color: red;
+        }
+        paper-dialog {
+          max-width: 500px;
+        }
+        .username {
+          margin-top: -8px;
+        }
+      </style>
+      <paper-dialog
+        id="dialog"
+        with-backdrop
+        opened="{{_opened}}"
+        on-opened-changed="_openedChanged"
+      >
+        <h2>Add user</h2>
+        <div>
+          <template is="dom-if" if="[[_errorMsg]]">
+            <div class="error">[[_errorMsg]]</div>
+          </template>
+          <paper-input
+            class="name"
+            label="Name"
+            value="{{_name}}"
+            required
+            auto-validate
+            autocapitalize="on"
+            error-message="Required"
+            on-blur="_maybePopulateUsername"
+          ></paper-input>
+          <paper-input
+            class="username"
+            label="Username"
+            value="{{_username}}"
+            required
+            auto-validate
+            autocapitalize="none"
+            error-message="Required"
+          ></paper-input>
+          <paper-input
+            label="Password"
+            type="password"
+            value="{{_password}}"
+            required
+            auto-validate
+            error-message="Required"
+          ></paper-input>
+        </div>
+        <div class="buttons">
+          <template is="dom-if" if="[[_loading]]">
+            <div class="submit-spinner">
+              <paper-spinner active></paper-spinner>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!_loading]]">
+            <paper-button on-click="_createUser">Create</paper-button>
+          </template>
+        </div>
+      </paper-dialog>
+    `;
   }
 
   static get properties() {

@@ -15,31 +15,37 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 class HaPickThemeRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      a { color: var(--primary-color); }
-    </style>
-    <ha-settings-row narrow='[[narrow]]'>
-      <span slot='heading'>[[localize('ui.panel.profile.themes.header')]]</span>
-      <span slot='description'>
-        <template is='dom-if' if='[[!_hasThemes]]'>
-        [[localize('ui.panel.profile.themes.error_no_theme')]]
-        </template>
-        <a
-          href='https://www.home-assistant.io/components/frontend/#defining-themes'
-          target='_blank'>[[localize('ui.panel.profile.themes.link_promo')]]</a>
-      </span>
-      <paper-dropdown-menu
-        label="[[localize('ui.panel.profile.themes.dropdown_label')]]"
-        dynamic-align
-        disabled='[[!_hasThemes]]'
-      >
-        <paper-listbox slot="dropdown-content" selected="{{selectedTheme}}">
-          <template is="dom-repeat" items="[[themes]]" as="theme">
-            <paper-item>[[theme]]</paper-item>
+      <style>
+        a {
+          color: var(--primary-color);
+        }
+      </style>
+      <ha-settings-row narrow="[[narrow]]">
+        <span slot="heading"
+          >[[localize('ui.panel.profile.themes.header')]]</span
+        >
+        <span slot="description">
+          <template is="dom-if" if="[[!_hasThemes]]">
+            [[localize('ui.panel.profile.themes.error_no_theme')]]
           </template>
-        </paper-listbox>
-      </paper-dropdown-menu>
-    </ha-settings-row>
+          <a
+            href="https://www.home-assistant.io/components/frontend/#defining-themes"
+            target="_blank"
+            >[[localize('ui.panel.profile.themes.link_promo')]]</a
+          >
+        </span>
+        <paper-dropdown-menu
+          label="[[localize('ui.panel.profile.themes.dropdown_label')]]"
+          dynamic-align
+          disabled="[[!_hasThemes]]"
+        >
+          <paper-listbox slot="dropdown-content" selected="{{selectedTheme}}">
+            <template is="dom-repeat" items="[[themes]]" as="theme">
+              <paper-item>[[theme]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </ha-settings-row>
     `;
   }
 

@@ -18,54 +18,59 @@ class HaConfigEntryPage extends NavigateMixin(
 ) {
   static get template() {
     return html`
-  <style>
-    .content {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 4px;
-      justify-content: center;
-    }
-    .card {
-      box-sizing: border-box;
-      display: flex;
-      flex: 1 0 300px;
-      min-width: 0;
-      max-width: 500px;
-      padding: 8px;
-    }
-  </style>
-  <hass-subpage header='[[configEntry.title]]'>
-    <paper-icon-button
-      slot='toolbar-icon'
-      icon='hass:delete'
-      on-click='_removeEntry'
-    ></paper-icon-button>
-    <div class='content'>
-      <template is='dom-if' if='[[_computeIsEmpty(_configEntryDevices, _noDeviceEntities)]]'>
-        <p>[[localize('ui.panel.config.integrations.config_entry.no_devices')]]</p>
-      </template>
-      <template is='dom-repeat' items='[[_configEntryDevices]]' as='device'>
-        <ha-device-card
-          class="card"
-          hass='[[hass]]'
-          devices='[[devices]]'
-          device='[[device]]'
-          entities='[[entities]]'
-          narrow='[[narrow]]'
-        ></ha-device-card>
-      </template>
-      <template is='dom-if' if='[[_noDeviceEntities.length]]'>
-        <ha-ce-entities-card
-          class="card"
-          heading="[[localize('ui.panel.config.integrations.config_entry.no_device')]]"
-          entities='[[_noDeviceEntities]]'
-          hass='[[hass]]'
-          narrow='[[narrow]]'
-        ></ha-ce-entities-card>
-      </template>
-    </div>
-  </hass-subpage>
-`;
+      <style>
+        .content {
+          display: flex;
+          flex-wrap: wrap;
+          padding: 4px;
+          justify-content: center;
+        }
+        .card {
+          box-sizing: border-box;
+          display: flex;
+          flex: 1 0 300px;
+          min-width: 0;
+          max-width: 500px;
+          padding: 8px;
+        }
+      </style>
+      <hass-subpage header="[[configEntry.title]]">
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:delete"
+          on-click="_removeEntry"
+        ></paper-icon-button>
+        <div class="content">
+          <template
+            is="dom-if"
+            if="[[_computeIsEmpty(_configEntryDevices, _noDeviceEntities)]]"
+          >
+            <p>
+              [[localize('ui.panel.config.integrations.config_entry.no_devices')]]
+            </p>
+          </template>
+          <template is="dom-repeat" items="[[_configEntryDevices]]" as="device">
+            <ha-device-card
+              class="card"
+              hass="[[hass]]"
+              devices="[[devices]]"
+              device="[[device]]"
+              entities="[[entities]]"
+              narrow="[[narrow]]"
+            ></ha-device-card>
+          </template>
+          <template is="dom-if" if="[[_noDeviceEntities.length]]">
+            <ha-ce-entities-card
+              class="card"
+              heading="[[localize('ui.panel.config.integrations.config_entry.no_device')]]"
+              entities="[[_noDeviceEntities]]"
+              hass="[[hass]]"
+              narrow="[[narrow]]"
+            ></ha-ce-entities-card>
+          </template>
+        </div>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {

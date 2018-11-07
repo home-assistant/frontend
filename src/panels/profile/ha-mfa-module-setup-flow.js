@@ -21,96 +21,116 @@ let instance = 0;
 class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      .error {
-        color: red;
-      }
-      paper-dialog {
-        max-width: 500px;
-      }
-      ha-markdown img:first-child:last-child,
-      ha-markdown svg:first-child:last-child {
-        display: block;
-        margin: 0 auto;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      .init-spinner {
-        padding: 10px 100px 34px;
-        text-align: center;
-      }
-      .submit-spinner {
-        margin-right: 16px;
-      }
-    </style>
-    <paper-dialog id="dialog" with-backdrop="" opened="{{_opened}}" on-opened-changed="_openedChanged">
-      <h2>
-        <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          [[localize('ui.panel.profile.mfa_setup.title_aborted')]]
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          [[localize('ui.panel.profile.mfa_setup.title_success')]]
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-          [[_computeStepTitle(localize, _step)]]
-        </template>
-      </h2>
-      <paper-dialog-scrollable>
-        <template is="dom-if" if="[[_errorMsg]]">
-          <div class='error'>[[_errorMsg]]</div>
-        </template>
-        <template is="dom-if" if="[[!_step]]">
-          <div class='init-spinner'><paper-spinner active></paper-spinner></div>
-        </template>
-        <template is="dom-if" if="[[_step]]">
+      <style include="ha-style-dialog">
+        .error {
+          color: red;
+        }
+        paper-dialog {
+          max-width: 500px;
+        }
+        ha-markdown img:first-child:last-child,
+        ha-markdown svg:first-child:last-child {
+          display: block;
+          margin: 0 auto;
+        }
+        ha-markdown a {
+          color: var(--primary-color);
+        }
+        .init-spinner {
+          padding: 10px 100px 34px;
+          text-align: center;
+        }
+        .submit-spinner {
+          margin-right: 16px;
+        }
+      </style>
+      <paper-dialog
+        id="dialog"
+        with-backdrop=""
+        opened="{{_opened}}"
+        on-opened-changed="_openedChanged"
+      >
+        <h2>
           <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-            <ha-markdown content="[[_computeStepAbortedReason(localize, _step)]]"></ha-markdown>
+            [[localize('ui.panel.profile.mfa_setup.title_aborted')]]
           </template>
-
           <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-            <p>[[localize('ui.panel.profile.mfa_setup.step_done', 'step', _step.title)]]</p>
+            [[localize('ui.panel.profile.mfa_setup.title_success')]]
           </template>
-
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-            <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
-              <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
+            [[_computeStepTitle(localize, _step)]]
+          </template>
+        </h2>
+        <paper-dialog-scrollable>
+          <template is="dom-if" if="[[_errorMsg]]">
+            <div class="error">[[_errorMsg]]</div>
+          </template>
+          <template is="dom-if" if="[[!_step]]">
+            <div class="init-spinner">
+              <paper-spinner active></paper-spinner>
+            </div>
+          </template>
+          <template is="dom-if" if="[[_step]]">
+            <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
+              <ha-markdown
+                content="[[_computeStepAbortedReason(localize, _step)]]"
+              ></ha-markdown>
             </template>
 
-            <ha-form
-              data="{{_stepData}}"
-              schema="[[_step.data_schema]]"
-              error="[[_step.errors]]"
-              compute-label="[[_computeLabelCallback(localize, _step)]]"
-              compute-error="[[_computeErrorCallback(localize, _step)]]"
-            ></ha-form>
+            <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
+              <p>
+                [[localize('ui.panel.profile.mfa_setup.step_done', 'step',
+                _step.title)]]
+              </p>
+            </template>
+
+            <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
+              <template
+                is="dom-if"
+                if="[[_computeStepDescription(localize, _step)]]"
+              >
+                <ha-markdown
+                  content="[[_computeStepDescription(localize, _step)]]"
+                  allow-svg
+                ></ha-markdown>
+              </template>
+
+              <ha-form
+                data="{{_stepData}}"
+                schema="[[_step.data_schema]]"
+                error="[[_step.errors]]"
+                compute-label="[[_computeLabelCallback(localize, _step)]]"
+                compute-error="[[_computeErrorCallback(localize, _step)]]"
+              ></ha-form>
+            </template>
           </template>
-        </template>
-      </paper-dialog-scrollable>
-      <div class="buttons">
-        <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-          <paper-button
-            on-click="_flowDone"
-          >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button>
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-          <paper-button
-            on-click="_flowDone"
-          >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button>
-        </template>
-        <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-          <template is="dom-if" if="[[_loading]]">
-            <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+          <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
+            <paper-button on-click="_flowDone"
+              >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button
+            >
           </template>
-          <template is="dom-if" if="[[!_loading]]">
-            <paper-button
-              on-click="_submitStep"
-            >[[localize('ui.panel.profile.mfa_setup.submit')]]</paper-button>
+          <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
+            <paper-button on-click="_flowDone"
+              >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button
+            >
           </template>
-        </template>
-      </div>
-    </paper-dialog>
-`;
+          <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
+            <template is="dom-if" if="[[_loading]]">
+              <div class="submit-spinner">
+                <paper-spinner active></paper-spinner>
+              </div>
+            </template>
+            <template is="dom-if" if="[[!_loading]]">
+              <paper-button on-click="_submitStep"
+                >[[localize('ui.panel.profile.mfa_setup.submit')]]</paper-button
+              >
+            </template>
+          </template>
+        </div>
+      </paper-dialog>
+    `;
   }
 
   static get properties() {

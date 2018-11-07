@@ -36,12 +36,10 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
       ${this.renderStyle()}
       <ha-icon .icon="${this._config.icon}"></ha-icon>
       <div class="flex">
-        <div>
-          ${this._config.name}
-        </div>
-        <paper-button
-          @click="${this._callService}"
-        >${this._config.action_name}</paper-button>
+        <div>${this._config.name}</div>
+        <paper-button @click="${this._callService}"
+          >${this._config.action_name}</paper-button
+        >
       </div>
     `;
   }
@@ -73,7 +71,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin-right: -.57em;
+          margin-right: -0.57em;
         }
       </style>
     `;

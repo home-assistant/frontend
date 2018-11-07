@@ -39,30 +39,32 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
     if (!stateObj) {
       return html`
         <hui-error-entity-row
-          .entity=${this._config.entity}
-        ></hui-error-entity-row>`;
+          .entity="${this._config.entity}"
+        ></hui-error-entity-row>
+      `;
     }
 
     return html`
-      <hui-generic-entity-row
-        .hass=${this.hass}
-        .config=${this._config}
-      >
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         ${
           stateObj.state === "on" || stateObj.state === "off"
             ? html`
-            <ha-entity-toggle
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></ha-entity-toggle>`
+                <ha-entity-toggle
+                  .hass="${this.hass}"
+                  .stateObj="${stateObj}"
+                ></ha-entity-toggle>
+              `
             : html`
-            <div>
-              ${computeStateDisplay(
-                this.localize,
-                stateObj,
-                this.hass!.language
-              )}
-            </div>`
+                <div>
+                  ${
+                    computeStateDisplay(
+                      this.localize,
+                      stateObj,
+                      this.hass!.language
+                    )
+                  }
+                </div>
+              `
         }
       </hui-generic-entity-row>
     `;

@@ -9,10 +9,7 @@ import secondsToDuration from "../../../common/datetime/seconds_to_duration";
 class HuiTimerEntityRow extends PolymerElement {
   static get template() {
     return html`
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
+      <hui-generic-entity-row hass="[[hass]]" config="[[_config]]">
         ${this.timerControlTemplate}
       </hui-generic-entity-row>
     `;
@@ -20,9 +17,7 @@ class HuiTimerEntityRow extends PolymerElement {
 
   static get timerControlTemplate() {
     return html`
-      <div>
-        [[_computeDisplay(_stateObj, _timeRemaining)]]
-      </div>
+      <div>[[_computeDisplay(_stateObj, _timeRemaining)]]</div>
     `;
   }
 

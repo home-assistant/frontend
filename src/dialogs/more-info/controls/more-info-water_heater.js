@@ -23,89 +23,115 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex"></style>
-    <style>
-      :host {
-        color: var(--primary-text-color);
-      }
+      <style include="iron-flex"></style>
+      <style>
+        :host {
+          color: var(--primary-text-color);
+        }
 
-      .container-away_mode,
-      .container-temperature,
-      .container-operation_list,
+        .container-away_mode,
+        .container-temperature,
+        .container-operation_list,
 
-      .has-away_mode .container-away_mode,
-      .has-target_temperature .container-temperature,
-      .has-operation_mode .container-operation_list,
+        .has-away_mode .container-away_mode,
+        .has-target_temperature .container-temperature,
+        .has-operation_mode .container-operation_list,
 
-      .container-operation_list iron-icon,
+        .container-operation_list iron-icon,
 
-      paper-dropdown-menu {
-        width: 100%;
-      }
+        paper-dropdown-menu {
+          width: 100%;
+        }
 
-      paper-item {
-        cursor: pointer;
-      }
+        paper-item {
+          cursor: pointer;
+        }
 
-      ha-paper-slider {
-        width: 100%;
-      }
+        ha-paper-slider {
+          width: 100%;
+        }
 
-      ha-water_heater-control.range-control-left,
-      ha-water_heater-control.range-control-right {
-        float: left;
-        width: 46%;
-      }
-      ha-water_heater-control.range-control-left {
-        margin-right: 4%;
-      }
-      ha-water_heater-control.range-control-right {
-        margin-left: 4%;
-      }
+        ha-water_heater-control.range-control-left,
+        ha-water_heater-control.range-control-right {
+          float: left;
+          width: 46%;
+        }
+        ha-water_heater-control.range-control-left {
+          margin-right: 4%;
+        }
+        ha-water_heater-control.range-control-right {
+          margin-left: 4%;
+        }
 
-      .single-row {
-        padding: 8px 0;
-      }
-      }
-    </style>
+        .single-row {
+          padding: 8px 0;
+        }
+        }
+      </style>
 
-    <div class$="[[computeClassNames(stateObj)]]">
-
-      <div class="container-temperature">
-        <div class$="[[stateObj.attributes.operation_mode]]">
-          <div hidden$="[[!supportsTemperatureControls(stateObj)]]">[[localize('ui.card.water_heater.target_temperature')]]</div>
-          <template is="dom-if" if="[[supportsTemperature(stateObj)]]">
-            <ha-water_heater-control value="[[stateObj.attributes.temperature]]" units="[[hass.config.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.max_temp]]" on-change="targetTemperatureChanged">
-            </ha-water_heater-control>
-          </template>
+      <div class$="[[computeClassNames(stateObj)]]">
+        <div class="container-temperature">
+          <div class$="[[stateObj.attributes.operation_mode]]">
+            <div hidden$="[[!supportsTemperatureControls(stateObj)]]">
+              [[localize('ui.card.water_heater.target_temperature')]]
+            </div>
+            <template is="dom-if" if="[[supportsTemperature(stateObj)]]">
+              <ha-water_heater-control
+                value="[[stateObj.attributes.temperature]]"
+                units="[[hass.config.unit_system.temperature]]"
+                step="[[computeTemperatureStepSize(hass, stateObj)]]"
+                min="[[stateObj.attributes.min_temp]]"
+                max="[[stateObj.attributes.max_temp]]"
+                on-change="targetTemperatureChanged"
+              >
+              </ha-water_heater-control>
+            </template>
+          </div>
         </div>
+
+        <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
+          <div class="container-operation_list">
+            <div class="controls">
+              <paper-dropdown-menu
+                label-float=""
+                dynamic-align=""
+                label="[[localize('ui.card.water_heater.operation')]]"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  selected="{{operationIndex}}"
+                >
+                  <template
+                    is="dom-repeat"
+                    items="[[stateObj.attributes.operation_list]]"
+                    on-dom-change="handleOperationListUpdate"
+                  >
+                    <paper-item
+                      >[[_localizeOperationMode(localize, item)]]</paper-item
+                    >
+                  </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
+          </div>
+        </template>
+
+        <template is="dom-if" if="[[supportsAwayMode(stateObj)]]">
+          <div class="container-away_mode">
+            <div class="center horizontal layout single-row">
+              <div class="flex">
+                [[localize('ui.card.water_heater.away_mode')]]
+              </div>
+              <paper-toggle-button
+                checked="[[awayToggleChecked]]"
+                on-change="awayToggleChanged"
+              >
+              </paper-toggle-button>
+            </div>
+          </div>
+        </template>
       </div>
-
-      <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
-        <div class="container-operation_list">
-          <div class="controls">
-            <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.water_heater.operation')]]">
-              <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
-                <template is="dom-repeat" items="[[stateObj.attributes.operation_list]]" on-dom-change="handleOperationListUpdate">
-                  <paper-item>[[_localizeOperationMode(localize, item)]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </div>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[supportsAwayMode(stateObj)]]">
-        <div class="container-away_mode">
-          <div class="center horizontal layout single-row">
-            <div class="flex">[[localize('ui.card.water_heater.away_mode')]]</div>
-            <paper-toggle-button checked="[[awayToggleChecked]]" on-change="awayToggleChanged">
-            </paper-toggle-button>
-          </div>
-        </div>
-      </template>
-    </div>
-`;
+    `;
   }
 
   static get properties() {

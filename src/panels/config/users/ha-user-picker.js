@@ -23,56 +23,56 @@ class HaUserPicker extends EventsMixin(
 ) {
   static get template() {
     return html`
-  <style>
-    paper-fab {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      z-index: 1;
-    }
-    paper-fab[is-wide] {
-      bottom: 24px;
-      right: 24px;
-    }
-    paper-card {
-      display: block;
-      max-width: 600px;
-      margin: 16px auto;
-    }
-    a {
-      text-decoration: none;
-      color: var(--primary-text-color);
-    }
-  </style>
+      <style>
+        paper-fab {
+          position: fixed;
+          bottom: 16px;
+          right: 16px;
+          z-index: 1;
+        }
+        paper-fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
+        paper-card {
+          display: block;
+          max-width: 600px;
+          margin: 16px auto;
+        }
+        a {
+          text-decoration: none;
+          color: var(--primary-text-color);
+        }
+      </style>
 
-  <hass-subpage header="[[localize('ui.panel.config.users.picker.title')]]">
-    <paper-card>
-      <template is="dom-repeat" items="[[users]]" as="user">
-        <a href='[[_computeUrl(user)]]'>
-          <paper-item>
-            <paper-item-body two-line>
-              <div>[[_withDefault(user.name, 'Unnamed User')]]</div>
-              <div secondary="">
-                [[user.id]]
-                <template is='dom-if' if='[[user.system_generated]]'>
-                - System Generated
-                </template>
-              </div>
-            </paper-item-body>
-            <iron-icon icon="hass:chevron-right"></iron-icon>
-          </paper-item>
-        </a>
-      </template>
-    </paper-card>
+      <hass-subpage header="[[localize('ui.panel.config.users.picker.title')]]">
+        <paper-card>
+          <template is="dom-repeat" items="[[users]]" as="user">
+            <a href="[[_computeUrl(user)]]">
+              <paper-item>
+                <paper-item-body two-line>
+                  <div>[[_withDefault(user.name, 'Unnamed User')]]</div>
+                  <div secondary="">
+                    [[user.id]]
+                    <template is="dom-if" if="[[user.system_generated]]">
+                      - System Generated
+                    </template>
+                  </div>
+                </paper-item-body>
+                <iron-icon icon="hass:chevron-right"></iron-icon>
+              </paper-item>
+            </a>
+          </template>
+        </paper-card>
 
-    <paper-fab
-      is-wide$="[[isWide]]"
-      icon="hass:plus"
-      title="[[localize('ui.panel.config.users.picker.add_user')]]"
-      on-click="_addUser"
-    ></paper-fab>
-  </hass-subpage>
-`;
+        <paper-fab
+          is-wide$="[[isWide]]"
+          icon="hass:plus"
+          title="[[localize('ui.panel.config.users.picker.add_user')]]"
+          on-click="_addUser"
+        ></paper-fab>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {

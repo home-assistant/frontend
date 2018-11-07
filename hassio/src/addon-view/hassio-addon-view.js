@@ -18,69 +18,102 @@ import "./hassio-addon-network";
 class HassioAddonView extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      :host {
-        color: var(--primary-text-color);
-        --paper-card-header-color: var(--primary-text-color);
-      }
-      .content {
-        padding: 24px 0 32px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      hassio-addon-info,
-      hassio-addon-network,
-      hassio-addon-audio,
-      hassio-addon-config {
-        margin-bottom: 24px;
-        width: 600px;
-      }
-      hassio-addon-logs {
-        max-width: calc(100% - 8px);
-        min-width: 600px;
-      }
-      @media only screen and (max-width: 600px) {
+      <style include="iron-flex ha-style">
+        :host {
+          color: var(--primary-text-color);
+          --paper-card-header-color: var(--primary-text-color);
+        }
+        .content {
+          padding: 24px 0 32px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
         hassio-addon-info,
         hassio-addon-network,
         hassio-addon-audio,
-        hassio-addon-config,
-        hassio-addon-logs {
-          max-width: 100%;
-          min-width: 100%;
+        hassio-addon-config {
+          margin-bottom: 24px;
+          width: 600px;
         }
-      }
-    </style>
-    <app-route route="[[route]]" pattern="/addon/:slug" data="{{routeData}}" active="{{routeMatches}}"></app-route>
-    <app-header-layout has-scrolling-region="">
-      <app-header fixed="" slot="header">
-        <app-toolbar>
-          <ha-menu-button hassio narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-          <paper-icon-button icon="hassio:arrow-left" on-click="backTapped"></paper-icon-button>
-          <div main-title="">Hass.io: add-on details</div>
-        </app-toolbar>
-      </app-header>
-      <div class="content">
-        <hassio-addon-info hass="[[hass]]" addon="[[addon]]" addon-slug="[[routeData.slug]]"></hassio-addon-info>
+        hassio-addon-logs {
+          max-width: calc(100% - 8px);
+          min-width: 600px;
+        }
+        @media only screen and (max-width: 600px) {
+          hassio-addon-info,
+          hassio-addon-network,
+          hassio-addon-audio,
+          hassio-addon-config,
+          hassio-addon-logs {
+            max-width: 100%;
+            min-width: 100%;
+          }
+        }
+      </style>
+      <app-route
+        route="[[route]]"
+        pattern="/addon/:slug"
+        data="{{routeData}}"
+        active="{{routeMatches}}"
+      ></app-route>
+      <app-header-layout has-scrolling-region="">
+        <app-header fixed="" slot="header">
+          <app-toolbar>
+            <ha-menu-button
+              hassio
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <paper-icon-button
+              icon="hassio:arrow-left"
+              on-click="backTapped"
+            ></paper-icon-button>
+            <div main-title="">Hass.io: add-on details</div>
+          </app-toolbar>
+        </app-header>
+        <div class="content">
+          <hassio-addon-info
+            hass="[[hass]]"
+            addon="[[addon]]"
+            addon-slug="[[routeData.slug]]"
+          ></hassio-addon-info>
 
-        <template is="dom-if" if="[[addon.version]]">
-          <hassio-addon-config hass="[[hass]]" addon="[[addon]]" addon-slug="[[routeData.slug]]"></hassio-addon-config>
+          <template is="dom-if" if="[[addon.version]]">
+            <hassio-addon-config
+              hass="[[hass]]"
+              addon="[[addon]]"
+              addon-slug="[[routeData.slug]]"
+            ></hassio-addon-config>
 
-          <template is="dom-if" if="[[addon.audio]]">
-            <hassio-addon-audio hass="[[hass]]" addon="[[addon]]"></hassio-addon-audio>
+            <template is="dom-if" if="[[addon.audio]]">
+              <hassio-addon-audio
+                hass="[[hass]]"
+                addon="[[addon]]"
+              ></hassio-addon-audio>
+            </template>
+
+            <template is="dom-if" if="[[addon.network]]">
+              <hassio-addon-network
+                hass="[[hass]]"
+                addon="[[addon]]"
+                addon-slug="[[routeData.slug]]"
+              ></hassio-addon-network>
+            </template>
+
+            <hassio-addon-logs
+              hass="[[hass]]"
+              addon-slug="[[routeData.slug]]"
+            ></hassio-addon-logs>
           </template>
+        </div>
+      </app-header-layout>
 
-          <template is="dom-if" if="[[addon.network]]">
-            <hassio-addon-network hass="[[hass]]" addon="[[addon]]" addon-slug="[[routeData.slug]]"></hassio-addon-network>
-          </template>
-
-          <hassio-addon-logs hass="[[hass]]" addon-slug="[[routeData.slug]]"></hassio-addon-logs>
-        </template>
-      </div>
-    </app-header-layout>
-
-    <hassio-markdown-dialog title="[[markdownTitle]]" content="[[markdownContent]]"></hassio-markdown-dialog>
-`;
+      <hassio-markdown-dialog
+        title="[[markdownTitle]]"
+        content="[[markdownContent]]"
+      ></hassio-markdown-dialog>
+    `;
   }
 
   static get properties() {

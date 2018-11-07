@@ -23,53 +23,85 @@ import NavigateMixin from "../../src/mixins/navigate-mixin";
 class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex iron-positioning ha-style">
-      :host {
-        color: var(--primary-text-color);
-        --paper-card-header-color: var(--primary-text-color);
-      }
-      paper-tabs {
-        margin-left: 12px;
-        --paper-tabs-selection-bar-color: #FFF;
-        text-transform: uppercase;
-      }
-    </style>
-    <app-header-layout id="layout" has-scrolling-region>
-      <app-header fixed slot="header">
-        <app-toolbar>
-          <ha-menu-button hassio narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-          <div main-title>Hass.io</div>
-          <template is="dom-if" if="[[showRefreshButton(page)]]">
-            <paper-icon-button icon="hassio:refresh" on-click="refreshClicked"></paper-icon-button>
-          </template>
-        </app-toolbar>
-        <paper-tabs scrollable="" selected="[[page]]" attr-for-selected="page-name" on-iron-activate="handlePageSelected">
-          <paper-tab page-name="dashboard">Dashboard</paper-tab>
-          <paper-tab page-name="snapshots">Snapshots</paper-tab>
-          <paper-tab page-name="store">Add-on store</paper-tab>
-          <paper-tab page-name="system">System</paper-tab>
-        </paper-tabs>
-      </app-header>
-      <template is="dom-if" if="[[equals(page, &quot;dashboard&quot;)]]">
-        <hassio-dashboard hass="[[hass]]" supervisor-info="[[supervisorInfo]]" hass-info="[[hassInfo]]"></hassio-dashboard>
-      </template>
+      <style include="iron-flex iron-positioning ha-style">
+        :host {
+          color: var(--primary-text-color);
+          --paper-card-header-color: var(--primary-text-color);
+        }
+        paper-tabs {
+          margin-left: 12px;
+          --paper-tabs-selection-bar-color: #fff;
+          text-transform: uppercase;
+        }
+      </style>
+      <app-header-layout id="layout" has-scrolling-region>
+        <app-header fixed slot="header">
+          <app-toolbar>
+            <ha-menu-button
+              hassio
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>Hass.io</div>
+            <template is="dom-if" if="[[showRefreshButton(page)]]">
+              <paper-icon-button
+                icon="hassio:refresh"
+                on-click="refreshClicked"
+              ></paper-icon-button>
+            </template>
+          </app-toolbar>
+          <paper-tabs
+            scrollable=""
+            selected="[[page]]"
+            attr-for-selected="page-name"
+            on-iron-activate="handlePageSelected"
+          >
+            <paper-tab page-name="dashboard">Dashboard</paper-tab>
+            <paper-tab page-name="snapshots">Snapshots</paper-tab>
+            <paper-tab page-name="store">Add-on store</paper-tab>
+            <paper-tab page-name="system">System</paper-tab>
+          </paper-tabs>
+        </app-header>
+        <template is="dom-if" if="[[equals(page, &quot;dashboard&quot;)]]">
+          <hassio-dashboard
+            hass="[[hass]]"
+            supervisor-info="[[supervisorInfo]]"
+            hass-info="[[hassInfo]]"
+          ></hassio-dashboard>
+        </template>
+        <template is="dom-if" if="[[equals(page, &quot;snapshots&quot;)]]">
+          <hassio-snapshots
+            hass="[[hass]]"
+            installed-addons="[[supervisorInfo.addons]]"
+            snapshot-slug="{{snapshotSlug}}"
+            snapshot-deleted="{{snapshotDeleted}}"
+          ></hassio-snapshots>
+        </template>
+        <template is="dom-if" if="[[equals(page, &quot;store&quot;)]]">
+          <hassio-addon-store hass="[[hass]]"></hassio-addon-store>
+        </template>
+        <template is="dom-if" if="[[equals(page, &quot;system&quot;)]]">
+          <hassio-system
+            hass="[[hass]]"
+            supervisor-info="[[supervisorInfo]]"
+            host-info="[[hostInfo]]"
+          ></hassio-system>
+        </template>
+      </app-header-layout>
+
+      <hassio-markdown-dialog
+        title="[[markdownTitle]]"
+        content="[[markdownContent]]"
+      ></hassio-markdown-dialog>
+
       <template is="dom-if" if="[[equals(page, &quot;snapshots&quot;)]]">
-        <hassio-snapshots hass="[[hass]]" installed-addons="[[supervisorInfo.addons]]" snapshot-slug="{{snapshotSlug}}" snapshot-deleted="{{snapshotDeleted}}"></hassio-snapshots>
+        <hassio-snapshot
+          hass="[[hass]]"
+          snapshot-slug="{{snapshotSlug}}"
+          snapshot-deleted="{{snapshotDeleted}}"
+        ></hassio-snapshot>
       </template>
-      <template is="dom-if" if="[[equals(page, &quot;store&quot;)]]">
-        <hassio-addon-store hass="[[hass]]"></hassio-addon-store>
-      </template>
-      <template is="dom-if" if="[[equals(page, &quot;system&quot;)]]">
-        <hassio-system hass="[[hass]]" supervisor-info="[[supervisorInfo]]" host-info="[[hostInfo]]"></hassio-system>
-      </template>
-    </app-header-layout>
-
-    <hassio-markdown-dialog title="[[markdownTitle]]" content="[[markdownContent]]"></hassio-markdown-dialog>
-
-    <template is="dom-if" if="[[equals(page, &quot;snapshots&quot;)]]">
-      <hassio-snapshot hass="[[hass]]" snapshot-slug="{{snapshotSlug}}" snapshot-deleted="{{snapshotDeleted}}"></hassio-snapshot>
-    </template>
-`;
+    `;
   }
 
   static get properties() {

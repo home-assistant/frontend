@@ -18,52 +18,54 @@ const FEATURE_CLASS_NAMES = {
 class MoreInfoCover extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-  <style include="iron-flex"></style>
-  <style>
-    .current_position, .tilt {
-      max-height: 0px;
-      overflow: hidden;
-    }
+      <style include="iron-flex"></style>
+      <style>
+        .current_position,
+        .tilt {
+          max-height: 0px;
+          overflow: hidden;
+        }
 
-    .has-current_position .current_position,
-    .has-set_tilt_position .tilt,
-    .has-current_tilt_position .tilt
-    {
-      max-height: 208px;
-    }
+        .has-current_position .current_position,
+        .has-set_tilt_position .tilt,
+        .has-current_tilt_position .tilt {
+          max-height: 208px;
+        }
 
-    [invisible] {
-      visibility: hidden !important;
-    }
-  </style>
-  <div class$="[[computeClassNames(stateObj)]]">
+        [invisible] {
+          visibility: hidden !important;
+        }
+      </style>
+      <div class$="[[computeClassNames(stateObj)]]">
+        <div class="current_position">
+          <ha-labeled-slider
+            caption="[[localize('ui.card.cover.position')]]"
+            pin=""
+            value="{{coverPositionSliderValue}}"
+            disabled="[[!entityObj.supportsSetPosition]]"
+            on-change="coverPositionSliderChanged"
+          ></ha-labeled-slider>
+        </div>
 
-    <div class="current_position">
-      <ha-labeled-slider
-        caption="[[localize('ui.card.cover.position')]]" pin=""
-        value="{{coverPositionSliderValue}}"
-        disabled="[[!entityObj.supportsSetPosition]]"
-        on-change="coverPositionSliderChanged"
-      ></ha-labeled-slider>
-    </div>
-
-    <div class="tilt">
-      <ha-labeled-slider
-        caption="[[localize('ui.card.cover.tilt_position')]]" pin="" extra=""
-        value="{{coverTiltPositionSliderValue}}"
-        disabled="[[!entityObj.supportsSetTiltPosition]]"
-        on-change="coverTiltPositionSliderChanged">
-
-        <ha-cover-tilt-controls
-          slot="extra" hidden$="[[entityObj.isTiltOnly]]"
-          hass="[[hass]]" state-obj="[[stateObj]]"
-        ></ha-cover-tilt-controls>
-
-      </ha-labeled-slider>
-    </div>
-
-  </div>
-`;
+        <div class="tilt">
+          <ha-labeled-slider
+            caption="[[localize('ui.card.cover.tilt_position')]]"
+            pin=""
+            extra=""
+            value="{{coverTiltPositionSliderValue}}"
+            disabled="[[!entityObj.supportsSetTiltPosition]]"
+            on-change="coverTiltPositionSliderChanged"
+          >
+            <ha-cover-tilt-controls
+              slot="extra"
+              hidden$="[[entityObj.isTiltOnly]]"
+              hass="[[hass]]"
+              state-obj="[[stateObj]]"
+            ></ha-cover-tilt-controls>
+          </ha-labeled-slider>
+        </div>
+      </div>
+    `;
   }
 
   static get properties() {

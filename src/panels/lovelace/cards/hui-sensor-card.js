@@ -62,20 +62,20 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   render({ _config, _entity, _line } = this) {
     return html`
       ${this._style()}
-      <ha-card @click=${this._handleClick}>
-        <div class='flex'>
-          <div class='icon'>
-            <ha-icon .icon=${this._computeIcon(_entity)}></ha-icon>
+      <ha-card @click="${this._handleClick}">
+        <div class="flex">
+          <div class="icon">
+            <ha-icon .icon="${this._computeIcon(_entity)}"></ha-icon>
           </div>
-          <div class='header'>
-            <span class='name'>${this._computeName(_entity)}</span>
+          <div class="header">
+            <span class="name">${this._computeName(_entity)}</span>
           </div>
         </div>
-        <div class='flex info'>
-          <span id='value'>${_entity.state}</span>
-          <span id='measurement'>${this._computeUom(_entity)}</span>
+        <div class="flex info">
+          <span id="value">${_entity.state}</span>
+          <span id="measurement">${this._computeUom(_entity)}</span>
         </div>
-        <div class='graph'>
+        <div class="graph">
           <div>
             ${
               _line
@@ -89,7 +89,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
             }
           </div>
         </div>
-      </ha-card>`;
+      </ha-card>
+    `;
   }
 
   _handleClick() {
@@ -225,7 +226,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           align-items: center;
           display: flex;
           min-width: 0;
-          opacity: .8;
+          opacity: 0.8;
           position: relative;
         }
         .name {
@@ -235,7 +236,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           font-weight: 500;
           max-height: 1.4rem;
           margin-top: 2px;
-          opacity: .8;
+          opacity: 0.8;
           overflow: hidden;
           text-overflow: ellipsis;
           -webkit-line-clamp: 1;
@@ -268,8 +269,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           display: inline-block;
           font-size: 1.3rem;
           line-height: 1.2em;
-          margin-top: .1em;
-          opacity: .6;
+          margin-top: 0.1em;
+          opacity: 0.6;
           vertical-align: bottom;
         }
         .graph {
@@ -283,7 +284,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           align-self: flex-end;
           margin: auto 8px;
         }
-      </style>`;
+      </style>
+    `;
   }
 }
 

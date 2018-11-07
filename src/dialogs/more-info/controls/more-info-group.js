@@ -10,23 +10,26 @@ import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
 class MoreInfoGroup extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      .child-card {
-        margin-bottom: 8px;
-      }
+      <style>
+        .child-card {
+          margin-bottom: 8px;
+        }
 
-      .child-card:last-child {
-        margin-bottom: 0;
-      }
-    </style>
+        .child-card:last-child {
+          margin-bottom: 0;
+        }
+      </style>
 
-    <div id="groupedControlDetails"></div>
-    <template is="dom-repeat" items="[[states]]" as="state">
-      <div class="child-card">
-        <state-card-content state-obj="[[state]]" hass="[[hass]]"></state-card-content>
-      </div>
-    </template>
-`;
+      <div id="groupedControlDetails"></div>
+      <template is="dom-repeat" items="[[states]]" as="state">
+        <div class="child-card">
+          <state-card-content
+            state-obj="[[state]]"
+            hass="[[hass]]"
+          ></state-card-content>
+        </div>
+      </template>
+    `;
   }
 
   static get properties() {

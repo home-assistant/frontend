@@ -18,17 +18,15 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(
 ) {
   static get template() {
     return html`
-    <hui-notification-item-template>
-      <span slot="header">[[localize('domain.configurator')]]</span>
+      <hui-notification-item-template>
+        <span slot="header">[[localize('domain.configurator')]]</span>
 
-      <div>[[_getMessage(notification)]]</div>
+        <div>[[_getMessage(notification)]]</div>
 
-      <paper-button
-        slot="actions"
-        class="primary"
-        on-click="_handleClick"
-      >[[_localizeState(notification.state)]]</paper-button>
-    </hui-notification-item-template>
+        <paper-button slot="actions" class="primary" on-click="_handleClick"
+          >[[_localizeState(notification.state)]]</paper-button
+        >
+      </hui-notification-item-template>
     `;
   }
 

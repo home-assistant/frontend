@@ -15,74 +15,77 @@ import "../../resources/ha-style";
 class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-      .error {
-        color: red;
-      }
-      .status {
-        color: var(--primary-color);
-      }
-      .error, .status {
-        position: absolute;
-        top: -4px;
-      }
-      paper-card {
-        display: block;
-      }
-      .currentPassword {
-        margin-top: -4px;
-      }
-    </style>
-    <div>
-      <paper-card heading="[[localize('ui.panel.profile.change_password.header')]]">
-        <div class="card-content">
-          <template is="dom-if" if="[[_errorMsg]]">
-            <div class='error'>[[_errorMsg]]</div>
-          </template>
-          <template is="dom-if" if="[[_statusMsg]]">
-            <div class="status">[[_statusMsg]]</div>
-          </template>
-          <paper-input
-            class="currentPassword"
-            label="[[localize('ui.panel.profile.change_password.current_password')]]"
-            type="password"
-            value="{{_currentPassword}}"
-            required
-            auto-validate
-            error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
-          ></paper-input>
-          <template is="dom-if" if="[[_currentPassword]]">
+      <style include="ha-style">
+        .error {
+          color: red;
+        }
+        .status {
+          color: var(--primary-color);
+        }
+        .error,
+        .status {
+          position: absolute;
+          top: -4px;
+        }
+        paper-card {
+          display: block;
+        }
+        .currentPassword {
+          margin-top: -4px;
+        }
+      </style>
+      <div>
+        <paper-card
+          heading="[[localize('ui.panel.profile.change_password.header')]]"
+        >
+          <div class="card-content">
+            <template is="dom-if" if="[[_errorMsg]]">
+              <div class="error">[[_errorMsg]]</div>
+            </template>
+            <template is="dom-if" if="[[_statusMsg]]">
+              <div class="status">[[_statusMsg]]</div>
+            </template>
             <paper-input
-              label="[[localize('ui.panel.profile.change_password.new_password')]]"
+              class="currentPassword"
+              label="[[localize('ui.panel.profile.change_password.current_password')]]"
               type="password"
-              value="{{_password1}}"
+              value="{{_currentPassword}}"
               required
               auto-validate
               error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
             ></paper-input>
-            <paper-input
-              label="[[localize('ui.panel.profile.change_password.confirm_new_password')]]"
-              type="password"
-              value="{{_password2}}"
-              required
-              auto-validate
-              error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
-            ></paper-input>
-          </template>
-        </div>
-        <div class="card-actions">
-          <template is="dom-if" if="[[_loading]]">
-            <div><paper-spinner active></paper-spinner></div>
-          </template>
-          <template is="dom-if" if="[[!_loading]]">
-            <paper-button
-              on-click="_changePassword"
-            >[[localize('ui.panel.profile.change_password.submit')]]</paper-button>
-          </template>
-        </div>
-      </paper-card>
-    </div>
-`;
+            <template is="dom-if" if="[[_currentPassword]]">
+              <paper-input
+                label="[[localize('ui.panel.profile.change_password.new_password')]]"
+                type="password"
+                value="{{_password1}}"
+                required
+                auto-validate
+                error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
+              ></paper-input>
+              <paper-input
+                label="[[localize('ui.panel.profile.change_password.confirm_new_password')]]"
+                type="password"
+                value="{{_password2}}"
+                required
+                auto-validate
+                error-message="[[localize('ui.panel.profile.change_password.error_required')]]"
+              ></paper-input>
+            </template>
+          </div>
+          <div class="card-actions">
+            <template is="dom-if" if="[[_loading]]">
+              <div><paper-spinner active></paper-spinner></div>
+            </template>
+            <template is="dom-if" if="[[!_loading]]">
+              <paper-button on-click="_changePassword"
+                >[[localize('ui.panel.profile.change_password.submit')]]</paper-button
+              >
+            </template>
+          </div>
+        </paper-card>
+      </div>
+    `;
   }
 
   static get properties() {
