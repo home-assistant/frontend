@@ -37,11 +37,16 @@ export class HuiDialogMigrateCard extends LitElement {
         }
       </style>
       <paper-dialog with-backdrop>
-        <h2>Configuration Incompatibble</h2>
+        <h2>Configuration Incompatible</h2>
         <div>
-          This element doesn't have an ID. Please add an ID to this element in
-          'ui-lovelace.yaml' We can add ID's to all your cards and views
-          automaticly for you by pressing the 'Migrate config' button.
+          <p>
+            This element doesn't have an ID. Please add an ID to this element in
+            'ui-lovelace.yaml'.
+          </p>
+          <p>
+            We can add ID's to all your cards and views automatically for you by
+            pressing the 'Migrate config' button.
+          </p>
         </div>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._migrateConfig}"
