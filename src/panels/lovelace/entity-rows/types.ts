@@ -16,12 +16,10 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
-export interface CallServiceConfig {
-  name: string;
-  icon?: string;
+export interface CallServiceConfig extends EntityConfig {
   action_name?: string;
   service: string;
-  service_data?: string;
+  service_data?: { [key: string]: any };
 }
 export type EntityRowConfig =
   | EntityConfig
