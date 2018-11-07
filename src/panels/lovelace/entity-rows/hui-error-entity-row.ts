@@ -21,6 +21,7 @@ class HuiErrorEntityRow extends LitElement {
       <style>
         :host {
           display: block;
+          color: black;
           background-color: yellow;
           padding: 8px;
         }
