@@ -79,33 +79,60 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
-        ${
-          repeat(
-            this._items!,
-            (item) => item.id,
-            (item, index) =>
-              html`
-                <div class="editRow">
-                  <paper-checkbox
-                    slot="item-icon"
-                    id="${index}"
-                    ?checked="${item.complete}"
-                    .itemId="${item.id}"
-                    @click="${this._completeItem}"
-                    tabindex="0"
-                  ></paper-checkbox>
-                  <paper-item-body>
-                    <paper-input
-                      no-label-float
-                      .value="${item.name}"
-                      .itemId="${item.id}"
-                      @change="${this._saveEdit}"
-                    ></paper-input>
-                  </paper-item-body>
-                </div>
-              `
-          )
-        }
+      ${repeat(
+        this._items!.filter((item) => !item.complete),
+        (item) => item.id,
+        (item, index) =>
+          html`
+        <div class="editRow">
+          <paper-checkbox
+            slot="item-icon"
+            id=${index}
+            ?checked=${item.complete}
+            .itemId=${item.id}
+            @click=${this._completeItem}
+            tabindex='0'
+          ></paper-checkbox>
+          <paper-item-body>
+            <paper-input
+              no-label-float
+              .value='${item.name}'
+              .itemId=${item.id}
+              @change=${this._saveEdit}
+            ></paper-input>
+          </paper-item-body>
+        </div>
+        `
+      )}
+        <div class="divider"></div>
+        <div class="label">
+          ${this.localize("ui.lovelace.shopping-list.checked_items")}
+        </div>
+      ${repeat(
+        this._items!.filter((item) => item.complete),
+        (item) => item.id,
+        (item, index) =>
+          html`
+        <div class="editRow">
+          <paper-checkbox
+            slot="item-icon"
+            id=${index}
+            ?checked=${item.complete}
+            .itemId=${item.id}
+            @click=${this._completeItem}
+            tabindex='0'
+          ></paper-checkbox>
+          <paper-item-body>
+            <paper-input
+              no-label-float
+              .value='${item.name}'
+              .itemId=${item.id}
+              @change=${this._saveEdit}
+            ></paper-input>
+          </paper-item-body>
+        </div>
+        `
+      )}
       </ha-card>
     `;
   }
@@ -132,6 +159,17 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           }
           position: relative;
           top: 1px;
+        }
+        .label {
+          color: var(--primary-color);
+          margin-left: 16px;
+          margin-bottom: 11px;
+          margin-top: 11px;
+        }
+        .divider {
+          height: 1px;
+          background-color: var(--divider-color);
+          margin: 10px;
         }
       </style>
     `;

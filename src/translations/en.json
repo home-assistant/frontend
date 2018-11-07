@@ -488,6 +488,11 @@
       "remember": "Remember",
       "log_in": "Log in"
     },
+    "lovelace": {
+      "shopping-list": {
+        "checked_items": "Checked items"
+      }
+    },
     "notification_drawer": {
       "click_to_configure": "Click button to configure {entity}",
       "empty": "No Notifications",
