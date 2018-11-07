@@ -49,47 +49,49 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       <paper-input
         label="Title"
         value="${this._config!.title}"
-        .configValue=${"title"}
-        .type=${"input"}
+        .configValue="${"title"}"
+        .type="${"input"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
       <hui-theme-select-editor
-        .hass=${this.hass}
-        .value=${this._config!.theme}
-        .type=${"input"}
-        .configValue=${"theme"}
-        @change=${this._valueChanged}
-      ></hui-theme-select-editor><br>
+        .hass="${this.hass}"
+        .value="${this._config!.theme}"
+        .type="${"input"}"
+        .configValue="${"theme"}"
+        @change="${this._valueChanged}"
+      ></hui-theme-select-editor
+      ><br />
       <paper-input
         label="Columns"
         value="${this._config!.columns || ""}"
-        .configValue=${"columns"}
-        .type=${"input"}
+        .configValue="${"columns"}"
+        .type="${"input"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
       <h4>Entities</h4>
       <div class="entities">
-        ${this._configEntities!.map((entityConf, index) => {
-          return this.renderEntity(entityConf, index!);
-        })}
-      </div><br>
-      <paper-button
-        noink
-        raised
-        @click=${this.addEntity}
-      >Add Entity</paper-button>
-      <br><br>
+        ${
+          this._configEntities!.map((entityConf, index) => {
+            return this.renderEntity(entityConf, index!);
+          })
+        }
+      </div>
+      <br />
+      <paper-button noink raised @click="${this.addEntity}"
+        >Add Entity</paper-button
+      >
+      <br /><br />
       <paper-checkbox
         ?checked="${this._config!.show_name !== false}"
-        .configValue=${"show_name"}
-        .type=${"checkbox"}
+        .configValue="${"show_name"}"
+        .type="${"checkbox"}"
         @change="${this._valueChanged}"
         >Show Entity's Name?</paper-checkbox
       ><br /><br />
       <paper-checkbox
         ?checked="${this._config!.show_state !== false}"
-        .configValue=${"show_state"}
-        .type=${"checkbox"}
+        .configValue="${"show_state"}"
+        .type="${"checkbox"}"
         @change="${this._valueChanged}"
         >Show Entity's State Text?</paper-checkbox
       ><br />
@@ -114,7 +116,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       <ha-entity-picker
         .hass="${this.hass}"
         .value="${entityConf.entity || entityConf}"
-        .type=${"entity"}
+        .type="${"entity"}"
         .index="${index}"
         @change="${this._valueChanged}"
       ></ha-entity-picker>

@@ -83,14 +83,16 @@ export class HuiDialogEditCard extends LitElement {
             this._editorToggle && this._configElement !== null
               ? html`
                   <div class="element-editor">
-                    ${when(
-                      this._configElement,
-                      () => this._configElement,
-                      () =>
-                        html`
+                    ${
+                      when(
+                        this._configElement,
+                        () => this._configElement,
+                        () =>
+                          html`
                             Loading...
                           `
-                    )}
+                      )
+                    }
                   </div>
                 `
               : html`
@@ -101,20 +103,18 @@ export class HuiDialogEditCard extends LitElement {
                 `
           }
           <hui-yaml-card-preview
-            .hass=${this.hass}
-            .value=${this._configValue}
+            .hass="${this.hass}"
+            .value="${this._configValue}"
           ></hui-yaml-card-preview>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button
-            @click=${this._toggleEditor}
-          >Toggle Editor</paper-button>
-          <paper-button
-            @click=${this._closeDialog}
-          >Cancel</paper-button>
-          <paper-button
-            @click=${this._updateConfigInBackend}
-          >Save</paper-button>
+          <paper-button @click="${this._toggleEditor}"
+            >Toggle Editor</paper-button
+          >
+          <paper-button @click="${this._closeDialog}">Cancel</paper-button>
+          <paper-button @click="${this._updateConfigInBackend}"
+            >Save</paper-button
+          >
         </div>
       </paper-dialog>
     `;

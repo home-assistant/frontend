@@ -27,16 +27,20 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
       <paper-dropdown-menu
         label="Theme"
         dynamic-align
-        @value-changed=${this._changed}
+        @value-changed="${this._changed}"
       >
         <paper-listbox
           slot="dropdown-content"
-          selected=${this.value || "Backend-selected"}
+          selected="${this.value || "Backend-selected"}"
           attr-for-selected="theme"
         >
-          ${themes.map((theme) => {
-            return html`<paper-item .theme=${theme}>${theme}</paper-item>`;
-          })}
+          ${
+            themes.map((theme) => {
+              return html`
+                <paper-item .theme="${theme}">${theme}</paper-item>
+              `;
+            })
+          }
         </paper-listbox>
       </paper-dropdown-menu>
     `;
