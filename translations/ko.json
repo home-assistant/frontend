@@ -33,7 +33,7 @@
             "arming": "경비중",
             "disarming": "해제중",
             "triggered": "작동됨",
-            "armed_custom_bypass": "경비중(특정지점)"
+            "armed_custom_bypass": "경비중(사용자 우회)"
         },
         "automation": {
             "off": "꺼짐",
@@ -780,7 +780,9 @@
                 "clear_code": "지움",
                 "disarm": "경비 해제",
                 "arm_home": "재실 경비",
-                "arm_away": "외출 경비"
+                "arm_away": "외출 경비",
+                "arm_night": "야간 경비",
+                "armed_custom_bypass": "사용자 우회"
             },
             "automation": {
                 "last_triggered": "최근 트리거 됨",

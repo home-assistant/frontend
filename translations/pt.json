@@ -780,7 +780,9 @@
                 "clear_code": "Limpo",
                 "disarm": "Desarmar",
                 "arm_home": "Armado casa",
-                "arm_away": "Armado ausente"
+                "arm_away": "Armado ausente",
+                "arm_night": "Armado noite",
+                "armed_custom_bypass": "Desvio personalizado"
             },
             "automation": {
                 "last_triggered": "Última ocorrência",
