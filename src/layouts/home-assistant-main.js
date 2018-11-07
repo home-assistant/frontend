@@ -132,10 +132,11 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   computeRTL(hass) {
-    return (
-      hass.translationMetadata.translations[hass.selectedLanguage].isRTL ||
-      false
-    );
+    var lang = this.hass.selectedLanguage || this.hass.language;
+    if (hass.translationMetadata.translations[lang]) {
+      return hass.translationMetadata.translations[lang].isRTL || false;
+    }
+    return false;
   }
 
   _computeDisableSwipe(hass) {
