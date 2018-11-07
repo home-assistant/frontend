@@ -160,7 +160,7 @@
     "@webcomponents/shadycss": "^1.5.2",
     "@vaadin/vaadin-overlay": "3.2.0-alpha3",
     "@vaadin/vaadin-lumo-styles": "1.2.0",
-    "fecha": "https://github.com/balloob/fecha/archive/5b6ee2fc9f7a0470f0ea9ed1c079cf9fa148aa25.tar.gz"
+    "fecha": "https://github.com/taylorhakes/fecha/archive/5e8fe08d982647fdb19fb403459838b02647813c.tar.gz"
   },
   "main": "src/home-assistant.js",
   "husky": {
