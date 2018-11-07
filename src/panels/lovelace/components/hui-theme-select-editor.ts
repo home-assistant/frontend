@@ -7,8 +7,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
+  public value?: string;
   protected hass?: HomeAssistant;
-  private value?: string;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -21,9 +21,11 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
     const themes = ["Backend-selected", "default"].concat(
       Object.keys(this.hass!.themes.themes).sort()
     );
+
     return html`
       ${this.renderStyle()}
       <paper-dropdown-menu
+        label="Theme"
         dynamic-align
         @value-changed=${this._changed}
       >
