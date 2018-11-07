@@ -80,7 +80,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
   }
 
   private _callService() {
-    callService(this._config, this.hass!);
+    callService(this._config!, this.hass!);
   }
 }
 
