@@ -780,7 +780,9 @@
                 "clear_code": "Clear",
                 "disarm": "Disarm",
                 "arm_home": "Arm home",
-                "arm_away": "Arm away"
+                "arm_away": "Arm away",
+                "arm_night": "Arm night",
+                "armed_custom_bypass": "Custom bypass"
             },
             "automation": {
                 "last_triggered": "Last triggered",

@@ -780,7 +780,9 @@
                 "clear_code": "Kloer",
                 "disarm": "Desaktivéieren",
                 "arm_home": "Aktivéiert Doheem",
-                "arm_away": "Aktivéiert Ënnerwee"
+                "arm_away": "Aktivéiert Ënnerwee",
+                "arm_night": "Aktivéiert Nuecht",
+                "armed_custom_bypass": "Personaliséierte Bypass"
             },
             "automation": {
                 "last_triggered": "Läscht ausgeléist",

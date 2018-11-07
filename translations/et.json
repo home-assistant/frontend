@@ -26,9 +26,9 @@
         "alarm_control_panel": {
             "armed": "Valves",
             "disarmed": "Maas",
-            "armed_home": "Valves kodu",
+            "armed_home": "Valves kodus",
             "armed_away": "Valves eemal",
-            "armed_night": "Öö-valves",
+            "armed_night": "Valves öine",
             "pending": "Ootel",
             "arming": "Valvestab",
             "disarming": "Maas...",
@@ -779,8 +779,10 @@
                 "code": "Kood",
                 "clear_code": "Puhasta",
                 "disarm": "Valvest maha",
-                "arm_home": "Valvesta kodu",
-                "arm_away": "Valves eemal"
+                "arm_home": "Valvesta kodus",
+                "arm_away": "Valvesta eemal",
+                "arm_night": "Valvesta öine",
+                "armed_custom_bypass": "Eranditega"
             },
             "automation": {
                 "last_triggered": "Viimati käivitatud",
