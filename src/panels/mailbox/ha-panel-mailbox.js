@@ -26,100 +26,106 @@ let registeredDialog = false;
 class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include='ha-style'>
-      :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
-
-      .content {
-        padding: 16px;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
-      paper-card {
-        display: block;
-      }
-
-      paper-item {
-        cursor: pointer;
-      }
-
-      .empty {
-        text-align: center;
-        color: var(--secondary-text-color);
-      }
-
-      .header {
-        @apply --paper-font-title;
-      }
-
-      .row {
-        display: flex;
-       justify-content: space-between;
-      }
-
-      @media all and (max-width: 450px) {
-        .content {
-          width: auto;
-          padding: 0;
+      <style include="ha-style">
+        :host {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
         }
-      }
 
-      .tip {
-        color: var(--secondary-text-color);
-        font-size: 14px;
-      }
-      .date {
-        color: var(--primary-text-color);
-      }
-    </style>
+        .content {
+          padding: 16px;
+          max-width: 600px;
+          margin: 0 auto;
+        }
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[localize('panel.mailbox')]]</div>
-        </app-toolbar>
-        <div sticky hidden$='[[areTabsHidden(platforms)]]'>
-          <paper-tabs
-            scrollable
-            selected='[[_currentPlatform]]'
-            on-iron-activate='handlePlatformSelected'
-          >
-            <template is='dom-repeat' items='[[platforms]]'>
-              <paper-tab data-entity='[[item]]' >
-                [[getPlatformName(item)]]
-              </paper-tab>
+        paper-card {
+          display: block;
+        }
+
+        paper-item {
+          cursor: pointer;
+        }
+
+        .empty {
+          text-align: center;
+          color: var(--secondary-text-color);
+        }
+
+        .header {
+          @apply --paper-font-title;
+        }
+
+        .row {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        @media all and (max-width: 450px) {
+          .content {
+            width: auto;
+            padding: 0;
+          }
+        }
+
+        .tip {
+          color: var(--secondary-text-color);
+          font-size: 14px;
+        }
+        .date {
+          color: var(--primary-text-color);
+        }
+      </style>
+
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>[[localize('panel.mailbox')]]</div>
+          </app-toolbar>
+          <div sticky hidden$="[[areTabsHidden(platforms)]]">
+            <paper-tabs
+              scrollable
+              selected="[[_currentPlatform]]"
+              on-iron-activate="handlePlatformSelected"
+            >
+              <template is="dom-repeat" items="[[platforms]]">
+                <paper-tab data-entity="[[item]]">
+                  [[getPlatformName(item)]]
+                </paper-tab>
+              </template>
+            </paper-tabs>
+          </div>
+        </app-header>
+        <div class="content">
+          <paper-card>
+            <template is="dom-if" if="[[!_messages.length]]">
+              <div class="card-content empty">
+                [[localize('ui.panel.mailbox.empty')]]
+              </div>
             </template>
-          </paper-tabs>
+            <template is="dom-repeat" items="[[_messages]]">
+              <paper-item on-click="openMP3Dialog">
+                <paper-item-body style="width:100%" two-line>
+                  <div class="row">
+                    <div>[[item.caller]]</div>
+                    <div class="tip">
+                      [[localize('ui.duration.second', 'count', item.duration)]]
+                    </div>
+                  </div>
+                  <div secondary>
+                    <span class="date">[[item.timestamp]]</span> -
+                    [[item.message]]
+                  </div>
+                </paper-item-body>
+              </paper-item>
+            </template>
+          </paper-card>
         </div>
-      </app-header>
-      <div class='content'>
-        <paper-card>
-          <template is='dom-if' if='[[!_messages.length]]'>
-            <div class='card-content empty'>
-              [[localize('ui.panel.mailbox.empty')]]
-            </div>
-          </template>
-          <template is='dom-repeat' items='[[_messages]]'>
-            <paper-item on-click='openMP3Dialog'>
-              <paper-item-body style="width:100%" two-line>
-                <div class="row">
-                  <div>[[item.caller]]</div>
-                  <div class="tip">[[localize('ui.duration.second', 'count', item.duration)]]</div>
-                </div>
-                <div secondary>
-                  <span class="date">[[item.timestamp]]</span> - [[item.message]]
-                </div>
-              </paper-item-body>
-            </paper-item>
-          </template>
-        </paper-card>
-      </div>
-    </app-header-layout>
+      </app-header-layout>
     `;
   }
 

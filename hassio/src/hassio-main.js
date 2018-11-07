@@ -14,22 +14,48 @@ import NavigateMixin from "../../src/mixins/navigate-mixin";
 class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
-    <app-route route="[[route]]" pattern="/:page" data="{{routeData}}"></app-route>
-    <hassio-data id="data" hass="[[hass]]" supervisor="{{supervisorInfo}}" homeassistant="{{hassInfo}}" host="{{hostInfo}}"></hassio-data>
+      <app-route
+        route="[[route]]"
+        pattern="/:page"
+        data="{{routeData}}"
+      ></app-route>
+      <hassio-data
+        id="data"
+        hass="[[hass]]"
+        supervisor="{{supervisorInfo}}"
+        homeassistant="{{hassInfo}}"
+        host="{{hostInfo}}"
+      ></hassio-data>
 
-    <template is="dom-if" if="[[!loaded]]">
-      <hass-loading-screen narrow="[[narrow]]" show-menu="[[showMenu]]"></hass-loading-screen>
-    </template>
+      <template is="dom-if" if="[[!loaded]]">
+        <hass-loading-screen
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+        ></hass-loading-screen>
+      </template>
 
-    <template is="dom-if" if="[[loaded]]">
-      <template is="dom-if" if="[[!equalsAddon(routeData.page)]]">
-        <hassio-pages-with-tabs hass="[[hass]]" narrow="[[narrow]]" show-menu="[[showMenu]]" page="[[routeData.page]]" supervisor-info="[[supervisorInfo]]" hass-info="[[hassInfo]]" host-info="[[hostInfo]]"></hassio-pages-with-tabs>
+      <template is="dom-if" if="[[loaded]]">
+        <template is="dom-if" if="[[!equalsAddon(routeData.page)]]">
+          <hassio-pages-with-tabs
+            hass="[[hass]]"
+            narrow="[[narrow]]"
+            show-menu="[[showMenu]]"
+            page="[[routeData.page]]"
+            supervisor-info="[[supervisorInfo]]"
+            hass-info="[[hassInfo]]"
+            host-info="[[hostInfo]]"
+          ></hassio-pages-with-tabs>
+        </template>
+        <template is="dom-if" if="[[equalsAddon(routeData.page)]]">
+          <hassio-addon-view
+            hass="[[hass]]"
+            narrow="[[narrow]]"
+            show-menu="[[showMenu]]"
+            route="[[route]]"
+          ></hassio-addon-view>
+        </template>
       </template>
-      <template is="dom-if" if="[[equalsAddon(routeData.page)]]">
-        <hassio-addon-view hass="[[hass]]" narrow="[[narrow]]" show-menu="[[showMenu]]" route="[[route]]"></hassio-addon-view>
-      </template>
-    </template>
-`;
+    `;
   }
 
   static get properties() {

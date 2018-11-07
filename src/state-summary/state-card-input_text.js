@@ -8,29 +8,40 @@ import "../components/entity/state-info";
 class StateCardInputText extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      paper-input {
-        margin-left: 16px;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        paper-input {
+          margin-left: 16px;
+        }
+      </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <paper-input no-label-float="" minlength="[[stateObj.attributes.min]]" maxlength="[[stateObj.attributes.max]]" value="{{value}}" auto-validate="[[stateObj.attributes.pattern]]" pattern="[[stateObj.attributes.pattern]]" type="[[stateObj.attributes.mode]]" on-change="selectedValueChanged" on-click="stopPropagation" placeholder="(empty value)">
-      </paper-input>
-    </div>
-`;
+      <div class="horizontal justified layout">
+        ${this.stateInfoTemplate}
+        <paper-input
+          no-label-float=""
+          minlength="[[stateObj.attributes.min]]"
+          maxlength="[[stateObj.attributes.max]]"
+          value="{{value}}"
+          auto-validate="[[stateObj.attributes.pattern]]"
+          pattern="[[stateObj.attributes.pattern]]"
+          type="[[stateObj.attributes.mode]]"
+          on-change="selectedValueChanged"
+          on-click="stopPropagation"
+          placeholder="(empty value)"
+        >
+        </paper-input>
+      </div>
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   static get properties() {

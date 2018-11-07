@@ -7,10 +7,15 @@ import "./resources/hassio-icons";
 class HassioApp extends PolymerElement {
   static get template() {
     return html`
-    <template is="dom-if" if="[[hass]]">
-      <hassio-main hass="[[hass]]" narrow="[[narrow]]" show-menu="[[showMenu]]" route="[[route]]"></hassio-main>
-    </template>
-`;
+      <template is="dom-if" if="[[hass]]">
+        <hassio-main
+          hass="[[hass]]"
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+          route="[[route]]"
+        ></hassio-main>
+      </template>
+    `;
   }
 
   static get properties() {

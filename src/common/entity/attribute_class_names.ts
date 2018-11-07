@@ -8,9 +8,8 @@ export default function attributeClassNames(
     return "";
   }
   return attributes
-    .map(
-      (attribute) =>
-        attribute in stateObj.attributes ? "has-" + attribute : ""
+    .map((attribute) =>
+      attribute in stateObj.attributes ? "has-" + attribute : ""
     )
     .filter((attr) => attr !== "")
     .join(" ");

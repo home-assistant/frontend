@@ -13,28 +13,34 @@ import EventsMixin from "../../../../mixins/events-mixin";
 export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        position: relative;
-      }
+      <style>
+        :host {
+          position: relative;
+        }
 
-      .indicator {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--accent-color);
-        pointer-events: none;
-      }
+        .indicator {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: var(--accent-color);
+          pointer-events: none;
+        }
 
-      .indicator[hidden] {
-        display: none;
-      }
-    </style>
-    <paper-icon-button icon="hass:bell" on-click="_clicked"></paper-icon-button>
-    <span class="indicator" hidden$="[[!_hasNotifications(notifications)]]"></span>
+        .indicator[hidden] {
+          display: none;
+        }
+      </style>
+      <paper-icon-button
+        icon="hass:bell"
+        on-click="_clicked"
+      ></paper-icon-button>
+      <span
+        class="indicator"
+        hidden$="[[!_hasNotifications(notifications)]]"
+      ></span>
     `;
   }
 

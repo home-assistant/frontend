@@ -26,99 +26,140 @@ const FEATURE_CLASS_NAMES = {
 class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-  <style include="iron-flex"></style>
-  <style>
+      <style include="iron-flex"></style>
+      <style>
+        .effect_list,
+        .brightness,
+        .color_temp,
+        .white_value {
+          max-height: 0px;
+          overflow: hidden;
+          transition: max-height 0.5s ease-in;
+        }
 
-    .effect_list, .brightness, .color_temp, .white_value {
-      max-height: 0px;
-      overflow: hidden;
-      transition: max-height .5s ease-in;
-    }
+        .color_temp {
+          --ha-slider-background: -webkit-linear-gradient(
+            right,
+            rgb(255, 160, 0) 0%,
+            white 50%,
+            rgb(166, 209, 255) 100%
+          );
+          /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
+          --paper-slider-knob-start-border-color: var(--primary-color);
+        }
 
-    .color_temp {
-      --ha-slider-background: -webkit-linear-gradient(right, rgb(255, 160, 0) 0%, white 50%, rgb(166, 209, 255) 100%);
-      /* The color temp minimum value shouldn't be rendered differently. It's not "off". */
-      --paper-slider-knob-start-border-color: var(--primary-color);
-    }
+        ha-color-picker {
+          display: block;
+          width: 100%;
 
-    ha-color-picker {
-      display: block;
-      width: 100%;
+          max-height: 0px;
+          overflow: hidden;
+          transition: max-height 0.5s ease-in;
+        }
 
-      max-height: 0px;
-      overflow: hidden;
-      transition: max-height .5s ease-in;
-    }
+        .has-effect_list.is-on .effect_list,
+        .has-brightness .brightness,
+        .has-color_temp.is-on .color_temp,
+        .has-white_value.is-on .white_value {
+          max-height: 84px;
+        }
 
-    .has-effect_list.is-on .effect_list,
-    .has-brightness .brightness,
-    .has-color_temp.is-on .color_temp,
-    .has-white_value.is-on .white_value {
-      max-height: 84px;
-    }
+        .has-brightness .has-color_temp.is-on,
+        .has-white_value.is-on {
+          margin-top: -16px;
+        }
 
-    .has-brightness
-    .has-color_temp.is-on,
-    .has-white_value.is-on {
-      margin-top: -16px;
-    }
+        .has-brightness .brightness,
+        .has-color_temp.is-on .color_temp,
+        .has-white_value.is-on .white_value {
+          padding-top: 16px;
+        }
 
-    .has-brightness .brightness,
-    .has-color_temp.is-on .color_temp,
-    .has-white_value.is-on .white_value {
-      padding-top: 16px;
-    }
+        .has-color.is-on ha-color-picker {
+          max-height: 500px;
+          overflow: visible;
+          --ha-color-picker-wheel-borderwidth: 5;
+          --ha-color-picker-wheel-bordercolor: white;
+          --ha-color-picker-wheel-shadow: none;
+          --ha-color-picker-marker-borderwidth: 2;
+          --ha-color-picker-marker-bordercolor: white;
+        }
 
-    .has-color.is-on ha-color-picker {
-      max-height: 500px;
-      overflow: visible;
-      --ha-color-picker-wheel-borderwidth: 5;
-      --ha-color-picker-wheel-bordercolor: white;
-      --ha-color-picker-wheel-shadow: none;
-      --ha-color-picker-marker-borderwidth: 2;
-      --ha-color-picker-marker-bordercolor: white;
-    }
+        .is-unavailable .control {
+          max-height: 0px;
+        }
 
-    .is-unavailable .control {
-      max-height: 0px;
-    }
+        paper-item {
+          cursor: pointer;
+        }
+      </style>
 
-    paper-item {
-      cursor: pointer;
-    }
+      <div class$="[[computeClassNames(stateObj)]]">
+        <div class="control brightness">
+          <ha-labeled-slider
+            caption="[[localize('ui.card.light.brightness')]]"
+            icon="hass:brightness-5"
+            min="1"
+            max="255"
+            value="{{brightnessSliderValue}}"
+            on-change="brightnessSliderChanged"
+          ></ha-labeled-slider>
+        </div>
 
-  </style>
+        <div class="control color_temp">
+          <ha-labeled-slider
+            caption="[[localize('ui.card.light.color_temperature')]]"
+            icon="hass:thermometer"
+            min="[[stateObj.attributes.min_mireds]]"
+            max="[[stateObj.attributes.max_mireds]]"
+            value="{{ctSliderValue}}"
+            on-change="ctSliderChanged"
+          ></ha-labeled-slider>
+        </div>
 
-  <div class$="[[computeClassNames(stateObj)]]">
+        <div class="control white_value">
+          <ha-labeled-slider
+            caption="[[localize('ui.card.light.white_value')]]"
+            icon="hass:file-word-box"
+            max="255"
+            value="{{wvSliderValue}}"
+            on-change="wvSliderChanged"
+          ></ha-labeled-slider>
+        </div>
 
-    <div class="control brightness">
-      <ha-labeled-slider caption="[[localize('ui.card.light.brightness')]]" icon="hass:brightness-5" min="1" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged"></ha-labeled-slider>
-    </div>
+        <ha-color-picker
+          class="control color"
+          on-colorselected="colorPicked"
+          desired-hs-color="{{colorPickerColor}}"
+          throttle="500"
+          hue-segments="24"
+          saturation-segments="8"
+        >
+        </ha-color-picker>
 
-    <div class="control color_temp">
-      <ha-labeled-slider caption="[[localize('ui.card.light.color_temperature')]]" icon="hass:thermometer" min="[[stateObj.attributes.min_mireds]]" max="[[stateObj.attributes.max_mireds]]" value="{{ctSliderValue}}" on-change="ctSliderChanged"></ha-labeled-slider>
-    </div>
+        <div class="control effect_list">
+          <paper-dropdown-menu
+            label-float=""
+            dynamic-align=""
+            label="[[localize('ui.card.light.effect')]]"
+          >
+            <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
+              <template
+                is="dom-repeat"
+                items="[[stateObj.attributes.effect_list]]"
+              >
+                <paper-item>[[item]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
 
-    <div class="control white_value">
-      <ha-labeled-slider caption="[[localize('ui.card.light.white_value')]]" icon="hass:file-word-box" max="255" value="{{wvSliderValue}}" on-change="wvSliderChanged"></ha-labeled-slider>
-    </div>
-
-    <ha-color-picker class="control color" on-colorselected="colorPicked" desired-hs-color="{{colorPickerColor}}" throttle="500" hue-segments="24" saturation-segments="8">
-    </ha-color-picker>
-
-    <div class="control effect_list">
-      <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.light.effect')]]">
-        <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
-          <template is="dom-repeat" items="[[stateObj.attributes.effect_list]]">
-            <paper-item>[[item]]</paper-item>
-          </template>
-        </paper-listbox>
-      </paper-dropdown-menu>
-    </div>
-
-    <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
-  </div>
-`;
+        <ha-attributes
+          state-obj="[[stateObj]]"
+          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds"
+        ></ha-attributes>
+      </div>
+    `;
   }
 
   static get properties() {

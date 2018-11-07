@@ -21,7 +21,7 @@ export class HuiYAMLEditor extends LitElement {
         }
       </style>
       <paper-textarea
-        max-rows=10
+        max-rows="10"
         value="${this.yaml}"
         @value-changed="${this._valueChanged}"
       ></paper-textarea>

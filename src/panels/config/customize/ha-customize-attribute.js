@@ -13,23 +13,27 @@ import "./types/ha-customize-string";
 class HaCustomizeAttribute extends PolymerElement {
   static get template() {
     return html`
-    <style include="ha-form-style">
-      :host {
-        display: block;
-        position: relative;
-        padding-right: 40px;
-      }
+      <style include="ha-form-style">
+        :host {
+          display: block;
+          position: relative;
+          padding-right: 40px;
+        }
 
-      .button {
-        position: absolute;
-        margin-top: -20px;
-        top: 50%;
-        right: 0;
-      }
-    </style>
-    <div id="wrapper" class="form-group"></div>
-    <paper-icon-button class="button" icon="[[getIcon(item.secondary)]]" on-click="tapButton"></paper-icon-button>
-`;
+        .button {
+          position: absolute;
+          margin-top: -20px;
+          top: 50%;
+          right: 0;
+        }
+      </style>
+      <div id="wrapper" class="form-group"></div>
+      <paper-icon-button
+        class="button"
+        icon="[[getIcon(item.secondary)]]"
+        on-click="tapButton"
+      ></paper-icon-button>
+    `;
   }
 
   static get properties() {

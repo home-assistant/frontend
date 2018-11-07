@@ -7,54 +7,61 @@ import LocalizeLiteMixin from "../mixins/localize-lite-mixin";
 class HaAuthFlow extends LocalizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        /* So we can set min-height to avoid jumping during loading */
-        display: block;
-      }
-      .action {
-        margin: 24px 0 8px;
-        text-align: center;
-      }
-      .error {
-        color: red;
-      }
-    </style>
-    <form>
-      <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">
-      [[localize('ui.panel.page-authorize.form.working')]]:
-      </template>
-      <template is="dom-if" if="[[_equals(_state, &quot;error&quot;)]]">
-      <div class='error'>Error: [[_errorMsg]]</div>
-      </template>
-      <template is="dom-if" if="[[_equals(_state, &quot;step&quot;)]]">
-        <template is="dom-if" if="[[_equals(_step.type, &quot;abort&quot;)]]">
-          [[localize('ui.panel.page-authorize.abort_intro')]]:
-          <ha-markdown content="[[_computeStepAbortedReason(localize, _step)]]"></ha-markdown>
+      <style>
+        :host {
+          /* So we can set min-height to avoid jumping during loading */
+          display: block;
+        }
+        .action {
+          margin: 24px 0 8px;
+          text-align: center;
+        }
+        .error {
+          color: red;
+        }
+      </style>
+      <form>
+        <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">
+          [[localize('ui.panel.page-authorize.form.working')]]:
         </template>
-
-        <template is="dom-if" if="[[_equals(_step.type, &quot;form&quot;)]]">
-          <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
-            <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
+        <template is="dom-if" if="[[_equals(_state, &quot;error&quot;)]]">
+          <div class="error">Error: [[_errorMsg]]</div>
+        </template>
+        <template is="dom-if" if="[[_equals(_state, &quot;step&quot;)]]">
+          <template is="dom-if" if="[[_equals(_step.type, &quot;abort&quot;)]]">
+            [[localize('ui.panel.page-authorize.abort_intro')]]:
+            <ha-markdown
+              content="[[_computeStepAbortedReason(localize, _step)]]"
+            ></ha-markdown>
           </template>
 
-          <ha-form
-            data="{{_stepData}}"
-            schema="[[_step.data_schema]]"
-            error="[[_step.errors]]"
-            compute-label="[[_computeLabelCallback(localize, _step)]]"
-            compute-error="[[_computeErrorCallback(localize, _step)]]"
-          ></ha-form>
+          <template is="dom-if" if="[[_equals(_step.type, &quot;form&quot;)]]">
+            <template
+              is="dom-if"
+              if="[[_computeStepDescription(localize, _step)]]"
+            >
+              <ha-markdown
+                content="[[_computeStepDescription(localize, _step)]]"
+                allow-svg
+              ></ha-markdown>
+            </template>
+
+            <ha-form
+              data="{{_stepData}}"
+              schema="[[_step.data_schema]]"
+              error="[[_step.errors]]"
+              compute-label="[[_computeLabelCallback(localize, _step)]]"
+              compute-error="[[_computeErrorCallback(localize, _step)]]"
+            ></ha-form>
+          </template>
+          <div class="action">
+            <paper-button raised on-click="_handleSubmit"
+              >[[_computeSubmitCaption(_step.type)]]</paper-button
+            >
+          </div>
         </template>
-        <div class='action'>
-          <paper-button
-            raised
-            on-click='_handleSubmit'
-          >[[_computeSubmitCaption(_step.type)]]</paper-button>
-        </div>
-      </template>
-    </form>
-`;
+      </form>
+    `;
   }
 
   static get properties() {

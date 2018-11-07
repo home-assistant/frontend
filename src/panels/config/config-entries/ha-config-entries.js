@@ -12,28 +12,33 @@ import compare from "../../../common/string/compare";
 class HaConfigEntries extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-  <app-route route="[[route]]" pattern="/integrations/:page" data="{{_routeData}}" tail="{{_routeTail}}"></app-route>
+      <app-route
+        route="[[route]]"
+        pattern="/integrations/:page"
+        data="{{_routeData}}"
+        tail="{{_routeTail}}"
+      ></app-route>
 
-  <template is='dom-if' if='[[_configEntry]]'>
-    <ha-config-entry-page
-      hass='[[hass]]'
-      config-entry='[[_configEntry]]'
-      entries='[[_entries]]'
-      entities='[[_entities]]'
-      devices='[[_devices]]'
-      narrow='[[narrow]]'
-    ></ha-config-entry-page>
-  </template>
-  <template is='dom-if' if='[[!_configEntry]]'>
-    <ha-config-entries-dashboard
-      hass='[[hass]]'
-      entries='[[_entries]]'
-      entities='[[_entities]]'
-      handlers='[[_handlers]]'
-      progress='[[_progress]]'
-    ></ha-config-entries-dashboard>
-  </template>
-`;
+      <template is="dom-if" if="[[_configEntry]]">
+        <ha-config-entry-page
+          hass="[[hass]]"
+          config-entry="[[_configEntry]]"
+          entries="[[_entries]]"
+          entities="[[_entities]]"
+          devices="[[_devices]]"
+          narrow="[[narrow]]"
+        ></ha-config-entry-page>
+      </template>
+      <template is="dom-if" if="[[!_configEntry]]">
+        <ha-config-entries-dashboard
+          hass="[[hass]]"
+          entries="[[_entries]]"
+          entities="[[_entities]]"
+          handlers="[[_handlers]]"
+          progress="[[_progress]]"
+        ></ha-config-entries-dashboard>
+      </template>
+    `;
   }
 
   static get properties() {

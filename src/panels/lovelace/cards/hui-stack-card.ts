@@ -56,9 +56,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this.renderStyle()}
-      <div id="root">
-        ${this._cards}
-      </div>
+      <div id="root">${this._cards}</div>
     `;
   }
 

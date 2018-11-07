@@ -43,10 +43,13 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
-        <div id="root"
-          style="${styleMap({
-            "padding-top": aspectRatio,
-          })}"
+        <div
+          id="root"
+          style="${
+            styleMap({
+              "padding-top": aspectRatio,
+            })
+          }"
         >
           <iframe src="${this._config.url}"></iframe>
         </div>

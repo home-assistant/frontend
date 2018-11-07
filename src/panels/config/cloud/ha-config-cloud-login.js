@@ -23,101 +23,137 @@ import NavigateMixin from "../../../mixins/navigate-mixin";
 class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .content {
-        padding-bottom: 24px;
-      }
-      [slot=introduction] {
-        margin: -1em 0;
-      }
-      [slot=introduction] a {
-        color: var(--primary-color);
-      }
-      paper-card {
-        display: block;
-      }
-      paper-item {
-        cursor: pointer;
-      }
-      paper-card:last-child {
-        margin-top: 24px;
-      }
-      h1 {
-        @apply --paper-font-headline;
-        margin: 0;
-      }
-      .error {
-        color: var(--google-red-500);
-      }
-      .card-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      [hidden] {
-        display: none;
-      }
-      .flash-msg {
-        padding-right: 44px;
-      }
-      .flash-msg paper-icon-button {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        color: var(--secondary-text-color);
-      }
-    </style>
-    <hass-subpage header="Cloud Login">
-      <div class="content">
-        <ha-config-section is-wide="[[isWide]]">
-          <span slot="header">Home Assistant Cloud</span>
-          <div slot="introduction">
-            <p>
-              Home Assistant Cloud connects your local instance securely to cloud-only services Amazon Alexa and Google Assistant.
-            </p>
-            <p>
-              This service is run by our partner <a href='https://www.nabucasa.com' target='_blank'>Nabu&nbsp;Casa,&nbsp;Inc</a>, a company founded by the founders of Home Assistant and Hass.io.
-            </p>
-            <p>
-              Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.
-            </p>
-            <p><a href="https://www.nabucasa.com" target="_blank">Learn more about Home Assistant Cloud</a></p>
-          </div>
-
-          <paper-card hidden$="[[!flashMessage]]">
-            <div class="card-content flash-msg">
-              [[flashMessage]]
-              <paper-icon-button icon="hass:close" on-click="_dismissFlash">Dismiss</paper-icon-button>
-              <paper-ripple id="flashRipple" noink=""></paper-ripple>
+      <style include="iron-flex ha-style">
+        .content {
+          padding-bottom: 24px;
+        }
+        [slot="introduction"] {
+          margin: -1em 0;
+        }
+        [slot="introduction"] a {
+          color: var(--primary-color);
+        }
+        paper-card {
+          display: block;
+        }
+        paper-item {
+          cursor: pointer;
+        }
+        paper-card:last-child {
+          margin-top: 24px;
+        }
+        h1 {
+          @apply --paper-font-headline;
+          margin: 0;
+        }
+        .error {
+          color: var(--google-red-500);
+        }
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        [hidden] {
+          display: none;
+        }
+        .flash-msg {
+          padding-right: 44px;
+        }
+        .flash-msg paper-icon-button {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          color: var(--secondary-text-color);
+        }
+      </style>
+      <hass-subpage header="Cloud Login">
+        <div class="content">
+          <ha-config-section is-wide="[[isWide]]">
+            <span slot="header">Home Assistant Cloud</span>
+            <div slot="introduction">
+              <p>
+                Home Assistant Cloud connects your local instance securely to
+                cloud-only services Amazon Alexa and Google Assistant.
+              </p>
+              <p>
+                This service is run by our partner
+                <a href="https://www.nabucasa.com" target="_blank"
+                  >Nabu&nbsp;Casa,&nbsp;Inc</a
+                >, a company founded by the founders of Home Assistant and
+                Hass.io.
+              </p>
+              <p>
+                Home Assistant Cloud is a subscription service with a free one
+                month trial. No payment information necessary.
+              </p>
+              <p>
+                <a href="https://www.nabucasa.com" target="_blank"
+                  >Learn more about Home Assistant Cloud</a
+                >
+              </p>
             </div>
-          </paper-card>
 
-          <paper-card>
-            <div class="card-content">
-              <h1>Sign In</h1>
-              <div class="error" hidden$="[[!_error]]">[[_error]]</div>
-              <paper-input label="Email" id="email" type="email" value="{{email}}" on-keydown="_keyDown" error-message="Invalid email"></paper-input>
-              <paper-input id="password" label="Password" value="{{_password}}" type="password" on-keydown="_keyDown" error-message="Passwords are at least 8 characters"></paper-input>
-            </div>
-            <div class="card-actions">
-              <ha-progress-button on-click="_handleLogin" progress="[[_requestInProgress]]">Sign in</ha-progress-button>
-              <button class="link" hidden="[[_requestInProgress]]" on-click="_handleForgotPassword">forgot password?</button>
-            </div>
-          </paper-card>
+            <paper-card hidden$="[[!flashMessage]]">
+              <div class="card-content flash-msg">
+                [[flashMessage]]
+                <paper-icon-button icon="hass:close" on-click="_dismissFlash"
+                  >Dismiss</paper-icon-button
+                >
+                <paper-ripple id="flashRipple" noink=""></paper-ripple>
+              </div>
+            </paper-card>
 
-          <paper-card>
-            <paper-item on-click="_handleRegister">
-              <paper-item-body two-line="">
-                Start your free 1 month trial
-                <div secondary="">No payment information necessary</div>
-              </paper-item-body>
-              <iron-icon icon="hass:chevron-right"></iron-icon>
-            </paper-item>
-          </paper-card>
-        </ha-config-section>
-      </div>
-    </hass-subpage>
-`;
+            <paper-card>
+              <div class="card-content">
+                <h1>Sign In</h1>
+                <div class="error" hidden$="[[!_error]]">[[_error]]</div>
+                <paper-input
+                  label="Email"
+                  id="email"
+                  type="email"
+                  value="{{email}}"
+                  on-keydown="_keyDown"
+                  error-message="Invalid email"
+                ></paper-input>
+                <paper-input
+                  id="password"
+                  label="Password"
+                  value="{{_password}}"
+                  type="password"
+                  on-keydown="_keyDown"
+                  error-message="Passwords are at least 8 characters"
+                ></paper-input>
+              </div>
+              <div class="card-actions">
+                <ha-progress-button
+                  on-click="_handleLogin"
+                  progress="[[_requestInProgress]]"
+                  >Sign in</ha-progress-button
+                >
+                <button
+                  class="link"
+                  hidden="[[_requestInProgress]]"
+                  on-click="_handleForgotPassword"
+                >
+                  forgot password?
+                </button>
+              </div>
+            </paper-card>
+
+            <paper-card>
+              <paper-item on-click="_handleRegister">
+                <paper-item-body two-line="">
+                  Start your free 1 month trial
+                  <div secondary="">No payment information necessary</div>
+                </paper-item-body>
+                <iron-icon icon="hass:chevron-right"></iron-icon>
+              </paper-item>
+            </paper-card>
+          </ha-config-section>
+        </div>
+      </hass-subpage>
+    `;
   }
 
   static get properties() {

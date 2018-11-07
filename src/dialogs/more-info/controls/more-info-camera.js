@@ -11,18 +11,23 @@ import EventsMixin from "../../../mixins/events-mixin";
 class MoreInfoCamera extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        max-width:640px;
-      }
+      <style>
+        :host {
+          max-width: 640px;
+        }
 
-      .camera-image {
-        width: 100%;
-      }
-    </style>
+        .camera-image {
+          width: 100%;
+        }
+      </style>
 
-    <img class="camera-image" src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]" on-load="imageLoaded" alt="[[_computeStateName(stateObj)]]">
-`;
+      <img
+        class="camera-image"
+        src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]"
+        on-load="imageLoaded"
+        alt="[[_computeStateName(stateObj)]]"
+      />
+    `;
   }
 
   static get properties() {

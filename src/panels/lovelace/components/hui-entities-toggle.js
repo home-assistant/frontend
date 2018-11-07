@@ -8,22 +8,25 @@ import turnOnOffEntities from "../common/entity/turn-on-off-entities";
 class HuiEntitiesToggle extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      :host {
-        width: 38px;
-        display: block;
-      }
-      paper-toggle-button {
-        cursor: pointer;
-        --paper-toggle-button-label-spacing: 0;
-        padding: 13px 5px;
-        margin: -4px -5px;
-      }
-    </style>
-    <template is="dom-if" if="[[_toggleEntities.length]]">
-      <paper-toggle-button checked="[[_computeIsChecked(hass, _toggleEntities)]]" on-change="_callService"></paper-toggle-button>
-    </template>
-`;
+      <style>
+        :host {
+          width: 38px;
+          display: block;
+        }
+        paper-toggle-button {
+          cursor: pointer;
+          --paper-toggle-button-label-spacing: 0;
+          padding: 13px 5px;
+          margin: -4px -5px;
+        }
+      </style>
+      <template is="dom-if" if="[[_toggleEntities.length]]">
+        <paper-toggle-button
+          checked="[[_computeIsChecked(hass, _toggleEntities)]]"
+          on-change="_callService"
+        ></paper-toggle-button>
+      </template>
+    `;
   }
 
   static get properties() {

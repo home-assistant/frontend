@@ -19,8 +19,15 @@ class HuiInputSelectEntityRow extends EventsMixin(PolymerElement) {
       ${this.styleTemplate}
       <template is="dom-if" if="[[_stateObj]]">
         <state-badge state-obj="[[_stateObj]]"></state-badge>
-        <paper-dropdown-menu on-click="_stopPropagation" selected-item-label="{{_selected}}" label="[[_computeName(_config.name, _stateObj)]]">
-          <paper-listbox slot="dropdown-content" selected="[[_computeSelected(_stateObj)]]">
+        <paper-dropdown-menu
+          on-click="_stopPropagation"
+          selected-item-label="{{_selected}}"
+          label="[[_computeName(_config.name, _stateObj)]]"
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            selected="[[_computeSelected(_stateObj)]]"
+          >
             <template is="dom-repeat" items="[[_stateObj.attributes.options]]">
               <paper-item>[[item]]</paper-item>
             </template>
@@ -28,9 +35,7 @@ class HuiInputSelectEntityRow extends EventsMixin(PolymerElement) {
         </paper-dropdown-menu>
       </template>
       <template is="dom-if" if="[[!_stateObj]]">
-        <div class="not-found">
-          Entity not available: [[_config.entity]]
-        </div>
+        <div class="not-found">Entity not available: [[_config.entity]]</div>
       </template>
     `;
   }

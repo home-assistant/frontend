@@ -20,11 +20,29 @@ class MoreInfoLock extends LocalizeMixin(PolymerElement) {
       </style>
 
       <template is="dom-if" if="[[stateObj.attributes.code_format]]">
-        <paper-input label="[[localize('ui.card.lock.code')]]" value="{{enteredCode}}" pattern="[[stateObj.attributes.code_format]]" type="password"></paper-input>
-        <paper-button on-click="callService" data-service="unlock" hidden$="[[!isLocked]]">[[localize('ui.card.lock.unlock')]]</paper-button>
-        <paper-button on-click="callService" data-service="lock" hidden$="[[isLocked]]">[[localize('ui.card.lock.lock')]]</paper-button>
+        <paper-input
+          label="[[localize('ui.card.lock.code')]]"
+          value="{{enteredCode}}"
+          pattern="[[stateObj.attributes.code_format]]"
+          type="password"
+        ></paper-input>
+        <paper-button
+          on-click="callService"
+          data-service="unlock"
+          hidden$="[[!isLocked]]"
+          >[[localize('ui.card.lock.unlock')]]</paper-button
+        >
+        <paper-button
+          on-click="callService"
+          data-service="lock"
+          hidden$="[[isLocked]]"
+          >[[localize('ui.card.lock.lock')]]</paper-button
+        >
       </template>
-      <ha-attributes state-obj="[[stateObj]]" extra-filters="code_format"></ha-attributes>
+      <ha-attributes
+        state-obj="[[stateObj]]"
+        extra-filters="code_format"
+      ></ha-attributes>
     `;
   }
 

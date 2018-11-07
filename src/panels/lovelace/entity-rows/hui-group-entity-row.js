@@ -14,10 +14,7 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class HuiGroupEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
+      <hui-generic-entity-row hass="[[hass]]" config="[[_config]]">
         ${this.groupControlTemplate}
       </hui-generic-entity-row>
     `;
@@ -32,9 +29,7 @@ class HuiGroupEntityRow extends LocalizeMixin(PolymerElement) {
         ></ha-entity-toggle>
       </template>
       <template is="dom-if" if="[[!_canToggle]]">
-        <div>
-          [[_computeState(_stateObj)]]
-        </div>
+        <div>[[_computeState(_stateObj)]]</div>
       </template>
     `;
   }

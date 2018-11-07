@@ -60,9 +60,7 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
         <div>[[_computeState(_stateObj.state)]]</div>
       </template>
 
-      <div slot="secondary">
-        [[_computeMediaTitle(_stateObj)]]
-      </div>
+      <div slot="secondary">[[_computeMediaTitle(_stateObj)]]</div>
     `;
   }
 

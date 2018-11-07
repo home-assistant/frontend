@@ -14,49 +14,61 @@ import EventsMixin from "../../../src/mixins/events-mixin";
 class HassioAddonAudio extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-      :host,
-      paper-card,
-      paper-dropdown-menu {
-        display: block;
-      }
-      .errors {
-        color: var(--google-red-500);
-        margin-bottom: 16px;
-      }
-      paper-item {
-        width: 450px;
-      }
-      .card-actions {
-        text-align: right;
-      }
-    </style>
-    <paper-card heading="Audio">
-      <div class="card-content">
-        <template is="dom-if" if="[[error]]">
-          <div class="errors">[[error]]</div>
-        </template>
+      <style include="ha-style">
+        :host,
+        paper-card,
+        paper-dropdown-menu {
+          display: block;
+        }
+        .errors {
+          color: var(--google-red-500);
+          margin-bottom: 16px;
+        }
+        paper-item {
+          width: 450px;
+        }
+        .card-actions {
+          text-align: right;
+        }
+      </style>
+      <paper-card heading="Audio">
+        <div class="card-content">
+          <template is="dom-if" if="[[error]]">
+            <div class="errors">[[error]]</div>
+          </template>
 
-        <paper-dropdown-menu label="Input">
-          <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedInput}}">
-            <template is="dom-repeat" items="[[inputDevices]]">
-              <paper-item device\$="[[item.device]]">[[item.name]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-        <paper-dropdown-menu label="Output">
-          <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedOutput}}">
-            <template is="dom-repeat" items="[[outputDevices]]">
-              <paper-item device\$="[[item.device]]">[[item.name]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-      <div class="card-actions">
-        <paper-button on-click="_saveSettings">Save</paper-button>
-      </div>
-    </paper-card>
-`;
+          <paper-dropdown-menu label="Input">
+            <paper-listbox
+              slot="dropdown-content"
+              attr-for-selected="device"
+              selected="{{selectedInput}}"
+            >
+              <template is="dom-repeat" items="[[inputDevices]]">
+                <paper-item device\$="[[item.device]]"
+                  >[[item.name]]</paper-item
+                >
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+          <paper-dropdown-menu label="Output">
+            <paper-listbox
+              slot="dropdown-content"
+              attr-for-selected="device"
+              selected="{{selectedOutput}}"
+            >
+              <template is="dom-repeat" items="[[outputDevices]]">
+                <paper-item device\$="[[item.device]]"
+                  >[[item.name]]</paper-item
+                >
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+        <div class="card-actions">
+          <paper-button on-click="_saveSettings">Save</paper-button>
+        </div>
+      </paper-card>
+    `;
   }
 
   static get properties() {

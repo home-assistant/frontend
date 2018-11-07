@@ -11,48 +11,73 @@ import "../resources/hassio-style";
 class HassioRepositoriesEditor extends PolymerElement {
   static get template() {
     return html`
-    <style include="ha-style hassio-style">
-      .add {
-        padding: 12px 16px;
-      }
-      iron-icon {
-        color: var(--secondary-text-color);
-        margin-right: 16px;
-        display: inline-block;
-      }
-      paper-input {
-        width: calc(100% - 49px);
-        display: inline-block;
-      }
-    </style>
-    <div class="card-group">
-      <div class="title">
-        Repositories
-        <div class="description">
-          Configure which add-on repositories to fetch data from:
+      <style include="ha-style hassio-style">
+        .add {
+          padding: 12px 16px;
+        }
+        iron-icon {
+          color: var(--secondary-text-color);
+          margin-right: 16px;
+          display: inline-block;
+        }
+        paper-input {
+          width: calc(100% - 49px);
+          display: inline-block;
+        }
+      </style>
+      <div class="card-group">
+        <div class="title">
+          Repositories
+          <div class="description">
+            Configure which add-on repositories to fetch data from:
+          </div>
         </div>
-      </div>
-      <template id="list" is="dom-repeat" items="[[repoList]]" as="repo" sort="sortRepos">
+        <template
+          id="list"
+          is="dom-repeat"
+          items="[[repoList]]"
+          as="repo"
+          sort="sortRepos"
+        >
+          <paper-card>
+            <div class="card-content">
+              <hassio-card-content
+                hass="[[hass]]"
+                title="[[repo.name]]"
+                description="[[repo.url]]"
+                icon="hassio:github-circle"
+              ></hassio-card-content>
+            </div>
+            <div class="card-actions">
+              <ha-call-api-button
+                hass="[[hass]]"
+                path="hassio/supervisor/options"
+                data="[[computeRemoveRepoData(repoList, repo.url)]]"
+                class="warning"
+                >Remove</ha-call-api-button
+              >
+            </div>
+          </paper-card>
+        </template>
         <paper-card>
-          <div class="card-content">
-            <hassio-card-content hass="[[hass]]" title="[[repo.name]]" description="[[repo.url]]" icon="hassio:github-circle"></hassio-card-content>
+          <div class="card-content add">
+            <iron-icon icon="hassio:github-circle"></iron-icon>
+            <paper-input
+              label="Add new repository by URL"
+              value="{{repoUrl}}"
+            ></paper-input>
           </div>
           <div class="card-actions">
-            <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/options" data="[[computeRemoveRepoData(repoList, repo.url)]]" class="warning">Remove</ha-call-api-button>
+            <ha-call-api-button
+              hass="[[hass]]"
+              path="hassio/supervisor/options"
+              data="[[computeAddRepoData(repoList, repoUrl)]]"
+              >Add</ha-call-api-button
+            >
           </div>
         </paper-card>
-      </template>
-      <paper-card>
-        <div class="card-content add">
-          <iron-icon icon="hassio:github-circle"></iron-icon>
-          <paper-input label="Add new repository by URL" value="{{repoUrl}}"></paper-input>
-        </div>
-        <div class="card-actions">
-          <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/options" data="[[computeAddRepoData(repoList, repoUrl)]]">Add</ha-call-api-button>
-        </div>
-      </paper-card>
-    </div>
-`;
+      </div>
+    `;
   }
 
   static get properties() {

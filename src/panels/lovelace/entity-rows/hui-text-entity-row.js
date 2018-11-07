@@ -14,10 +14,7 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       ${this.styleTemplate}
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
+      <hui-generic-entity-row hass="[[hass]]" config="[[_config]]">
         ${this.textControlTemplate}
       </hui-generic-entity-row>
     `;
@@ -35,9 +32,7 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
 
   static get textControlTemplate() {
     return html`
-      <div>
-        [[_computeState(_stateObj)]]
-      </div>
+      <div>[[_computeState(_stateObj)]]</div>
     `;
   }
 

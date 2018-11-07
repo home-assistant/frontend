@@ -7,21 +7,35 @@ import CoverEntity from "../util/cover-model";
 class HaCoverControls extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      .state {
-        white-space: nowrap;
-      }
-      [invisible] {
-        visibility: hidden !important;
-      }
-    </style>
+      <style>
+        .state {
+          white-space: nowrap;
+        }
+        [invisible] {
+          visibility: hidden !important;
+        }
+      </style>
 
-    <div class="state">
-      <paper-icon-button icon="hass:arrow-up" on-click="onOpenTap" invisible$="[[!entityObj.supportsOpen]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
-      <paper-icon-button icon="hass:stop" on-click="onStopTap" invisible$="[[!entityObj.supportsStop]]"></paper-icon-button>
-      <paper-icon-button icon="hass:arrow-down" on-click="onCloseTap" invisible$="[[!entityObj.supportsClose]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
-    </div>
-`;
+      <div class="state">
+        <paper-icon-button
+          icon="hass:arrow-up"
+          on-click="onOpenTap"
+          invisible$="[[!entityObj.supportsOpen]]"
+          disabled="[[computeOpenDisabled(stateObj, entityObj)]]"
+        ></paper-icon-button>
+        <paper-icon-button
+          icon="hass:stop"
+          on-click="onStopTap"
+          invisible$="[[!entityObj.supportsStop]]"
+        ></paper-icon-button>
+        <paper-icon-button
+          icon="hass:arrow-down"
+          on-click="onCloseTap"
+          invisible$="[[!entityObj.supportsClose]]"
+          disabled="[[computeClosedDisabled(stateObj, entityObj)]]"
+        ></paper-icon-button>
+      </div>
+    `;
   }
 
   static get properties() {
