@@ -147,7 +147,7 @@ class HUIView extends PolymerElement {
 
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
-      wrapper.cardId = cardConfig.id;
+      wrapper.cardId = String(cardConfig.id);
       wrapper.editMode = this.editMode;
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);
