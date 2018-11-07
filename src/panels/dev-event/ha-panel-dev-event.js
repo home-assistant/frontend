@@ -19,55 +19,69 @@ import EventsMixin from "../../mixins/events-mixin";
 class HaPanelDevEvent extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style iron-flex iron-positioning"></style>
-    <style>
-      :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
+      <style include="ha-style iron-flex iron-positioning"></style>
+      <style>
+        :host {
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+        }
 
-      .content {
-        @apply --paper-font-body1;
-        padding: 16px;
-      }
+        .content {
+          @apply --paper-font-body1;
+          padding: 16px;
+        }
 
-      .ha-form {
-        margin-right: 16px;
-      }
+        .ha-form {
+          margin-right: 16px;
+        }
 
-      .header {
-        @apply --paper-font-title;
-      }
-    </style>
+        .header {
+          @apply --paper-font-title;
+        }
+      </style>
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Events</div>
-        </app-toolbar>
-      </app-header>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>Events</div>
+          </app-toolbar>
+        </app-header>
 
-      <div class$='[[computeFormClasses(narrow)]]'>
-        <div class='flex'>
-          <p>
-            Fire an event on the event bus.
-          </p>
+        <div class$="[[computeFormClasses(narrow)]]">
+          <div class="flex">
+            <p>Fire an event on the event bus.</p>
 
-          <div class='ha-form'>
-            <paper-input label="Event Type" autofocus required value='{{eventType}}'></paper-input>
-            <paper-textarea label="Event Data (JSON, optional)" value='{{eventData}}'></paper-textarea>
-            <paper-button on-click='fireEvent' raised>Fire Event</paper-button>
+            <div class="ha-form">
+              <paper-input
+                label="Event Type"
+                autofocus
+                required
+                value="{{eventType}}"
+              ></paper-input>
+              <paper-textarea
+                label="Event Data (JSON, optional)"
+                value="{{eventData}}"
+              ></paper-textarea>
+              <paper-button on-click="fireEvent" raised
+                >Fire Event</paper-button
+              >
+            </div>
+          </div>
+
+          <div>
+            <div class="header">Available Events</div>
+            <events-list
+              on-event-selected="eventSelected"
+              hass="[[hass]]"
+            ></events-list>
           </div>
         </div>
-
-        <div>
-          <div class='header'>Available Events</div>
-          <events-list on-event-selected='eventSelected' hass='[[hass]]'></events-list>
-        </div>
-      </div>
-    </app-header-layout>
+      </app-header-layout>
     `;
   }
 

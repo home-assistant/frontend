@@ -13,15 +13,10 @@ class HuiGenericEntityRow extends PolymerElement {
       ${this.styleTemplate}
       <template is="dom-if" if="[[_stateObj]]">
         ${this.stateBadgeTemplate}
-        <div class="flex">
-          ${this.infoTemplate}
-          <slot></slot>
-        </div>
+        <div class="flex">${this.infoTemplate} <slot></slot></div>
       </template>
       <template is="dom-if" if="[[!_stateObj]]">
-        <div class="not-found">
-          Entity not available: [[config.entity]]
-        </div>
+        <div class="not-found">Entity not available: [[config.entity]]</div>
       </template>
     `;
   }
@@ -54,7 +49,7 @@ class HuiGenericEntityRow extends PolymerElement {
           margin-left: 8px;
           min-width: 0;
         }
-        .flex ::slotted([slot=secondary]) {
+        .flex ::slotted([slot="secondary"]) {
           margin-left: 0;
         }
         .secondary,
@@ -89,10 +84,16 @@ class HuiGenericEntityRow extends PolymerElement {
         [[_computeName(config.name, _stateObj)]]
         <div class="secondary">
           <template is="dom-if" if="[[showSecondary]]">
-            <template is="dom-if" if="[[_equals(config.secondary_info, 'entity-id')]]">
+            <template
+              is="dom-if"
+              if="[[_equals(config.secondary_info, 'entity-id')]]"
+            >
               [[_stateObj.entity_id]]
             </template>
-            <template is="dom-if" if="[[_equals(config.secondary_info, 'last-changed')]]">
+            <template
+              is="dom-if"
+              if="[[_equals(config.secondary_info, 'last-changed')]]"
+            >
               <ha-relative-time
                 hass="[[hass]]"
                 datetime="[[_stateObj.last_changed]]"

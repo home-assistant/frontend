@@ -21,39 +21,78 @@ const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-  <style>
-    :host {
-      color: var(--primary-text-color);
-      /* remove the grey tap highlights in iOS on the fullscreen touch targets */
-      -webkit-tap-highlight-color: rgba(0,0,0,0);
-    }
-    iron-pages, ha-sidebar {
-      /* allow a light tap highlight on the actual interface elements  */
-      -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    }
-    iron-pages {
-      height: 100%;
-    }
-  </style>
-  <ha-url-sync hass="[[hass]]"></ha-url-sync>
-  <app-route route="{{route}}" pattern="/states" tail="{{statesRouteTail}}"></app-route>
-  <ha-voice-command-dialog hass="[[hass]]" id="voiceDialog"></ha-voice-command-dialog>
-  <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
-  </iron-media-query>
+      <style>
+        :host {
+          color: var(--primary-text-color);
+          /* remove the grey tap highlights in iOS on the fullscreen touch targets */
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+        iron-pages,
+        ha-sidebar {
+          /* allow a light tap highlight on the actual interface elements  */
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+        }
+        iron-pages {
+          height: 100%;
+        }
+      </style>
+      <ha-url-sync hass="[[hass]]"></ha-url-sync>
+      <app-route
+        route="{{route}}"
+        pattern="/states"
+        tail="{{statesRouteTail}}"
+      ></app-route>
+      <ha-voice-command-dialog
+        hass="[[hass]]"
+        id="voiceDialog"
+      ></ha-voice-command-dialog>
+      <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
+      </iron-media-query>
 
-  <app-drawer-layout fullbleed="" force-narrow="[[computeForceNarrow(narrow, dockedSidebar)]]" responsive-width="0">
-    <app-drawer id="drawer" slot="drawer" disable-swipe="[[_computeDisableSwipe(hass)]]" swipe-open="[[!_computeDisableSwipe(hass)]]" persistent="[[dockedSidebar]]">
-      <ha-sidebar narrow="[[narrow]]" hass="[[hass]]" default-page="[[_defaultPage]]"></ha-sidebar>
-    </app-drawer>
+      <app-drawer-layout
+        fullbleed=""
+        force-narrow="[[computeForceNarrow(narrow, dockedSidebar)]]"
+        responsive-width="0"
+      >
+        <app-drawer
+          id="drawer"
+          slot="drawer"
+          disable-swipe="[[_computeDisableSwipe(hass)]]"
+          swipe-open="[[!_computeDisableSwipe(hass)]]"
+          persistent="[[dockedSidebar]]"
+        >
+          <ha-sidebar
+            narrow="[[narrow]]"
+            hass="[[hass]]"
+            default-page="[[_defaultPage]]"
+          ></ha-sidebar>
+        </app-drawer>
 
-    <iron-pages attr-for-selected="id" fallback-selection="panel-resolver" selected="[[hass.panelUrl]]" selected-attribute="panel-visible">
-      <partial-cards id="states" narrow="[[narrow]]" hass="[[hass]]" show-menu="[[dockedSidebar]]" route="[[statesRouteTail]]" show-tabs=""></partial-cards>
+        <iron-pages
+          attr-for-selected="id"
+          fallback-selection="panel-resolver"
+          selected="[[hass.panelUrl]]"
+          selected-attribute="panel-visible"
+        >
+          <partial-cards
+            id="states"
+            narrow="[[narrow]]"
+            hass="[[hass]]"
+            show-menu="[[dockedSidebar]]"
+            route="[[statesRouteTail]]"
+            show-tabs=""
+          ></partial-cards>
 
-      <partial-panel-resolver id="panel-resolver" narrow="[[narrow]]" hass="[[hass]]" route="[[route]]" show-menu="[[dockedSidebar]]"></partial-panel-resolver>
-
-    </iron-pages>
-  </app-drawer-layout>
-`;
+          <partial-panel-resolver
+            id="panel-resolver"
+            narrow="[[narrow]]"
+            hass="[[hass]]"
+            route="[[route]]"
+            show-menu="[[dockedSidebar]]"
+          ></partial-panel-resolver>
+        </iron-pages>
+      </app-drawer-layout>
+    `;
   }
 
   static get properties() {

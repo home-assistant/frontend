@@ -14,90 +14,120 @@ import EventsMixin from "../../../src/mixins/events-mixin";
 class HassioSnapshots extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style hassio-style">
-      paper-radio-group {
-        display: block;
-      }
-      paper-radio-button {
-        padding: 0 0 2px 2px;
-      }
-      paper-radio-button,
-      paper-checkbox,
-      paper-input[type="password"] {
-        display: block;
-        margin: 4px 0 4px 48px;
-      }
-      .pointer {
-        cursor: pointer;
-      }
-    </style>
-    <div class="content">
-      <div class="card-group">
-        <div class="title">
-          Create snapshot
-          <div class="description">
-            Snapshots allow you to easily backup and
-            restore all data of your Hass.io instance.
+      <style include="ha-style hassio-style">
+        paper-radio-group {
+          display: block;
+        }
+        paper-radio-button {
+          padding: 0 0 2px 2px;
+        }
+        paper-radio-button,
+        paper-checkbox,
+        paper-input[type="password"] {
+          display: block;
+          margin: 4px 0 4px 48px;
+        }
+        .pointer {
+          cursor: pointer;
+        }
+      </style>
+      <div class="content">
+        <div class="card-group">
+          <div class="title">
+            Create snapshot
+            <div class="description">
+              Snapshots allow you to easily backup and restore all data of your
+              Hass.io instance.
+            </div>
           </div>
-        </div>
-        <paper-card>
-          <div class="card-content">
-            <paper-input autofocus="" label="Name" value="{{snapshotName}}"></paper-input>
-            Type:
-            <paper-radio-group selected="{{snapshotType}}">
-              <paper-radio-button name="full">
-                Full snapshot
-              </paper-radio-button>
-              <paper-radio-button name="partial">
-                Partial snapshot
-              </paper-radio-button>
-            </paper-radio-group>
-            <template is="dom-if" if="[[!_fullSelected(snapshotType)]]">
-              Folders:
-              <template is="dom-repeat" items="[[folderList]]">
-                <paper-checkbox checked="{{item.checked}}">
-                  [[item.name]]
-                </paper-checkbox>
-              </template>
-              Add-ons:
-              <template is="dom-repeat" items="[[addonList]]" sort="_sortAddons">
-                <paper-checkbox checked="{{item.checked}}">
-                  [[item.name]]
-                </paper-checkbox>
-              </template>
-            </template>
-            Security:
-            <paper-checkbox checked="{{snapshotHasPassword}}">Password protection</paper-checkbox>
-            <template is="dom-if" if="[[snapshotHasPassword]]">
-              <paper-input label="Password" type="password" value="{{snapshotPassword}}"></paper-input>
-            </template>
-            <template is="dom-if" if="[[error]]">
-              <p class="error">[[error]]</p>
-            </template>
-          </div>
-          <div class="card-actions">
-            <paper-button disabled="[[creatingSnapshot]]" on-click="_createSnapshot">Create</paper-button>
-          </div>
-        </paper-card>
-      </div>
-
-      <div class="card-group">
-        <div class="title">Available snapshots</div>
-        <template is="dom-if" if="[[!snapshots.length]]">
           <paper-card>
-            <div class="card-content">You don't have any snapshots yet.</div>
-          </paper-card>
-        </template>
-        <template is="dom-repeat" items="[[snapshots]]" as="snapshot" sort="_sortSnapshots">
-          <paper-card class="pointer" on-click="_snapshotClicked">
             <div class="card-content">
-              <hassio-card-content hass="[[hass]]" title="[[_computeName(snapshot)]]" description="[[_computeDetails(snapshot)]]" datetime="[[snapshot.date]]" icon="[[_computeIcon(snapshot.type)]]" icon-class="snapshot"></hassio-card-content>
+              <paper-input
+                autofocus=""
+                label="Name"
+                value="{{snapshotName}}"
+              ></paper-input>
+              Type:
+              <paper-radio-group selected="{{snapshotType}}">
+                <paper-radio-button name="full">
+                  Full snapshot
+                </paper-radio-button>
+                <paper-radio-button name="partial">
+                  Partial snapshot
+                </paper-radio-button>
+              </paper-radio-group>
+              <template is="dom-if" if="[[!_fullSelected(snapshotType)]]">
+                Folders:
+                <template is="dom-repeat" items="[[folderList]]">
+                  <paper-checkbox checked="{{item.checked}}">
+                    [[item.name]]
+                  </paper-checkbox>
+                </template>
+                Add-ons:
+                <template
+                  is="dom-repeat"
+                  items="[[addonList]]"
+                  sort="_sortAddons"
+                >
+                  <paper-checkbox checked="{{item.checked}}">
+                    [[item.name]]
+                  </paper-checkbox>
+                </template>
+              </template>
+              Security:
+              <paper-checkbox checked="{{snapshotHasPassword}}"
+                >Password protection</paper-checkbox
+              >
+              <template is="dom-if" if="[[snapshotHasPassword]]">
+                <paper-input
+                  label="Password"
+                  type="password"
+                  value="{{snapshotPassword}}"
+                ></paper-input>
+              </template>
+              <template is="dom-if" if="[[error]]">
+                <p class="error">[[error]]</p>
+              </template>
+            </div>
+            <div class="card-actions">
+              <paper-button
+                disabled="[[creatingSnapshot]]"
+                on-click="_createSnapshot"
+                >Create</paper-button
+              >
             </div>
           </paper-card>
-        </template>
+        </div>
+
+        <div class="card-group">
+          <div class="title">Available snapshots</div>
+          <template is="dom-if" if="[[!snapshots.length]]">
+            <paper-card>
+              <div class="card-content">You don't have any snapshots yet.</div>
+            </paper-card>
+          </template>
+          <template
+            is="dom-repeat"
+            items="[[snapshots]]"
+            as="snapshot"
+            sort="_sortSnapshots"
+          >
+            <paper-card class="pointer" on-click="_snapshotClicked">
+              <div class="card-content">
+                <hassio-card-content
+                  hass="[[hass]]"
+                  title="[[_computeName(snapshot)]]"
+                  description="[[_computeDetails(snapshot)]]"
+                  datetime="[[snapshot.date]]"
+                  icon="[[_computeIcon(snapshot.type)]]"
+                  icon-class="snapshot"
+                ></hassio-card-content>
+              </div>
+            </paper-card>
+          </template>
+        </div>
       </div>
-    </div>
-`;
+    `;
   }
 
   static get properties() {

@@ -38,9 +38,9 @@ class DemoCard extends PolymerElement {
         }
       </style>
       <h2>[[config.heading]]</h2>
-      <div class='root'>
+      <div class="root">
         <div id="card"></div>
-        <template is='dom-if' if='[[showConfig]]'>
+        <template is="dom-if" if="[[showConfig]]">
           <pre>[[_trim(config.config)]]</pre>
         </template>
       </div>

@@ -5,10 +5,10 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 class HaCustomizeBoolean extends PolymerElement {
   static get template() {
     return html`
-    <paper-checkbox disabled="[[item.secondary]]" checked="{{item.value}}">
-      [[item.description]]
-    </paper-checkbox>
-`;
+      <paper-checkbox disabled="[[item.secondary]]" checked="{{item.value}}">
+        [[item.description]]
+      </paper-checkbox>
+    `;
   }
 
   static get properties() {

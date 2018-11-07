@@ -8,29 +8,32 @@ import "../components/entity/state-info";
 class StateCardToggle extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      ha-entity-toggle {
-        margin: -4px -16px -4px 0;
-        padding: 4px 16px;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        ha-entity-toggle {
+          margin: -4px -16px -4px 0;
+          padding: 4px 16px;
+        }
+      </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <ha-entity-toggle state-obj="[[stateObj]]" hass="[[hass]]"></ha-entity-toggle>
-    </div>
-`;
+      <div class="horizontal justified layout">
+        ${this.stateInfoTemplate}
+        <ha-entity-toggle
+          state-obj="[[stateObj]]"
+          hass="[[hass]]"
+        ></ha-entity-toggle>
+      </div>
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   static get properties() {

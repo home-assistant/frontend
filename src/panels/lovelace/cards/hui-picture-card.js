@@ -24,8 +24,11 @@ class HuiPictureCard extends NavigateMixin(PolymerElement) {
         }
       </style>
 
-      <ha-card on-click="_cardClicked" clickable$='[[_computeClickable(_config)]]'>
-        <img src='[[_config.image]]' />
+      <ha-card
+        on-click="_cardClicked"
+        clickable$="[[_computeClickable(_config)]]"
+      >
+        <img src="[[_config.image]]" />
       </ha-card>
     `;
   }

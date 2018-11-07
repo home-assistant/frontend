@@ -12,8 +12,7 @@ class HuiErrorEntityRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.renderStyle()}
-      Entity not available: ${this.entity || ""}
+      ${this.renderStyle()} Entity not available: ${this.entity || ""}
     `;
   }
 

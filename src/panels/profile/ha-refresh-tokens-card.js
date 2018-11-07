@@ -16,39 +16,43 @@ import "./ha-settings-row";
 class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      paper-card {
-        display: block;
-      }
-      paper-icon-button {
-        color: var(--primary-text-color);
-      }
-      paper-icon-button[disabled] {
-        color: var(--disabled-text-color);
-      }
-    </style>
-    <paper-card heading="[[localize('ui.panel.profile.refresh_tokens.header')]]">
-      <div class="card-content">[[localize('ui.panel.profile.refresh_tokens.description')]]</div>
-      <template is='dom-repeat' items='[[_computeTokens(refreshTokens)]]'>
-        <ha-settings-row three-line>
-          <span slot='heading'>[[_formatTitle(item.client_id)]]</span>
-          <div slot='description'>[[_formatCreatedAt(item.created_at)]]</div>
-          <div slot='description'>[[_formatLastUsed(item)]]</div>
-          <div>
-            <template is='dom-if' if='[[item.is_current]]'>
-              <paper-tooltip
-                position="left"
-              >[[localize('ui.panel.profile.refresh_tokens.current_token_tooltip')]]</paper-tooltip>
-            </template>
-            <paper-icon-button
-              icon="hass:delete"
-              on-click='_handleDelete'
-              disabled="[[item.is_current]]"
-            ></paper-icon-button>
-          </div>
-        </ha-settings-row>
-      </template>
-    </paper-card>
+      <style>
+        paper-card {
+          display: block;
+        }
+        paper-icon-button {
+          color: var(--primary-text-color);
+        }
+        paper-icon-button[disabled] {
+          color: var(--disabled-text-color);
+        }
+      </style>
+      <paper-card
+        heading="[[localize('ui.panel.profile.refresh_tokens.header')]]"
+      >
+        <div class="card-content">
+          [[localize('ui.panel.profile.refresh_tokens.description')]]
+        </div>
+        <template is="dom-repeat" items="[[_computeTokens(refreshTokens)]]">
+          <ha-settings-row three-line>
+            <span slot="heading">[[_formatTitle(item.client_id)]]</span>
+            <div slot="description">[[_formatCreatedAt(item.created_at)]]</div>
+            <div slot="description">[[_formatLastUsed(item)]]</div>
+            <div>
+              <template is="dom-if" if="[[item.is_current]]">
+                <paper-tooltip position="left"
+                  >[[localize('ui.panel.profile.refresh_tokens.current_token_tooltip')]]</paper-tooltip
+                >
+              </template>
+              <paper-icon-button
+                icon="hass:delete"
+                on-click="_handleDelete"
+                disabled="[[item.is_current]]"
+              ></paper-icon-button>
+            </div>
+          </ha-settings-row>
+        </template>
+      </paper-card>
     `;
   }
 

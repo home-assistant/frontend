@@ -14,62 +14,63 @@ import domainIcon from "../../common/entity/domain_icon";
 class HaLogbook extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex"></style>
-    <style>
-      :host {
-        display: block;
-      }
+      <style include="iron-flex"></style>
+      <style>
+        :host {
+          display: block;
+        }
 
-      .entry {
-        @apply --paper-font-body1;
-        line-height: 2em;
-      }
+        .entry {
+          @apply --paper-font-body1;
+          line-height: 2em;
+        }
 
-      .time {
-        width: 55px;
-        font-size: .8em;
-        color: var(--secondary-text-color);
-      }
+        .time {
+          width: 55px;
+          font-size: 0.8em;
+          color: var(--secondary-text-color);
+        }
 
-      iron-icon {
-        margin: 0 8px 0 16px;
-        color: var(--primary-text-color);
-      }
+        iron-icon {
+          margin: 0 8px 0 16px;
+          color: var(--primary-text-color);
+        }
 
-      .message {
-        color: var(--primary-text-color);
-      }
+        .message {
+          color: var(--primary-text-color);
+        }
 
-      a {
-        color: var(--primary-color);
-      }
-    </style>
+        a {
+          color: var(--primary-color);
+        }
+      </style>
 
-    <template is="dom-if" if="[[!entries.length]]">
-      No logbook entries found.
-    </template>
-
-    <template is="dom-repeat" items="[[entries]]">
-      <template is="dom-if" if="{{_needHeader(entries.*, index)}}">
-        <h4 class="date">[[_formatDate(item.when)]]</h4>
+      <template is="dom-if" if="[[!entries.length]]">
+        No logbook entries found.
       </template>
 
-      <div class="horizontal layout entry">
-        <div class="time">[[_formatTime(item.when)]]</div>
-        <iron-icon icon="[[_computeIcon(item.domain)]]"></iron-icon>
-        <div class="message" flex="">
-          <template is="dom-if" if="[[!item.entity_id]]">
-            <span class="name">[[item.name]]</span>
-          </template>
-          <template is="dom-if" if="[[item.entity_id]]">
-            <a href="#" on-click="entityClicked" class="name">[[item.name]]</a>
-          </template>
-          <span> </span>
-          <span>[[item.message]]</span>
+      <template is="dom-repeat" items="[[entries]]">
+        <template is="dom-if" if="{{_needHeader(entries.*, index)}}">
+          <h4 class="date">[[_formatDate(item.when)]]</h4>
+        </template>
+
+        <div class="horizontal layout entry">
+          <div class="time">[[_formatTime(item.when)]]</div>
+          <iron-icon icon="[[_computeIcon(item.domain)]]"></iron-icon>
+          <div class="message" flex="">
+            <template is="dom-if" if="[[!item.entity_id]]">
+              <span class="name">[[item.name]]</span>
+            </template>
+            <template is="dom-if" if="[[item.entity_id]]">
+              <a href="#" on-click="entityClicked" class="name"
+                >[[item.name]]</a
+              >
+            </template>
+            <span> </span> <span>[[item.message]]</span>
+          </div>
         </div>
-      </div>
-    </template>
-`;
+      </template>
+    `;
   }
 
   static get properties() {

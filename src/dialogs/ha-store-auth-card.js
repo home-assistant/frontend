@@ -10,7 +10,7 @@ import "../resources/ha-style";
 class HaStoreAuth extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-      <style include='ha-style'>
+      <style include="ha-style">
         paper-card {
           position: fixed;
           padding: 8px 0;
@@ -31,12 +31,14 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
         }
       </style>
       <paper-card elevation="4">
-        <div class='card-content'>
-          [[localize('ui.auth_store.ask')]]
-        </div>
-        <div class='card-actions'>
-          <paper-button on-click='_done'>[[localize('ui.auth_store.decline')]]</paper-button>
-          <paper-button primary on-click='_save'>[[localize('ui.auth_store.confirm')]]</paper-button>
+        <div class="card-content">[[localize('ui.auth_store.ask')]]</div>
+        <div class="card-actions">
+          <paper-button on-click="_done"
+            >[[localize('ui.auth_store.decline')]]</paper-button
+          >
+          <paper-button primary on-click="_save"
+            >[[localize('ui.auth_store.confirm')]]</paper-button
+          >
         </div>
       </paper-card>
     `;

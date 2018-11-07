@@ -6,13 +6,13 @@ import "../../layouts/partial-cards";
 class HaPanelKiosk extends PolymerElement {
   static get template() {
     return html`
-    <partial-cards
-      id='kiosk-states'
-      hass='[[hass]]'
-      show-menu
-      route='[[route]]'
-      panel-visible
-    ></partial-cards>
+      <partial-cards
+        id="kiosk-states"
+        hass="[[hass]]"
+        show-menu
+        route="[[route]]"
+        panel-visible
+      ></partial-cards>
     `;
   }
 

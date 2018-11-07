@@ -21,10 +21,7 @@ class HaTextarea extends PolymerElement {
           display: block;
         }
       </style>
-      <paper-textarea
-        label='[[label]]'
-        value='{{value}}'
-      ></paper-textarea>
+      <paper-textarea label="[[label]]" value="{{value}}"></paper-textarea>
     `;
   }
 

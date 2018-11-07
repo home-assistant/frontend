@@ -419,8 +419,8 @@
           return a
             ? a.href
             : p && p.get
-              ? p.get.call(this)
-              : (document.querySelector("base") || window.location).href;
+            ? p.get.call(this)
+            : (document.querySelector("base") || window.location).href;
         },
         configurable: !0,
         enumerable: !0,

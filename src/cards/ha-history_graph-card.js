@@ -14,39 +14,56 @@ import EventsMixin from "../mixins/events-mixin";
 class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      paper-card:not([dialog]) .content {
-        padding: 0 16px 16px;
-      }
-      paper-card[dialog] {
-        padding-top: 16px;
-        background-color: transparent;
-      }
-      paper-card {
-        width: 100%;
-        /* prevent new stacking context, chart tooltip needs to overflow */
-        position: static;
-      }
-      .header {
-        @apply --paper-font-headline;
-        line-height: 40px;
-        color: var(--primary-text-color);
-        padding: 20px 16px 12px;
-        @apply --paper-font-common-nowrap;
-      }
-      paper-card[dialog] .header {
-        display: none;
-      }
-    </style>
-    <ha-state-history-data hass="[[hass]]" filter-type="recent-entity" entity-id="[[computeHistoryEntities(stateObj)]]" data="{{stateHistory}}" is-loading="{{stateHistoryLoading}}" cache-config="[[cacheConfig]]"></ha-state-history-data>
-    <paper-card dialog$="[[inDialog]]" on-click="cardTapped" elevation="[[computeElevation(inDialog)]]">
-      <div class="header">[[computeTitle(stateObj)]]</div>
-      <div class="content">
-         <state-history-charts hass="[[hass]]" history-data="[[stateHistory]]" is-loading-data="[[stateHistoryLoading]]" up-to-now no-single>
-         </state-history-charts>
-      </div>
-    </paper-card>
-`;
+      <style>
+        paper-card:not([dialog]) .content {
+          padding: 0 16px 16px;
+        }
+        paper-card[dialog] {
+          padding-top: 16px;
+          background-color: transparent;
+        }
+        paper-card {
+          width: 100%;
+          /* prevent new stacking context, chart tooltip needs to overflow */
+          position: static;
+        }
+        .header {
+          @apply --paper-font-headline;
+          line-height: 40px;
+          color: var(--primary-text-color);
+          padding: 20px 16px 12px;
+          @apply --paper-font-common-nowrap;
+        }
+        paper-card[dialog] .header {
+          display: none;
+        }
+      </style>
+      <ha-state-history-data
+        hass="[[hass]]"
+        filter-type="recent-entity"
+        entity-id="[[computeHistoryEntities(stateObj)]]"
+        data="{{stateHistory}}"
+        is-loading="{{stateHistoryLoading}}"
+        cache-config="[[cacheConfig]]"
+      ></ha-state-history-data>
+      <paper-card
+        dialog$="[[inDialog]]"
+        on-click="cardTapped"
+        elevation="[[computeElevation(inDialog)]]"
+      >
+        <div class="header">[[computeTitle(stateObj)]]</div>
+        <div class="content">
+          <state-history-charts
+            hass="[[hass]]"
+            history-data="[[stateHistory]]"
+            is-loading-data="[[stateHistoryLoading]]"
+            up-to-now
+            no-single
+          >
+          </state-history-charts>
+        </div>
+      </paper-card>
+    `;
   }
 
   static get properties() {

@@ -10,31 +10,39 @@ import CoverEntity from "../util/cover-model";
 class StateCardCover extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      :host {
-        line-height: 1.5;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        :host {
+          line-height: 1.5;
+        }
+      </style>
 
-    <div class="horizontal justified layout">
-      ${this.stateInfoTemplate}
-      <div class="horizontal layout">
-        <ha-cover-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
-        <ha-cover-tilt-controls hidden$="[[!entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
+      <div class="horizontal justified layout">
+        ${this.stateInfoTemplate}
+        <div class="horizontal layout">
+          <ha-cover-controls
+            hidden$="[[entityObj.isTiltOnly]]"
+            hass="[[hass]]"
+            state-obj="[[stateObj]]"
+          ></ha-cover-controls>
+          <ha-cover-tilt-controls
+            hidden$="[[!entityObj.isTiltOnly]]"
+            hass="[[hass]]"
+            state-obj="[[stateObj]]"
+          ></ha-cover-tilt-controls>
+        </div>
       </div>
-    </div>
-`;
+    `;
   }
 
   static get stateInfoTemplate() {
     return html`
-    <state-info
-      hass="[[hass]]"
-      state-obj="[[stateObj]]"
-      in-dialog="[[inDialog]]"
-    ></state-info>
-`;
+      <state-info
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        in-dialog="[[inDialog]]"
+      ></state-info>
+    `;
   }
 
   static get properties() {

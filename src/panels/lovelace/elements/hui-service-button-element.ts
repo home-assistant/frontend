@@ -49,7 +49,8 @@ export class HuiServiceButtonElement extends LitElement
         .domain="${this._domain}"
         .service="${this._service}"
         .service-data="${this._config.service_data}"
-      >${this._config.title}</ha-call-service-button>
+        >${this._config.title}</ha-call-service-button
+      >
     `;
   }
 

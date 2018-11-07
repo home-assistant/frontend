@@ -10,23 +10,43 @@ import computeStateDomain from "../../../common/entity/compute_state_domain";
 class HaConfigAutomation extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      ha-automation-picker,
-      ha-automation-editor {
-        height: 100%;
-      }
-    </style>
-    <app-route route="[[route]]" pattern="/automation/edit/:automation" data="{{_routeData}}" active="{{_edittingAutomation}}"></app-route>
-    <app-route route="[[route]]" pattern="/automation/new" active="{{_creatingNew}}"></app-route>
+      <style>
+        ha-automation-picker,
+        ha-automation-editor {
+          height: 100%;
+        }
+      </style>
+      <app-route
+        route="[[route]]"
+        pattern="/automation/edit/:automation"
+        data="{{_routeData}}"
+        active="{{_edittingAutomation}}"
+      ></app-route>
+      <app-route
+        route="[[route]]"
+        pattern="/automation/new"
+        active="{{_creatingNew}}"
+      ></app-route>
 
-    <template is="dom-if" if="[[!showEditor]]">
-      <ha-automation-picker hass="[[hass]]" narrow="[[narrow]]" show-menu="[[showMenu]]" automations="[[automations]]" is-wide="[[isWide]]"></ha-automation-picker>
-    </template>
+      <template is="dom-if" if="[[!showEditor]]">
+        <ha-automation-picker
+          hass="[[hass]]"
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+          automations="[[automations]]"
+          is-wide="[[isWide]]"
+        ></ha-automation-picker>
+      </template>
 
-    <template is="dom-if" if="[[showEditor]]" restamp="">
-      <ha-automation-editor hass="[[hass]]" automation="[[automation]]" is-wide="[[isWide]]" creating-new="[[_creatingNew]]"></ha-automation-editor>
-    </template>
-`;
+      <template is="dom-if" if="[[showEditor]]" restamp="">
+        <ha-automation-editor
+          hass="[[hass]]"
+          automation="[[automation]]"
+          is-wide="[[isWide]]"
+          creating-new="[[_creatingNew]]"
+        ></ha-automation-editor>
+      </template>
+    `;
   }
 
   static get properties() {

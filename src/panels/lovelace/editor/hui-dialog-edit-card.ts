@@ -81,16 +81,26 @@ export class HuiDialogEditCard extends LitElement {
         <paper-dialog-scrollable>
           ${
             this._editorToggle && this._configElement !== null
-              ? html`<div class="element-editor">${when(
-                  this._configElement,
-                  () => this._configElement,
-                  () => html`Loading...`
-                )}</div>`
+              ? html`
+                  <div class="element-editor">
+                    ${
+                      when(
+                        this._configElement,
+                        () => this._configElement,
+                        () =>
+                          html`
+                            Loading...
+                          `
+                      )
+                    }
+                  </div>
+                `
               : html`
-              <hui-yaml-editor
-                .yaml="${this._configValue!.value}"
-                @yaml-changed="${this._handleYamlChanged}"
-              ></hui-yaml-editor>`
+                  <hui-yaml-editor
+                    .yaml="${this._configValue!.value}"
+                    @yaml-changed="${this._handleYamlChanged}"
+                  ></hui-yaml-editor>
+                `
           }
           <hui-yaml-card-preview
             .hass="${this.hass}"

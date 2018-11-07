@@ -10,7 +10,8 @@ class HaCallApiButton extends LitElement {
         .progress="${this.progress}"
         @click="${this._buttonTapped}"
         ?disabled="${this.disabled}"
-      ><slot></slot></ha-progress-button>
+        ><slot></slot
+      ></ha-progress-button>
     `;
   }
 

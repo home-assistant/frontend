@@ -68,7 +68,6 @@ class HuiMapCard extends PolymerElement {
           ></paper-icon-button>
         </div>
       </ha-card>
-
     `;
   }
 

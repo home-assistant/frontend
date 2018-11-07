@@ -6,53 +6,55 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 class HaProgressButton extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      .container {
-        position: relative;
-        display: inline-block;
-      }
+      <style>
+        .container {
+          position: relative;
+          display: inline-block;
+        }
 
-      paper-button {
-        transition: all 1s;
-      }
+        paper-button {
+          transition: all 1s;
+        }
 
-      .success paper-button {
-        color: white;
-        background-color: var(--google-green-500);
-        transition: none;
-      }
+        .success paper-button {
+          color: white;
+          background-color: var(--google-green-500);
+          transition: none;
+        }
 
-      .error paper-button {
-        color: white;
-        background-color: var(--google-red-500);
-        transition: none;
-      }
+        .error paper-button {
+          color: white;
+          background-color: var(--google-red-500);
+          transition: none;
+        }
 
-      paper-button[disabled] {
-        color: #c8c8c8;
-      }
+        paper-button[disabled] {
+          color: #c8c8c8;
+        }
 
-      .progress {
-        @apply --layout;
-        @apply --layout-center-center;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
-    </style>
-    <div class="container" id="container">
-      <paper-button id="button" disabled="[[computeDisabled(disabled, progress)]]" on-click="buttonTapped">
-        <slot></slot>
-      </paper-button>
-      <template is="dom-if" if="[[progress]]">
-        <div class="progress">
-          <paper-spinner active=""></paper-spinner>
-        </div>
-      </template>
-    </div>
-`;
+        .progress {
+          @apply --layout;
+          @apply --layout-center-center;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        }
+      </style>
+      <div class="container" id="container">
+        <paper-button
+          id="button"
+          disabled="[[computeDisabled(disabled, progress)]]"
+          on-click="buttonTapped"
+        >
+          <slot></slot>
+        </paper-button>
+        <template is="dom-if" if="[[progress]]">
+          <div class="progress"><paper-spinner active=""></paper-spinner></div>
+        </template>
+      </div>
+    `;
   }
 
   static get properties() {

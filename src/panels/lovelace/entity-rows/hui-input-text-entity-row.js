@@ -7,10 +7,7 @@ import "../components/hui-generic-entity-row";
 class HuiInputTextEntityRow extends PolymerElement {
   static get template() {
     return html`
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
+      <hui-generic-entity-row hass="[[hass]]" config="[[_config]]">
         ${this.inputTextControlTemplate}
       </hui-generic-entity-row>
     `;
