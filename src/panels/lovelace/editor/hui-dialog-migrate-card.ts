@@ -22,6 +22,7 @@ export class HuiDialogMigrateCard extends LitElement {
   public async showDialog({ hass, reloadLovelace }) {
     this.hass = hass;
     this._reloadLovelace = reloadLovelace;
+    await this.updateComplete;
     this._dialog.open();
   }
 
@@ -68,7 +69,7 @@ export class HuiDialogMigrateCard extends LitElement {
       this._dialog.close();
       this._reloadLovelace!();
     } catch (err) {
-      alert(`Migration failed: ${err.reason}`);
+      alert(`Migration failed: ${err.message}`);
     }
   }
 }

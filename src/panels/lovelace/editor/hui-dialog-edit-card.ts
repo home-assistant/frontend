@@ -221,7 +221,7 @@ export class HuiDialogEditCard extends LitElement {
       this._dialog.close();
       this._reloadLovelace!();
     } catch (err) {
-      alert(`Saving failed: ${err.reason}`);
+      alert(`Saving failed: ${err.message}`);
     }
   }
 }
