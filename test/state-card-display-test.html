@@ -1,11 +1,15 @@
 <!doctype html>
 <html>
+
 <head>
-  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-  <script src="../node_modules/wct-browser-legacy/browser.js"></script>
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script src="../node_modules/wct-mocha/wct-mocha.js"></script>
+  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <script src="../node_modules/chai/chai.js"></script>
 
   <script type="module" src="../src/state-summary/state-card-display.js"></script>
 </head>
+
 <body>
   <test-fixture id="stateCardDisplay">
     <template>
@@ -14,47 +18,48 @@
   </test-fixture>
 
   <script type="module">
-import '../src/state-summary/state-card-display.js';
-function lightOrShadow(elem, selector) {
-  return elem.shadowRoot ?
-      elem.shadowRoot.querySelector(selector) :
-      elem.querySelector(selector);
-}
+    import '../src/state-summary/state-card-display.js';
+    function lightOrShadow(elem, selector) {
+      return elem.shadowRoot ?
+        elem.shadowRoot.querySelector(selector) :
+        elem.querySelector(selector);
+    }
 
-suite('state-card-display', function() {
-  let wrapper;
-  let card;
+    suite('state-card-display', function () {
+      let wrapper;
+      let card;
 
-  setup(function() {
-    wrapper = fixture('stateCardDisplay');
-    card = document.createElement('state-card-display');
-    card.stateObj = {
-      entity_id: 'binary_sensor.demo',
-      state: 'off',
-      attributes: {
-        device_class: 'moisture',
-      },
-    };
-    card.hass = {
-      language: 'en',
-      resources: {
-        'en': {
-          'state.binary_sensor.moisture.off': 'Mock Off Text',
-        },
-      },
-    };
-    wrapper.appendChild(card);
-  });
+      setup(function () {
+        wrapper = fixture('stateCardDisplay');
+        card = document.createElement('state-card-display');
+        card.stateObj = {
+          entity_id: 'binary_sensor.demo',
+          state: 'off',
+          attributes: {
+            device_class: 'moisture',
+          },
+        };
+        card.hass = {
+          language: 'en',
+          resources: {
+            'en': {
+              'state.binary_sensor.moisture.off': 'Mock Off Text',
+            },
+          },
+        };
+        wrapper.appendChild(card);
+      });
 
-  test('state display text', function(done) {
-    flush(function() {
-      const stateDiv = lightOrShadow(card, '.state');
-      assert.isOk(stateDiv);
-      assert.deepEqual(stateDiv.innerText, 'Mock Off Text');
-      done();
+      test('state display text', function (done) {
+        flush(function () {
+          const stateDiv = lightOrShadow(card, '.state');
+          assert.isOk(stateDiv);
+          assert.deepEqual(stateDiv.innerText, 'Mock Off Text');
+          done();
+        });
+      });
     });
-  });
-});
-</script>
+  </script>
 </body>
+
 </html>
