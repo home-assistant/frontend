@@ -52,7 +52,7 @@ class HuiTextEntityRow extends hassLocalizeLitMixin(LitElement)
         <div>${computeStateDisplay(
           this.localize,
           stateObj,
-          this.hass!.language
+          this.hass.language
         )}</div>
       </hui-generic-entity-row>
     `;
