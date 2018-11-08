@@ -52,8 +52,7 @@ export class HuiEntityEditor extends LitElement {
   private _addEntity() {
     const newConfigEntities = this.entities!.concat();
 
-    newConfigEntities.push({ entity: " " });
-    this.entities = newConfigEntities;
+    newConfigEntities.push({ entity: "" });
 
     fireEvent(this, "change", { entities: newConfigEntities });
   }

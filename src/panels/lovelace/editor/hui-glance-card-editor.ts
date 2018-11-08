@@ -18,6 +18,7 @@ import "../components/hui-entity-editor";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { processEditorEntities } from "./process-editor-entities";
+import { EditorEvent } from "./types";
 
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
@@ -89,7 +90,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _valueChanged(ev: MouseEvent): void {
+  private _valueChanged(ev: EditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -97,14 +98,14 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     const target = ev.target! as any;
     let newConfig = this._config;
 
-    if (!target.entities) {
+    if (ev.detail && ev.detail.entities) {
+      newConfig.entities = ev.detail.entities;
+    } else {
       newConfig = {
         ...this._config,
         [target.configValue]:
           target.checked !== undefined ? target.checked : target.value,
       };
-    } else {
-      newConfig.entities = target.entities;
     }
 
     fireEvent(this, "config-changed", {
