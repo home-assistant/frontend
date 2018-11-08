@@ -98,7 +98,8 @@ class HaLogbook extends EventsMixin(PolymerElement) {
     const current = this.get("when", change.base[index]);
     const previous = this.get("when", change.base[index - 1]);
     return (
-      current && previous &&
+      current &&
+      previous &&
       new Date(current).toDateString() !== new Date(previous).toDateString()
     );
   }
