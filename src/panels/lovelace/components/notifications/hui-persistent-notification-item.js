@@ -28,6 +28,9 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(
         ha-relative-time {
           color: var(--secondary-text-color);
         }
+        a {
+          color: var(--primary-color);
+        }
       </style>
       <hui-notification-item-template>
         <span slot="header">[[_computeTitle(notification)]]</span>
