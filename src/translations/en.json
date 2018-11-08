@@ -758,8 +758,10 @@
         "showing_entries": "[%key:ui::panel::history::showing_entries%]"
       },
       "lovelace": {
-        "shopping-list": {
-          "checked_items": "Checked items"
+        "cards": {
+          "shopping-list": {
+            "checked_items": "Checked items"
+          }
         }
       },
       "mailbox": {
