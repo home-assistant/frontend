@@ -5,7 +5,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
-import processConfigEntities from "../common/process-config-entities";
+import { processEditorEntities } from "./process-editor-entities";
+import { EditorEvent } from "./types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardEditor } from "../types";
@@ -17,8 +18,6 @@ import "../components/hui-theme-select-editor";
 import "../components/hui-entity-editor";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { processEditorEntities } from "./process-editor-entities";
-import { EditorEvent } from "./types";
 
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
