@@ -2,15 +2,28 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import "@polymer/paper-input/paper-textarea";
 
+import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { getCardConfig } from "../common/data";
 
 export class HuiYAMLEditor extends LitElement {
   public yaml?: string;
+  public cardId?: string;
+  private _hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
-    return {
-      yaml: {},
-    };
+    return { yaml: {}, cardId: { type: String } };
+  }
+
+  set hass(value: HomeAssistant) {
+    this._hass = value;
+    if (!this.yaml || this.yaml === "") {
+      this._loadConfig();
+    }
+  }
+
+  constructor() {
+    super();
   }
 
   protected render(): TemplateResult {
@@ -28,10 +41,16 @@ export class HuiYAMLEditor extends LitElement {
     `;
   }
 
+  private async _loadConfig(): Promise<void> {
+    this.yaml = await getCardConfig(this._hass!, this.cardId!);
+  }
+
   private _valueChanged(ev: MouseEvent): void {
     const target = ev.target! as any;
     this.yaml = target.value;
-    fireEvent(this, "yaml-changed", { yaml: target.value });
+    fireEvent(this, "yaml-changed", {
+      yaml: target.value,
+    });
   }
 }
 

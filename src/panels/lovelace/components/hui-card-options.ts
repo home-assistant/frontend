@@ -2,17 +2,17 @@ import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
+import { LovelaceConfig } from "../types";
 
 let registeredDialog = false;
 
 export class HuiCardOptions extends LitElement {
   public cardId?: string;
+  public cardConfig?: LovelaceConfig;
   protected hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-    };
+    return { hass: {} };
   }
 
   public connectedCallback() {
@@ -23,11 +23,6 @@ export class HuiCardOptions extends LitElement {
         dialogShowEvent: "show-edit-card",
         dialogTag: "hui-dialog-edit-card",
         dialogImport: () => import("../editor/hui-dialog-edit-card"),
-      });
-      fireEvent(this, "register-dialog", {
-        dialogShowEvent: "show-migrate",
-        dialogTag: "hui-dialog-migrate",
-        dialogImport: () => import("../editor/hui-dialog-migrate"),
       });
     }
   }
@@ -54,18 +49,12 @@ export class HuiCardOptions extends LitElement {
     `;
   }
   private _editCard() {
-    if (this.cardId) {
-      fireEvent(this, "show-edit-card", {
-        hass: this.hass,
-        cardId: this.cardId,
-        reloadLovelace: () => fireEvent(this, "config-refresh"),
-      });
-    } else {
-      fireEvent(this, "show-migrate", {
-        hass: this.hass,
-        reloadLovelace: () => fireEvent(this, "config-refresh"),
-      });
-    }
+    fireEvent(this, "show-edit-card", {
+      hass: this.hass,
+      cardId: this.cardId,
+      cardConfig: this.cardConfig,
+      reloadLovelace: () => fireEvent(this, "config-refresh"),
+    });
   }
 }
 
