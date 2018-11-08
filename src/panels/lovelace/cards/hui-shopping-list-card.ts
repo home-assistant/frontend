@@ -24,26 +24,26 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
-  private _items?: ShoppingListItem[];
+  private _uncheckedItems?: ShoppingListItem[];
+  private _checkedItems?: ShoppingListItem[];
   private _unsubEvents?: Promise<() => Promise<void>>;
 
   static get properties() {
     return {
       _config: {},
-      _items: {},
+      _uncheckedItems: {},
+      _checkedItems: {},
     };
   }
 
   public getCardSize(): number {
-    return (
-      (this._config ? (this._config.title ? 1 : 0) : 0) +
-      (this._items ? this._items.length : 3)
-    );
+    return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
   }
 
   public setConfig(config: Config): void {
     this._config = config;
-    this._items = [];
+    this._uncheckedItems = [];
+    this._checkedItems = [];
     this._fetchData();
   }
 
@@ -77,7 +77,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       <ha-card .header="${this._config.title}">
         ${
           repeat(
-            this._items!.filter((item) => !item.complete),
+            this._uncheckedItems!,
             (item) => item.id,
             (item, index) =>
               html`
@@ -110,7 +110,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
         </div>
         ${
           repeat(
-            this._items!.filter((item) => item.complete),
+            this._checkedItems!,
             (item) => item.id,
             (item, index) =>
               html`
@@ -179,7 +179,18 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
 
   private async _fetchData(): Promise<void> {
     if (this.hass) {
-      this._items = await fetchItems(this.hass);
+      const checkedItems: ShoppingListItem[] = [];
+      const uncheckedItems: ShoppingListItem[] = [];
+      const items = await fetchItems(this.hass);
+      for (const key in items) {
+        if (items[key].complete) {
+          checkedItems.push(items[key]);
+        } else {
+          uncheckedItems.push(items[key]);
+        }
+      }
+      this._checkedItems = checkedItems;
+      this._uncheckedItems = uncheckedItems;
     }
   }
 
