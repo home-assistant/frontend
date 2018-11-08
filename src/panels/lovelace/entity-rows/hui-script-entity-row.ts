@@ -76,7 +76,8 @@ class HuiScriptEntityRow extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _callService(): void {
+  private _callService(ev): void {
+    ev.stopPropagation();
     this.hass!.callService("script", "turn_on", {
       entity_id: this._config!.entity,
     });
