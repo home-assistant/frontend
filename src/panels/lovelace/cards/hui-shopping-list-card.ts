@@ -141,7 +141,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                   )
                 }
               `
-            : html``
+            : ""
         }
       </ha-card>
     `;
