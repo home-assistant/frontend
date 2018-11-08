@@ -76,7 +76,8 @@ class HuiSceneEntityRow extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _callService(): void {
+  private _callService(ev): void {
+    ev.stopPropagation();
     this.hass!.callService("scene", "turn_on", {
       entity_id: this._config!.entity,
     });
