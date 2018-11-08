@@ -13,10 +13,11 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { Config, EntityConfig } from "../cards/hui-glance-card";
 
 import "../../../components/entity/state-badge";
-import "../../../components/entity/ha-entity-picker";
 import "../components/hui-theme-select-editor";
+import "../components/hui-entity-editor";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { processEditorEntities } from "./process-editor-entities";
 
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
@@ -34,9 +35,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     this._config = { type: "glance", ...config };
-    const entities = processConfigEntities(config.entities);
-
-    this._configEntities = entities;
+    this._configEntities = processEditorEntities(config.entities);
   }
 
   protected render(): TemplateResult {
@@ -45,7 +44,6 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
-      ${this.renderStyle()}
       <paper-input
         label="Title"
         value="${this._config!.title}"
@@ -68,18 +66,11 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
         .type="${"input"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
-      <h4>Entities</h4>
-      <div class="entities">
-        ${
-          this._configEntities!.map((entityConf, index) => {
-            return this.renderEntity(entityConf, index!);
-          })
-        }
-      </div>
-      <br />
-      <paper-button noink raised @click="${this.addEntity}"
-        >Add Entity</paper-button
-      >
+      <hui-entity-editor
+        .hass="${this.hass}"
+        .entities="${this._configEntities}"
+        @change="${this._valueChanged}"
+      ></hui-entity-editor>
       <br /><br />
       <paper-checkbox
         ?checked="${this._config!.show_name !== false}"
@@ -98,43 +89,6 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .entities {
-          padding-left: 20px;
-        }
-      </style>
-    `;
-  }
-
-  private renderEntity(
-    entityConf: EntityConfig,
-    index: number
-  ): TemplateResult {
-    return html`
-      <ha-entity-picker
-        .hass="${this.hass}"
-        .value="${entityConf.entity || entityConf}"
-        .type="${"entity"}"
-        .index="${index}"
-        @change="${this._valueChanged}"
-      ></ha-entity-picker>
-    `;
-  }
-
-  private addEntity() {
-    const newConfig = this._config!;
-    const newConfigEntites = this._configEntities!;
-
-    newConfigEntites.push(newConfigEntites[0].entity);
-    newConfig.entities = newConfigEntites;
-
-    fireEvent(this, "config-changed", {
-      config: newConfig,
-    });
-  }
-
   private _valueChanged(ev: MouseEvent): void {
     if (!this._config || !this.hass) {
       return;
@@ -142,25 +96,15 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
 
     const target = ev.target! as any;
     let newConfig = this._config;
-    const newConfigEntites = this._configEntities!;
 
-    switch (target.type) {
-      case "input":
-        newConfig = { ...this._config, [target.configValue]: target.value };
-        break;
-
-      case "checkbox":
-        newConfig = { ...this._config, [target.configValue]: target.checked };
-        break;
-
-      case "entity":
-        if (target.value === "") {
-          newConfigEntites.splice(target.index, 1);
-        } else {
-          newConfigEntites[target.index].entity = target.value;
-        }
-        newConfig.entities = newConfigEntites;
-        break;
+    if (!target.entities) {
+      newConfig = {
+        ...this._config,
+        [target.configValue]:
+          target.checked !== undefined ? target.checked : target.value,
+      };
+    } else {
+      newConfig.entities = target.entities;
     }
 
     fireEvent(this, "config-changed", {

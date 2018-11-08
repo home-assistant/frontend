@@ -31,8 +31,8 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
       >
         <paper-listbox
           slot="dropdown-content"
-          selected="${this.value || "Backend-selected"}"
-          attr-for-selected="theme"
+          .sselected="${this.value || "Backend-selected"}"
+          .attrForSelected="theme"
         >
           ${
             themes.map((theme) => {
