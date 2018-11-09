@@ -22,40 +22,36 @@ interface Config extends LovelaceConfig {
 
 class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  private _hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   private _config?: Config;
-  private _items?: ShoppingListItem[];
+  private _uncheckedItems?: ShoppingListItem[];
+  private _checkedItems?: ShoppingListItem[];
   private _unsubEvents?: Promise<() => Promise<void>>;
 
   static get properties() {
     return {
       _config: {},
-      _items: {},
+      _uncheckedItems: {},
+      _checkedItems: {},
     };
   }
 
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-  }
-
   public getCardSize(): number {
-    return (
-      (this._config ? (this._config.title ? 1 : 0) : 0) +
-      (this._items ? this._items.length : 3)
-    );
+    return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
   }
 
   public setConfig(config: Config): void {
     this._config = config;
-    this._items = [];
+    this._uncheckedItems = [];
+    this._checkedItems = [];
     this._fetchData();
   }
 
   public connectedCallback(): void {
     super.connectedCallback();
 
-    if (this._hass) {
-      this._unsubEvents = this._hass.connection.subscribeEvents(
+    if (this.hass) {
+      this._unsubEvents = this.hass.connection.subscribeEvents(
         () => this._fetchData(),
         "shopping_list_updated"
       );
@@ -72,7 +68,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this._hass) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
@@ -81,7 +77,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
       <ha-card .header="${this._config.title}">
         ${
           repeat(
-            this._items!,
+            this._uncheckedItems!,
             (item) => item.id,
             (item, index) =>
               html`
@@ -97,7 +93,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                   <paper-item-body>
                     <paper-input
                       no-label-float
-                      .value="${item.name}"
+                      value="${item.name}"
                       .itemId="${item.id}"
                       @change="${this._saveEdit}"
                     ></paper-input>
@@ -105,6 +101,47 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                 </div>
               `
           )
+        }
+        ${
+          this._checkedItems!.length > 0
+            ? html`
+                <div class="divider"></div>
+                <div class="label">
+                  ${
+                    this.localize(
+                      "ui.panel.lovelace.cards.shopping-list.checked_items"
+                    )
+                  }
+                </div>
+                ${
+                  repeat(
+                    this._checkedItems!,
+                    (item) => item.id,
+                    (item, index) =>
+                      html`
+                        <div class="editRow">
+                          <paper-checkbox
+                            slot="item-icon"
+                            id="${index}"
+                            ?checked="${item.complete}"
+                            .itemId="${item.id}"
+                            @click="${this._completeItem}"
+                            tabindex="0"
+                          ></paper-checkbox>
+                          <paper-item-body>
+                            <paper-input
+                              no-label-float
+                              value="${item.name}"
+                              .itemId="${item.id}"
+                              @change="${this._saveEdit}"
+                            ></paper-input>
+                          </paper-item-body>
+                        </div>
+                      `
+                  )
+                }
+              `
+            : ""
         }
       </ha-card>
     `;
@@ -133,24 +170,46 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           position: relative;
           top: 1px;
         }
+        .label {
+          color: var(--primary-color);
+          margin-left: 17px;
+          margin-bottom: 11px;
+          margin-top: 11px;
+        }
+        .divider {
+          height: 1px;
+          background-color: var(--divider-color);
+          margin: 10px;
+        }
       </style>
     `;
   }
 
   private async _fetchData(): Promise<void> {
-    if (this._hass) {
-      this._items = await fetchItems(this._hass);
+    if (this.hass) {
+      const checkedItems: ShoppingListItem[] = [];
+      const uncheckedItems: ShoppingListItem[] = [];
+      const items = await fetchItems(this.hass);
+      for (const key in items) {
+        if (items[key].complete) {
+          checkedItems.push(items[key]);
+        } else {
+          uncheckedItems.push(items[key]);
+        }
+      }
+      this._checkedItems = checkedItems;
+      this._uncheckedItems = uncheckedItems;
     }
   }
 
   private _completeItem(ev): void {
-    completeItem(this._hass!, ev.target.itemId, ev.target.checked).catch(() =>
+    completeItem(this.hass!, ev.target.itemId, ev.target.checked).catch(() =>
       this._fetchData()
     );
   }
 
   private _saveEdit(ev): void {
-    saveEdit(this._hass!, ev.target.itemId, ev.target.value).catch(() =>
+    saveEdit(this.hass!, ev.target.itemId, ev.target.value).catch(() =>
       this._fetchData()
     );
 
