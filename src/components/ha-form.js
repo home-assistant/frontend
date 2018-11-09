@@ -217,7 +217,11 @@ class HaForm extends EventsMixin(PolymerElement) {
   }
 
   _valueChanged(ev) {
-    this.set(["data", ev.model.item.name], ev.detail.value);
+    let value = ev.detail.value;
+    if (ev.model.item.type === "integer") {
+      value = Number(ev.detail.value);
+    }
+    this.set(["data", ev.model.item.name], value);
   }
 
   _passwordFieldType(unmaskedPassword) {
