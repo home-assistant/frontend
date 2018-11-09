@@ -6,7 +6,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
 import { processEditorEntities } from "./process-editor-entities";
-import { EditorEvent } from "./types";
+import { EntitiesEditorEvent, EditorTarget } from "./types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardEditor } from "../types";
@@ -44,26 +44,23 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
+      ${this.renderStyle()}
       <paper-input
         label="Title"
         value="${this._config!.title}"
         .configValue="${"title"}"
-        .type="${"input"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
       <hui-theme-select-editor
         .hass="${this.hass}"
         .value="${this._config!.theme}"
-        .type="${"input"}"
         .configValue="${"theme"}"
         @change="${this._valueChanged}"
-      ></hui-theme-select-editor
-      ><br />
+      ></hui-theme-select-editor>
       <paper-input
         label="Columns"
         value="${this._config!.columns || ""}"
         .configValue="${"columns"}"
-        .type="${"input"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
       <hui-entity-editor
@@ -71,30 +68,27 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
         .entities="${this._configEntities}"
         @change="${this._valueChanged}"
       ></hui-entity-editor>
-      <br /><br />
       <paper-checkbox
         ?checked="${this._config!.show_name !== false}"
         .configValue="${"show_name"}"
-        .type="${"checkbox"}"
         @change="${this._valueChanged}"
         >Show Entity's Name?</paper-checkbox
-      ><br /><br />
+      >
       <paper-checkbox
         ?checked="${this._config!.show_state !== false}"
         .configValue="${"show_state"}"
-        .type="${"checkbox"}"
         @change="${this._valueChanged}"
         >Show Entity's State Text?</paper-checkbox
-      ><br />
+      >
     `;
   }
 
-  private _valueChanged(ev: EditorEvent): void {
+  private _valueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
 
-    const target = ev.target! as any;
+    const target = ev.target! as EditorTarget;
     let newConfig = this._config;
 
     if (ev.detail && ev.detail.entities) {
@@ -102,7 +96,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     } else {
       newConfig = {
         ...this._config,
-        [target.configValue]:
+        [target.configValue!]:
           target.checked !== undefined ? target.checked : target.value,
       };
     }
@@ -110,6 +104,17 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     fireEvent(this, "config-changed", {
       config: newConfig,
     });
+  }
+
+  private renderStyle(): TemplateResult {
+    return html`
+      <style>
+        paper-checkbox {
+          display: block;
+          padding-top: 16px;
+        }
+      </style>
+    `;
   }
 }
 

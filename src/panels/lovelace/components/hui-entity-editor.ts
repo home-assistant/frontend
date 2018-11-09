@@ -7,6 +7,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityConfig } from "../entity-rows/types";
 
 import "../../../components/entity/ha-entity-picker";
+import { EditorTarget } from "../editor/types";
 
 export class HuiEntityEditor extends LitElement {
   protected hass?: HomeAssistant;
@@ -42,7 +43,6 @@ export class HuiEntityEditor extends LitElement {
           })
         }
       </div>
-      <br />
       <paper-button noink raised @click="${this._addEntity}"
         >Add Entity</paper-button
       >
@@ -50,21 +50,22 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private _addEntity() {
-    const newConfigEntities = this.entities!.concat();
-
-    newConfigEntities.push({ entity: "" });
+    const newConfigEntities = this.entities!.concat({ entity: "" });
 
     fireEvent(this, "change", { entities: newConfigEntities });
   }
 
-  private _valueChanged(ev): void {
-    const target = ev.target! as any;
+  private _valueChanged(ev: Event): void {
+    const target = ev.target! as EditorTarget;
     const newConfigEntities = this.entities!.concat();
 
     if (target.value === "") {
-      newConfigEntities.splice(target.index, 1);
+      newConfigEntities.splice(target.index!, 1);
     } else {
-      newConfigEntities[target.index].entity = target.value;
+      newConfigEntities[target.index!] = {
+        ...newConfigEntities[target.index!],
+        entity: target.value!,
+      };
     }
 
     fireEvent(this, "change", { entities: newConfigEntities });
@@ -75,6 +76,9 @@ export class HuiEntityEditor extends LitElement {
       <style>
         .entities {
           padding-left: 20px;
+        }
+        paper-button {
+          margin: 8px 0;
         }
       </style>
     `;

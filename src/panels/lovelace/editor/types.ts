@@ -12,9 +12,16 @@ export interface ConfigValue {
   value: string | LovelaceConfig;
 }
 
-export interface EditorEvent {
+export interface EntitiesEditorEvent {
   detail?: {
     entities?: EntityConfig[];
   };
   target?: EventTarget;
+}
+
+export interface EditorTarget extends EventTarget {
+  value?: string;
+  index?: number;
+  checked?: boolean;
+  configValue?: string;
 }

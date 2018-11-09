@@ -31,13 +31,13 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
       >
         <paper-listbox
           slot="dropdown-content"
-          .sselected="${this.value || "Backend-selected"}"
-          .attrForSelected="theme"
+          .selected="${this.value || "Backend-selected"}"
+          attr-for-selected="theme"
         >
           ${
             themes.map((theme) => {
               return html`
-                <paper-item .theme="${theme}">${theme}</paper-item>
+                <paper-item theme="${theme}">${theme}</paper-item>
               `;
             })
           }
