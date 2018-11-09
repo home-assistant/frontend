@@ -757,6 +757,13 @@
       "logbook": {
         "showing_entries": "[%key:ui::panel::history::showing_entries%]"
       },
+      "lovelace": {
+        "cards": {
+          "shopping-list": {
+            "checked_items": "Checked items"
+          }
+        }
+      },
       "mailbox": {
         "empty": "You do not have any messages",
         "playback_title": "Message playback",
