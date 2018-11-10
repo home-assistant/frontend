@@ -5,6 +5,7 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 
 import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
@@ -14,6 +15,7 @@ import {
   completeItem,
   saveEdit,
   ShoppingListItem,
+  clearItems,
 } from "../../../data/shopping-list";
 
 interface Config extends LovelaceConfig {
@@ -106,12 +108,25 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           this._checkedItems!.length > 0
             ? html`
                 <div class="divider"></div>
-                <div class="label">
-                  ${
-                    this.localize(
-                      "ui.panel.lovelace.cards.shopping-list.checked_items"
-                    )
-                  }
+                <div class="checked">
+                  <span class="label">
+                    ${
+                      this.localize(
+                        "ui.panel.lovelace.cards.shopping-list.checked_items"
+                      )
+                    }
+                  </span>
+                  <ha-icon
+                    class="clearall"
+                    @click="${this._clearItems}"
+                    icon="hass:notification-clear-all"
+                    .title="${
+                      this.localize(
+                        "ui.panel.lovelace.cards.shopping-list.clear_items"
+                      )
+                    }"
+                  >
+                  </ha-icon>
                 </div>
                 ${
                   repeat(
@@ -170,16 +185,24 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           position: relative;
           top: 1px;
         }
-        .label {
-          color: var(--primary-color);
+        .checked {
           margin-left: 17px;
           margin-bottom: 11px;
           margin-top: 11px;
+        }
+        .label {
+          color: var(--primary-color);
         }
         .divider {
           height: 1px;
           background-color: var(--divider-color);
           margin: 10px;
+        }
+        .clearall {
+          cursor: pointer;
+          margin-bottom: 3px;
+          float: right;
+          padding-right: 10px;
         }
       </style>
     `;
@@ -214,6 +237,12 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     );
 
     ev.target.blur();
+  }
+
+  private _clearItems(): void {
+    if (this.hass) {
+      clearItems(this.hass).catch(() => this._fetchData());
+    }
   }
 }
 
