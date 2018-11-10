@@ -1,8 +1,8 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import { TemplateResult } from "lit-html";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-input/paper-input";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -275,26 +275,25 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     }
   }
 
+  private get _newItem(): PaperInputElement {
+    return this.shadowRoot!.querySelector(".addBox") as PaperInputElement;
+  }
+
   private _addItem(ev): void {
-    if (this.shadowRoot!.querySelector(".addBox")) {
-      const root = this.shadowRoot!.querySelector(
-        ".addBox"
-      ) as HTMLInputElement;
+    const newItem = this._newItem;
 
-      if (this.hass && root.value.length > 0) {
-        addItem(this.hass, root.value).catch(() => this._fetchData());
-      }
+    if (newItem.value!.length > 0) {
+      addItem(this.hass!, newItem.value!).catch(() => this._fetchData());
+    }
 
-      root.value = "";
-      if (ev) {
-        root.focus();
-      }
+    newItem.value = "";
+    if (ev) {
+      newItem.focus();
     }
   }
 
   private _addKeyPress(ev): void {
     if (ev.keyCode === 13) {
-      console.log("return_");
       this._addItem(null);
     }
   }
