@@ -29,3 +29,11 @@ export const completeItem = (
 
 export const clearItems = (hass: HomeAssistant): Promise<void> =>
   hass.callApi("POST", "shopping_list/clear_completed");
+
+export const addItem = (
+  hass: HomeAssistant,
+  name: string
+): Promise<ShoppingListItem> =>
+  hass.callApi("POST", "shopping_list/item", {
+    name,
+  });

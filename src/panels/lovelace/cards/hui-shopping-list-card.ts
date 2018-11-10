@@ -16,6 +16,7 @@ import {
   saveEdit,
   ShoppingListItem,
   clearItems,
+  addItem,
 } from "../../../data/shopping-list";
 
 interface Config extends LovelaceConfig {
@@ -77,6 +78,27 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
+        <div class="addRow">
+          <ha-icon
+            class="addButton"
+            @click="${this._addItem}"
+            icon="hass:plus"
+            .title="${
+              this.localize("ui.panel.lovelace.cards.shopping-list.add_item")
+            }"
+          >
+          </ha-icon>
+          <paper-item-body>
+            <paper-input
+              no-label-float
+              class="addBox"
+              placeholder="${
+                this.localize("ui.panel.lovelace.cards.shopping-list.add_item")
+              }"
+              @keydown="${this._addKeyPress}"
+            ></paper-input>
+          </paper-item-body>
+        </div>
         ${
           repeat(
             this._uncheckedItems!,
@@ -165,9 +187,14 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   private renderStyle(): TemplateResult {
     return html`
       <style>
-        .editRow {
+        .editRow,
+        .addRow {
           display: flex;
           flex-direction: row;
+        }
+        .addButton {
+          padding: 9px 15px 11px 15px;
+          cursor: pointer;
         }
         paper-checkbox {
           padding: 11px 11px 11px 18px;
@@ -203,6 +230,9 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
           margin-bottom: 3px;
           float: right;
           padding-right: 10px;
+        }
+        .addRow > ha-icon {
+          color: var(--secondary-text-color);
         }
       </style>
     `;
@@ -242,6 +272,30 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   private _clearItems(): void {
     if (this.hass) {
       clearItems(this.hass).catch(() => this._fetchData());
+    }
+  }
+
+  private _addItem(ev): void {
+    if (this.shadowRoot!.querySelector(".addBox")) {
+      const root = this.shadowRoot!.querySelector(
+        ".addBox"
+      ) as HTMLInputElement;
+
+      if (this.hass && root.value.length > 0) {
+        addItem(this.hass, root.value).catch(() => this._fetchData());
+      }
+
+      root.value = "";
+      if (ev) {
+        root.focus();
+      }
+    }
+  }
+
+  private _addKeyPress(ev): void {
+    if (ev.keyCode === 13) {
+      console.log("return_");
+      this._addItem(null);
     }
   }
 }
