@@ -33,6 +33,7 @@ const thermostatConfig = {
 
 const modeIcons = {
   auto: "hass:autorenew",
+  manual: "hass:cursor-pointer",
   heat: "hass:fire",
   cool: "hass:snowflake",
   off: "hass:power",
