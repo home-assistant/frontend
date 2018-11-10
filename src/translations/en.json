@@ -760,7 +760,8 @@
       "lovelace": {
         "cards": {
           "shopping-list": {
-            "checked_items": "Checked items"
+            "checked_items": "Checked items",
+            "clear_items": "Clear checked items"
           }
         }
       },
