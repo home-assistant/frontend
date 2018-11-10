@@ -19,7 +19,7 @@ deploy:
   provider: script
   script: script/travis_deploy
   'on':
-    branch: master
+    branch: dev
 dist: trusty
 addons:
   sauce_connect: true
