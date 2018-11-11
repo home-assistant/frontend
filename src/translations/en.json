@@ -761,7 +761,8 @@
         "cards": {
           "shopping-list": {
             "checked_items": "Checked items",
-            "clear_items": "Clear checked items"
+            "clear_items": "Clear checked items",
+            "add_item": "Add item"
           }
         }
       },
