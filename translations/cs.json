@@ -780,7 +780,9 @@
                 "clear_code": "Zrušit",
                 "disarm": "Deaktivovat",
                 "arm_home": "Aktivní doma",
-                "arm_away": "Aktivní v nepřítomnosti"
+                "arm_away": "Aktivní v nepřítomnosti",
+                "arm_night": "Aktivní v noci",
+                "armed_custom_bypass": "Specifické obejítí alarmu"
             },
             "automation": {
                 "last_triggered": "Naposledy spuštěno",

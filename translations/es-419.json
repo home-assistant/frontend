@@ -780,7 +780,9 @@
                 "clear_code": "Limpiar",
                 "disarm": "Desactivar",
                 "arm_home": "Proteger en casa",
-                "arm_away": "Proteger fuera de casa"
+                "arm_away": "Proteger fuera de casa",
+                "arm_night": "Armado nocturno",
+                "armed_custom_bypass": "Bypass personalizado"
             },
             "automation": {
                 "last_triggered": "Última activación",
