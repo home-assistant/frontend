@@ -529,7 +529,7 @@
                 },
                 "cloud": {
                     "caption": "Home Assistant Felhő",
-                    "description_login": "Bejelentkezve mint {e-mail}",
+                    "description_login": "Bejelentkezve mint {email}",
                     "description_not_login": "Nincs bejelentkezve"
                 },
                 "integrations": {
@@ -781,7 +781,8 @@
                 "disarm": "Hatástalanít",
                 "arm_home": "Élesít (otthon)",
                 "arm_away": "Élesít (távozó)",
-                "arm_night": "Élesít (éjszakai)"
+                "arm_night": "Élesít (éjszakai)",
+                "armed_custom_bypass": "Egyéni áthidalás"
             },
             "automation": {
                 "last_triggered": "Utoljára aktiválva",
