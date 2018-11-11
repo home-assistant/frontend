@@ -134,7 +134,7 @@
             "off": "Desligado",
             "on": "Ligado",
             "heat": "Quente",
-            "cool": "Fresco",
+            "cool": "Frio",
             "idle": "Ocioso",
             "auto": "Automático",
             "dry": "Seco",
@@ -381,7 +381,7 @@
                                     "label": "Estado",
                                     "from": "De",
                                     "to": "Para",
-                                    "for": "Para"
+                                    "for": "Por"
                                 },
                                 "homeassistant": {
                                     "label": "",

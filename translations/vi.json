@@ -542,13 +542,20 @@
                     "dropdown_label": "Giao diện"
                 },
                 "refresh_tokens": {
+                    "header": "Token",
+                    "description": "Mỗi mã token đại diện cho một phiên đăng nhập. Token sẽ được tự động loại bỏ khi bạn bấm vào đăng xuất. Những token đang hoạt động với tài khoản của bạn là:",
+                    "token_title": "Làm mới token cho {clientId}",
                     "created_at": "Được tạo lúc {date}",
+                    "confirm_delete": "Bạn có chắn chắn muốn xóa token truy cập {name}?",
+                    "delete_failed": "Không thể xóa token truy cập.",
                     "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
                     "not_used": "Chưa bao giờ được sử dụng",
                     "current_token_tooltip": "Không thể xóa token truy cập"
                 },
                 "long_lived_access_tokens": {
                     "header": "Token truy cập thời hạn dài",
+                    "description": "Tạo mã truy cập tồn tại lâu dài để cho phép script của bạn tương tác với Home assistant. Mỗi mã truy cập sẽ có hiệu lực trong 10 năm kể từ khi tạo. Các mã truy cập hiện đang hoạt động được thể hiện trong danh sách sau.",
+                    "learn_auth_requests": "Làm thế nào để thực hiện yêu cầu xác thực.",
                     "created_at": "Được tạo lúc {date}",
                     "confirm_delete": "Bạn có chắn chắn muốn xóa token truy cập {name}?",
                     "delete_failed": "Không thể xóa token truy cập.",
