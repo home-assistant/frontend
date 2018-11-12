@@ -117,78 +117,88 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
           }
           <div>
             ${
-              this._entitiesDialog!.filter(
-                (entityConf) => entityConf.entity in this.hass!.states
-              ).map((entityConf) => {
-                return html`
-                  <ha-icon
-                    .entity="${entityConf.entity}"
-                    @click="${this._openDialog}"
-                    class="${
-                      classMap({
-                        "state-on": !STATES_OFF.has(
-                          this.hass!.states[entityConf.entity].state
-                        ),
-                      })
-                    }"
-                    .icon="${
-                      entityConf.icon ||
-                        stateIcon(this.hass!.states[entityConf.entity])
-                    }"
-                    title="${
-                      `
-                        ${computeStateName(
-                          this.hass!.states[entityConf.entity]
-                        )} : ${computeStateDisplay(
-                        this.localize,
-                        this.hass!.states[entityConf.entity],
-                        this.hass!.language
-                      )}
-                        `
-                    }"
-                  ></ha-icon>
-                `;
-              })
+              this._entitiesDialog!.map((entityConf) =>
+                this.renderDialogEntity(entityConf)
+              )
             }
           </div>
           <div>
             ${
-              this._entitiesToggle!.filter(
-                (entityConf) => entityConf.entity in this.hass!.states
-              ).map((entityConf) => {
-                return html`
-                  <ha-icon
-                    .entity="${entityConf.entity}"
-                    @click="${this._callService}"
-                    class="${
-                      classMap({
-                        "state-on": !STATES_OFF.has(
-                          this.hass!.states[entityConf.entity].state
-                        ),
-                      })
-                    }"
-                    .icon="${
-                      entityConf.icon ||
-                        stateIcon(this.hass!.states[entityConf.entity])
-                    }"
-                    title="${
-                      `
-                      ${computeStateName(
-                        this.hass!.states[entityConf.entity]
-                      )} : ${computeStateDisplay(
-                        this.localize,
-                        this.hass!.states[entityConf.entity],
-                        this.hass!.language
-                      )}
-                      `
-                    }"
-                  ></ha-icon>
-                `;
-              })
+              this._entitiesToggle!.map((entityConf) =>
+                this.renderToggleEntity(entityConf)
+              )
             }
           </div>
         </div>
       </ha-card>
+    `;
+  }
+
+  private renderDialogEntity(entityConf: EntityConfig): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
+
+    const stateObj = this.hass.states[entityConf.entity];
+
+    if (!stateObj) {
+      return html``;
+    }
+
+    return html`
+      <ha-icon
+        .entity="${stateObj.entity_id}"
+        @click="${this._openDialog}"
+        class="${
+          classMap({
+            "state-on": !STATES_OFF.has(stateObj.state),
+          })
+        }"
+        .icon="${entityConf.icon || stateIcon(stateObj)}"
+        title="${
+          `
+            ${computeStateName(stateObj)} : ${computeStateDisplay(
+            this.localize,
+            stateObj,
+            this.hass.language
+          )}
+          `
+        }"
+      ></ha-icon>
+    `;
+  }
+
+  private renderToggleEntity(entityConf: EntityConfig): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
+
+    const stateObj = this.hass.states[entityConf.entity];
+
+    if (!stateObj) {
+      return html``;
+    }
+
+    return html`
+      <ha-icon
+        .entity="${stateObj.entity_id}"
+        @click="${this._callService}"
+        class="${
+          classMap({
+            "state-on": !STATES_OFF.has(stateObj.state),
+          })
+        }"
+        .icon="${entityConf.icon || stateIcon(stateObj)}"
+        title="${
+          `
+            ${computeStateName(stateObj)} : ${computeStateDisplay(
+            this.localize,
+            stateObj,
+            this.hass!.language
+          )}
+          `
+        }"
+      ></ha-icon>
     `;
   }
 
