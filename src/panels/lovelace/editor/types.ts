@@ -15,7 +15,6 @@ export interface ConfigValue {
 export interface ConfigError {
   type: string;
   message: string;
-
 }
 
 export interface EntitiesEditorEvent {
