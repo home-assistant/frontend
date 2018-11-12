@@ -24,10 +24,10 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
 export interface EntityConfig {
-  name: string;
-  icon: string;
+  name?: string;
+  icon?: string;
   entity: string;
-  tap_action: "toggle" | "call-service" | "more-info";
+  tap_action?: "toggle" | "call-service" | "more-info";
   hold_action?: "toggle" | "call-service" | "more-info";
   service?: string;
   service_data?: object;

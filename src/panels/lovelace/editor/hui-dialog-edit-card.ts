@@ -108,15 +108,13 @@ export class HuiDialogEditCard extends LitElement {
           ></hui-yaml-card-preview>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button
-            @click="${this._toggleEditor}"
-          >Toggle Editor</paper-button>
-          <paper-button
-            @click="${this._closeDialog}"
-          >Cancel</paper-button>
-          <paper-button
-            @click="${this._updateConfigInBackend}"'
-          >Save</paper-button>
+          <paper-button @click="${this._toggleEditor}"
+            >Toggle Editor</paper-button
+          >
+          <paper-button @click="${this._closeDialog}">Cancel</paper-button>
+          <paper-button @click="${this._updateConfigInBackend}"
+            >Save</paper-button
+          >
         </div>
       </paper-dialog>
     `;
@@ -167,6 +165,9 @@ export class HuiDialogEditCard extends LitElement {
       value: cardConfig,
     };
     this._originalConfigYaml = cardConfig;
+
+    // This will center the dialog with the updated config Element
+    fireEvent(this._dialog, "iron-resize");
   }
 
   private async _loadConfigElement(): Promise<void> {
