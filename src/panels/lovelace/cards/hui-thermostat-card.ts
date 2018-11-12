@@ -36,16 +36,11 @@ const modeIcons = {
   heat: "hass:fire",
   cool: "hass:snowflake",
   off: "hass:power",
-  on: "hass:air-conditioner",
+  manual: "hass:thermostat",
   fan_only: "hass:fan",
   eco: "hass:leaf",
   dry: "hass:water-percent",
   idle: "hass:power-sleep",
-  electric: "hass:thermometer-lines",
-  performance: "hass:circle-slice-7",
-  high_demand: "hass:tune-vertical",
-  heat_pump: "hass:white-balance-sunny",
-  gas: "hass:gas-cylinder",
 };
 
 interface Config extends LovelaceConfig {
@@ -203,20 +198,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           overflow: hidden;
           --rail-border-color: transparent;
           --auto-color: green;
-          --electric-color: green;
-          --on-color: green;
-          --performance-color: green;
-          --high_demand-color: green;
-          --heat_pump-color: green;
-          --gas-color: #ff8100;
           --eco-color: springgreen;
           --cool-color: #2b9af9;
           --heat-color: #ff8100;
-          --heat_pump-color: #ff8100;
           --off-color: #8a8a8a;
           --fan_only-color: #8a8a8a;
           --dry-color: #8a8a8a;
           --idle-color: #8a8a8a;
+          --manual-color: #8a8a8a;
           --unknown-color: #bac;
         }
         #root {
@@ -235,9 +224,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         .off {
           --mode-color: var(--off-color);
         }
-        .on {
-          --mode-color: var(--on-color);
-        }
         .fan_only {
           --mode-color: var(--fan_only-color);
         }
@@ -250,20 +236,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         .idle {
           --mode-color: var(--idle-color);
         }
-        .electric {
-          --mode-color: var(--electric-color);
-        }
-        .performance {
-          --mode-color: var(--performance-color);
-        }
-        .high_demand {
-          --mode-color: var(--high_demand-color);
-        }
-        .heat_pump {
-          --mode-color: var(--heat_pump-color);
-        }
-        .gas {
-          --mode-color: var(--gas-color);
+        .manual {
+          --mode-color: var(--manual-color);
         }
         .unknown-mode {
           --mode-color: var(--unknown-color);
