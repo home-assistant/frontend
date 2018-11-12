@@ -118,14 +118,14 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
           <div>
             ${
               this._entitiesDialog!.map((entityConf) =>
-                this.renderDialogEntity(entityConf)
+                this.renderEntity(entityConf, true)
               )
             }
           </div>
           <div>
             ${
               this._entitiesToggle!.map((entityConf) =>
-                this.renderToggleEntity(entityConf)
+                this.renderEntity(entityConf, false)
               )
             }
           </div>
@@ -134,7 +134,10 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderDialogEntity(entityConf: EntityConfig): TemplateResult {
+  private renderEntity(
+    entityConf: EntityConfig,
+    dialog: boolean
+  ): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -148,7 +151,7 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
     return html`
       <ha-icon
         .entity="${stateObj.entity_id}"
-        @click="${this._openDialog}"
+        @click="${dialog ? this._openDialog : this._callService}"
         class="${
           classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
@@ -161,40 +164,6 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
             this.localize,
             stateObj,
             this.hass.language
-          )}
-          `
-        }"
-      ></ha-icon>
-    `;
-  }
-
-  private renderToggleEntity(entityConf: EntityConfig): TemplateResult {
-    if (!this.hass) {
-      return html``;
-    }
-
-    const stateObj = this.hass.states[entityConf.entity];
-
-    if (!stateObj) {
-      return html``;
-    }
-
-    return html`
-      <ha-icon
-        .entity="${stateObj.entity_id}"
-        @click="${this._callService}"
-        class="${
-          classMap({
-            "state-on": !STATES_OFF.has(stateObj.state),
-          })
-        }"
-        .icon="${entityConf.icon || stateIcon(stateObj)}"
-        title="${
-          `
-            ${computeStateName(stateObj)} : ${computeStateDisplay(
-            this.localize,
-            stateObj,
-            this.hass!.language
           )}
           `
         }"
