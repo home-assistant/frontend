@@ -9,12 +9,25 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   public value?: string;
   protected hass?: HomeAssistant;
+  private _initializing?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       value: {},
     };
+  }
+
+  protected constructor() {
+    super();
+    this._initializing = true;
+  }
+  protected async update(changedProps) {
+    super.update(changedProps);
+    if (this._initializing) {
+      await this.updateComplete;
+      this._initializing = false;
+    }
   }
 
   protected render(): TemplateResult {
@@ -57,6 +70,10 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _changed(ev): void {
+    if (!this.hass || this._initializing) {
+      return;
+    }
+
     this.value = ev.target.value;
     fireEvent(this, "change");
   }

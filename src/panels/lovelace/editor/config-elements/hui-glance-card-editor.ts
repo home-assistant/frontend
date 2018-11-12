@@ -24,6 +24,25 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   public hass?: HomeAssistant;
   private _config?: Config;
   private _configEntities?: ConfigEntity[];
+  private _initializing?: boolean;
+
+  protected constructor() {
+    super();
+    this._initializing = true;
+  }
+
+  public setConfig(config: Config): void {
+    this._config = { type: "glance", ...config };
+    this._configEntities = processEditorEntities(config.entities);
+  }
+
+  protected async update(changedProps) {
+    super.update(changedProps);
+    if (this._initializing) {
+      await this.updateComplete;
+      this._initializing = false;
+    }
+  }
 
   static get properties(): PropertyDeclarations {
     return {
@@ -31,11 +50,6 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       _config: {},
       _configEntities: {},
     };
-  }
-
-  public setConfig(config: Config): void {
-    this._config = { type: "glance", ...config };
-    this._configEntities = processEditorEntities(config.entities);
   }
 
   protected render(): TemplateResult {
@@ -84,7 +98,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || this._initializing) {
       return;
     }
 
