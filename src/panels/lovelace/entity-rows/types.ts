@@ -2,8 +2,9 @@ import { HomeAssistant } from "../../../types";
 
 export interface EntityConfig {
   entity: string;
-  name: string;
-  icon: string;
+  type?: string;
+  name?: string;
+  icon?: string;
 }
 export interface DividerConfig {
   style: string;
