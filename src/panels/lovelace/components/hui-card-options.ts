@@ -51,7 +51,6 @@ export class HuiCardOptions extends LitElement {
   private _editCard() {
     fireEvent(this, "show-edit-card", {
       hass: this.hass,
-      cardId: this.cardId,
       cardConfig: this.cardConfig,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });

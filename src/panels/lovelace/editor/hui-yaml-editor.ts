@@ -12,18 +12,20 @@ export class HuiYAMLEditor extends LitElement {
   private _hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
-    return { yaml: {}, cardId: { type: String } };
+    return { yaml: {}, cardId: {} };
   }
 
-  set hass(value: HomeAssistant) {
-    this._hass = value;
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
     if (!this.yaml || this.yaml === "") {
       this._loadConfig();
     }
   }
 
-  constructor() {
-    super();
+  protected updated(changedProperties) {
+    if ("cardID" in changedProperties) {
+      this._loadConfig();
+    }
   }
 
   protected render(): TemplateResult {
@@ -35,7 +37,7 @@ export class HuiYAMLEditor extends LitElement {
       </style>
       <paper-textarea
         max-rows="10"
-        value="${this.yaml}"
+        .value="${this.yaml}"
         @value-changed="${this._valueChanged}"
       ></paper-textarea>
     `;

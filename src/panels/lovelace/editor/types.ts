@@ -8,8 +8,14 @@ export interface YamlChangedEvent extends Event {
 }
 
 export interface ConfigValue {
-  format: "js" | "yaml";
+  format: "json" | "yaml";
   value: string | LovelaceConfig;
+}
+
+export interface ConfigError {
+  type: string;
+  message: string;
+
 }
 
 export interface EntitiesEditorEvent {

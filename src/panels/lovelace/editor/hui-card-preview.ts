@@ -1,8 +1,10 @@
 import "@polymer/paper-input/paper-textarea";
 
 import createCardElement from "../common/create-card-element";
+import createErrorCardConfig from "../common/create-error-card-config";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceConfig } from "../types";
+import { ConfigError } from "./types";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
@@ -14,7 +16,20 @@ export class HuiCardPreview extends HTMLElement {
     }
   }
 
+  set error(error: ConfigError) {
+    const configValue = createErrorCardConfig(
+      `${error.type}: ${error.message}`,
+      undefined
+    );
+
+    this._createCard(configValue);
+  }
+
   set value(configValue: LovelaceConfig) {
+    this._createCard(configValue);
+  }
+
+  private _createCard(configValue: LovelaceConfig): void {
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }

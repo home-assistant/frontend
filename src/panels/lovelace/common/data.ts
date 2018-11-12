@@ -13,8 +13,8 @@ export const getCardConfig = (
 export const updateCardConfig = (
   hass: HomeAssistant,
   cardId: string,
-  config: string | LovelaceConfig,
-  configFormat: "js" | "yaml"
+  config: LovelaceConfig | string,
+  configFormat: "json" | "yaml"
 ): Promise<void> =>
   hass!.callWS({
     type: "lovelace/config/card/update",
