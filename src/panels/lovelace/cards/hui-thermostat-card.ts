@@ -36,7 +36,6 @@ const modeIcons = {
   heat: "hass:fire",
   cool: "hass:snowflake",
   off: "hass:power",
-  manual: "hass:thermostat",
   fan_only: "hass:fan",
   eco: "hass:leaf",
   dry: "hass:water-percent",
@@ -205,7 +204,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           --fan_only-color: #8a8a8a;
           --dry-color: #8a8a8a;
           --idle-color: #8a8a8a;
-          --manual-color: #8a8a8a;
           --unknown-color: #bac;
         }
         #root {
@@ -235,9 +233,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         }
         .idle {
           --mode-color: var(--idle-color);
-        }
-        .manual {
-          --mode-color: var(--manual-color);
         }
         .unknown-mode {
           --mode-color: var(--unknown-color);
