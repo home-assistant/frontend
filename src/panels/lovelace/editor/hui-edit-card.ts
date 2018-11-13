@@ -17,6 +17,7 @@ import "./hui-card-preview";
 import { HuiCardPreview } from "./hui-card-preview";
 import { LovelaceCardEditor, LovelaceConfig } from "../types";
 import { YamlChangedEvent, ConfigValue, ConfigError } from "./types";
+import { extYamlSchema } from "./yaml-ext-schema";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 
@@ -42,13 +43,15 @@ export class HuiEditCard extends LitElement {
   }
 
   set cardConfig(cardConfig: LovelaceConfig) {
-    this._uiEditor = true;
-    this._configElement = undefined;
-    this._configValue = { format: "yaml", value: "" };
-    this._configState = "OK";
     this._originalConfig = cardConfig;
-    this._cardId = String(cardConfig.id);
-    this._loadConfigElement();
+    if (String(cardConfig.id) !== this._cardId) {
+      this._uiEditor = true;
+      this._configElement = undefined;
+      this._configValue = { format: "yaml", value: "" };
+      this._configState = "OK";
+      this._cardId = String(cardConfig.id);
+      this._loadConfigElement();
+    }
   }
 
   public toggleEditor(): void {
@@ -69,7 +72,9 @@ export class HuiEditCard extends LitElement {
     } else if (this._configElement && this._configValue!.format === "yaml") {
       this._configValue = {
         format: "json",
-        value: yaml.safeLoad(this._configValue!.value),
+        value: yaml.safeLoad(this._configValue!.value, {
+          schema: extYamlSchema,
+        }),
       };
       this._configElement.setConfig(this._configValue!.value as LovelaceConfig);
       this._uiEditor = !this._uiEditor;
@@ -129,9 +134,9 @@ export class HuiEditCard extends LitElement {
             `
           : html`
               <hui-yaml-editor
-                .yaml="${this._configValue!.value}"
-                .cardId="${this._cardId}"
                 .hass="${this.hass}"
+                .cardId="${this._cardId}"
+                .yaml="${this._configValue!.value}"
                 @yaml-changed="${this._handleYamlChanged}"
               ></hui-yaml-editor>
             `
@@ -143,7 +148,9 @@ export class HuiEditCard extends LitElement {
   private _handleYamlChanged(ev: YamlChangedEvent): void {
     this._configValue = { format: "yaml", value: ev.detail.yaml };
     try {
-      const config = yaml.safeLoad(this._configValue.value) as LovelaceConfig;
+      const config = yaml.safeLoad(this._configValue.value, {
+        schema: extYamlSchema,
+      }) as LovelaceConfig;
       this._updatePreview(config);
       this._configState = "OK";
     } catch (err) {

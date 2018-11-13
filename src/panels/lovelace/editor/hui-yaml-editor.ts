@@ -7,24 +7,19 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { getCardConfig } from "../common/data";
 
 export class HuiYAMLEditor extends LitElement {
-  public yaml?: string;
   public cardId?: string;
-  private _hass?: HomeAssistant;
+  private _yaml?: string;
+  private hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
-    return { yaml: {}, cardId: {} };
+    return { _yaml: {}, cardId: {} };
   }
 
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-    if (!this.yaml || this.yaml === "") {
+  set yaml(yaml: string) {
+    if (yaml === "") {
       this._loadConfig();
-    }
-  }
-
-  protected updated(changedProperties) {
-    if ("cardID" in changedProperties) {
-      this._loadConfig();
+    } else {
+      this._yaml = yaml;
     }
   }
 
@@ -37,19 +32,19 @@ export class HuiYAMLEditor extends LitElement {
       </style>
       <paper-textarea
         max-rows="10"
-        .value="${this.yaml}"
+        .value="${this._yaml}"
         @value-changed="${this._valueChanged}"
       ></paper-textarea>
     `;
   }
 
   private async _loadConfig(): Promise<void> {
-    this.yaml = await getCardConfig(this._hass!, this.cardId!);
+    this._yaml = await getCardConfig(this.hass!, this.cardId!);
   }
 
-  private _valueChanged(ev: MouseEvent): void {
+  private _valueChanged(ev: Event): void {
     const target = ev.target! as any;
-    this.yaml = target.value;
+    this._yaml = target.value;
     fireEvent(this, "yaml-changed", {
       yaml: target.value,
     });
