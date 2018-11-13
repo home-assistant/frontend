@@ -61,7 +61,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <paper-input
         label="Title"
-        value="${this._config!.title}"
+        value="${this._config!.title || ""}"
         .configValue="${"title"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
