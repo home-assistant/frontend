@@ -160,6 +160,7 @@ export const longPressBind = (element: LongPressElement) => {
   longpress.bind(element);
 };
 
-export const longPress = directive(() => (part: PropertyPart) => {
-  longPressBind(part.committer.element);
-});
+export const longPress = () =>
+  directive((part: PropertyPart) => {
+    longPressBind(part.committer.element);
+  });
