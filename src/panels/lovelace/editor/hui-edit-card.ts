@@ -79,6 +79,7 @@ export class HuiEditCard extends LitElement {
       this._configElement.setConfig(this._configValue!.value as LovelaceConfig);
       this._uiEditor = !this._uiEditor;
     }
+    fireEvent(this, "resize-dialog");
   }
 
   public async updateConfigInBackend(): Promise<void> {
@@ -168,11 +169,11 @@ export class HuiEditCard extends LitElement {
     this._updatePreview(value);
   }
 
-  private _updatePreview(value: LovelaceConfig) {
+  private _updatePreview(config: LovelaceConfig) {
     if (!this._previewEl) {
       return;
     }
-    this._previewEl.value = value;
+    this._previewEl.config = config;
 
     fireEvent(this, "resize-dialog");
   }

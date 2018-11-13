@@ -25,7 +25,7 @@ export class HuiCardPreview extends HTMLElement {
     this._createCard(configValue);
   }
 
-  set value(configValue: LovelaceConfig) {
+  set config(configValue: LovelaceConfig) {
     this._createCard(configValue);
   }
 
