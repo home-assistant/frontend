@@ -46,7 +46,6 @@ class HuiTextEntityRow extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        >
         <div>
           ${computeStateDisplay(this.localize, stateObj, this.hass.language)}
         </div>
