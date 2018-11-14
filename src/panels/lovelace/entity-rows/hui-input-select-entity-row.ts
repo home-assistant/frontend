@@ -61,7 +61,8 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
               stateObj.attributes.options,
               (option) =>
                 html`
-                  <paper-item @click="${() => this._selectedChanged(option)}"
+                  <paper-item
+                    @click="${() => this._selectedChanged(option as string)}"
                     >${option}</paper-item
                   >
                 `
