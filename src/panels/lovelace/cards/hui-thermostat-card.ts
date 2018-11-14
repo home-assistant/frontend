@@ -37,6 +37,10 @@ const modeIcons = {
   heat: "hass:fire",
   cool: "hass:snowflake",
   off: "hass:power",
+  fan_only: "hass:fan",
+  eco: "hass:leaf",
+  dry: "hass:water-percent",
+  idle: "hass:power-sleep",
 };
 
 interface Config extends LovelaceConfig {
@@ -194,10 +198,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           overflow: hidden;
           --rail-border-color: transparent;
           --auto-color: green;
+          --eco-color: springgreen;
           --cool-color: #2b9af9;
           --heat-color: #ff8100;
           --manual-color: #44739e;
           --off-color: #8a8a8a;
+          --fan_only-color: #8a8a8a;
+          --dry-color: #efbd07;
+          --idle-color: #8a8a8a;
           --unknown-color: #bac;
         }
         #root {
@@ -218,6 +226,18 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         }
         .off {
           --mode-color: var(--off-color);
+        }
+        .fan_only {
+          --mode-color: var(--fan_only-color);
+        }
+        .eco {
+          --mode-color: var(--eco-color);
+        }
+        .dry {
+          --mode-color: var(--dry-color);
+        }
+        .idle {
+          --mode-color: var(--idle-color);
         }
         .unknown-mode {
           --mode-color: var(--unknown-color);
