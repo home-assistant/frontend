@@ -202,7 +202,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           --heat-color: #ff8100;
           --off-color: #8a8a8a;
           --fan_only-color: #8a8a8a;
-          --dry-color: #8a8a8a;
+          --dry-color: #efbd07;
           --idle-color: #8a8a8a;
           --unknown-color: #bac;
         }
