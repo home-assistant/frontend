@@ -9,10 +9,11 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { migrateConfig } from "../common/data";
 
 export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
+  public loading?: boolean;
   protected hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
-    return { hass: {} };
+    return { hass: {}, loading: {} };
   }
 
   public async migrateConfig(): Promise<void> {
@@ -22,6 +23,12 @@ export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
       fireEvent(this, "close-dialog");
     } catch (err) {
       alert(`Migration failed: ${err.message}`);
+    }
+  }
+
+  protected updated() {
+    if (this.loading) {
+      fireEvent(this, "loaded-dialog");
     }
   }
 

@@ -22,6 +22,7 @@ import { extYamlSchema } from "./yaml-ext-schema";
 const CUSTOM_TYPE_PREFIX = "custom:";
 
 export class HuiEditCard extends LitElement {
+  public loading?: boolean;
   protected hass?: HomeAssistant;
   private _cardId?: string;
   private _originalConfig?: LovelaceConfig;
@@ -39,6 +40,7 @@ export class HuiEditCard extends LitElement {
       _configValue: {},
       _configState: {},
       _uiEditor: {},
+      loading: {},
     };
   }
 
@@ -51,6 +53,8 @@ export class HuiEditCard extends LitElement {
       this._configState = "OK";
       this._cardId = String(cardConfig.id);
       this._loadConfigElement();
+    } else if (this.loading) {
+      fireEvent(this, "loaded-dialog");
     }
   }
 
@@ -175,6 +179,9 @@ export class HuiEditCard extends LitElement {
     }
     this._previewEl.config = config;
 
+    if (this.loading) {
+      fireEvent(this, "loaded-dialog");
+    }
     fireEvent(this, "resize-dialog");
   }
 
