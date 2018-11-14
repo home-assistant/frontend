@@ -1,13 +1,13 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { HassEntity } from "home-assistant-js-websocket";
 
 import "../components/hui-generic-entity-row";
 import "./hui-error-entity-row";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
-import { HassEntity } from "home-assistant-js-websocket";
 
 class HuiInputTextEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
@@ -55,7 +55,7 @@ class HuiInputTextEntityRow extends LitElement implements EntityRow {
           .pattern="${this._stateObj.attributes.pattern}"
           .type="${this._stateObj.attributes.mode}"
           @change="${this._selectedValueChanged}"
-          .placeholder="(empty value)"
+          placeholder="(empty value)"
         ></paper-input>
       </hui-generic-entity-row>
     `;
