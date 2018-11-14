@@ -33,6 +33,7 @@ const thermostatConfig = {
 
 const modeIcons = {
   auto: "hass:autorenew",
+  manual: "hass:cursor-pointer",
   heat: "hass:fire",
   cool: "hass:snowflake",
   off: "hass:power",
@@ -195,6 +196,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           --auto-color: green;
           --cool-color: #2b9af9;
           --heat-color: #ff8100;
+          --manual-color: #44739e;
           --off-color: #8a8a8a;
           --unknown-color: #bac;
         }
@@ -210,6 +212,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         }
         .heat {
           --mode-color: var(--heat-color);
+        }
+        .manual {
+          --mode-color: var(--manual-color);
         }
         .off {
           --mode-color: var(--off-color);
