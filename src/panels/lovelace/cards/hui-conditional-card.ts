@@ -1,5 +1,5 @@
-import computeCardSize from "../common/compute-card-size";
 import createCardElement from "../common/create-card-element";
+import { computeCardSize } from "../common/compute-card-size";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceConfig } from "../types";
 
