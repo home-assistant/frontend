@@ -1,6 +1,11 @@
 import computeDomain from "../../../../common/entity/compute_domain";
+import { HomeAssistant } from "../../../../types";
 
-export default function turnOnOffEntity(hass, entityId, turnOn = true) {
+export const turnOnOffEntity = (
+  hass: HomeAssistant,
+  entityId: string,
+  turnOn = true
+): void => {
   const stateDomain = computeDomain(entityId);
   const serviceDomain = stateDomain === "group" ? "homeassistant" : stateDomain;
 
@@ -17,4 +22,4 @@ export default function turnOnOffEntity(hass, entityId, turnOn = true) {
   }
 
   hass.callService(serviceDomain, service, { entity_id: entityId });
-}
+};

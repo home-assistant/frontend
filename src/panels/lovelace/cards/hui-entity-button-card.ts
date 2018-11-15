@@ -10,12 +10,12 @@ import { styleMap } from "lit-html/directives/styleMap";
 
 import "../../../components/ha-card";
 
-import toggleEntity from "../common/entity/toggle-entity";
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { toggleEntity } from "../common/entity/toggle-entity";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceConfig } from "../types";
@@ -199,7 +199,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     const action = hold ? config.hold_action : config.tap_action || "more-info";
     switch (action) {
       case "toggle":
-        toggleEntity(this.hass, entityId);
+        toggleEntity(this.hass!, entityId);
         break;
       case "call-service":
         if (!config.service) {
