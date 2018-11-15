@@ -19,10 +19,11 @@ export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
   public async migrateConfig(): Promise<void> {
     try {
       await migrateConfig(this.hass!);
-      fireEvent(this, "reload-lovelace");
       fireEvent(this, "close-dialog");
+      fireEvent(this, "reload-lovelace");
     } catch (err) {
       alert(`Migration failed: ${err.message}`);
+      fireEvent(this, "migrate-done");
     }
   }
 

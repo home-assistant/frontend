@@ -112,6 +112,7 @@ export class HuiDialogEditCard extends hassLocalizeLitMixin(LitElement) {
                     @loaded-dialog="${this._loaded}"
                     @resize-dialog="${this._resizeDialog}"
                     @close-dialog="${this._closeDialog}"
+                    @save-done="${this._saveDone}"
                     @reload-lovelace="${this._reloadLovelace}"
                   >
                   </hui-edit-card>
@@ -124,6 +125,7 @@ export class HuiDialogEditCard extends hassLocalizeLitMixin(LitElement) {
                     @loaded-dialog="${this._loaded}"
                     @resize-dialog="${this._resizeDialog}"
                     @close-dialog="${this._closeDialog}"
+                    @migrate-done="${this._migrateDone}"
                     @reload-lovelace="${this._reloadLovelace}"
                   ></hui-migrate-config>
                 `
@@ -192,6 +194,10 @@ export class HuiDialogEditCard extends hassLocalizeLitMixin(LitElement) {
     this._editCard.updateConfigInBackend();
   }
 
+  private _saveDone(): void {
+    this._saving = false;
+  }
+
   private _toggle(): void {
     this._editCard.toggleEditor();
   }
@@ -199,6 +205,10 @@ export class HuiDialogEditCard extends hassLocalizeLitMixin(LitElement) {
   private _migrate(): void {
     this._migrating = true;
     this._migrateConfig.migrateConfig();
+  }
+
+  private _migrateDone(): void {
+    this._migrating = false;
   }
 }
 

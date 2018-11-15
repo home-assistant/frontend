@@ -94,6 +94,7 @@ export class HuiEditCard extends LitElement {
 
     if (!this._isConfigValid()) {
       alert("Your config is not valid, please fix your config before saving.");
+      fireEvent(this, "save-done");
       return;
     }
 
@@ -104,10 +105,11 @@ export class HuiEditCard extends LitElement {
         this._configValue!.value,
         this._configValue!.format
       );
-      fireEvent(this, "reload-lovelace");
       fireEvent(this, "close-dialog");
+      fireEvent(this, "reload-lovelace");
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
+      fireEvent(this, "save-done");
     }
   }
 

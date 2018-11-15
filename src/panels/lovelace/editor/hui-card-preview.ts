@@ -6,13 +6,16 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceConfig } from "../types";
 import { ConfigError } from "./types";
 
+const CUSTOM_TYPE_PREFIX = "custom:";
+
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
+  private _element?: LovelaceCard;
 
   set hass(value: HomeAssistant) {
     this._hass = value;
-    if (this.lastChild) {
-      (this.lastChild as LovelaceCard).hass = value;
+    if (this._element) {
+      this._element.hass = value;
     }
   }
 
@@ -26,25 +29,38 @@ export class HuiCardPreview extends HTMLElement {
   }
 
   set config(configValue: LovelaceConfig) {
-    this._createCard(configValue);
-  }
-
-  private _createCard(configValue: LovelaceConfig): void {
-    if (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
-
     if (!configValue) {
       return;
     }
 
-    const element = createCardElement(configValue);
-
-    if (this._hass) {
-      element.hass = this._hass;
+    if (!this._element) {
+      this._createCard(configValue);
+      return;
     }
 
-    this.appendChild(element);
+    const tag = configValue!.type.startsWith(CUSTOM_TYPE_PREFIX)
+      ? configValue!.type.substr(CUSTOM_TYPE_PREFIX.length)
+      : `hui-${configValue!.type}-card`;
+
+    if (tag.toUpperCase() === this._element.tagName) {
+      this._element.setConfig(configValue);
+    } else {
+      this._createCard(configValue);
+    }
+  }
+
+  private _createCard(configValue: LovelaceConfig): void {
+    if (this._element) {
+      this.removeChild(this._element);
+    }
+
+    this._element = createCardElement(configValue);
+
+    if (this._hass) {
+      this._element!.hass = this._hass;
+    }
+
+    this.appendChild(this._element!);
   }
 }
 

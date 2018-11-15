@@ -7,7 +7,6 @@ import { LovelaceConfig } from "../types";
 let registeredDialog = false;
 
 export class HuiCardOptions extends LitElement {
-  public cardId?: string;
   public cardConfig?: LovelaceConfig;
   protected hass?: HomeAssistant;
 
