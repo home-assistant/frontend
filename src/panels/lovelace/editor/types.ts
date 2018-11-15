@@ -9,7 +9,7 @@ export interface YamlChangedEvent extends Event {
 
 export interface ConfigValue {
   format: "json" | "yaml";
-  value: string | LovelaceConfig;
+  value?: string | LovelaceConfig;
 }
 
 export interface ConfigError {

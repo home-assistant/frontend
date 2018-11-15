@@ -49,7 +49,7 @@ export class HuiEditCard extends LitElement {
     if (String(cardConfig.id) !== this._cardId) {
       this._uiEditor = true;
       this._configElement = undefined;
-      this._configValue = { format: "yaml", value: "" };
+      this._configValue = { format: "yaml", value: undefined };
       this._configState = "OK";
       this._cardId = String(cardConfig.id);
       this._loadConfigElement();
@@ -70,7 +70,7 @@ export class HuiEditCard extends LitElement {
           value: yaml.safeDump(this._configValue!.value),
         };
       } else {
-        this._configValue = { format: "yaml", value: "" };
+        this._configValue = { format: "yaml", value: undefined };
       }
       this._uiEditor = !this._uiEditor;
     } else if (this._configElement && this._configValue!.format === "yaml") {
@@ -102,7 +102,7 @@ export class HuiEditCard extends LitElement {
       await updateCardConfig(
         this.hass!,
         this._cardId!,
-        this._configValue!.value,
+        this._configValue!.value!,
         this._configValue!.format
       );
       fireEvent(this, "close-dialog");
@@ -197,6 +197,9 @@ export class HuiEditCard extends LitElement {
   }
 
   private _isConfigValid() {
+    if (!this._cardId || !this._configValue || !this._configValue.value) {
+      return false;
+    }
     if (this._configState === "OK") {
       return true;
     } else {

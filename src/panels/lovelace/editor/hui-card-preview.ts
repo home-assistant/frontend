@@ -38,9 +38,9 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    const tag = configValue!.type.startsWith(CUSTOM_TYPE_PREFIX)
-      ? configValue!.type.substr(CUSTOM_TYPE_PREFIX.length)
-      : `hui-${configValue!.type}-card`;
+    const tag = configValue.type.startsWith(CUSTOM_TYPE_PREFIX)
+      ? configValue.type.substr(CUSTOM_TYPE_PREFIX.length)
+      : `hui-${configValue.type}-card`;
 
     if (tag.toUpperCase() === this._element.tagName) {
       this._element.setConfig(configValue);
