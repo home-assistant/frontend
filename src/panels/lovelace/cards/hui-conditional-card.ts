@@ -72,7 +72,7 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
   }
 
   public getCardSize() {
-    return computeCardSize(this._card);
+    return computeCardSize(this._card!);
   }
 }
 
