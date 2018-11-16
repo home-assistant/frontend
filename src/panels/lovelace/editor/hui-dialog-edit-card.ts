@@ -1,5 +1,6 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import { classMap } from "lit-html/directives/classMap";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-dialog/paper-dialog";
@@ -83,7 +84,7 @@ export class HuiDialogEditCard extends hassLocalizeLitMixin(LitElement) {
         paper-spinner[active] {
           display: block;
         }
-        .paper-dialog-buttons[hidden] {
+        .hidden {
           display: none;
         }
       </style>
@@ -131,7 +132,9 @@ export class HuiDialogEditCard extends hassLocalizeLitMixin(LitElement) {
                 `
           }
         </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons" ?hidden="${this._loading}">
+        <div
+          class="paper-dialog-buttons ${classMap({ hidden: this._loading! })}"
+        >
           ${
             this._cardConfig!.id
               ? html`
@@ -185,8 +188,10 @@ export class HuiDialogEditCard extends hassLocalizeLitMixin(LitElement) {
     this._dialog.close();
   }
 
-  private _loaded(): void {
+  private async _loaded(): Promise<void> {
+    await this.updateComplete;
     this._loading = false;
+    this._resizeDialog();
   }
 
   private _save(): void {

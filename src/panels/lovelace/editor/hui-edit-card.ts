@@ -183,8 +183,9 @@ export class HuiEditCard extends LitElement {
 
     if (this.loading) {
       fireEvent(this, "loaded-dialog");
+    } else {
+      fireEvent(this, "resize-dialog");
     }
-    fireEvent(this, "resize-dialog");
   }
 
   private _setPreviewError(error: ConfigError) {
