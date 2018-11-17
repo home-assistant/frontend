@@ -180,13 +180,14 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const history = stateHistory[0];
     const valArray = [history[history.length - 1]];
 
-    let pos = history.length - 1;
-    const accuracy = this._config.accuracy <= pos ? this._config.accuracy : pos;
+    const accuracy = this._config.accuracy <= history.length ? this._config.accuracy : history.length;
     let increment = Math.ceil(history.length / accuracy);
     increment = increment <= 0 ? 1 : increment;
-    for (let i = accuracy; i >= 2; i--) {
+    let pos = history.length - 1;
+    for (let i = accuracy; i >= 1; i--) {
       pos -= increment;
-      valArray.unshift(pos >= 0 ? history[pos] : history[0]);
+      if (pos <= 0) { break; }
+      valArray.unshift(history[pos]);
     }
     this._line = this._getGraph(valArray, 500, this._config.height);
   }
