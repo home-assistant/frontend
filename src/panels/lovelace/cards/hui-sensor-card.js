@@ -186,8 +186,9 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     let pos = history.length - 1;
     for (let i = accuracy; i >= 1; i--) {
       pos -= increment;
-      if (pos <= 0) { break; }
-      valArray.unshift(history[pos]);
+      if (pos >= 0) {
+        valArray.unshift(history[pos]); 
+        }
     }
     this._line = this._getGraph(valArray, 500, this._config.height);
   }
