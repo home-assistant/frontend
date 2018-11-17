@@ -180,7 +180,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const history = stateHistory[0];
     const valArray = [history[history.length - 1]];
 
-    const accuracy = this._config.accuracy <= history.length
+    const accuracy =
+      this._config.accuracy <= history.length
         ? this._config.accuracy
         : history.length;
     let increment = Math.ceil(history.length / accuracy);
