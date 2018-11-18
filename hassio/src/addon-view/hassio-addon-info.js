@@ -5,8 +5,9 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/ha-label-badge";
 import "../../../src/components/ha-markdown";
+import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/resources/ha-style";
 import EventsMixin from "../../../src/mixins/events-mixin";
 
@@ -22,6 +23,14 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
         paper-card {
           display: block;
           margin-bottom: 16px;
+        }
+        paper-card.warning {
+          background-color: var(--google-red-500);
+          color: white;
+          --paper-card-header-color: white;
+        }
+        paper-card.warning paper-button {
+          color: white !important;
         }
         .addon-header {
           @apply --paper-font-headline;
@@ -65,7 +74,42 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
         ha-markdown img {
           max-width: 100%;
         }
+        .red {
+          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        }
+        .blue {
+          --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        }
+        .green {
+          --ha-label-badge-color: var(--label-badge-green, #0da035);
+        }
+        .yellow {
+          --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        }
+        .security {
+          margin-bottom: 8px;
+        }
+        .security h3 {
+          margin-bottom: 8px;
+          font-weight: normal;
+        }
+        .security ha-label-badge {
+          margin-right: 4px;
+          --iron-icon-height: 45px;
+        }
       </style>
+      <template is="dom-if" if="[[!addon.protected]]">
+        <paper-card heading="Warning: Protected mode is disabled!" class="warning">
+          <div class="card-content">
+            Protection mode is disabled, this addon can do things that can damage your system. Only use this if you know and trust the source of this addon.
+          </div>
+          <div class="card-actions">
+              <paper-button on-click="protectionToggled">Enable protected mode</paper-button>
+            </div>
+          </div>
+        </paper-card>
+      </template>
+
       <template is="dom-if" if="[[computeUpdateAvailable(addon)]]">
         <paper-card heading="Update available! 🎉">
           <div class="card-content">
@@ -123,6 +167,57 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             <a href="[[addon.url]]" target="_blank">[[addon.name]] page</a> for
             details.
           </div>
+          <div class="security">
+              <h3>Security</h3>
+              <ha-label-badge
+                class$="[[computeSecurityClassName(addon.rating)]]"
+                value="[[addon.rating]]"
+                label="rating"
+                description=""
+              ></ha-label-badge>
+              <template is="dom-if" if="[[addon.host_network]]">
+                <ha-label-badge
+                icon="mdi:network"  
+                label="network"
+                  description=""
+                ></ha-label-badge>
+              </template>
+              <template is="dom-if" if="[[addon.full_access]]">
+                <ha-label-badge
+                icon="mdi:shield-half-full"  
+                label="full"
+                  description=""
+                ></ha-label-badge>
+              </template>
+              <template is="dom-if" if="[[addon.homeassistant_api]]">
+                <ha-label-badge
+                  icon="mdi:home-assistant"
+                  label="hass"
+                  description=""
+                ></ha-label-badge>
+              </template>
+              <template is="dom-if" if="[[addon.hassio_api]]">
+                <ha-label-badge
+                  icon="mdi:home-assistant"
+                  label="hassio"
+                  description=""
+                ></ha-label-badge>
+              </template>
+              <template is="dom-if" if="[[addon.docker_api]]">
+                <ha-label-badge
+                  icon="mdi:docker"
+                  label="docker"
+                  description=""
+                ></ha-label-badge>
+              </template>
+              <template is="dom-if" if="[[addon.host_pid]]">
+                <ha-label-badge
+                  icon="mdi:host"
+                  label="host pid"
+                  description=""
+                ></ha-label-badge>
+              </template>
+          </div>
           <template is="dom-if" if="[[addon.logo]]">
             <a href="[[addon.url]]" target="_blank" class="logo">
               <img src="/api/hassio/addons/[[addonSlug]]/logo" />
@@ -141,6 +236,13 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
               <paper-toggle-button
                 on-change="autoUpdateToggled"
                 checked="[[addon.auto_update]]"
+              ></paper-toggle-button>
+            </div>
+            <div class="state">
+              <div>Protection mode</div>
+              <paper-toggle-button
+                on-change="protectionToggled"
+                checked="[[addon.protected]]"
               ></paper-toggle-button>
             </div>
           </template>
@@ -194,6 +296,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           </template>
           <template is="dom-if" if="[[!addon.version]]">
             <ha-call-api-button
+              disabled="[[!addon.available]]"
               hass="[[hass]]"
               path="hassio/addons/[[addonSlug]]/install"
               >Install</ha-call-api-button
@@ -216,10 +319,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
       hass: Object,
       addon: Object,
       addonSlug: String,
-      isRunning: {
-        type: Boolean,
-        computed: "computeIsRunning(addon)",
-      },
+      isRunning: { type: Boolean, computed: "computeIsRunning(addon)" },
     };
   }
 
@@ -248,6 +348,16 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     return state === "auto";
   }
 
+  computeSecurityClassName(rating) {
+    if (rating === 5) {
+      return "green";
+    }
+    if (rating > 2) {
+      return "yellow";
+    }
+    return "red";
+  }
+
   startOnBootToggled() {
     const data = { boot: this.addon.boot === "auto" ? "manual" : "auto" };
     this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/options`, data);
@@ -256,6 +366,12 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
   autoUpdateToggled() {
     const data = { auto_update: !this.addon.auto_update };
     this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/options`, data);
+  }
+
+  protectionToggled() {
+    const data = { protected: !this.addon.protected };
+    this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/security`, data);
+    this.set("addon.protected", !this.addon.protected);
   }
 
   openChangelog() {

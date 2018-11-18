@@ -76,13 +76,15 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
       return addon.installed !== addon.version
         ? "New version available"
         : "Add-on is installed";
-    return "Add-on is not installed";
+    return addon.available
+      ? "Add-on is not installed"
+      : "Add-on is not available on your system";
   }
 
   computeIconClass(addon) {
     if (addon.installed)
       return addon.installed !== addon.version ? "update" : "installed";
-    return "";
+    return !addon.available ? "not_available" : "";
   }
 
   addonTapped(ev) {
