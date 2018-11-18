@@ -1,8 +1,7 @@
 import { html } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import computeCardSize from "../common/compute-card-size";
-
+import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 
 class HuiHorizontalStackCard extends HuiStackCard {
