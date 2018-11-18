@@ -7,7 +7,7 @@ import "./components/hui-card-options.ts";
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
 import createCardElement from "./common/create-card-element";
-import computeCardSize from "./common/compute-card-size";
+import { computeCardSize } from "./common/compute-card-size";
 
 class HUIView extends PolymerElement {
   static get template() {
