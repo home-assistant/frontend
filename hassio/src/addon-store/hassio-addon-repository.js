@@ -38,12 +38,13 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
             as="addon"
             sort="sortAddons"
           >
-            <paper-card on-click="addonTapped" class="[[computeClass(addon.available)]]">
+            <paper-card class$="[[computeClass(addon)]]" on-click="addonTapped">
               <div class="card-content">
                 <hassio-card-content
                   hass="[[hass]]"
                   title="[[addon.name]]"
                   description="[[addon.description]]"
+                  available="[[addon.available]]"
                   icon="[[computeIcon(addon)]]"
                   icon-title="[[computeIconTitle(addon)]]"
                   icon-class="[[computeIconClass(addon)]]"
@@ -90,8 +91,8 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
     return !addon.available ? "not_available" : "";
   }
 
-  computeClass(available) {
-    return !available ? "not_available" : "";
+  computeClass(addon) {
+    return !addon.available ? "not_available" : "";
   }
 
   addonTapped(ev) {

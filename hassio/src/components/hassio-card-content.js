@@ -57,7 +57,7 @@ class HassioCardContent extends PolymerElement {
             [[description]]
           </template>
           <template is="dom-if" if="[[!available]]">
-            Not available
+            (Not available)
           </template>
           <template is="dom-if" if="[[datetime]]">
             <ha-relative-time
