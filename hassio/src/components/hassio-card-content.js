@@ -12,7 +12,7 @@ class HassioCardContent extends PolymerElement {
           margin-right: 16px;
           margin-top: 16px;
           float: left;
-          color: var(--primary-color);
+          color: var(--secondary-text-color);
         }
         iron-icon.update {
           color: var(--paper-orange-400);
@@ -26,7 +26,7 @@ class HassioCardContent extends PolymerElement {
           color: var(--paper-item-icon-color);
         }
         iron-icon.not_available {
-          color: var(--secondary-text-color);
+          color: var(--google-red-500);
         }
         .title {
           color: var(--primary-text-color);

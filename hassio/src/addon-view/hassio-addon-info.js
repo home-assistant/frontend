@@ -13,6 +13,54 @@ import EventsMixin from "../../../src/mixins/events-mixin";
 
 import "../components/hassio-card-content";
 
+const PERMIS_DESC = {
+  rating: {
+    title: "Addon Security Rating",
+    description:
+      "Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an addon requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk).",
+  },
+  host_network: {
+    title: "Host Network",
+    description:
+      "Add-ons usually run in their own isolated network layer, which prevents them from accessing the network of the host operating system. In some cases, this network isolation can limit add-ons in providing their services and therefore, the isolation can be lifted by the add-on author, giving the addon full access to the network capabilities of the host machine. This gives the addon more networking capabilities but lowers the security, hence, the security rating of the add-on will be lowered when this option is used by the addon.",
+  },
+  homeassistant_api: {
+    title: "Home Assistant API Access",
+    description:
+      "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the addon as well, which enables an addon to interact with Home Assistant without the need for additional authentication tokens.",
+  },
+  full_access: {
+    title: "Full Hardware Access",
+    description:
+      "This addon is given full access to the hardware of your system, by request of the addon author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the addon security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the addon manually. Only disable the protection mode if you know, need AND trust the source of this addon.",
+  },
+  hassio_api: {
+    title: "Hass.io API Access",
+    description:
+      "The addon was given access to the Hass.io API, by request of the addon author. By default, the addon can access general version information of your system. When the addon requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Hass.io system. This permission is indicated by this badge and will impact the security score of the addon negatively.",
+  },
+  docker_api: {
+    title: "Full Docker Access",
+    description:
+      "The addon author has requested the addon to have management access to the Docker instance running on your system. This mode gives the addon full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the addon security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the addon manually. Only disable the protection mode if you know, need AND trust the source of this addon.",
+  },
+  host_pid: {
+    title: "Host Processes Namespace",
+    description:
+      "Usually, the processes the addon runs, are isolated from all other system processes. The addon author has requested the addon to have access to the system processes running on the host system instance, and allow the addon to spawn processes on the host system as well. This mode gives the addon full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the addon security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the addon manually. Only disable the protection mode if you know, need AND trust the source of this addon.",
+  },
+  apparmor: {
+    title: "AppArmor",
+    description:
+      "AppArmor ('Application Armor') is a Linux kernel security module that restricts addons capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAddon authors can provide their security profiles, optimized for the addon, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the addon.",
+  },
+  auth_api: {
+    title: "Home Assistant Authentication",
+    description:
+      "An addon can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability.",
+  },
+};
+
 class HassioAddonInfo extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -31,6 +79,9 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
         }
         paper-card.warning paper-button {
           color: white !important;
+        }
+        .warning {
+          color: var(--google-red-500);
         }
         .addon-header {
           @apply --paper-font-headline;
@@ -87,28 +138,18 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
         }
         .security {
-          margin-bottom: 8px;
+          margin-bottom: 16px;
         }
         .security h3 {
           margin-bottom: 8px;
           font-weight: normal;
         }
         .security ha-label-badge {
+          cursor: pointer;
           margin-right: 4px;
           --iron-icon-height: 45px;
         }
       </style>
-      <template is="dom-if" if="[[!addon.protected]]">
-        <paper-card heading="Warning: Protected mode is disabled!" class="warning">
-          <div class="card-content">
-            Protection mode is disabled, this addon can do things that can damage your system. Only use this if you know and trust the source of this addon.
-          </div>
-          <div class="card-actions">
-              <paper-button on-click="protectionToggled">Enable protected mode</paper-button>
-            </div>
-          </div>
-        </paper-card>
-      </template>
 
       <template is="dom-if" if="[[computeUpdateAvailable(addon)]]">
         <paper-card heading="Update available! 🎉">
@@ -167,62 +208,108 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             <a href="[[addon.url]]" target="_blank">[[addon.name]] page</a> for
             details.
           </div>
+          <template is="dom-if" if="[[addon.logo]]">
+            <a href="[[addon.url]]" target="_blank" class="logo">
+              <img src="/api/hassio/addons/[[addonSlug]]/logo" />
+            </a>
+          </template>
+          <template is="dom-if" if="[[!addon.protected]]">
+            <paper-card heading="Warning: Protection mode is disabled!" class="warning">
+              <div class="card-content">
+                Protection mode on this addon is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this addon.
+              </div>
+              <div class="card-actions">
+                  <paper-button on-click="protectionToggled">Enable Protection mode</paper-button>
+                </div>
+              </div>
+            </paper-card>
+          </template>
           <div class="security">
-              <h3>Security</h3>
+              <h3>Addon Security Rating</h3>
+              <div class="description light-color">
+                Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an addon requires on your system, the lower the score, thus raising the possible security risks.
+              </div>
               <ha-label-badge
                 class$="[[computeSecurityClassName(addon.rating)]]"
+                on-click="showMoreInfo"
+                id="rating"
                 value="[[addon.rating]]"
                 label="rating"
                 description=""
               ></ha-label-badge>
               <template is="dom-if" if="[[addon.host_network]]">
                 <ha-label-badge
-                icon="mdi:network"  
-                label="network"
-                  description=""
+                on-click="showMoreInfo"
+                id="host_network"
+                icon="hassio:network"
+                label="host"
+                description=""
                 ></ha-label-badge>
               </template>
               <template is="dom-if" if="[[addon.full_access]]">
                 <ha-label-badge
-                icon="mdi:shield-half-full"  
-                label="full"
-                  description=""
+                on-click="showMoreInfo"
+                id="full_access"
+                icon="hassio:chip"  
+                label="hardware"
+                description=""
                 ></ha-label-badge>
               </template>
               <template is="dom-if" if="[[addon.homeassistant_api]]">
                 <ha-label-badge
-                  icon="mdi:home-assistant"
+                  on-click="showMoreInfo"
+                  id="homeassistant_api"
+                  icon="hassio:home-assistant"
                   label="hass"
                   description=""
                 ></ha-label-badge>
               </template>
-              <template is="dom-if" if="[[addon.hassio_api]]">
+              <template is="dom-if" if="[[computeHassioApi(addon)]]">
                 <ha-label-badge
-                  icon="mdi:home-assistant"
+                  on-click="showMoreInfo"
+                  id="hassio_api"
+                  icon="hassio:home-assistant"
                   label="hassio"
-                  description=""
+                  description="[[addon.hassio_role]]"
                 ></ha-label-badge>
               </template>
               <template is="dom-if" if="[[addon.docker_api]]">
                 <ha-label-badge
-                  icon="mdi:docker"
+                  on-click="showMoreInfo"
+                  id="docker_api"
+                  icon="hassio:docker"
                   label="docker"
                   description=""
                 ></ha-label-badge>
               </template>
               <template is="dom-if" if="[[addon.host_pid]]">
                 <ha-label-badge
-                  icon="mdi:host"
+                  on-click="showMoreInfo"
+                  id="host_pid"
+                  icon="hassio:pound"
                   label="host pid"
                   description=""
                 ></ha-label-badge>
               </template>
+              <template is="dom-if" if="[[addon.apparmor]]">
+                <ha-label-badge
+                  on-click="showMoreInfo"
+                  id="apparmor"
+                  icon="hassio:shield"
+                  label="apparmor"
+                  description=""
+                ></ha-label-badge>
+              </template>
+              <template is="dom-if" if="[[addon.auth_api]]">
+                <ha-label-badge
+                  on-click="showMoreInfo"
+                  id="auth_api"
+                  icon="hassio:key"
+                  label="auth"
+                  description=""
+                ></ha-label-badge>
+              </template>
           </div>
-          <template is="dom-if" if="[[addon.logo]]">
-            <a href="[[addon.url]]" target="_blank" class="logo">
-              <img src="/api/hassio/addons/[[addonSlug]]/logo" />
-            </a>
-          </template>
           <template is="dom-if" if="[[addon.version]]">
             <div class="state">
               <div>Start on boot</div>
@@ -295,6 +382,9 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             </template>
           </template>
           <template is="dom-if" if="[[!addon.version]]">
+            <template is="dom-if" if="[[!addon.available]]">
+              <p class="warning">This addon is not available on your system.</p>
+            </template>
             <ha-call-api-button
               disabled="[[!addon.available]]"
               hass="[[hass]]"
@@ -336,6 +426,13 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     );
   }
 
+  computeHassioApi(addon) {
+    return (
+      addon.hassio_api &&
+      (addon.hassio_role === "manager" || addon.hassio_role === "admin")
+    );
+  }
+
   pathWebui(webui) {
     return webui && webui.replace("[HOST]", document.location.hostname);
   }
@@ -372,6 +469,14 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     const data = { protected: !this.addon.protected };
     this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/security`, data);
     this.set("addon.protected", !this.addon.protected);
+  }
+
+  showMoreInfo(e) {
+    const id = e.target.getAttribute("id");
+    this.fire("hassio-markdown-dialog", {
+      title: PERMIS_DESC[id].title,
+      content: PERMIS_DESC[id].description,
+    });
   }
 
   openChangelog() {
