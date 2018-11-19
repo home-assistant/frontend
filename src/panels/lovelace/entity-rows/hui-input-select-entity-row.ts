@@ -11,15 +11,18 @@ import "./hui-error-entity-row";
 import computeStateName from "../../../common/entity/compute_state_name";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { setOption } from "../../../data/input-select";
 
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
+  private _selected?: string;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _config: {},
+      _selected: {},
     };
   }
 
@@ -50,6 +53,8 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
       ${this.renderStyle()}
       <state-badge .stateObj="${stateObj}"></state-badge>
       <paper-dropdown-menu
+        selected-item-label="${this._selected}"
+        @selected-item-label-changed="${this._selectedChanged}"
         label="${this._config.name || computeStateName(stateObj)}"
       >
         <paper-listbox
@@ -61,10 +66,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
               stateObj.attributes.options,
               (option) =>
                 html`
-                  <paper-item
-                    @click="${() => this._selectedChanged(option as string)}"
-                    >${option}</paper-item
-                  >
+                  <paper-item>${option}</paper-item>
                 `
             )
           }
@@ -88,16 +90,19 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private _selectedChanged(option: string): void {
+  private _selectedChanged(ev): void {
     // Selected Option will transition to '' before transitioning to new value
     const stateObj = this.hass!.states[this._config!.entity];
-    if (option === "" || option === stateObj.state) {
+    if (
+      !ev.target.selectedItem ||
+      ev.target.selectedItem.innerText === "" ||
+      ev.target.selectedItem.innerText === stateObj.state
+    ) {
       return;
     }
-    this.hass!.callService("input_select", "select_option", {
-      option,
-      entity_id: stateObj.entity_id,
-    });
+
+    this._selected = ev.target.selectedItem.innerText;
+    setOption(this.hass!, stateObj.entity_id, this._selected!);
   }
 }
 
