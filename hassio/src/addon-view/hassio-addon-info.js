@@ -291,9 +291,10 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                   description=""
                 ></ha-label-badge>
               </template>
-              <template is="dom-if" if="[[computeApparmor(addon.apparmor)]]">
+              <template is="dom-if" if="[[addon.apparmor]]">
                 <ha-label-badge
                   on-click="showMoreInfo"
+                  class$="[[computeApparmorClassName(addon.apparmor)]]"
                   id="apparmor"
                   icon="hassio:shield"
                   label="apparmor"
@@ -433,8 +434,14 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     );
   }
 
-  computeApparmor(apparmor) {
-    return apparmor !== "default";
+  computeApparmorClassName(apparmor) {
+    if (apparmor === "profile") {
+      return "green";
+    }
+    if (apparmor === "disable") {
+      return "red";
+    }
+    return "";
   }
 
   pathWebui(webui) {
@@ -450,7 +457,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
   }
 
   computeSecurityClassName(rating) {
-    if (rating === 5) {
+    if (rating > 4) {
       return "green";
     }
     if (rating > 2) {
