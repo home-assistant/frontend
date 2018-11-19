@@ -22,8 +22,8 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
     super();
     this._initializing = true;
   }
-  protected async update(changedProps) {
-    super.update(changedProps);
+
+  protected async firstUpdated(): Promise<void> {
     if (this._initializing) {
       await this.updateComplete;
       this._initializing = false;

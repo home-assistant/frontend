@@ -36,8 +36,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     this._configEntities = processEditorEntities(config.entities);
   }
 
-  protected async update(changedProps) {
-    super.update(changedProps);
+  protected async firstUpdated(): Promise<void> {
     if (this._initializing) {
       await this.updateComplete;
       this._initializing = false;
@@ -101,7 +100,6 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     if (!this._config || !this.hass || this._initializing) {
       return;
     }
-
     const target = ev.target! as EditorTarget;
     let newConfig = this._config;
 
