@@ -2,17 +2,16 @@ import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
+import { LovelaceConfig } from "../types";
 
 let registeredDialog = false;
 
 export class HuiCardOptions extends LitElement {
-  public cardId?: string;
+  public cardConfig?: LovelaceConfig;
   protected hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-    };
+    return { hass: {} };
   }
 
   public connectedCallback() {
@@ -51,7 +50,7 @@ export class HuiCardOptions extends LitElement {
   private _editCard() {
     fireEvent(this, "show-edit-card", {
       hass: this.hass,
-      cardId: this.cardId,
+      cardConfig: this.cardConfig,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }

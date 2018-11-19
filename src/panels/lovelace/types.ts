@@ -2,6 +2,7 @@ import { HomeAssistant } from "../../types";
 
 export interface LovelaceConfig {
   type: string;
+  id: string;
 }
 
 export interface LovelaceCard extends HTMLElement {
