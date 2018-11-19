@@ -49,11 +49,11 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
     };
   }
 
-  public getCardSize() {
+  public getCardSize(): number {
     return 3;
   }
 
-  public setConfig(config: Config) {
+  public setConfig(config: Config): void {
     if (
       !config ||
       !config.entities ||
@@ -138,11 +138,7 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
     entityConf: EntityConfig,
     dialog: boolean
   ): TemplateResult {
-    if (!this.hass) {
-      return html``;
-    }
-
-    const stateObj = this.hass.states[entityConf.entity];
+    const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
       return html``;
@@ -163,7 +159,7 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
             ${computeStateName(stateObj)} : ${computeStateDisplay(
             this.localize,
             stateObj,
-            this.hass.language
+            this.hass!.language
           )}
           `
         }"
@@ -171,21 +167,18 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _openDialog(ev: MouseEvent) {
+  private _openDialog(ev: MouseEvent): void {
     fireEvent(this, "hass-more-info", { entityId: (ev.target as any).entity });
   }
 
-  private _callService(ev: MouseEvent) {
+  private _callService(ev: MouseEvent): void {
     toggleEntity(this.hass, (ev.target as any).entity);
   }
 
-  private _handleImageClick() {
+  private _handleImageClick(): void {
     if (this._config!.navigation_path) {
       navigate(this, this._config!.navigation_path!);
-      return;
-    }
-
-    if (this._config!.camera_image) {
+    } else if (this._config!.camera_image) {
       fireEvent(this, "hass-more-info", {
         entityId: this._config!.camera_image,
       });
