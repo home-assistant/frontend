@@ -764,6 +764,19 @@
             "clear_items": "Clear checked items",
             "add_item": "Add item"
           }
+        },
+        "editor": {
+          "edit": {
+            "header": "Card Configuration",
+            "save": "Save",
+            "toggle_editor": "Toggle Editor"
+          },
+          "migrate": {
+            "header": "Configuration Incompatible",
+            "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
+            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
+            "migrate": "Migrate config"
+          }
         }
       },
       "mailbox": {
@@ -934,19 +947,6 @@
           "create_account": "Create Account",
           "error": {
             "required_fields": "Fill in all required fields"
-          }
-        }
-      },
-      "lovelace": {
-        "editor": {
-          "header": "Card Configuration",
-          "save": "Save",
-          "toggle_editor": "Toggle Editor",
-          "migrate": {
-            "header": "Configuration Incompatible",
-            "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
-            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
-            "migrate": "Migrate config"
           }
         }
       }
