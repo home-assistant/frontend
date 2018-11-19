@@ -13,7 +13,7 @@ import "./hui-migrate-config";
 import { HuiMigrateConfig } from "./hui-migrate-config";
 
 export class HuiDialogEditCard extends LitElement {
-  private _hass?: HomeAssistant;
+  protected _hass?: HomeAssistant;
   private _cardConfig?: LovelaceConfig;
   private _reloadLovelace?: () => void;
 
@@ -38,8 +38,8 @@ export class HuiDialogEditCard extends LitElement {
     this._reloadLovelace = reloadLovelace;
     await this.updateComplete;
     this._cardConfig!.id
-      ? this._editDialog.openDialog()
-      : this._migrateDialog.openDialog();
+      ? this._editDialog.showDialog()
+      : this._migrateDialog.showDialog();
   }
 
   protected render(): TemplateResult {

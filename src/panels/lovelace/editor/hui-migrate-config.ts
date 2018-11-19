@@ -14,41 +14,28 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { migrateConfig } from "../common/data";
 
 export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
-  private _hass?: HomeAssistant;
+  protected hass?: HomeAssistant;
   private _migrating?: boolean;
 
   static get properties(): PropertyDeclarations {
-    return { hass: {}, _migrating: {} };
+    return { _hass: {}, _migrating: {} };
   }
 
   private get _dialog(): PaperDialogElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  public async openDialog(): Promise<void> {
+  public async showDialog(): Promise<void> {
     // Wait till dialog is rendered.
-    await this.updateComplete;
+    if (this._dialog == null) {
+      await this.updateComplete;
+    }
     this._dialog.open();
   }
 
   protected render(): TemplateResult {
     return html`
-      <style>
-        paper-dialog {
-          width: 650px;
-        }
-        paper-spinner {
-          display: none;
-        }
-        paper-spinner[active] {
-          display: block;
-        }
-        paper-button paper-spinner {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-      </style>
+      ${this.renderStyle()}
       <paper-dialog with-backdrop>
         <h2>${this.localize("ui.panel.lovelace.editor.migrate.header")}</h2>
         <paper-dialog-scrollable>
@@ -78,6 +65,27 @@ export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
+  private renderStyle(): TemplateResult {
+    return html`
+      <style>
+        paper-dialog {
+          width: 650px;
+        }
+        paper-spinner {
+          display: none;
+        }
+        paper-spinner[active] {
+          display: block;
+        }
+        paper-button paper-spinner {
+          width: 14px;
+          height: 14px;
+          margin-right: 20px;
+        }
+      </style>
+    `;
+  }
+
   private _closeDialog(): void {
     this._dialog.close();
   }
@@ -85,7 +93,7 @@ export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
   private async _migrateConfig(): Promise<void> {
     this._migrating = true;
     try {
-      await migrateConfig(this._hass!);
+      await migrateConfig(this.hass!);
       this._closeDialog();
       fireEvent(this, "reload-lovelace");
     } catch (err) {

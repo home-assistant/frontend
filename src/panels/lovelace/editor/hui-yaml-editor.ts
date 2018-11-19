@@ -31,6 +31,22 @@ export class HuiYAMLEditor extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      ${this.renderStyle()}
+      <paper-spinner
+        ?active="${this._loading}"
+        alt="Loading"
+        class="center"
+      ></paper-spinner>
+      <paper-textarea
+        max-rows="10"
+        .value="${this._yaml}"
+        @value-changed="${this._valueChanged}"
+      ></paper-textarea>
+    `;
+  }
+
+  private renderStyle(): TemplateResult {
+    return html`
       <style>
         paper-textarea {
           --paper-input-container-shared-input-style_-_font-family: monospace;
@@ -46,16 +62,6 @@ export class HuiYAMLEditor extends LitElement {
           display: block;
         }
       </style>
-      <paper-spinner
-        ?active="${this._loading}"
-        alt="Loading"
-        class="center"
-      ></paper-spinner>
-      <paper-textarea
-        max-rows="10"
-        .value="${this._yaml}"
-        @value-changed="${this._valueChanged}"
-      ></paper-textarea>
     `;
   }
 
