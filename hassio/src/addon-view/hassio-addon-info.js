@@ -291,13 +291,13 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                   description=""
                 ></ha-label-badge>
               </template>
-              <template is="dom-if" if="[[addon.apparmor]]">
+              <template is="dom-if" if="[[computeApparmor(addon.apparmor)]]">
                 <ha-label-badge
                   on-click="showMoreInfo"
                   id="apparmor"
                   icon="hassio:shield"
                   label="apparmor"
-                  description=""
+                  description="[[addon.apparmor]]"
                 ></ha-label-badge>
               </template>
               <template is="dom-if" if="[[addon.auth_api]]">
@@ -431,6 +431,10 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
       addon.hassio_api &&
       (addon.hassio_role === "manager" || addon.hassio_role === "admin")
     );
+  }
+
+  computeApparmor(apparmor) {
+    return apparmor !== "default";
   }
 
   pathWebui(webui) {
