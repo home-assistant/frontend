@@ -14,7 +14,7 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { migrateConfig } from "../common/data";
 
 export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
-  protected hass?: HomeAssistant;
+  private _hass?: HomeAssistant;
   private _migrating?: boolean;
 
   static get properties(): PropertyDeclarations {
@@ -85,7 +85,7 @@ export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
   private async _migrateConfig(): Promise<void> {
     this._migrating = true;
     try {
-      await migrateConfig(this.hass!);
+      await migrateConfig(this._hass!);
       this._closeDialog();
       fireEvent(this, "reload-lovelace");
     } catch (err) {

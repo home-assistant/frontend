@@ -13,7 +13,7 @@ import "./hui-migrate-config";
 import { HuiMigrateConfig } from "./hui-migrate-config";
 
 export class HuiDialogEditCard extends LitElement {
-  protected _hass?: HomeAssistant;
+  private _hass?: HomeAssistant;
   private _cardConfig?: LovelaceConfig;
   private _reloadLovelace?: () => void;
 
@@ -32,7 +32,7 @@ export class HuiDialogEditCard extends LitElement {
     return this.shadowRoot!.querySelector("hui-migrate-config")!;
   }
 
-  public async showDialog({ hass, cardConfig, reloadLovelace }) {
+  public async showDialog({ hass, cardConfig, reloadLovelace }): Promise<void> {
     this._hass = hass;
     this._cardConfig = cardConfig;
     this._reloadLovelace = reloadLovelace;

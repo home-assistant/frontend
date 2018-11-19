@@ -29,7 +29,7 @@ import { extYamlSchema } from "./yaml-ext-schema";
 const CUSTOM_TYPE_PREFIX = "custom:";
 
 export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
-  protected hass?: HomeAssistant;
+  private _hass?: HomeAssistant;
   private _cardId?: string;
   private _originalConfig?: LovelaceConfig;
   private _configElement?: LovelaceCardEditor | null;
@@ -38,6 +38,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   private _configState?: string;
   private _saving: boolean;
   private _loading: boolean;
+  private _isToggleAvailable?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -50,6 +51,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       _uiEditor: {},
       _saving: {},
       _loading: {},
+      _isToggleAvailable: {},
     };
   }
 
@@ -67,6 +69,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       this._configElement = undefined;
       this._configValue = { format: "yaml", value: undefined };
       this._configState = "OK";
+      this._isToggleAvailable = false;
       this._cardId = String(cardConfig.id);
       this._loadConfigElement();
     }
@@ -142,19 +145,21 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                 `
               : html`
                   <hui-yaml-editor
-                    .hass="${this.hass}"
+                    .hass="${this._hass}"
                     .cardId="${this._cardId}"
                     .yaml="${this._configValue!.value}"
                     @yaml-changed="${this._handleYamlChanged}"
                   ></hui-yaml-editor>
                 `
           }
-          <hui-card-preview .hass="${this.hass}"></hui-card-preview>
+          <hui-card-preview .hass="${this._hass}"></hui-card-preview>
         </paper-dialog-scrollable>
         <div
           class="paper-dialog-buttons ${classMap({ hidden: this._loading! })}"
         >
-          <paper-button @click="${this._toggleEditor}"
+          <paper-button
+            ?disabled="${!this._isToggleAvailable}"
+            @click="${this._toggleEditor}"
             >${
               this.localize("ui.panel.lovelace.editor.edit.toggle_editor")
             }</paper-button
@@ -175,7 +180,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _toggleEditor(): void {
-    if (!this._isToggleAvailable()) {
+    if (!this._isToggleAvailable) {
       alert("You can't switch editor.");
       return;
     }
@@ -240,7 +245,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
 
     try {
       await updateCardConfig(
-        this.hass!,
+        this._hass!,
         this._cardId!,
         this._configValue!.value!,
         this._configValue!.format
@@ -261,7 +266,11 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       }) as LovelaceConfig;
       this._updatePreview(config);
       this._configState = "OK";
+      if (!this._isToggleAvailable && this._configElement !== null) {
+        this._isToggleAvailable = true;
+      }
     } catch (err) {
+      this._isToggleAvailable = false;
       this._configState = "YAML_ERROR";
       this._setPreviewError({
         type: "YAML Error",
@@ -321,14 +330,6 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _isToggleAvailable(): boolean {
-    if (this._configElement !== null && this._isConfigValid()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   private async _loadConfigElement(): Promise<void> {
     const conf = this._originalConfig;
     const tag = conf!.type.startsWith(CUSTOM_TYPE_PREFIX)
@@ -346,12 +347,13 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     }
 
     configElement.setConfig(conf);
-    configElement.hass = this.hass;
+    configElement.hass = this._hass;
     configElement.addEventListener("config-changed", (ev) =>
       this._handleUIConfigChanged(ev.detail.config)
     );
     this._configValue = { format: "json", value: conf! };
     this._configElement = configElement;
+    this._isToggleAvailable = true;
 
     // This will center the dialog with the updated config Element
     this._resizeDialog();
