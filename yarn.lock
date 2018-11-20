@@ -1039,12 +1039,12 @@
     "@polymer/iron-meta" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/lit-element@^0.6.2", "@polymer/lit-element@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.6.3.tgz#8ac2b82ae24f6306b5df0f2fa0b6deddd3cc4794"
-  integrity sha512-f7MNsgaliRN+g5MFbwKiTWTTWf3GrhYNB/3fAHM7t77TXTSbQ8MXHy2HXfQvPEHwjgen1o2CocaCTSGl/zzJ3g==
+"@polymer/lit-element@0.6.2", "@polymer/lit-element@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.6.2.tgz#589f2fa19e84d23c1debb2c329cbab758ae30581"
+  integrity sha512-4NWvK6SyAyyeW1mQ24ZVR+rtqZNHZ2JWnVTsPF/1iXnmmPwnpLs8mz0HRqz5adyoyt96ed/y2dsDwGBktJYyew==
   dependencies:
-    lit-html "^0.13.0"
+    lit-html "^0.12.0"
 
 "@polymer/neon-animation@^3.0.0-pre.26", "@polymer/neon-animation@^3.0.1":
   version "3.0.1"
@@ -8725,15 +8725,10 @@ listr@^0.14.2:
     p-map "^1.1.1"
     rxjs "^6.1.0"
 
-lit-html@^0.12.0:
+lit-html@0.12.0, lit-html@^0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.12.0.tgz#d994420fda74744f9d4a79401b086de929643e6a"
   integrity sha512-NyFgq8yTlGEjUFQOmNnK/kj+ZdDVJzTwsLunNSewGiOns7SjuJi6ymCCqzZZ81uW2VwEmliMbOlFZc9QmOJPLA==
-
-lit-html@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.13.0.tgz#d05e7fe8ade572432120339c451c614669788adf"
-  integrity sha512-p3R2ji/ucNVG5skguy8WufmSYIdMiTTb9ObUVYM2bOuvIXzDnUiePXGwP5BDbKssW1K6fw1Oj/M07FzdPLsTXw==
 
 load-json-file@^1.0.0:
   version "1.1.0"
