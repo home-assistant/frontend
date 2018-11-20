@@ -5,25 +5,25 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
-import { processEditorEntities } from "./process-editor-entities";
-import { EntitiesEditorEvent, EditorTarget } from "./types";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCardEditor } from "../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { Config, EntityConfig } from "../cards/hui-glance-card";
+import { processEditorEntities } from "../process-editor-entities";
+import { EntitiesEditorEvent, EditorTarget } from "../types";
+import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCardEditor } from "../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { Config, ConfigEntity } from "../../cards/hui-glance-card";
 
-import "../../../components/entity/state-badge";
-import "../components/hui-theme-select-editor";
-import "../components/hui-entity-editor";
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import "../../../../components/entity/state-badge";
+import "../../components/hui-theme-select-editor";
+import "../../components/hui-entity-editor";
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon";
 
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
   public hass?: HomeAssistant;
   private _config?: Config;
-  private _configEntities?: EntityConfig[];
+  private _configEntities?: ConfigEntity[];
 
   static get properties(): PropertyDeclarations {
     return {
@@ -47,7 +47,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <paper-input
         label="Title"
-        value="${this._config!.title}"
+        value="${this._config!.title || ""}"
         .configValue="${"title"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>

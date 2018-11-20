@@ -12,6 +12,7 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
+import { EntityConfig } from "../entity-rows/types";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -23,10 +24,7 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-export interface EntityConfig {
-  name?: string;
-  icon?: string;
-  entity: string;
+export interface ConfigEntity extends EntityConfig {
   tap_action?: "toggle" | "call-service" | "more-info";
   hold_action?: "toggle" | "call-service" | "more-info";
   service?: string;
@@ -38,20 +36,20 @@ export interface Config extends LovelaceConfig {
   show_state?: boolean;
   title?: string;
   theme?: string;
-  entities: EntityConfig[];
+  entities: ConfigEntity[];
   columns?: number;
 }
 
 export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/hui-glance-card-editor");
+    await import("../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }
 
   public hass?: HomeAssistant;
   private _config?: Config;
-  private _configEntities?: EntityConfig[];
+  private _configEntities?: ConfigEntity[];
 
   static get properties(): PropertyDeclarations {
     return {
