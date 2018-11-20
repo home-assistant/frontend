@@ -29,6 +29,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
       _config: {},
       _entity: {},
       _line: String,
+      _min: Number,
+      _max: Number,
     };
   }
 
@@ -38,18 +40,21 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     }
 
     const cardConfig = {
+      detail: 1,
       icon: false,
-      hours_to_show: 24,
-      accuracy: 10,
       height: 100,
-      line_width: 5,
+      hours_to_show: 24,
       line_color: "var(--accent-color)",
+      line_width: 5,
       ...config,
     };
     cardConfig.hours_to_show = Number(cardConfig.hours_to_show);
-    cardConfig.accuracy = Number(cardConfig.accuracy);
     cardConfig.height = Number(cardConfig.height);
     cardConfig.line_width = Number(cardConfig.line_width);
+    cardConfig.detail =
+      cardConfig.detail === 1 || cardConfig.detail === 2
+        ? cardConfig.detail
+        : 1;
 
     this._config = cardConfig;
   }
@@ -109,53 +114,79 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     return this._config.unit || item.attributes.unit_of_measurement;
   }
 
-  _getGraph(items, width, height) {
-    const values = this._getValueArr(items);
-    const coords = this._calcCoordinates(values, width, height);
-    return this._getPath(coords);
+  _coordinates(history, hours, width, detail = 1) {
+    history = history.filter((item) => !Number.isNaN(Number(item.state)));
+    this._min = Math.min.apply(Math, history.map((item) => Number(item.state)));
+    this._max = Math.max.apply(Math, history.map((item) => Number(item.state)));
+    const now = new Date().getTime();
+
+    const reduce = (res, item, min = false) => {
+      const age = now - new Date(item.last_changed).getTime();
+      let key = Math.abs(age / (1000 * 3600) - hours);
+      if (min) {
+        key = (key - Math.floor(key)) * 60;
+        key = (Math.round(key / 10) * 10).toString()[0];
+      } else {
+        key = Math.floor(key);
+      }
+      if (!res[key]) res[key] = [];
+      res[key].push(item);
+      return res;
+    };
+    history = history.reduce((res, item) => reduce(res, item), []);
+    if (detail > 1) {
+      history = history.map((entry) =>
+        entry.reduce((res, item) => reduce(res, item, true), [])
+      );
+    }
+    return this._calcPoints(history, hours, width, detail);
   }
 
-  _getValueArr(items) {
-    return items
-      .map((item) => Number(item.state))
-      .filter((val) => !Number.isNaN(val));
-  }
-
-  _calcCoordinates(values, width, height) {
+  _calcPoints(history, hours, width, detail = 1) {
+    const coords = [];
     const margin = this._config.line_width;
+    const height = this._config.height - margin * 4;
     width -= margin * 2;
-    height -= margin * 2;
-    const min = Math.floor(Math.min.apply(null, values) * 0.95);
-    const max = Math.ceil(Math.max.apply(null, values) * 1.05);
+    let yRatio = (this._max - this._min) / height;
+    yRatio = yRatio !== 0 ? yRatio : height;
+    let xRatio = width / (hours - (detail === 1 ? 1 : 0));
+    xRatio = isFinite(xRatio) ? xRatio : width;
+    const getCoords = (item, i, offset = 0, depth = 1) => {
+      if (depth > 1)
+        return item.forEach((subItem, index) =>
+          getCoords(subItem, i, index, depth - 1)
+        );
+      const average =
+        item.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
+        item.length;
 
-    if (values.length === 1) values.push(values[0]);
+      const x = xRatio * (i + offset / 6) + margin;
+      const y = height - (average - this._min) / yRatio + margin * 2;
+      return coords.push([x, y]);
+    };
 
-    const yRatio = (max - min) / height;
-    const xRatio = width / (values.length - 1);
-
-    return values.map((value, i) => {
-      const y = height - (value - min) / yRatio || 0;
-      const x = xRatio * i + margin;
-      return [x, y];
-    });
+    history.forEach((item, i) => getCoords(item, i, 0, detail));
+    if (coords.length === 1) coords[1] = [width + margin, coords[0][1]];
+    coords.push([width + margin, coords[coords.length - 1][1]]);
+    return coords;
   }
 
-  _getPath(points) {
+  _getPath(coords) {
     let next;
     let Z;
     const X = 0;
     const Y = 1;
     let path = "";
-    let point = points[0];
+    let last = coords.filter(Boolean)[0];
 
-    path += `M ${point[X]},${point[Y]}`;
+    path += `M ${last[X]},${last[Y]}`;
 
-    for (let i = 0; i < points.length; i++) {
-      next = points[i];
-      Z = this._midPoint(point[X], point[Y], next[X], next[Y]);
+    for (let i = 0; i < coords.length; i++) {
+      next = coords[i];
+      Z = this._midPoint(last[X], last[Y], next[X], next[Y]);
       path += ` ${Z[X]},${Z[Y]}`;
       path += ` Q${next[X]},${next[Y]}`;
-      point = next;
+      last = next;
     }
 
     path += ` ${next[X]},${next[Y]}`;
@@ -177,21 +208,15 @@ class HuiSensorCard extends EventsMixin(LitElement) {
       startTime,
       endTime
     );
-    const history = stateHistory[0];
-    const valArray = [history[history.length - 1]];
 
-    const accuracy =
-      this._config.accuracy <= history.length
-        ? this._config.accuracy
-        : history.length;
-    let increment = Math.ceil(history.length / accuracy);
-    increment = increment <= 0 ? 1 : increment;
-    let pos = history.length - 1;
-    for (let i = accuracy; i >= 1; i--) {
-      pos -= increment;
-      if (pos >= 0) valArray.unshift(history[pos]);
-    }
-    this._line = this._getGraph(valArray, 500, this._config.height);
+    if (stateHistory[0].length < 1) return;
+    const coords = this._coordinates(
+      stateHistory[0],
+      this._config.hours_to_show,
+      500,
+      this._config.detail
+    );
+    this._line = this._getPath(coords);
   }
 
   async _fetchRecent(entityId, startTime, endTime) {
