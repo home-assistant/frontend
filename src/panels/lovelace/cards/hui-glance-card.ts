@@ -240,7 +240,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private handleClick(ev: MouseEvent, hold: boolean): void {
-    const config = (ev.currentTarget as any).entityConf as EntityConfig;
+    const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     const entityId = config.entity;
     const action = hold ? config.hold_action : config.tap_action || "more-info";
     switch (action) {
