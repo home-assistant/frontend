@@ -724,23 +724,23 @@
   resolved "https://registry.yarnpkg.com/@material/base/-/base-0.40.1.tgz#a0d8e19cee98dae0f96dbf0887a14b3f7acd2aac"
   integrity sha512-vrbOK8hONVCYgURQ9h7nkXvMdYnZVVNmAfFFijF8fbWQdwnoPcNTdqV6RoQlhBEqHYHQqLNfdUDlznAPKLclGQ==
 
-"@material/mwc-base@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.3.1.tgz#5e1440aa09e0a83633be36eb8102ff88d3fddae8"
-  integrity sha512-7AdcBu6rxARcUteEBNSJKCen3hP47T/NRsfw+RMn6IedHlEGp2GKwF6YqYDCVSsQbm0IjsJ4ft4+nVXlFVYO2g==
+"@material/mwc-base@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.3.2.tgz#b8948c1ea77bba0863aa0a6985ea012bb626f674"
+  integrity sha512-RSVoiJhWjul07h472QbJ6P4oGGjr+RAg5D7WqIMykxAMXtZYw+CvpUr8M8BIKvYnfT+KOpNzLebT75AtGzMbfQ==
   dependencies:
     "@polymer/lit-element" "^0.6.2"
-    lit-html "^0.12.0"
+    lit-html "^0.13.0"
 
 "@material/mwc-ripple@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@material/mwc-ripple/-/mwc-ripple-0.3.1.tgz#da812516d0bd0b15b0c4793b783fbdb9e04cd7a0"
-  integrity sha512-pOdBkP6NJyGz9UftvKjrx8sXvz+yIXMC8q6Qx/LgGw67tgU4qM/1Hy22iePiw1UFNhlqD8ZwtdPLXKVaisGauQ==
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@material/mwc-ripple/-/mwc-ripple-0.3.2.tgz#b97f80c7a8d6f312d29bd3a0692d78ab31f2e5ed"
+  integrity sha512-NFotUuCGec8TSB2n3xNL5HfE2d7+iUoq8EetbhNzOf7x7cWwDxKeRHvapWqWuoHvpUWK8ineALAO0nM2DIVtvA==
   dependencies:
-    "@material/mwc-base" "^0.3.1"
+    "@material/mwc-base" "^0.3.2"
     "@material/ripple" "^0.40.0"
     "@polymer/lit-element" "^0.6.2"
-    lit-html "^0.12.0"
+    lit-html "^0.13.0"
 
 "@material/ripple@^0.40.0":
   version "0.40.1"
@@ -1039,12 +1039,12 @@
     "@polymer/iron-meta" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/lit-element@0.6.2", "@polymer/lit-element@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.6.2.tgz#589f2fa19e84d23c1debb2c329cbab758ae30581"
-  integrity sha512-4NWvK6SyAyyeW1mQ24ZVR+rtqZNHZ2JWnVTsPF/1iXnmmPwnpLs8mz0HRqz5adyoyt96ed/y2dsDwGBktJYyew==
+"@polymer/lit-element@^0.6.2", "@polymer/lit-element@^0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.6.3.tgz#8ac2b82ae24f6306b5df0f2fa0b6deddd3cc4794"
+  integrity sha512-f7MNsgaliRN+g5MFbwKiTWTTWf3GrhYNB/3fAHM7t77TXTSbQ8MXHy2HXfQvPEHwjgen1o2CocaCTSGl/zzJ3g==
   dependencies:
-    lit-html "^0.12.0"
+    lit-html "^0.13.0"
 
 "@polymer/neon-animation@^3.0.0-pre.26", "@polymer/neon-animation@^3.0.1":
   version "3.0.1"
@@ -8725,10 +8725,10 @@ listr@^0.14.2:
     p-map "^1.1.1"
     rxjs "^6.1.0"
 
-lit-html@0.12.0, lit-html@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.12.0.tgz#d994420fda74744f9d4a79401b086de929643e6a"
-  integrity sha512-NyFgq8yTlGEjUFQOmNnK/kj+ZdDVJzTwsLunNSewGiOns7SjuJi6ymCCqzZZ81uW2VwEmliMbOlFZc9QmOJPLA==
+lit-html@^0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.13.0.tgz#d05e7fe8ade572432120339c451c614669788adf"
+  integrity sha512-p3R2ji/ucNVG5skguy8WufmSYIdMiTTb9ObUVYM2bOuvIXzDnUiePXGwP5BDbKssW1K6fw1Oj/M07FzdPLsTXw==
 
 load-json-file@^1.0.0:
   version "1.1.0"
