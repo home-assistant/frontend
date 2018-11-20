@@ -116,16 +116,12 @@ class HassioSnapshot extends PolymerElement {
             class="warning"
             title="Delete snapshot"
           ></paper-icon-button>
-          <a
-            href="[[_computeDownloadUrl(snapshotSlug)]]"
-            download="[[_computeDownloadName(snapshot)]]"
-          >
-            <paper-icon-button
-              icon="hassio:download"
-              class="download"
-              title="Download snapshot"
-            ></paper-icon-button>
-          </a>
+          <paper-icon-button
+            on-click="_downloadClicked"
+            icon="hassio:download"
+            class="download"
+            title="Download snapshot"
+          ></paper-icon-button>
           <paper-button on-click="_partialRestoreClicked"
             >Restore selected</paper-button
           >
@@ -282,14 +278,29 @@ class HassioSnapshot extends PolymerElement {
       );
   }
 
-  _computeDownloadUrl(snapshotSlug) {
-    const password = encodeURIComponent(this.hass.connection.options.authToken);
-    return `/api/hassio/snapshots/${snapshotSlug}/download?api_password=${password}`;
-  }
-
-  _computeDownloadName(snapshot) {
-    const name = this._computeName(snapshot).replace(/[^a-z0-9]+/gi, "_");
-    return `Hass_io_${name}.tar`;
+  _downloadClicked() {
+    this.hass
+      .callWS({
+        type: "auth/sign_path",
+        path: `/api/hassio/snapshots/${this.snapshotSlug}/download`,
+      })
+      .then(
+        (resp) => {
+          const name = this._computeName(this.snapshot).replace(
+            /[^a-z0-9]+/gi,
+            "_"
+          );
+          const a = document.createElement("A");
+          a.href = resp.path;
+          a.download = `Hass_io_${name}.tar`;
+          this.$.dialog.appendChild(a);
+          a.click();
+          this.$.dialog.removeChild(a);
+        },
+        (err) => {
+          alert("Error: " + err.message);
+        }
+      );
   }
 
   _computeName(snapshot) {
