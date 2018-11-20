@@ -25,6 +25,9 @@ class HassioCardContent extends PolymerElement {
         iron-icon.snapshot {
           color: var(--paper-item-icon-color);
         }
+        iron-icon.not_available {
+          color: var(--google-red-500);
+        }
         .title {
           color: var(--primary-text-color);
           white-space: nowrap;
@@ -53,6 +56,9 @@ class HassioCardContent extends PolymerElement {
           <template is="dom-if" if="[[description]]">
             [[description]]
           </template>
+          <template is="dom-if" if="[[!available]]">
+            (Not available)
+          </template>
           <template is="dom-if" if="[[datetime]]">
             <ha-relative-time
               hass="[[hass]]"
@@ -70,6 +76,7 @@ class HassioCardContent extends PolymerElement {
       hass: Object,
       title: String,
       description: String,
+      available: Boolean,
       datetime: String,
       icon: {
         type: String,

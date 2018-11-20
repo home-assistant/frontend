@@ -37,6 +37,7 @@ class HassioAddons extends NavigateMixin(PolymerElement) {
                 hass="[[hass]]"
                 title="[[addon.name]]"
                 description="[[addon.description]]"
+                available="[[addon.available]]"
                 icon="[[computeIcon(addon)]]"
                 icon-title="[[computeIconTitle(addon)]]"
                 icon-class="[[computeIconClass(addon)]]"
