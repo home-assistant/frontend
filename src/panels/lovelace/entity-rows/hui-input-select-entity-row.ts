@@ -16,13 +16,11 @@ import { setOption } from "../../../data/input-select";
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
-  private _selected?: string;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _config: {},
-      _selected: {},
     };
   }
 
@@ -53,7 +51,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
       ${this.renderStyle()}
       <state-badge .stateObj="${stateObj}"></state-badge>
       <paper-dropdown-menu
-        selected-item-label="${this._selected}"
+        selected-item-label="${stateObj.state}"
         @selected-item-label-changed="${this._selectedChanged}"
         label="${this._config.name || computeStateName(stateObj)}"
       >
@@ -101,8 +99,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
       return;
     }
 
-    this._selected = ev.target.selectedItem.innerText;
-    setOption(this.hass!, stateObj.entity_id, this._selected!);
+    setOption(this.hass!, stateObj.entity_id, ev.target.selectedItem.innerText);
   }
 }
 
