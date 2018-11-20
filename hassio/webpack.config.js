@@ -38,7 +38,7 @@ module.exports = {
         },
       }),
     isProdBuild &&
-      isCI &&
+      !isCI &&
       new CompressionPlugin({
         cache: true,
         exclude: [/\.js\.map$/, /\.LICENSE$/, /\.py$/, /\.txt$/],
