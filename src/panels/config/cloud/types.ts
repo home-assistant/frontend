@@ -11,12 +11,15 @@ interface CloudStatusBase {
 
 export type CloudStatusLoggedIn = CloudStatusBase & {
   email: string;
-  google_enabled: boolean;
   google_entities: EntityFilter;
   google_domains: string[];
-  alexa_enabled: boolean;
   alexa_entities: EntityFilter;
   alexa_domains: string[];
+  prefs: {
+    google_enabled: boolean;
+    alexa_enabled: boolean;
+    google_allow_unlock: boolean;
+  };
 };
 
 export type CloudStatus = CloudStatusBase | CloudStatusLoggedIn;
