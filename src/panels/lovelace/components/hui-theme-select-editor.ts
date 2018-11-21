@@ -9,25 +9,12 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   public value?: string;
   protected hass?: HomeAssistant;
-  private _initializing?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       value: {},
     };
-  }
-
-  protected constructor() {
-    super();
-    this._initializing = true;
-  }
-
-  protected async firstUpdated(): Promise<void> {
-    if (this._initializing) {
-      await this.updateComplete;
-      this._initializing = false;
-    }
   }
 
   protected render(): TemplateResult {
@@ -44,16 +31,14 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
       >
         <paper-listbox
           slot="dropdown-content"
-          .selected="${this.value || "Backend-selected"}"
+          .selected="${this.value}"
           attr-for-selected="theme"
         >
-          ${
-            themes.map((theme) => {
-              return html`
+          ${themes.map((theme) => {
+            return html`
                 <paper-item theme="${theme}">${theme}</paper-item>
               `;
-            })
-          }
+          })}
         </paper-listbox>
       </paper-dropdown-menu>
     `;
@@ -70,7 +55,7 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _changed(ev): void {
-    if (!this.hass || this._initializing || ev.target.value === "") {
+    if (!this.hass || ev.target.value === "") {
       return;
     }
     this.value = ev.target.value;

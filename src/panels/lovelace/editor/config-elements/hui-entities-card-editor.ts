@@ -24,31 +24,22 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   public hass?: HomeAssistant;
   private _config?: Config;
   private _configEntities?: ConfigEntity[];
-  private _initializing?: boolean;
-
-  protected constructor() {
-    super();
-    this._initializing = true;
-  }
 
   static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      _configEntities: {},
-    };
+    return { hass: {}, _config: {}, _configEntities: {} };
+  }
+
+  get _title() {
+    return this._config!.title || "";
+  }
+
+  get _theme() {
+    return this._config!.theme || "Backend-selected";
   }
 
   public setConfig(config: Config): void {
     this._config = { type: "entities", ...config };
     this._configEntities = processEditorEntities(config.entities);
-  }
-
-  protected async firstUpdated(): Promise<void> {
-    if (this._initializing) {
-      await this.updateComplete;
-      this._initializing = false;
-    }
   }
 
   protected render(): TemplateResult {
@@ -60,13 +51,13 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <paper-input
         label="Title"
-        value="${this._config!.title || ""}"
+        value="${this._title}"
         .configValue="${"title"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
       <hui-theme-select-editor
         .hass="${this.hass}"
-        .value="${this._config!.theme}"
+        .value="${this._theme}"
         .configValue="${"theme"}"
         @theme-changed="${this._valueChanged}"
       ></hui-theme-select-editor>
@@ -85,11 +76,19 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
-    if (!this._config || !this.hass || this._initializing) {
+    if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
     let newConfig = this._config;
+
+    if (target.configValue! === "title" && target.value === this._title) {
+      return;
+    }
+
+    if (target.configValue! === "theme" && target.value === this._theme) {
+      return;
+    }
 
     if (ev.detail && ev.detail.entities) {
       newConfig.entities = ev.detail.entities;
@@ -101,9 +100,7 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       };
     }
 
-    fireEvent(this, "config-changed", {
-      config: newConfig,
-    });
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private renderStyle(): TemplateResult {

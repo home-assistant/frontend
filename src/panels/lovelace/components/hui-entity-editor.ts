@@ -29,9 +29,8 @@ export class HuiEntityEditor extends LitElement {
       ${this.renderStyle()}
       <h3>Entities</h3>
       <div class="entities">
-        ${
-          this.entities.map((entityConf, index) => {
-            return html`
+        ${this.entities.map((entityConf, index) => {
+          return html`
               <ha-entity-picker
                 .hass="${this.hass}"
                 .value="${entityConf.entity}"
@@ -40,8 +39,7 @@ export class HuiEntityEditor extends LitElement {
                 allow-custom-entity
               ></ha-entity-picker>
             `;
-          })
-        }
+        })}
       </div>
       <paper-button noink raised @click="${this._addEntity}"
         >Add Entity</paper-button

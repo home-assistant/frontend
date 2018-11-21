@@ -24,31 +24,26 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   public hass?: HomeAssistant;
   private _config?: Config;
   private _configEntities?: ConfigEntity[];
-  private _initializing?: boolean;
-
-  protected constructor() {
-    super();
-    this._initializing = true;
-  }
 
   public setConfig(config: Config): void {
     this._config = { type: "glance", ...config };
     this._configEntities = processEditorEntities(config.entities);
   }
 
-  protected async firstUpdated(): Promise<void> {
-    if (this._initializing) {
-      await this.updateComplete;
-      this._initializing = false;
-    }
+  static get properties(): PropertyDeclarations {
+    return { hass: {}, _config: {}, _configEntities: {} };
   }
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      _configEntities: {},
-    };
+  get _title() {
+    return this._config!.title || "";
+  }
+
+  get _theme() {
+    return this._config!.theme || "Backend-selected";
+  }
+
+  get _columns() {
+    return this._config!.columns || "";
   }
 
   protected render(): TemplateResult {
@@ -60,19 +55,19 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <paper-input
         label="Title"
-        value="${this._config!.title || ""}"
+        value="${this._title}"
         .configValue="${"title"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
       <hui-theme-select-editor
         .hass="${this.hass}"
-        .value="${this._config!.theme}"
+        .value="${this._theme}"
         .configValue="${"theme"}"
         @theme-changed="${this._valueChanged}"
       ></hui-theme-select-editor>
       <paper-input
         label="Columns"
-        value="${this._config!.columns || ""}"
+        value="${this._columns}"
         .configValue="${"columns"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
@@ -97,11 +92,23 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
-    if (!this._config || !this.hass || this._initializing) {
+    if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
     let newConfig = this._config;
+
+    if (target.configValue! === "title" && target.value === this._title) {
+      return;
+    }
+
+    if (target.configValue! === "theme" && target.value === this._theme) {
+      return;
+    }
+
+    if (target.configValue! === "columns" && target.value === this._columns) {
+      return;
+    }
 
     if (ev.detail && ev.detail.entities) {
       newConfig.entities = ev.detail.entities;
@@ -113,9 +120,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       };
     }
 
-    fireEvent(this, "config-changed", {
-      config: newConfig,
-    });
+    fireEvent(this, "config-changed", { config: newConfig });
   }
 
   private renderStyle(): TemplateResult {
