@@ -5,7 +5,7 @@ export const turnOnOffEntity = (
   hass: HomeAssistant,
   entityId: string,
   turnOn = true
-): void => {
+): Promise<void> => {
   const stateDomain = computeDomain(entityId);
   const serviceDomain = stateDomain === "group" ? "homeassistant" : stateDomain;
 
@@ -21,5 +21,5 @@ export const turnOnOffEntity = (
       service = turnOn ? "turn_on" : "turn_off";
   }
 
-  hass.callService(serviceDomain, service, { entity_id: entityId });
+  return hass.callService(serviceDomain, service, { entity_id: entityId });
 };
