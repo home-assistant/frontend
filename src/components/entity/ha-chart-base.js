@@ -18,120 +18,126 @@ class HaChartBase extends mixinBehaviors(
 ) {
   static get template() {
     return html`
-  <style>
-    :host {
-      display: block;
-    }
-    .chartHeader {
-      padding: 6px 0 0 0;
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-    }
-    .chartHeader > div {
-      vertical-align: top;
-      padding: 0 8px;
-    }
-    .chartHeader > div.chartTitle {
-      padding-top: 8px;
-      flex: 0 0 0;
-      max-width: 30%;
-    }
-    .chartHeader > div.chartLegend {
-      flex: 1 1;
-      min-width: 70%;
-    }
-    :root{
-      user-select: none;
-      -moz-user-select: none;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-    }
-    .chartTooltip {
-      font-size: 90%;
-      opacity: 1;
-      position: absolute;
-      background: rgba(80, 80, 80, .9);
-      color: white;
-      border-radius: 3px;
-      pointer-events: none;
-      transform: translate(-50%, 12px);
-      z-index: 1000;
-      width: 200px;
-      transition: opacity 0.15s ease-in-out;
-    }
-    .chartLegend ul,
-    .chartTooltip ul {
-      display: inline-block;
-      padding: 0 0px;
-      margin: 5px 0 0 0;
-      width: 100%
-    }
-    .chartTooltip li {
-      display: block;
-      white-space: pre-line;
-    }
-    .chartTooltip .title {
-      text-align: center;
-      font-weight: 500;
-    }
-    .chartLegend li {
-      display: inline-block;
-      padding: 0 6px;
-      max-width: 49%;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      box-sizing: border-box;
-    }
-    .chartLegend li:nth-child(odd):last-of-type {
-      /* Make last item take full width if it is odd-numbered. */
-      max-width: 100%;
-    }
-    .chartLegend li[data-hidden] {
-      text-decoration: line-through;
-    }
-    .chartLegend em,
-    .chartTooltip em {
-      border-radius: 5px;
-      display: inline-block;
-      height: 10px;
-      margin-right: 4px;
-      width: 10px;
-    }
-    paper-icon-button {
-      color: var(--secondary-text-color);
-    }
-  </style>
-  <template is="dom-if" if="[[unit]]">
-    <div class="chartHeader">
-      <div class="chartTitle">[[unit]]</div>
-      <div class="chartLegend">
-        <ul>
-          <template is="dom-repeat" items="[[metas]]">
-            <li on-click="_legendClick" data-hidden$="[[item.hidden]]">
-              <em style$="background-color:[[item.bgColor]]"></em>
-              [[item.label]]
-            </li>
-          </template>
-        </ul>
+      <style>
+        :host {
+          display: block;
+        }
+        .chartHeader {
+          padding: 6px 0 0 0;
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+        }
+        .chartHeader > div {
+          vertical-align: top;
+          padding: 0 8px;
+        }
+        .chartHeader > div.chartTitle {
+          padding-top: 8px;
+          flex: 0 0 0;
+          max-width: 30%;
+        }
+        .chartHeader > div.chartLegend {
+          flex: 1 1;
+          min-width: 70%;
+        }
+        :root {
+          user-select: none;
+          -moz-user-select: none;
+          -webkit-user-select: none;
+          -ms-user-select: none;
+        }
+        .chartTooltip {
+          font-size: 90%;
+          opacity: 1;
+          position: absolute;
+          background: rgba(80, 80, 80, 0.9);
+          color: white;
+          border-radius: 3px;
+          pointer-events: none;
+          transform: translate(-50%, 12px);
+          z-index: 1000;
+          width: 200px;
+          transition: opacity 0.15s ease-in-out;
+        }
+        .chartLegend ul,
+        .chartTooltip ul {
+          display: inline-block;
+          padding: 0 0px;
+          margin: 5px 0 0 0;
+          width: 100%;
+        }
+        .chartTooltip li {
+          display: block;
+          white-space: pre-line;
+        }
+        .chartTooltip .title {
+          text-align: center;
+          font-weight: 500;
+        }
+        .chartLegend li {
+          display: inline-block;
+          padding: 0 6px;
+          max-width: 49%;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          box-sizing: border-box;
+        }
+        .chartLegend li:nth-child(odd):last-of-type {
+          /* Make last item take full width if it is odd-numbered. */
+          max-width: 100%;
+        }
+        .chartLegend li[data-hidden] {
+          text-decoration: line-through;
+        }
+        .chartLegend em,
+        .chartTooltip em {
+          border-radius: 5px;
+          display: inline-block;
+          height: 10px;
+          margin-right: 4px;
+          width: 10px;
+        }
+        paper-icon-button {
+          color: var(--secondary-text-color);
+        }
+      </style>
+      <template is="dom-if" if="[[unit]]">
+        <div class="chartHeader">
+          <div class="chartTitle">[[unit]]</div>
+          <div class="chartLegend">
+            <ul>
+              <template is="dom-repeat" items="[[metas]]">
+                <li on-click="_legendClick" data-hidden$="[[item.hidden]]">
+                  <em style$="background-color:[[item.bgColor]]"></em>
+                  [[item.label]]
+                </li>
+              </template>
+            </ul>
+          </div>
+        </div>
+      </template>
+      <div id="chartTarget" style="height:40px; width:100%">
+        <canvas id="chartCanvas"></canvas>
+        <div
+          class$="chartTooltip [[tooltip.yAlign]]"
+          style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px"
+        >
+          <div class="title">[[tooltip.title]]</div>
+          <div>
+            <ul>
+              <template is="dom-repeat" items="[[tooltip.lines]]">
+                <li>
+                  <em style$="background-color:[[item.bgColor]]"></em
+                  >[[item.text]]
+                </li>
+              </template>
+            </ul>
+          </div>
+        </div>
       </div>
-    </div>
-  </template>
-  <div id="chartTarget" style="height:40px; width:100%">
-    <canvas id="chartCanvas"></canvas>
-    <div class$="chartTooltip [[tooltip.yAlign]]" style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px">
-      <div class="title">[[tooltip.title]]</div>
-      <div>
-        <ul>
-          <template is="dom-repeat" items="[[tooltip.lines]]">
-            <li><em style$="background-color:[[item.bgColor]]"></em>[[item.text]]</li>
-          </template>
-        </ul>
-      </div>
-    </div>
-  </div>
-`;
+    `;
   }
 
   get chart() {

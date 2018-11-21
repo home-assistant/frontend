@@ -24,77 +24,86 @@ function computeEntityName(hass, entity) {
 class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      :host(:not([narrow])) .device-entities {
-        max-height: 225px;
-        overflow: auto;
-      }
-      paper-card {
-        flex: 1 0 100%;
-        padding-bottom: 10px;
-        min-width: 0;
-      }
-      .device {
-        width: 30%;
-      }
-      .device .name {
-        font-weight: bold;
-      }
-      .device .model,
-      .device .manuf {
-        color: var(--secondary-text-color);
-      }
-      .extra-info {
-        margin-top: 8px;
-      }
-      paper-icon-item {
-        cursor: pointer;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
-      .manuf,
-      .entity-id {
-        color: var(--secondary-text-color);
-      }
-    </style>
-    <paper-card heading='[[device.name]]'>
-      <div class='card-content'>
-      <!-- <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1> -->
-        <div class='info'>
-          <div class='model'>[[device.model]]</div>
-          <div class='manuf'>
-            [[localize('ui.panel.config.integrations.config_entry.manuf', 'manufacturer', device.manufacturer)]]
+      <style>
+        :host(:not([narrow])) .device-entities {
+          max-height: 225px;
+          overflow: auto;
+        }
+        paper-card {
+          flex: 1 0 100%;
+          padding-bottom: 10px;
+          min-width: 0;
+        }
+        .device {
+          width: 30%;
+        }
+        .device .name {
+          font-weight: bold;
+        }
+        .device .model,
+        .device .manuf {
+          color: var(--secondary-text-color);
+        }
+        .extra-info {
+          margin-top: 8px;
+        }
+        paper-icon-item {
+          cursor: pointer;
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+        .manuf,
+        .entity-id {
+          color: var(--secondary-text-color);
+        }
+      </style>
+      <paper-card heading="[[device.name]]">
+        <div class="card-content">
+          <!--
+            <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1>
+          -->
+          <div class="info">
+            <div class="model">[[device.model]]</div>
+            <div class="manuf">
+              [[localize('ui.panel.config.integrations.config_entry.manuf',
+              'manufacturer', device.manufacturer)]]
+            </div>
           </div>
+          <template is="dom-if" if="[[device.hub_device_id]]">
+            <div class="extra-info">
+              [[localize('ui.panel.config.integrations.config_entry.hub')]]
+              <span class="hub"
+                >[[_computeDeviceName(devices, device.hub_device_id)]]</span
+              >
+            </div>
+          </template>
+          <template is="dom-if" if="[[device.sw_version]]">
+            <div class="extra-info">
+              [[localize('ui.panel.config.integrations.config_entry.firmware',
+              'version', device.sw_version)]]
+            </div>
+          </template>
         </div>
-        <template is='dom-if' if='[[device.hub_device_id]]'>
-          <div class='extra-info'>
-            [[localize('ui.panel.config.integrations.config_entry.hub')]]
-            <span class='hub'>[[_computeDeviceName(devices, device.hub_device_id)]]</span>
-          </div>
-        </template>
-        <template is='dom-if' if='[[device.sw_version]]'>
-          <div class='extra-info'>
-            [[localize('ui.panel.config.integrations.config_entry.firmware', 'version', device.sw_version)]]
-          </div>
-        </template>
-      </div>
 
-      <div class='device-entities'>
-        <template is='dom-repeat' items='[[_computeDeviceEntities(hass, device, entities)]]' as='entity'>
-          <paper-icon-item on-click='_openMoreInfo'>
-            <state-badge
-              state-obj="[[_computeStateObj(entity, hass)]]"
-              slot='item-icon'
-            ></state-badge>
-            <paper-item-body>
-              <div class='name'>[[_computeEntityName(entity, hass)]]</div>
-              <div class='secondary entity-id'>[[entity.entity_id]]</div>
-            </paper-item-body>
-          </paper-icon-item>
-        </template>
-      </div>
-    </paper-card>
-
+        <div class="device-entities">
+          <template
+            is="dom-repeat"
+            items="[[_computeDeviceEntities(hass, device, entities)]]"
+            as="entity"
+          >
+            <paper-icon-item on-click="_openMoreInfo">
+              <state-badge
+                state-obj="[[_computeStateObj(entity, hass)]]"
+                slot="item-icon"
+              ></state-badge>
+              <paper-item-body>
+                <div class="name">[[_computeEntityName(entity, hass)]]</div>
+                <div class="secondary entity-id">[[entity.entity_id]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+          </template>
+        </div>
+      </paper-card>
     `;
   }
 

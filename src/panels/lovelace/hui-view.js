@@ -7,60 +7,60 @@ import "./components/hui-card-options.ts";
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
 import createCardElement from "./common/create-card-element";
-import computeCardSize from "./common/compute-card-size";
+import { computeCardSize } from "./common/compute-card-size";
 
 class HUIView extends PolymerElement {
   static get template() {
     return html`
       <style>
-      :host {
-        display: block;
-        padding: 4px 4px 0;
-        transform: translateZ(0);
-        position: relative;
-      }
-
-      #badges {
-        margin: 8px 16px;
-        font-size: 85%;
-        text-align: center;
-      }
-
-      #columns {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-      }
-
-      .column {
-        flex-basis: 0;
-        flex-grow: 1;
-        max-width: 500px;
-        overflow-x: hidden;
-      }
-
-      .column > * {
-        display: block;
-        margin: 4px 4px 8px;
-      }
-
-      @media (max-width: 500px) {
         :host {
-          padding-left: 0;
-          padding-right: 0;
+          display: block;
+          padding: 4px 4px 0;
+          transform: translateZ(0);
+          position: relative;
+        }
+
+        #badges {
+          margin: 8px 16px;
+          font-size: 85%;
+          text-align: center;
+        }
+
+        #columns {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+        }
+
+        .column {
+          flex-basis: 0;
+          flex-grow: 1;
+          max-width: 500px;
+          overflow-x: hidden;
         }
 
         .column > * {
-          margin-left: 0;
-          margin-right: 0;
+          display: block;
+          margin: 4px 4px 8px;
         }
-      }
 
-      @media (max-width: 599px) {
-        .column {
-          max-width: 600px;
+        @media (max-width: 500px) {
+          :host {
+            padding-left: 0;
+            padding-right: 0;
+          }
+
+          .column > * {
+            margin-left: 0;
+            margin-right: 0;
+          }
         }
-      }
+
+        @media (max-width: 599px) {
+          .column {
+            max-width: 600px;
+          }
+        }
       </style>
       <div id="badges"></div>
       <div id="columns"></div>
@@ -147,7 +147,7 @@ class HUIView extends PolymerElement {
 
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
-      wrapper.cardId = cardConfig.id;
+      wrapper.cardConfig = cardConfig;
       wrapper.editMode = this.editMode;
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);

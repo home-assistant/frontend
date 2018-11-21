@@ -14,51 +14,55 @@ const UPDATE_INTERVAL = 10000; // ms
 class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-  <style include="paper-material-styles">
-    :host {
-      @apply --paper-material-elevation-1;
-      display: block;
-      position: relative;
-      font-size: 0px;
-      border-radius: 2px;
-      cursor: pointer;
-      min-height: 48px;
-      line-height: 0;
-    }
-    .camera-feed {
-      width: 100%;
-      height: auto;
-      border-radius: 2px;
-    }
-    .caption {
-      @apply --paper-font-common-nowrap;
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      bottom: 0px;
-      border-bottom-left-radius: 2px;
-      border-bottom-right-radius: 2px;
+      <style include="paper-material-styles">
+        :host {
+          @apply --paper-material-elevation-1;
+          display: block;
+          position: relative;
+          font-size: 0px;
+          border-radius: 2px;
+          cursor: pointer;
+          min-height: 48px;
+          line-height: 0;
+        }
+        .camera-feed {
+          width: 100%;
+          height: auto;
+          border-radius: 2px;
+        }
+        .caption {
+          @apply --paper-font-common-nowrap;
+          position: absolute;
+          left: 0px;
+          right: 0px;
+          bottom: 0px;
+          border-bottom-left-radius: 2px;
+          border-bottom-right-radius: 2px;
 
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 16px;
+          background-color: rgba(0, 0, 0, 0.3);
+          padding: 16px;
 
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 16px;
-      color: white;
-    }
-  </style>
+          font-size: 16px;
+          font-weight: 500;
+          line-height: 16px;
+          color: white;
+        }
+      </style>
 
-  <template is="dom-if" if="[[cameraFeedSrc]]">
-    <img src="[[cameraFeedSrc]]" class="camera-feed" alt="[[_computeStateName(stateObj)]]">
-  </template>
-  <div class="caption">
-    [[_computeStateName(stateObj)]]
-    <template is="dom-if" if="[[!imageLoaded]]">
-      ([[localize('ui.card.camera.not_available')]])
-    </template>
-  </div>
-`;
+      <template is="dom-if" if="[[cameraFeedSrc]]">
+        <img
+          src="[[cameraFeedSrc]]"
+          class="camera-feed"
+          alt="[[_computeStateName(stateObj)]]"
+        />
+      </template>
+      <div class="caption">
+        [[_computeStateName(stateObj)]]
+        <template is="dom-if" if="[[!imageLoaded]]">
+          ([[localize('ui.card.camera.not_available')]])
+        </template>
+      </div>
+    `;
   }
 
   static get properties() {

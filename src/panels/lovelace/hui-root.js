@@ -23,6 +23,7 @@ import "../../components/ha-start-voice-button";
 import "../../components/ha-icon";
 import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
+import { computeNotifications } from "./common/compute-notifications";
 import "./components/notifications/hui-notification-drawer";
 import "./components/notifications/hui-notifications-button";
 import "./hui-unused-entities";
@@ -30,7 +31,6 @@ import "./hui-view";
 import debounce from "../../common/util/debounce";
 
 import createCardElement from "./common/create-card-element";
-import computeNotifications from "./common/compute-notifications";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};

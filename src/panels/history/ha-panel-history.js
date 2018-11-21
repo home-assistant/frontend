@@ -25,75 +25,85 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 class HaPanelHistory extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-        <style include="iron-flex ha-style">
-      .content {
-        padding: 0 16px 16px;
-      }
+      <style include="iron-flex ha-style">
+        .content {
+          padding: 0 16px 16px;
+        }
 
-      vaadin-date-picker {
-        margin-right: 16px;
-        max-width: 200px;
-      }
+        vaadin-date-picker {
+          margin-right: 16px;
+          max-width: 200px;
+        }
 
-      paper-dropdown-menu {
-        max-width: 100px;
-      }
+        paper-dropdown-menu {
+          max-width: 100px;
+        }
 
-      paper-item {
-        cursor: pointer;
-      }
-    </style>
+        paper-item {
+          cursor: pointer;
+        }
+      </style>
 
-    <ha-state-history-data
-      hass='[[hass]]'
-      filter-type='[[_filterType]]'
-      start-time='[[_computeStartTime(_currentDate)]]'
-      end-time='[[endTime]]'
-      data='{{stateHistory}}'
-      is-loading='{{isLoadingData}}'
-    ></ha-state-history-data>
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[localize('panel.history')]]</div>
-        </app-toolbar>
-      </app-header>
+      <ha-state-history-data
+        hass="[[hass]]"
+        filter-type="[[_filterType]]"
+        start-time="[[_computeStartTime(_currentDate)]]"
+        end-time="[[endTime]]"
+        data="{{stateHistory}}"
+        is-loading="{{isLoadingData}}"
+      ></ha-state-history-data>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>[[localize('panel.history')]]</div>
+          </app-toolbar>
+        </app-header>
 
-      <div class="flex content">
-        <div class="flex layout horizontal wrap">
-          <vaadin-date-picker
-            id='picker'
-            value='{{_currentDate}}'
-            label="[[localize('ui.panel.history.showing_entries')]]"
-            disabled='[[isLoadingData]]'
-            required
-          ></vaadin-date-picker>
+        <div class="flex content">
+          <div class="flex layout horizontal wrap">
+            <vaadin-date-picker
+              id="picker"
+              value="{{_currentDate}}"
+              label="[[localize('ui.panel.history.showing_entries')]]"
+              disabled="[[isLoadingData]]"
+              required
+            ></vaadin-date-picker>
 
-          <paper-dropdown-menu
-            label-float
-            label="[[localize('ui.panel.history.period')]]"
-            disabled='[[isLoadingData]]'
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              selected="{{_periodIndex}}"
+            <paper-dropdown-menu
+              label-float
+              label="[[localize('ui.panel.history.period')]]"
+              disabled="[[isLoadingData]]"
             >
-              <paper-item>[[localize('ui.duration.day', 'count', 1)]]</paper-item>
-              <paper-item>[[localize('ui.duration.day', 'count', 3)]]</paper-item>
-              <paper-item>[[localize('ui.duration.week', 'count', 1)]]</paper-item>
-            </paper-listbox>
-          </paper-dropdown-menu>
+              <paper-listbox
+                slot="dropdown-content"
+                selected="{{_periodIndex}}"
+              >
+                <paper-item
+                  >[[localize('ui.duration.day', 'count', 1)]]</paper-item
+                >
+                <paper-item
+                  >[[localize('ui.duration.day', 'count', 3)]]</paper-item
+                >
+                <paper-item
+                  >[[localize('ui.duration.week', 'count', 1)]]</paper-item
+                >
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+          <state-history-charts
+            hass="[[hass]]"
+            history-data="[[stateHistory]]"
+            is-loading-data="[[isLoadingData]]"
+            end-time="[[endTime]]"
+            no-single
+          >
+          </state-history-charts>
         </div>
-        <state-history-charts
-          hass='[[hass]]'
-          history-data="[[stateHistory]]"
-          is-loading-data="[[isLoadingData]]"
-          end-time="[[endTime]]"
-          no-single>
-        </state-history-charts>
-      </div>
-    </app-header-layout>
+      </app-header-layout>
     `;
   }
 

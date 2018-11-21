@@ -11,8 +11,13 @@ import LocalizeMixin from "../mixins/localize-mixin";
 class HaServicePicker extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <ha-combo-box label="[[localize('ui.components.service-picker.service')]]" items="[[_services]]" value="{{value}}" allow-custom-value=""></ha-combo-box>
-`;
+      <ha-combo-box
+        label="[[localize('ui.components.service-picker.service')]]"
+        items="[[_services]]"
+        value="{{value}}"
+        allow-custom-value=""
+      ></ha-combo-box>
+    `;
   }
 
   static get properties() {

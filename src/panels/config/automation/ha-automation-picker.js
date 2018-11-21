@@ -23,71 +23,90 @@ import computeStateName from "../../../common/entity/compute_state_name";
 class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="ha-style">
-      :host {
-        display: block;
-      }
+      <style include="ha-style">
+        :host {
+          display: block;
+        }
 
-      paper-item {
-        cursor: pointer;
-      }
+        paper-item {
+          cursor: pointer;
+        }
 
-      paper-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-      }
+        paper-fab {
+          position: fixed;
+          bottom: 16px;
+          right: 16px;
+          z-index: 1;
+        }
 
-      paper-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
+        paper-fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
 
-      a {
-        color: var(--primary-color);
-      }
+        a {
+          color: var(--primary-color);
+        }
 
-      ha-markdown p {
-        margin: 0px;
-      }
-    </style>
+        ha-markdown p {
+          margin: 0px;
+        }
+      </style>
 
-    <ha-app-layout has-scrolling-region="">
-      <app-header slot="header" fixed="">
-        <app-toolbar>
-          <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
-          <div main-title="">[[localize('ui.panel.config.automation.caption')]]</div>
-        </app-toolbar>
-      </app-header>
-
-      <ha-config-section is-wide="[[isWide]]">
-        <div slot="header">[[localize('ui.panel.config.automation.picker.header')]]</div>
-        <div slot="introduction">
-          <ha-markdown content="[[localize('ui.panel.config.automation.picker.introduction')]]"></ha-markdown>
-        </div>
-
-        <paper-card heading="[[localize('ui.panel.config.automation.picker.pick_automation')]]">
-          <template is="dom-if" if="[[!automations.length]]">
-            <div class="card-content">
-              <p>[[localize('ui.panel.config.automation.picker.no_automations')]]</p>
+      <ha-app-layout has-scrolling-region="">
+        <app-header slot="header" fixed="">
+          <app-toolbar>
+            <paper-icon-button
+              icon="hass:arrow-left"
+              on-click="_backTapped"
+            ></paper-icon-button>
+            <div main-title="">
+              [[localize('ui.panel.config.automation.caption')]]
             </div>
-          </template>
-          <template is="dom-repeat" items="[[automations]]" as="automation">
-            <paper-item>
-              <paper-item-body two-line="" on-click="automationTapped">
-                <div>[[computeName(automation)]]</div>
-                <div secondary="">[[computeDescription(automation)]]</div>
-              </paper-item-body>
-              <iron-icon icon="hass:chevron-right"></iron-icon>
-            </paper-item>
-          </template>
-        </paper-card>
-      </ha-config-section>
+          </app-toolbar>
+        </app-header>
 
-      <paper-fab slot="fab" is-wide$="[[isWide]]" icon="hass:plus" title="[[localize('ui.panel.config.automation.picker.add_automation')]]" on-click="addAutomation"></paper-fab>
-    </ha-app-layout>
-`;
+        <ha-config-section is-wide="[[isWide]]">
+          <div slot="header">
+            [[localize('ui.panel.config.automation.picker.header')]]
+          </div>
+          <div slot="introduction">
+            <ha-markdown
+              content="[[localize('ui.panel.config.automation.picker.introduction')]]"
+            ></ha-markdown>
+          </div>
+
+          <paper-card
+            heading="[[localize('ui.panel.config.automation.picker.pick_automation')]]"
+          >
+            <template is="dom-if" if="[[!automations.length]]">
+              <div class="card-content">
+                <p>
+                  [[localize('ui.panel.config.automation.picker.no_automations')]]
+                </p>
+              </div>
+            </template>
+            <template is="dom-repeat" items="[[automations]]" as="automation">
+              <paper-item>
+                <paper-item-body two-line="" on-click="automationTapped">
+                  <div>[[computeName(automation)]]</div>
+                  <div secondary="">[[computeDescription(automation)]]</div>
+                </paper-item-body>
+                <iron-icon icon="hass:chevron-right"></iron-icon>
+              </paper-item>
+            </template>
+          </paper-card>
+        </ha-config-section>
+
+        <paper-fab
+          slot="fab"
+          is-wide$="[[isWide]]"
+          icon="hass:plus"
+          title="[[localize('ui.panel.config.automation.picker.add_automation')]]"
+          on-click="addAutomation"
+        ></paper-fab>
+      </ha-app-layout>
+    `;
   }
 
   static get properties() {

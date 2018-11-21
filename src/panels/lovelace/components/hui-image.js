@@ -22,7 +22,8 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
           id="image"
           src="[[_imageSrc]]"
           on-error="_onImageError"
-          on-load="_onImageLoad" />
+          on-load="_onImageLoad"
+        />
         <div id="brokenImage"></div>
       </div>
     `;
@@ -31,11 +32,10 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   static get styleTemplate() {
     return html`
       <style>
-
         img {
           display: block;
           height: auto;
-          transition: filter .2s linear;
+          transition: filter 0.2s linear;
           width: 100%;
         }
 
@@ -50,10 +50,11 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
         .ratio {
           position: relative;
           width: 100%;
-          height: 0
+          height: 0;
         }
 
-        .ratio img, .ratio div {
+        .ratio img,
+        .ratio div {
           position: absolute;
           top: 0;
           left: 0;
@@ -62,9 +63,9 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
         }
 
         #brokenImage {
-          background: grey url('/static/images/image-broken.svg') center/36px no-repeat;
+          background: grey url("/static/images/image-broken.svg") center/36px
+            no-repeat;
         }
-
       </style>
     `;
   }

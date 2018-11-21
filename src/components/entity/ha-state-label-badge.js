@@ -21,46 +21,56 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 class HaStateLabelBadge extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      :host {
-        cursor: pointer;
-      }
+      <style>
+        :host {
+          cursor: pointer;
+        }
 
-      ha-label-badge {
-        --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
-      }
-      ha-label-badge.has-unit_of_measurement {
-        --ha-label-badge-label-text-transform: none;
-      }
+        ha-label-badge {
+          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        }
+        ha-label-badge.has-unit_of_measurement {
+          --ha-label-badge-label-text-transform: none;
+        }
 
-      ha-label-badge.binary_sensor,
-      ha-label-badge.updater {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
-      }
+        ha-label-badge.binary_sensor,
+        ha-label-badge.updater {
+          --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        }
 
-      .red {
-        --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
-      }
+        .red {
+          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+        }
 
-      .blue {
-        --ha-label-badge-color: var(--label-badge-blue, #039be5);
-      }
+        .blue {
+          --ha-label-badge-color: var(--label-badge-blue, #039be5);
+        }
 
-      .green {
-        --ha-label-badge-color: var(--label-badge-green, #0DA035);
-      }
+        .green {
+          --ha-label-badge-color: var(--label-badge-green, #0da035);
+        }
 
-      .yellow {
-        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
-      }
+        .yellow {
+          --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+        }
 
-      .grey {
-        --ha-label-badge-color: var(--label-badge-grey, var(--paper-grey-500));
-      }
-    </style>
+        .grey {
+          --ha-label-badge-color: var(
+            --label-badge-grey,
+            var(--paper-grey-500)
+          );
+        }
+      </style>
 
-    <ha-label-badge class$="[[computeClassNames(state)]]" value="[[computeValue(localize, state)]]" icon="[[computeIcon(state)]]" image="[[computeImage(state)]]" label="[[computeLabel(localize, state, _timerTimeRemaining)]]" description="[[computeDescription(state)]]"></ha-label-badge>
-`;
+      <ha-label-badge
+        class$="[[computeClassNames(state)]]"
+        value="[[computeValue(localize, state)]]"
+        icon="[[computeIcon(state)]]"
+        image="[[computeImage(state)]]"
+        label="[[computeLabel(localize, state, _timerTimeRemaining)]]"
+        description="[[computeDescription(state)]]"
+      ></ha-label-badge>
+    `;
   }
 
   static get properties() {

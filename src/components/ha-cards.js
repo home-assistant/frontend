@@ -78,72 +78,75 @@ const iterateDomainSorted = (collection, func) => {
 class HaCards extends PolymerElement {
   static get template() {
     return html`
-  <style include="iron-flex iron-flex-factors"></style>
-  <style>
-    :host {
-      display: block;
-      padding: 4px 4px 0;
-      transform: translateZ(0);
-      position: relative;
-    }
+      <style include="iron-flex iron-flex-factors"></style>
+      <style>
+        :host {
+          display: block;
+          padding: 4px 4px 0;
+          transform: translateZ(0);
+          position: relative;
+        }
 
-    .badges {
-      font-size: 85%;
-      text-align: center;
-      padding-top: 16px;
-    }
+        .badges {
+          font-size: 85%;
+          text-align: center;
+          padding-top: 16px;
+        }
 
-    .column {
-      max-width: 500px;
-      overflow-x: hidden;
-    }
+        .column {
+          max-width: 500px;
+          overflow-x: hidden;
+        }
 
-    ha-card-chooser {
-      display: block;
-      margin: 4px 4px 8px;
-    }
+        ha-card-chooser {
+          display: block;
+          margin: 4px 4px 8px;
+        }
 
-    @media (max-width: 500px) {
-      :host {
-        padding-left: 0;
-        padding-right: 0;
-      }
+        @media (max-width: 500px) {
+          :host {
+            padding-left: 0;
+            padding-right: 0;
+          }
 
-      ha-card-chooser {
-        margin-left: 0;
-        margin-right: 0;
-      }
-    }
+          ha-card-chooser {
+            margin-left: 0;
+            margin-right: 0;
+          }
+        }
 
-    @media (max-width: 599px) {
-      .column {
-        max-width: 600px;
-      }
-    }
-  </style>
+        @media (max-width: 599px) {
+          .column {
+            max-width: 600px;
+          }
+        }
+      </style>
 
-  <div id="main">
-    <template is="dom-if" if="[[cards.badges]]">
-      <div class="badges">
-        <template is="dom-if" if="[[cards.demo]]">
-          <ha-demo-badge></ha-demo-badge>
+      <div id="main">
+        <template is="dom-if" if="[[cards.badges]]">
+          <div class="badges">
+            <template is="dom-if" if="[[cards.demo]]">
+              <ha-demo-badge></ha-demo-badge>
+            </template>
+
+            <ha-badges-card
+              states="[[cards.badges]]"
+              hass="[[hass]]"
+            ></ha-badges-card>
+          </div>
         </template>
 
-        <ha-badges-card states="[[cards.badges]]" hass="[[hass]]"></ha-badges-card>
-      </div>
-    </template>
-
-    <div class="horizontal layout center-justified">
-      <template is="dom-repeat" items="[[cards.columns]]" as="column">
-        <div class="column flex-1">
-          <template is="dom-repeat" items="[[column]]" as="card">
-            <ha-card-chooser card-data="[[card]]"></ha-card-chooser>
+        <div class="horizontal layout center-justified">
+          <template is="dom-repeat" items="[[cards.columns]]" as="column">
+            <div class="column flex-1">
+              <template is="dom-repeat" items="[[column]]" as="card">
+                <ha-card-chooser card-data="[[card]]"></ha-card-chooser>
+              </template>
+            </div>
           </template>
         </div>
-      </template>
-  </div>
-</div>
-`;
+      </div>
+    `;
   }
 
   static get properties() {

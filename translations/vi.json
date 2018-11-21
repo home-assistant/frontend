@@ -510,12 +510,14 @@
                     "none": "Chưa có cấu hình nào",
                     "config_entry": {
                         "no_devices": "Bộ tích hợp này chưa có thiết bị nào",
+                        "no_device": "Các mục không có thiết bị",
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "restart_confirm": "Khởi động lại Home Assistant để hoàn tất xóa bộ tích hợp này",
                         "manuf": "bởi {manufacturer}",
                         "hub": "Đã kết nối qua",
                         "firmware": "Firmware: {version}",
-                        "device_unavailable": "thiết bị không khả dụng"
+                        "device_unavailable": "Thiết bị không khả dụng",
+                        "entity_unavailable": "Thiết bị không khả dụng"
                     }
                 }
             },
@@ -540,12 +542,20 @@
                     "dropdown_label": "Giao diện"
                 },
                 "refresh_tokens": {
+                    "header": "Token",
+                    "description": "Mỗi mã token đại diện cho một phiên đăng nhập. Token sẽ được tự động loại bỏ khi bạn bấm vào đăng xuất. Những token đang hoạt động với tài khoản của bạn là:",
+                    "token_title": "Làm mới token cho {clientId}",
                     "created_at": "Được tạo lúc {date}",
+                    "confirm_delete": "Bạn có chắn chắn muốn xóa token truy cập {name}?",
+                    "delete_failed": "Không thể xóa token truy cập.",
                     "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
-                    "not_used": "Chưa bao giờ được sử dụng"
+                    "not_used": "Chưa bao giờ được sử dụng",
+                    "current_token_tooltip": "Không thể xóa token truy cập"
                 },
                 "long_lived_access_tokens": {
                     "header": "Token truy cập thời hạn dài",
+                    "description": "Tạo mã truy cập tồn tại lâu dài để cho phép script của bạn tương tác với Home assistant. Mỗi mã truy cập sẽ có hiệu lực trong 10 năm kể từ khi tạo. Các mã truy cập hiện đang hoạt động được thể hiện trong danh sách sau.",
+                    "learn_auth_requests": "Làm thế nào để thực hiện yêu cầu xác thực.",
                     "created_at": "Được tạo lúc {date}",
                     "confirm_delete": "Bạn có chắn chắn muốn xóa token truy cập {name}?",
                     "delete_failed": "Không thể xóa token truy cập.",
@@ -553,6 +563,7 @@
                     "create_failed": "Không thể tạo token truy cập.",
                     "prompt_name": "Tên?",
                     "prompt_copy_token": "Sao chép token truy cập của bạn. Nó sẽ không đươc hiển thị nữa.",
+                    "empty_state": "Bạn hiện tại chưa có token truy cập lâu dài",
                     "last_used": "Sử dụng lần cuối lúc {date} từ {location}",
                     "not_used": "Chưa bao giờ được sử dụng"
                 },
@@ -736,7 +747,9 @@
                 "clear_code": "Xóa",
                 "disarm": "Vô hiệu hoá",
                 "arm_home": "An ninh ở nhà",
-                "arm_away": "An ninh đi vắng"
+                "arm_away": "An ninh đi vắng",
+                "arm_night": "An ninh ban đêm",
+                "armed_custom_bypass": "Bỏ qua tùy chỉnh"
             },
             "automation": {
                 "last_triggered": "Kích hoạt lần cuối",
@@ -788,7 +801,11 @@
                 }
             },
             "water_heater": {
-                "currently": "Hiện tại"
+                "currently": "Hiện tại",
+                "on_off": "Bật \/ tắt",
+                "target_temperature": "Nhiệt độ mục tiêu",
+                "operation": "Chế độ hoạt động",
+                "away_mode": "Chế độ đi vắng"
             }
         },
         "components": {

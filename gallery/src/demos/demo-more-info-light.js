@@ -34,8 +34,8 @@ class DemoMoreInfoLight extends PolymerElement {
   static get template() {
     return html`
       <demo-more-infos
-        hass='[[hass]]'
-        entities='[[_entities]]'
+        hass="[[hass]]"
+        entities="[[_entities]]"
       ></demo-more-infos>
     `;
   }

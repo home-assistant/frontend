@@ -10,44 +10,47 @@ import "../../../components/buttons/ha-call-service-button";
 class ZwaveValues extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .content {
-        margin-top: 24px;
-      }
-
-      paper-card {
-        display: block;
-        margin: 0 auto;
-        max-width: 600px;
-      }
-
-      .device-picker {
-        @apply --layout-horizontal;
-        @apply --layout-center-center;
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-bottom: 24px;
+      <style include="iron-flex ha-style">
+        .content {
+          margin-top: 24px;
         }
 
-      .help-text {
-        padding-left: 24px;
-        padding-right: 24px;
-      }
-    </style>
-    <div class="content">
-      <paper-card heading="Node Values">
-        <div class="device-picker">
-        <paper-dropdown-menu label="Value" dynamic-align="" class="flex">
-          <paper-listbox slot="dropdown-content" selected="{{_selectedValue}}">
-             <template is="dom-repeat" items="[[values]]" as="item">
-              <paper-item>[[_computeSelectCaption(item)]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-        </div>
-      </paper-card>
-    </div>
-`;
+        paper-card {
+          display: block;
+          margin: 0 auto;
+          max-width: 600px;
+        }
+
+        .device-picker {
+          @apply --layout-horizontal;
+          @apply --layout-center-center;
+          padding-left: 24px;
+          padding-right: 24px;
+          padding-bottom: 24px;
+        }
+
+        .help-text {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+      </style>
+      <div class="content">
+        <paper-card heading="Node Values">
+          <div class="device-picker">
+            <paper-dropdown-menu label="Value" dynamic-align="" class="flex">
+              <paper-listbox
+                slot="dropdown-content"
+                selected="{{_selectedValue}}"
+              >
+                <template is="dom-repeat" items="[[values]]" as="item">
+                  <paper-item>[[_computeSelectCaption(item)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+        </paper-card>
+      </div>
+    `;
   }
 
   static get properties() {

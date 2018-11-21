@@ -78,8 +78,8 @@ class DemoHuiMediaPlayerRows extends PolymerElement {
   static get template() {
     return html`
       <demo-cards
-        id='demos'
-        hass='[[hass]]'
+        id="demos"
+        hass="[[hass]]"
         configs="[[_configs]]"
       ></demo-cards>
     `;

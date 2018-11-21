@@ -4,6 +4,8 @@
 # Stop on errors
 set -e
 
+cd "$(dirname "$0")/.."
+
 OUTPUT_DIR=build
 
 rm -rf $OUTPUT_DIR

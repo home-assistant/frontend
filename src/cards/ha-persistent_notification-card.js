@@ -15,40 +15,42 @@ import computeObjectId from "../common/entity/compute_object_id";
 class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        @apply --paper-font-body1;
-      }
-      ha-markdown {
-        display: block;
-        padding: 0 16px;
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
-      ha-markdown p:first-child {
-        margin-top: 0;
-      }
-      ha-markdown p:last-child {
-        margin-bottom: 0;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      ha-markdown img {
-        max-width: 100%;
-      }
-      paper-button {
-        margin: 8px;
-        font-weight: 500;
-      }
-    </style>
+      <style>
+        :host {
+          @apply --paper-font-body1;
+        }
+        ha-markdown {
+          display: block;
+          padding: 0 16px;
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+        }
+        ha-markdown p:first-child {
+          margin-top: 0;
+        }
+        ha-markdown p:last-child {
+          margin-bottom: 0;
+        }
+        ha-markdown a {
+          color: var(--primary-color);
+        }
+        ha-markdown img {
+          max-width: 100%;
+        }
+        paper-button {
+          margin: 8px;
+          font-weight: 500;
+        }
+      </style>
 
-    <ha-card header="[[computeTitle(stateObj)]]">
-      <ha-markdown content="[[stateObj.attributes.message]]"></ha-markdown>
-      <paper-button on-click="dismissTap">[[localize('ui.card.persistent_notification.dismiss')]]</paper-button>
-    </ha-card>
-`;
+      <ha-card header="[[computeTitle(stateObj)]]">
+        <ha-markdown content="[[stateObj.attributes.message]]"></ha-markdown>
+        <paper-button on-click="dismissTap"
+          >[[localize('ui.card.persistent_notification.dismiss')]]</paper-button
+        >
+      </ha-card>
+    `;
   }
 
   static get properties() {

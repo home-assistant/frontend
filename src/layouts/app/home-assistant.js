@@ -38,23 +38,23 @@ class HomeAssistant extends ext(PolymerElement, [
 ]) {
   static get template() {
     return html`
-    <app-location route="{{route}}"></app-location>
-    <app-route
-      route="{{route}}"
-      pattern="/:panel"
-      data="{{routeData}}"
-    ></app-route>
-    <template is="dom-if" if="[[showMain]]" restamp>
-      <home-assistant-main
-        hass="[[hass]]"
+      <app-location route="{{route}}"></app-location>
+      <app-route
         route="{{route}}"
-      ></home-assistant-main>
-    </template>
+        pattern="/:panel"
+        data="{{routeData}}"
+      ></app-route>
+      <template is="dom-if" if="[[showMain]]" restamp>
+        <home-assistant-main
+          hass="[[hass]]"
+          route="{{route}}"
+        ></home-assistant-main>
+      </template>
 
-    <template is="dom-if" if="[[!showMain]]" restamp>
-      <ha-init-page error='[[_error]]'></ha-init-page>
-    </template>
-`;
+      <template is="dom-if" if="[[!showMain]]" restamp>
+        <ha-init-page error="[[_error]]"></ha-init-page>
+      </template>
+    `;
   }
 
   static get properties() {

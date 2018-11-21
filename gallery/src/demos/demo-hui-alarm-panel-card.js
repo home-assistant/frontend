@@ -51,7 +51,11 @@ const CONFIGS = [
 class DemoAlarmPanelEntity extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards id='demos' hass='[[hass]]' configs="[[_configs]]"></demo-cards>
+      <demo-cards
+        id="demos"
+        hass="[[hass]]"
+        configs="[[_configs]]"
+      ></demo-cards>
     `;
   }
 

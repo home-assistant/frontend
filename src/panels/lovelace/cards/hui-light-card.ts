@@ -81,37 +81,40 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
         ${
           !stateObj
             ? html`
-              <div class="not-found">Entity not available: ${
-                this._config.entity
-              }</div>`
-            : html`
-              <div id="light"></div>
-              <div id="tooltip">
-                <div class="icon-state">
-                  <ha-icon
-                    data-state="${stateObj.state}"
-                    .icon="${stateIcon(stateObj)}"
-                    style="${styleMap({
-                      filter: this._computeBrightness(stateObj),
-                      color: this._computeColor(stateObj),
-                    })}"
-                    @ha-click="${() => this._handleClick(false)}"
-                    @ha-hold="${() => this._handleClick(true)}"
-                    .longPress="${longPress()}"
-                  ></ha-icon>
-                  <div
-                    class="brightness"
-                    @ha-click="${() => this._handleClick(false)}"
-                    @ha-hold="${() => this._handleClick(true)}"
-                    .longPress="${longPress()}"
-                  ></div>
-                  <div class="name">${this._config.name ||
-                    computeStateName(stateObj)}</div>
+                <div class="not-found">
+                  Entity not available: ${this._config.entity}
                 </div>
-              </div>
-            `
+              `
+            : html`
+                <div id="light"></div>
+                <div id="tooltip">
+                  <div class="icon-state">
+                    <ha-icon
+                      data-state="${stateObj.state}"
+                      .icon="${stateIcon(stateObj)}"
+                      style="${
+                        styleMap({
+                          filter: this._computeBrightness(stateObj),
+                          color: this._computeColor(stateObj),
+                        })
+                      }"
+                      @ha-click="${() => this._handleClick(false)}"
+                      @ha-hold="${() => this._handleClick(true)}"
+                      .longPress="${longPress()}"
+                    ></ha-icon>
+                    <div
+                      class="brightness"
+                      @ha-click="${() => this._handleClick(false)}"
+                      @ha-hold="${() => this._handleClick(true)}"
+                      .longPress="${longPress()}"
+                    ></div>
+                    <div class="name">
+                      ${this._config.name || computeStateName(stateObj)}
+                    </div>
+                  </div>
+                </div>
+              `
         }
-
       </ha-card>
     `;
   }
@@ -153,7 +156,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
 
   private renderStyle(): TemplateResult {
     return html`
-    ${roundSliderStyle}
+      ${roundSliderStyle}
       <style>
         :host {
           display: block;
@@ -162,11 +165,8 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
           position: relative;
           overflow: hidden;
           --brightness-font-color: white;
-          --brightness-font-text-shadow:
-            -1px -1px 0 #000,
-            1px -1px 0 #000,
-            -1px 1px 0 #000,
-            1px 1px 0 #000;
+          --brightness-font-text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
+            -1px 1px 0 #000, 1px 1px 0 #000;
           --name-font-size: 1.2rem;
           --brightness-font-size: 1.2rem;
           --rail-border-color: transparent;
@@ -185,35 +185,36 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
           margin: auto;
           width: 100%;
           height: 100%;
-          transform: translate(0,25%);
+          transform: translate(0, 25%);
         }
         #light {
           margin: 0 auto;
           padding-top: 16px;
           padding-bottom: 16px;
         }
-        #light .rs-bar.rs-transition.rs-first, .rs-bar.rs-transition.rs-second{
+        #light .rs-bar.rs-transition.rs-first,
+        .rs-bar.rs-transition.rs-second {
           z-index: 20 !important;
         }
-        #light .rs-range-color  {
+        #light .rs-range-color {
           background-color: var(--primary-color);
         }
-        #light .rs-path-color  {
-            background-color: var(--disabled-text-color);
+        #light .rs-path-color {
+          background-color: var(--disabled-text-color);
         }
-        #light .rs-handle  {
-            background-color: var(--paper-card-background-color, white);
-            padding: 7px;
-            border: 2px solid var(--disabled-text-color);
+        #light .rs-handle {
+          background-color: var(--paper-card-background-color, white);
+          padding: 7px;
+          border: 2px solid var(--disabled-text-color);
         }
-        #light .rs-handle.rs-focus  {
-            border-color:var(--primary-color);
+        #light .rs-handle.rs-focus {
+          border-color: var(--primary-color);
         }
-        #light .rs-handle:after  {
-            border-color: var(--primary-color);
-            background-color: var(--primary-color);
+        #light .rs-handle:after {
+          border-color: var(--primary-color);
+          background-color: var(--primary-color);
         }
-        #light .rs-border  {
+        #light .rs-border {
           border-color: var(--rail-border-color);
         }
         #light .rs-inner.rs-bg-color.rs-border,
@@ -227,10 +228,10 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
           color: var(--paper-item-icon-color, #44739e);
           cursor: pointer;
         }
-        ha-icon[data-state=on] {
-          color: var(--paper-item-icon-active-color, #FDD835);
+        ha-icon[data-state="on"] {
+          color: var(--paper-item-icon-active-color, #fdd835);
         }
-        ha-icon[data-state=unavailable] {
+        ha-icon[data-state="unavailable"] {
           color: var(--state-icon-unavailable-color);
         }
         .name {
@@ -245,12 +246,12 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
           top: 10%;
           transform: translate(-50%);
           opacity: 0;
-          transition: opacity .5s ease-in-out;
-          -moz-transition: opacity .5s ease-in-out;
-          -webkit-transition: opacity .5s ease-in-out;
+          transition: opacity 0.5s ease-in-out;
+          -moz-transition: opacity 0.5s ease-in-out;
+          -webkit-transition: opacity 0.5s ease-in-out;
           cursor: pointer;
           color: var(--brightness-font-color);
-          text-shadow: var(--brightness-font-text-shadow)
+          text-shadow: var(--brightness-font-text-shadow);
         }
         .show_brightness {
           opacity: 1;

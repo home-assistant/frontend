@@ -24,188 +24,262 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex"></style>
-    <style>
-      :host {
-        color: var(--primary-text-color);
-      }
+      <style include="iron-flex"></style>
+      <style>
+        :host {
+          color: var(--primary-text-color);
+        }
 
-      .container-on,
-      .container-away_mode,
-      .container-aux_heat,
-      .container-temperature,
-      .container-humidity,
-      .container-operation_list,
-      .container-fan_list,
-      .container-swing_list {
-        display: none;
-      }
+        .container-on,
+        .container-away_mode,
+        .container-aux_heat,
+        .container-temperature,
+        .container-humidity,
+        .container-operation_list,
+        .container-fan_list,
+        .container-swing_list {
+          display: none;
+        }
 
-      .has-on .container-on,
-      .has-away_mode .container-away_mode,
-      .has-aux_heat .container-aux_heat,
-      .has-target_temperature .container-temperature,
-      .has-target_temperature_low .container-temperature,
-      .has-target_temperature_high .container-temperature,
-      .has-target_humidity .container-humidity,
-      .has-operation_mode .container-operation_list,
-      .has-fan_mode .container-fan_list,
-      .has-swing_list .container-swing_list,
-      .has-swing_mode .container-swing_list {
-        display: block;
-        margin-bottom: 5px;
-      }
+        .has-on .container-on,
+        .has-away_mode .container-away_mode,
+        .has-aux_heat .container-aux_heat,
+        .has-target_temperature .container-temperature,
+        .has-target_temperature_low .container-temperature,
+        .has-target_temperature_high .container-temperature,
+        .has-target_humidity .container-humidity,
+        .has-operation_mode .container-operation_list,
+        .has-fan_mode .container-fan_list,
+        .has-swing_list .container-swing_list,
+        .has-swing_mode .container-swing_list {
+          display: block;
+          margin-bottom: 5px;
+        }
 
-      .container-operation_list iron-icon,
-      .container-fan_list iron-icon,
-      .container-swing_list iron-icon {
-        margin: 22px 16px 0 0;
-      }
+        .container-operation_list iron-icon,
+        .container-fan_list iron-icon,
+        .container-swing_list iron-icon {
+          margin: 22px 16px 0 0;
+        }
 
-      paper-dropdown-menu {
-        width: 100%;
-      }
+        paper-dropdown-menu {
+          width: 100%;
+        }
 
-      paper-item {
-        cursor: pointer;
-      }
+        paper-item {
+          cursor: pointer;
+        }
 
-      ha-paper-slider {
-        width: 100%;
-      }
+        ha-paper-slider {
+          width: 100%;
+        }
 
-      .container-humidity .single-row {
-          display: flex;
-          height: 50px;
-      }
+        .container-humidity .single-row {
+            display: flex;
+            height: 50px;
+        }
 
-      .target-humidity {
-        width: 90px;
-        font-size: 200%;
-        margin: auto;
-      }
+        .target-humidity {
+          width: 90px;
+          font-size: 200%;
+          margin: auto;
+        }
 
-      ha-climate-control.range-control-left,
-      ha-climate-control.range-control-right {
-        float: left;
-        width: 46%;
-      }
-      ha-climate-control.range-control-left {
-        margin-right: 4%;
-      }
-      ha-climate-control.range-control-right {
-        margin-left: 4%;
-      }
+        ha-climate-control.range-control-left,
+        ha-climate-control.range-control-right {
+          float: left;
+          width: 46%;
+        }
+        ha-climate-control.range-control-left {
+          margin-right: 4%;
+        }
+        ha-climate-control.range-control-right {
+          margin-left: 4%;
+        }
 
-      .humidity {
-        --paper-slider-active-color: var(--paper-blue-400);
-        --paper-slider-secondary-color: var(--paper-blue-400);
-      }
+        .humidity {
+          --paper-slider-active-color: var(--paper-blue-400);
+          --paper-slider-secondary-color: var(--paper-blue-400);
+        }
 
-      .single-row {
-        padding: 8px 0;
-      }
-      }
-    </style>
+        .single-row {
+          padding: 8px 0;
+        }
+        }
+      </style>
 
-    <div class$="[[computeClassNames(stateObj)]]">
+      <div class$="[[computeClassNames(stateObj)]]">
+        <template is="dom-if" if="[[supportsOn(stateObj)]]">
+          <div class="container-on">
+            <div class="center horizontal layout single-row">
+              <div class="flex">[[localize('ui.card.climate.on_off')]]</div>
+              <paper-toggle-button
+                checked="[[onToggleChecked]]"
+                on-change="onToggleChanged"
+              >
+              </paper-toggle-button>
+            </div>
+          </div>
+        </template>
 
-      <template is="dom-if" if="[[supportsOn(stateObj)]]">
-        <div class="container-on">
-          <div class="center horizontal layout single-row">
-            <div class="flex">[[localize('ui.card.climate.on_off')]]</div>
-            <paper-toggle-button checked="[[onToggleChecked]]" on-change="onToggleChanged">
-            </paper-toggle-button>
+        <div class="container-temperature">
+          <div class$="[[stateObj.attributes.operation_mode]]">
+            <div hidden$="[[!supportsTemperatureControls(stateObj)]]">
+              [[localize('ui.card.climate.target_temperature')]]
+            </div>
+            <template is="dom-if" if="[[supportsTemperature(stateObj)]]">
+              <ha-climate-control
+                value="[[stateObj.attributes.temperature]]"
+                units="[[hass.config.unit_system.temperature]]"
+                step="[[computeTemperatureStepSize(hass, stateObj)]]"
+                min="[[stateObj.attributes.min_temp]]"
+                max="[[stateObj.attributes.max_temp]]"
+                on-change="targetTemperatureChanged"
+              >
+              </ha-climate-control>
+            </template>
+            <template is="dom-if" if="[[supportsTemperatureRange(stateObj)]]">
+              <ha-climate-control
+                value="[[stateObj.attributes.target_temp_low]]"
+                units="[[hass.config.unit_system.temperature]]"
+                step="[[computeTemperatureStepSize(hass, stateObj)]]"
+                min="[[stateObj.attributes.min_temp]]"
+                max="[[stateObj.attributes.target_temp_high]]"
+                class="range-control-left"
+                on-change="targetTemperatureLowChanged"
+              >
+              </ha-climate-control>
+              <ha-climate-control
+                value="[[stateObj.attributes.target_temp_high]]"
+                units="[[hass.config.unit_system.temperature]]"
+                step="[[computeTemperatureStepSize(hass, stateObj)]]"
+                min="[[stateObj.attributes.target_temp_low]]"
+                max="[[stateObj.attributes.max_temp]]"
+                class="range-control-right"
+                on-change="targetTemperatureHighChanged"
+              >
+              </ha-climate-control>
+            </template>
           </div>
         </div>
-      </template>
 
-      <div class="container-temperature">
-        <div class$="[[stateObj.attributes.operation_mode]]">
-          <div hidden$="[[!supportsTemperatureControls(stateObj)]]">[[localize('ui.card.climate.target_temperature')]]</div>
-          <template is="dom-if" if="[[supportsTemperature(stateObj)]]">
-            <ha-climate-control value="[[stateObj.attributes.temperature]]" units="[[hass.config.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.max_temp]]" on-change="targetTemperatureChanged">
-            </ha-climate-control>
-          </template>
-          <template is="dom-if" if="[[supportsTemperatureRange(stateObj)]]">
-            <ha-climate-control value="[[stateObj.attributes.target_temp_low]]" units="[[hass.config.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.target_temp_high]]" class="range-control-left" on-change="targetTemperatureLowChanged">
-            </ha-climate-control>
-            <ha-climate-control value="[[stateObj.attributes.target_temp_high]]" units="[[hass.config.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.target_temp_low]]" max="[[stateObj.attributes.max_temp]]" class="range-control-right" on-change="targetTemperatureHighChanged">
-            </ha-climate-control>
-          </template>
-        </div>
-      </div>
-
-      <template is="dom-if" if="[[supportsHumidity(stateObj)]]">
-        <div class="container-humidity">
-          <div>[[localize('ui.card.climate.target_humidity')]]</div>
+        <template is="dom-if" if="[[supportsHumidity(stateObj)]]">
+          <div class="container-humidity">
+            <div>[[localize('ui.card.climate.target_humidity')]]</div>
             <div class="single-row">
-              <div class="target-humidity">[[stateObj.attributes.humidity]] %</div>
-              <ha-paper-slider class="humidity" min="[[stateObj.attributes.min_humidity]]" max="[[stateObj.attributes.max_humidity]]" secondary-progress="[[stateObj.attributes.max_humidity]]" step="1" pin="" value="[[stateObj.attributes.humidity]]" on-change="targetHumiditySliderChanged" ignore-bar-touch="">
+              <div class="target-humidity">
+                [[stateObj.attributes.humidity]] %
+              </div>
+              <ha-paper-slider
+                class="humidity"
+                min="[[stateObj.attributes.min_humidity]]"
+                max="[[stateObj.attributes.max_humidity]]"
+                secondary-progress="[[stateObj.attributes.max_humidity]]"
+                step="1"
+                pin=""
+                value="[[stateObj.attributes.humidity]]"
+                on-change="targetHumiditySliderChanged"
+                ignore-bar-touch=""
+              >
               </ha-paper-slider>
+            </div>
           </div>
-        </div>
-      </template>
+        </template>
 
-      <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
-        <div class="container-operation_list">
-          <div class="controls">
-            <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.climate.operation')]]">
-              <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
-                <template is="dom-repeat" items="[[stateObj.attributes.operation_list]]" on-dom-change="handleOperationListUpdate">
-                  <paper-item>[[_localizeOperationMode(localize, item)]]</paper-item>
+        <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
+          <div class="container-operation_list">
+            <div class="controls">
+              <paper-dropdown-menu
+                label-float=""
+                dynamic-align=""
+                label="[[localize('ui.card.climate.operation')]]"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  selected="{{operationIndex}}"
+                >
+                  <template
+                    is="dom-repeat"
+                    items="[[stateObj.attributes.operation_list]]"
+                    on-dom-change="handleOperationListUpdate"
+                  >
+                    <paper-item
+                      >[[_localizeOperationMode(localize, item)]]</paper-item
+                    >
+                  </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
+          </div>
+        </template>
+
+        <template is="dom-if" if="[[supportsFanMode(stateObj)]]">
+          <div class="container-fan_list">
+            <paper-dropdown-menu
+              label-float=""
+              dynamic-align=""
+              label="[[localize('ui.card.climate.fan_mode')]]"
+            >
+              <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
+                <template
+                  is="dom-repeat"
+                  items="[[stateObj.attributes.fan_list]]"
+                  on-dom-change="handleFanListUpdate"
+                >
+                  <paper-item>[[item]]</paper-item>
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
-        </div>
-      </template>
+        </template>
 
-      <template is="dom-if" if="[[supportsFanMode(stateObj)]]">
-        <div class="container-fan_list">
-          <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.climate.fan_mode')]]">
-            <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
-              <template is="dom-repeat" items="[[stateObj.attributes.fan_list]]" on-dom-change="handleFanListUpdate">
-                <paper-item>[[item]]</paper-item>
-              </template>
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[supportsSwingMode(stateObj)]]">
-        <div class="container-swing_list">
-          <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.climate.swing_mode')]]">
-            <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
-              <template is="dom-repeat" items="[[stateObj.attributes.swing_list]]" on-dom-change="handleSwingListUpdate">
-                <paper-item>[[item]]</paper-item>
-              </template>
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[supportsAwayMode(stateObj)]]">
-        <div class="container-away_mode">
-          <div class="center horizontal layout single-row">
-            <div class="flex">[[localize('ui.card.climate.away_mode')]]</div>
-            <paper-toggle-button checked="[[awayToggleChecked]]" on-change="awayToggleChanged">
-            </paper-toggle-button>
+        <template is="dom-if" if="[[supportsSwingMode(stateObj)]]">
+          <div class="container-swing_list">
+            <paper-dropdown-menu
+              label-float=""
+              dynamic-align=""
+              label="[[localize('ui.card.climate.swing_mode')]]"
+            >
+              <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
+                <template
+                  is="dom-repeat"
+                  items="[[stateObj.attributes.swing_list]]"
+                  on-dom-change="handleSwingListUpdate"
+                >
+                  <paper-item>[[item]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
           </div>
-        </div>
-      </template>
+        </template>
 
-      <template is="dom-if" if="[[supportsAuxHeat(stateObj)]]">
-        <div class="container-aux_heat">
-          <div class="center horizontal layout single-row">
-            <div class="flex">[[localize('ui.card.climate.aux_heat')]]</div>
-            <paper-toggle-button checked="[[auxToggleChecked]]" on-change="auxToggleChanged">
-            </paper-toggle-button>
+        <template is="dom-if" if="[[supportsAwayMode(stateObj)]]">
+          <div class="container-away_mode">
+            <div class="center horizontal layout single-row">
+              <div class="flex">[[localize('ui.card.climate.away_mode')]]</div>
+              <paper-toggle-button
+                checked="[[awayToggleChecked]]"
+                on-change="awayToggleChanged"
+              >
+              </paper-toggle-button>
+            </div>
           </div>
-        </div>
-      </template>
-    </div>
-`;
+        </template>
+
+        <template is="dom-if" if="[[supportsAuxHeat(stateObj)]]">
+          <div class="container-aux_heat">
+            <div class="center horizontal layout single-row">
+              <div class="flex">[[localize('ui.card.climate.aux_heat')]]</div>
+              <paper-toggle-button
+                checked="[[auxToggleChecked]]"
+                on-change="auxToggleChanged"
+              >
+              </paper-toggle-button>
+            </div>
+          </div>
+        </template>
+      </div>
+    `;
   }
 
   static get properties() {

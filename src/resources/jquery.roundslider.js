@@ -3,4 +3,8 @@ import "./jquery";
 import "round-slider";
 import roundSliderCSS from "round-slider/dist/roundslider.min.css";
 
-export const roundSliderStyle = html`<style>${roundSliderCSS}</style>`;
+export const roundSliderStyle = html`
+  <style>
+    ${roundSliderCSS}
+  </style>
+`;

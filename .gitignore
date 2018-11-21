@@ -22,7 +22,8 @@ bin
 dist
 
 # vscode
-.vscode
+.vscode/*
+!.vscode/extensions.json
 
 # Secrets
 .lokalise_token

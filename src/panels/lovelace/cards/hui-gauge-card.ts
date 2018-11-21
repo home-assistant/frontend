@@ -71,30 +71,33 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-    ${this.renderStyle()}
-    <ha-card @click="${this._handleClick}">
-    ${
-      error
-        ? html`<div class="not-found">${error}</div>`
-        : html`
-          <div class='container'>
-            <div class='gauge-a'></div>
-            <div class='gauge-b'></div>
-            <div class='gauge-c' id='gauge'></div>
-            <div class='gauge-data'>
-              <div id='percent'>${stateObj.state}
-              ${this._config.unit_of_measurement ||
-                stateObj.attributes.unit_of_measurement ||
-                ""}
-              </div>
-              <div id='title'>${this._config.title}
-
-              </div>
-            </div>
-          </div>
-        `
-    }
-    </ha-card>
+      ${this.renderStyle()}
+      <ha-card @click="${this._handleClick}">
+        ${
+          error
+            ? html`
+                <div class="not-found">${error}</div>
+              `
+            : html`
+                <div class="container">
+                  <div class="gauge-a"></div>
+                  <div class="gauge-b"></div>
+                  <div class="gauge-c" id="gauge"></div>
+                  <div class="gauge-data">
+                    <div id="percent">
+                      ${stateObj.state}
+                      ${
+                        this._config.unit_of_measurement ||
+                          stateObj.attributes.unit_of_measurement ||
+                          ""
+                      }
+                    </div>
+                    <div id="title">${this._config.title}</div>
+                  </div>
+                </div>
+              `
+        }
+      </ha-card>
     `;
   }
 
@@ -142,30 +145,31 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       <style>
         ha-card {
           --base-unit: 50px;
-          height: calc(var(--base-unit)*3);
+          height: calc(var(--base-unit) * 3);
           position: relative;
           cursor: pointer;
         }
-        .container{
+        .container {
           width: calc(var(--base-unit) * 4);
           height: calc(var(--base-unit) * 2);
           position: absolute;
-          top: calc(var(--base-unit)*1.5);
+          top: calc(var(--base-unit) * 1.5);
           left: 50%;
           overflow: hidden;
           text-align: center;
           transform: translate(-50%, -50%);
         }
-        .gauge-a{
+        .gauge-a {
           z-index: 1;
           position: absolute;
           background-color: var(--primary-background-color);
           width: calc(var(--base-unit) * 4);
           height: calc(var(--base-unit) * 2);
           top: 0%;
-          border-radius:calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5) 0px 0px ;
+          border-radius: calc(var(--base-unit) * 2.5)
+            calc(var(--base-unit) * 2.5) 0px 0px;
         }
-        .gauge-b{
+        .gauge-b {
           z-index: 3;
           position: absolute;
           background-color: var(--paper-card-background-color);
@@ -174,9 +178,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           top: calc(var(--base-unit) * 0.75);
           margin-left: calc(var(--base-unit) * 0.75);
           margin-right: auto;
-          border-radius: calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5) 0px 0px ;
+          border-radius: calc(var(--base-unit) * 2.5)
+            calc(var(--base-unit) * 2.5) 0px 0px;
         }
-        .gauge-c{
+        .gauge-c {
           z-index: 2;
           position: absolute;
           background-color: var(--label-badge-blue);
@@ -185,11 +190,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           top: calc(var(--base-unit) * 2);
           margin-left: auto;
           margin-right: auto;
-          border-radius: 0px 0px calc(var(--base-unit) * 2) calc(var(--base-unit) * 2) ;
+          border-radius: 0px 0px calc(var(--base-unit) * 2)
+            calc(var(--base-unit) * 2);
           transform-origin: center top;
           transition: all 1.3s ease-in-out;
         }
-        .gauge-data{
+        .gauge-data {
           z-index: 4;
           color: var(--primary-text-color);
           line-height: calc(var(--base-unit) * 0.3);
@@ -201,12 +207,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           margin-right: auto;
           transition: all 1s ease-out;
         }
-        .gauge-data #percent{
+        .gauge-data #percent {
           font-size: calc(var(--base-unit) * 0.55);
         }
-        .gauge-data #title{
+        .gauge-data #title {
           padding-top: calc(var(--base-unit) * 0.15);
-          font-size: calc(var(--base-unit) * 0.30);
+          font-size: calc(var(--base-unit) * 0.3);
         }
         .not-found {
           flex: 1;

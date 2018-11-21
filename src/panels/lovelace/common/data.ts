@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../../../types";
+import { LovelaceConfig } from "../types";
 
 export const getCardConfig = (
   hass: HomeAssistant,
@@ -12,10 +13,17 @@ export const getCardConfig = (
 export const updateCardConfig = (
   hass: HomeAssistant,
   cardId: string,
-  config: any
+  config: LovelaceConfig | string,
+  configFormat: "json" | "yaml"
 ): Promise<void> =>
-  hass!.callWS({
+  hass.callWS({
     type: "lovelace/config/card/update",
     card_id: cardId,
     card_config: config,
+    format: configFormat,
+  });
+
+export const migrateConfig = (hass: HomeAssistant): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config/migrate",
   });

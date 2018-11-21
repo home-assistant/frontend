@@ -13,22 +13,22 @@ import EventsMixin from "../../mixins/events-mixin";
 class HaLoadedComponents extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      paper-dialog {
-        max-width: 500px;
-      }
-    </style>
-    <paper-dialog id="dialog" with-backdrop="" opened="{{_opened}}">
-      <h2>Loaded Components</h2>
-      <paper-dialog-scrollable id="scrollable">
-       <p>The following components are currently loaded:</p>
-       <ul>
-        <template is='dom-repeat' items='[[_components]]'>
-          <li>[[item]]</li>
-        </template>
-       </ul>
-      </paper-dialog-scrollable>
-    </paper-dialog>
+      <style include="ha-style-dialog">
+        paper-dialog {
+          max-width: 500px;
+        }
+      </style>
+      <paper-dialog id="dialog" with-backdrop="" opened="{{_opened}}">
+        <h2>Loaded Components</h2>
+        <paper-dialog-scrollable id="scrollable">
+          <p>The following components are currently loaded:</p>
+          <ul>
+            <template is="dom-repeat" items="[[_components]]">
+              <li>[[item]]</li>
+            </template>
+          </ul>
+        </paper-dialog-scrollable>
+      </paper-dialog>
     `;
   }
 

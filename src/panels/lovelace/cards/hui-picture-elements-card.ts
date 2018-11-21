@@ -56,10 +56,11 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
         <div id="root">
-          <img src="${this._config.image}">
-          ${this._config.elements.map((elementConfig: LovelaceElementConfig) =>
-            this._createHuiElement(elementConfig)
-          )}
+          <img src="${this._config.image}" /> ${
+            this._config.elements.map((elementConfig: LovelaceElementConfig) =>
+              this._createHuiElement(elementConfig)
+            )
+          }
         </div>
       </ha-card>
     `;

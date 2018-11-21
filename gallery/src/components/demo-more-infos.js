@@ -25,18 +25,18 @@ class DemoMoreInfos extends PolymerElement {
         }
       </style>
       <app-toolbar>
-        <div class='filters'>
-          <paper-toggle-button
-            checked='{{_showConfig}}'
-          >Show entity</paper-toggle-button>
+        <div class="filters">
+          <paper-toggle-button checked="{{_showConfig}}"
+            >Show entity</paper-toggle-button
+          >
         </div>
       </app-toolbar>
-      <div class='cards'>
-        <template is='dom-repeat' items='[[entities]]'>
+      <div class="cards">
+        <template is="dom-repeat" items="[[entities]]">
           <demo-more-info
-            entity-id='[[item]]'
-            show-config='[[_showConfig]]'
-            hass='[[hass]]'
+            entity-id="[[item]]"
+            show-config="[[_showConfig]]"
+            hass="[[hass]]"
           ></demo-more-info>
         </template>
       </div>

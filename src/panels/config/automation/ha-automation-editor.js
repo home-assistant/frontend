@@ -26,79 +26,89 @@ function AutomationEditor(mountEl, props, mergeEl) {
 class HaAutomationEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="ha-style">
-      .errors {
-        padding: 20px;
-        font-weight: bold;
-        color: var(--google-red-500);
-      }
-      .content {
-        padding-bottom: 20px;
-      }
-      paper-card {
-        display: block;
-      }
-      .triggers,
-      .script {
-        margin-top: -16px;
-      }
-      .triggers paper-card,
-      .script paper-card {
-        margin-top: 16px;
-      }
-      .add-card paper-button {
-        display: block;
-        text-align: center;
-      }
-      .card-menu {
-        position: absolute;
-        top: 0;
-        right: 0;
-        z-index: 1;
-        color: var(--primary-text-color);
-      }
-      .card-menu paper-item {
-        cursor: pointer;
-      }
-      span[slot=introduction] a {
-        color: var(--primary-color);
-      }
-      paper-fab {
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        z-index: 1;
-        margin-bottom: -80px;
-        transition: margin-bottom .3s;
-      }
+      <style include="ha-style">
+        .errors {
+          padding: 20px;
+          font-weight: bold;
+          color: var(--google-red-500);
+        }
+        .content {
+          padding-bottom: 20px;
+        }
+        paper-card {
+          display: block;
+        }
+        .triggers,
+        .script {
+          margin-top: -16px;
+        }
+        .triggers paper-card,
+        .script paper-card {
+          margin-top: 16px;
+        }
+        .add-card paper-button {
+          display: block;
+          text-align: center;
+        }
+        .card-menu {
+          position: absolute;
+          top: 0;
+          right: 0;
+          z-index: 1;
+          color: var(--primary-text-color);
+        }
+        .card-menu paper-item {
+          cursor: pointer;
+        }
+        span[slot="introduction"] a {
+          color: var(--primary-color);
+        }
+        paper-fab {
+          position: fixed;
+          bottom: 16px;
+          right: 16px;
+          z-index: 1;
+          margin-bottom: -80px;
+          transition: margin-bottom 0.3s;
+        }
 
-      paper-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
+        paper-fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
 
-      paper-fab[dirty] {
-        margin-bottom: 0;
-      }
-    </style>
+        paper-fab[dirty] {
+          margin-bottom: 0;
+        }
+      </style>
 
-    <ha-app-layout has-scrolling-region="">
-      <app-header slot="header" fixed="">
-        <app-toolbar>
-          <paper-icon-button icon="hass:arrow-left" on-click="backTapped"></paper-icon-button>
-          <div main-title="">[[computeName(automation, localize)]]</div>
-        </app-toolbar>
-      </app-header>
+      <ha-app-layout has-scrolling-region="">
+        <app-header slot="header" fixed="">
+          <app-toolbar>
+            <paper-icon-button
+              icon="hass:arrow-left"
+              on-click="backTapped"
+            ></paper-icon-button>
+            <div main-title="">[[computeName(automation, localize)]]</div>
+          </app-toolbar>
+        </app-header>
 
-      <div class="content">
-        <template is="dom-if" if="[[errors]]">
-          <div class="errors">[[errors]]</div>
-        </template>
-        <div id="root"></div>
-      </div>
-      <paper-fab slot="fab" is-wide$="[[isWide]]" dirty$="[[dirty]]" icon="hass:content-save" title="[[localize('ui.panel.config.automation.editor.save')]]" on-click="saveAutomation"></paper-fab>
-    </ha-app-layout>
-`;
+        <div class="content">
+          <template is="dom-if" if="[[errors]]">
+            <div class="errors">[[errors]]</div>
+          </template>
+          <div id="root"></div>
+        </div>
+        <paper-fab
+          slot="fab"
+          is-wide$="[[isWide]]"
+          dirty$="[[dirty]]"
+          icon="hass:content-save"
+          title="[[localize('ui.panel.config.automation.editor.save')]]"
+          on-click="saveAutomation"
+        ></paper-fab>
+      </ha-app-layout>
+    `;
   }
 
   static get properties() {
