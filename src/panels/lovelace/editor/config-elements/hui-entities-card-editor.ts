@@ -24,6 +24,12 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   public hass?: HomeAssistant;
   private _config?: Config;
   private _configEntities?: ConfigEntity[];
+  private _initializing?: boolean;
+
+  protected constructor() {
+    super();
+    this._initializing = true;
+  }
 
   static get properties(): PropertyDeclarations {
     return {
@@ -36,6 +42,13 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   public setConfig(config: Config): void {
     this._config = { type: "entities", ...config };
     this._configEntities = processEditorEntities(config.entities);
+  }
+
+  protected async firstUpdated(): Promise<void> {
+    if (this._initializing) {
+      await this.updateComplete;
+      this._initializing = false;
+    }
   }
 
   protected render(): TemplateResult {
@@ -55,12 +68,12 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
         .hass="${this.hass}"
         .value="${this._config!.theme}"
         .configValue="${"theme"}"
-        @change="${this._valueChanged}"
+        @theme-changed="${this._valueChanged}"
       ></hui-theme-select-editor>
       <hui-entity-editor
         .hass="${this.hass}"
         .entities="${this._configEntities}"
-        @change="${this._valueChanged}"
+        @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>
       <paper-checkbox
         ?checked="${this._config!.show_header_toggle !== false}"
@@ -72,19 +85,18 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || this._initializing) {
       return;
     }
-
     const target = ev.target! as EditorTarget;
     let newConfig = this._config;
 
     if (ev.detail && ev.detail.entities) {
       newConfig.entities = ev.detail.entities;
-    } else {
+    } else if (target.configValue) {
       newConfig = {
         ...this._config,
-        [target.configValue!]:
+        [target.configValue]:
           target.checked !== undefined ? target.checked : target.value,
       };
     }

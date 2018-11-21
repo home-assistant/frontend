@@ -70,12 +70,11 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _changed(ev): void {
-    if (!this.hass || this._initializing) {
+    if (!this.hass || this._initializing || ev.target.value === "") {
       return;
     }
-
     this.value = ev.target.value;
-    fireEvent(this, "change");
+    fireEvent(this, "theme-changed");
   }
 }
 

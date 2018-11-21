@@ -68,7 +68,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
         .hass="${this.hass}"
         .value="${this._config!.theme}"
         .configValue="${"theme"}"
-        @change="${this._valueChanged}"
+        @theme-changed="${this._valueChanged}"
       ></hui-theme-select-editor>
       <paper-input
         label="Columns"
@@ -79,7 +79,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       <hui-entity-editor
         .hass="${this.hass}"
         .entities="${this._configEntities}"
-        @change="${this._valueChanged}"
+        @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>
       <paper-checkbox
         ?checked="${this._config!.show_name !== false}"
