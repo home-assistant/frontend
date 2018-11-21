@@ -344,7 +344,7 @@
                 },
                 "customize": {
                     "caption": "Tilpasning",
-                    "description": "Tilpass dine enheter"
+                    "description": "Tilpass dine oppføringer"
                 },
                 "automation": {
                     "caption": "Automatisering",
@@ -417,7 +417,7 @@
                                 },
                                 "zone": {
                                     "label": "Sone",
-                                    "entity": "Enhet med posisjon",
+                                    "entity": "Oppføring med posisjon",
                                     "zone": "Sone",
                                     "event": "Hendelse:",
                                     "enter": "Ankommer",
@@ -542,14 +542,14 @@
                     "none": "Ingenting er konfigurert enda",
                     "config_entry": {
                         "no_devices": "Denne integrasjonen har ingen enheter.",
-                        "no_device": "Enheter uten enheter",
+                        "no_device": "Oppføringer uten enheter",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "manuf": "av {manufacturer}",
                         "hub": "Tilkoblet via",
                         "firmware": "Fastvare: {version}",
                         "device_unavailable": "enheten er utilgjengelig",
-                        "entity_unavailable": "enheten er utilgjengelig"
+                        "entity_unavailable": "oppføringen er utilgjengelig"
                     }
                 }
             },
@@ -835,7 +835,7 @@
             },
             "water_heater": {
                 "currently": "Temperatur nå",
-                "on_off": "På \/ Av",
+                "on_off": "På \/ av",
                 "target_temperature": "Ønsket temperatur",
                 "operation": "Drift",
                 "away_mode": "Bortemodus"
@@ -844,14 +844,14 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Enhet"
+                    "entity": "Oppføring"
                 }
             },
             "service-picker": {
                 "service": "Tjeneste"
             },
             "relative_time": {
-                "past": "For {time} siden",
+                "past": "{time} siden",
                 "future": "Om {time}",
                 "never": "Aldri",
                 "duration": {
@@ -878,7 +878,7 @@
             "more_info_settings": {
                 "save": "Lagre",
                 "name": "Navn",
-                "entity_id": "Enhets ID"
+                "entity_id": "Oppføring ID"
             }
         },
         "auth_store": {

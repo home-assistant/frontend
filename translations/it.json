@@ -780,7 +780,9 @@
                 "clear_code": "Canc",
                 "disarm": "Disattivato",
                 "arm_home": "Attivo in casa",
-                "arm_away": "Attiva Fuori Casa"
+                "arm_away": "Attiva Fuori Casa",
+                "arm_night": "Attiva Notte",
+                "armed_custom_bypass": "Attiva con bypass"
             },
             "automation": {
                 "last_triggered": "Ultima attivazione",

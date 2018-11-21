@@ -780,7 +780,9 @@
                 "clear_code": "Очистить",
                 "disarm": "Без охраны",
                 "arm_home": "Охрана (дома)",
-                "arm_away": "Охрана (не дома)"
+                "arm_away": "Охрана (не дома)",
+                "arm_night": "Ночная охрана",
+                "armed_custom_bypass": "Охрана с исключениями"
             },
             "automation": {
                 "last_triggered": "Последний запуск",
