@@ -7,7 +7,9 @@ export interface ShoppingListItem {
 }
 
 export const fetchItems = (hass: HomeAssistant): Promise<ShoppingListItem[]> =>
-  hass.callApi("GET", "shopping_list");
+  hass.callWS({
+    type: "shopping_list/items",
+  });
 
 export const saveEdit = (
   hass: HomeAssistant,
