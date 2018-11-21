@@ -44,7 +44,7 @@ class StateBadge extends PolymerElement {
         id="icon"
         data-domain$="[[_computeDomain(stateObj)]]"
         data-state$="[[stateObj.state]]"
-        icon="[[_computeIcon(stateObj)]]"
+        icon="[[_computeIcon(stateObj, overrideIcon)]]"
       ></ha-icon>
     `;
   }
@@ -63,8 +63,8 @@ class StateBadge extends PolymerElement {
     return computeStateDomain(stateObj);
   }
 
-  _computeIcon(stateObj) {
-    return this.overrideIcon || stateIcon(stateObj);
+  _computeIcon(stateObj, overrideIcon) {
+    return overrideIcon || stateIcon(stateObj);
   }
 
   _updateIconAppearance(newVal) {
