@@ -280,8 +280,9 @@ class HassioSnapshot extends PolymerElement {
   }
 
   async _downloadClicked() {
+    let signedPath;
     try {
-      const signedPath = await getSignedPath(
+      signedPath = await getSignedPath(
         this.hass,
         `/api/hassio/snapshots/${this.snapshotSlug}/download`
       );
