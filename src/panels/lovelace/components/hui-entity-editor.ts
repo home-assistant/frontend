@@ -91,11 +91,11 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private _optionChanged(ev: Event): void {
-    const target = ev.target! as any;
+    const target = ev.target! as EditorTarget;
     const newConfigEntities = this.entities!.concat();
-    newConfigEntities[target.index] = {
+    newConfigEntities[target.index!] = {
       ...newConfigEntities[target.index!],
-      [target.configValue]: target.value,
+      [target.configValue!]: target.value,
     };
 
     fireEvent(this, "change", { entities: newConfigEntities });
@@ -105,7 +105,7 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <style>
         .entities {
-          padding-left: 20px;
+          padding-left: 16px;
         }
         .entity {
           display: flex;
@@ -126,6 +126,7 @@ export class HuiEntityEditor extends LitElement {
         .options {
           display: none;
           width: 100%;
+          padding-left: 16px;
         }
         .options > * {
           flex: 1;
