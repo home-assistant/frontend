@@ -17,24 +17,28 @@ import "./ha-settings-row";
 class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      a { color: var(--primary-color); }
-    </style>
-    <ha-settings-row narrow='[[narrow]]'>
-      <span slot='heading'>[[localize('ui.panel.profile.push_notifications.header')]]</span>
-      <span
-        slot='description'
-      >
-        [[_description(_platformLoaded, _pushSupported)]]
-        <a
-          href='https://www.home-assistant.io/components/notify.html5/'
-          target='_blank'>[[localize('ui.panel.profile.push_notifications.link_promo')]]</a>
-      </span>
-      <ha-push-notifications-toggle
-        hass="[[hass]]"
-        disabled='[[_error]]'
-      ></ha-push-notifications-toggle>
-    </ha-settings-row>
+      <style>
+        a {
+          color: var(--primary-color);
+        }
+      </style>
+      <ha-settings-row narrow="[[narrow]]">
+        <span slot="heading"
+          >[[localize('ui.panel.profile.push_notifications.header')]]</span
+        >
+        <span slot="description">
+          [[_description(_platformLoaded, _pushSupported)]]
+          <a
+            href="https://www.home-assistant.io/components/notify.html5/"
+            target="_blank"
+            >[[localize('ui.panel.profile.push_notifications.link_promo')]]</a
+          >
+        </span>
+        <ha-push-notifications-toggle
+          hass="[[hass]]"
+          disabled="[[_error]]"
+        ></ha-push-notifications-toggle>
+      </ha-settings-row>
     `;
   }
 

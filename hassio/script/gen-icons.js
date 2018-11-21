@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 const fs = require("fs");
-const { findIcons, generateIconset } = require("../../gulp/tasks/gen-icons.js");
+const {
+  findIcons,
+  generateIconset,
+  genMDIIcons,
+} = require("../../gulp/tasks/gen-icons.js");
 
 const MENU_BUTTON_ICON = "menu";
 
@@ -9,4 +13,5 @@ function genHassioIcons() {
   fs.writeFileSync("./hassio-icons.html", generateIconset("hassio", iconNames));
 }
 
+genMDIIcons();
 genHassioIcons();

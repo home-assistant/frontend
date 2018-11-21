@@ -4,16 +4,21 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 class MoreInfoUpdater extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      .link {
-        color: #03A9F4;
-      }
-    </style>
+      <style>
+        .link {
+          color: #03a9f4;
+        }
+      </style>
 
-    <div>
-      <a class="link" href="https://www.home-assistant.io/docs/installation/updating/" target="_blank">Update Instructions</a>
-    </div>
-`;
+      <div>
+        <a
+          class="link"
+          href="https://www.home-assistant.io/docs/installation/updating/"
+          target="_blank"
+          >Update Instructions</a
+        >
+      </div>
+    `;
   }
 
   static get properties() {

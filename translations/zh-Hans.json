@@ -780,7 +780,9 @@
                 "clear_code": "清除",
                 "disarm": "解除警戒",
                 "arm_home": "在家警戒",
-                "arm_away": "离家警戒"
+                "arm_away": "离家警戒",
+                "arm_night": "夜间警戒",
+                "armed_custom_bypass": "自定义略过"
             },
             "automation": {
                 "last_triggered": "上次触发",

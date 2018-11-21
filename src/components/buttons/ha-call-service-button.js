@@ -10,8 +10,13 @@ import EventsMixin from "../../mixins/events-mixin";
 class HaCallServiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <ha-progress-button id="progress" progress="[[progress]]" on-click="buttonTapped"><slot></slot></ha-progress-button>
-`;
+      <ha-progress-button
+        id="progress"
+        progress="[[progress]]"
+        on-click="buttonTapped"
+        ><slot></slot
+      ></ha-progress-button>
+    `;
   }
 
   static get properties() {

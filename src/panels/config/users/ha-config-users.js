@@ -16,25 +16,29 @@ import { fireEvent } from "../../../common/dom/fire_event";
 class HaConfigUsers extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-    <app-route
-      route='[[route]]'
-      pattern='/users/:user'
-      data="{{_routeData}}"
-    ></app-route>
+      <app-route
+        route="[[route]]"
+        pattern="/users/:user"
+        data="{{_routeData}}"
+      ></app-route>
 
-    <template is='dom-if' if='[[_equals(_routeData.user, "picker")]]'>
-      <ha-user-picker
-        hass='[[hass]]'
-        users='[[_users]]'
-      ></ha-user-picker>
-    </template>
-    <template is='dom-if' if='[[!_equals(_routeData.user, "picker")]]' restamp>
-      <ha-user-editor
-        hass='[[hass]]'
-        user='[[_computeUser(_users, _routeData.user)]]'
-      ></ha-user-editor>
-    </template>
-`;
+      <template
+        is="dom-if"
+        if="[[_equals(_routeData.user, &quot;picker&quot;)]]"
+      >
+        <ha-user-picker hass="[[hass]]" users="[[_users]]"></ha-user-picker>
+      </template>
+      <template
+        is="dom-if"
+        if="[[!_equals(_routeData.user, &quot;picker&quot;)]]"
+        restamp
+      >
+        <ha-user-editor
+          hass="[[hass]]"
+          user="[[_computeUser(_users, _routeData.user)]]"
+        ></ha-user-editor>
+      </template>
+    `;
   }
 
   static get properties() {

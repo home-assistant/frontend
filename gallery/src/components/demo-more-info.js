@@ -8,56 +8,56 @@ import "../../../src/components/ha-card";
 class DemoMoreInfo extends PolymerElement {
   static get template() {
     return html`
-        <style>
+      <style>
+        :host {
+          display: flex;
+          align-items: start;
+        }
+
+        ha-card {
+          width: 333px;
+        }
+
+        state-card-content {
+          display: block;
+          padding: 16px;
+        }
+
+        more-info-content {
+          padding: 0 16px;
+        }
+
+        pre {
+          width: 400px;
+          margin: 16px;
+          overflow: auto;
+        }
+
+        @media only screen and (max-width: 800px) {
           :host {
-            display: flex;
-            align-items: start;
+            flex-direction: column;
           }
-
-          ha-card {
-            width: 333px;
-          }
-
-          state-card-content {
-            display: block;
-            padding: 16px;
-          }
-
-          more-info-content {
-            padding: 0 16px;
-          }
-
           pre {
-            width: 400px;
-            margin: 16px;
-            overflow: auto;
+            margin-left: 0;
           }
+        }
+      </style>
+      <ha-card>
+        <state-card-content
+          state-obj="[[_stateObj]]"
+          hass="[[hass]]"
+          in-dialog
+        ></state-card-content>
 
-          @media only screen and (max-width: 800px) {
-            :host {
-              flex-direction: column;
-            }
-            pre {
-              margin-left: 0;
-            }
-          }
-        </style>
-        <ha-card>
-          <state-card-content
-            state-obj="[[_stateObj]]"
-            hass="[[hass]]"
-            in-dialog
-          ></state-card-content>
-
-          <more-info-content
-            hass='[[hass]]'
-            state-obj='[[_stateObj]]'
-          ></more-info-content>
-        </ha-card>
-        <template is='dom-if' if='[[showConfig]]'>
-          <pre>[[_jsonEntity(_stateObj)]]</pre>
-        </template>
-      `;
+        <more-info-content
+          hass="[[hass]]"
+          state-obj="[[_stateObj]]"
+        ></more-info-content>
+      </ha-card>
+      <template is="dom-if" if="[[showConfig]]">
+        <pre>[[_jsonEntity(_stateObj)]]</pre>
+      </template>
+    `;
   }
 
   static get properties() {

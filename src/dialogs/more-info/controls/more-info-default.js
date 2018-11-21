@@ -6,8 +6,8 @@ import "../../../components/ha-attributes";
 class MoreInfoDefault extends PolymerElement {
   static get template() {
     return html`
-    <ha-attributes state-obj="[[stateObj]]"></ha-attributes>
-`;
+      <ha-attributes state-obj="[[stateObj]]"></ha-attributes>
+    `;
   }
 
   static get properties() {

@@ -87,27 +87,31 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
       >
         ${
           !stateObj
-            ? html`<div class="not-found">Entity not available: ${
-                this._config.entity
-              }</div>`
-            : html`
-              <paper-button>
-                <div>
-                  <ha-icon
-                    data-domain="${computeStateDomain(stateObj)}"
-                    data-state="${stateObj.state}"
-                    .icon="${this._config.icon || stateIcon(stateObj)}"
-                    style="${styleMap({
-                      filter: this._computeBrightness(stateObj),
-                      color: this._computeColor(stateObj),
-                    })}"
-                  ></ha-icon>
-                  <span>
-                    ${this._config.name || computeStateName(stateObj)}
-                  </span>
+            ? html`
+                <div class="not-found">
+                  Entity not available: ${this._config.entity}
                 </div>
-              </paper-button>
-            `
+              `
+            : html`
+                <paper-button>
+                  <div>
+                    <ha-icon
+                      data-domain="${computeStateDomain(stateObj)}"
+                      data-state="${stateObj.state}"
+                      .icon="${this._config.icon || stateIcon(stateObj)}"
+                      style="${
+                        styleMap({
+                          filter: this._computeBrightness(stateObj),
+                          color: this._computeColor(stateObj),
+                        })
+                      }"
+                    ></ha-icon>
+                    <span>
+                      ${this._config.name || computeStateName(stateObj)}
+                    </span>
+                  </div>
+                </paper-button>
+              `
         }
       </ha-card>
     `;
@@ -125,41 +129,41 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
 
   private renderStyle(): TemplateResult {
     return html`
-    <style>
-      ha-icon {
-        display: flex;
-        margin: auto;
-        width: 40%;
-        height: 40%;
-        color: var(--paper-item-icon-color, #44739e);
-      }
-      ha-icon[data-domain=light][data-state=on],
-      ha-icon[data-domain=switch][data-state=on],
-      ha-icon[data-domain=binary_sensor][data-state=on],
-      ha-icon[data-domain=fan][data-state=on],
-      ha-icon[data-domain=sun][data-state=above_horizon] {
-        color: var(--paper-item-icon-active-color, #FDD835);
-      }
-      ha-icon[data-state=unavailable] {
-        color: var(--state-icon-unavailable-color);
-      }
-      state-badge {
-        display: flex;
-        margin: auto;
-        width:40%;
-        height:40%;
-      }
-      paper-button {
-        display: flex;
-        margin: auto;
-        text-align: center;
-      }
-      .not-found {
-        flex: 1;
-        background-color: yellow;
-        padding: 8px;
-      }
-    </style>
+      <style>
+        ha-icon {
+          display: flex;
+          margin: auto;
+          width: 40%;
+          height: 40%;
+          color: var(--paper-item-icon-color, #44739e);
+        }
+        ha-icon[data-domain="light"][data-state="on"],
+        ha-icon[data-domain="switch"][data-state="on"],
+        ha-icon[data-domain="binary_sensor"][data-state="on"],
+        ha-icon[data-domain="fan"][data-state="on"],
+        ha-icon[data-domain="sun"][data-state="above_horizon"] {
+          color: var(--paper-item-icon-active-color, #fdd835);
+        }
+        ha-icon[data-state="unavailable"] {
+          color: var(--state-icon-unavailable-color);
+        }
+        state-badge {
+          display: flex;
+          margin: auto;
+          width: 40%;
+          height: 40%;
+        }
+        paper-button {
+          display: flex;
+          margin: auto;
+          text-align: center;
+        }
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
+        }
+      </style>
     `;
   }
 

@@ -17,11 +17,11 @@ export const pushSupported =
 class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <paper-toggle-button
-      disabled="[[_compDisabled(disabled, loading)]]"
-      checked="{{pushChecked}}"
-    ></paper-toggle-button>
-`;
+      <paper-toggle-button
+        disabled="[[_compDisabled(disabled, loading)]]"
+        checked="{{pushChecked}}"
+      ></paper-toggle-button>
+    `;
   }
 
   static get properties() {

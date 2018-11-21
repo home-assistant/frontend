@@ -13,7 +13,6 @@ import "../entity-rows/hui-script-entity-row";
 import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-timer-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
-
 import "../special-rows/hui-call-service-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";

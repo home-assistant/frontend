@@ -43,13 +43,11 @@ class PaperTimeInput extends PolymerElement {
             -moz-appearance: textfield;
             @apply --paper-time-input-cotnainer;
           }
-          ;
           --paper-input-container-input-webkit-spinner: {
             -webkit-appearance: none;
             margin: 0;
             display: none;
           }
-          ;
         }
 
         paper-dropdown-menu {
@@ -57,20 +55,23 @@ class PaperTimeInput extends PolymerElement {
           padding: 0;
           /* Force ripple to use the whole container */
           --paper-dropdown-menu-ripple: {
-            color: var(--paper-time-input-dropdown-ripple-color, var(--primary-color));
-          };
+            color: var(
+              --paper-time-input-dropdown-ripple-color,
+              var(--primary-color)
+            );
+          }
           --paper-input-container-input: {
             @apply --paper-font-button;
             text-align: center;
             padding-left: 5px;
             @apply --paper-time-dropdown-input-cotnainer;
-          };
+          }
           --paper-input-container-underline: {
             border-color: transparent;
           }
           --paper-input-container-underline-focus: {
             border-color: transparent;
-          };
+          }
         }
 
         paper-item {
@@ -99,27 +100,58 @@ class PaperTimeInput extends PolymerElement {
 
       <label hidden$="[[hideLabel]]">[[label]]</label>
       <div class="time-input-wrap">
-
         <!-- Hour Input -->
-        <paper-input id="hour" type="number" value="{{hour}}" on-change="_shouldFormatHour" required="" auto-validate="[[autoValidate]]"
-          prevent-invalid-input="" maxlength="2" max="[[_computeHourMax(format)]]" min="0" no-label-float="" disabled="[[disabled]]">
+        <paper-input
+          id="hour"
+          type="number"
+          value="{{hour}}"
+          on-change="_shouldFormatHour"
+          required=""
+          auto-validate="[[autoValidate]]"
+          prevent-invalid-input=""
+          maxlength="2"
+          max="[[_computeHourMax(format)]]"
+          min="0"
+          no-label-float=""
+          disabled="[[disabled]]"
+        >
           <span suffix="" slot="suffix">:</span>
         </paper-input>
 
         <!-- Min Input -->
-        <paper-input id="min" type="number" value="{{min}}" on-change="_formatMin" required="" auto-validate="[[autoValidate]]" prevent-invalid-input=""
-          maxlength="2" max="59" min="0" no-label-float="" disabled="[[disabled]]">
+        <paper-input
+          id="min"
+          type="number"
+          value="{{min}}"
+          on-change="_formatMin"
+          required=""
+          auto-validate="[[autoValidate]]"
+          prevent-invalid-input=""
+          maxlength="2"
+          max="59"
+          min="0"
+          no-label-float=""
+          disabled="[[disabled]]"
+        >
         </paper-input>
 
         <!-- Dropdown Menu -->
-        <paper-dropdown-menu id="dropdown" required="" hidden$="[[_equal(format, 24)]]" no-label-float="" disabled="[[disabled]]">
-
-          <paper-listbox attr-for-selected="name" selected="{{amPm}}" slot="dropdown-content">
+        <paper-dropdown-menu
+          id="dropdown"
+          required=""
+          hidden$="[[_equal(format, 24)]]"
+          no-label-float=""
+          disabled="[[disabled]]"
+        >
+          <paper-listbox
+            attr-for-selected="name"
+            selected="{{amPm}}"
+            slot="dropdown-content"
+          >
             <paper-item name="AM">AM</paper-item>
             <paper-item name="PM">PM</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
-
       </div>
     `;
   }

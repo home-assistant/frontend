@@ -11,44 +11,48 @@ import EventsMixin from "../mixins/events-mixin";
 class HaClimateControl extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex iron-flex-alignment"></style>
-    <style>
-      /* local DOM styles go here */
-      :host {
-        @apply --layout-flex;
-        @apply --layout-horizontal;
-        @apply --layout-justified;
-      }
-      .in-flux#target_temperature {
-        color: var(--google-red-500);
-      }
-      #target_temperature {
-        @apply --layout-self-center;
-        font-size: 200%;
-      }
-      .control-buttons {
-        font-size: 200%;
-        text-align: right;
-      }
-      paper-icon-button {
-        height: 48px;
-        width: 48px;
-      }
-    </style>
+      <style include="iron-flex iron-flex-alignment"></style>
+      <style>
+        /* local DOM styles go here */
+        :host {
+          @apply --layout-flex;
+          @apply --layout-horizontal;
+          @apply --layout-justified;
+        }
+        .in-flux#target_temperature {
+          color: var(--google-red-500);
+        }
+        #target_temperature {
+          @apply --layout-self-center;
+          font-size: 200%;
+        }
+        .control-buttons {
+          font-size: 200%;
+          text-align: right;
+        }
+        paper-icon-button {
+          height: 48px;
+          width: 48px;
+        }
+      </style>
 
-    <!-- local DOM goes here -->
-    <div id="target_temperature">
-      [[value]] [[units]]
-    </div>
-    <div class="control-buttons">
-      <div>
-        <paper-icon-button icon="hass:chevron-up" on-click="incrementValue"></paper-icon-button>
+      <!-- local DOM goes here -->
+      <div id="target_temperature">[[value]] [[units]]</div>
+      <div class="control-buttons">
+        <div>
+          <paper-icon-button
+            icon="hass:chevron-up"
+            on-click="incrementValue"
+          ></paper-icon-button>
+        </div>
+        <div>
+          <paper-icon-button
+            icon="hass:chevron-down"
+            on-click="decrementValue"
+          ></paper-icon-button>
+        </div>
       </div>
-      <div>
-        <paper-icon-button icon="hass:chevron-down" on-click="decrementValue"></paper-icon-button>
-      </div>
-    </div>
-`;
+    `;
   }
 
   static get properties() {

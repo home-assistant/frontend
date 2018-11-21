@@ -16,54 +16,68 @@ import LocalizeMixin from "../mixins/localize-mixin";
 class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex"></style>
-    <style>
-      ha-card {
-        padding: 16px;
-      }
-      .states {
-        margin: -4px 0;
-      }
-      .state {
-        padding: 4px 0;
-      }
-      .header {
-        @apply --paper-font-headline;
-        /* overwriting line-height +8 because entity-toggle can be 40px height,
+      <style include="iron-flex"></style>
+      <style>
+        ha-card {
+          padding: 16px;
+        }
+        .states {
+          margin: -4px 0;
+        }
+        .state {
+          padding: 4px 0;
+        }
+        .header {
+          @apply --paper-font-headline;
+          /* overwriting line-height +8 because entity-toggle can be 40px height,
            compensating this with reduced padding */
-        line-height: 40px;
-        color: var(--primary-text-color);
-        padding: 4px 0 12px;
-      }
-      .header .name {
-        @apply --paper-font-common-nowrap;
-      }
-      ha-entity-toggle {
-        margin-left: 16px;
-      }
-      .more-info {
-        cursor: pointer;
-      }
-    </style>
+          line-height: 40px;
+          color: var(--primary-text-color);
+          padding: 4px 0 12px;
+        }
+        .header .name {
+          @apply --paper-font-common-nowrap;
+        }
+        ha-entity-toggle {
+          margin-left: 16px;
+        }
+        .more-info {
+          cursor: pointer;
+        }
+      </style>
 
-    <ha-card>
-      <template is="dom-if" if="[[title]]">
-        <div class$="[[computeTitleClass(groupEntity)]]" on-click="entityTapped">
-          <div class="flex name">[[title]]</div>
-          <template is="dom-if" if="[[showGroupToggle(groupEntity, states)]]">
-            <ha-entity-toggle hass="[[hass]]" state-obj="[[groupEntity]]"></ha-entity-toggle>
-          </template>
-        </div>
-      </template>
-      <div class="states">
-        <template is="dom-repeat" items="[[states]]" on-dom-change="addTapEvents">
-          <div class$="[[computeStateClass(item)]]">
-            <state-card-content hass="[[hass]]" class="state-card" state-obj="[[item]]"></state-card-content>
+      <ha-card>
+        <template is="dom-if" if="[[title]]">
+          <div
+            class$="[[computeTitleClass(groupEntity)]]"
+            on-click="entityTapped"
+          >
+            <div class="flex name">[[title]]</div>
+            <template is="dom-if" if="[[showGroupToggle(groupEntity, states)]]">
+              <ha-entity-toggle
+                hass="[[hass]]"
+                state-obj="[[groupEntity]]"
+              ></ha-entity-toggle>
+            </template>
           </div>
         </template>
-      </div>
-    </ha-card>
-`;
+        <div class="states">
+          <template
+            is="dom-repeat"
+            items="[[states]]"
+            on-dom-change="addTapEvents"
+          >
+            <div class$="[[computeStateClass(item)]]">
+              <state-card-content
+                hass="[[hass]]"
+                class="state-card"
+                state-obj="[[item]]"
+              ></state-card-content>
+            </div>
+          </template>
+        </div>
+      </ha-card>
+    `;
   }
 
   static get properties() {

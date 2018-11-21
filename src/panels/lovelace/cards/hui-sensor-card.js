@@ -29,6 +29,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
       _config: {},
       _entity: {},
       _line: String,
+      _min: Number,
+      _max: Number,
     };
   }
 
@@ -38,18 +40,21 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     }
 
     const cardConfig = {
+      detail: 1,
       icon: false,
-      hours_to_show: 24,
-      accuracy: 10,
       height: 100,
-      line_width: 5,
+      hours_to_show: 24,
       line_color: "var(--accent-color)",
+      line_width: 5,
       ...config,
     };
     cardConfig.hours_to_show = Number(cardConfig.hours_to_show);
-    cardConfig.accuracy = Number(cardConfig.accuracy);
     cardConfig.height = Number(cardConfig.height);
     cardConfig.line_width = Number(cardConfig.line_width);
+    cardConfig.detail =
+      cardConfig.detail === 1 || cardConfig.detail === 2
+        ? cardConfig.detail
+        : 1;
 
     this._config = cardConfig;
   }
@@ -62,20 +67,20 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   render({ _config, _entity, _line } = this) {
     return html`
       ${this._style()}
-      <ha-card @click=${this._handleClick}>
-        <div class='flex'>
-          <div class='icon'>
-            <ha-icon .icon=${this._computeIcon(_entity)}></ha-icon>
+      <ha-card @click="${this._handleClick}">
+        <div class="flex">
+          <div class="icon">
+            <ha-icon .icon="${this._computeIcon(_entity)}"></ha-icon>
           </div>
-          <div class='header'>
-            <span class='name'>${this._computeName(_entity)}</span>
+          <div class="header">
+            <span class="name">${this._computeName(_entity)}</span>
           </div>
         </div>
-        <div class='flex info'>
-          <span id='value'>${_entity.state}</span>
-          <span id='measurement'>${this._computeUom(_entity)}</span>
+        <div class="flex info">
+          <span id="value">${_entity.state}</span>
+          <span id="measurement">${this._computeUom(_entity)}</span>
         </div>
-        <div class='graph'>
+        <div class="graph">
           <div>
             ${
               _line
@@ -89,7 +94,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
             }
           </div>
         </div>
-      </ha-card>`;
+      </ha-card>
+    `;
   }
 
   _handleClick() {
@@ -108,58 +114,82 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     return this._config.unit || item.attributes.unit_of_measurement;
   }
 
-  _getGraph(items, width, height) {
-    const values = this._getValueArr(items);
-    const coords = this._calcCoordinates(values, width, height);
-    return this._getPath(coords);
+  _coordinates(history, hours, width, detail = 1) {
+    history = history.filter((item) => !Number.isNaN(Number(item.state)));
+    this._min = Math.min.apply(Math, history.map((item) => Number(item.state)));
+    this._max = Math.max.apply(Math, history.map((item) => Number(item.state)));
+    const now = new Date().getTime();
+
+    const reduce = (res, item, min = false) => {
+      const age = now - new Date(item.last_changed).getTime();
+      let key = Math.abs(age / (1000 * 3600) - hours);
+      if (min) {
+        key = (key - Math.floor(key)) * 60;
+        key = (Math.round(key / 10) * 10).toString()[0];
+      } else {
+        key = Math.floor(key);
+      }
+      if (!res[key]) res[key] = [];
+      res[key].push(item);
+      return res;
+    };
+    history = history.reduce((res, item) => reduce(res, item), []);
+    if (detail > 1) {
+      history = history.map((entry) =>
+        entry.reduce((res, item) => reduce(res, item, true), [])
+      );
+    }
+    return this._calcPoints(history, hours, width, detail);
   }
 
-  _getValueArr(items) {
-    return items.map((item) => Number(item.state) || 0);
-  }
-
-  _calcCoordinates(values, width, height) {
+  _calcPoints(history, hours, width, detail = 1) {
+    const coords = [];
     const margin = this._config.line_width;
+    const height = this._config.height - margin * 4;
     width -= margin * 2;
-    height -= margin * 2;
-    const min = Math.floor(Math.min.apply(null, values) * 0.95);
-    const max = Math.ceil(Math.max.apply(null, values) * 1.05);
+    let yRatio = (this._max - this._min) / height;
+    yRatio = yRatio !== 0 ? yRatio : height;
+    let xRatio = width / (hours - (detail === 1 ? 1 : 0));
+    xRatio = isFinite(xRatio) ? xRatio : width;
+    const getCoords = (item, i, offset = 0, depth = 1) => {
+      if (depth > 1)
+        return item.forEach((subItem, index) =>
+          getCoords(subItem, i, index, depth - 1)
+        );
+      const average =
+        item.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
+        item.length;
 
-    if (values.length === 1) values.push(values[0]);
+      const x = xRatio * (i + offset / 6) + margin;
+      const y = height - (average - this._min) / yRatio + margin * 2;
+      return coords.push([x, y]);
+    };
 
-    const yRatio = (max - min) / height;
-    const xRatio = width / (values.length - 1);
-
-    return values.map((value, i) => {
-      const y = height - (value - min) / yRatio || 0;
-      const x = xRatio * i + margin;
-      return [x, y];
-    });
+    history.forEach((item, i) => getCoords(item, i, 0, detail));
+    if (coords.length === 1) coords[1] = [width + margin, coords[0][1]];
+    coords.push([width + margin, coords[coords.length - 1][1]]);
+    return coords;
   }
 
-  _getPath(points) {
-    const SPACE = " ";
+  _getPath(coords) {
     let next;
     let Z;
     const X = 0;
     const Y = 1;
     let path = "";
-    let point = points[0];
+    let last = coords.filter(Boolean)[0];
 
-    path += "M" + point[X] + "," + point[Y];
-    const first = point;
+    path += `M ${last[X]},${last[Y]}`;
 
-    for (let i = 0; i < points.length; i++) {
-      next = points[i];
-      Z = this._midPoint(point[X], point[Y], next[X], next[Y]);
-      path += SPACE + Z[X] + "," + Z[Y];
-      path += "Q" + Math.floor(next[X]) + "," + next[Y];
-      point = next;
+    for (let i = 0; i < coords.length; i++) {
+      next = coords[i];
+      Z = this._midPoint(last[X], last[Y], next[X], next[Y]);
+      path += ` ${Z[X]},${Z[Y]}`;
+      path += ` Q${next[X]},${next[Y]}`;
+      last = next;
     }
 
-    const second = points[1];
-    Z = this._midPoint(first[X], first[Y], second[X], second[Y]);
-    path += SPACE + Math.floor(next[X]) + "." + points[points.length - 1];
+    path += ` ${next[X]},${next[Y]}`;
     return path;
   }
 
@@ -178,18 +208,15 @@ class HuiSensorCard extends EventsMixin(LitElement) {
       startTime,
       endTime
     );
-    const history = stateHistory[0];
-    const valArray = [history[history.length - 1]];
 
-    let pos = history.length - 1;
-    const accuracy = this._config.accuracy <= pos ? this._config.accuracy : pos;
-    let increment = Math.ceil(history.length / accuracy);
-    increment = increment <= 0 ? 1 : increment;
-    for (let i = accuracy; i >= 2; i--) {
-      pos -= increment;
-      valArray.unshift(pos >= 0 ? history[pos] : history[0]);
-    }
-    this._line = this._getGraph(valArray, 500, this._config.height);
+    if (stateHistory[0].length < 1) return;
+    const coords = this._coordinates(
+      stateHistory[0],
+      this._config.hours_to_show,
+      500,
+      this._config.detail
+    );
+    this._line = this._getPath(coords);
   }
 
   async _fetchRecent(entityId, startTime, endTime) {
@@ -227,7 +254,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           align-items: center;
           display: flex;
           min-width: 0;
-          opacity: .8;
+          opacity: 0.8;
           position: relative;
         }
         .name {
@@ -237,7 +264,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           font-weight: 500;
           max-height: 1.4rem;
           margin-top: 2px;
-          opacity: .8;
+          opacity: 0.8;
           overflow: hidden;
           text-overflow: ellipsis;
           -webkit-line-clamp: 1;
@@ -270,8 +297,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           display: inline-block;
           font-size: 1.3rem;
           line-height: 1.2em;
-          margin-top: .1em;
-          opacity: .6;
+          margin-top: 0.1em;
+          opacity: 0.6;
           vertical-align: bottom;
         }
         .graph {
@@ -285,7 +312,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           align-self: flex-end;
           margin: auto 8px;
         }
-      </style>`;
+      </style>
+    `;
   }
 }
 

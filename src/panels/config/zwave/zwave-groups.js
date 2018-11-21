@@ -12,89 +12,106 @@ import computeStateName from "../../../common/entity/compute_state_name";
 class ZwaveGroups extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .content {
-        margin-top: 24px;
-      }
-
-      paper-card {
-        display: block;
-        margin: 0 auto;
-        max-width: 600px;
-      }
-
-      .device-picker {
-        @apply --layout-horizontal;
-        @apply --layout-center-center;
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-bottom: 24px;
+      <style include="iron-flex ha-style">
+        .content {
+          margin-top: 24px;
         }
 
-      .help-text {
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-bottom: 12px;
-      }
-    </style>
-    <paper-card class="content" heading="Node group associations">
-      <!--TODO make api for getting groups and members-->
-      <div class="device-picker">
-        <paper-dropdown-menu label="Group" dynamic-align="" class="flex">
-          <paper-listbox slot="dropdown-content" selected="{{_selectedGroup}}">
-            <template is="dom-repeat" items="[[groups]]" as="state">
-              <paper-item>[[_computeSelectCaptionGroup(state)]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-      <template is="dom-if" if="[[_computeIsGroupSelected(_selectedGroup)]]">
+        paper-card {
+          display: block;
+          margin: 0 auto;
+          max-width: 600px;
+        }
+
+        .device-picker {
+          @apply --layout-horizontal;
+          @apply --layout-center-center;
+          padding-left: 24px;
+          padding-right: 24px;
+          padding-bottom: 24px;
+        }
+
+        .help-text {
+          padding-left: 24px;
+          padding-right: 24px;
+          padding-bottom: 12px;
+        }
+      </style>
+      <paper-card class="content" heading="Node group associations">
+        <!-- TODO make api for getting groups and members -->
         <div class="device-picker">
-          <paper-dropdown-menu label="Node to control" dynamic-align="" class="flex">
-            <paper-listbox slot="dropdown-content" selected="{{_selectedTargetNode}}">
-              <template is="dom-repeat" items="[[nodes]]" as="state">
-                <paper-item>[[_computeSelectCaption(state)]]</paper-item>
+          <paper-dropdown-menu label="Group" dynamic-align="" class="flex">
+            <paper-listbox
+              slot="dropdown-content"
+              selected="{{_selectedGroup}}"
+            >
+              <template is="dom-repeat" items="[[groups]]" as="state">
+                <paper-item>[[_computeSelectCaptionGroup(state)]]</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
+        <template is="dom-if" if="[[_computeIsGroupSelected(_selectedGroup)]]">
+          <div class="device-picker">
+            <paper-dropdown-menu
+              label="Node to control"
+              dynamic-align=""
+              class="flex"
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                selected="{{_selectedTargetNode}}"
+              >
+                <template is="dom-repeat" items="[[nodes]]" as="state">
+                  <paper-item>[[_computeSelectCaption(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
 
-        <div class="help-text">
-          <span>Other Nodes in this group:</span>
-          <template is="dom-repeat" items="[[_otherGroupNodes]]" as="state">
-            <div>[[state]]</div>
-          </template>
-        </div>
-        <div class="help-text">
-          <span>Max Associations:</span>
-          <span>[[_maxAssociations]]</span>
-        </div>
-      </template>
+          <div class="help-text">
+            <span>Other Nodes in this group:</span>
+            <template is="dom-repeat" items="[[_otherGroupNodes]]" as="state">
+              <div>[[state]]</div>
+            </template>
+          </div>
+          <div class="help-text">
+            <span>Max Associations:</span> <span>[[_maxAssociations]]</span>
+          </div>
+        </template>
 
-      <template is="dom-if" if="[[_computeIsTargetNodeSelected(_selectedTargetNode)]]">
-        <div class="card-actions">
-          <template is="dom-if" if="[[!_noAssociationsLeft]]">
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="change_association"
-              service-data="[[_addAssocServiceData]]">
-              Add To Group
-            </ha-call-service-button>
-          </template>
-          <template is="dom-if" if="[[_computeTargetInGroup(_selectedGroup, _selectedTargetNode)]]">
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="change_association"
-              service-data="[[_removeAssocServiceData]]">
-              Remove From Group
-            </ha-call-service-button>
-          </template>
-        </div>
-      </template>
-    </paper-card>
-`;
+        <template
+          is="dom-if"
+          if="[[_computeIsTargetNodeSelected(_selectedTargetNode)]]"
+        >
+          <div class="card-actions">
+            <template is="dom-if" if="[[!_noAssociationsLeft]]">
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="zwave"
+                service="change_association"
+                service-data="[[_addAssocServiceData]]"
+              >
+                Add To Group
+              </ha-call-service-button>
+            </template>
+            <template
+              is="dom-if"
+              if="[[_computeTargetInGroup(_selectedGroup, _selectedTargetNode)]]"
+            >
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="zwave"
+                service="change_association"
+                service-data="[[_removeAssocServiceData]]"
+              >
+                Remove From Group
+              </ha-call-service-button>
+            </template>
+          </div>
+        </template>
+      </paper-card>
+    `;
   }
 
   static get properties() {

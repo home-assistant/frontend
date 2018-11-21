@@ -134,7 +134,7 @@
             "off": "Desligado",
             "on": "Ligado",
             "heat": "Quente",
-            "cool": "Fresco",
+            "cool": "Frio",
             "idle": "Ocioso",
             "auto": "Automático",
             "dry": "Seco",
@@ -381,7 +381,7 @@
                                     "label": "Estado",
                                     "from": "De",
                                     "to": "Para",
-                                    "for": "Para"
+                                    "for": "Por"
                                 },
                                 "homeassistant": {
                                     "label": "",
@@ -780,7 +780,9 @@
                 "clear_code": "Limpar",
                 "disarm": "Desarmar",
                 "arm_home": "Armar em casa",
-                "arm_away": "Armar ausente"
+                "arm_away": "Armar ausente",
+                "arm_night": "Acionamento noturno",
+                "armed_custom_bypass": "Atalho personalizado"
             },
             "automation": {
                 "last_triggered": "Último disparo",

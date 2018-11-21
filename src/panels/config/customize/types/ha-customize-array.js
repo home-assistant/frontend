@@ -12,19 +12,27 @@ import EventsMixin from "../../../../mixins/events-mixin";
 class HaCustomizeArray extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      paper-dropdown-menu {
-        margin: -9px 0;
-      }
-    </style>
-    <paper-dropdown-menu label="[[item.description]]" disabled="[[item.secondary]]" selected-item-label="{{item.value}}" dynamic-align="">
-      <paper-listbox slot="dropdown-content" selected="[[computeSelected(item)]]">
-        <template is="dom-repeat" items="[[getOptions(item)]]" as="option">
-          <paper-item>[[option]]</paper-item>
-        </template>
-      </paper-listbox>
-    </paper-dropdown-menu>
-`;
+      <style>
+        paper-dropdown-menu {
+          margin: -9px 0;
+        }
+      </style>
+      <paper-dropdown-menu
+        label="[[item.description]]"
+        disabled="[[item.secondary]]"
+        selected-item-label="{{item.value}}"
+        dynamic-align=""
+      >
+        <paper-listbox
+          slot="dropdown-content"
+          selected="[[computeSelected(item)]]"
+        >
+          <template is="dom-repeat" items="[[getOptions(item)]]" as="option">
+            <paper-item>[[option]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    `;
   }
 
   static get properties() {

@@ -252,6 +252,12 @@
             "sunny": "แดดจัด",
             "windy": "ลมแรง",
             "windy-variant": "ลมแรง"
+        },
+        "vacuum": {
+            "cleaning": "กำลังทำความสะอาด",
+            "idle": "ว่าง",
+            "off": "ปิด",
+            "on": "เปิด"
         }
     },
     "state_badge": {
@@ -368,7 +374,8 @@
                                 "state": {
                                     "label": "สถานะ",
                                     "from": "จาก",
-                                    "to": "ไปยัง"
+                                    "to": "ไปยัง",
+                                    "for": "ถึง"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -499,6 +506,47 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "จัดการเครือข่าย Z-Wave"
+                },
+                "cloud": {
+                    "description_login": "ลงชื่อเข้าใช้เป็น {email}"
+                },
+                "integrations": {
+                    "config_entry": {
+                        "delete_confirm": "แน่ใจหรือว่าต้องการจะลบการบูรณาการนี้",
+                        "restart_confirm": "เริ่ม Home Assistant ใหม่หลังจากลบการบูรณาการนี้",
+                        "manuf": "โดย {manufacturer}",
+                        "hub": "เชื่อมต่อแล้ว",
+                        "firmware": "เฟิร์มแวร์: {version}"
+                    }
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "เซสชั่นหมดอายุ โปรดเข้าสู่ระบบใหม่"
+                            }
+                        }
+                    }
+                }
+            },
+            "profile": {
+                "long_lived_access_tokens": {
+                    "confirm_delete": "คุณแน่ใจหรือไม่ว่าต้องการลบโทเค็นการเข้าถึงของ {name} ?"
+                },
+                "current_user": "ขณะนี้คุณเข้าสู่ระบบในชื่อ {fullName}",
+                "change_password": {
+                    "header": "เปลี่ยนรหัสผ่าน",
+                    "current_password": "รหัสผ่านปัจจุบัน"
+                },
+                "mfa": {
+                    "disable": "ปิดการใช้งาน",
+                    "enable": "เปิดใช้งาน",
+                    "confirm_disable": "คุณแน่ใจหรือไม่ว่าต้องการปิดใช้งาน {name} ?"
+                },
+                "mfa_setup": {
+                    "title_success": "งานสำเร็จ!"
                 }
             }
         },
@@ -509,6 +557,11 @@
         "common": {
             "loading": "กำลังโหลด",
             "cancel": "ยกเลิก"
+        },
+        "duration": {
+            "day": "วัน",
+            "week": "สัปดาห์",
+            "second": "วินาที"
         },
         "login-form": {
             "password": "รหัสผ่าน",
@@ -555,6 +608,48 @@
                     "wsw": "ทิศหรดีเฉียงตะวันตก"
                 },
                 "forecast": "พยากรณ์"
+            },
+            "alarm_control_panel": {
+                "disarm": "ปิดระบบสัญญาณกันขโมย"
+            },
+            "automation": {
+                "last_triggered": "การทำงานครั้งล่าสุด",
+                "trigger": "การทำงาน"
+            },
+            "cover": {
+                "position": "ตำแหน่ง",
+                "tilt_position": "ตำแหน่งการเอียง"
+            },
+            "fan": {
+                "speed": "ความเร็วลม",
+                "oscillate": "การส่าย",
+                "direction": "ทิศทาง"
+            },
+            "light": {
+                "brightness": "ความสว่าง",
+                "color_temperature": "อุณหภูมิสี",
+                "white_value": "ค่าสีขาว",
+                "effect": "ลูกเล่น"
+            },
+            "media_player": {
+                "text_to_speak": "ข้อความที่จะให้ออกเสียง"
+            },
+            "climate": {
+                "currently": "ในขณะนี้",
+                "on_off": "เปิด \/ ปิด",
+                "target_temperature": "อุณหภูมิที่ต้องการ",
+                "target_humidity": "ค่าความชื้นที่ต้องการ"
+            },
+            "vacuum": {
+                "actions": {
+                    "turn_on": "เปิดใข้งาน",
+                    "turn_off": "ปิดใข้งาน"
+                }
+            },
+            "water_heater": {
+                "currently": "ในขณะนี้",
+                "on_off": "เปิด \/ ปิด",
+                "target_temperature": "อุณหภูมิ"
             }
         },
         "components": {
@@ -565,6 +660,23 @@
             },
             "service-picker": {
                 "service": "บริการ"
+            },
+            "relative_time": {
+                "past": "{time} ที่ผ่านมา",
+                "future": "ในเวลา {time}",
+                "never": "ไม่เคย"
+            },
+            "history_charts": {
+                "loading_history": "กำลังโหลดประวัติการทำงาน ...",
+                "no_history_found": "ไม่พบประวัติการทำงาน"
+            }
+        },
+        "notification_toast": {
+            "connection_lost": "สูญเสียการเชื่อมต่อ ดำเนินการเชื่อมต่อใหม่..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "entity_id": "รหัสเอนทิตี"
             }
         }
     },
@@ -603,7 +715,8 @@
         "switch": "สวิตซ์",
         "updater": "อัพเดต",
         "weblink": "เว็บลิงค์",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "เครื่องดูดฝุ่น"
     },
     "attribute": {
         "weather": {

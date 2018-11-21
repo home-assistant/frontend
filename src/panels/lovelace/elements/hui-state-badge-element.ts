@@ -36,8 +36,8 @@ export class HuiStateBadgeElement extends LitElement
     const state = this.hass.states[this._config.entity!];
     return html`
       <ha-state-label-badge
-        .hass=${this.hass}
-        .state=${state}
+        .hass="${this.hass}"
+        .state="${state}"
         .title="${computeStateName(state)}"
       ></ha-state-label-badge>
     `;

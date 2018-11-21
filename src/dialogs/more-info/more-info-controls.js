@@ -24,61 +24,92 @@ const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 class MoreInfoControls extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-  <style include="ha-style-dialog">
-    app-toolbar {
-      color: var(--more-info-header-color);
-      background-color: var(--more-info-header-background);
-    }
+      <style include="ha-style-dialog">
+        app-toolbar {
+          color: var(--more-info-header-color);
+          background-color: var(--more-info-header-background);
+        }
 
-    app-toolbar [main-title] {
-      @apply --ha-more-info-app-toolbar-title;
-    }
+        app-toolbar [main-title] {
+          @apply --ha-more-info-app-toolbar-title;
+        }
 
-    state-card-content {
-      display: block;
-      padding: 16px;
-    }
+        state-card-content {
+          display: block;
+          padding: 16px;
+        }
 
-    state-history-charts {
-      max-width: 100%;
-      margin-bottom: 16px;
-    }
+        state-history-charts {
+          max-width: 100%;
+          margin-bottom: 16px;
+        }
 
-    @media all and (min-width: 451px) and (min-height: 501px) {
-      .main-title {
-        pointer-events: auto;
-        cursor: default;
-      }
-    }
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          .main-title {
+            pointer-events: auto;
+            cursor: default;
+          }
+        }
 
-    paper-dialog-scrollable {
-      padding-bottom: 16px;
-    }
+        paper-dialog-scrollable {
+          padding-bottom: 16px;
+        }
 
-    :host([domain=camera]) paper-dialog-scrollable {
-      margin: 0 -24px -21px;
-    }
-  </style>
+        :host([domain="camera"]) paper-dialog-scrollable {
+          margin: 0 -24px -21px;
+        }
+      </style>
 
-  <app-toolbar>
-    <paper-icon-button icon="hass:close" dialog-dismiss=""></paper-icon-button>
-    <div class="main-title" main-title="" on-click="enlarge">[[_computeStateName(stateObj)]]</div>
-    <template is="dom-if" if="[[canConfigure]]">
-      <paper-icon-button icon="hass:settings" on-click="_gotoSettings"></paper-icon-button>
-    </template>
-  </app-toolbar>
+      <app-toolbar>
+        <paper-icon-button
+          icon="hass:close"
+          dialog-dismiss=""
+        ></paper-icon-button>
+        <div class="main-title" main-title="" on-click="enlarge">
+          [[_computeStateName(stateObj)]]
+        </div>
+        <template is="dom-if" if="[[canConfigure]]">
+          <paper-icon-button
+            icon="hass:settings"
+            on-click="_gotoSettings"
+          ></paper-icon-button>
+        </template>
+      </app-toolbar>
 
-  <template is="dom-if" if="[[_computeShowStateInfo(stateObj)]]" restamp="">
-    <state-card-content state-obj="[[stateObj]]" hass="[[hass]]" in-dialog=""></state-card-content>
-  </template>
-  <paper-dialog-scrollable dialog-element="[[dialogElement]]">
-    <template is="dom-if" if="[[_computeShowHistoryComponent(hass, stateObj)]]" restamp="">
-      <ha-state-history-data hass="[[hass]]" filter-type="recent-entity" entity-id="[[stateObj.entity_id]]" data="{{_stateHistory}}" is-loading="{{_stateHistoryLoading}}" cache-config="[[_cacheConfig]]"></ha-state-history-data>
-      <state-history-charts hass="[[hass]]" history-data="[[_stateHistory]]" is-loading-data="[[_stateHistoryLoading]]" up-to-now></state-history-charts>
-    </template>
-    <more-info-content state-obj="[[stateObj]]" hass="[[hass]]"></more-info-content>
-  </paper-dialog-scrollable>
-`;
+      <template is="dom-if" if="[[_computeShowStateInfo(stateObj)]]" restamp="">
+        <state-card-content
+          state-obj="[[stateObj]]"
+          hass="[[hass]]"
+          in-dialog=""
+        ></state-card-content>
+      </template>
+      <paper-dialog-scrollable dialog-element="[[dialogElement]]">
+        <template
+          is="dom-if"
+          if="[[_computeShowHistoryComponent(hass, stateObj)]]"
+          restamp=""
+        >
+          <ha-state-history-data
+            hass="[[hass]]"
+            filter-type="recent-entity"
+            entity-id="[[stateObj.entity_id]]"
+            data="{{_stateHistory}}"
+            is-loading="{{_stateHistoryLoading}}"
+            cache-config="[[_cacheConfig]]"
+          ></ha-state-history-data>
+          <state-history-charts
+            hass="[[hass]]"
+            history-data="[[_stateHistory]]"
+            is-loading-data="[[_stateHistoryLoading]]"
+            up-to-now
+          ></state-history-charts>
+        </template>
+        <more-info-content
+          state-obj="[[stateObj]]"
+          hass="[[hass]]"
+        ></more-info-content>
+      </paper-dialog-scrollable>
+    `;
   }
 
   static get properties() {

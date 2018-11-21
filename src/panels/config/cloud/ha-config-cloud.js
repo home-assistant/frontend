@@ -24,43 +24,64 @@ const NOT_LOGGED_IN_URLS = [
 class HaConfigCloud extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-  <app-route route="[[route]]" pattern="/cloud/:page" data="{{_routeData}}" tail="{{_routeTail}}"></app-route>
+      <app-route
+        route="[[route]]"
+        pattern="/cloud/:page"
+        data="{{_routeData}}"
+        tail="{{_routeTail}}"
+      ></app-route>
 
-  <template is="dom-if" if="[[_equals(_routeData.page, &quot;account&quot;)]]" restamp="">
-    <ha-config-cloud-account
-      hass="[[hass]]"
-      cloud-status="[[cloudStatus]]"
-      is-wide="[[isWide]]"
-    ></ha-config-cloud-account>
-  </template>
+      <template
+        is="dom-if"
+        if="[[_equals(_routeData.page, &quot;account&quot;)]]"
+        restamp=""
+      >
+        <ha-config-cloud-account
+          hass="[[hass]]"
+          cloud-status="[[cloudStatus]]"
+          is-wide="[[isWide]]"
+        ></ha-config-cloud-account>
+      </template>
 
-  <template is="dom-if" if="[[_equals(_routeData.page, &quot;login&quot;)]]" restamp="">
-    <ha-config-cloud-login
-      page-name="login"
-      hass="[[hass]]"
-      is-wide="[[isWide]]"
-      email="{{_loginEmail}}"
-      flash-message="{{_flashMessage}}"
-    ></ha-config-cloud-login>
-  </template>
+      <template
+        is="dom-if"
+        if="[[_equals(_routeData.page, &quot;login&quot;)]]"
+        restamp=""
+      >
+        <ha-config-cloud-login
+          page-name="login"
+          hass="[[hass]]"
+          is-wide="[[isWide]]"
+          email="{{_loginEmail}}"
+          flash-message="{{_flashMessage}}"
+        ></ha-config-cloud-login>
+      </template>
 
-  <template is="dom-if" if="[[_equals(_routeData.page, &quot;register&quot;)]]" restamp="">
-    <ha-config-cloud-register
-      page-name="register"
-      hass="[[hass]]"
-      is-wide="[[isWide]]"
-      email="{{_loginEmail}}"
-    ></ha-config-cloud-register>
-  </template>
+      <template
+        is="dom-if"
+        if="[[_equals(_routeData.page, &quot;register&quot;)]]"
+        restamp=""
+      >
+        <ha-config-cloud-register
+          page-name="register"
+          hass="[[hass]]"
+          is-wide="[[isWide]]"
+          email="{{_loginEmail}}"
+        ></ha-config-cloud-register>
+      </template>
 
-  <template is="dom-if" if="[[_equals(_routeData.page, &quot;forgot-password&quot;)]]" restamp="">
-    <ha-config-cloud-forgot-password
-      page-name="forgot-password"
-      hass="[[hass]]"
-      email="{{_loginEmail}}"
-    ></ha-config-cloud-forgot-password>
-  </template>
-`;
+      <template
+        is="dom-if"
+        if="[[_equals(_routeData.page, &quot;forgot-password&quot;)]]"
+        restamp=""
+      >
+        <ha-config-cloud-forgot-password
+          page-name="forgot-password"
+          hass="[[hass]]"
+          email="{{_loginEmail}}"
+        ></ha-config-cloud-forgot-password>
+      </template>
+    `;
   }
 
   static get properties() {

@@ -25,115 +25,128 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-    .content {
-      padding: 0 16px 16px;
-    }
+      <style include="ha-style">
+        .content {
+          padding: 0 16px 16px;
+        }
 
-    paper-spinner {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
+        paper-spinner {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
 
-    .wrap {
-      margin-bottom: 24px;
-    }
+        .wrap {
+          margin-bottom: 24px;
+        }
 
-    vaadin-date-picker {
-      --vaadin-date-picker-clear-icon: {
-        display: none;
-      }
-      max-width: 200px;
-      margin-right: 16px;
-    }
+        vaadin-date-picker {
+          --vaadin-date-picker-clear-icon: {
+            display: none;
+          }
+          max-width: 200px;
+          margin-right: 16px;
+        }
 
-    paper-dropdown-menu {
-      max-width: 100px;
-      margin-right: 16px;
-    }
+        paper-dropdown-menu {
+          max-width: 100px;
+          margin-right: 16px;
+        }
 
-    paper-item {
-      cursor: pointer;
-    }
+        paper-item {
+          cursor: pointer;
+        }
 
-    ha-entity-picker {
-      display: inline-block;
-      width: 100%;
-      max-width: 400px;
-    }
+        ha-entity-picker {
+          display: inline-block;
+          width: 100%;
+          max-width: 400px;
+        }
 
-    [hidden] {
-      display: none !important;
-    }
-    </style>
+        [hidden] {
+          display: none !important;
+        }
+      </style>
 
-    <ha-logbook-data
-      hass='[[hass]]'
-      is-loading='{{isLoading}}'
-      entries='{{entries}}'
-      filter-date='[[_computeFilterDate(_currentDate)]]'
-      filter-period='[[_computeFilterDays(_periodIndex)]]'
-      filter-entity='[[entityId]]'
-    ></ha-logbook-data>
+      <ha-logbook-data
+        hass="[[hass]]"
+        is-loading="{{isLoading}}"
+        entries="{{entries}}"
+        filter-date="[[_computeFilterDate(_currentDate)]]"
+        filter-period="[[_computeFilterDays(_periodIndex)]]"
+        filter-entity="[[entityId]]"
+      ></ha-logbook-data>
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[localize('panel.logbook')]]</div>
-          <paper-icon-button
-            icon='hass:refresh'
-            on-click='refreshLogbook'
-            hidden$='[[isLoading]]'
-          ></paper-icon-button>
-        </app-toolbar>
-      </app-header>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>[[localize('panel.logbook')]]</div>
+            <paper-icon-button
+              icon="hass:refresh"
+              on-click="refreshLogbook"
+              hidden$="[[isLoading]]"
+            ></paper-icon-button>
+          </app-toolbar>
+        </app-header>
 
-      <div class="content">
-        <paper-spinner
-          active='[[isLoading]]'
-          hidden$='[[!isLoading]]'
-          alt="[[localize('ui.common.loading')]]"
-        ></paper-spinner>
+        <div class="content">
+          <paper-spinner
+            active="[[isLoading]]"
+            hidden$="[[!isLoading]]"
+            alt="[[localize('ui.common.loading')]]"
+          ></paper-spinner>
 
-        <div class="flex layout horizontal wrap">
-          <vaadin-date-picker
-            id='picker'
-            value='{{_currentDate}}'
-            label="[[localize('ui.panel.logbook.showing_entries')]]"
-            disabled='[[isLoading]]'
-            required
-          ></vaadin-date-picker>
+          <div class="flex layout horizontal wrap">
+            <vaadin-date-picker
+              id="picker"
+              value="{{_currentDate}}"
+              label="[[localize('ui.panel.logbook.showing_entries')]]"
+              disabled="[[isLoading]]"
+              required
+            ></vaadin-date-picker>
 
-          <paper-dropdown-menu
-            label-float
-            label="[[localize('ui.panel.logbook.period')]]"
-            disabled='[[isLoading]]'
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              selected="{{_periodIndex}}"
+            <paper-dropdown-menu
+              label-float
+              label="[[localize('ui.panel.logbook.period')]]"
+              disabled="[[isLoading]]"
             >
-              <paper-item>[[localize('ui.duration.day', 'count', 1)]]</paper-item>
-              <paper-item>[[localize('ui.duration.day', 'count', 3)]]</paper-item>
-              <paper-item>[[localize('ui.duration.week', 'count', 1)]]</paper-item>
-            </paper-listbox>
-          </paper-dropdown-menu>
+              <paper-listbox
+                slot="dropdown-content"
+                selected="{{_periodIndex}}"
+              >
+                <paper-item
+                  >[[localize('ui.duration.day', 'count', 1)]]</paper-item
+                >
+                <paper-item
+                  >[[localize('ui.duration.day', 'count', 3)]]</paper-item
+                >
+                <paper-item
+                  >[[localize('ui.duration.week', 'count', 1)]]</paper-item
+                >
+              </paper-listbox>
+            </paper-dropdown-menu>
 
-          <ha-entity-picker
+            <ha-entity-picker
+              hass="[[hass]]"
+              value="{{_entityId}}"
+              label="[[localize('ui.components.entity.entity-picker.entity')]]"
+              disabled="[[isLoading]]"
+              on-change="_entityPicked"
+            ></ha-entity-picker>
+          </div>
+
+          <ha-logbook
             hass="[[hass]]"
-            value="{{_entityId}}"
-            label="[[localize('ui.components.entity.entity-picker.entity')]]"
-            disabled='[[isLoading]]'
-            on-change='_entityPicked'
-          ></ha-entity-picker>
+            entries="[[entries]]"
+            hidden$="[[isLoading]]"
+          ></ha-logbook>
         </div>
-
-        <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
-      </div>
-    </app-header-layout>
+      </app-header-layout>
     `;
   }
 

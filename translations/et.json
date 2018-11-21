@@ -26,9 +26,9 @@
         "alarm_control_panel": {
             "armed": "Valves",
             "disarmed": "Maas",
-            "armed_home": "Valves kodu",
+            "armed_home": "Valves kodus",
             "armed_away": "Valves eemal",
-            "armed_night": "Öö-valves",
+            "armed_night": "Valves öine",
             "pending": "Ootel",
             "arming": "Valvestab",
             "disarming": "Maas...",
@@ -578,7 +578,7 @@
                     "description": "Iga ajutine juurdepääsutõend kehtib ühe seansi jaoks. Ajutised juurdepääsutõendid kustutatakse automaatselt pärast välja logimist. Sinu konto jaoks on praegu aktiivsed järgmised ajutised juurdepääsutõendid.",
                     "token_title": "Ajutine juurdepääsutõend {clientId} jaoks",
                     "created_at": "Loodud {date}",
-                    "confirm_delete": "Oled kindel, et soovid kustutada ajutise juurdepääsutõendi {nimi} jaoks?",
+                    "confirm_delete": "Oled kindel, et soovid kustutada ajutise juurdepääsutõendi {name} jaoks?",
                     "delete_failed": "Ajutise juurdepääsutõendi kustutamine ebaõnnestus.",
                     "last_used": "Viimati kasutatud {date} asukohast {location}",
                     "not_used": "Pole kunagi kasutatud",
@@ -589,7 +589,7 @@
                     "description": "Loo pikaajalised juurdepääsutõendid, mis võimaldavad sinu skriptidel suhelda sinu Home Assistant serveriga. Iga juurdepääsutõend kehtib kümme aastat loomisest alates. Praegu on aktiivsed järgmised pikaajalised juurdepääsutõendid.",
                     "learn_auth_requests": "Loe, kuidas teha tõendatud päringuid.",
                     "created_at": "Loodud {date}",
-                    "confirm_delete": "Oled kindel, et soovid kustutada juurdepääsutõendi {nimi} jaoks?",
+                    "confirm_delete": "Oled kindel, et soovid kustutada juurdepääsutõendi {name} jaoks?",
                     "delete_failed": "Juurdepääsutõendi kustutamine ebaõnnestus.",
                     "create": "Loo juurdepääsutõend",
                     "create_failed": "Juurdepääsutõendi loomine ebaõnnestus.",
@@ -614,7 +614,7 @@
                     "header": "Mitmeastmelise autentimise moodulid",
                     "disable": "Keela",
                     "enable": "Luba",
-                    "confirm_disable": "Oled kindel, et soovid keelata kasutaja {nimi}?"
+                    "confirm_disable": "Oled kindel, et soovid keelata kasutaja {name}?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Katkestatud",
@@ -779,8 +779,10 @@
                 "code": "Kood",
                 "clear_code": "Puhasta",
                 "disarm": "Valvest maha",
-                "arm_home": "Valvesta kodu",
-                "arm_away": "Valves eemal"
+                "arm_home": "Valvesta kodus",
+                "arm_away": "Valvesta eemal",
+                "arm_night": "Valvesta öine",
+                "armed_custom_bypass": "Eranditega"
             },
             "automation": {
                 "last_triggered": "Viimati käivitatud",

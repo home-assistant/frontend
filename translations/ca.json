@@ -779,8 +779,10 @@
                 "code": "Codi",
                 "clear_code": "Esborrar",
                 "disarm": "Desactivar",
-                "arm_home": "Activar a casa",
-                "arm_away": "Activar a fora"
+                "arm_home": "Activar, casa",
+                "arm_away": "Activar, fora",
+                "arm_night": "Activar, nit",
+                "armed_custom_bypass": "Bypass personalitzat"
             },
             "automation": {
                 "last_triggered": "Última activació",
@@ -850,7 +852,7 @@
             },
             "relative_time": {
                 "past": "Fa {time}",
-                "future": "D'aquí {time}",
+                "future": "D'aquí a {time}",
                 "never": "Mai",
                 "duration": {
                     "second": "{count} {count, plural,\n  one {segon}\n  other {segons}\n}",

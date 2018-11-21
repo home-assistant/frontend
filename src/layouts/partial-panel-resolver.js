@@ -107,27 +107,35 @@ function ensureLoaded(panel) {
 class PartialPanelResolver extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      [hidden] {
-        display: none !important;
-      }
-    </style>
-    <app-route route="{{route}}" pattern="/:panel" data="{{routeData}}" tail="{{routeTail}}"></app-route>
+      <style>
+        [hidden] {
+          display: none !important;
+        }
+      </style>
+      <app-route
+        route="{{route}}"
+        pattern="/:panel"
+        data="{{routeData}}"
+        tail="{{routeTail}}"
+      ></app-route>
 
-    <template is="dom-if" if="[[_equal(_state, 'loading')]]">
-      <hass-loading-screen narrow="[[narrow]]" show-menu="[[showMenu]]"></hass-loading-screen>
-    </template>
-    <template is="dom-if" if="[[_equal(_state, 'error')]]">
-      <hass-error-screen
-        title=''
-        error="Error while loading this panel."
-        narrow="[[narrow]]"
-        show-menu="[[showMenu]]"
-      ></hass-error-screen>
-    </template>
+      <template is="dom-if" if="[[_equal(_state, 'loading')]]">
+        <hass-loading-screen
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+        ></hass-loading-screen>
+      </template>
+      <template is="dom-if" if="[[_equal(_state, 'error')]]">
+        <hass-error-screen
+          title=""
+          error="Error while loading this panel."
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+        ></hass-error-screen>
+      </template>
 
-    <span id="panel" hidden$="[[!_equal(_state, 'loaded')]]"></span>
-`;
+      <span id="panel" hidden$="[[!_equal(_state, 'loaded')]]"></span>
+    `;
   }
 
   static get properties() {

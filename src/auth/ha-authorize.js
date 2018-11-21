@@ -12,49 +12,51 @@ import "./ha-auth-flow";
 class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      ha-markdown {
-        display: block;
-        margin-bottom: 16px;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      ha-markdown p:last-child{
-        margin-bottom: 0;
-      }
-      ha-pick-auth-provider {
-        display: block;
-        margin-top: 48px;
-      }
-    </style>
+      <style>
+        ha-markdown {
+          display: block;
+          margin-bottom: 16px;
+        }
+        ha-markdown a {
+          color: var(--primary-color);
+        }
+        ha-markdown p:last-child {
+          margin-bottom: 0;
+        }
+        ha-pick-auth-provider {
+          display: block;
+          margin-top: 48px;
+        }
+      </style>
 
-    <template is="dom-if" if="[[!_authProviders]]">
-      <p>[[localize('ui.panel.page-authorize.initializing')]]</p>
-    </template>
+      <template is="dom-if" if="[[!_authProviders]]">
+        <p>[[localize('ui.panel.page-authorize.initializing')]]</p>
+      </template>
 
-    <template is="dom-if" if="[[_authProviders]]">
-      <ha-markdown content='[[_computeIntro(localize, clientId, _authProvider)]]'></ha-markdown>
+      <template is="dom-if" if="[[_authProviders]]">
+        <ha-markdown
+          content="[[_computeIntro(localize, clientId, _authProvider)]]"
+        ></ha-markdown>
 
-      <ha-auth-flow
-        resources="[[resources]]"
-        client-id="[[clientId]]"
-        redirect-uri="[[redirectUri]]"
-        oauth2-state="[[oauth2State]]"
-        auth-provider="[[_authProvider]]"
-        step="{{step}}"
-      ></ha-auth-flow>
-
-      <template is="dom-if" if="[[_computeMultiple(_authProviders)]]">
-        <ha-pick-auth-provider
+        <ha-auth-flow
           resources="[[resources]]"
           client-id="[[clientId]]"
-          auth-providers="[[_computeInactiveProvders(_authProvider, _authProviders)]]"
-          on-pick="_handleAuthProviderPick"
-        ></ha-pick-auth-provider>
+          redirect-uri="[[redirectUri]]"
+          oauth2-state="[[oauth2State]]"
+          auth-provider="[[_authProvider]]"
+          step="{{step}}"
+        ></ha-auth-flow>
+
+        <template is="dom-if" if="[[_computeMultiple(_authProviders)]]">
+          <ha-pick-auth-provider
+            resources="[[resources]]"
+            client-id="[[clientId]]"
+            auth-providers="[[_computeInactiveProvders(_authProvider, _authProviders)]]"
+            on-pick="_handleAuthProviderPick"
+          ></ha-pick-auth-provider>
+        </template>
       </template>
-    </template>
-`;
+    `;
   }
 
   static get properties() {
