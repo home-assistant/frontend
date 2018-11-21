@@ -89,19 +89,18 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
 
-    let newConfig = this._config;
-
     if (ev.detail && ev.detail.entities) {
-      newConfig.entities = ev.detail.entities;
+      this._config.entities = ev.detail.entities;
+      this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      newConfig = {
+      this._config = {
         ...this._config,
         [target.configValue]:
           target.checked !== undefined ? target.checked : target.value,
       };
     }
 
-    fireEvent(this, "config-changed", { config: newConfig });
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private renderStyle(): TemplateResult {

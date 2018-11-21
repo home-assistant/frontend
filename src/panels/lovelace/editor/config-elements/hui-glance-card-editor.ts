@@ -43,7 +43,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _columns(): string {
-    return String(this._config!.columns) || "";
+    return this._config!.columns ? String(this._config!.columns) : "";
   }
 
   protected render(): TemplateResult {
@@ -105,19 +105,17 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
 
-    let newConfig = this._config;
-
     if (ev.detail && ev.detail.entities) {
-      newConfig.entities = ev.detail.entities;
-    } else {
-      newConfig = {
+      this._config.entities = ev.detail.entities;
+      this._configEntities = processEditorEntities(this._config.entities);
+    } else if (target.configValue) {
+      this._config = {
         ...this._config,
         [target.configValue!]:
           target.checked !== undefined ? target.checked : target.value,
       };
     }
-
-    fireEvent(this, "config-changed", { config: newConfig });
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private renderStyle(): TemplateResult {
