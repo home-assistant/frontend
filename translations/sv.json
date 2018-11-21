@@ -780,7 +780,9 @@
                 "clear_code": "Rensa",
                 "disarm": "Larma från",
                 "arm_home": "Larma hemmaläge",
-                "arm_away": "Larma bortaläge"
+                "arm_away": "Larma bortaläge",
+                "arm_night": "Nattlarmat",
+                "armed_custom_bypass": "Larm förbikopplat"
             },
             "automation": {
                 "last_triggered": "Utlöstes senast",

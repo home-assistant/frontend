@@ -13,7 +13,8 @@
         "dev-templates": "Malar",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalendrar"
+        "calendar": "Kalendrar",
+        "profile": "Perfil"
     },
     "state": {
         "default": {
@@ -379,7 +380,8 @@
                                 "state": {
                                     "label": "Tilstand",
                                     "from": "Frå",
-                                    "to": "Til"
+                                    "to": "Til",
+                                    "for": "Para"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -524,6 +526,31 @@
                         "deactivate_user": "Deaktiver brukaren",
                         "delete_user": "Slett brukar"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Conectado como {email}",
+                    "description_not_login": "Ikkje logga inn"
+                },
+                "integrations": {
+                    "caption": "Integrações",
+                    "description": "Gerenciar dispositivos e serviços conectados",
+                    "discovered": "Descoberto",
+                    "configured": "Configurado",
+                    "new": "Configurar uma nova integração",
+                    "configure": "Configurar",
+                    "none": "Ainda não configurado",
+                    "config_entry": {
+                        "no_devices": "Essa integração não possui dispositivos.",
+                        "no_device": "Entidades sem dispositivos.",
+                        "delete_confirm": "Voc^tem certeza que deseja apagar essa integração?",
+                        "restart_confirm": "Reinicie Home Assistant para finalizar essa integração",
+                        "manuf": "por {fabricante}",
+                        "hub": "Conectado via",
+                        "firmware": "Firmware: {versão}",
+                        "device_unavailable": "Dispositivo indisponível",
+                        "entity_unavailable": "Entidade indisponível"
+                    }
                 }
             },
             "profile": {
@@ -571,6 +598,30 @@
                     "empty_state": "Du har ikkje langtidslevande tilgangstoken endå.",
                     "last_used": "Sist brukt den {date} frå {location}",
                     "not_used": "Har aldri vore brukt"
+                },
+                "current_user": "Você está atualmente conectado como {NomeCompleto}.",
+                "is_owner": "Du er ein eigar",
+                "logout": "Sair",
+                "change_password": {
+                    "header": "Mudar Senha",
+                    "current_password": "Senha Atual",
+                    "new_password": "Nova Senha",
+                    "confirm_new_password": "Confirme Nova Senha",
+                    "error_required": "Obrigatório",
+                    "submit": "Submeter"
+                },
+                "mfa": {
+                    "header": "Módulos de autenticação Multi-fator",
+                    "disable": "Desabilitar",
+                    "enable": "Habilitar",
+                    "confirm_disable": "Você está seguro que deseja desabilitar {nome}?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Abortado",
+                    "title_success": "Sucesso!",
+                    "step_done": "Configuraçãofeita por {passo}",
+                    "close": "Fechar",
+                    "submit": "Submeter"
                 }
             },
             "page-authorize": {
@@ -729,7 +780,9 @@
                 "clear_code": "Slett alt",
                 "disarm": "Skru av",
                 "arm_home": "Heimemodus",
-                "arm_away": "Bortemodus"
+                "arm_away": "Bortemodus",
+                "arm_night": "Acionamento noturno",
+                "armed_custom_bypass": "Atalho configurado"
             },
             "automation": {
                 "last_triggered": "Sist utløyst",
@@ -779,6 +832,13 @@
                     "turn_on": "Skru på",
                     "turn_off": "Skru av"
                 }
+            },
+            "water_heater": {
+                "currently": "Atualmente",
+                "on_off": "Liga \/ desliga",
+                "target_temperature": "Temperatura desejada",
+                "operation": "Operação",
+                "away_mode": "Modo distante"
             }
         },
         "components": {
