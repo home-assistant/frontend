@@ -79,16 +79,17 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
     if (!this._config || !this.hass) {
       return;
     }
+
     const target = ev.target! as EditorTarget;
+
+    if (
+      (target.configValue! === "title" && target.value === this._title) ||
+      (target.configValue! === "theme" && target.value === this._theme)
+    ) {
+      return;
+    }
+
     let newConfig = this._config;
-
-    if (target.configValue! === "title" && target.value === this._title) {
-      return;
-    }
-
-    if (target.configValue! === "theme" && target.value === this._theme) {
-      return;
-    }
 
     if (ev.detail && ev.detail.entities) {
       newConfig.entities = ev.detail.entities;

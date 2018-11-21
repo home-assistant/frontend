@@ -96,19 +96,16 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     const target = ev.target! as EditorTarget;
+
+    if (
+      (target.configValue! === "title" && target.value === this._title) ||
+      (target.configValue! === "theme" && target.value === this._theme) ||
+      (target.configValue! === "columns" && target.value === this._columns)
+    ) {
+      return;
+    }
+
     let newConfig = this._config;
-
-    if (target.configValue! === "title" && target.value === this._title) {
-      return;
-    }
-
-    if (target.configValue! === "theme" && target.value === this._theme) {
-      return;
-    }
-
-    if (target.configValue! === "columns" && target.value === this._columns) {
-      return;
-    }
 
     if (ev.detail && ev.detail.entities) {
       newConfig.entities = ev.detail.entities;
