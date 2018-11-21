@@ -602,6 +602,15 @@
                 "current_user": "Du er logget ind som {fullName} .",
                 "is_owner": "Du er ejer.",
                 "logout": "Log af",
+                "change_password": {
+                    "header": "Skift adgangskode",
+                    "submit": "Gem og afslut"
+                },
+                "mfa": {
+                    "header": "Multifaktor godkendelsesmoduler",
+                    "disable": "Deaktiver",
+                    "enable": "Aktiver"
+                },
                 "mfa_setup": {
                     "title_aborted": "Afbrudt",
                     "title_success": "Succes!",
@@ -684,7 +693,7 @@
                 }
             },
             "page-onboarding": {
-                "intro": "Er du klar til at vække din hjem, genvinde dit privatliv og deltage i et verdensomspændende fællesskab af tinkerers?",
+                "intro": "Er du klar til at vække dit hjem, genvinde dit privatliv og blive medlem af et verdensomspændende fællesskab af tinkerers?",
                 "user": {
                     "intro": "Lad os komme i gang ved at oprette en brugerkonto.",
                     "required_field": "Nødvendig",
@@ -766,7 +775,9 @@
                 "clear_code": "Nulstil",
                 "disarm": "Frakoble",
                 "arm_home": "Tilkoble hjemme",
-                "arm_away": "Tilkoble ude"
+                "arm_away": "Tilkoble ude",
+                "arm_night": "Tilkoblet nat",
+                "armed_custom_bypass": "Brugerdefineret "
             },
             "automation": {
                 "last_triggered": "Senest udløst",
