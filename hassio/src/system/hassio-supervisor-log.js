@@ -6,23 +6,21 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 class HassioSupervisorLog extends PolymerElement {
   static get template() {
     return html`
-    <style include="ha-style">
-      paper-card {
-        display: block;
-      }
-      pre {
-        overflow-x: auto;
-      }
-    </style>
-    <paper-card>
-      <div class="card-content">
-        <pre>[[log]]</pre>
-      </div>
-      <div class="card-actions">
-        <paper-button on-click="refreshTapped">Refresh</paper-button>
-      </div>
-    </paper-card>
-`;
+      <style include="ha-style">
+        paper-card {
+          display: block;
+        }
+        pre {
+          overflow-x: auto;
+        }
+      </style>
+      <paper-card>
+        <div class="card-content"><pre>[[log]]</pre></div>
+        <div class="card-actions">
+          <paper-button on-click="refreshTapped">Refresh</paper-button>
+        </div>
+      </paper-card>
+    `;
   }
 
   static get properties() {

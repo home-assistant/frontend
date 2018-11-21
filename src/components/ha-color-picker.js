@@ -11,73 +11,95 @@ import EventsMixin from "../mixins/events-mixin";
 class HaColorPicker extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      :host {
-        user-select: none;
-        -webkit-user-select: none;
-      }
+      <style>
+        :host {
+          user-select: none;
+          -webkit-user-select: none;
+        }
 
-      #canvas {
-        position: relative;
-        width: 100%;
-        max-width: 330px;
-      }
-      #canvas > * {
-        display: block;
-      }
-      #interactionLayer {
-        color: white;
-        position: absolute;
-        cursor: crosshair;
-        width: 100%;
-        height: 100%;
-        overflow: visible;
-      }
-      #backgroundLayer {
-        width: 100%;
-        overflow: visible;
-        --wheel-bordercolor: var(--ha-color-picker-wheel-bordercolor, white);
-        --wheel-borderwidth: var(--ha-color-picker-wheel-borderwidth, 3);
-        --wheel-shadow: var(--ha-color-picker-wheel-shadow, rgb(15, 15, 15) 10px 5px 5px 0px);
-      }
+        #canvas {
+          position: relative;
+          width: 100%;
+          max-width: 330px;
+        }
+        #canvas > * {
+          display: block;
+        }
+        #interactionLayer {
+          color: white;
+          position: absolute;
+          cursor: crosshair;
+          width: 100%;
+          height: 100%;
+          overflow: visible;
+        }
+        #backgroundLayer {
+          width: 100%;
+          overflow: visible;
+          --wheel-bordercolor: var(--ha-color-picker-wheel-bordercolor, white);
+          --wheel-borderwidth: var(--ha-color-picker-wheel-borderwidth, 3);
+          --wheel-shadow: var(
+            --ha-color-picker-wheel-shadow,
+            rgb(15, 15, 15) 10px 5px 5px 0px
+          );
+        }
 
-      #marker {
-        fill: currentColor;
-        stroke: var(--ha-color-picker-marker-bordercolor, white);
-        stroke-width: var(--ha-color-picker-marker-borderwidth, 3);
-        filter: url(#marker-shadow)
-      }
-      .dragging #marker {
-      }
+        #marker {
+          fill: currentColor;
+          stroke: var(--ha-color-picker-marker-bordercolor, white);
+          stroke-width: var(--ha-color-picker-marker-borderwidth, 3);
+          filter: url(#marker-shadow);
+        }
+        .dragging #marker {
+        }
 
-      #colorTooltip {
-        display: none;
-        fill: currentColor;
-        stroke: var(--ha-color-picker-tooltip-bordercolor, white);
-        stroke-width: var(--ha-color-picker-tooltip-borderwidth, 3);
-      }
+        #colorTooltip {
+          display: none;
+          fill: currentColor;
+          stroke: var(--ha-color-picker-tooltip-bordercolor, white);
+          stroke-width: var(--ha-color-picker-tooltip-borderwidth, 3);
+        }
 
-      .touch.dragging #colorTooltip {
-        display: inherit;
-      }
-
-    </style>
-    <div id="canvas">
-      <svg id="interactionLayer">
-        <defs>
-          <filter id="marker-shadow" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">
-             <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2"></feOffset>
-             <feGaussianBlur result="blurOut" in="offOut" stdDeviation="2"></feGaussianBlur>
-             <feComponentTransfer in="blurOut" result="alphaOut">
-               <feFuncA type="linear" slope="0.3"></feFuncA>
-             </feComponentTransfer>
-             <feBlend in="SourceGraphic" in2="alphaOut" mode="normal"></feBlend>
-          </filter>
-        </defs>
-      </svg>
-      <canvas id="backgroundLayer"></canvas>
-    </div>
-`;
+        .touch.dragging #colorTooltip {
+          display: inherit;
+        }
+      </style>
+      <div id="canvas">
+        <svg id="interactionLayer">
+          <defs>
+            <filter
+              id="marker-shadow"
+              x="-50%"
+              y="-50%"
+              width="200%"
+              height="200%"
+              filterUnits="objectBoundingBox"
+            >
+              <feOffset
+                result="offOut"
+                in="SourceAlpha"
+                dx="2"
+                dy="2"
+              ></feOffset>
+              <feGaussianBlur
+                result="blurOut"
+                in="offOut"
+                stdDeviation="2"
+              ></feGaussianBlur>
+              <feComponentTransfer in="blurOut" result="alphaOut">
+                <feFuncA type="linear" slope="0.3"></feFuncA>
+              </feComponentTransfer>
+              <feBlend
+                in="SourceGraphic"
+                in2="alphaOut"
+                mode="normal"
+              ></feBlend>
+            </filter>
+          </defs>
+        </svg>
+        <canvas id="backgroundLayer"></canvas>
+      </div>
+    `;
   }
 
   static get properties() {
@@ -246,8 +268,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   /*
-  * General event/selection handling
-  */
+   * General event/selection handling
+   */
 
   // Process user input to color
   processUserSelect(ev) {
@@ -290,8 +312,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   /*
-  * Interface updating
-  */
+   * Interface updating
+   */
 
   // set marker position to the given color
   setMarkerOnColor(hs) {
@@ -328,8 +350,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   /*
-  * input processing helpers
-  */
+   * input processing helpers
+   */
 
   // get angle (degrees)
   getAngle(dX, dY) {
@@ -349,8 +371,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   /*
-  * Getting colors
-  */
+   * Getting colors
+   */
 
   getColor(x, y) {
     var hue = this.getAngle(x, y); // degrees, clockwise from right
@@ -387,8 +409,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   /*
-  * Drawing related stuff
-  */
+   * Drawing related stuff
+   */
 
   setupLayers() {
     this.canvas = this.$.canvas;
@@ -410,8 +432,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   drawColorWheel() {
     /*
-    *  Setting up all paremeters
-    */
+     *  Setting up all paremeters
+     */
     let shadowColor;
     let shadowOffsetX;
     let shadowOffsetY;
@@ -446,8 +468,8 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     const shadowRadius = radius + borderWidth;
 
     /*
-    *  Drawing functions
-    */
+     *  Drawing functions
+     */
     function drawCircle(hueSegments, saturationSegments) {
       hueSegments = hueSegments || 360; // reset 0 segments to 360
       const angleStep = 360 / hueSegments;
@@ -524,9 +546,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     }
 
     /*
-    *   Call the drawing functions
-    *   draws the shadow, wheel and border
-    */
+     *   Call the drawing functions
+     *   draws the shadow, wheel and border
+     */
     if (wheelStyle.shadow !== "none") {
       drawShadow();
     }
@@ -537,9 +559,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   /*
-  *   Draw the (draggable) marker and tooltip
-  *   on the interactionLayer)
-  */
+   *   Draw the (draggable) marker and tooltip
+   *   on the interactionLayer)
+   */
 
   drawMarker() {
     const svgElement = this.interactionLayer;

@@ -51,7 +51,8 @@
     "nativeName": "Schwiizerdütsch"
   },
   "he": {
-    "nativeName": "עברית"
+    "nativeName": "עברית",
+    "isRTL": true
   },
   "hi": {
     "nativeName": "हिन्दी"

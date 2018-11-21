@@ -47,9 +47,11 @@ class HuiStateLabelElement extends hassLocalizeLitMixin(LitElement)
         @ha-hold="${() => handleClick(this, this.hass!, this._config!, true)}"
         .longPress="${longPress()}"
       >
-      ${this._config.prefix}${
-      state ? computeStateDisplay(this.localize, state) : "-"
-    }${this._config.suffix}
+        ${this._config.prefix}${
+          state
+            ? computeStateDisplay(this.localize, state, this.hass!.language)
+            : "-"
+        }${this._config.suffix}
       </div>
     `;
   }

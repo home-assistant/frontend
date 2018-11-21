@@ -43,7 +43,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
           font-weight: 500;
           top: 3px;
           height: 37px;
-          margin-right: -.57em;
+          margin-right: -0.57em;
         }
         paper-button[disabled] {
           background-color: transparent;
@@ -51,10 +51,9 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <paper-button
-        on-click="_callService"
-        disabled="[[!_interceptable]]"
-      >[[_computeLabel(stateObj.state, _interceptable)]]</paper-button>
+      <paper-button on-click="_callService" disabled="[[!_interceptable]]"
+        >[[_computeLabel(stateObj.state, _interceptable)]]</paper-button
+      >
     `;
   }
 

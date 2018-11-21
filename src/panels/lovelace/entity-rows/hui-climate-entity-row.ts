@@ -33,13 +33,10 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
 
     return html`
       ${this.renderStyle()}
-      <hui-generic-entity-row
-        .hass=${this.hass}
-        .config=${this._config}
-      >
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <ha-climate-state
-          .hass=${this.hass}
-          .stateObj=${this.hass.states[this._config.entity]}
+          .hass="${this.hass}"
+          .stateObj="${this.hass.states[this._config.entity]}"
         ></ha-climate-state>
       </hui-generic-entity-row>
     `;

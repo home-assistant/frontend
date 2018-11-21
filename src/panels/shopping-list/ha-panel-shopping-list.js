@@ -23,116 +23,122 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style">
-      :host {
-        height: 100%;
-      }
-      app-toolbar paper-listbox {
-        width: 150px;
-      }
-      app-toolbar paper-item {
-        cursor: pointer;
-      }
-      .content {
-        padding-bottom: 32px;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-      paper-card {
-        display: block;
-      }
-      paper-icon-item {
-        border-top: 1px solid var(--divider-color);
-      }
-      paper-icon-item:first-child {
-        border-top: 0;
-      }
-      paper-checkbox {
-        padding: 11px;
-      }
-      paper-input {
-        --paper-input-container-underline: {
-          display: none;
+      <style include="ha-style">
+        :host {
+          height: 100%;
         }
-        --paper-input-container-underline-focus: {
-          display: none;
+        app-toolbar paper-listbox {
+          width: 150px;
         }
-        position: relative;
-        top: 1px;
-      }
-      .tip {
-        padding: 24px;
-        text-align: center;
-        color: var(--secondary-text-color);
-      }
-    </style>
+        app-toolbar paper-item {
+          cursor: pointer;
+        }
+        .content {
+          padding-bottom: 32px;
+          max-width: 600px;
+          margin: 0 auto;
+        }
+        paper-card {
+          display: block;
+        }
+        paper-icon-item {
+          border-top: 1px solid var(--divider-color);
+        }
+        paper-icon-item:first-child {
+          border-top: 0;
+        }
+        paper-checkbox {
+          padding: 11px;
+        }
+        paper-input {
+          --paper-input-container-underline: {
+            display: none;
+          }
+          --paper-input-container-underline-focus: {
+            display: none;
+          }
+          position: relative;
+          top: 1px;
+        }
+        .tip {
+          padding: 24px;
+          text-align: center;
+          color: var(--secondary-text-color);
+        }
+      </style>
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[localize('panel.shopping_list')]]</div>
-          <ha-start-voice-button hass='[[hass]]' can-listen='{{canListen}}'></ha-start-voice-button>
-          <paper-menu-button
-            horizontal-align="right"
-            horizontal-offset="-5"
-            vertical-offset="-5"
-          >
-            <paper-icon-button
-              icon="hass:dots-vertical"
-              slot="dropdown-trigger"
-            ></paper-icon-button>
-            <paper-listbox slot="dropdown-content">
-              <paper-item
-                on-click="_clearCompleted"
-              >[[localize('ui.panel.shopping-list.clear_completed')]]</paper-item>
-            </paper-listbox>
-          </paper-menu-button>
-        </app-toolbar>
-      </app-header>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              narrow="[[narrow]]"
+              show-menu="[[showMenu]]"
+            ></ha-menu-button>
+            <div main-title>[[localize('panel.shopping_list')]]</div>
+            <ha-start-voice-button
+              hass="[[hass]]"
+              can-listen="{{canListen}}"
+            ></ha-start-voice-button>
+            <paper-menu-button
+              horizontal-align="right"
+              horizontal-offset="-5"
+              vertical-offset="-5"
+            >
+              <paper-icon-button
+                icon="hass:dots-vertical"
+                slot="dropdown-trigger"
+              ></paper-icon-button>
+              <paper-listbox slot="dropdown-content">
+                <paper-item on-click="_clearCompleted"
+                  >[[localize('ui.panel.shopping-list.clear_completed')]]</paper-item
+                >
+              </paper-listbox>
+            </paper-menu-button>
+          </app-toolbar>
+        </app-header>
 
-      <div class='content'>
-        <paper-card>
-          <paper-icon-item on-focus='_focusRowInput'>
-            <paper-icon-button
-              slot="item-icon"
-              icon="hass:plus"
-              on-click='_addItem'
-            ></paper-icon-button>
-            <paper-item-body>
-              <paper-input
-                id='addBox'
-                placeholder="[[localize('ui.panel.shopping-list.add_item')]]"
-                on-keydown='_addKeyPress'
-                no-label-float
-              ></paper-input>
-            </paper-item-body>
-          </paper-icon-item>
-
-          <template is='dom-repeat' items='[[items]]'>
-            <paper-icon-item>
-                <paper-checkbox
-                  slot="item-icon"
-                  checked='{{item.complete}}'
-                  on-click='_itemCompleteTapped'
-                  tabindex='0'
-                ></paper-checkbox>
+        <div class="content">
+          <paper-card>
+            <paper-icon-item on-focus="_focusRowInput">
+              <paper-icon-button
+                slot="item-icon"
+                icon="hass:plus"
+                on-click="_addItem"
+              ></paper-icon-button>
               <paper-item-body>
                 <paper-input
-                  id='editBox'
+                  id="addBox"
+                  placeholder="[[localize('ui.panel.shopping-list.add_item')]]"
+                  on-keydown="_addKeyPress"
                   no-label-float
-                  value='[[item.name]]'
-                  on-change='_saveEdit'
                 ></paper-input>
               </paper-item-body>
             </paper-icon-item>
-          </template>
-        </paper-card>
-        <div class='tip' hidden$='[[!canListen]]'>
-          [[localize('ui.panel.shopping-list.microphone_tip')]]
+
+            <template is="dom-repeat" items="[[items]]">
+              <paper-icon-item>
+                <paper-checkbox
+                  slot="item-icon"
+                  checked="{{item.complete}}"
+                  on-click="_itemCompleteTapped"
+                  tabindex="0"
+                ></paper-checkbox>
+                <paper-item-body>
+                  <paper-input
+                    id="editBox"
+                    no-label-float
+                    value="[[item.name]]"
+                    on-change="_saveEdit"
+                  ></paper-input>
+                </paper-item-body>
+              </paper-icon-item>
+            </template>
+          </paper-card>
+          <div class="tip" hidden$="[[!canListen]]">
+            [[localize('ui.panel.shopping-list.microphone_tip')]]
+          </div>
         </div>
-      </div>
-    </app-header-layout>
+      </app-header-layout>
     `;
   }
 

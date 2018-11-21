@@ -10,41 +10,58 @@ import EventsMixin from "../mixins/events-mixin";
 class HaComboBox extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      paper-input > paper-icon-button {
-        width: 24px;
-        height: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      [hidden] {
-        display: none;
-      }
-    </style>
-    <vaadin-combo-box-light
-      items="[[_items]]"
-      item-value-path="[[itemValuePath]]"
-      item-label-path="[[itemLabelPath]]"
-      value="{{value}}"
-      opened="{{opened}}"
-      allow-custom-value="[[allowCustomValue]]"
-      on-change='_fireChanged'
-    >
-      <paper-input autofocus="[[autofocus]]" label="[[label]]" class="input" value="[[value]]">
-        <paper-icon-button slot="suffix" class="clear-button" icon="hass:close" hidden$="[[!value]]">Clear</paper-icon-button>
-        <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden$="[[!items.length]]">Toggle</paper-icon-button>
-      </paper-input>
-      <template>
-        <style>
+      <style>
+        paper-input > paper-icon-button {
+          width: 24px;
+          height: 24px;
+          padding: 2px;
+          color: var(--secondary-text-color);
+        }
+        [hidden] {
+          display: none;
+        }
+      </style>
+      <vaadin-combo-box-light
+        items="[[_items]]"
+        item-value-path="[[itemValuePath]]"
+        item-label-path="[[itemLabelPath]]"
+        value="{{value}}"
+        opened="{{opened}}"
+        allow-custom-value="[[allowCustomValue]]"
+        on-change="_fireChanged"
+      >
+        <paper-input
+          autofocus="[[autofocus]]"
+          label="[[label]]"
+          class="input"
+          value="[[value]]"
+        >
+          <paper-icon-button
+            slot="suffix"
+            class="clear-button"
+            icon="hass:close"
+            hidden$="[[!value]]"
+            >Clear</paper-icon-button
+          >
+          <paper-icon-button
+            slot="suffix"
+            class="toggle-button"
+            icon="[[_computeToggleIcon(opened)]]"
+            hidden$="[[!items.length]]"
+            >Toggle</paper-icon-button
+          >
+        </paper-input>
+        <template>
+          <style>
             paper-item {
               margin: -5px -10px;
               padding: 0;
             }
-        </style>
-        <paper-item>[[_computeItemLabel(item, itemLabelPath)]]</paper-item>
-      </template>
-    </vaadin-combo-box-light>
-`;
+          </style>
+          <paper-item>[[_computeItemLabel(item, itemLabelPath)]]</paper-item>
+        </template>
+      </vaadin-combo-box-light>
+    `;
   }
 
   static get properties() {

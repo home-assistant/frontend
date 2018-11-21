@@ -17,45 +17,55 @@ import "./ha-settings-row";
 class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="ha-style">
-      paper-card {
-        display: block;
-      }
-      .card-content {
-        margin: -1em 0;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      paper-icon-button {
-        color: var(--primary-text-color);
-      }
-    </style>
-    <paper-card heading="[[localize('ui.panel.profile.long_lived_access_tokens.header')]]">
-      <div class="card-content">
-        <p>
-          [[localize('ui.panel.profile.long_lived_access_tokens.description')]]
-          <a href='https://developers.home-assistant.io/docs/en/auth_api.html#making-authenticated-requests' target='_blank'>
-            [[localize('ui.panel.profile.long_lived_access_tokens.learn_auth_requests')]]
-          </a>
-        </p>
-        <template is='dom-if' if='[[!_tokens.length]]'>
-          <p>[[localize('ui.panel.profile.long_lived_access_tokens.empty_state')]]</p>
+      <style include="ha-style">
+        paper-card {
+          display: block;
+        }
+        .card-content {
+          margin: -1em 0;
+        }
+        a {
+          color: var(--primary-color);
+        }
+        paper-icon-button {
+          color: var(--primary-text-color);
+        }
+      </style>
+      <paper-card
+        heading="[[localize('ui.panel.profile.long_lived_access_tokens.header')]]"
+      >
+        <div class="card-content">
+          <p>
+            [[localize('ui.panel.profile.long_lived_access_tokens.description')]]
+            <a
+              href="https://developers.home-assistant.io/docs/en/auth_api.html#making-authenticated-requests"
+              target="_blank"
+            >
+              [[localize('ui.panel.profile.long_lived_access_tokens.learn_auth_requests')]]
+            </a>
+          </p>
+          <template is="dom-if" if="[[!_tokens.length]]">
+            <p>
+              [[localize('ui.panel.profile.long_lived_access_tokens.empty_state')]]
+            </p>
+          </template>
+        </div>
+        <template is="dom-repeat" items="[[_tokens]]">
+          <ha-settings-row two-line>
+            <span slot="heading">[[item.client_name]]</span>
+            <div slot="description">[[_formatCreatedAt(item.created_at)]]</div>
+            <paper-icon-button
+              icon="hass:delete"
+              on-click="_handleDelete"
+            ></paper-icon-button>
+          </ha-settings-row>
         </template>
-      </div>
-      <template is='dom-repeat' items='[[_tokens]]'>
-        <ha-settings-row two-line>
-          <span slot='heading'>[[item.client_name]]</span>
-          <div slot='description'>[[_formatCreatedAt(item.created_at)]]</div>
-          <paper-icon-button icon="hass:delete" on-click='_handleDelete'></paper-icon-button>
-        </ha-settings-row>
-      </template>
-      <div class='card-actions'>
-        <paper-button on-click='_handleCreate'>
-          [[localize('ui.panel.profile.long_lived_access_tokens.create')]]
-        </paper-button>
-      </div>
-    </paper-card>
+        <div class="card-actions">
+          <paper-button on-click="_handleCreate">
+            [[localize('ui.panel.profile.long_lived_access_tokens.create')]]
+          </paper-button>
+        </div>
+      </paper-card>
     `;
   }
 

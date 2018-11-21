@@ -45,7 +45,10 @@ class HuiInputNumberEntityRow extends mixinBehaviors(
   static get inputNumberControlTemplate() {
     return html`
       <div>
-        <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'slider')]]">
+        <template
+          is="dom-if"
+          if="[[_equals(_stateObj.attributes.mode, 'slider')]]"
+        >
           <div class="flex">
             <ha-slider
               min="[[_min]]"
@@ -56,10 +59,15 @@ class HuiInputNumberEntityRow extends mixinBehaviors(
               on-change="_selectedValueChanged"
               ignore-bar-touch
             ></ha-slider>
-            <span class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</span>
+            <span class="state"
+              >[[_value]] [[_stateObj.attributes.unit_of_measurement]]</span
+            >
           </div>
         </template>
-        <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'box')]]">
+        <template
+          is="dom-if"
+          if="[[_equals(_stateObj.attributes.mode, 'box')]]"
+        >
           <paper-input
             no-label-float
             auto-validate

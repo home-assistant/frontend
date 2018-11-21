@@ -31,8 +31,7 @@ class HuiErrorCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
-      ${this._config.error}
+      ${this.renderStyle()} ${this._config.error}
       <pre>${this._toStr(this._config.origConfig)}</pre>
     `;
   }

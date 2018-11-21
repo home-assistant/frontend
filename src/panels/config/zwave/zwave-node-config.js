@@ -11,110 +11,157 @@ import "../../../components/buttons/ha-call-service-button";
 class ZwaveNodeConfig extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .content {
-        margin-top: 24px;
-      }
-
-      paper-card {
-        display: block;
-        margin: 0 auto;
-        max-width: 600px;
-      }
-
-      .device-picker {
-        @apply --layout-horizontal;
-        @apply --layout-center-center;
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-bottom: 24px;
+      <style include="iron-flex ha-style">
+        .content {
+          margin-top: 24px;
         }
 
-      .help-text {
-        padding-left: 24px;
-        padding-right: 24px;
-      }
-    </style>
-    <div class="content">
-      <paper-card heading="Node config options">
-        <template is="dom-if" if="[[_wakeupNode]]">
-          <div class="card-actions">
-            <paper-input
-              float-label="Wakeup Interval"
-              type="number"
-              value="{{_wakeupInput}}"
-              placeholder="[[_computeGetWakeupValue(selectedNode)]]">
-              <div suffix="">seconds</div>
-            </paper-input>
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="set_wakeup"
-              service-data="[[_computeWakeupServiceData(_wakeupInput)]]">
-              Set Wakeup
-            </ha-call-service-button>
-          </div>
-        </template>
-        <div class="device-picker">
-        <paper-dropdown-menu label="Config parameter" dynamic-align="" class="flex">
-          <paper-listbox slot="dropdown-content" selected="{{_selectedConfigParameter}}">
-            <template is="dom-repeat" items="[[config]]" as="state">
-              <paper-item>[[_computeSelectCaptionConfigParameter(state)]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-        </div>
-        <template is="dom-if" if="[[_isConfigParameterSelected(_selectedConfigParameter, 'List')]]">
-          <div class="device-picker">
-            <paper-dropdown-menu label="Config value" dynamic-align="" class="flex" placeholder="{{_loadedConfigValue}}">
-              <paper-listbox slot="dropdown-content" selected="{{_selectedConfigValue}}">
-                <template is="dom-repeat" items="[[_selectedConfigParameterValues]]" as="state">
-                  <paper-item>[[state]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </div>
-        </template>
+        paper-card {
+          display: block;
+          margin: 0 auto;
+          max-width: 600px;
+        }
 
-        <template is="dom-if" if="[[_isConfigParameterSelected(_selectedConfigParameter, 'Byte Short Int')]]">
-          <div class="card-actions">
-            <paper-input
-              label="{{_selectedConfigParameterNumValues}}"
-              type="number"
-              value="{{_selectedConfigValue}}"
-              max="{{_configParameterMax}}"
-              min="{{_configParameterMin}}">
-            </paper-input>
-          </div>
-        </template>
-        <template is="dom-if" if="[[_isConfigParameterSelected(_selectedConfigParameter, 'Bool Button')]]">
+        .device-picker {
+          @apply --layout-horizontal;
+          @apply --layout-center-center;
+          padding-left: 24px;
+          padding-right: 24px;
+          padding-bottom: 24px;
+        }
+
+        .help-text {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+      </style>
+      <div class="content">
+        <paper-card heading="Node config options">
+          <template is="dom-if" if="[[_wakeupNode]]">
+            <div class="card-actions">
+              <paper-input
+                float-label="Wakeup Interval"
+                type="number"
+                value="{{_wakeupInput}}"
+                placeholder="[[_computeGetWakeupValue(selectedNode)]]"
+              >
+                <div suffix="">seconds</div>
+              </paper-input>
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="zwave"
+                service="set_wakeup"
+                service-data="[[_computeWakeupServiceData(_wakeupInput)]]"
+              >
+                Set Wakeup
+              </ha-call-service-button>
+            </div>
+          </template>
           <div class="device-picker">
-            <paper-dropdown-menu label="Config value" class="flex" dynamic-align="" placeholder="{{_loadedConfigValue}}">
-              <paper-listbox slot="dropdown-content" selected="{{_selectedConfigValue}}">
-                <template is="dom-repeat" items="[[_selectedConfigParameterValues]]" as="state">
-                  <paper-item>[[state]]</paper-item>
+            <paper-dropdown-menu
+              label="Config parameter"
+              dynamic-align=""
+              class="flex"
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                selected="{{_selectedConfigParameter}}"
+              >
+                <template is="dom-repeat" items="[[config]]" as="state">
+                  <paper-item
+                    >[[_computeSelectCaptionConfigParameter(state)]]</paper-item
+                  >
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
-        </template>
-        <div class="help-text">
-          <span>[[_configValueHelpText]]</span>
-        </div>
-        <template is="dom-if" if="[[_isConfigParameterSelected(_selectedConfigParameter, 'Bool Button Byte Short Int List')]]">
-          <div class="card-actions">
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="set_config_parameter"
-              service-data="[[_computeSetConfigParameterServiceData(_selectedConfigValue)]]">
-              Set Config Parameter
-            </ha-call-service-button>
-          </div>
-        </template>
-      </paper-card>
-    </div>
-`;
+          <template
+            is="dom-if"
+            if="[[_isConfigParameterSelected(_selectedConfigParameter, 'List')]]"
+          >
+            <div class="device-picker">
+              <paper-dropdown-menu
+                label="Config value"
+                dynamic-align=""
+                class="flex"
+                placeholder="{{_loadedConfigValue}}"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  selected="{{_selectedConfigValue}}"
+                >
+                  <template
+                    is="dom-repeat"
+                    items="[[_selectedConfigParameterValues]]"
+                    as="state"
+                  >
+                    <paper-item>[[state]]</paper-item>
+                  </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
+          </template>
+
+          <template
+            is="dom-if"
+            if="[[_isConfigParameterSelected(_selectedConfigParameter, 'Byte Short Int')]]"
+          >
+            <div class="card-actions">
+              <paper-input
+                label="{{_selectedConfigParameterNumValues}}"
+                type="number"
+                value="{{_selectedConfigValue}}"
+                max="{{_configParameterMax}}"
+                min="{{_configParameterMin}}"
+              >
+              </paper-input>
+            </div>
+          </template>
+          <template
+            is="dom-if"
+            if="[[_isConfigParameterSelected(_selectedConfigParameter, 'Bool Button')]]"
+          >
+            <div class="device-picker">
+              <paper-dropdown-menu
+                label="Config value"
+                class="flex"
+                dynamic-align=""
+                placeholder="{{_loadedConfigValue}}"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  selected="{{_selectedConfigValue}}"
+                >
+                  <template
+                    is="dom-repeat"
+                    items="[[_selectedConfigParameterValues]]"
+                    as="state"
+                  >
+                    <paper-item>[[state]]</paper-item>
+                  </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
+          </template>
+          <div class="help-text"><span>[[_configValueHelpText]]</span></div>
+          <template
+            is="dom-if"
+            if="[[_isConfigParameterSelected(_selectedConfigParameter, 'Bool Button Byte Short Int List')]]"
+          >
+            <div class="card-actions">
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="zwave"
+                service="set_config_parameter"
+                service-data="[[_computeSetConfigParameterServiceData(_selectedConfigValue)]]"
+              >
+                Set Config Parameter
+              </ha-call-service-button>
+            </div>
+          </template>
+        </paper-card>
+      </div>
+    `;
   }
 
   static get properties() {

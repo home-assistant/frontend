@@ -10,11 +10,11 @@ import EventsMixin from "../mixins/events-mixin";
 class HaMenuButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <paper-icon-button
-      icon="[[_getIcon(hassio)]]"
-      on-click="toggleMenu"
-    ></paper-icon-button>
-`;
+      <paper-icon-button
+        icon="[[_getIcon(hassio)]]"
+        on-click="toggleMenu"
+      ></paper-icon-button>
+    `;
   }
 
   static get properties() {

@@ -12,68 +12,84 @@ import computeStateName from "../../common/entity/compute_state_name";
 class HaEntityConfig extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      paper-card {
-        display: block;
-      }
+      <style include="iron-flex ha-style">
+        paper-card {
+          display: block;
+        }
 
-      .device-picker {
-        @apply --layout-horizontal;
-        padding-bottom: 24px;
-      }
+        .device-picker {
+          @apply --layout-horizontal;
+          padding-bottom: 24px;
+        }
 
-      .form-placeholder {
-        @apply --layout-vertical;
-        @apply --layout-center-center;
-        height: 96px;
-      }
+        .form-placeholder {
+          @apply --layout-vertical;
+          @apply --layout-center-center;
+          height: 96px;
+        }
 
-      [hidden]: {
-        display: none;
-      }
+        [hidden]: {
+          display: none;
+        }
 
-      .card-actions {
-        @apply --layout-horizontal;
-        @apply --layout-justified;
-      }
-    </style>
-    <paper-card>
-      <div class="card-content">
-        <div class="device-picker">
-          <paper-dropdown-menu label="[[label]]" class="flex" disabled="[[!entities.length]]">
-            <paper-listbox slot="dropdown-content" selected="{{selectedEntity}}">
-              <template is="dom-repeat" items="[[entities]]" as="state">
-                <paper-item>[[computeSelectCaption(state)]]</paper-item>
-              </template>
-            </paper-listbox>
-          </paper-dropdown-menu>
+        .card-actions {
+          @apply --layout-horizontal;
+          @apply --layout-justified;
+        }
+      </style>
+      <paper-card>
+        <div class="card-content">
+          <div class="device-picker">
+            <paper-dropdown-menu
+              label="[[label]]"
+              class="flex"
+              disabled="[[!entities.length]]"
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                selected="{{selectedEntity}}"
+              >
+                <template is="dom-repeat" items="[[entities]]" as="state">
+                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+
+          <div class="form-container">
+            <template is="dom-if" if="[[computeShowPlaceholder(formState)]]">
+              <div class="form-placeholder">
+                <template is="dom-if" if="[[computeShowNoDevices(formState)]]">
+                  No entities found! :-(
+                </template>
+
+                <template is="dom-if" if="[[computeShowSpinner(formState)]]">
+                  <paper-spinner active="" alt="[[formState]]"></paper-spinner>
+                  [[formState]]
+                </template>
+              </div>
+            </template>
+
+            <div hidden$="[[!computeShowForm(formState)]]" id="form"></div>
+          </div>
         </div>
-
-        <div class="form-container">
-          <template is="dom-if" if="[[computeShowPlaceholder(formState)]]">
-            <div class="form-placeholder">
-              <template is="dom-if" if="[[computeShowNoDevices(formState)]]">
-                No entities found! :-(
-              </template>
-
-              <template is="dom-if" if="[[computeShowSpinner(formState)]]">
-                <paper-spinner active="" alt="[[formState]]"></paper-spinner>
-                [[formState]]
-              </template>
-            </div>
+        <div class="card-actions">
+          <paper-button
+            on-click="saveEntity"
+            disabled="[[computeShowPlaceholder(formState)]]"
+            >SAVE</paper-button
+          >
+          <template is="dom-if" if="[[allowDelete]]">
+            <paper-button
+              class="warning"
+              on-click="deleteEntity"
+              disabled="[[computeShowPlaceholder(formState)]]"
+              >DELETE</paper-button
+            >
           </template>
-
-          <div hidden$="[[!computeShowForm(formState)]]" id="form"></div>
         </div>
-      </div>
-      <div class="card-actions">
-        <paper-button on-click="saveEntity" disabled="[[computeShowPlaceholder(formState)]]">SAVE</paper-button>
-        <template is="dom-if" if="[[allowDelete]]">
-          <paper-button class="warning" on-click="deleteEntity" disabled="[[computeShowPlaceholder(formState)]]">DELETE</paper-button>
-        </template>
-      </div>
-    </paper-card>
-`;
+      </paper-card>
+    `;
   }
 
   static get properties() {

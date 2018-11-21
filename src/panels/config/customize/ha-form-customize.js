@@ -12,57 +12,81 @@ import computeStateDomain from "../../../common/entity/compute_state_domain";
 class HaFormCustomize extends PolymerElement {
   static get template() {
     return html`
-    <style include="iron-flex ha-style ha-form-style">
-      .warning {
-        color: red;
-      }
+      <style include="iron-flex ha-style ha-form-style">
+        .warning {
+          color: red;
+        }
 
-      .attributes-text {
-        padding-left: 20px;
-      }
-    </style>
-    <template is="dom-if" if="[[computeShowWarning(localConfig, globalConfig)]]">
-      <div class="warning">
-        It seems that your configuration.yaml doesn't properly include customize.yaml<br>
-        Changes made here won't affect your configuration.
+        .attributes-text {
+          padding-left: 20px;
+        }
+      </style>
+      <template
+        is="dom-if"
+        if="[[computeShowWarning(localConfig, globalConfig)]]"
+      >
+        <div class="warning">
+          It seems that your configuration.yaml doesn't properly include
+          customize.yaml<br />
+          Changes made here won't affect your configuration.
+        </div>
+      </template>
+      <template is="dom-if" if="[[hasLocalAttributes]]">
+        <h4 class="attributes-text">
+          The following attributes are already set in customize.yaml<br />
+        </h4>
+        <ha-form-customize-attributes
+          attributes="{{localAttributes}}"
+        ></ha-form-customize-attributes>
+      </template>
+      <template is="dom-if" if="[[hasGlobalAttributes]]">
+        <h4 class="attributes-text">
+          The following attributes are customized from outside of
+          customize.yaml<br />
+          Possibly via a domain, a glob or a different include.
+        </h4>
+        <ha-form-customize-attributes
+          attributes="{{globalAttributes}}"
+        ></ha-form-customize-attributes>
+      </template>
+      <template is="dom-if" if="[[hasExistingAttributes]]">
+        <h4 class="attributes-text">
+          The following attributes of the entity are set programatically.<br />
+          You can override them if you like.
+        </h4>
+        <ha-form-customize-attributes
+          attributes="{{existingAttributes}}"
+        ></ha-form-customize-attributes>
+      </template>
+      <template is="dom-if" if="[[hasNewAttributes]]">
+        <h4 class="attributes-text">
+          The following attributes weren't set. Set them if you like.
+        </h4>
+        <ha-form-customize-attributes
+          attributes="{{newAttributes}}"
+        ></ha-form-customize-attributes>
+      </template>
+      <div class="form-group">
+        <paper-dropdown-menu
+          label="Pick an attribute to override"
+          class="flex"
+          dynamic-align=""
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            selected="{{selectedNewAttribute}}"
+          >
+            <template
+              is="dom-repeat"
+              items="[[newAttributesOptions]]"
+              as="option"
+            >
+              <paper-item>[[option]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
       </div>
-    </template>
-    <template is="dom-if" if="[[hasLocalAttributes]]">
-      <h4 class="attributes-text">
-        The following attributes are already set in customize.yaml<br>
-      </h4>
-      <ha-form-customize-attributes attributes="{{localAttributes}}"></ha-form-customize-attributes>
-    </template>
-    <template is="dom-if" if="[[hasGlobalAttributes]]">
-      <h4 class="attributes-text">
-        The following attributes are customized from outside of customize.yaml<br>
-        Possibly via a domain, a glob or a different include.
-      </h4>
-      <ha-form-customize-attributes attributes="{{globalAttributes}}"></ha-form-customize-attributes>
-    </template>
-    <template is="dom-if" if="[[hasExistingAttributes]]">
-      <h4 class="attributes-text">
-        The following attributes of the entity are set programatically.<br>
-        You can override them if you like.
-      </h4>
-      <ha-form-customize-attributes attributes="{{existingAttributes}}"></ha-form-customize-attributes>
-    </template>
-    <template is="dom-if" if="[[hasNewAttributes]]">
-      <h4 class="attributes-text">
-        The following attributes weren't set. Set them if you like.
-      </h4>
-      <ha-form-customize-attributes attributes="{{newAttributes}}"></ha-form-customize-attributes>
-    </template>
-    <div class="form-group">
-      <paper-dropdown-menu label="Pick an attribute to override" class="flex" dynamic-align="">
-        <paper-listbox slot="dropdown-content" selected="{{selectedNewAttribute}}">
-          <template is="dom-repeat" items="[[newAttributesOptions]]" as="option">
-            <paper-item>[[option]]</paper-item>
-          </template>
-        </paper-listbox>
-      </paper-dropdown-menu>
-    </div>
-`;
+    `;
   }
 
   static get properties() {

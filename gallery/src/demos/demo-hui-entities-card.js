@@ -175,10 +175,7 @@ const CONFIGS = [
 class DemoEntities extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards
-        id='demos'
-        configs="[[_configs]]"
-      ></demo-cards>
+      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
     `;
   }
 

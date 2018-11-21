@@ -3,7 +3,7 @@ import "@polymer/paper-button/paper-button";
 
 import "../../../components/ha-icon";
 
-import callService from "../common/call-service";
+import { callService } from "../common/call-service";
 import { EntityRow, CallServiceConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
@@ -36,12 +36,10 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
       ${this.renderStyle()}
       <ha-icon .icon="${this._config.icon}"></ha-icon>
       <div class="flex">
-        <div>
-          ${this._config.name}
-        </div>
-        <paper-button
-          @click="${this._callService}"
-        >${this._config.action_name}</paper-button>
+        <div>${this._config.name}</div>
+        <paper-button @click="${this._callService}"
+          >${this._config.action_name}</paper-button
+        >
       </div>
     `;
   }
@@ -73,14 +71,14 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin-right: -.57em;
+          margin-right: -0.57em;
         }
       </style>
     `;
   }
 
   private _callService() {
-    callService(this._config, this.hass);
+    callService(this._config!, this.hass!);
   }
 }
 

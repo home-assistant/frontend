@@ -9,31 +9,32 @@ import EventsMixin from "../../mixins/events-mixin";
 class EventsList extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      ul {
-        margin: 0;
-        padding: 0;
-      }
+      <style>
+        ul {
+          margin: 0;
+          padding: 0;
+        }
 
-      li {
-        list-style: none;
-        line-height: 2em;
-      }
+        li {
+          list-style: none;
+          line-height: 2em;
+        }
 
-      a {
-        color: var(--dark-primary-color);
-      }
-    </style>
+        a {
+          color: var(--dark-primary-color);
+        }
+      </style>
 
-    <ul>
-      <template is="dom-repeat" items="[[events]]" as="event">
-        <li>
-          <a href="#" on-click="eventSelected">{{event.event}}</a>
-          <span> (</span><span>{{event.listener_count}}</span><span> listeners)</span>
-        </li>
-      </template>
-    </ul>
-`;
+      <ul>
+        <template is="dom-repeat" items="[[events]]" as="event">
+          <li>
+            <a href="#" on-click="eventSelected">{{event.event}}</a>
+            <span> (</span><span>{{event.listener_count}}</span
+            ><span> listeners)</span>
+          </li>
+        </template>
+      </ul>
+    `;
   }
 
   static get properties() {

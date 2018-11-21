@@ -19,49 +19,50 @@ let registeredDialog = false;
 class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style">
-      .error {
-        color: red;
-      }
-      .status {
-        color: var(--primary-color);
-      }
-      .error, .status {
-        position: absolute;
-        top: -4px;
-      }
-      paper-card {
-        display: block;
-        max-width: 600px;
-        margin: 16px auto;
-      }
-      paper-button {
-        color: var(--primary-color);
-        font-weight: 500;
-        margin-right: -.57em;
-      }
-    </style>
-    <paper-card heading="[[localize('ui.panel.profile.mfa.header')]]">
-      <template is="dom-repeat" items="[[mfaModules]]" as="module">
-        <paper-item>
-          <paper-item-body two-line="">
-            <div>[[module.name]]</div>
-            <div secondary="">[[module.id]]</div>
-          </paper-item-body>
-          <template is="dom-if" if="[[module.enabled]]">
-            <paper-button
-              on-click="_disable"
-            >[[localize('ui.panel.profile.mfa.disable')]]</paper-button>
-          </template>
-          <template is="dom-if" if="[[!module.enabled]]">
-            <paper-button
-              on-click="_enable"
-            >[[localize('ui.panel.profile.mfa.enable')]]</paper-button>
-          </template>
-        </paper-item>
-      </template>
-    </paper-card>
-`;
+      <style include="iron-flex ha-style">
+        .error {
+          color: red;
+        }
+        .status {
+          color: var(--primary-color);
+        }
+        .error,
+        .status {
+          position: absolute;
+          top: -4px;
+        }
+        paper-card {
+          display: block;
+          max-width: 600px;
+          margin: 16px auto;
+        }
+        paper-button {
+          color: var(--primary-color);
+          font-weight: 500;
+          margin-right: -0.57em;
+        }
+      </style>
+      <paper-card heading="[[localize('ui.panel.profile.mfa.header')]]">
+        <template is="dom-repeat" items="[[mfaModules]]" as="module">
+          <paper-item>
+            <paper-item-body two-line="">
+              <div>[[module.name]]</div>
+              <div secondary="">[[module.id]]</div>
+            </paper-item-body>
+            <template is="dom-if" if="[[module.enabled]]">
+              <paper-button on-click="_disable"
+                >[[localize('ui.panel.profile.mfa.disable')]]</paper-button
+              >
+            </template>
+            <template is="dom-if" if="[[!module.enabled]]">
+              <paper-button on-click="_enable"
+                >[[localize('ui.panel.profile.mfa.enable')]]</paper-button
+              >
+            </template>
+          </paper-item>
+        </template>
+      </paper-card>
+    `;
   }
 
   static get properties() {

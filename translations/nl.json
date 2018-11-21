@@ -780,7 +780,9 @@
                 "clear_code": "Wis",
                 "disarm": "Uitschakelen",
                 "arm_home": "Inschakelen thuis",
-                "arm_away": "Inschakelen afwezig"
+                "arm_away": "Inschakelen afwezig",
+                "arm_night": "Inschakelen nacht",
+                "armed_custom_bypass": "Aangepaste overbrugging(en)"
             },
             "automation": {
                 "last_triggered": "Laatst uitgevoerd",

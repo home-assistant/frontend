@@ -14,60 +14,67 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style-dialog">
-      .error {
-        color: red;
-      }
-      @media all and (max-width: 500px) {
-        paper-dialog {
-          margin: 0;
-          width: 100%;
-          max-height: calc(100% - 64px);
-
-          position: fixed !important;
-          bottom: 0px;
-          left: 0px;
-          right: 0px;
-          overflow: scroll;
-          border-bottom-left-radius: 0px;
-          border-bottom-right-radius: 0px;
+      <style include="ha-style-dialog">
+        .error {
+          color: red;
         }
-      }
+        @media all and (max-width: 500px) {
+          paper-dialog {
+            margin: 0;
+            width: 100%;
+            max-height: calc(100% - 64px);
 
-      paper-dialog {
-        border-radius: 2px;
-      }
-      paper-dialog p {
-        color: var(--secondary-text-color);
-      }
+            position: fixed !important;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            overflow: scroll;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+          }
+        }
 
-      .icon {
-        float: right;
-      }
-    </style>
-    <paper-dialog id="mp3dialog" with-backdrop opened="{{_opened}}" on-opened-changed="_openedChanged">
-      <h2>
-        [[localize('ui.panel.mailbox.playback_title')]]
-        <div class='icon'>
-        <template is="dom-if" if="[[_loading]]">
-          <paper-spinner active></paper-spinner>
-        </template>
-        <paper-icon-button
-          id='delicon'
-          on-click='openDeleteDialog'
-          icon='hass:delete'
-        ></paper-icon-button>
+        paper-dialog {
+          border-radius: 2px;
+        }
+        paper-dialog p {
+          color: var(--secondary-text-color);
+        }
+
+        .icon {
+          float: right;
+        }
+      </style>
+      <paper-dialog
+        id="mp3dialog"
+        with-backdrop
+        opened="{{_opened}}"
+        on-opened-changed="_openedChanged"
+      >
+        <h2>
+          [[localize('ui.panel.mailbox.playback_title')]]
+          <div class="icon">
+            <template is="dom-if" if="[[_loading]]">
+              <paper-spinner active></paper-spinner>
+            </template>
+            <paper-icon-button
+              id="delicon"
+              on-click="openDeleteDialog"
+              icon="hass:delete"
+            ></paper-icon-button>
+          </div>
+        </h2>
+        <div id="transcribe"></div>
+        <div>
+          <template is="dom-if" if="[[_errorMsg]]">
+            <div class="error">[[_errorMsg]]</div>
+          </template>
+          <audio id="mp3" preload="none" controls>
+            <source id="mp3src" src="" type="audio/mpeg" />
+          </audio>
         </div>
-      </h2>
-      <div id="transcribe"></div>
-      <div>
-        <template is="dom-if" if="[[_errorMsg]]">
-          <div class='error'>[[_errorMsg]]</div>
-        </template>
-        <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg" /></audio>
-      </div>
-    </paper-dialog>
-`;
+      </paper-dialog>
+    `;
   }
 
   static get properties() {

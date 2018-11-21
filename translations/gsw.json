@@ -9,7 +9,8 @@
         "shopping_list": "Ichoufsliste",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kaländer"
+        "calendar": "Kaländer",
+        "profile": "Profiu"
     },
     "state": {
         "default": {
@@ -223,6 +224,13 @@
             "sunny": "sunnig",
             "windy": "windig",
             "windy-variant": "windig"
+        },
+        "vacuum": {
+            "cleaning": "Putze",
+            "error": "Fähler",
+            "off": "Us",
+            "on": "I",
+            "paused": "Pause"
         }
     },
     "state_badge": {
@@ -359,6 +367,48 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "users": {
+                    "caption": "Benutzer",
+                    "picker": {
+                        "title": "Benutzer"
+                    },
+                    "editor": {
+                        "rename_user": "Benutzer umbenenne",
+                        "delete_user": "Benutzer lösche"
+                    }
+                },
+                "integrations": {
+                    "caption": "Integratione",
+                    "discovered": "Erkennt",
+                    "configured": "Konfiguriärt",
+                    "configure": "Konfiguriärä",
+                    "config_entry": {
+                        "manuf": "vo {manufacturer}",
+                        "hub": "Verbunge über",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "Grät verfüägbar",
+                        "entity_unavailable": "Entitiy verfüägbar"
+                    }
+                }
+            },
+            "profile": {
+                "long_lived_access_tokens": {
+                    "create": "Token erzüge",
+                    "prompt_name": "Name?"
+                },
+                "is_owner": "Du bisch dr Bsitzer",
+                "logout": "Uslogge",
+                "change_password": {
+                    "header": "Passwort wächsle",
+                    "current_password": "Aktuells Passwort",
+                    "new_password": "Nöis Passwort",
+                    "confirm_new_password": "Nöis Passwort bestätige",
+                    "error_required": "Benötigt",
+                    "submit": "Abschicke"
+                },
+                "mfa": {
+                    "disable": "Deaktiviert"
                 }
             }
         },
@@ -447,6 +497,18 @@
             "media_player": {
                 "source": "Quelle",
                 "sound_mode": "Sound-Modus"
+            },
+            "vacuum": {
+                "actions": {
+                    "turn_on": "Ischaute",
+                    "turn_off": "Ausschaute"
+                }
+            },
+            "water_heater": {
+                "currently": "Aktuell",
+                "on_off": "I \/ Us",
+                "target_temperature": "Ziu-Temperatur",
+                "operation": "Operation"
             }
         },
         "notification_toast": {
@@ -455,7 +517,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Spichere",
-                "name": "Name"
+                "name": "Name",
+                "entity_id": "Entity ID"
             }
         }
     },
@@ -480,7 +543,8 @@
         "switch": "Schauter",
         "updater": "Updater",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Stoubsuger"
     },
     "attribute": {
         "weather": {
