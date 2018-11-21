@@ -13,6 +13,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { toggleEntity } from "../common/entity/toggle-entity";
+import { EntityConfig } from "../entity-rows/types";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
