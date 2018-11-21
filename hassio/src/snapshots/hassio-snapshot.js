@@ -281,8 +281,14 @@ class HassioSnapshot extends PolymerElement {
 
   async _downloadClicked() {
     try {
-      const signedPath = await getSignedPath(this.hass, `/api/hassio/snapshots/${this.snapshotSlug}/download`);
-      const name = this._computeName(this.snapshot).replace(/[^a-z0-9]+/gi,"_");
+      const signedPath = await getSignedPath(
+        this.hass,
+        `/api/hassio/snapshots/${this.snapshotSlug}/download`
+      );
+      const name = this._computeName(this.snapshot).replace(
+        /[^a-z0-9]+/gi,
+        "_"
+      );
       const a = document.createElement("A");
       a.href = signedPath.path;
       a.download = `Hass_io_${name}.tar`;
