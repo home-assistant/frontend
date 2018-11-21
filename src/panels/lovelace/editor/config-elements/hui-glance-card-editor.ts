@@ -34,16 +34,16 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     return { hass: {}, _config: {}, _configEntities: {} };
   }
 
-  get _title() {
+  get _title(): string {
     return this._config!.title || "";
   }
 
-  get _theme() {
+  get _theme(): string {
     return this._config!.theme || "Backend-selected";
   }
 
-  get _columns() {
-    return this._config!.columns || "";
+  get _columns(): string {
+    return String(this._config!.columns) || "";
   }
 
   protected render(): TemplateResult {
