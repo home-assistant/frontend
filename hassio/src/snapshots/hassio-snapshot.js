@@ -7,6 +7,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { getSignedPath } from "../../../src/auth/data";
 
 import "../../../src/resources/ha-style";
 
@@ -278,29 +279,19 @@ class HassioSnapshot extends PolymerElement {
       );
   }
 
-  _downloadClicked() {
-    this.hass
-      .callWS({
-        type: "auth/sign_path",
-        path: `/api/hassio/snapshots/${this.snapshotSlug}/download`,
-      })
-      .then(
-        (resp) => {
-          const name = this._computeName(this.snapshot).replace(
-            /[^a-z0-9]+/gi,
-            "_"
-          );
-          const a = document.createElement("A");
-          a.href = resp.path;
-          a.download = `Hass_io_${name}.tar`;
-          this.$.dialog.appendChild(a);
-          a.click();
-          this.$.dialog.removeChild(a);
-        },
-        (err) => {
-          alert("Error: " + err.message);
-        }
-      );
+  async _downloadClicked() {
+    try {
+      const signedPath = await getSignedPath(this.hass, `/api/hassio/snapshots/${this.snapshotSlug}/download`);
+      const name = this._computeName(this.snapshot).replace(/[^a-z0-9]+/gi,"_");
+      const a = document.createElement("A");
+      a.href = signedPath.path;
+      a.download = `Hass_io_${name}.tar`;
+      this.$.dialog.appendChild(a);
+      a.click();
+      this.$.dialog.removeChild(a);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
   }
 
   _computeName(snapshot) {
