@@ -1,3 +1,3 @@
 export interface SignedPath {
-    path: string;
-  }
+  path: string;
+}

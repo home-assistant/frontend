@@ -285,19 +285,17 @@ class HassioSnapshot extends PolymerElement {
         this.hass,
         `/api/hassio/snapshots/${this.snapshotSlug}/download`
       );
-      const name = this._computeName(this.snapshot).replace(
-        /[^a-z0-9]+/gi,
-        "_"
-      );
-      const a = document.createElement("A");
-      a.href = signedPath.path;
-      a.download = `Hass_io_${name}.tar`;
-      this.$.dialog.appendChild(a);
-      a.click();
-      this.$.dialog.removeChild(a);
     } catch (err) {
       alert(`Error: ${err.message}`);
+      return;
     }
+    const name = this._computeName(this.snapshot).replace(/[^a-z0-9]+/gi, "_");
+    const a = document.createElement("A");
+    a.href = signedPath.path;
+    a.download = `Hass_io_${name}.tar`;
+    this.$.dialog.appendChild(a);
+    a.click();
+    this.$.dialog.removeChild(a);
   }
 
   _computeName(snapshot) {
