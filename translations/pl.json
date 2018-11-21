@@ -330,7 +330,7 @@
                                 "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
                                 "core": "Przeładuj rdzeń",
                                 "group": "Przeładuj grupy",
-                                "automation": "Przeładuj automatyzacje",
+                                "automation": "Przeładuj reguły automatyzacji",
                                 "script": "Przeładuj skrypty"
                             },
                             "server_management": {
@@ -347,18 +347,18 @@
                     "description": "Dostosuj swoje encje"
                 },
                 "automation": {
-                    "caption": "Automatyzacja",
-                    "description": "Twórz i edytuj automatyzacje",
+                    "caption": "Reguły automatyzacji",
+                    "description": "Twórz i edytuj reguły automatyzacji",
                     "picker": {
                         "header": "Edytor automatyzacji",
-                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzację. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant'a.",
-                        "pick_automation": "Wybierz automatyzację do edycji",
-                        "no_automations": "Nie znaleziono żadnych edytowalnych automatyzacji",
-                        "add_automation": "Dodaj automatyzację"
+                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować reguły automatyzacji. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant'a.",
+                        "pick_automation": "Wybierz regułę automatyzacji do edycji",
+                        "no_automations": "Nie znaleziono żadnych edytowalnych reguł automatyzacji",
+                        "add_automation": "Dodaj regułę automatyzacji"
                     },
                     "editor": {
-                        "introduction": "Użyj automatyzacji, aby utrzymać swój dom przy życiu",
-                        "default_name": "Nowa automatyzacja",
+                        "introduction": "Użyj reguł automatyzacji, aby utrzymać swój dom przy życiu",
+                        "default_name": "Nowa reguła automatyzacji",
                         "save": "Zapisz",
                         "unsaved_confirm": "Masz niezapisane zmiany. Jesteś pewny, że chcesz wyjść?",
                         "alias": "Nazwa",
@@ -515,7 +515,7 @@
                 },
                 "users": {
                     "caption": "Użytkownicy",
-                    "description": "Zarządzanie użytkownikami",
+                    "description": "Zarządzaj użytkownikami",
                     "picker": {
                         "title": "Użytkownicy"
                     },
@@ -779,8 +779,10 @@
                 "code": "Kod",
                 "clear_code": "Wyczyść",
                 "disarm": "Rozbrojony",
-                "arm_home": "Uzbrojony (w domu)",
-                "arm_away": "Uzbrojony (nieobecny)"
+                "arm_home": "uzbrojony (w domu)",
+                "arm_away": "uzbrojony (nieobecny)",
+                "arm_night": "uzbrojony (noc)",
+                "armed_custom_bypass": "uzbrojony (częściowo)"
             },
             "automation": {
                 "last_triggered": "Ostatnie uruchomienie",

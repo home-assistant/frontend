@@ -10,48 +10,60 @@ import LocalizeMixin from "../mixins/localize-mixin";
 class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-    :host {
-      display: block;
-      /* height of single timeline chart = 58px */
-      min-height: 58px;
-    }
-    .info {
-      text-align: center;
-      line-height: 58px;
-      color: var(--secondary-text-color);
-    }
-    </style>
-    <template is="dom-if" class="info" if="[[_computeIsLoading(isLoadingData)]]">
-      <div class="info">[[localize('ui.components.history_charts.loading_history')]]</div>
-    </template>
+      <style>
+        :host {
+          display: block;
+          /* height of single timeline chart = 58px */
+          min-height: 58px;
+        }
+        .info {
+          text-align: center;
+          line-height: 58px;
+          color: var(--secondary-text-color);
+        }
+      </style>
+      <template
+        is="dom-if"
+        class="info"
+        if="[[_computeIsLoading(isLoadingData)]]"
+      >
+        <div class="info">
+          [[localize('ui.components.history_charts.loading_history')]]
+        </div>
+      </template>
 
-    <template is="dom-if" class="info" if="[[_computeIsEmpty(isLoadingData, historyData)]]">
-      <div class="info">[[localize('ui.components.history_charts.no_history_found')]]</div>
-    </template>
+      <template
+        is="dom-if"
+        class="info"
+        if="[[_computeIsEmpty(isLoadingData, historyData)]]"
+      >
+        <div class="info">
+          [[localize('ui.components.history_charts.no_history_found')]]
+        </div>
+      </template>
 
-    <template is="dom-if" if="[[historyData.timeline.length]]">
-      <state-history-chart-timeline
-        hass='[[hass]]'
-        data="[[historyData.timeline]]"
-        end-time="[[_computeEndTime(endTime, upToNow, historyData)]]"
-        no-single="[[noSingle]]"
-        names="[[names]]"
-      ></state-history-chart-timeline>
-    </template>
+      <template is="dom-if" if="[[historyData.timeline.length]]">
+        <state-history-chart-timeline
+          hass="[[hass]]"
+          data="[[historyData.timeline]]"
+          end-time="[[_computeEndTime(endTime, upToNow, historyData)]]"
+          no-single="[[noSingle]]"
+          names="[[names]]"
+        ></state-history-chart-timeline>
+      </template>
 
-    <template is="dom-repeat" items="[[historyData.line]]">
-      <state-history-chart-line
-        hass='[[hass]]'
-        unit="[[item.unit]]"
-        data="[[item.data]]"
-        identifier="[[item.identifier]]"
-        is-single-device="[[_computeIsSingleLineChart(item.data, noSingle)]]"
-        end-time="[[_computeEndTime(endTime, upToNow, historyData)]]"
-        names="[[names]]"
-      ></state-history-chart-line>
-    </template>
-`;
+      <template is="dom-repeat" items="[[historyData.line]]">
+        <state-history-chart-line
+          hass="[[hass]]"
+          unit="[[item.unit]]"
+          data="[[item.data]]"
+          identifier="[[item.identifier]]"
+          is-single-device="[[_computeIsSingleLineChart(item.data, noSingle)]]"
+          end-time="[[_computeEndTime(endTime, upToNow, historyData)]]"
+          names="[[names]]"
+        ></state-history-chart-line>
+      </template>
+    `;
   }
 
   static get properties() {

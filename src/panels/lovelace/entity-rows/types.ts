@@ -2,8 +2,9 @@ import { HomeAssistant } from "../../../types";
 
 export interface EntityConfig {
   entity: string;
-  name: string;
-  icon: string;
+  type?: string;
+  name?: string;
+  icon?: string;
 }
 export interface DividerConfig {
   style: string;
@@ -16,12 +17,10 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
-export interface CallServiceConfig {
-  name: string;
-  icon?: string;
+export interface CallServiceConfig extends EntityConfig {
   action_name?: string;
   service: string;
-  service_data?: string;
+  service_data?: { [key: string]: any };
 }
 export type EntityRowConfig =
   | EntityConfig

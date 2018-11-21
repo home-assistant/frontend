@@ -24,76 +24,75 @@ import "@polymer/polymer/polymer-element";
 class HaAppLayout extends customElements.get("app-header-layout") {
   static get template() {
     return html`
-    <style>
-      :host {
-        display: block;
-        /**
+      <style>
+        :host {
+          display: block;
+          /**
          * Force app-header-layout to have its own stacking context so that its parent can
          * control the stacking of it relative to other elements (e.g. app-drawer-layout).
          * This could be done using \`isolation: isolate\`, but that's not well supported
          * across browsers.
          */
-        position: relative;
-        z-index: 0;
-      }
-
-      #wrapper ::slotted([slot=header]) {
-        @apply --layout-fixed-top;
-        z-index: 1;
-      }
-
-      #wrapper.initializing ::slotted([slot=header]) {
-        position: relative;
-      }
-
-      :host([has-scrolling-region]) {
-        height: 100%;
-      }
-
-      :host([has-scrolling-region]) #wrapper ::slotted([slot=header]) {
-        position: absolute;
-      }
-
-      :host([has-scrolling-region]) #wrapper.initializing ::slotted([slot=header]) {
-        position: relative;
-      }
-
-      :host([has-scrolling-region]) #wrapper #contentContainer {
-        @apply --layout-fit;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      :host([has-scrolling-region]) #wrapper.initializing #contentContainer {
-        position: relative;
-      }
-
-      #contentContainer {
-        /* Create a stacking context here so that all children appear below the header. */
-        position: relative;
-        z-index: 0;
-        /* Using 'transform' will cause 'position: fixed' elements to behave like
-           'position: absolute' relative to this element. */
-        transform: translate(0);
-      }
-
-      @media print {
-        :host([has-scrolling-region]) #wrapper #contentContainer {
-          overflow-y: visible;
+          position: relative;
+          z-index: 0;
         }
-      }
 
-    </style>
+        #wrapper ::slotted([slot="header"]) {
+          @apply --layout-fixed-top;
+          z-index: 1;
+        }
 
-    <div id="wrapper" class="initializing">
-      <slot id="headerSlot" name="header"></slot>
+        #wrapper.initializing ::slotted([slot="header"]) {
+          position: relative;
+        }
 
-      <div id="contentContainer">
-        <slot></slot>
+        :host([has-scrolling-region]) {
+          height: 100%;
+        }
+
+        :host([has-scrolling-region]) #wrapper ::slotted([slot="header"]) {
+          position: absolute;
+        }
+
+        :host([has-scrolling-region])
+          #wrapper.initializing
+          ::slotted([slot="header"]) {
+          position: relative;
+        }
+
+        :host([has-scrolling-region]) #wrapper #contentContainer {
+          @apply --layout-fit;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        :host([has-scrolling-region]) #wrapper.initializing #contentContainer {
+          position: relative;
+        }
+
+        #contentContainer {
+          /* Create a stacking context here so that all children appear below the header. */
+          position: relative;
+          z-index: 0;
+          /* Using 'transform' will cause 'position: fixed' elements to behave like
+           'position: absolute' relative to this element. */
+          transform: translate(0);
+        }
+
+        @media print {
+          :host([has-scrolling-region]) #wrapper #contentContainer {
+            overflow-y: visible;
+          }
+        }
+      </style>
+
+      <div id="wrapper" class="initializing">
+        <slot id="headerSlot" name="header"></slot>
+
+        <div id="contentContainer"><slot></slot></div>
+        <slot id="fab" name="fab"></slot>
       </div>
-      <slot id="fab" name="fab"></slot>
-    </div>
-`;
+    `;
   }
 }
 customElements.define("ha-app-layout", HaAppLayout);

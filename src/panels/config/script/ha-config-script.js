@@ -11,23 +11,43 @@ import computeStateDomain from "../../../common/entity/compute_state_domain";
 class HaConfigScript extends PolymerElement {
   static get template() {
     return html`
-    <style>
-      ha-script-picker,
-      ha-script-editor {
-        height: 100%;
-      }
-    </style>
-    <app-route route="[[route]]" pattern="/script/edit/:script" data="{{_routeData}}" active="{{_edittingScript}}"></app-route>
-    <app-route route="[[route]]" pattern="/script/new" active="{{_creatingNew}}"></app-route>
+      <style>
+        ha-script-picker,
+        ha-script-editor {
+          height: 100%;
+        }
+      </style>
+      <app-route
+        route="[[route]]"
+        pattern="/script/edit/:script"
+        data="{{_routeData}}"
+        active="{{_edittingScript}}"
+      ></app-route>
+      <app-route
+        route="[[route]]"
+        pattern="/script/new"
+        active="{{_creatingNew}}"
+      ></app-route>
 
-    <template is="dom-if" if="[[!showEditor]]">
-      <ha-script-picker hass="[[hass]]" narrow="[[narrow]]" show-menu="[[showMenu]]" scripts="[[scripts]]" is-wide="[[isWide]]"></ha-script-picker>
-    </template>
+      <template is="dom-if" if="[[!showEditor]]">
+        <ha-script-picker
+          hass="[[hass]]"
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+          scripts="[[scripts]]"
+          is-wide="[[isWide]]"
+        ></ha-script-picker>
+      </template>
 
-    <template is="dom-if" if="[[showEditor]]" restamp="">
-      <ha-script-editor hass="[[hass]]" script="[[script]]" is-wide="[[isWide]]" creating-new="[[_creatingNew]]"></ha-script-editor>
-    </template>
-`;
+      <template is="dom-if" if="[[showEditor]]" restamp="">
+        <ha-script-editor
+          hass="[[hass]]"
+          script="[[script]]"
+          is-wide="[[isWide]]"
+          creating-new="[[_creatingNew]]"
+        ></ha-script-editor>
+      </template>
+    `;
   }
 
   static get properties() {

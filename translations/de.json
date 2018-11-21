@@ -780,7 +780,9 @@
                 "clear_code": "Löschen",
                 "disarm": "Deaktivieren",
                 "arm_home": "Aktivieren, Zuhause",
-                "arm_away": "Aktivieren, unterwegs"
+                "arm_away": "Aktivieren, unterwegs",
+                "arm_night": "Nacht aktiviert",
+                "armed_custom_bypass": "Benutzerdefinierter Bypass"
             },
             "automation": {
                 "last_triggered": "Zuletzt ausgelöst",
@@ -836,7 +838,7 @@
                 "on_off": "An \/ Aus",
                 "target_temperature": "Solltemperatur",
                 "operation": "Betrieb",
-                "away_mode": "Abwesend-Modus"
+                "away_mode": "Abwesenheitsmodus"
             }
         },
         "components": {

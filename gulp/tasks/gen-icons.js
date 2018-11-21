@@ -111,4 +111,5 @@ gulp.task("gen-icons", ["gen-icons-hass", "gen-icons-mdi"], () => {});
 module.exports = {
   findIcons,
   generateIconset,
+  genMDIIcons,
 };

@@ -14,22 +14,22 @@ import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, EntityRow } from "../entity-rows/types";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
 import processConfigEntities from "../common/process-config-entities";
 import createRowElement from "../common/create-row-element";
 import computeDomain from "../../../common/entity/compute_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
-interface ConfigEntity extends EntityConfig {
+export interface ConfigEntity extends EntityConfig {
   type?: string;
-  secondary_info: "entity-id" | "last-changed";
+  secondary_info?: "entity-id" | "last-changed";
   action_name?: string;
   service?: string;
   service_data?: object;
   url?: string;
 }
 
-interface Config extends LovelaceConfig {
+export interface Config extends LovelaceConfig {
   show_header_toggle?: boolean;
   title?: string;
   entities: ConfigEntity[];
@@ -38,6 +38,10 @@ interface Config extends LovelaceConfig {
 
 class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-entities-card-editor");
+    return document.createElement("hui-entities-card-editor");
+  }
   protected _hass?: HomeAssistant;
   protected _config?: Config;
   protected _configEntities?: ConfigEntity[];
@@ -97,25 +101,29 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
           !title && !show_header_toggle
             ? html``
             : html`
-            <div class='header'>
-              <div class="name">${title}</div>
-              ${
-                show_header_toggle === false
-                  ? html``
-                  : html`
-                  <hui-entities-toggle
-                    .hass="${this._hass}"
-                    .entities="${this._configEntities!.map(
-                      (conf) => conf.entity
-                    )}"
-                  ></hui-entities-toggle>`
-              }
-            </div>`
+                <div class="header">
+                  <div class="name">${title}</div>
+                  ${
+                    show_header_toggle === false
+                      ? html``
+                      : html`
+                          <hui-entities-toggle
+                            .hass="${this._hass}"
+                            .entities="${
+                              this._configEntities!.map((conf) => conf.entity)
+                            }"
+                          ></hui-entities-toggle>
+                        `
+                  }
+                </div>
+              `
         }
         <div id="states">
-          ${this._configEntities!.map((entityConf) =>
-            this.renderEntity(entityConf)
-          )}
+          ${
+            this._configEntities!.map((entityConf) =>
+              this.renderEntity(entityConf)
+            )
+          }
         </div>
       </ha-card>
     `;
@@ -169,7 +177,9 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
       element.addEventListener("click", () => this._handleClick(entityConf));
     }
 
-    return html`<div>${element}</div>`;
+    return html`
+      <div>${element}</div>
+    `;
   }
 
   private _handleClick(entityConf: ConfigEntity): void {

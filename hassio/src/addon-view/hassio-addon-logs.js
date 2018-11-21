@@ -8,24 +8,22 @@ import "../../../src/resources/ha-style";
 class HassioAddonLogs extends PolymerElement {
   static get template() {
     return html`
-    <style include="ha-style">
-      :host,
-      paper-card {
-        display: block;
-      }
-      pre {
-        overflow-x: auto;
-      }
-    </style>
-    <paper-card heading="Log">
-      <div class="card-content">
-        <pre>[[log]]</pre>
-      </div>
-      <div class="card-actions">
-        <paper-button on-click="refresh">Refresh</paper-button>
-      </div>
-    </paper-card>
-`;
+      <style include="ha-style">
+        :host,
+        paper-card {
+          display: block;
+        }
+        pre {
+          overflow-x: auto;
+        }
+      </style>
+      <paper-card heading="Log">
+        <div class="card-content"><pre>[[log]]</pre></div>
+        <div class="card-actions">
+          <paper-button on-click="refresh">Refresh</paper-button>
+        </div>
+      </paper-card>
+    `;
   }
 
   static get properties() {

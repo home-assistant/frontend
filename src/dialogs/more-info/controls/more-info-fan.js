@@ -19,60 +19,82 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex"></style>
-    <style>
-      .container-speed_list,
-      .container-direction,
-      .container-oscillating {
-        display: none;
-      }
+      <style include="iron-flex"></style>
+      <style>
+        .container-speed_list,
+        .container-direction,
+        .container-oscillating {
+          display: none;
+        }
 
-      .has-speed_list .container-speed_list,
-      .has-direction .container-direction,
-      .has-oscillating .container-oscillating {
-        display: block;
-      }
+        .has-speed_list .container-speed_list,
+        .has-direction .container-direction,
+        .has-oscillating .container-oscillating {
+          display: block;
+        }
 
-      paper-dropdown-menu {
-        width: 100%;
-      }
+        paper-dropdown-menu {
+          width: 100%;
+        }
 
-      paper-item {
-        cursor: pointer;
-      }
-    </style>
+        paper-item {
+          cursor: pointer;
+        }
+      </style>
 
-    <div class$="[[computeClassNames(stateObj)]]">
+      <div class$="[[computeClassNames(stateObj)]]">
+        <div class="container-speed_list">
+          <paper-dropdown-menu
+            label-float=""
+            dynamic-align=""
+            label="[[localize('ui.card.fan.speed')]]"
+          >
+            <paper-listbox slot="dropdown-content" selected="{{speedIndex}}">
+              <template
+                is="dom-repeat"
+                items="[[stateObj.attributes.speed_list]]"
+              >
+                <paper-item>[[item]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
 
-      <div class="container-speed_list">
-        <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.fan.speed')]]">
-          <paper-listbox slot="dropdown-content" selected="{{speedIndex}}">
-            <template is="dom-repeat" items="[[stateObj.attributes.speed_list]]">
-              <paper-item>[[item]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
+        <div class="container-oscillating">
+          <div class="center horizontal layout single-row">
+            <div class="flex">[[localize('ui.card.fan.oscillate')]]</div>
+            <paper-toggle-button
+              checked="[[oscillationToggleChecked]]"
+              on-change="oscillationToggleChanged"
+            >
+            </paper-toggle-button>
+          </div>
+        </div>
 
-      <div class="container-oscillating">
-        <div class="center horizontal layout single-row">
-          <div class="flex">[[localize('ui.card.fan.oscillate')]]</div>
-          <paper-toggle-button checked="[[oscillationToggleChecked]]" on-change="oscillationToggleChanged">
-          </paper-toggle-button>
+        <div class="container-direction">
+          <div class="direction">
+            <div>[[localize('ui.card.fan.direction')]]</div>
+            <paper-icon-button
+              icon="hass:rotate-left"
+              on-click="onDirectionLeft"
+              title="Left"
+              disabled="[[computeIsRotatingLeft(stateObj)]]"
+            ></paper-icon-button>
+            <paper-icon-button
+              icon="hass:rotate-right"
+              on-click="onDirectionRight"
+              title="Right"
+              disabled="[[computeIsRotatingRight(stateObj)]]"
+            ></paper-icon-button>
+          </div>
         </div>
       </div>
 
-      <div class="container-direction">
-        <div class="direction">
-          <div>[[localize('ui.card.fan.direction')]]</div>
-          <paper-icon-button icon="hass:rotate-left" on-click="onDirectionLeft" title="Left" disabled="[[computeIsRotatingLeft(stateObj)]]"></paper-icon-button>
-          <paper-icon-button icon="hass:rotate-right" on-click="onDirectionRight" title="Right" disabled="[[computeIsRotatingRight(stateObj)]]"></paper-icon-button>
-        </div>
-      </div>
-    </div>
-
-    <ha-attributes state-obj="[[stateObj]]" extra-filters="speed,speed_list,oscillating,direction"></ha-attributes>
-`;
+      <ha-attributes
+        state-obj="[[stateObj]]"
+        extra-filters="speed,speed_list,oscillating,direction"
+      ></ha-attributes>
+    `;
   }
 
   static get properties() {

@@ -1,115 +1,51 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { TemplateResult } from "lit-html";
 
-import "@polymer/paper-button/paper-button";
-import "@polymer/paper-input/paper-textarea";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { HomeAssistant } from "../../../types";
-import { getCardConfig, updateCardConfig } from "../common/data";
-
-import "./hui-yaml-editor";
-import "./hui-yaml-card-preview";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HuiYAMLCardPreview } from "./hui-yaml-card-preview";
+import { LovelaceConfig } from "../types";
+import "./hui-edit-card";
+import "./hui-migrate-config";
 
 export class HuiDialogEditCard extends LitElement {
-  protected hass?: HomeAssistant;
-  private _cardId?: string;
-  private _cardConfig?: string;
+  protected _hass?: HomeAssistant;
+  private _cardConfig?: LovelaceConfig;
   private _reloadLovelace?: () => void;
 
   static get properties(): PropertyDeclarations {
     return {
-      hass: {},
-      cardId: {
-        type: Number,
-      },
+      _hass: {},
       _cardConfig: {},
-      _dialogClosedCallback: {},
     };
   }
 
-  public async showDialog({ hass, cardId, reloadLovelace }) {
-    this.hass = hass;
-    this._cardId = cardId;
+  public async showDialog({ hass, cardConfig, reloadLovelace }): Promise<void> {
+    this._hass = hass;
+    this._cardConfig = cardConfig;
     this._reloadLovelace = reloadLovelace;
-    this._cardConfig = "";
-    this._loadConfig();
-    // Wait till dialog is rendered.
     await this.updateComplete;
-    this._dialog.open();
+    (this.shadowRoot!.children[0] as any).showDialog();
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
-  }
-
-  private get _previewEl(): HuiYAMLCardPreview {
-    return this.shadowRoot!.querySelector("hui-yaml-card-preview")!;
-  }
-
-  protected render() {
+  protected render(): TemplateResult {
     return html`
-      <style>
-        paper-dialog {
-          width: 650px;
-        }
-      </style>
-      <paper-dialog with-backdrop>
-        <h2>Card Configuration</h2>
-        <paper-dialog-scrollable>
-          <hui-yaml-editor
-            .yaml="${this._cardConfig}"
-            @yaml-changed="${this._handleYamlChanged}"
-          ></hui-yaml-editor>
-          <hui-yaml-card-preview
-            .hass="${this.hass}"
-            .yaml="${this._cardConfig}"
-          ></hui-yaml-card-preview>
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <paper-button @click="${this._closeDialog}">Cancel</paper-button>
-          <paper-button @click="${this._updateConfig}">Save</paper-button>
-        </div>
-      </paper-dialog>
+      ${
+        this._cardConfig!.id
+          ? html`
+              <hui-edit-card
+                .cardConfig="${this._cardConfig}"
+                .hass="${this._hass}"
+                @reload-lovelace="${this._reloadLovelace}"
+              >
+              </hui-edit-card>
+            `
+          : html`
+              <hui-migrate-config
+                .hass="${this._hass}"
+                @reload-lovelace="${this._reloadLovelace}"
+              ></hui-migrate-config>
+            `
+      }
     `;
-  }
-
-  private _handleYamlChanged(ev) {
-    this._previewEl.yaml = ev.detail.yaml;
-  }
-
-  private _closeDialog() {
-    this._dialog.close();
-  }
-
-  private async _loadConfig() {
-    this._cardConfig = await getCardConfig(this.hass!, this._cardId!);
-    await this.updateComplete;
-    // This will center the dialog with the updated config
-    fireEvent(this._dialog, "iron-resize");
-  }
-
-  private async _updateConfig() {
-    const newCardConfig = this.shadowRoot!.querySelector("hui-yaml-editor")!
-      .yaml;
-
-    if (this._cardConfig === newCardConfig) {
-      this._dialog.close();
-      return;
-    }
-    try {
-      await updateCardConfig(this.hass!, this._cardId!, newCardConfig);
-      this._dialog.close();
-      this._reloadLovelace!();
-    } catch (err) {
-      alert(`Saving failed: ${err.reason}`);
-    }
   }
 }
 

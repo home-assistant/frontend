@@ -53,6 +53,7 @@ class LongPress extends HTMLElement implements LongPress {
         () => {
           clearTimeout(this.timer);
           this.stopAnimation();
+          this.timer = undefined;
         },
         { passive: true }
       );
@@ -64,34 +65,59 @@ class LongPress extends HTMLElement implements LongPress {
       return;
     }
     element.longPress = true;
-    element.addEventListener(
-      isTouch ? "touchstart" : "mousedown",
-      (ev: Event) => {
-        this.held = false;
-        let x;
-        let y;
-        if ((ev as TouchEvent).touches) {
-          x = (ev as TouchEvent).touches[0].pageX;
-          y = (ev as TouchEvent).touches[0].pageY;
-        } else {
-          x = (ev as MouseEvent).pageX;
-          y = (ev as MouseEvent).pageY;
-        }
-        this.timer = window.setTimeout(() => {
-          this.startAnimation(x, y);
-          this.held = true;
-        }, this.holdTime);
-      },
-      { passive: true }
-    );
-    element.addEventListener("click", () => {
+
+    element.addEventListener("contextmenu", (ev: Event) => {
+      const e = ev || window.event;
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      e.cancelBubble = true;
+      e.returnValue = false;
+      return false;
+    });
+
+    const clickStart = (ev: Event) => {
+      this.held = false;
+      let x;
+      let y;
+      if ((ev as TouchEvent).touches) {
+        x = (ev as TouchEvent).touches[0].pageX;
+        y = (ev as TouchEvent).touches[0].pageY;
+      } else {
+        x = (ev as MouseEvent).pageX;
+        y = (ev as MouseEvent).pageY;
+      }
+      this.timer = window.setTimeout(() => {
+        this.startAnimation(x, y);
+        this.held = true;
+      }, this.holdTime);
+    };
+
+    const clickEnd = () => {
+      clearTimeout(this.timer);
       this.stopAnimation();
+      if (isTouch && this.timer === undefined) {
+        return;
+      }
+      this.timer = undefined;
       if (this.held) {
         element.dispatchEvent(new Event("ha-hold"));
       } else {
         element.dispatchEvent(new Event("ha-click"));
       }
-    });
+    };
+
+    if (isTouch) {
+      element.addEventListener("touchstart", clickStart, { passive: true });
+      element.addEventListener("touchend", clickEnd);
+      element.addEventListener("touchcancel", clickEnd);
+    } else {
+      element.addEventListener("mousedown", clickStart, { passive: true });
+      element.addEventListener("click", clickEnd);
+    }
   }
 
   private startAnimation(x: number, y: number) {

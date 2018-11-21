@@ -38,286 +38,331 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="iron-flex ha-style ha-form-style">
-      .content {
-        margin-top: 24px;
-      }
+      <style include="iron-flex ha-style ha-form-style">
+        .content {
+          margin-top: 24px;
+        }
 
-      .node-info {
-        margin-left: 16px;
-      }
+        .node-info {
+          margin-left: 16px;
+        }
 
-      .help-text {
-        padding-left: 24px;
-        padding-right: 24px;
-      }
+        .help-text {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
 
-      paper-card {
-        display: block;
-        margin: 0 auto;
-        max-width: 600px;
-      }
+        paper-card {
+          display: block;
+          margin: 0 auto;
+          max-width: 600px;
+        }
 
-      .device-picker {
-        @apply --layout-horizontal;
-        @apply --layout-center-center;
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-bottom: 24px;
-      }
+        .device-picker {
+          @apply --layout-horizontal;
+          @apply --layout-center-center;
+          padding-left: 24px;
+          padding-right: 24px;
+          padding-bottom: 24px;
+        }
 
-      ha-service-description {
-        display: block;
-        color: grey;
-      }
+        ha-service-description {
+          display: block;
+          color: grey;
+        }
 
-      [hidden] {
-        display: none;
-      }
+        [hidden] {
+          display: none;
+        }
 
-      .toggle-help-icon {
-        position: absolute;
-        top: 6px;
-        right: 0;
-        color: var(--primary-color);
-      }
-    </style>
-    <ha-app-layout has-scrolling-region="">
-      <app-header slot="header" fixed="">
-        <app-toolbar>
-          <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
-          <div main-title="">[[localize('ui.panel.config.zwave.caption')]]</div>
-        </app-toolbar>
-      </app-header>
+        .toggle-help-icon {
+          position: absolute;
+          top: 6px;
+          right: 0;
+          color: var(--primary-color);
+        }
+      </style>
+      <ha-app-layout has-scrolling-region="">
+        <app-header slot="header" fixed="">
+          <app-toolbar>
+            <paper-icon-button
+              icon="hass:arrow-left"
+              on-click="_backTapped"
+            ></paper-icon-button>
+            <div main-title="">
+              [[localize('ui.panel.config.zwave.caption')]]
+            </div>
+          </app-toolbar>
+        </app-header>
 
-      <zwave-network id="zwave-network" is-wide="[[isWide]]" hass="[[hass]]"></zwave-network>
+        <zwave-network
+          id="zwave-network"
+          is-wide="[[isWide]]"
+          hass="[[hass]]"
+        ></zwave-network>
 
-      <!--Node card-->
-      <ha-config-section is-wide="[[isWide]]">
-        <div style="position: relative" slot="header">
-          <span>Z-Wave Node Management</span>
-          <paper-icon-button class="toggle-help-icon" on-click="toggleHelp" icon="hass:help-circle"></paper-icon-button>
-
-        </div>
-        <span slot="introduction">
-          Run Z-Wave commands that affect a single node. Pick a node to see a list of available commands.
-        </span>
-
-        <paper-card class="content">
-          <div class="device-picker">
-            <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
-              <paper-listbox slot="dropdown-content" selected="{{selectedNode}}">
-                <template is="dom-repeat" items="[[nodes]]" as="state">
-                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
+        <!-- Node card -->
+        <ha-config-section is-wide="[[isWide]]">
+          <div style="position: relative" slot="header">
+            <span>Z-Wave Node Management</span>
+            <paper-icon-button
+              class="toggle-help-icon"
+              on-click="toggleHelp"
+              icon="hass:help-circle"
+            ></paper-icon-button>
           </div>
+          <span slot="introduction">
+            Run Z-Wave commands that affect a single node. Pick a node to see a
+            list of available commands.
+          </span>
+
+          <paper-card class="content">
+            <div class="device-picker">
+              <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
+                <paper-listbox
+                  slot="dropdown-content"
+                  selected="{{selectedNode}}"
+                >
+                  <template is="dom-repeat" items="[[nodes]]" as="state">
+                    <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                  </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
             <template is="dom-if" if="[[!computeIsNodeSelected(selectedNode)]]">
               <template is="dom-if" if="[[showHelp]]">
-                <div style="color: grey; padding: 12px">Select node to view per-node options</div>
+                <div style="color: grey; padding: 12px">
+                  Select node to view per-node options
+                </div>
               </template>
             </template>
 
-          <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
-          <div class="card-actions">
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="refresh_node"
-              service-data="[[computeNodeServiceData(selectedNode)]]">
-              Refresh Node
-            </ha-call-service-button>
-            <ha-service-description
-              hass="[[hass]]"
-              domain="zwave"
-              service="refresh_node"
-              hidden$="[[!showHelp]]">
-            </ha-service-description>
+            <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
+              <div class="card-actions">
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="refresh_node"
+                  service-data="[[computeNodeServiceData(selectedNode)]]"
+                >
+                  Refresh Node
+                </ha-call-service-button>
+                <ha-service-description
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="refresh_node"
+                  hidden$="[[!showHelp]]"
+                >
+                </ha-service-description>
 
-            <template is="dom-if" if="[[nodeFailed]]">
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="remove_failed_node"
-              service-data="[[computeNodeServiceData(selectedNode)]]">
-              Remove Failed Node
-            </ha-call-service-button>
-            <ha-service-description
-              hass="[[hass]]"
-              domain="zwave"
-              service="remove_failed_node"
-              hidden$="[[!showHelp]]">
-            </ha-service-description>
+                <template is="dom-if" if="[[nodeFailed]]">
+                  <ha-call-service-button
+                    hass="[[hass]]"
+                    domain="zwave"
+                    service="remove_failed_node"
+                    service-data="[[computeNodeServiceData(selectedNode)]]"
+                  >
+                    Remove Failed Node
+                  </ha-call-service-button>
+                  <ha-service-description
+                    hass="[[hass]]"
+                    domain="zwave"
+                    service="remove_failed_node"
+                    hidden$="[[!showHelp]]"
+                  >
+                  </ha-service-description>
 
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="replace_failed_node"
-              service-data="[[computeNodeServiceData(selectedNode)]]">
-              Replace Failed Node
-            </ha-call-service-button>
-            <ha-service-description
-              hass="[[hass]]"
-              domain="zwave"
-              service="replace_failed_node"
-              hidden$="[[!showHelp]]">
-            </ha-service-description>
-            </template>
-
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="print_node"
-              service-data="[[computeNodeServiceData(selectedNode)]]">
-              Print Node
-            </ha-call-service-button>
-            <ha-service-description
-              hass="[[hass]]"
-              domain="zwave"
-              service="print_node"
-              hidden$="[[!showHelp]]">
-            </ha-service-description>
-
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="heal_node"
-              service-data="[[computeHealNodeServiceData(selectedNode)]]">
-              Heal Node
-            </ha-call-service-button>
-            <ha-service-description
-              hass="[[hass]]"
-              domain="zwave"
-              service="heal_node"
-              hidden$="[[!showHelp]]">
-            </ha-service-description>
-
-            <ha-call-service-button
-              hass="[[hass]]"
-              domain="zwave"
-              service="test_node"
-              service-data="[[computeNodeServiceData(selectedNode)]]">
-              Test Node
-            </ha-call-service-button>
-            <ha-service-description
-              hass="[[hass]]"
-              domain="zwave"
-              service="test_node"
-              hidden$="[[!showHelp]]">
-            </ha-service-description>
-            <paper-button on-click="_nodeMoreInfo">Node Information</paper-button>
-          </div>
-
-           <div class="device-picker">
-            <paper-dropdown-menu label="Entities of this node" dynamic-align="" class="flex">
-              <paper-listbox slot="dropdown-content" selected="{{selectedEntity}}">
-                <template is="dom-repeat" items="[[entities]]" as="state">
-                  <paper-item>[[state.entity_id]]</paper-item>
+                  <ha-call-service-button
+                    hass="[[hass]]"
+                    domain="zwave"
+                    service="replace_failed_node"
+                    service-data="[[computeNodeServiceData(selectedNode)]]"
+                  >
+                    Replace Failed Node
+                  </ha-call-service-button>
+                  <ha-service-description
+                    hass="[[hass]]"
+                    domain="zwave"
+                    service="replace_failed_node"
+                    hidden$="[[!showHelp]]"
+                  >
+                  </ha-service-description>
                 </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-           </div>
-           <template is="dom-if" if="[[!computeIsEntitySelected(selectedEntity)]]">
-           <div class="card-actions">
-             <ha-call-service-button
-               hass="[[hass]]"
-               domain="zwave"
-               service="refresh_entity"
-               service-data="[[computeRefreshEntityServiceData(selectedEntity)]]">
-               Refresh Entity
-             </ha-call-service-button>
-             <ha-service-description
-               hass="[[hass]]"
-               domain="zwave"
-               service="refresh_entity"
-               hidden$="[[!showHelp]]">
-             </ha-service-description>
-             <paper-button on-click="_entityMoreInfo">Entity Information</paper-button>
-           </div>
-           <div class="form-group">
-             <paper-checkbox checked="{{entityIgnored}}" class="form-control">
-             Exclude this entity from Home Assistant
-             </paper-checkbox>
-             <paper-input
-               disabled="{{entityIgnored}}"
-               label="Polling intensity"
-               type="number"
-               min="0"
-               value="{{entityPollingIntensity}}">
-             </paper-input>
-           </div>
-           <div class="card-actions">
-             <ha-call-service-button
-               hass="[[hass]]"
-               domain="zwave"
-               service="set_poll_intensity"
-               service-data="[[computePollIntensityServiceData(entityPollingIntensity)]]">
-               Save
-             </ha-call-service-button>
-           </div>
 
-           </template>
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="print_node"
+                  service-data="[[computeNodeServiceData(selectedNode)]]"
+                >
+                  Print Node
+                </ha-call-service-button>
+                <ha-service-description
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="print_node"
+                  hidden$="[[!showHelp]]"
+                >
+                </ha-service-description>
+
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="heal_node"
+                  service-data="[[computeHealNodeServiceData(selectedNode)]]"
+                >
+                  Heal Node
+                </ha-call-service-button>
+                <ha-service-description
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="heal_node"
+                  hidden$="[[!showHelp]]"
+                >
+                </ha-service-description>
+
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="test_node"
+                  service-data="[[computeNodeServiceData(selectedNode)]]"
+                >
+                  Test Node
+                </ha-call-service-button>
+                <ha-service-description
+                  hass="[[hass]]"
+                  domain="zwave"
+                  service="test_node"
+                  hidden$="[[!showHelp]]"
+                >
+                </ha-service-description>
+                <paper-button on-click="_nodeMoreInfo"
+                  >Node Information</paper-button
+                >
+              </div>
+
+              <div class="device-picker">
+                <paper-dropdown-menu
+                  label="Entities of this node"
+                  dynamic-align=""
+                  class="flex"
+                >
+                  <paper-listbox
+                    slot="dropdown-content"
+                    selected="{{selectedEntity}}"
+                  >
+                    <template is="dom-repeat" items="[[entities]]" as="state">
+                      <paper-item>[[state.entity_id]]</paper-item>
+                    </template>
+                  </paper-listbox>
+                </paper-dropdown-menu>
+              </div>
+              <template
+                is="dom-if"
+                if="[[!computeIsEntitySelected(selectedEntity)]]"
+              >
+                <div class="card-actions">
+                  <ha-call-service-button
+                    hass="[[hass]]"
+                    domain="zwave"
+                    service="refresh_entity"
+                    service-data="[[computeRefreshEntityServiceData(selectedEntity)]]"
+                  >
+                    Refresh Entity
+                  </ha-call-service-button>
+                  <ha-service-description
+                    hass="[[hass]]"
+                    domain="zwave"
+                    service="refresh_entity"
+                    hidden$="[[!showHelp]]"
+                  >
+                  </ha-service-description>
+                  <paper-button on-click="_entityMoreInfo"
+                    >Entity Information</paper-button
+                  >
+                </div>
+                <div class="form-group">
+                  <paper-checkbox
+                    checked="{{entityIgnored}}"
+                    class="form-control"
+                  >
+                    Exclude this entity from Home Assistant
+                  </paper-checkbox>
+                  <paper-input
+                    disabled="{{entityIgnored}}"
+                    label="Polling intensity"
+                    type="number"
+                    min="0"
+                    value="{{entityPollingIntensity}}"
+                  >
+                  </paper-input>
+                </div>
+                <div class="card-actions">
+                  <ha-call-service-button
+                    hass="[[hass]]"
+                    domain="zwave"
+                    service="set_poll_intensity"
+                    service-data="[[computePollIntensityServiceData(entityPollingIntensity)]]"
+                  >
+                    Save
+                  </ha-call-service-button>
+                </div>
+              </template>
+            </template>
+          </paper-card>
+
+          <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
+            <!-- Value card -->
+            <zwave-values
+              hass="[[hass]]"
+              nodes="[[nodes]]"
+              selected-node="[[selectedNode]]"
+              values="[[values]]"
+            ></zwave-values>
+
+            <!-- Group card -->
+            <zwave-groups
+              hass="[[hass]]"
+              nodes="[[nodes]]"
+              selected-node="[[selectedNode]]"
+              groups="[[groups]]"
+            ></zwave-groups>
+
+            <!-- Config card -->
+            <zwave-node-config
+              hass="[[hass]]"
+              nodes="[[nodes]]"
+              selected-node="[[selectedNode]]"
+              config="[[config]]"
+            ></zwave-node-config>
           </template>
-        </paper-card>
 
-        <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
+          <!-- Protection card -->
+          <template is="dom-if" if="{{_protectionNode}}">
+            <zwave-node-protection
+              hass="[[hass]]"
+              nodes="[[nodes]]"
+              selected-node="[[selectedNode]]"
+              protection="[[_protection]]"
+            ></zwave-node-protection>
+          </template>
 
-          <!--Value card-->
-          <zwave-values
-            hass="[[hass]]"
-            nodes="[[nodes]]"
-            selected-node="[[selectedNode]]"
-            values="[[values]]"
-          ></zwave-values>
+          <!-- User Codes -->
+          <template is="dom-if" if="{{hasNodeUserCodes}}">
+            <zwave-usercodes
+              id="zwave-usercodes"
+              hass="[[hass]]"
+              nodes="[[nodes]]"
+              user-codes="[[userCodes]]"
+              selected-node="[[selectedNode]]"
+            ></zwave-usercodes>
+          </template>
+        </ha-config-section>
 
-          <!--Group card-->
-          <zwave-groups
-            hass="[[hass]]"
-            nodes="[[nodes]]"
-            selected-node="[[selectedNode]]"
-            groups="[[groups]]"
-          ></zwave-groups>
-
-          <!--Config card-->
-          <zwave-node-config
-            hass="[[hass]]"
-            nodes="[[nodes]]"
-            selected-node="[[selectedNode]]"
-            config="[[config]]"
-          ></zwave-node-config>
-
-        </template>
-
-        <!--Protection card-->
-        <template is="dom-if" if="{{_protectionNode}}">
-          <zwave-node-protection
-            hass="[[hass]]"
-            nodes="[[nodes]]"
-            selected-node="[[selectedNode]]"
-            protection="[[_protection]]"
-          ></zwave-node-protection>
-        </template>
-
-        <!--User Codes-->
-        <template is="dom-if" if="{{hasNodeUserCodes}}">
-          <zwave-usercodes
-            id="zwave-usercodes"
-            hass="[[hass]]"
-            nodes="[[nodes]]"
-            user-codes="[[userCodes]]"
-            selected-node="[[selectedNode]]"
-          ></zwave-usercodes>
-      </template>
-      </ha-config-section>
-
-
-
-      <!--Ozw log-->
-      <ozw-log is-wide="[[isWide]]" hass="[[hass]]"></ozw-log>
-
-    </ha-app-layout>
-`;
+        <!-- Ozw log -->
+        <ozw-log is-wide="[[isWide]]" hass="[[hass]]"></ozw-log>
+      </ha-app-layout>
+    `;
   }
 
   static get properties() {

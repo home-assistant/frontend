@@ -9,29 +9,44 @@ import NavigateMixin from "../../../src/mixins/navigate-mixin";
 class HassioAddons extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="ha-style hassio-style">
-      paper-card {
-        cursor: pointer;
-      }
-    </style>
-    <div class="content card-group">
-      <div class="title">Add-ons</div>
-      <template is="dom-if" if="[[!addons.length]]">
-        <paper-card>
-          <div class="card-content">
-            You don't have any add-ons installed yet. Head over to <a href="#" on-click="openStore">the add-on store</a> to get started!
-          </div>
-        </paper-card>
-      </template>
-      <template is="dom-repeat" items="[[addons]]" as="addon" sort="sortAddons">
-        <paper-card on-click="addonTapped">
-          <div class="card-content">
-            <hassio-card-content hass="[[hass]]" title="[[addon.name]]" description="[[addon.description]]" icon="[[computeIcon(addon)]]" icon-title="[[computeIconTitle(addon)]]" icon-class="[[computeIconClass(addon)]]"></hassio-card-content>
-          </div>
-        </paper-card>
-      </template>
-    </div>
-`;
+      <style include="ha-style hassio-style">
+        paper-card {
+          cursor: pointer;
+        }
+      </style>
+      <div class="content card-group">
+        <div class="title">Add-ons</div>
+        <template is="dom-if" if="[[!addons.length]]">
+          <paper-card>
+            <div class="card-content">
+              You don't have any add-ons installed yet. Head over to
+              <a href="#" on-click="openStore">the add-on store</a> to get
+              started!
+            </div>
+          </paper-card>
+        </template>
+        <template
+          is="dom-repeat"
+          items="[[addons]]"
+          as="addon"
+          sort="sortAddons"
+        >
+          <paper-card on-click="addonTapped">
+            <div class="card-content">
+              <hassio-card-content
+                hass="[[hass]]"
+                title="[[addon.name]]"
+                description="[[addon.description]]"
+                available="[[addon.available]]"
+                icon="[[computeIcon(addon)]]"
+                icon-title="[[computeIconTitle(addon)]]"
+                icon-class="[[computeIconClass(addon)]]"
+              ></hassio-card-content>
+            </div>
+          </paper-card>
+        </template>
+      </div>
+    `;
   }
 
   static get properties() {
