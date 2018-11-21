@@ -120,9 +120,11 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-          ${this._configEntities!.map((entityConf) =>
-            this.renderEntity(entityConf)
-          )}
+          ${
+            this._configEntities!.map((entityConf) =>
+              this.renderEntity(entityConf)
+            )
+          }
         </div>
       </ha-card>
     `;
@@ -222,11 +224,13 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
           this._config!.show_state !== false
             ? html`
                 <div>
-                  ${computeStateDisplay(
-                    this.localize,
-                    stateObj,
-                    this.hass!.language
-                  )}
+                  ${
+                    computeStateDisplay(
+                      this.localize,
+                      stateObj,
+                      this.hass!.language
+                    )
+                  }
                 </div>
               `
             : ""

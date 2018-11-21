@@ -125,9 +125,11 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                   <paper-button
                     ?disabled="${!this._isToggleAvailable}"
                     @click="${this._toggleEditor}"
-                    >${this.localize(
-                      "ui.panel.lovelace.editor.edit.toggle_editor"
-                    )}</paper-button
+                    >${
+                      this.localize(
+                        "ui.panel.lovelace.editor.edit.toggle_editor"
+                      )
+                    }</paper-button
                   >
                   <paper-button @click="${this._closeDialog}"
                     >${this.localize("ui.common.cancel")}</paper-button
@@ -140,9 +142,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                       ?active="${this._saving}"
                       alt="Saving"
                     ></paper-spinner>
-                    ${this.localize(
-                      "ui.panel.lovelace.editor.edit.save"
-                    )}</paper-button
+                    ${
+                      this.localize("ui.panel.lovelace.editor.edit.save")
+                    }</paper-button
                   >
                 </div>
               `
