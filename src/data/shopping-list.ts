@@ -16,9 +16,7 @@ export const saveEdit = (
   itemId: number,
   name: string
 ): Promise<ShoppingListItem> =>
-  hass.callWS({
-    type: "shopping_list/items/update",
-    item_id: itemId,
+  hass.callApi("POST", "shopping_list/item/" + itemId, {
     name,
   });
 
@@ -27,22 +25,17 @@ export const completeItem = (
   itemId: number,
   complete: boolean
 ): Promise<void> =>
-  hass.callWS({
-    type: "shopping_list/items/update",
-    item_id: itemId,
+  hass.callApi("POST", "shopping_list/item/" + itemId, {
     complete,
   });
 
 export const clearItems = (hass: HomeAssistant): Promise<void> =>
-  hass.callWS({
-    type: "shopping_list/items/clear",
-  });
+  hass.callApi("POST", "shopping_list/clear_completed");
 
 export const addItem = (
   hass: HomeAssistant,
   name: string
 ): Promise<ShoppingListItem> =>
-  hass.callWS({
-    type: "shopping_list/items/add",
+  hass.callApi("POST", "shopping_list/item", {
     name,
   });
