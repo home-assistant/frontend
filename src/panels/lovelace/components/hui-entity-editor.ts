@@ -52,7 +52,7 @@ export class HuiEntityEditor extends LitElement {
   private _addEntity() {
     const newConfigEntities = this.entities!.concat({ entity: "" });
 
-    fireEvent(this, "change", { entities: newConfigEntities });
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   private _valueChanged(ev: Event): void {
@@ -68,7 +68,7 @@ export class HuiEntityEditor extends LitElement {
       };
     }
 
-    fireEvent(this, "change", { entities: newConfigEntities });
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   private renderStyle(): TemplateResult {
