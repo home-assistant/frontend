@@ -291,7 +291,6 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _handleUIConfigChanged(value: LovelaceConfig): void {
-    this._configElement!.setConfig(value);
     this._configValue = { format: "json", value };
     this._updatePreview(value);
   }
@@ -339,8 +338,11 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   private async _loadConfigElement(): Promise<void> {
+    if (!this._originalConfig) {
+      return;
+    }
     const conf = this._originalConfig;
-    const tag = conf!.type.startsWith(CUSTOM_TYPE_PREFIX)
+    const tag = conf.type.startsWith(CUSTOM_TYPE_PREFIX)
       ? conf!.type.substr(CUSTOM_TYPE_PREFIX.length)
       : `hui-${conf!.type}-card`;
 
@@ -362,8 +364,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     configElement.addEventListener("config-changed", (ev) =>
       this._handleUIConfigChanged(ev.detail.config)
     );
-    this._configValue = { format: "json", value: conf! };
+    this._configValue = { format: "json", value: conf };
     this._configElement = configElement;
+    this._updatePreview(conf);
   }
 }
 

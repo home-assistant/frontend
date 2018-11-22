@@ -26,11 +26,15 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   private _configEntities?: ConfigEntity[];
 
   static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      _configEntities: {},
-    };
+    return { hass: {}, _config: {}, _configEntities: {} };
+  }
+
+  get _title(): string {
+    return this._config!.title || "";
+  }
+
+  get _theme(): string {
+    return this._config!.theme || "Backend-selected";
   }
 
   public setConfig(config: Config): void {
@@ -47,20 +51,20 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <paper-input
         label="Title"
-        value="${this._config!.title || ""}"
+        value="${this._title}"
         .configValue="${"title"}"
         @value-changed="${this._valueChanged}"
       ></paper-input>
       <hui-theme-select-editor
         .hass="${this.hass}"
-        .value="${this._config!.theme}"
+        .value="${this._theme}"
         .configValue="${"theme"}"
-        @change="${this._valueChanged}"
+        @theme-changed="${this._valueChanged}"
       ></hui-theme-select-editor>
       <hui-entity-editor
         .hass="${this.hass}"
         .entities="${this._configEntities}"
-        @change="${this._valueChanged}"
+        @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>
       <paper-checkbox
         ?checked="${this._config!.show_header_toggle !== false}"
@@ -77,21 +81,26 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     const target = ev.target! as EditorTarget;
-    let newConfig = this._config;
+
+    if (
+      (target.configValue! === "title" && target.value === this._title) ||
+      (target.configValue! === "theme" && target.value === this._theme)
+    ) {
+      return;
+    }
 
     if (ev.detail && ev.detail.entities) {
-      newConfig.entities = ev.detail.entities;
-    } else {
-      newConfig = {
+      this._config.entities = ev.detail.entities;
+      this._configEntities = processEditorEntities(this._config.entities);
+    } else if (target.configValue) {
+      this._config = {
         ...this._config,
-        [target.configValue!]:
+        [target.configValue]:
           target.checked !== undefined ? target.checked : target.value,
       };
     }
 
-    fireEvent(this, "config-changed", {
-      config: newConfig,
-    });
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private renderStyle(): TemplateResult {
