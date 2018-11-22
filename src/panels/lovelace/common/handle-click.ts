@@ -2,7 +2,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig } from "../elements/types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import toggleEntity from "../../../../src/panels/lovelace/common/entity/toggle-entity";
+import { toggleEntity } from "../../../../src/panels/lovelace/common/entity/toggle-entity";
 
 export const handleClick = (
   node: HTMLElement,
@@ -28,7 +28,7 @@ export const handleClick = (
       navigate(node, config.navigation_path ? config.navigation_path : "");
       break;
     case "toggle":
-      toggleEntity(hass, config.entity);
+      toggleEntity(hass, config.entity!);
       break;
     case "call-service": {
       if (config.service) {
