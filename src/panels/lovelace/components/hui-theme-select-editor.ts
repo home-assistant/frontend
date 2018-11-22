@@ -31,7 +31,7 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
       >
         <paper-listbox
           slot="dropdown-content"
-          .selected="${this.value || "Backend-selected"}"
+          .selected="${this.value}"
           attr-for-selected="theme"
         >
           ${
@@ -57,8 +57,11 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _changed(ev): void {
+    if (!this.hass || ev.target.value === "") {
+      return;
+    }
     this.value = ev.target.value;
-    fireEvent(this, "change");
+    fireEvent(this, "theme-changed");
   }
 }
 
