@@ -13,12 +13,12 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { EntityConfig } from "../entity-rows/types";
+import { toggleEntity } from "../common/entity/toggle-entity";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 import processConfigEntities from "../common/process-config-entities";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import toggleEntity from "../common/entity/toggle-entity";
 
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
@@ -245,7 +245,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     const action = hold ? config.hold_action : config.tap_action || "more-info";
     switch (action) {
       case "toggle":
-        toggleEntity(this.hass, entityId);
+        toggleEntity(this.hass!, entityId);
         break;
       case "call-service":
         const [domain, service] = config.service!.split(".", 2);

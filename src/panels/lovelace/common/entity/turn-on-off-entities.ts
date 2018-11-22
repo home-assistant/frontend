@@ -1,7 +1,12 @@
-import { STATES_OFF } from "../../../../common/const";
 import computeDomain from "../../../../common/entity/compute_domain";
+import { STATES_OFF } from "../../../../common/const";
+import { HomeAssistant } from "../../../../types";
 
-export default function turnOnOffEntities(hass, entityIds, turnOn = true) {
+export const turnOnOffEntities = (
+  hass: HomeAssistant,
+  entityIds: string[],
+  turnOn = true
+): void => {
   const domainsToCall = {};
   entityIds.forEach((entityId) => {
     if (STATES_OFF.includes(hass.states[entityId].state) === turnOn) {
@@ -10,7 +15,9 @@ export default function turnOnOffEntities(hass, entityIds, turnOn = true) {
         ? stateDomain
         : "homeassistant";
 
-      if (!(serviceDomain in domainsToCall)) domainsToCall[serviceDomain] = [];
+      if (!(serviceDomain in domainsToCall)) {
+        domainsToCall[serviceDomain] = [];
+      }
       domainsToCall[serviceDomain].push(entityId);
     }
   });
@@ -31,4 +38,4 @@ export default function turnOnOffEntities(hass, entityIds, turnOn = true) {
     const entities = domainsToCall[domain];
     hass.callService(domain, service, { entity_id: entities });
   });
-}
+};
