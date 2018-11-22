@@ -7,10 +7,10 @@ import "../components/hui-image";
 import computeDomain from "../../../common/entity/compute_domain";
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
-import toggleEntity from "../common/entity/toggle-entity";
 
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { toggleEntity } from "../common/entity/toggle-entity";
 import { longPressBind } from "../common/directives/long-press-directive";
 
 const UNAVAILABLE = "Unavailable";
