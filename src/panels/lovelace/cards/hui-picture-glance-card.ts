@@ -172,7 +172,7 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _callService(ev: MouseEvent): void {
-    toggleEntity(this.hass, (ev.target as any).entity);
+    toggleEntity(this.hass!, (ev.target as any).entity);
   }
 
   private _handleImageClick(): void {
