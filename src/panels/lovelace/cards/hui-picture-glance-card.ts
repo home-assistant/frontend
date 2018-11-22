@@ -9,13 +9,13 @@ import { LovelaceCard, LovelaceConfig } from "../types";
 import { EntityConfig } from "../entity-rows/types";
 import { navigate } from "../../../common/navigate";
 import { HomeAssistant } from "../../../types";
+import { toggleEntity } from "../common/entity/toggle-entity";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 import processConfigEntities from "../common/process-config-entities";
 import computeDomain from "../../../common/entity/compute_domain";
 import stateIcon from "../../../common/entity/state_icon";
-import toggleEntity from "../common/entity/toggle-entity";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
