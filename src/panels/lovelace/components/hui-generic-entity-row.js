@@ -99,6 +99,15 @@ class HuiGenericEntityRow extends PolymerElement {
                 datetime="[[_stateObj.last_changed]]"
               ></ha-relative-time>
             </template>
+            <template
+              is="dom-if"
+              if="[[_equals(config.secondary_info, 'last-triggered')]]"
+            >
+              <ha-relative-time
+                hass="[[hass]]"
+                datetime="[[_stateObj.last_triggered]]"
+              ></ha-relative-time>
+            </template>
           </template>
           <template is="dom-if" if="[[!showSecondary]">
             <slot name="secondary"></slot>

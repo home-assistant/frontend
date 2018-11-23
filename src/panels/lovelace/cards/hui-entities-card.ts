@@ -22,7 +22,7 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 export interface ConfigEntity extends EntityConfig {
   type?: string;
-  secondary_info?: "entity-id" | "last-changed";
+  secondary_info?: "entity-id" | "last-changed" | "last-triggered";
   action_name?: string;
   service?: string;
   service_data?: object;
