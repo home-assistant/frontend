@@ -2,10 +2,14 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/paper-button/paper-button";
 
+import { fireEvent } from "../../common/dom/fire_event";
+
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
 import localizeMixin from "../../mixins/localize-mixin";
+
+let registeredDialog = false;
 
 class Lovelace extends localizeMixin(PolymerElement) {
   static get template() {
@@ -125,6 +129,14 @@ class Lovelace extends localizeMixin(PolymerElement) {
           _config: generateLovelaceConfig(this.hass, this.localize),
           _state: "loaded",
         });
+        if (!registeredDialog) {
+          registeredDialog = true;
+          fireEvent(this, "register-dialog", {
+            dialogShowEvent: "show-save-config",
+            dialogTag: "hui-dialog-save-config",
+            dialogImport: () => import("./editor/hui-dialog-save-config"),
+          });
+        }
       } else {
         this.setProperties({
           _state: "error",

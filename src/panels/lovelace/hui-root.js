@@ -275,7 +275,14 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   _editModeEnable() {
     if (this.config._frontendAuto) {
-      alert("Unable to edit automatic generated UI yet.");
+      this.fire("show-save-config", {
+        hass: this.hass,
+        config: this.config,
+        reloadLovelace: () => {
+          this.fire("config-refresh");
+          this._editMode = true;
+        },
+      });
       return;
     }
     this._editMode = true;
