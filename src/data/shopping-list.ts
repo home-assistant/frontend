@@ -36,6 +36,7 @@ export const addItem = (
   hass: HomeAssistant,
   name: string
 ): Promise<ShoppingListItem> =>
-  hass.callApi("POST", "shopping_list/item", {
+  hass.callWS({
+    type: "shopping_list/items/add",
     name,
   });
