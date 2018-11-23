@@ -5,8 +5,9 @@ import "@polymer/paper-button/paper-button";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
+import localizeMixin from "../../mixins/localize-mixin";
 
-class Lovelace extends PolymerElement {
+class Lovelace extends localizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -121,7 +122,7 @@ class Lovelace extends PolymerElement {
           generateLovelaceConfig,
         } = await import("./common/generate-lovelace-config");
         this.setProperties({
-          _config: generateLovelaceConfig(this.hass),
+          _config: generateLovelaceConfig(this.hass, this.localize),
           _state: "loaded",
         });
       } else {

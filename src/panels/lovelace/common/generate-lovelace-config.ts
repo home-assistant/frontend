@@ -6,6 +6,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import splitByGroups from "../../../common/entity/split_by_groups";
 import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { LocalizeFunc } from "../../../mixins/localize-base-mixin";
 
 interface CardConfig {
   id?: string;
@@ -97,6 +98,7 @@ const computeDefaultViewStates = (hass: HomeAssistant): HassEntities => {
 };
 
 const generateViewConfig = (
+  localize: LocalizeFunc,
   id: string,
   title: string | undefined,
   icon: string | undefined,
@@ -150,7 +152,7 @@ const generateViewConfig = (
     .forEach((domain) => {
       cards = cards.concat(
         computeCards(
-          domain,
+          localize(`domain.${domain}`),
           ungroupedEntitites[domain].map((entityId) => entities[entityId])
         )
       );
@@ -165,7 +167,10 @@ const generateViewConfig = (
   };
 };
 
-export const generateLovelaceConfig = (hass: HomeAssistant): LovelaceConfig => {
+export const generateLovelaceConfig = (
+  hass: HomeAssistant,
+  localize: LocalizeFunc
+): LovelaceConfig => {
   const viewEntities = extractViews(hass.states);
 
   const views = viewEntities.map((viewEntity: GroupEntity) => {
@@ -178,6 +183,7 @@ export const generateLovelaceConfig = (hass: HomeAssistant): LovelaceConfig => {
     });
 
     return generateViewConfig(
+      localize,
       computeObjectId(viewEntity.entity_id),
       computeStateName(viewEntity),
       viewEntity.attributes.icon,
@@ -206,7 +212,14 @@ export const generateLovelaceConfig = (hass: HomeAssistant): LovelaceConfig => {
     });
 
     views.unshift(
-      generateViewConfig("default_view", "Home", undefined, states, groupOrders)
+      generateViewConfig(
+        localize,
+        "default_view",
+        "Home",
+        undefined,
+        states,
+        groupOrders
+      )
     );
 
     // Make sure we don't have Home as title and first tab.
