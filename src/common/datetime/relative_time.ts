@@ -10,31 +10,43 @@ const langKey = ["second", "minute", "hour", "day"];
 
 export default function relativeTime(
   dateObj: Date,
-  localize: LocalizeFunc
+  localize: LocalizeFunc,
+  options: {
+    compareTime?: Date;
+    includeTense?: boolean;
+  } = {}
 ): string {
-  let delta = (new Date().getTime() - dateObj.getTime()) / 1000;
+  const compareTime = options.compareTime || new Date();
+  let delta = (compareTime.getTime() - dateObj.getTime()) / 1000;
   const tense = delta >= 0 ? "past" : "future";
   delta = Math.abs(delta);
+
+  let timeDesc;
 
   for (let i = 0; i < tests.length; i++) {
     if (delta < tests[i]) {
       delta = Math.floor(delta);
-      const timeDesc = localize(
+      timeDesc = localize(
         `ui.components.relative_time.duration.${langKey[i]}`,
         "count",
         delta
       );
-      return localize(`ui.components.relative_time.${tense}`, "time", timeDesc);
+      break;
     }
 
     delta /= tests[i];
   }
 
-  delta = Math.floor(delta);
-  const time = localize(
-    "ui.components.relative_time.duration.week",
-    "count",
-    delta
-  );
-  return localize(`ui.components.relative_time.${tense}`, "time", time);
+  if (timeDesc === undefined) {
+    delta = Math.floor(delta);
+    timeDesc = localize(
+      "ui.components.relative_time.duration.week",
+      "count",
+      delta
+    );
+  }
+
+  return options.includeTense === false
+    ? timeDesc
+    : localize(`ui.components.relative_time.${tense}`, "time", timeDesc);
 }
