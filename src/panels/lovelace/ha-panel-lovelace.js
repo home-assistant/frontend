@@ -116,10 +116,20 @@ class Lovelace extends PolymerElement {
         _state: "loaded",
       });
     } catch (err) {
-      this.setProperties({
-        _state: "error",
-        _errorMsg: err.message,
-      });
+      if (err.code === "file_not_found") {
+        const {
+          generateLovelaceConfig,
+        } = await import("./common/generate-lovelace-config");
+        this.setProperties({
+          _config: generateLovelaceConfig(this.hass),
+          _state: "loaded",
+        });
+      } else {
+        this.setProperties({
+          _state: "error",
+          _errorMsg: err.message,
+        });
+      }
     }
   }
 
