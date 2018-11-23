@@ -8,7 +8,7 @@ import { GroupEntity } from "../../types";
 export default function getViewEntities(
   entities: HassEntities,
   view: GroupEntity
-) {
+): HassEntities {
   const viewEntities = {};
 
   view.attributes.entity_id.forEach((entityId) => {
