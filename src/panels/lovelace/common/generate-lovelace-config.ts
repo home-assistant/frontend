@@ -46,6 +46,9 @@ const computeCards = (title: string, states: HassEntity[]): CardConfig[] => {
   const entities: string[] = [];
 
   states.forEach((stateObj) => {
+    if (!stateObj) {
+      return;
+    }
     const domain = computeStateDomain(stateObj);
     if (domain === "alarm_control_panel") {
       cards.push({
