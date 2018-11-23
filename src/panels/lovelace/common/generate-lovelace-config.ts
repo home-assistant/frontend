@@ -7,6 +7,7 @@ import splitByGroups from "../../../common/entity/split_by_groups";
 import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import { LocalizeFunc } from "../../../mixins/localize-base-mixin";
+import computeDomain from "../../../common/entity/compute_domain";
 
 interface CardConfig {
   id?: string;
@@ -39,38 +40,42 @@ const DOMAINS_BADGES = [
 ];
 const HIDE_DOMAIN = new Set(["persistent_notification", "configurator"]);
 
-const computeCards = (title: string, states: HassEntity[]): CardConfig[] => {
+const computeCards = (
+  title: string,
+  states: Array<[string, HassEntity]>
+): CardConfig[] => {
   const cards: CardConfig[] = [];
 
   // For entity card
   const entities: string[] = [];
 
-  states.forEach((stateObj) => {
-    const domain = computeStateDomain(stateObj);
+  for (const [entityId /*, stateObj */] of states) {
+    const domain = computeDomain(entityId);
+
     if (domain === "alarm_control_panel") {
       cards.push({
         type: "alarm-panel",
-        entity: stateObj.entity_id,
+        entity: entityId,
       });
     } else if (domain === "climate") {
       cards.push({
         type: "thermostat",
-        entity: stateObj.entity_id,
+        entity: entityId,
       });
     } else if (domain === "media_player") {
       cards.push({
         type: "media-control",
-        entity: stateObj.entity_id,
+        entity: entityId,
       });
     } else if (domain === "weather") {
       cards.push({
         type: "weather-forecast",
-        entity: stateObj.entity_id,
+        entity: entityId,
       });
     } else {
-      entities.push(stateObj.entity_id);
+      entities.push(entityId);
     }
-  });
+  }
 
   if (entities.length > 0) {
     cards.unshift({
@@ -142,7 +147,9 @@ const generateViewConfig = (
     cards = cards.concat(
       computeCards(
         computeStateName(groupEntity),
-        groupEntity.attributes.entity_id.map((entityId) => entities[entityId])
+        groupEntity.attributes.entity_id.map(
+          (entityId): [string, HassEntity] => [entityId, entities[entityId]]
+        )
       )
     );
   });
@@ -153,7 +160,9 @@ const generateViewConfig = (
       cards = cards.concat(
         computeCards(
           localize(`domain.${domain}`),
-          ungroupedEntitites[domain].map((entityId) => entities[entityId])
+          ungroupedEntitites[domain].map(
+            (entityId): [string, HassEntity] => [entityId, entities[entityId]]
+          )
         )
       );
     });
