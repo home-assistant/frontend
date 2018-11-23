@@ -274,6 +274,10 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _editModeEnable() {
+    if (this.config._frontendAuto) {
+      alert("Unable to edit automatic generated UI yet.");
+      return;
+    }
     this._editMode = true;
   }
 

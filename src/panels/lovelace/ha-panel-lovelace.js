@@ -5,8 +5,9 @@ import "@polymer/paper-button/paper-button";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
+import localizeMixin from "../../mixins/localize-mixin";
 
-class Lovelace extends PolymerElement {
+class Lovelace extends localizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -116,10 +117,20 @@ class Lovelace extends PolymerElement {
         _state: "loaded",
       });
     } catch (err) {
-      this.setProperties({
-        _state: "error",
-        _errorMsg: err.message,
-      });
+      if (err.code === "file_not_found") {
+        const {
+          generateLovelaceConfig,
+        } = await import("./common/generate-lovelace-config");
+        this.setProperties({
+          _config: generateLovelaceConfig(this.hass, this.localize),
+          _state: "loaded",
+        });
+      } else {
+        this.setProperties({
+          _state: "error",
+          _errorMsg: err.message,
+        });
+      }
     }
   }
 
