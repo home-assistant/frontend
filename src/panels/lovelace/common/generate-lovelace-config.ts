@@ -22,6 +22,7 @@ interface ViewConfig {
 }
 
 interface LovelaceConfig {
+  _frontendAuto: boolean;
   title?: string;
   views: ViewConfig[];
 }
@@ -215,6 +216,7 @@ export const generateLovelaceConfig = (hass: HomeAssistant): LovelaceConfig => {
   }
 
   return {
+    _frontendAuto: true,
     title,
     views,
   };
