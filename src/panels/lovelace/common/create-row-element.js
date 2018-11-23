@@ -47,6 +47,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   timer: "timer",
   switch: "toggle",
   vacuum: "toggle",
+  sun: "sensor",
 };
 const TIMEOUT = 2000;
 
