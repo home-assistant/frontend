@@ -3,16 +3,19 @@ import { TemplateResult } from "lit-html";
 
 class HuiErrorEntityRow extends LitElement {
   public entity?: string;
+  public error?: string;
 
   static get properties() {
     return {
+      error: {},
       entity: {},
     };
   }
 
   protected render(): TemplateResult {
     return html`
-      ${this.renderStyle()} Entity not available: ${this.entity || ""}
+      ${this.renderStyle()} ${this.error || "Entity not available"}:
+      ${this.entity || ""}
     `;
   }
 
