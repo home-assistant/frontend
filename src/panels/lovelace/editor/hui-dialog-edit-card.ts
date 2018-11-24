@@ -2,13 +2,13 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
-import { LovelaceConfig } from "../types";
+import { LovelaceCardConfig } from "../types";
 import "./hui-edit-card";
 import "./hui-migrate-config";
 
 export class HuiDialogEditCard extends LitElement {
   protected _hass?: HomeAssistant;
-  private _cardConfig?: LovelaceConfig;
+  private _cardConfig?: LovelaceCardConfig;
   private _reloadLovelace?: () => void;
 
   static get properties(): PropertyDeclarations {

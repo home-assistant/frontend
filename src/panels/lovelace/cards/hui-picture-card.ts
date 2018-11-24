@@ -2,13 +2,13 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 
 import "../../../components/ha-card";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { navigate } from "../../../common/navigate";
 import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/classMap";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   image?: string;
   navigation_path?: string;
   service?: string;

@@ -3,7 +3,7 @@ import "@polymer/paper-input/paper-textarea";
 import createCardElement from "../common/create-card-element";
 import createErrorCardConfig from "../common/create-error-card-config";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { ConfigError } from "./types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
@@ -28,7 +28,7 @@ export class HuiCardPreview extends HTMLElement {
     this._createCard(configValue);
   }
 
-  set config(configValue: LovelaceConfig) {
+  set config(configValue: LovelaceCardConfig) {
     if (!configValue) {
       return;
     }
@@ -49,7 +49,7 @@ export class HuiCardPreview extends HTMLElement {
     }
   }
 
-  private _createCard(configValue: LovelaceConfig): void {
+  private _createCard(configValue: LovelaceCardConfig): void {
     if (this._element) {
       this.removeChild(this._element);
     }

@@ -2,12 +2,12 @@ import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
-import { LovelaceConfig } from "../types";
+import { LovelaceCardConfig } from "../types";
 
 let registeredDialog = false;
 
 export class HuiCardOptions extends LitElement {
-  public cardConfig?: LovelaceConfig;
+  public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {

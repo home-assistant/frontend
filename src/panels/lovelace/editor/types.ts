@@ -1,4 +1,4 @@
-import { LovelaceConfig } from "../types";
+import { LovelaceCardConfig } from "../types";
 import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {
@@ -9,7 +9,7 @@ export interface YamlChangedEvent extends Event {
 
 export interface ConfigValue {
   format: "json" | "yaml";
-  value?: string | LovelaceConfig;
+  value?: string | LovelaceCardConfig;
 }
 
 export interface ConfigError {
