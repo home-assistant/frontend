@@ -25,6 +25,16 @@ import { LovelaceCardEditor, LovelaceCardConfig } from "../types";
 import { YamlChangedEvent, ConfigValue, ConfigError } from "./types";
 import { extYamlSchema } from "./yaml-ext-schema";
 
+declare global {
+  interface HASSDomEvents {
+    "yaml-changed": {
+      yaml: string;
+    };
+    "entities-changed": undefined;
+    "config-changed": undefined;
+  }
+}
+
 const CUSTOM_TYPE_PREFIX = "custom:";
 
 export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
