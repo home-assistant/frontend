@@ -1,4 +1,5 @@
-import { LovelaceCardConfig } from "../types";
+import { HomeAssistant } from "../../../types";
+import { LovelaceConfig, LovelaceCardConfig } from "../types";
 import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {
@@ -29,4 +30,16 @@ export interface EditorTarget extends EventTarget {
   index?: number;
   checked?: boolean;
   configValue?: string;
+}
+
+export interface SaveDialogParams {
+  hass: HomeAssistant;
+  config: LovelaceConfig;
+  reloadLovelace: () => void;
+}
+
+export interface EditDialogParams {
+  hass: HomeAssistant;
+  cardConfig: LovelaceCardConfig;
+  reloadLovelace: () => void;
 }

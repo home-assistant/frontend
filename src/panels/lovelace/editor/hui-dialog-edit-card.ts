@@ -3,8 +3,29 @@ import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../types";
+import { EditDialogParams } from "./types";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "./hui-edit-card";
 import "./hui-migrate-config";
+
+export const registerEditCardDialog = (element: HTMLElement) =>
+  fireEvent(element, "register-dialog", {
+    dialogShowEvent: "show-edit-card",
+    dialogTag: "hui-dialog-edit-card",
+    dialogImport: () => import("./hui-dialog-edit-card"),
+  });
+
+export const showEditCardDialog = (
+  element: HTMLElement,
+  hass: HomeAssistant,
+  cardConfig: LovelaceCardConfig,
+  reloadLovelace: () => void
+) =>
+  fireEvent(element, "show-edit-card", {
+    hass,
+    cardConfig,
+    reloadLovelace,
+  });
 
 export class HuiDialogEditCard extends LitElement {
   protected _hass?: HomeAssistant;
@@ -18,10 +39,10 @@ export class HuiDialogEditCard extends LitElement {
     };
   }
 
-  public async showDialog({ hass, cardConfig, reloadLovelace }): Promise<void> {
-    this._hass = hass;
-    this._cardConfig = cardConfig;
-    this._reloadLovelace = reloadLovelace;
+  public async showDialog(params: EditDialogParams): Promise<void> {
+    this._hass = params.hass;
+    this._cardConfig = params.cardConfig;
+    this._reloadLovelace = params.reloadLovelace;
     await this.updateComplete;
     (this.shadowRoot!.children[0] as any).showDialog();
   }

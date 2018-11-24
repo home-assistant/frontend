@@ -1,5 +1,4 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { LovelaceConfig } from "../types";
 import { TemplateResult } from "lit-html";
 
 import "@polymer/paper-spinner/paper-spinner";
@@ -9,9 +8,27 @@ import "@polymer/paper-dialog/paper-dialog";
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-button/paper-button";
 
-import { saveConfig } from "../common/data";
 import { HomeAssistant } from "../../../types";
+import { LovelaceConfig } from "../types";
+import { SaveDialogParams } from "./types";
+
+import { saveConfig } from "../common/data";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+
+export const registerSaveDialog = (element: HTMLElement) =>
+  fireEvent(element, "register-dialog", {
+    dialogShowEvent: "show-save-config",
+    dialogTag: "hui-dialog-save-config",
+    dialogImport: () => import("./hui-dialog-save-config"),
+  });
+
+export const showSaveDialog = (
+  element: HTMLElement,
+  hass: HomeAssistant,
+  config: LovelaceConfig,
+  reloadLovelace: () => void
+) => fireEvent(element, "show-save-config", { hass, config, reloadLovelace });
 
 export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
   protected _hass?: HomeAssistant;
@@ -32,10 +49,10 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
     this._saving = false;
   }
 
-  public async showDialog({ hass, config, reloadLovelace }): Promise<void> {
-    this._hass = hass;
-    this._config = config;
-    this._reloadLovelace = reloadLovelace;
+  public async showDialog(params: SaveDialogParams): Promise<void> {
+    this._hass = params.hass;
+    this._config = params.config;
+    this._reloadLovelace = params.reloadLovelace;
     await this.updateComplete;
     this._dialog.open();
   }

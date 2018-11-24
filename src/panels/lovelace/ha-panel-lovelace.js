@@ -2,8 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/paper-button/paper-button";
 
-import { fireEvent } from "../../common/dom/fire_event";
-
+import { registerSaveDialog } from "./editor/hui-dialog-save-config";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
@@ -131,11 +130,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
         });
         if (!registeredDialog) {
           registeredDialog = true;
-          fireEvent(this, "register-dialog", {
-            dialogShowEvent: "show-save-config",
-            dialogTag: "hui-dialog-save-config",
-            dialogImport: () => import("./editor/hui-dialog-save-config"),
-          });
+          registerSaveDialog(this);
         }
       } else {
         this.setProperties({
