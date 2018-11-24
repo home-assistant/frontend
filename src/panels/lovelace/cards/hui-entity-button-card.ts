@@ -18,11 +18,11 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import { toggleEntity } from "../common/entity/toggle-entity";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   icon?: string;

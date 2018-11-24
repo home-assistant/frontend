@@ -1,17 +1,31 @@
 import { HomeAssistant } from "../../types";
 
-export interface LovelaceConfig {
+export interface LovelaceCardConfig {
+  id?: string;
   type: string;
-  id: string;
+  [key: string]: any;
+}
+
+export interface LovelaceViewConfig {
+  title?: string;
+  badges?: string[];
+  cards?: LovelaceCardConfig[];
+  id?: string;
+  icon?: string;
+}
+export interface LovelaceConfig {
+  _frontendAuto: boolean;
+  title?: string;
+  views: LovelaceViewConfig[];
 }
 
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   getCardSize(): number;
-  setConfig(config: LovelaceConfig): void;
+  setConfig(config: LovelaceCardConfig): void;
 }
 
 export interface LovelaceCardEditor extends HTMLElement {
   hass?: HomeAssistant;
-  setConfig(config: LovelaceConfig): void;
+  setConfig(config: LovelaceCardConfig): void;
 }

@@ -3,11 +3,11 @@ import { TemplateResult } from "lit-html";
 
 import createHuiElement from "../common/create-hui-element";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   title?: string;
   image: string;
   elements: LovelaceElementConfig[];

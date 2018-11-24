@@ -2,11 +2,11 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 
 import "../../../components/ha-card";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { TemplateResult } from "lit-html";
 import { styleMap } from "lit-html/directives/styleMap";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   aspect_ratio?: string;
   title?: string;
   url: string;
