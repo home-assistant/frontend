@@ -12,7 +12,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceConfig } from "../types";
 import { SaveDialogParams } from "./types";
 
-import { saveConfig } from "../common/data";
+import { saveConfig, migrateConfig } from "../common/data";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
@@ -131,6 +131,7 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
     delete this._config._frontendAuto;
     try {
       await saveConfig(this._hass, this._config, "json");
+      await migrateConfig(this._hass);
       this._saving = false;
       this._closeDialog();
       this._reloadLovelace!();
