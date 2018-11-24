@@ -14,7 +14,7 @@ import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, EntityRow } from "../entity-rows/types";
-import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
+import { LovelaceCard, LovelaceCardConfig, LovelaceCardEditor } from "../types";
 import processConfigEntities from "../common/process-config-entities";
 import createRowElement from "../common/create-row-element";
 import computeDomain from "../../../common/entity/compute_domain";
@@ -29,7 +29,7 @@ export interface ConfigEntity extends EntityConfig {
   url?: string;
 }
 
-export interface Config extends LovelaceConfig {
+export interface Config extends LovelaceCardConfig {
   show_header_toggle?: boolean;
   title?: string;
   entities: ConfigEntity[];

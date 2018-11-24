@@ -6,7 +6,7 @@ import {
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
@@ -16,7 +16,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 import "../../../components/ha-card";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entity: string;
   title?: string;
   unit_of_measurement?: string;
