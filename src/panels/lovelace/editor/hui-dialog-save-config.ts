@@ -1,4 +1,5 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import { LovelaceConfig } from "../types";
 import { TemplateResult } from "lit-html";
 
 import "@polymer/paper-spinner/paper-spinner";
@@ -11,26 +12,6 @@ import "@polymer/paper-button/paper-button";
 import { saveConfig } from "../common/data";
 import { HomeAssistant } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-
-interface CardConfig {
-  id?: string;
-  type: string;
-  [key: string]: any;
-}
-
-interface ViewConfig {
-  title?: string;
-  badges?: string[];
-  cards?: CardConfig[];
-  id?: string;
-  icon?: string;
-}
-
-interface LovelaceConfig {
-  _frontendAuto: boolean;
-  title?: string;
-  views: ViewConfig[];
-}
 
 export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
   protected _hass?: HomeAssistant;
