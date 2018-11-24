@@ -88,8 +88,8 @@ export class CloudWebhooks extends LitElement {
         <div class="webhook" .entry="${entry}">
           <paper-item-body two-line>
             <div>
-              ${entry.domain === "automation" ? "Automation: " : ""}
               ${entry.name}
+              ${entry.domain === entry.name ? "" : ` (${entry.domain})`}
             </div>
             <div secondary>${entry.webhook_id}</div>
           </paper-item-body>
