@@ -5,7 +5,7 @@ import { TemplateResult } from "lit-html";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { EntityConfig } from "../entity-rows/types";
 import { navigate } from "../../../common/navigate";
 import { HomeAssistant } from "../../../types";
@@ -23,7 +23,7 @@ import "../components/hui-image";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entities: EntityConfig[];
   title?: string;
   navigation_path?: string;

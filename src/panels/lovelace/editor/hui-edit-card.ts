@@ -21,7 +21,7 @@ import "./hui-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiCardPreview } from "./hui-card-preview";
-import { LovelaceCardEditor, LovelaceConfig } from "../types";
+import { LovelaceCardEditor, LovelaceCardConfig } from "../types";
 import { YamlChangedEvent, ConfigValue, ConfigError } from "./types";
 import { extYamlSchema } from "./yaml-ext-schema";
 
@@ -30,7 +30,7 @@ const CUSTOM_TYPE_PREFIX = "custom:";
 export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   protected hass?: HomeAssistant;
   private _cardId?: string;
-  private _originalConfig?: LovelaceConfig;
+  private _originalConfig?: LovelaceCardConfig;
   private _configElement?: LovelaceCardEditor | null;
   private _uiEditor?: boolean;
   private _configValue?: ConfigValue;
@@ -59,7 +59,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     this._saving = false;
   }
 
-  set cardConfig(cardConfig: LovelaceConfig) {
+  set cardConfig(cardConfig: LovelaceCardConfig) {
     this._originalConfig = cardConfig;
     if (String(cardConfig.id) !== this._cardId) {
       this._loading = true;
@@ -210,7 +210,8 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           schema: extYamlSchema,
         }),
       };
-      this._configElement.setConfig(this._configValue!.value as LovelaceConfig);
+      this._configElement.setConfig(this._configValue!
+        .value as LovelaceCardConfig);
       this._uiEditor = !this._uiEditor;
     }
     this._resizeDialog();
@@ -274,7 +275,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     try {
       const config = yaml.safeLoad(this._configValue.value, {
         schema: extYamlSchema,
-      }) as LovelaceConfig;
+      }) as LovelaceCardConfig;
       this._updatePreview(config);
       this._configState = "OK";
       if (!this._isToggleAvailable && this._configElement !== null) {
@@ -290,12 +291,12 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _handleUIConfigChanged(value: LovelaceConfig): void {
+  private _handleUIConfigChanged(value: LovelaceCardConfig): void {
     this._configValue = { format: "json", value };
     this._updatePreview(value);
   }
 
-  private _updatePreview(config: LovelaceConfig) {
+  private _updatePreview(config: LovelaceCardConfig) {
     if (!this._previewEl) {
       return;
     }

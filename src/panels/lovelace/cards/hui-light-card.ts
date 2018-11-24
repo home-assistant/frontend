@@ -12,7 +12,7 @@ import { jQuery } from "../../../resources/jquery";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 
 import stateIcon from "../../../common/entity/state_icon";
@@ -37,7 +37,7 @@ const lightConfig = {
   showTooltip: false,
 };
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   theme?: string;

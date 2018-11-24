@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../../../types";
-import { LovelaceConfig } from "../types";
+import { LovelaceCardConfig } from "../types";
 
 export const getCardConfig = (
   hass: HomeAssistant,
@@ -13,7 +13,7 @@ export const getCardConfig = (
 export const updateCardConfig = (
   hass: HomeAssistant,
   cardId: string,
-  config: LovelaceConfig | string,
+  config: LovelaceCardConfig | string,
   configFormat: "json" | "yaml"
 ): Promise<void> =>
   hass.callWS({
