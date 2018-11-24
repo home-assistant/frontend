@@ -42,7 +42,7 @@ export class CloudWebhookManageDialog extends LitElement {
     const docsUrl =
       webhook.domain === "automation"
         ? "https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger"
-        : `https://www.home-assistant.io/components/${entry.domain}/`;
+        : `https://www.home-assistant.io/components/${webhook.domain}/`;
     return html`
       ${this._renderStyle()}
       <paper-dialog with-backdrop>
