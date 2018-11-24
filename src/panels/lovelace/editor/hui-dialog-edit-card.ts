@@ -8,10 +8,13 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "./hui-edit-card";
 import "./hui-migrate-config";
 
+const dialogShowEvent = "show-edit-card";
+const dialogTag = "hui-dialog-edit-config";
+
 export const registerEditCardDialog = (element: HTMLElement) =>
   fireEvent(element, "register-dialog", {
-    dialogShowEvent: "show-edit-card",
-    dialogTag: "hui-dialog-edit-card",
+    dialogShowEvent,
+    dialogTag,
     dialogImport: () => import("./hui-dialog-edit-card"),
   });
 
@@ -21,7 +24,7 @@ export const showEditCardDialog = (
   cardConfig: LovelaceCardConfig,
   reloadLovelace: () => void
 ) =>
-  fireEvent(element, "show-edit-card", {
+  fireEvent(element, dialogShowEvent, {
     hass,
     cardConfig,
     reloadLovelace,
@@ -76,4 +79,4 @@ declare global {
   }
 }
 
-customElements.define("hui-dialog-edit-card", HuiDialogEditCard);
+customElements.define(dialogTag, HuiDialogEditCard);

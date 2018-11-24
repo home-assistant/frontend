@@ -16,10 +16,13 @@ import { saveConfig } from "../common/data";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
+const dialogShowEvent = "show-save-config";
+const dialogTag = "hui-dialog-save-config";
+
 export const registerSaveDialog = (element: HTMLElement) =>
   fireEvent(element, "register-dialog", {
-    dialogShowEvent: "show-save-config",
-    dialogTag: "hui-dialog-save-config",
+    dialogShowEvent,
+    dialogTag,
     dialogImport: () => import("./hui-dialog-save-config"),
   });
 
@@ -28,7 +31,7 @@ export const showSaveDialog = (
   hass: HomeAssistant,
   config: LovelaceConfig,
   reloadLovelace: () => void
-) => fireEvent(element, "show-save-config", { hass, config, reloadLovelace });
+) => fireEvent(element, dialogShowEvent, { hass, config, reloadLovelace });
 
 export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
   protected _hass?: HomeAssistant;
@@ -144,4 +147,4 @@ declare global {
   }
 }
 
-customElements.define("hui-dialog-save-config", HuiSaveConfig);
+customElements.define(dialogTag, HuiSaveConfig);
