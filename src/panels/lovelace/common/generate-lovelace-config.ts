@@ -1,4 +1,9 @@
 import { HomeAssistant, GroupEntity } from "../../../types";
+import {
+  LovelaceConfig,
+  LovelaceCardConfig,
+  LovelaceViewConfig,
+} from "../types";
 import { HassEntity, HassEntities } from "home-assistant-js-websocket";
 import extractViews from "../../../common/entity/extract_views";
 import getViewEntities from "../../../common/entity/get_view_entities";
@@ -8,26 +13,6 @@ import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import { LocalizeFunc } from "../../../mixins/localize-base-mixin";
 import computeDomain from "../../../common/entity/compute_domain";
-
-interface CardConfig {
-  id?: string;
-  type: string;
-  [key: string]: any;
-}
-
-interface ViewConfig {
-  title?: string;
-  badges?: string[];
-  cards?: CardConfig[];
-  id?: string;
-  icon?: string;
-}
-
-interface LovelaceConfig {
-  _frontendAuto: boolean;
-  title?: string;
-  views: ViewConfig[];
-}
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -43,8 +28,8 @@ const HIDE_DOMAIN = new Set(["persistent_notification", "configurator"]);
 const computeCards = (
   title: string,
   states: Array<[string, HassEntity]>
-): CardConfig[] => {
-  const cards: CardConfig[] = [];
+): LovelaceCardConfig[] => {
+  const cards: LovelaceCardConfig[] = [];
 
   // For entity card
   const entities: string[] = [];
@@ -109,7 +94,7 @@ const generateViewConfig = (
   icon: string | undefined,
   entities: HassEntities,
   groupOrders: { [entityId: string]: number }
-): ViewConfig => {
+): LovelaceViewConfig => {
   const splitted = splitByGroups(entities);
   splitted.groups.sort(
     (gr1, gr2) => groupOrders[gr1.entity_id] - groupOrders[gr2.entity_id]
@@ -141,7 +126,7 @@ const generateViewConfig = (
     }
   });
 
-  let cards: CardConfig[] = [];
+  let cards: LovelaceCardConfig[] = [];
 
   splitted.groups.forEach((groupEntity) => {
     cards = cards.concat(

@@ -4,10 +4,10 @@ import { classMap } from "lit-html/directives/classMap";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import { TemplateResult } from "lit-html";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   content: string;
   title?: string;
 }

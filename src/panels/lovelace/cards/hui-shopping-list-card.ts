@@ -9,7 +9,7 @@ import "../../../components/ha-icon";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 import {
   fetchItems,
   completeItem,
@@ -19,7 +19,7 @@ import {
   addItem,
 } from "../../../data/shopping-list";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   title?: string;
 }
 

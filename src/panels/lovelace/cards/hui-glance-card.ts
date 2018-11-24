@@ -10,7 +10,7 @@ import { classMap } from "lit-html/directives/classMap";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
+import { LovelaceCard, LovelaceCardConfig, LovelaceCardEditor } from "../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { EntityConfig } from "../entity-rows/types";
 import { toggleEntity } from "../common/entity/toggle-entity";
@@ -31,7 +31,7 @@ export interface ConfigEntity extends EntityConfig {
   service_data?: object;
 }
 
-export interface Config extends LovelaceConfig {
+export interface Config extends LovelaceCardConfig {
   show_name?: boolean;
   show_state?: boolean;
   title?: string;

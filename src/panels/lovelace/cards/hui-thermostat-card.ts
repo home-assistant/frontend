@@ -15,7 +15,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard, LovelaceCardConfig } from "../types";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -43,7 +43,7 @@ const modeIcons = {
   idle: "hass:power-sleep",
 };
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entity: string;
   theme?: string;
 }
