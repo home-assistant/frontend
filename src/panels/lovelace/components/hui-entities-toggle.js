@@ -3,7 +3,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import turnOnOffEntities from "../common/entity/turn-on-off-entities";
+import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
 
 class HuiEntitiesToggle extends PolymerElement {
   static get template() {
