@@ -24,6 +24,21 @@ import { HuiCardPreview } from "./hui-card-preview";
 import { LovelaceCardEditor, LovelaceCardConfig } from "../types";
 import { YamlChangedEvent, ConfigValue, ConfigError } from "./types";
 import { extYamlSchema } from "./yaml-ext-schema";
+import { EntityConfig } from "../entity-rows/types";
+
+declare global {
+  interface HASSDomEvents {
+    "yaml-changed": {
+      yaml: string;
+    };
+    "entities-changed": {
+      entities: EntityConfig[];
+    };
+    "config-changed": {
+      config: LovelaceCardConfig;
+    };
+  }
+}
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 
