@@ -23,7 +23,7 @@ export class CloudWebhookManageDialog extends LitElement {
 
   static get properties(): PropertyDeclarations {
     return {
-      _webhookInfo: {},
+      _params: {},
     };
   }
 
@@ -51,7 +51,7 @@ export class CloudWebhookManageDialog extends LitElement {
           <p>The webhook is available at the following url:</p>
           <paper-input
             label="${inputLabel}"
-            value="${cloudhook.cloud_url}"
+            value="${cloudhook.cloudhook_url}"
             @click="${this._copyClipboard}"
             @blur="${this._restoreLabel}"
           ></paper-input>

@@ -2,18 +2,18 @@ import { HomeAssistant } from "../types";
 
 export interface CloudWebhook {
   webhook_id: string;
-  cloud_id: string;
-  cloud_url: string;
+  cloudhook_id: string;
+  cloudhook_url: string;
 }
 
-export const enableWebhook = (hass: HomeAssistant, webhookId: string) =>
+export const createCloudhook = (hass: HomeAssistant, webhookId: string) =>
   hass.callWS<CloudWebhook>({
-    type: "cloud/webhook/enable",
+    type: "cloud/cloudhook/create",
     webhook_id: webhookId,
   });
 
-export const disableWebhook = (hass: HomeAssistant, webhookId: string) =>
+export const deleteCloudhook = (hass: HomeAssistant, webhookId: string) =>
   hass.callWS({
-    type: "cloud/webhook/disable",
+    type: "cloud/cloudhook/delete",
     webhook_id: webhookId,
   });

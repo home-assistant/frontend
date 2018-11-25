@@ -16,8 +16,8 @@ import { HomeAssistant, WebhookError } from "../../../types";
 import { WebhookDialogParams, CloudStatusLoggedIn } from "./types";
 import { Webhook, fetchWebhooks } from "../../../data/webhook";
 import {
-  enableWebhook,
-  disableWebhook,
+  createCloudhook,
+  deleteCloudhook,
   CloudWebhook,
 } from "../../../data/cloud";
 
@@ -72,7 +72,7 @@ export class CloudWebhooks extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("cloudStatus") && this.cloudStatus) {
-      this._cloudHooks = this.cloudStatus.prefs.webhooks || {};
+      this._cloudHooks = this.cloudStatus.prefs.cloudhooks || {};
     }
   }
 
@@ -89,7 +89,11 @@ export class CloudWebhooks extends LitElement {
           <paper-item-body two-line>
             <div>
               ${entry.name}
-              ${entry.domain === entry.name ? "" : ` (${entry.domain})`}
+              ${
+                entry.domain === entry.name.toLowerCase()
+                  ? ""
+                  : ` (${entry.domain})`
+              }
             </div>
             <div secondary>${entry.webhook_id}</div>
           </paper-item-body>
@@ -141,7 +145,7 @@ export class CloudWebhooks extends LitElement {
     let updatedWebhook;
 
     try {
-      updatedWebhook = await enableWebhook(this.hass!, entry.webhook_id);
+      updatedWebhook = await createCloudhook(this.hass!, entry.webhook_id);
     } catch (err) {
       alert((err as WebhookError).message);
       return;
@@ -163,7 +167,7 @@ export class CloudWebhooks extends LitElement {
   private async _disableWebhook(webhookId: string) {
     this._progress = [...this._progress, webhookId];
     try {
-      await disableWebhook(this.hass!, webhookId!);
+      await deleteCloudhook(this.hass!, webhookId!);
     } catch (err) {
       alert(`Failed to disable webhook: ${(err as WebhookError).message}`);
       return;
