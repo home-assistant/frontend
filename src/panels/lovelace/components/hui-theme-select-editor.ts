@@ -3,8 +3,19 @@ import "@polymer/paper-button/paper-button";
 import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "theme-changed": undefined;
+  }
+  // for add event listener
+  interface HTMLElementEventMap {
+    "theme-changed": HASSDomEvent<undefined>;
+  }
+}
 
 export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   public value?: string;

@@ -180,7 +180,7 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
       navigate(this, this._config!.navigation_path!);
     } else if (this._config!.camera_image) {
       fireEvent(this, "hass-more-info", {
-        entityId: this._config!.camera_image,
+        entityId: this._config!.camera_image!,
       });
     }
   }

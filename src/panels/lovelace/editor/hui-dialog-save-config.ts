@@ -15,6 +15,13 @@ import { saveConfig, migrateConfig } from "../common/data";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "show-save-config": SaveDialogParams;
+  }
+}
+
 const dialogShowEvent = "show-save-config";
 const dialogTag = "hui-dialog-save-config";
 
