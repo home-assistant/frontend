@@ -16,7 +16,7 @@ import TranslationsMixin from "./translations-mixin";
 import ThemesMixin from "./themes-mixin";
 import MoreInfoMixin from "./more-info-mixin";
 import SidebarMixin from "./sidebar-mixin";
-import DialogManagerMixin from "./dialog-manager-mixin";
+import { dialogManagerMixin } from "./dialog-manager-mixin";
 import ConnectionMixin from "./connection-mixin";
 import NotificationMixin from "./notification-mixin";
 import DisconnectToastMixin from "./disconnect-toast-mixin";
@@ -33,7 +33,7 @@ class HomeAssistant extends ext(PolymerElement, [
   DisconnectToastMixin,
   ConnectionMixin,
   NotificationMixin,
-  DialogManagerMixin,
+  dialogManagerMixin,
   HassBaseMixin,
 ]) {
   static get template() {
