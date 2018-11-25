@@ -13,6 +13,7 @@ export interface LovelaceViewConfig {
   id?: string;
   icon?: string;
 }
+
 export interface LovelaceConfig {
   _frontendAuto: boolean;
   title?: string;
