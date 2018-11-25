@@ -3,48 +3,66 @@ import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../types";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "./hui-edit-card";
 import "./hui-migrate-config";
 
+const dialogShowEvent = "show-edit-card";
+const dialogTag = "hui-dialog-edit-config";
+
+export interface EditCardDialogParams {
+  cardConfig: LovelaceCardConfig;
+  reloadLovelace: () => void;
+}
+
+export const registerEditCardDialog = (element: HTMLElement) =>
+  fireEvent(element, "register-dialog", {
+    dialogShowEvent,
+    dialogTag,
+    dialogImport: () => import("./hui-dialog-edit-card"),
+  });
+
+export const showEditCardDialog = (
+  element: HTMLElement,
+  editCardDialogParams: EditCardDialogParams
+) => fireEvent(element, dialogShowEvent, editCardDialogParams);
+
 export class HuiDialogEditCard extends LitElement {
-  protected _hass?: HomeAssistant;
-  private _cardConfig?: LovelaceCardConfig;
-  private _reloadLovelace?: () => void;
+  protected hass?: HomeAssistant;
+  private _params?: EditCardDialogParams;
 
   static get properties(): PropertyDeclarations {
     return {
-      _hass: {},
+      hass: {},
       _cardConfig: {},
     };
   }
 
-  public async showDialog({ hass, cardConfig, reloadLovelace }): Promise<void> {
-    this._hass = hass;
-    this._cardConfig = cardConfig;
-    this._reloadLovelace = reloadLovelace;
+  public async showDialog(params: EditCardDialogParams): Promise<void> {
+    this._params = params;
     await this.updateComplete;
     (this.shadowRoot!.children[0] as any).showDialog();
   }
 
   protected render(): TemplateResult {
+    if (!this._params) {
+      return html``;
+    }
+    if (!this._params.cardConfig.id) {
+      return html`
+        <hui-migrate-config
+          .hass="${this.hass}"
+          @reload-lovelace="${this._params.reloadLovelace}"
+        ></hui-migrate-config>
+      `;
+    }
     return html`
-      ${
-        this._cardConfig!.id
-          ? html`
-              <hui-edit-card
-                .cardConfig="${this._cardConfig}"
-                .hass="${this._hass}"
-                @reload-lovelace="${this._reloadLovelace}"
-              >
-              </hui-edit-card>
-            `
-          : html`
-              <hui-migrate-config
-                .hass="${this._hass}"
-                @reload-lovelace="${this._reloadLovelace}"
-              ></hui-migrate-config>
-            `
-      }
+      <hui-edit-card
+        .cardConfig="${this._params.cardConfig}"
+        .hass="${this.hass}"
+        @reload-lovelace="${this._params.reloadLovelace}"
+      >
+      </hui-edit-card>
     `;
   }
 }
@@ -55,4 +73,4 @@ declare global {
   }
 }
 
-customElements.define("hui-dialog-edit-card", HuiDialogEditCard);
+customElements.define(dialogTag, HuiDialogEditCard);

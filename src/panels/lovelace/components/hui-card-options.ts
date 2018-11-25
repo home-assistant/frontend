@@ -1,6 +1,10 @@
 import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  showEditCardDialog,
+  registerEditCardDialog,
+} from "../editor/hui-dialog-edit-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../types";
 
@@ -18,11 +22,7 @@ export class HuiCardOptions extends LitElement {
     super.connectedCallback();
     if (!registeredDialog) {
       registeredDialog = true;
-      fireEvent(this, "register-dialog", {
-        dialogShowEvent: "show-edit-card",
-        dialogTag: "hui-dialog-edit-card",
-        dialogImport: () => import("../editor/hui-dialog-edit-card"),
-      });
+      registerEditCardDialog(this);
     }
   }
 
@@ -48,9 +48,8 @@ export class HuiCardOptions extends LitElement {
     `;
   }
   private _editCard() {
-    fireEvent(this, "show-edit-card", {
-      hass: this.hass,
-      cardConfig: this.cardConfig,
+    showEditCardDialog(this, {
+      cardConfig: this.cardConfig!,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }
