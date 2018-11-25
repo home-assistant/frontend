@@ -4,7 +4,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import {
   showEditCardDialog,
   registerEditCardDialog,
-  EditCardDialogParams,
 } from "../editor/hui-dialog-edit-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../types";
@@ -49,12 +48,10 @@ export class HuiCardOptions extends LitElement {
     `;
   }
   private _editCard() {
-    let editCardDialogParams: EditCardDialogParams;
-    editCardDialogParams = {
+    showEditCardDialog(this, {
       cardConfig: this.cardConfig!,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
-    };
-    showEditCardDialog(this, editCardDialogParams);
+    });
   }
 }
 
