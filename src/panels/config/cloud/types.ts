@@ -22,7 +22,7 @@ export type CloudStatusLoggedIn = CloudStatusBase & {
     google_enabled: boolean;
     alexa_enabled: boolean;
     google_allow_unlock: boolean;
-    webhooks: { [webhookId: string]: CloudWebhook };
+    cloudhooks: { [webhookId: string]: CloudWebhook };
   };
 };
 
