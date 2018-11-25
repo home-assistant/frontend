@@ -2,9 +2,8 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../types";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "./hui-edit-card";
 import "./hui-migrate-config";
 

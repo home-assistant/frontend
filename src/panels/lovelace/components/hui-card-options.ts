@@ -8,6 +8,17 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../types";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "show-edit-card": {
+      hass: HomeAssistant;
+      cardConfig: LovelaceCardConfig;
+      reloadLovelace: () => void;
+    };
+  }
+}
+
 let registeredDialog = false;
 
 export class HuiCardOptions extends LitElement {

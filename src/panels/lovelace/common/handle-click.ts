@@ -22,7 +22,9 @@ export const handleClick = (
 
   switch (action) {
     case "more-info":
-      fireEvent(node, "hass-more-info", { entityId: config.entity });
+      if (config.entity) {
+        fireEvent(node, "hass-more-info", { entityId: config.entity });
+      }
       break;
     case "navigate":
       navigate(node, config.navigation_path ? config.navigation_path : "");

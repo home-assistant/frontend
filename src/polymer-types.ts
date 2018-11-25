@@ -11,6 +11,5 @@ declare global {
       entityId: string;
     };
     "location-changed": undefined;
-    "show-edit-card": undefined;
   }
 }

@@ -5,7 +5,7 @@ import { HASSDomEvent, ValidHassDomEvent } from "../../common/dom/fire_event";
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;
   dialogTag: keyof HTMLElementTagNameMap;
-  dialogImport: () => Promise<void>;
+  dialogImport: () => Promise<unknown>;
 }
 
 interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]> extends HTMLElement {

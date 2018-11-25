@@ -54,10 +54,10 @@ export interface HASSDomEvent<T> extends Event {
  *  `node` on which to fire the event (HTMLElement, defaults to `this`).
  * @return {Event} The new event that was fired.
  */
-export const fireEvent = (
+export const fireEvent = <HassEvent extends ValidHassDomEvent>(
   node: HTMLElement,
-  type: ValidHassDomEvent,
-  detail?: HASSDomEvents[ValidHassDomEvent] | null,
+  type: HassEvent,
+  detail?: HASSDomEvents[HassEvent],
   options?: {
     bubbles?: boolean;
     cancelable?: boolean;
