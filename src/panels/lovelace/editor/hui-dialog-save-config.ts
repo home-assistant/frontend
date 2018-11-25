@@ -10,7 +10,6 @@ import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceConfig } from "../types";
-import { SaveDialogParams } from "./types";
 
 import { saveConfig, migrateConfig } from "../common/data";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -18,6 +17,11 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 const dialogShowEvent = "show-save-config";
 const dialogTag = "hui-dialog-save-config";
+
+export interface SaveDialogParams {
+  config: LovelaceConfig;
+  reloadLovelace: () => void;
+}
 
 export const registerSaveDialog = (element: HTMLElement) =>
   fireEvent(element, "register-dialog", {
@@ -28,21 +32,18 @@ export const registerSaveDialog = (element: HTMLElement) =>
 
 export const showSaveDialog = (
   element: HTMLElement,
-  hass: HomeAssistant,
-  config: LovelaceConfig,
-  reloadLovelace: () => void
-) => fireEvent(element, dialogShowEvent, { hass, config, reloadLovelace });
+  saveDialogParams: SaveDialogParams
+) => fireEvent(element, dialogShowEvent, saveDialogParams);
 
 export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
-  protected _hass?: HomeAssistant;
-  private _config?: LovelaceConfig;
-  private _reloadLovelace?: () => void;
+  protected hass?: HomeAssistant;
+  private _params?: SaveDialogParams;
   private _saving: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
-      _hass: {},
-      _cardConfig: {},
+      hass: {},
+      _params: {},
       _saving: {},
     };
   }
@@ -53,9 +54,7 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
   }
 
   public async showDialog(params: SaveDialogParams): Promise<void> {
-    this._hass = params.hass;
-    this._config = params.config;
-    this._reloadLovelace = params.reloadLovelace;
+    this._params = params;
     await this.updateComplete;
     this._dialog.open();
   }
@@ -124,17 +123,17 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
   }
 
   private async _saveConfig(): Promise<void> {
-    if (!this._hass || !this._config) {
+    if (!this.hass || !this._params) {
       return;
     }
     this._saving = true;
-    delete this._config._frontendAuto;
+    delete this._params.config._frontendAuto;
     try {
-      await saveConfig(this._hass, this._config, "json");
-      await migrateConfig(this._hass);
+      await saveConfig(this.hass, this._params.config, "json");
+      await migrateConfig(this.hass);
       this._saving = false;
       this._closeDialog();
-      this._reloadLovelace!();
+      this._params.reloadLovelace!();
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
       this._saving = false;

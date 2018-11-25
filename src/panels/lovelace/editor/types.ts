@@ -31,15 +31,3 @@ export interface EditorTarget extends EventTarget {
   checked?: boolean;
   configValue?: string;
 }
-
-export interface SaveDialogParams {
-  hass: HomeAssistant;
-  config: LovelaceConfig;
-  reloadLovelace: () => void;
-}
-
-export interface EditDialogParams {
-  hass: HomeAssistant;
-  cardConfig: LovelaceCardConfig;
-  reloadLovelace: () => void;
-}

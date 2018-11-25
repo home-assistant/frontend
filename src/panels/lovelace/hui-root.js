@@ -275,10 +275,14 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   _editModeEnable() {
     if (this.config._frontendAuto) {
-      showSaveDialog(this, this.hass, this.config, () => {
-        this.fire("config-refresh");
-        this._editMode = true;
-      });
+      const saveDialogParams = {
+        config: this.config,
+        reloadLovelace: () => {
+          this.fire("config-refresh");
+          this._editMode = true;
+        },
+      };
+      showSaveDialog(this, saveDialogParams);
       return;
     }
     this._editMode = true;
