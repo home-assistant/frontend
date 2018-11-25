@@ -2,10 +2,22 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../types";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "./hui-edit-card";
 import "./hui-migrate-config";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "reload-lovelace": undefined;
+    "show-edit-card": EditCardDialogParams;
+  }
+  // for add event listener
+  interface HTMLElementEventMap {
+    "reload-lovelace": HASSDomEvent<undefined>;
+  }
+}
 
 const dialogShowEvent = "show-edit-card";
 const dialogTag = "hui-dialog-edit-config";
@@ -69,7 +81,7 @@ export class HuiDialogEditCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-edit-card": HuiDialogEditCard;
+    "hui-dialog-edit-config": HuiDialogEditCard;
   }
 }
 
