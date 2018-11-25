@@ -47,27 +47,23 @@ export class HuiDialogEditCard extends LitElement {
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
-    } else {
+    }
+    if (!this._params.cardConfig!.id) {
       return html`
-        ${
-          this._params.cardConfig!.id
-            ? html`
-                <hui-edit-card
-                  .cardConfig="${this._params.cardConfig}"
-                  .hass="${this.hass}"
-                  @reload-lovelace="${this._params.reloadLovelace}"
-                >
-                </hui-edit-card>
-              `
-            : html`
-                <hui-migrate-config
-                  .hass="${this.hass}"
-                  @reload-lovelace="${this._params.reloadLovelace}"
-                ></hui-migrate-config>
-              `
-        }
+        <hui-migrate-config
+          .hass="${this.hass}"
+          @reload-lovelace="${this._params.reloadLovelace}"
+        ></hui-migrate-config>
       `;
     }
+    return html`
+      <hui-edit-card
+        .cardConfig="${this._params.cardConfig}"
+        .hass="${this.hass}"
+        @reload-lovelace="${this._params.reloadLovelace}"
+      >
+      </hui-edit-card>
+    `;
   }
 }
 
