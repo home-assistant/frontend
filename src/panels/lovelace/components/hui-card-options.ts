@@ -12,7 +12,6 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "show-edit-card": {
-      hass: HomeAssistant;
       cardConfig: LovelaceCardConfig;
       reloadLovelace: () => void;
     };

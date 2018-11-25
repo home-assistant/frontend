@@ -7,6 +7,18 @@ import { LovelaceCardConfig } from "../types";
 import "./hui-edit-card";
 import "./hui-migrate-config";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "reload-lovelace": undefined;
+    "show-edit-card": EditCardDialogParams;
+  }
+  // for add event listener
+  interface HTMLElementEventMap {
+    "reload-lovelace": HASSDomEvent<undefined>;
+  }
+}
+
 const dialogShowEvent = "show-edit-card";
 const dialogTag = "hui-dialog-edit-config";
 
@@ -26,17 +38,6 @@ export const showEditCardDialog = (
   element: HTMLElement,
   editCardDialogParams: EditCardDialogParams
 ) => fireEvent(element, dialogShowEvent, editCardDialogParams);
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "reload-lovelace": undefined;
-  }
-  // for add event listener
-  interface HTMLElementEventMap {
-    "reload-lovelace": HASSDomEvent<undefined>;
-  }
-}
 
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
@@ -80,7 +81,7 @@ export class HuiDialogEditCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-edit-card": HuiDialogEditCard;
+    "hui-dialog-edit-config": HuiDialogEditCard;
   }
 }
 
