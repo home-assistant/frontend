@@ -632,7 +632,7 @@
                 "abort_intro": "Входът е прекратен",
                 "form": {
                     "working": "Моля, изчакайте",
-                    "unknown_error": "Ся си е*а майката",
+                    "unknown_error": "Възникна неочаквана грешка",
                     "providers": {
                         "homeassistant": {
                             "step": {
