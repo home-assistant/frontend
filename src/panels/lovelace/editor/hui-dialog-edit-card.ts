@@ -48,7 +48,7 @@ export class HuiDialogEditCard extends LitElement {
     if (!this._params) {
       return html``;
     }
-    if (!this._params.cardConfig!.id) {
+    if (!this._params.cardConfig.id) {
       return html`
         <hui-migrate-config
           .hass="${this.hass}"
