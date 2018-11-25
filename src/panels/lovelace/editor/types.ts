@@ -1,5 +1,4 @@
-import { HomeAssistant } from "../../../types";
-import { LovelaceConfig, LovelaceCardConfig } from "../types";
+import { LovelaceCardConfig } from "../types";
 import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {
