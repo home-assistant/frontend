@@ -29,8 +29,8 @@ import "./components/notifications/hui-notifications-button";
 import "./hui-unused-entities";
 import "./hui-view";
 import debounce from "../../common/util/debounce";
-
 import createCardElement from "./common/create-card-element";
+import { showSaveDialog } from "./editor/hui-dialog-save-config";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -275,7 +275,13 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   _editModeEnable() {
     if (this.config._frontendAuto) {
-      alert("Unable to edit automatic generated UI yet.");
+      showSaveDialog(this, {
+        config: this.config,
+        reloadLovelace: () => {
+          this.fire("config-refresh");
+          this._editMode = true;
+        },
+      });
       return;
     }
     this._editMode = true;
