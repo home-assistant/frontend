@@ -67,17 +67,24 @@ export class HuiCardOptions extends LitElement {
     `;
   }
   private _editCard(): void {
+    if (!this.cardConfig) {
+      return;
+    }
     showEditCardDialog(this, {
-      cardConfig: this.cardConfig!,
+      cardConfig: this.cardConfig,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }
   private _deleteCard(): void {
-    confDeleteCard(
-      this.hass!,
-      this.cardConfig!,
-      () => fireEvent(this, "config-refresh"),
-      () => this._editCard()
+    if (!this.cardConfig) {
+      return;
+    }
+    if (!this.cardConfig.id) {
+      this._editCard();
+      return;
+    }
+    confDeleteCard(this.hass!, this.cardConfig.id, () =>
+      fireEvent(this, "config-refresh")
     );
   }
 }
