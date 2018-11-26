@@ -32,13 +32,17 @@ export class HuiEntityEditor extends LitElement {
         ${
           this.entities.map((entityConf, index) => {
             return html`
-              <ha-entity-picker
-                .hass="${this.hass}"
-                .value="${entityConf.entity}"
-                .index="${index}"
-                @change="${this._valueChanged}"
-                allow-custom-entity
-              ></ha-entity-picker>
+              <div class="entity">
+                <ha-entity-picker
+                  .hass="${this.hass}"
+                  .value="${entityConf.entity}"
+                  .index="${index}"
+                  @change="${this._valueChanged}"
+                  allow-custom-entity
+                ></ha-entity-picker>
+                <paper-toggle-button>Options</paper-toggle-button>
+                <div class="options"></div>
+              </div>
             `;
           })
         }
