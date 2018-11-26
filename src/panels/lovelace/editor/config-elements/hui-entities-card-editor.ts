@@ -12,7 +12,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config, ConfigEntity } from "../../cards/hui-entities-card";
-import { editorStyle } from "../editor-style";
+import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
@@ -49,7 +49,7 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
-      ${editorStyle}
+      ${configElementStyle}
       <div class="card-config">
         <paper-input
           label="Title"

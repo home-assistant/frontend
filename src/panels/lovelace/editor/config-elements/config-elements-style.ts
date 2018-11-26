@@ -1,6 +1,6 @@
 import { html } from "@polymer/lit-element";
 
-export const editorStyle = html`
+export const configElementStyle = html`
   <style>
     paper-toggle-button {
       padding-top: 16px;
