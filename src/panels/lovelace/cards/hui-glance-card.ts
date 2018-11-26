@@ -18,7 +18,7 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
-import processConfigEntities from "../common/process-config-entities";
+import { processConfigEntities } from "../common/process-config-entities";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/entity/state-badge";
@@ -68,7 +68,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     this._config = { theme: "default", ...config };
-    const entities = processConfigEntities(config.entities);
+    const entities = processConfigEntities(config.entities) as ConfigEntity[];
 
     for (const entity of entities) {
       if (
