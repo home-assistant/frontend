@@ -144,7 +144,8 @@
             "performance": "Vysoký výkon",
             "high_demand": "Vysoký výkon",
             "heat_pump": "Tepelné čerpadlo",
-            "gas": "Plyn"
+            "gas": "Plyn",
+            "manual": "Ruční"
         },
         "configurator": {
             "configure": "Nakonfigurovat",
@@ -710,6 +711,28 @@
                     "create_account": "Vytvořit účet",
                     "error": {
                         "required_fields": "Vyplňte všechna povinná pole"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Označené položky",
+                        "clear_items": "Vymazat označené položky",
+                        "add_item": "Přidat položku"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "header": "Konfigurace karty",
+                        "save": "Uložit",
+                        "toggle_editor": "Přepnout Editor"
+                    },
+                    "migrate": {
+                        "header": "Konfigurace není kompatibilní",
+                        "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant může automaticky přidávat ID ke všem kartám a pohledům stisknutím tlačítka Migrate config.",
+                        "migrate": "Migrovat konfiguraci"
                     }
                 }
             }
