@@ -144,7 +144,8 @@
             "performance": "Ytelse",
             "high_demand": "Høy etterspørsel",
             "heat_pump": "Varmepumpe",
-            "gas": "Gass"
+            "gas": "Gass",
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -710,6 +711,28 @@
                     "create_account": "Opprett konto",
                     "error": {
                         "required_fields": "Fyll ut alle nødvendige felt"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Merkede elementer",
+                        "clear_items": "Fjern merkede elementer",
+                        "add_item": "Legg til"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "header": "Kortkonfigurasjon",
+                        "save": "Lagre",
+                        "toggle_editor": "Bytt redigering"
+                    },
+                    "migrate": {
+                        "header": "Konfigurasjon inkompatibel",
+                        "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID til dette elementet i 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant kan legge til ID-er til alle dine kort og visninger automatisk for deg ved å trykke på 'Overfør konfigurasjon' knappen.",
+                        "migrate": "Overfør konfigurasjon"
                     }
                 }
             }

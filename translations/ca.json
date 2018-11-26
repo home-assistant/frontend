@@ -144,7 +144,8 @@
             "performance": "Rendiment",
             "high_demand": "Plena potència",
             "heat_pump": "Bomba de calor",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -710,6 +711,28 @@
                     "create_account": "Crear un compte",
                     "error": {
                         "required_fields": "Ompliu tots els camps obligatoris"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Elements seleccionats",
+                        "clear_items": "Esborra els elements seleccionats",
+                        "add_item": "Afegir element"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "header": "Targeta de Configuració",
+                        "save": "Desa",
+                        "toggle_editor": "Commuta l'editor"
+                    },
+                    "migrate": {
+                        "header": "Configuració incompatible",
+                        "para_no_id": "Aquest element no té ID. Afegiu un ID per aquest element a 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant pot afegir ID's a totes les vostres targetes i visualitzacions automàticament fent clic al botó \"Migrar la configuració\".",
+                        "migrate": "Migrar la configuració"
                     }
                 }
             }
