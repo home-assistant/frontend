@@ -60,7 +60,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     // We don't have a good approach yet to map text markup in localization.
     // So we sanitize the translation with innerText and then inject
     // the name with a bold tag.
-    const loggingInWith = document.createElement("p");
+    const loggingInWith = document.createElement("div");
     loggingInWith.innerText = this.localize(
       "ui.panel.page-authorize.logging_in_with",
       "authProviderName",
@@ -143,16 +143,6 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   protected renderStyle() {
     return html`
       <style>
-        ha-markdown {
-          display: block;
-          margin-bottom: 16px;
-        }
-        ha-markdown a {
-          color: var(--primary-color);
-        }
-        ha-markdown p:last-child {
-          margin-bottom: 0;
-        }
         ha-pick-auth-provider {
           display: block;
           margin-top: 48px;
