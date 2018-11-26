@@ -144,7 +144,8 @@
             "performance": "Leeschtung",
             "high_demand": "Héich Ufro",
             "heat_pump": "Heizung",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Astellen",
@@ -710,6 +711,28 @@
                     "create_account": "Kont erstellen",
                     "error": {
                         "required_fields": "Fëllt all néideg Felder aus"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markéiert Elementer",
+                        "clear_items": "Markéiert Elementer läschen",
+                        "add_item": "Element dobäisetzen"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "header": "Kaart Konfiguratioun",
+                        "save": "Späicheren",
+                        "toggle_editor": "Editeur ëmschalten"
+                    },
+                    "migrate": {
+                        "header": "Konfiguratioun net kompatibel",
+                        "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant kann ID's zu all äre Kaarten automatesch dobäisetzen andeem dir de Knäppche 'Konfiguratioun migréieren' dréckt.",
+                        "migrate": "Konfiguratioun migréieren"
                     }
                 }
             }

@@ -144,7 +144,8 @@
             "performance": "Teljesítmény",
             "high_demand": "Magas igénybevétel",
             "heat_pump": "Hőszivattyú",
-            "gas": "Gáz"
+            "gas": "Gáz",
+            "manual": "Kézikönyv"
         },
         "configurator": {
             "configure": "Beállítás",
@@ -710,6 +711,23 @@
                     "create_account": "Fiók Létrehozása",
                     "error": {
                         "required_fields": "Töltsd ki az összes szükséges mezőt"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Ellenőrzött elemek ",
+                        "clear_items": "Ellenőrzött elemek ",
+                        "add_item": "Elem hozzáadása"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "save": "Mentés"
+                    },
+                    "migrate": {
+                        "header": "Inkompatibilis konfiguráció!"
                     }
                 }
             }

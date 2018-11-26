@@ -144,7 +144,8 @@
             "performance": "Performance",
             "high_demand": "High demand",
             "heat_pump": "Heat pump",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configure",
@@ -710,6 +711,28 @@
                     "create_account": "Create Account",
                     "error": {
                         "required_fields": "Fill in all required fields"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Checked items",
+                        "clear_items": "Clear checked items",
+                        "add_item": "Add item"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "header": "Card Configuration",
+                        "save": "Save",
+                        "toggle_editor": "Toggle Editor"
+                    },
+                    "migrate": {
+                        "header": "Configuration Incompatible",
+                        "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
+                        "migrate": "Migrate config"
                     }
                 }
             }
