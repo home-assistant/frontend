@@ -1,5 +1,3 @@
-import "../components/ha-markdown";
-
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { LitElement, html, PropertyDeclarations } from "@polymer/lit-element";
 import "./ha-auth-flow";
@@ -59,6 +57,20 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       `;
     }
 
+    // We don't have a good approach yet to map text markup in localization.
+    // So we sanitize the translation with innerText and then inject
+    // the name with a bold tag.
+    const loggingInWith = document.createElement("p");
+    loggingInWith.innerText = this.localize(
+      "ui.panel.page-authorize.logging_in_with",
+      "authProviderName",
+      "NAME"
+    );
+    loggingInWith.innerHTML = loggingInWith.innerHTML.replace(
+      "**NAME**",
+      `<b>${this._authProvider!.name}</b>`
+    );
+
     const inactiveProviders = this._authProviders.filter(
       (prv) => prv !== this._authProvider
     );
@@ -74,15 +86,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           )
         }
       </p>
-      <ha-markdown
-        .content="${
-          this.localize(
-            "ui.panel.page-authorize.logging_in_with",
-            "authProviderName",
-            this._authProvider!.name
-          )
-        }"
-      ></ha-markdown>
+      ${loggingInWith}
 
       <ha-auth-flow
         .resources="${this.resources}"
