@@ -5,6 +5,7 @@ import {
   showEditCardDialog,
   registerEditCardDialog,
 } from "../editor/hui-dialog-edit-card";
+
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -52,6 +53,9 @@ export class HuiCardOptions extends LitElement {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
+        }
+        paper-button.warning:not([disabled]) {
+          color: var(--google-red-500);
         }
       </style>
       <slot></slot>
