@@ -11,7 +11,7 @@ import "@polymer/paper-button/paper-button";
 import { HomeAssistant } from "../../../types";
 import { LovelaceConfig } from "../types";
 
-import { saveConfig, migrateConfig } from "../common/data";
+import { saveConfig, migrateConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 

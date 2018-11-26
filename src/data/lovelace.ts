@@ -1,5 +1,10 @@
-import { HomeAssistant } from "../../../types";
-import { LovelaceConfig, LovelaceCardConfig } from "../types";
+import { HomeAssistant } from "../types";
+import { LovelaceConfig, LovelaceCardConfig } from "../panels/lovelace/types";
+
+export const lovelaceConfig = (hass: HomeAssistant): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config",
+  });
 
 export const migrateConfig = (hass: HomeAssistant): Promise<void> =>
   hass.callWS({

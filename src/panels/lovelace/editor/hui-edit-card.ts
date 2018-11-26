@@ -12,7 +12,7 @@ import "@polymer/paper-button/paper-button";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../types";
-import { updateCardConfig } from "../common/data";
+import { updateCardConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
