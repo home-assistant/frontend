@@ -176,7 +176,11 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   async _fetchSubscriptionInfo() {
     this._subscription = await fetchSubscriptionInfo(this.hass);
-    if (this._subscription.provider && this.cloudStatus.cloud !== "connected") {
+    if (
+      this._subscription.provider &&
+      this.cloudStatus &&
+      this.cloudStatus.cloud !== "connected"
+    ) {
       this.fire("ha-refresh-cloud-status");
     }
   }
