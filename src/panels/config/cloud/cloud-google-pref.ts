@@ -25,7 +25,11 @@ export class CloudGooglePref extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const { google_enabled, google_allow_unlock } = this.cloudStatus!.prefs;
+    if (!this.cloudStatus) {
+      return html``;
+    }
+
+    const { google_enabled, google_allow_unlock } = this.cloudStatus.prefs;
 
     return html`
       ${this.renderStyle()}
