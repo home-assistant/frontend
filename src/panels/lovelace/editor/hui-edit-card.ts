@@ -12,7 +12,7 @@ import "@polymer/paper-button/paper-button";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../types";
-import { updateCardConfig } from "../../../data/lovelace";
+import { updateCardConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
@@ -21,7 +21,7 @@ import "./hui-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiCardPreview } from "./hui-card-preview";
-import { LovelaceCardEditor, LovelaceCardConfig } from "../types";
+import { LovelaceCardEditor } from "../types";
 import { YamlChangedEvent, ConfigValue, ConfigError } from "./types";
 import { extYamlSchema } from "./yaml-ext-schema";
 import { EntityConfig } from "../entity-rows/types";
