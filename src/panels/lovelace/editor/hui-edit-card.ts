@@ -131,6 +131,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                   ></hui-yaml-editor>
                 `
           }
+          <hr />
           <hui-card-preview .hass="${this.hass}"></hui-card-preview>
         </paper-dialog-scrollable>
         ${
@@ -197,7 +198,16 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           display: none;
         }
         .element-editor {
-          margin-bottom: 16px;
+          margin-bottom: 8px;
+        }
+        hr {
+          color: #000;
+          opacity: 0.12;
+        }
+        hui-card-preview {
+          padding-top: 8px;
+          margin-bottom: 4px;
+          display: block;
         }
       </style>
     `;
