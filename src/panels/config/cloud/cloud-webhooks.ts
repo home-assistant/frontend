@@ -21,6 +21,13 @@ import {
   CloudWebhook,
 } from "../../../data/cloud";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "manage-cloud-webhook": WebhookDialogParams;
+  }
+}
+
 export class CloudWebhooks extends LitElement {
   public hass?: HomeAssistant;
   public cloudStatus?: CloudStatusLoggedIn;
