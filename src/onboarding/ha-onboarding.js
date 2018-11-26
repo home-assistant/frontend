@@ -4,7 +4,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-button/paper-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import localizeLiteMixin from "../mixins/localize-lite-mixin";
+import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
 
 class HaOnboarding extends localizeLiteMixin(PolymerElement) {
   static get template() {
