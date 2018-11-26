@@ -1,9 +1,9 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { processEditorEntities } from "../process-editor-entities";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -12,6 +12,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config, ConfigEntity } from "../../cards/hui-entities-card";
+import { editorStyle } from "../editor-style";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
@@ -48,30 +49,32 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
-      ${this.renderStyle()}
-      <paper-input
-        label="Title"
-        value="${this._title}"
-        .configValue="${"title"}"
-        @value-changed="${this._valueChanged}"
-      ></paper-input>
-      <hui-theme-select-editor
-        .hass="${this.hass}"
-        .value="${this._theme}"
-        .configValue="${"theme"}"
-        @theme-changed="${this._valueChanged}"
-      ></hui-theme-select-editor>
+      ${editorStyle}
+      <div class="card-config">
+        <paper-input
+          label="Title"
+          value="${this._title}"
+          .configValue="${"title"}"
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
+        <hui-theme-select-editor
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
+        <paper-toggle-button
+          ?checked="${this._config!.show_header_toggle !== false}"
+          .configValue="${"show_header_toggle"}"
+          @change="${this._valueChanged}"
+          >Show Header Toggle?</paper-toggle-button
+        >
+      </div>
       <hui-entity-editor
         .hass="${this.hass}"
         .entities="${this._configEntities}"
         @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>
-      <paper-checkbox
-        ?checked="${this._config!.show_header_toggle !== false}"
-        .configValue="${"show_header_toggle"}"
-        @change="${this._valueChanged}"
-        >Show Header Toggle?</paper-checkbox
-      >
     `;
   }
 
@@ -101,17 +104,6 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     fireEvent(this, "config-changed", { config: this._config });
-  }
-
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-checkbox {
-          display: block;
-          padding-top: 16px;
-        }
-      </style>
-    `;
   }
 }
 

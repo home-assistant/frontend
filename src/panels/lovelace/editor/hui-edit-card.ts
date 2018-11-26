@@ -206,6 +206,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         }
         hui-card-preview {
           padding-top: 8px;
+          margin-bottom: 4px;
           display: block;
         }
       </style>

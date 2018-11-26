@@ -1,6 +1,5 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -13,6 +12,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config, ConfigEntity } from "../../cards/hui-glance-card";
+import { editorStyle } from "../editor-style";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
@@ -53,7 +53,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
-      ${this.renderStyle()}
+      ${editorStyle}
       <div class="card-config">
         <paper-input
           label="Title"
@@ -123,23 +123,6 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       };
     }
     fireEvent(this, "config-changed", { config: this._config });
-  }
-
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-toggle-button {
-          padding-top: 16px;
-        }
-        .side-by-side {
-          display: flex;
-        }
-        .side-by-side > * {
-          flex: 1;
-          padding-right: 4px;
-        }
-      </style>
-    `;
   }
 }
 
