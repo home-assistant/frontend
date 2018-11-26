@@ -16,7 +16,9 @@ export const saveEdit = (
   itemId: number,
   name: string
 ): Promise<ShoppingListItem> =>
-  hass.callApi("POST", "shopping_list/item/" + itemId, {
+  hass.callWS({
+    type: "shopping_list/items/update",
+    item_id: itemId,
     name,
   });
 
@@ -25,7 +27,9 @@ export const completeItem = (
   itemId: number,
   complete: boolean
 ): Promise<void> =>
-  hass.callApi("POST", "shopping_list/item/" + itemId, {
+  hass.callWS({
+    type: "shopping_list/items/update",
+    item_id: itemId,
     complete,
   });
 
