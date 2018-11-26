@@ -4,6 +4,7 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { afterNextRender } from "@polymer/polymer/lib/utils/render-status";
+import { html as litHtml, LitElement } from "@polymer/lit-element";
 
 import "../home-assistant-main";
 import "../ha-init-page";
@@ -20,6 +21,8 @@ import { dialogManagerMixin } from "./dialog-manager-mixin";
 import ConnectionMixin from "./connection-mixin";
 import NotificationMixin from "./notification-mixin";
 import DisconnectToastMixin from "./disconnect-toast-mixin";
+
+LitElement.prototype.html = litHtml;
 
 const ext = (baseClass, mixins) =>
   mixins.reduceRight((base, mixin) => mixin(base), baseClass);
