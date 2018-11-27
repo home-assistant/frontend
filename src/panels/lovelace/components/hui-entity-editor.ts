@@ -73,6 +73,19 @@ export class HuiEntityEditor extends LitElement {
     `;
   }
 
+  protected _optionChanged(ev: Event): void {
+    const target = ev.target! as EditorTarget;
+    const value = target.value || target.selected;
+    const newConfigEntities = this.entities!.concat();
+
+    newConfigEntities[target.index!] = {
+      ...newConfigEntities[target.index!],
+      [target.configValue!]: value,
+    };
+
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
+  }
+
   private _addEntity() {
     const newConfigEntities = this.entities!.concat({ entity: "" });
 

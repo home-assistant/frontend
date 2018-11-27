@@ -1,14 +1,14 @@
 import { html, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+
 import { HuiEntityEditor } from "../../../components/hui-entity-editor";
 import { HomeAssistant } from "../../../../../types";
 import { ConfigEntity } from "../../../cards/hui-glance-card";
 import { EditorTarget } from "../../types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 
 export class HuiGlanceEntitySelect extends HuiEntityEditor {
   static get properties(): PropertyDeclarations {
@@ -119,19 +119,6 @@ export class HuiGlanceEntitySelect extends HuiEntityEditor {
         }
       </style>
     `;
-  }
-
-  private _optionChanged(ev: Event): void {
-    const target = ev.target! as EditorTarget;
-    const value = target.value || target.selected;
-    const newConfigEntities = this.entities!.concat();
-
-    newConfigEntities[target.index!] = {
-      ...newConfigEntities[target.index!],
-      [target.configValue!]: value,
-    };
-
-    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 }
 
