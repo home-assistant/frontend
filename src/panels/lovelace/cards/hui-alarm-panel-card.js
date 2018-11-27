@@ -209,8 +209,8 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _computeHeader(localize, stateObj) {
     if (!stateObj) return "";
-    return this._config.title
-      ? this._config.title
+    return this._config.name
+      ? this._config.name
       : this._label(localize, stateObj.state);
   }
 
