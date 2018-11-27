@@ -119,8 +119,13 @@ class HuiMapCard extends PolymerElement {
   }
 
   getCardSize() {
-    let ar = this._config.aspect_ratio || "100%";
-    ar = ar.substr(0, ar.length - 1);
+    const ratio = parseAspectRatio(this._config.aspect_ratio);
+    let ar;
+    if (ratio && ratio.w > 0 && ratio.h > 0) {
+      ar = `${((100 * ratio.h) / ratio.w).toFixed(2)}`;
+    } else {
+      ar = "100";
+    }
     return 1 + Math.floor(ar / 25) || 3;
   }
 
