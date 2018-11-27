@@ -81,11 +81,20 @@ class HuiSensorCard extends EventsMixin(LitElement) {
             ${
               _line
                 ? svg`
-            <svg width='100%' height='100%' viewBox='0 0 500 100'>
-              <path d=${_line} fill='none' stroke='var(--accent-color)'
-                stroke-width=5
-                stroke-linecap='round' stroke-linejoin='round' />
-            </svg>`
+                  <svg
+                    width='100%'
+                    height='100%'
+                    viewBox='0 0 500 100'
+                  >
+                    <path
+                      d=${_line}
+                      fill='none'
+                      stroke='var(--accent-color)'
+                      stroke-width=5
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                  </svg>`
                 : ""
             }
           </div>
@@ -141,7 +150,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
   _calcPoints(history, hours, width, detail = 1) {
     const coords = [];
     const margin = 5;
-    const height = 100 - margin * 4;
+    const height = 80;
     width -= margin * 2;
     let yRatio = (this._max - this._min) / height;
     yRatio = yRatio !== 0 ? yRatio : height;
@@ -242,7 +251,6 @@ class HuiSensorCard extends EventsMixin(LitElement) {
           padding: 16px;
           position: relative;
           cursor: pointer;
-          --line-color: var(--accent-color, var(--primary-color));
         }
         .flex {
           display: flex;
