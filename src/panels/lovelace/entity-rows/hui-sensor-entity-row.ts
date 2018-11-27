@@ -45,7 +45,7 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
       `;
     }
 
-    return renderTemplate(stateObj);
+    return this.renderTemplate(stateObj);
   }
 
   protected renderTemplate(stateObj): TemplateResult {

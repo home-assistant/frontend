@@ -31,7 +31,7 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
       return html``;
     }
 
-    return renderTemplate();
+    return this.renderTemplate();
   }
 
   protected renderTemplate(): TemplateResult {

@@ -43,7 +43,7 @@ class HuiTextEntityRow extends hassLocalizeLitMixin(LitElement)
       `;
     }
 
-    return renderTemplate(stateObj);
+    return this.renderTemplate(stateObj);
   }
 
   protected renderTemplate(stateObj): TemplateResult {
