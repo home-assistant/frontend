@@ -47,6 +47,7 @@ const modeIcons = {
 interface Config extends LovelaceCardConfig {
   entity: string;
   theme?: string;
+  name?: string;
 }
 
 function formatTemp(temps: string[]): string {
@@ -97,7 +98,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">${computeStateName(stateObj)}</div>
+            <div class="title">${this._config.name ||
+              computeStateName(stateObj)}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">
                 ${stateObj.attributes.current_temperature}
