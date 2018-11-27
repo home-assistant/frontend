@@ -10,6 +10,7 @@ import processConfigEntities from "../common/process-config-entities";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
 Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
 
@@ -97,7 +98,15 @@ class HuiMapCard extends PolymerElement {
       return;
     }
 
-    this.$.root.style.paddingTop = this._config.aspect_ratio || "100%";
+    const ratio = parseAspectRatio(this._config.aspect_ratio);
+
+    if (ratio && ratio.w > 0 && ratio.h > 0) {
+      this.$.root.style.paddingBottom = `${((100 * ratio.h) / ratio.w).toFixed(
+        2
+      )}%`;
+    } else {
+      this.$.root.style.paddingBottom = "100%";
+    }
   }
 
   setConfig(config) {
