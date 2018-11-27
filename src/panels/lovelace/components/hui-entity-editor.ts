@@ -54,8 +54,8 @@ export class HuiEntityEditor extends LitElement {
   }
 
   protected renderOptions(
-    entityConf: EntityConfig,
-    index: number
+    _entityConf: EntityConfig,
+    _index: number
   ): TemplateResult {
     return html``;
   }

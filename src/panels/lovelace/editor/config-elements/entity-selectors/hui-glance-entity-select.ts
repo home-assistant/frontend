@@ -7,8 +7,6 @@ import "@polymer/paper-listbox/paper-listbox";
 import { HuiEntityEditor } from "../../../components/hui-entity-editor";
 import { HomeAssistant } from "../../../../../types";
 import { ConfigEntity } from "../../../cards/hui-glance-card";
-import { EditorTarget } from "../../types";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export class HuiGlanceEntitySelect extends HuiEntityEditor {
   static get properties(): PropertyDeclarations {
