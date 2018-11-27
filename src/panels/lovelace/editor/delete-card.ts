@@ -1,4 +1,4 @@
-import { deleteCard } from "../common/data";
+import { deleteCard } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 
 export async function confDeleteCard(
