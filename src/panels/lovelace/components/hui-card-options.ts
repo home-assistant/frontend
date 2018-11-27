@@ -6,7 +6,7 @@ import {
   registerEditCardDialog,
 } from "../editor/hui-dialog-edit-card";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 declare global {
   // for fire event

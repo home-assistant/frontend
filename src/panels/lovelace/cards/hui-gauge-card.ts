@@ -6,7 +6,8 @@ import {
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
