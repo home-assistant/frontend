@@ -15,7 +15,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";

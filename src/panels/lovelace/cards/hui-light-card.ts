@@ -12,7 +12,8 @@ import { jQuery } from "../../../resources/jquery";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 
 import stateIcon from "../../../common/entity/state_icon";

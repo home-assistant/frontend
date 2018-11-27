@@ -1,6 +1,7 @@
 import { html, LitElement } from "@polymer/lit-element";
 
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceCardConfig {

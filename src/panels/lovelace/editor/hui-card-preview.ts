@@ -3,7 +3,8 @@ import "@polymer/paper-input/paper-textarea";
 import createCardElement from "../common/create-card-element";
 import createErrorCardConfig from "../common/create-error-card-config";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCard } from "../types";
 import { ConfigError } from "./types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
