@@ -1,6 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import { computeStateName } from "../common/entity/compute_state_name";
+
 import "../components/ha-card";
 import "../components/ha-icon";
 
@@ -106,7 +108,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <ha-card>
         <div class="header">
           [[computeState(stateObj.state, localize)]]
-          <div class="name">[[stateObj.attributes.friendly_name]]</div>
+          <div class="name">[[computeName(stateObj)]]</div>
         </div>
         <div class="content">
           <div class="now">
@@ -269,6 +271,10 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   computeState(state, localize) {
     return localize(`state.weather.${state}`) || state;
+  }
+
+  computeName(stateObj) {
+    return this.config.name || computeStateName(stateObj);
   }
 
   showWeatherIcon(condition) {
