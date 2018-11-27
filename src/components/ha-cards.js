@@ -123,7 +123,7 @@ class HaCards extends PolymerElement {
       </style>
 
       <div id="main">
-        <template is="dom-if" if="[[isBadges(cards)]]">
+        <template is="dom-if" if="[[cards.badges.length]]">
           <div class="badges">
             <template is="dom-if" if="[[cards.demo]]">
               <ha-demo-badge></ha-demo-badge>
@@ -205,10 +205,6 @@ class HaCards extends PolymerElement {
         }
       }
     );
-  }
-
-  isBadges(cards) {
-    return cards.badges && cards.badges.length > 0;
   }
 
   emptyCards() {
