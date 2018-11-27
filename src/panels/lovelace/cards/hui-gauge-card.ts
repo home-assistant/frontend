@@ -10,16 +10,17 @@ import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import computeStateName from "../../../common/entity/compute_state_name";
 
 import "../../../components/ha-card";
 
 interface Config extends LovelaceCardConfig {
   entity: string;
-  title?: string;
+  name?: string;
   unit_of_measurement?: string;
   min?: number;
   max?: number;
@@ -93,7 +94,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
                           ""
                       }
                     </div>
-                    <div id="title">${this._config.title}</div>
+                    <div id="name">
+                      ${this._config.name || computeStateName(stateObj)}
+                    </div>
                   </div>
                 </div>
               `
@@ -211,7 +214,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         .gauge-data #percent {
           font-size: calc(var(--base-unit) * 0.55);
         }
-        .gauge-data #title {
+        .gauge-data #name {
           padding-top: calc(var(--base-unit) * 0.15);
           font-size: calc(var(--base-unit) * 0.3);
         }
