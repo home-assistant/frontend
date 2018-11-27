@@ -81,20 +81,17 @@ class HuiSensorCard extends EventsMixin(LitElement) {
             ${
               _line
                 ? svg`
-                  <svg
-                    width='100%'
-                    height='100%'
-                    viewBox='0 0 500 100'
-                  >
-                    <path
-                      d=${_line}
-                      fill='none'
-                      stroke='var(--accent-color)'
-                      stroke-width=5
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                    />
-                  </svg>`
+                    <svg width="100%" height="100%" viewBox="0 0 500 100">
+                      <path
+                        d="${_line}"
+                        fill="none"
+                        stroke="var(--accent-color)"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  `
                 : ""
             }
           </div>
