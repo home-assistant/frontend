@@ -42,15 +42,11 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     const cardConfig = {
       detail: 1,
       icon: false,
-      height: 100,
       hours_to_show: 24,
-      line_color: "var(--accent-color)",
-      line_width: 5,
       ...config,
     };
     cardConfig.hours_to_show = Number(cardConfig.hours_to_show);
     cardConfig.height = Number(cardConfig.height);
-    cardConfig.line_width = Number(cardConfig.line_width);
     cardConfig.detail =
       cardConfig.detail === 1 || cardConfig.detail === 2
         ? cardConfig.detail
@@ -64,7 +60,7 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     return change;
   }
 
-  render({ _config, _entity, _line } = this) {
+  render({ _entity, _line } = this) {
     return html`
       ${this._style()}
       <ha-card @click="${this._handleClick}">
@@ -85,11 +81,17 @@ class HuiSensorCard extends EventsMixin(LitElement) {
             ${
               _line
                 ? svg`
-            <svg width='100%' height='100%' viewBox='0 0 500 ${_config.height}'>
-              <path d=${_line} fill='none' stroke=${_config.line_color}
-                stroke-width=${_config.line_width}
-                stroke-linecap='round' stroke-linejoin='round' />
-            </svg>`
+                    <svg width="100%" height="100%" viewBox="0 0 500 100">
+                      <path
+                        d="${_line}"
+                        fill="none"
+                        stroke="var(--accent-color)"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  `
                 : ""
             }
           </div>
@@ -144,8 +146,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
 
   _calcPoints(history, hours, width, detail = 1) {
     const coords = [];
-    const margin = this._config.line_width;
-    const height = this._config.height - margin * 4;
+    const margin = 5;
+    const height = 80;
     width -= margin * 2;
     let yRatio = (this._max - this._min) / height;
     yRatio = yRatio !== 0 ? yRatio : height;
