@@ -6,20 +6,20 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
-import { processEditorEntities } from "../process-editor-entities";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config, ConfigEntity } from "../../cards/hui-glance-card";
-import { configElementStyle } from "./config-elements-style";
+import { processEditorEntities } from "../../process-editor-entities";
+import { EntitiesEditorEvent, EditorTarget } from "../../types";
+import { hassLocalizeLitMixin } from "../../../../../mixins/lit-localize-mixin";
+import { HomeAssistant } from "../../../../../types";
+import { LovelaceCardEditor } from "../../../types";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { Config, ConfigEntity } from "../../../cards/hui-glance-card";
+import { configElementStyle } from "../config-elements-style";
 
-import "./entity-selectors/hui-glance-entity-select";
-import "../../../../components/entity/state-badge";
-import "../../components/hui-theme-select-editor";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon";
+import "./hui-glance-entity-editor";
+import "../../../../../components/entity/state-badge";
+import "../../../components/hui-theme-select-editor";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon";
 
 const entitiesConfigStruct = struct.union([
   {
@@ -113,11 +113,11 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
           >
         </div>
       </div>
-      <hui-glance-entity-select
+      <hui-glance-entity-editor
         .hass="${this.hass}"
         .entities="${this._configEntities}"
         @entities-changed="${this._valueChanged}"
-      ></hui-glance-entity-select>
+      ></hui-glance-entity-editor>
     `;
   }
 

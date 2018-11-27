@@ -8,15 +8,15 @@ import { HuiEntityEditor } from "../../../components/hui-entity-editor";
 import { HomeAssistant } from "../../../../../types";
 import { ConfigEntity } from "../../../cards/hui-glance-card";
 
-export class HuiGlanceEntitySelect extends HuiEntityEditor {
+export class HuiGlanceEntityEditor extends HuiEntityEditor {
+  protected hass?: HomeAssistant;
+  protected entities?: ConfigEntity[];
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       entities: {},
     };
   }
-  protected hass?: HomeAssistant;
-  protected entities?: ConfigEntity[];
 
   protected renderOptions(
     entityConf: ConfigEntity,
@@ -122,8 +122,8 @@ export class HuiGlanceEntitySelect extends HuiEntityEditor {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-glance-entity-select": HuiGlanceEntitySelect;
+    "hui-glance-entity-editor": HuiGlanceEntityEditor;
   }
 }
 
-customElements.define("hui-glance-entity-select", HuiGlanceEntitySelect);
+customElements.define("hui-glance-entity-editor", HuiGlanceEntityEditor);
