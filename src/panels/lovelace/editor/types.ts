@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {

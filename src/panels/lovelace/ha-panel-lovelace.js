@@ -3,6 +3,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/paper-button/paper-button";
 
 import { registerSaveDialog } from "./editor/hui-dialog-save-config";
+import { fetchConfig } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
@@ -114,7 +115,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
 
   async _fetchConfig() {
     try {
-      const conf = await this.hass.callWS({ type: "lovelace/config" });
+      const conf = await fetchConfig(this.hass);
       this.setProperties({
         _config: conf,
         _state: "loaded",

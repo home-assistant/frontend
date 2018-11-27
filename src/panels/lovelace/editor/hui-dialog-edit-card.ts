@@ -3,7 +3,7 @@ import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { LovelaceCardConfig } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import "./hui-edit-card";
 import "./hui-migrate-config";
 

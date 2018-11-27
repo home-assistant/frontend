@@ -1,5 +1,29 @@
-import { HomeAssistant } from "../../../types";
-import { LovelaceConfig, LovelaceCardConfig } from "../types";
+import { HomeAssistant } from "../types";
+
+export interface LovelaceConfig {
+  _frontendAuto: boolean;
+  title?: string;
+  views: LovelaceViewConfig[];
+}
+
+export interface LovelaceViewConfig {
+  title?: string;
+  badges?: string[];
+  cards?: LovelaceCardConfig[];
+  id?: string;
+  icon?: string;
+}
+
+export interface LovelaceCardConfig {
+  id?: string;
+  type: string;
+  [key: string]: any;
+}
+
+export const fetchConfig = (hass: HomeAssistant): Promise<LovelaceConfig> =>
+  hass.callWS({
+    type: "lovelace/config",
+  });
 
 export const migrateConfig = (hass: HomeAssistant): Promise<void> =>
   hass.callWS({
