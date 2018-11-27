@@ -3,7 +3,8 @@ import { TemplateResult } from "lit-html";
 
 import createHuiElement from "../common/create-hui-element";
 
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 
