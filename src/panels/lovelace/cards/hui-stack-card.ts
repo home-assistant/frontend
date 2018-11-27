@@ -3,7 +3,8 @@ import { TemplateResult } from "lit-html";
 
 import createCardElement from "../common/create-card-element";
 
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 
 interface Config extends LovelaceCardConfig {

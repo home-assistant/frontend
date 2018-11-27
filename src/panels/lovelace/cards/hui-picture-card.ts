@@ -2,7 +2,8 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 
 import "../../../components/ha-card";
 
-import { LovelaceCard, LovelaceCardConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { navigate } from "../../../common/navigate";
 import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";

@@ -3,7 +3,7 @@ import {
   LovelaceConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
-} from "../types";
+} from "../../../data/lovelace";
 import { HassEntity, HassEntities } from "home-assistant-js-websocket";
 import extractViews from "../../../common/entity/extract_views";
 import getViewEntities from "../../../common/entity/get_view_entities";
