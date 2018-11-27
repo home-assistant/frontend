@@ -47,6 +47,10 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
       `;
     }
 
+    return renderTemplate(stateObj);
+  }
+
+  protected renderTemplate(stateObj): TemplateResult {
     return html`
       ${this.renderStyle()}
       <state-badge .stateObj="${stateObj}"></state-badge>
@@ -73,7 +77,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         :host {

@@ -31,6 +31,10 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
       return html``;
     }
 
+    return renderTemplate();
+  }
+
+  protected renderTemplate(): TemplateResult {
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
@@ -42,7 +46,7 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         ha-climate-state {

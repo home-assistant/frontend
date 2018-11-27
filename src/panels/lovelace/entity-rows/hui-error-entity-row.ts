@@ -19,7 +19,7 @@ class HuiErrorEntityRow extends LitElement {
     `;
   }
 
-  private renderStyle(): TemplateResult {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         :host {

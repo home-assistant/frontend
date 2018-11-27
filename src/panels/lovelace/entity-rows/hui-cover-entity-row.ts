@@ -43,29 +43,19 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
       `;
     }
 
+    return renderTemplate(stateObj);
+  }
+
+  protected renderTemplate(stateObj): TemplateResult {
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        ${
-          isTiltOnly(stateObj)
-            ? html`
-                <ha-cover-tilt-controls
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-cover-tilt-controls>
-              `
-            : html`
-                <ha-cover-controls
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-cover-controls>
-              `
-        }
+        ${this.renderCoverControl(stateObj)}
       </hui-generic-entity-row>
     `;
   }
 
-  private renderStyle(): TemplateResult {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         ha-cover-controls,
@@ -73,6 +63,26 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
           margin-right: -0.57em;
         }
       </style>
+    `;
+  }
+
+  protected renderCoverControl(stateObj): TemplateResult {
+    return html`
+      ${
+        isTiltOnly(stateObj)
+          ? html`
+              <ha-cover-tilt-controls
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-cover-tilt-controls>
+            `
+          : html`
+              <ha-cover-controls
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-cover-controls>
+            `
+      }
     `;
   }
 }

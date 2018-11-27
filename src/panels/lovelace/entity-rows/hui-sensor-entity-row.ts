@@ -45,6 +45,10 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
       `;
     }
 
+    return renderTemplate(stateObj);
+  }
+
+  protected renderTemplate(stateObj): TemplateResult {
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
@@ -65,7 +69,7 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         div {

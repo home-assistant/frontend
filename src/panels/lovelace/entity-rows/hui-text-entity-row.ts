@@ -43,6 +43,10 @@ class HuiTextEntityRow extends hassLocalizeLitMixin(LitElement)
       `;
     }
 
+    return renderTemplate(stateObj);
+  }
+
+  protected renderTemplate(stateObj): TemplateResult {
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
@@ -53,7 +57,7 @@ class HuiTextEntityRow extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderStyle(): TemplateResult {
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         div {

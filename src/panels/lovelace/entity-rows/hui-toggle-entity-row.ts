@@ -44,6 +44,10 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
       `;
     }
 
+    return renderTemplate(stateObj);
+  }
+
+  protected renderTemplate(stateObj): TemplateResult {
     return html`
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         ${
