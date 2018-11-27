@@ -15,9 +15,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config, ConfigEntity } from "../../cards/hui-glance-card";
 import { configElementStyle } from "./config-elements-style";
 
+import "./entity-selectors/hui-glance-entity-select";
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 
@@ -113,11 +113,11 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
           >
         </div>
       </div>
-      <hui-entity-editor
+      <hui-glance-entity-select
         .hass="${this.hass}"
         .entities="${this._configEntities}"
         @entities-changed="${this._valueChanged}"
-      ></hui-entity-editor>
+      ></hui-glance-entity-select>
     `;
   }
 

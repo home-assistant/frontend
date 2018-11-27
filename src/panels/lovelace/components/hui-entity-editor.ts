@@ -1,6 +1,7 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import "@polymer/paper-button/paper-button";
 import { TemplateResult } from "lit-html";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -40,8 +41,7 @@ export class HuiEntityEditor extends LitElement {
                   @change="${this._valueChanged}"
                   allow-custom-entity
                 ></ha-entity-picker>
-                <paper-toggle-button>Options</paper-toggle-button>
-                <div class="options"></div>
+                ${this.renderOptions(entityConf, index)}
               </div>
             `;
           })
@@ -50,6 +50,26 @@ export class HuiEntityEditor extends LitElement {
       <paper-button noink raised @click="${this._addEntity}"
         >Add Entity</paper-button
       >
+    `;
+  }
+
+  protected renderOptions(
+    entityConf: EntityConfig,
+    index: number
+  ): TemplateResult {
+    return html``;
+  }
+
+  protected renderStyle(): TemplateResult {
+    return html`
+      <style>
+        .entities {
+          padding-left: 16px;
+        }
+        paper-button {
+          margin: 8px 0;
+        }
+      </style>
     `;
   }
 
@@ -73,19 +93,6 @@ export class HuiEntityEditor extends LitElement {
     }
 
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
-  }
-
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .entities {
-          padding-left: 20px;
-        }
-        paper-button {
-          margin: 8px 0;
-        }
-      </style>
-    `;
   }
 }
 
