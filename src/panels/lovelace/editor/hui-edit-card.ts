@@ -257,8 +257,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       this._uiEditor = !this._uiEditor;
       const cardConfig = this._configValue!.value! as LovelaceCardConfig;
       if (cardConfig.type !== this._cardType) {
-        await this._loadConfigElement(this._configValue!
-          .value! as LovelaceCardConfig);
+        await this._loadConfigElement(cardConfig);
         this._cardType = cardConfig.type;
       }
       this._configElement.setConfig(cardConfig);
