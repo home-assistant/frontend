@@ -13,8 +13,7 @@ import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import {
   fetchItems,
-  completeItem,
-  saveEdit,
+  updateItem,
   ShoppingListItem,
   clearItems,
   addItem,
@@ -257,15 +256,15 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _completeItem(ev): void {
-    completeItem(this.hass!, ev.target.itemId, ev.target.checked).catch(() =>
-      this._fetchData()
-    );
+    updateItem(this.hass!, ev.target.itemId, {
+      complete: ev.target.checked,
+    }).catch(() => this._fetchData());
   }
 
   private _saveEdit(ev): void {
-    saveEdit(this.hass!, ev.target.itemId, ev.target.value).catch(() =>
-      this._fetchData()
-    );
+    updateItem(this.hass!, ev.target.itemId, {
+      name: ev.target.value,
+    }).catch(() => this._fetchData());
 
     ev.target.blur();
   }
