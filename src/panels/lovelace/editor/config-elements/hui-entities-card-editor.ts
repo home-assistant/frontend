@@ -43,6 +43,11 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
     const requiredKeys = ["type", "entities", "id"];
     const optionalKeys = ["title", "show_header_toggle"];
     const allKeys = optionalKeys.concat(requiredKeys);
+
+    const requiredEntKeys = ["entity"];
+    const optionalEntKeys = ["name", "icon"];
+    const allEntKeys = optionalEntKeys.concat(requiredEntKeys);
+
     requiredKeys.forEach((key) => {
       if (!config.hasOwnProperty(key)) {
         throw new Error(`Missing required option: '${key}'`);
@@ -57,14 +62,10 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
     if (!Array.isArray(config.entities)) {
       throw new Error("Entities need to be an array");
     }
-
     config.entities.forEach((entity) => {
       if (typeof entity === "string") {
         return;
       }
-      const requiredEntKeys = ["entity"];
-      const optionalEntKeys = ["name", "icon"];
-      const allEntKeys = optionalEntKeys.concat(requiredEntKeys);
       requiredEntKeys.forEach((key) => {
         if (!entity.hasOwnProperty(key)) {
           throw new Error(`Missing required entity option: '${key}'`);
