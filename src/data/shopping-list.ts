@@ -11,26 +11,18 @@ export const fetchItems = (hass: HomeAssistant): Promise<ShoppingListItem[]> =>
     type: "shopping_list/items",
   });
 
-export const saveEdit = (
+export const updateItem = (
   hass: HomeAssistant,
   itemId: number,
-  name: string
+  item: {
+    name?: string;
+    complete?: boolean;
+  }
 ): Promise<ShoppingListItem> =>
   hass.callWS({
     type: "shopping_list/items/update",
     item_id: itemId,
-    name,
-  });
-
-export const completeItem = (
-  hass: HomeAssistant,
-  itemId: number,
-  complete: boolean
-): Promise<void> =>
-  hass.callWS({
-    type: "shopping_list/items/update",
-    item_id: itemId,
-    complete,
+    ...item,
   });
 
 export const clearItems = (hass: HomeAssistant): Promise<void> =>
