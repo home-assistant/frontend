@@ -3,7 +3,6 @@ import {
   LitElement,
   PropertyDeclarations,
   svg,
-  PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import { until } from "lit-html/directives/until";
