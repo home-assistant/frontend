@@ -285,6 +285,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _closeDialog(): void {
+    this._cardId = undefined;
     this._dialog.close();
   }
 

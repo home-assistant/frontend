@@ -41,7 +41,7 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     const requiredKeys = ["type", "entities", "id"];
-    const optionalKeys = ["title", "show_header_toggle"];
+    const optionalKeys = ["title", "show_header_toggle", "theme"];
     const allKeys = optionalKeys.concat(requiredKeys);
 
     const requiredEntKeys = ["entity"];
