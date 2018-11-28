@@ -63,21 +63,6 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return 3;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
-    return true;
-  }
-
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
@@ -142,11 +127,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(): void {
-    if (!this._config) {
-      return;
-    }
-
-    fireEvent(this, "hass-more-info", { entityId: this._config.entity });
+    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
   private _coordinates(
