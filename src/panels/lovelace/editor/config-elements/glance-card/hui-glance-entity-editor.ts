@@ -7,7 +7,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import { HuiEntityEditor } from "../../../components/hui-entity-editor";
 import { HomeAssistant } from "../../../../../types";
 import { ConfigEntity } from "../../../cards/hui-glance-card";
-import { GlanceOptions } from "./glance-options-class";
+import { GlanceOptions } from "./glance-options";
 
 export class HuiGlanceEntityEditor extends HuiEntityEditor {
   protected hass?: HomeAssistant;
