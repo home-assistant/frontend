@@ -5,6 +5,8 @@ import {
   showEditCardDialog,
   registerEditCardDialog,
 } from "../editor/hui-dialog-edit-card";
+
+import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 
@@ -52,16 +54,38 @@ export class HuiCardOptions extends LitElement {
           color: var(--primary-color);
           font-weight: 500;
         }
+        paper-button.warning:not([disabled]) {
+          color: var(--google-red-500);
+        }
       </style>
       <slot></slot>
-      <div><paper-button @click="${this._editCard}">EDIT</paper-button></div>
+      <div>
+        <paper-button class="warning" @click="${this._deleteCard}"
+          >DELETE</paper-button
+        ><paper-button @click="${this._editCard}">EDIT</paper-button>
+      </div>
     `;
   }
-  private _editCard() {
+  private _editCard(): void {
+    if (!this.cardConfig) {
+      return;
+    }
     showEditCardDialog(this, {
-      cardConfig: this.cardConfig!,
+      cardConfig: this.cardConfig,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
+  }
+  private _deleteCard(): void {
+    if (!this.cardConfig) {
+      return;
+    }
+    if (!this.cardConfig.id) {
+      this._editCard();
+      return;
+    }
+    confDeleteCard(this.hass!, this.cardConfig.id, () =>
+      fireEvent(this, "config-refresh")
+    );
   }
 }
 
