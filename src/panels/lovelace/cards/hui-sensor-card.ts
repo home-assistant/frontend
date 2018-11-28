@@ -34,6 +34,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   static get properties(): PropertyDeclarations {
     return {
+      hass: {},
       _config: {},
     };
   }
@@ -68,41 +69,46 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     }
 
     const stateObj = this.hass.states[this._config.entity];
-    if (!stateObj) {
-      return html``;
-    }
-
     return html`
       ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
-        <div class="flex">
-          <div class="icon">
-            <ha-icon
-              .icon="${this._config.icon || stateIcon(stateObj)}"
-            ></ha-icon>
-          </div>
-          <div class="header">
-            <span class="name"
-              >${this._config.name || computeStateName(stateObj)}</span
-            >
-          </div>
-        </div>
-        <div class="flex info">
-          <span id="value">${stateObj.state}</span>
-          <span id="measurement"
-            >${
-              this._config.unit || stateObj.attributes.unit_of_measurement
-            }</span
-          >
-        </div>
-        <div class="graph">
-          <div>
-            ${
-              this._config.graph !== "none" &&
-              stateObj.attributes.unit_of_measurement
-                ? until(
-                    this._getHistory().then((history) => {
-                      return svg`
+        ${
+          !stateObj
+            ? html`
+                <div class="not-found">
+                  Entity not available: ${this._config.entity}
+                </div>
+              `
+            : html`
+                <div class="flex">
+                  <div class="icon">
+                    <ha-icon
+                      .icon="${this._config.icon || stateIcon(stateObj)}"
+                    ></ha-icon>
+                  </div>
+                  <div class="header">
+                    <span class="name"
+                      >${this._config.name || computeStateName(stateObj)}</span
+                    >
+                  </div>
+                </div>
+                <div class="flex info">
+                  <span id="value">${stateObj.state}</span>
+                  <span id="measurement"
+                    >${
+                      this._config.unit ||
+                        stateObj.attributes.unit_of_measurement
+                    }</span
+                  >
+                </div>
+                <div class="graph">
+                  <div>
+                    ${
+                      this._config.graph !== "none" &&
+                      stateObj.attributes.unit_of_measurement
+                        ? until(
+                            this._getHistory().then((history) => {
+                              return svg`
                         <svg width="100%" height="100%" viewBox="0 0 500 100">
                           <path
                             d="${history}"
@@ -114,13 +120,15 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
                           />
                         </svg>
                       `;
-                    }),
-                    html``
-                  )
-                : ""
-            }
-          </div>
-        </div>
+                            }),
+                            html``
+                          )
+                        : ""
+                    }
+                  </div>
+                </div>
+              `
+        }
       </ha-card>
     `;
   }
@@ -347,6 +355,11 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         .graph > div {
           align-self: flex-end;
           margin: auto 8px;
+        }
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
         }
       </style>
     `;
