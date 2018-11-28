@@ -3,6 +3,7 @@ import {
   LitElement,
   PropertyDeclarations,
   svg,
+  PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import { until } from "lit-html/directives/until";
@@ -62,7 +63,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return 3;
   }
 
-  protected shouldUpdate(changedProps): boolean {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("_config")) {
       return true;
     }
@@ -145,7 +146,12 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config.entity });
   }
 
-  private _coordinates(history, hours, width, detail) {
+  private _coordinates(
+    history: any,
+    hours: number,
+    width: number,
+    detail: number
+  ): number[][] {
     history = history.filter((item) => !Number.isNaN(Number(item.state)));
     const min = Math.min.apply(Math, history.map((item) => Number(item.state)));
     const max = Math.max.apply(Math, history.map((item) => Number(item.state)));
@@ -182,7 +188,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     detail: number,
     min: number,
     max: number
-  ) {
+  ): number[][] {
     const coords = [] as number[][];
     const margin = 5;
     const height = 80;
@@ -214,7 +220,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return coords;
   }
 
-  private _getPath(coords): string {
+  private _getPath(coords: number[][]): string {
     let next;
     let Z;
     const X = 0;
@@ -236,7 +242,12 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return path;
   }
 
-  private _midPoint(_Ax: number, _Ay: number, _Bx: number, _By: number) {
+  private _midPoint(
+    _Ax: number,
+    _Ay: number,
+    _Bx: number,
+    _By: number
+  ): number[] {
     const _Zx = (_Ax - _Bx) / 2 + _Bx;
     const _Zy = (_Ay - _By) / 2 + _By;
     return [_Zx, _Zy];
@@ -247,30 +258,26 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     const startTime = new Date();
     startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
 
-    const stateHistory = await this._fetchRecent(
-      this._config!.entity,
-      startTime,
-      endTime
-    );
+    const stateHistory = await this._fetchRecent(startTime, endTime);
 
     if (stateHistory[0].length < 1) {
       return "";
     }
     const coords = this._coordinates(
       stateHistory[0],
-      this._config!.hours_to_show,
+      this._config!.hours_to_show!,
       500,
-      this._config!.detail
+      this._config!.detail!
     );
     return this._getPath(coords);
   }
 
-  private async _fetchRecent(entityId, startTime, endTime) {
+  private async _fetchRecent(startTime: Date, endTime: Date): Promise<{}> {
     let url = "history/period";
     if (startTime) {
       url += "/" + startTime.toISOString();
     }
-    url += "?filter_entity_id=" + entityId;
+    url += "?filter_entity_id=" + this._config!.entity;
     if (endTime) {
       url += "&end_time=" + endTime.toISOString();
     }
@@ -278,7 +285,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return this.hass!.callApi("GET", url);
   }
 
-  private renderStyle() {
+  private renderStyle(): TemplateResult {
     return html`
       <style>
         :host {
