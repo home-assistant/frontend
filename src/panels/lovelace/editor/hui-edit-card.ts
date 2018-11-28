@@ -54,6 +54,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   private _isToggleAvailable?: boolean;
   private _saving: boolean;
   private _errorMsg?: TemplateResult;
+  private _cardType?: string;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -79,15 +80,11 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   set cardConfig(cardConfig: LovelaceCardConfig) {
     this._originalConfig = cardConfig;
     if (String(cardConfig.id) !== this._cardId) {
-      this._errorMsg = undefined;
-      this._loading = true;
-      this._uiEditor = false;
-      this._configElement = undefined;
       this._configValue = { format: "yaml", value: undefined };
       this._configState = "OK";
-      this._isToggleAvailable = false;
+      this._uiEditor = false;
       this._cardId = String(cardConfig.id);
-      this._loadConfigElement();
+      this._loadConfigElement(cardConfig);
     }
   }
 
@@ -235,7 +232,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
-  private _toggleEditor(): void {
+  private async _toggleEditor(): Promise<void> {
     if (!this._isToggleAvailable) {
       alert("You can't switch editor.");
       return;
@@ -257,9 +254,17 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           schema: extYamlSchema,
         }),
       };
+      this._uiEditor = !this._uiEditor;
+      if (
+        (this._configValue!.value! as LovelaceCardConfig).type !==
+        this._cardType
+      ) {
+        await this._loadConfigElement(this._configValue!
+          .value! as LovelaceCardConfig);
+        this._cardType = (this._configValue!.value! as LovelaceCardConfig).type;
+      }
       this._configElement.setConfig(this._configValue!
         .value as LovelaceCardConfig);
-      this._uiEditor = !this._uiEditor;
     }
     this._resizeDialog();
   }
@@ -386,11 +391,16 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     return JSON.stringify(configValue) !== JSON.stringify(this._originalConfig);
   }
 
-  private async _loadConfigElement(): Promise<void> {
-    if (!this._originalConfig) {
+  private async _loadConfigElement(conf: LovelaceCardConfig): Promise<void> {
+    if (!conf) {
       return;
     }
-    const conf = this._originalConfig;
+
+    this._errorMsg = undefined;
+    this._loading = true;
+    this._configElement = undefined;
+    this._isToggleAvailable = false;
+
     const tag = conf.type.startsWith(CUSTOM_TYPE_PREFIX)
       ? conf!.type.substr(CUSTOM_TYPE_PREFIX.length)
       : `hui-${conf!.type}-card`;
