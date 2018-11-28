@@ -255,16 +255,13 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         }),
       };
       this._uiEditor = !this._uiEditor;
-      if (
-        (this._configValue!.value! as LovelaceCardConfig).type !==
-        this._cardType
-      ) {
+      const cardConfig = this._configValue!.value! as LovelaceCardConfig;
+      if (cardConfig.type !== this._cardType) {
         await this._loadConfigElement(this._configValue!
           .value! as LovelaceCardConfig);
-        this._cardType = (this._configValue!.value! as LovelaceCardConfig).type;
+        this._cardType = cardConfig.type;
       }
-      this._configElement.setConfig(this._configValue!
-        .value as LovelaceCardConfig);
+      this._configElement.setConfig(cardConfig);
     }
     this._resizeDialog();
   }
