@@ -84,6 +84,9 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     }
 
     const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return html``;
+    }
 
     return html`
       ${this.renderStyle()}
