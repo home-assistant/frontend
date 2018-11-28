@@ -21,7 +21,7 @@ import "../../../components/ha-card";
 interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
-  unit_of_measurement?: string;
+  unit?: string;
   min?: number;
   max?: number;
   severity?: object;
@@ -89,7 +89,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
                     <div id="percent">
                       ${stateObj.state}
                       ${
-                        this._config.unit_of_measurement ||
+                        this._config.unit ||
                           stateObj.attributes.unit_of_measurement ||
                           ""
                       }
