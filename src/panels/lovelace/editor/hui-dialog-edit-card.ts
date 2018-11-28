@@ -46,7 +46,7 @@ export class HuiDialogEditCard extends LitElement {
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      _cardConfig: {},
+      _params: {},
     };
   }
 
