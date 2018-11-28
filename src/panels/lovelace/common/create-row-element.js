@@ -30,6 +30,7 @@ const SPECIAL_TYPES = new Set([
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   automation: "toggle",
+  alert: "toggle",
   climate: "climate",
   cover: "cover",
   fan: "toggle",
