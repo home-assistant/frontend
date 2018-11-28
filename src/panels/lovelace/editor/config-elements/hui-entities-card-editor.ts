@@ -6,6 +6,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { processEditorEntities } from "../process-editor-entities";
+
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -39,6 +40,43 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   public setConfig(config: Config): void {
+    const requiredKeys = ["type", "entities", "id"];
+    const optionalKeys = ["title", "show_header_toggle"];
+    const allKeys = optionalKeys.concat(requiredKeys);
+    requiredKeys.forEach((key) => {
+      if (!config.hasOwnProperty(key)) {
+        throw new Error(`Missing required option: '${key}'`);
+      }
+    });
+    Object.keys(config).forEach((key) => {
+      if (allKeys.indexOf(key) === -1) {
+        throw new Error(`Unsupported option: '${key}'`);
+      }
+    });
+
+    if (!Array.isArray(config.entities)) {
+      throw new Error("Entities need to be an array");
+    }
+
+    config.entities.forEach((entity) => {
+      if (typeof entity === "string") {
+        return;
+      }
+      const requiredEntKeys = ["entity"];
+      const optionalEntKeys = ["name", "icon"];
+      const allEntKeys = optionalEntKeys.concat(requiredEntKeys);
+      requiredEntKeys.forEach((key) => {
+        if (!entity.hasOwnProperty(key)) {
+          throw new Error(`Missing required entity option: '${key}'`);
+        }
+      });
+      Object.keys(entity).forEach((key) => {
+        if (allEntKeys.indexOf(key) === -1) {
+          throw new Error(`Unsupported entity option: '${key}'`);
+        }
+      });
+    });
+
     this._config = { type: "entities", ...config };
     this._configEntities = processEditorEntities(config.entities);
   }

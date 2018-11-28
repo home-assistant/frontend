@@ -53,6 +53,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   private _loading?: boolean;
   private _isToggleAvailable?: boolean;
   private _saving: boolean;
+  private _errorMsg?: TemplateResult;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -62,6 +63,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       _configElement: {},
       _configValue: {},
       _configState: {},
+      _errorMsg: {},
       _uiEditor: {},
       _saving: {},
       _loading: {},
@@ -77,8 +79,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   set cardConfig(cardConfig: LovelaceCardConfig) {
     this._originalConfig = cardConfig;
     if (String(cardConfig.id) !== this._cardId) {
+      this._errorMsg = undefined;
       this._loading = true;
-      this._uiEditor = true;
+      this._uiEditor = false;
       this._configElement = undefined;
       this._configValue = { format: "yaml", value: undefined };
       this._configState = "OK";
@@ -118,18 +121,33 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           class="${classMap({ hidden: this._loading! })}"
         >
           ${
-            this._uiEditor && this._configElement !== null
+            this._errorMsg
               ? html`
-                  <div class="element-editor">${this._configElement}</div>
+                  <div class="error">${this._errorMsg}</div>
                 `
-              : html`
-                  <hui-yaml-editor
-                    .hass="${this.hass}"
-                    .cardId="${this._cardId}"
-                    .yaml="${this._configValue!.value}"
-                    @yaml-changed="${this._handleYamlChanged}"
-                  ></hui-yaml-editor>
+              : ""
+          }
+          ${
+            this._configElement !== undefined
+              ? html`
+                  ${
+                    this._uiEditor
+                      ? html`
+                          <div class="element-editor">
+                            ${this._configElement}
+                          </div>
+                        `
+                      : html`
+                          <hui-yaml-editor
+                            .hass="${this.hass}"
+                            .cardId="${this._cardId}"
+                            .yaml="${this._configValue!.value}"
+                            @yaml-changed="${this._handleYamlChanged}"
+                          ></hui-yaml-editor>
+                        `
+                  }
                 `
+              : ""
           }
           <hr />
           <hui-card-preview .hass="${this.hass}"></hui-card-preview>
@@ -164,7 +182,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                   >
                 </div>
               `
-            : html``
+            : ""
         }
       </paper-dialog>
     `;
@@ -199,6 +217,10 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         }
         .element-editor {
           margin-bottom: 8px;
+        }
+        .error {
+          color: #ef5350;
+          border-bottom: 1px solid #ef5350;
         }
         hr {
           color: #000;
@@ -379,19 +401,29 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       configElement = await elClass.getConfigElement();
     } catch (err) {
       this._configElement = null;
-      this._uiEditor = false;
       return;
     }
 
-    this._isToggleAvailable = true;
+    try {
+      configElement.setConfig(conf);
+    } catch (err) {
+      this._errorMsg = html`
+        Your config is not supported by the UI editor:<br /><b
+          >${err.message}.</b
+        ><br />Falling back to YAML editor.
+      `;
+      this._configElement = null;
+      return;
+    }
 
-    configElement.setConfig(conf);
     configElement.hass = this.hass;
     configElement.addEventListener("config-changed", (ev) =>
       this._handleUIConfigChanged(ev.detail.config)
     );
     this._configValue = { format: "json", value: conf };
     this._configElement = configElement;
+    this._uiEditor = true;
+    this._isToggleAvailable = true;
     this._updatePreview(conf);
   }
 }
