@@ -13,7 +13,6 @@ import { EditorTarget } from "../../types";
 export class HuiGlanceEntityEditor extends HuiEntityEditor {
   protected hass?: HomeAssistant;
   protected entities?: ConfigEntity[];
-  private _glanceOptions?: GlanceOptions;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -26,21 +25,21 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
     entityConf: ConfigEntity,
     index: number
   ): TemplateResult {
-    this._glanceOptions = new GlanceOptions(entityConf);
+    const glanceOptions = new GlanceOptions(entityConf);
 
     return html`
       <paper-toggle-button>Options</paper-toggle-button>
       <div class="options">
         <paper-input
           label="Name"
-          .value="${this._glanceOptions._name}"
+          .value="${glanceOptions._name}"
           .configValue="${"name"}"
           .index="${index}"
           @value-changed="${this._optionChanged}"
         ></paper-input>
         <paper-input
           label="Icon"
-          .value="${this._glanceOptions._icon}"
+          .value="${glanceOptions._icon}"
           .configValue="${"icon"}"
           .index="${index}"
           @value-changed="${this._optionChanged}"
@@ -48,7 +47,7 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
         <paper-dropdown-menu label="Toggle Action">
           <paper-listbox
             slot="dropdown-content"
-            .selected="${this._glanceOptions._tapaction}"
+            .selected="${glanceOptions._tapaction}"
             attr-for-selected="action"
             .configValue="${"tap_action"}"
             .index="${index}"
@@ -62,7 +61,7 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
         <paper-dropdown-menu label="Hold Action">
           <paper-listbox
             slot="dropdown-content"
-            .selected="${this._glanceOptions._holdaction}"
+            .selected="${glanceOptions._holdaction}"
             attr-for-selected="action"
             .configValue="${"hold_action"}"
             .index="${index}"
@@ -76,7 +75,7 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
         </paper-dropdown-menu>
         <paper-input
           label="Service"
-          .value="${this._glanceOptions._service}"
+          .value="${glanceOptions._service}"
           .configValue="${"service"}"
           .index="${index}"
           @value-changed="${this._optionChanged}"
@@ -87,17 +86,15 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
 
   protected _optionChanged(ev: Event): void {
     const target = ev.target! as EditorTarget;
+    const value = target.value || target.selected;
+    const entity = this.entities![target.index!];
+
     if (
-      (target.configValue! === "name" &&
-        target.value === this._glanceOptions!._name) ||
-      (target.configValue! === "icon" &&
-        target.value === this._glanceOptions!._icon) ||
-      (target.configValue! === "tap_action" &&
-        target.value === this._glanceOptions!._tapaction) ||
-      (target.configValue! === "hold_action" &&
-        target.value === this._glanceOptions!._holdaction) ||
-      (target.configValue! === "service" &&
-        target.value === this._glanceOptions!._service)
+      (target.configValue! === "name" && value === entity.name) ||
+      (target.configValue! === "icon" && value === entity.icon) ||
+      (target.configValue! === "tap_action" && value === entity.tap_action) ||
+      (target.configValue! === "hold_action" && value === entity.hold_action) ||
+      (target.configValue! === "service" && value === entity.service)
     ) {
       return;
     }
