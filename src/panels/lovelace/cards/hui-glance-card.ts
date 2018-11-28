@@ -68,7 +68,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     this._config = { theme: "default", ...config };
-    const entities = processConfigEntities(config.entities) as ConfigEntity[];
+    const entities = processConfigEntities<ConfigEntity>(config.entities);
 
     for (const entity of entities) {
       if (

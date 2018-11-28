@@ -2,7 +2,9 @@
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import { EntityConfig } from "../entity-rows/types";
 
-export const processConfigEntities = (entities: EntityConfig[]) => {
+export const processConfigEntities = <T extends EntityConfig>(
+  entities: Array<T | string>
+): T[] => {
   if (!entities || !Array.isArray(entities)) {
     throw new Error("Entities need to be an array");
   }
