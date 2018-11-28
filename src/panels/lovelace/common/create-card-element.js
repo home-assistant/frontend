@@ -19,7 +19,7 @@ import "../cards/hui-picture-elements-card";
 import "../cards/hui-picture-entity-card";
 import "../cards/hui-picture-glance-card";
 import "../cards/hui-plant-status-card";
-import "../cards/hui-sensor-card";
+import "../cards/hui-sensor-card.ts";
 import "../cards/hui-vertical-stack-card.ts";
 import "../cards/hui-shopping-list-card";
 import "../cards/hui-thermostat-card.ts";

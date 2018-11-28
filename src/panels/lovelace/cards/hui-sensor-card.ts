@@ -1,52 +1,55 @@
-import { LitElement, html, svg } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  svg,
+} from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
+import { until } from "lit-html/directives/until";
 
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 import stateIcon from "../../../common/entity/state_icon";
 
-import EventsMixin from "../../../mixins/events-mixin";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 
-class HuiSensorCard extends EventsMixin(LitElement) {
-  set hass(hass) {
-    this._hass = hass;
-    const entity = hass.states[this._config.entity];
-    if (entity && this._entity !== entity) {
-      this._entity = entity;
-      if (
-        this._config.graph !== "none" &&
-        entity.attributes.unit_of_measurement
-      ) {
-        this._getHistory();
-      }
-    }
-  }
+interface Config extends LovelaceCardConfig {
+  entity: string;
+  name?: string;
+  icon?: string;
+  graph?: string;
+  unit?: string;
+  detail?: number;
+  hours_to_show?: number;
+}
 
-  static get properties() {
+class HuiSensorCard extends LitElement implements LovelaceCard {
+  public hass?: HomeAssistant;
+  private _config?: Config;
+
+  static get properties(): PropertyDeclarations {
     return {
-      _hass: {},
       _config: {},
-      _entity: {},
-      _line: String,
-      _min: Number,
-      _max: Number,
     };
   }
 
-  setConfig(config) {
+  public setConfig(config: Config): void {
     if (!config.entity || config.entity.split(".")[0] !== "sensor") {
       throw new Error("Specify an entity from within the sensor domain.");
     }
 
     const cardConfig = {
       detail: 1,
-      icon: false,
       hours_to_show: 24,
       ...config,
     };
+
     cardConfig.hours_to_show = Number(cardConfig.hours_to_show);
-    cardConfig.height = Number(cardConfig.height);
     cardConfig.detail =
       cardConfig.detail === 1 || cardConfig.detail === 2
         ? cardConfig.detail
@@ -55,43 +58,77 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     this._config = cardConfig;
   }
 
-  shouldUpdate(changedProps) {
-    const change = changedProps.has("_entity") || changedProps.has("_line");
-    return change;
+  public getCardSize(): number {
+    return 3;
   }
 
-  render({ _entity, _line } = this) {
+  protected shouldUpdate(changedProps): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
+    }
+    return true;
+  }
+
+  protected render(): TemplateResult {
+    if (!this._config || !this.hass) {
+      return html``;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+
     return html`
-      ${this._style()}
+      ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
         <div class="flex">
           <div class="icon">
-            <ha-icon .icon="${this._computeIcon(_entity)}"></ha-icon>
+            <ha-icon
+              .icon="${this._config.icon || stateIcon(stateObj)}"
+            ></ha-icon>
           </div>
           <div class="header">
-            <span class="name">${this._computeName(_entity)}</span>
+            <span class="name"
+              >${this._config.name || computeStateName(stateObj)}</span
+            >
           </div>
         </div>
         <div class="flex info">
-          <span id="value">${_entity.state}</span>
-          <span id="measurement">${this._computeUom(_entity)}</span>
+          <span id="value">${stateObj.state}</span>
+          <span id="measurement"
+            >${
+              this._config.unit || stateObj.attributes.unit_of_measurement
+            }</span
+          >
         </div>
         <div class="graph">
           <div>
             ${
-              _line
-                ? svg`
-                    <svg width="100%" height="100%" viewBox="0 0 500 100">
-                      <path
-                        d="${_line}"
-                        fill="none"
-                        stroke="var(--accent-color)"
-                        stroke-width="5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  `
+              this._config.graph !== "none" &&
+              stateObj.attributes.unit_of_measurement
+                ? until(
+                    this._getHistory().then((history) => {
+                      return svg`
+                        <svg width="100%" height="100%" viewBox="0 0 500 100">
+                          <path
+                            d="${history}"
+                            fill="none"
+                            stroke="var(--accent-color)"
+                            stroke-width="5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      `;
+                    }),
+                    html``
+                  )
                 : ""
             }
           </div>
@@ -100,38 +137,32 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     `;
   }
 
-  _handleClick() {
-    this.fire("hass-more-info", { entityId: this._config.entity });
+  private _handleClick(): void {
+    if (!this._config) {
+      return;
+    }
+
+    fireEvent(this, "hass-more-info", { entityId: this._config.entity });
   }
 
-  _computeIcon(item) {
-    return this._config.icon || stateIcon(item);
-  }
-
-  _computeName(item) {
-    return this._config.name || computeStateName(item);
-  }
-
-  _computeUom(item) {
-    return this._config.unit || item.attributes.unit_of_measurement;
-  }
-
-  _coordinates(history, hours, width, detail = 1) {
+  private _coordinates(history, hours, width, detail) {
     history = history.filter((item) => !Number.isNaN(Number(item.state)));
-    this._min = Math.min.apply(Math, history.map((item) => Number(item.state)));
-    this._max = Math.max.apply(Math, history.map((item) => Number(item.state)));
+    const min = Math.min.apply(Math, history.map((item) => Number(item.state)));
+    const max = Math.max.apply(Math, history.map((item) => Number(item.state)));
     const now = new Date().getTime();
 
-    const reduce = (res, item, min = false) => {
+    const reduce = (res, item, point = false) => {
       const age = now - new Date(item.last_changed).getTime();
       let key = Math.abs(age / (1000 * 3600) - hours);
-      if (min) {
+      if (point) {
         key = (key - Math.floor(key)) * 60;
-        key = (Math.round(key / 10) * 10).toString()[0];
+        key = Number((Math.round(key / 10) * 10).toString()[0]);
       } else {
         key = Math.floor(key);
       }
-      if (!res[key]) res[key] = [];
+      if (!res[key]) {
+        res[key] = [];
+      }
       res[key].push(item);
       return res;
     };
@@ -141,39 +172,49 @@ class HuiSensorCard extends EventsMixin(LitElement) {
         entry.reduce((res, item) => reduce(res, item, true), [])
       );
     }
-    return this._calcPoints(history, hours, width, detail);
+    return this._calcPoints(history, hours, width, detail, min, max);
   }
 
-  _calcPoints(history, hours, width, detail = 1) {
-    const coords = [];
+  private _calcPoints(
+    history,
+    hours,
+    width: number,
+    detail: number,
+    min: number,
+    max: number
+  ) {
+    const coords = [] as number[][];
     const margin = 5;
     const height = 80;
-    width -= margin * 2;
-    let yRatio = (this._max - this._min) / height;
+    width -= 10;
+    let yRatio = (max - min) / height;
     yRatio = yRatio !== 0 ? yRatio : height;
     let xRatio = width / (hours - (detail === 1 ? 1 : 0));
     xRatio = isFinite(xRatio) ? xRatio : width;
     const getCoords = (item, i, offset = 0, depth = 1) => {
-      if (depth > 1)
+      if (depth > 1) {
         return item.forEach((subItem, index) =>
           getCoords(subItem, i, index, depth - 1)
         );
+      }
       const average =
         item.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
         item.length;
 
       const x = xRatio * (i + offset / 6) + margin;
-      const y = height - (average - this._min) / yRatio + margin * 2;
+      const y = height - (average - min) / yRatio + margin * 2;
       return coords.push([x, y]);
     };
 
     history.forEach((item, i) => getCoords(item, i, 0, detail));
-    if (coords.length === 1) coords[1] = [width + margin, coords[0][1]];
+    if (coords.length === 1) {
+      coords[1] = [width + margin, coords[0][1]];
+    }
     coords.push([width + margin, coords[coords.length - 1][1]]);
     return coords;
   }
 
-  _getPath(coords) {
+  private _getPath(coords): string {
     let next;
     let Z;
     const X = 0;
@@ -183,8 +224,8 @@ class HuiSensorCard extends EventsMixin(LitElement) {
 
     path += `M ${last[X]},${last[Y]}`;
 
-    for (let i = 0; i < coords.length; i++) {
-      next = coords[i];
+    for (const coord of coords) {
+      next = coord;
       Z = this._midPoint(last[X], last[Y], next[X], next[Y]);
       path += ` ${Z[X]},${Z[Y]}`;
       path += ` Q${next[X]},${next[Y]}`;
@@ -195,46 +236,49 @@ class HuiSensorCard extends EventsMixin(LitElement) {
     return path;
   }
 
-  _midPoint(Ax, Ay, Bx, By) {
-    const Zx = (Ax - Bx) / 2 + Bx;
-    const Zy = (Ay - By) / 2 + By;
-    return [Zx, Zy];
+  private _midPoint(_Ax: number, _Ay: number, _Bx: number, _By: number) {
+    const _Zx = (_Ax - _Bx) / 2 + _Bx;
+    const _Zy = (_Ay - _By) / 2 + _By;
+    return [_Zx, _Zy];
   }
 
-  async _getHistory() {
+  private async _getHistory(): Promise<string> {
     const endTime = new Date();
     const startTime = new Date();
-    startTime.setHours(endTime.getHours() - this._config.hours_to_show);
+    startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
+
     const stateHistory = await this._fetchRecent(
-      this._config.entity,
+      this._config!.entity,
       startTime,
       endTime
     );
 
-    if (stateHistory[0].length < 1) return;
+    if (stateHistory[0].length < 1) {
+      return "";
+    }
     const coords = this._coordinates(
       stateHistory[0],
-      this._config.hours_to_show,
+      this._config!.hours_to_show,
       500,
-      this._config.detail
+      this._config!.detail
     );
-    this._line = this._getPath(coords);
+    return this._getPath(coords);
   }
 
-  async _fetchRecent(entityId, startTime, endTime) {
+  private async _fetchRecent(entityId, startTime, endTime) {
     let url = "history/period";
-    if (startTime) url += "/" + startTime.toISOString();
+    if (startTime) {
+      url += "/" + startTime.toISOString();
+    }
     url += "?filter_entity_id=" + entityId;
-    if (endTime) url += "&end_time=" + endTime.toISOString();
+    if (endTime) {
+      url += "&end_time=" + endTime.toISOString();
+    }
 
-    return await this._hass.callApi("GET", url);
+    return this.hass!.callApi("GET", url);
   }
 
-  getCardSize() {
-    return 3;
-  }
-
-  _style() {
+  private renderStyle() {
     return html`
       <style>
         :host {
@@ -316,6 +360,12 @@ class HuiSensorCard extends EventsMixin(LitElement) {
         }
       </style>
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-sensor-card": HuiSensorCard;
   }
 }
 
