@@ -26,7 +26,9 @@ export const updateItem = (
   });
 
 export const clearItems = (hass: HomeAssistant): Promise<void> =>
-  hass.callApi("POST", "shopping_list/clear_completed");
+  hass.callWS({
+    type: "shopping_list/items/clear",
+  });
 
 export const addItem = (
   hass: HomeAssistant,
