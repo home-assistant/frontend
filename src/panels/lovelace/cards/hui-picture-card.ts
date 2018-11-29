@@ -8,9 +8,14 @@ import { navigate } from "../../../common/navigate";
 import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/classMap";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 interface Config extends LovelaceCardConfig {
   image?: string;
+  camera_image?: string;
+  state_image?: {};
+  aspect_ratio?: string;
+  entity?: string;
   navigation_path?: string;
   service?: string;
   service_data?: object;
@@ -22,6 +27,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   static get properties(): PropertyDeclarations {
     return {
+      hass: {},
       _config: {},
     };
   }
@@ -31,7 +37,10 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: Config): void {
-    if (!config || !config.image) {
+    if (
+      !(config.image || config.camera_image || config.state_image) ||
+      (config.state_image && !config.entity)
+    ) {
       throw new Error("Invalid Configuration: 'image' required");
     }
 
@@ -43,19 +52,28 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
+    const isClickable =
+      this._config.navigation_path ||
+      this._config.camera_image ||
+      this._config.service;
+
     return html`
       ${this.renderStyle()}
-      <ha-card
-        @click="${this.handleClick}"
-        class="${
-          classMap({
-            clickable: Boolean(
-              this._config.navigation_path || this._config.service
-            ),
-          })
-        }"
-      >
-        <img src="${this._config.image}" />
+      <ha-card>
+        <hui-image
+          class="${
+            classMap({
+              clickable: Boolean(isClickable),
+            })
+          }"
+          @click="${this._handleClick}"
+          .hass="${this.hass}"
+          .image="${this._config.image}"
+          .stateImage="${this._config.state_image}"
+          .cameraImage="${this._config.camera_image}"
+          .entity="${this._config.entity}"
+          .aspectRatio="${this._config.aspect_ratio}"
+        ></hui-image>
       </ha-card>
     `;
   }
@@ -66,22 +84,21 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
         ha-card {
           overflow: hidden;
         }
-        ha-card.clickable {
+        hui-image.clickable {
           cursor: pointer;
-        }
-        img {
-          display: block;
-          width: 100%;
         }
       </style>
     `;
   }
 
-  private handleClick(): void {
+  private _handleClick(): void {
     if (this._config!.navigation_path) {
       navigate(this, this._config!.navigation_path!);
-    }
-    if (this._config!.service) {
+    } else if (this._config!.camera_image) {
+      fireEvent(this, "hass-more-info", {
+        entityId: this._config!.camera_image!,
+      });
+    } else if (this._config!.service) {
       const [domain, service] = this._config!.service!.split(".", 2);
       this.hass!.callService(domain, service, this._config!.service_data);
     }
