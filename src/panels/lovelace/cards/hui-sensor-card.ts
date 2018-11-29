@@ -105,25 +105,38 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
                 <div class="graph">
                   <div>
                     ${
-                      this._config.graph !== "none" &&
+                      this._config.graph === "line" &&
                       stateObj.attributes.unit_of_measurement
                         ? until(
                             this._getHistory().then((history) => {
                               return svg`
-                        <svg width="100%" height="100%" viewBox="0 0 500 100">
-                          <path
-                            d="${history}"
-                            fill="none"
-                            stroke="var(--accent-color)"
-                            stroke-width="5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          />
-                        </svg>
-                      `;
+                                <svg
+                                  width="100%"
+                                  height="100%"
+                                  viewBox="0 0 500 100"
+                                >
+                                  <path
+                                    d="${history}"
+                                    fill="none"
+                                    stroke="var(--accent-color)"
+                                    stroke-width="5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  />
+                                </svg>
+                              `;
                             }),
                             html``
                           )
+                        : this._config.graph === "line" &&
+                          !stateObj.attributes.unit_of_measurement
+                        ? html`
+                            <div class="not-found">
+                              Entity: ${this._config.entity} - Has no Unit of
+                              Measurement and therefore can not display a line
+                              graph.
+                            </div>
+                          `
                         : ""
                     }
                   </div>
