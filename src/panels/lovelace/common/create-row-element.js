@@ -29,6 +29,7 @@ const SPECIAL_TYPES = new Set([
   "weblink",
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
+  alert: "toggle",
   automation: "toggle",
   climate: "climate",
   cover: "cover",
