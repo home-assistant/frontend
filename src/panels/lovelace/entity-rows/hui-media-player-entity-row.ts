@@ -8,11 +8,12 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
-
-const SUPPORT_PAUSE = 1;
-const SUPPORT_NEXT_TRACK = 32;
-const SUPPORTS_PLAY = 16384;
-const OFF_STATES = ["off", "idle"];
+import {
+  SUPPORTS_PLAY,
+  SUPPORT_NEXT_TRACK,
+  OFF_STATES,
+  SUPPORT_PAUSE,
+} from "../../../data/media-player";
 
 class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
   implements EntityRow {
