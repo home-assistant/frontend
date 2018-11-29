@@ -64,51 +64,51 @@ export default class MediaPlayerEntity {
   }
 
   get supportsPause() {
-    return supportsFeature(this._attr, 1);
+    return supportsFeature(this.stateObj, 1);
   }
 
   get supportsVolumeSet() {
-    return supportsFeature(this._attr, 4);
+    return supportsFeature(this.stateObj, 4);
   }
 
   get supportsVolumeMute() {
-    return supportsFeature(this._attr, 8);
+    return supportsFeature(this.stateObj, 8);
   }
 
   get supportsPreviousTrack() {
-    return supportsFeature(this._attr, 16);
+    return supportsFeature(this.stateObj, 16);
   }
 
   get supportsNextTrack() {
-    return supportsFeature(this._attr, 32);
+    return supportsFeature(this.stateObj, 32);
   }
 
   get supportsTurnOn() {
-    return supportsFeature(this._attr, 128);
+    return supportsFeature(this.stateObj, 128);
   }
 
   get supportsTurnOff() {
-    return supportsFeature(this._attr, 256);
+    return supportsFeature(this.stateObj, 256);
   }
 
   get supportsPlayMedia() {
-    return supportsFeature(this._attr, 512);
+    return supportsFeature(this.stateObj, 512);
   }
 
   get supportsVolumeButtons() {
-    return supportsFeature(this._attr, 1024);
+    return supportsFeature(this.stateObj, 1024);
   }
 
   get supportsSelectSource() {
-    return supportsFeature(this._attr, 2048);
+    return supportsFeature(this.stateObj, 2048);
   }
 
   get supportsSelectSoundMode() {
-    return supportsFeature(this._attr, 65536);
+    return supportsFeature(this.stateObj, 65536);
   }
 
   get supportsPlay() {
-    return supportsFeature(this._attr, 16384);
+    return supportsFeature(this.stateObj, 16384);
   }
 
   get primaryTitle() {

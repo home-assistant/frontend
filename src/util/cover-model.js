@@ -40,35 +40,35 @@ export default class CoverEntity {
   }
 
   get supportsOpen() {
-    return supportsFeature(this._attr, 1);
+    return supportsFeature(this.stateObj, 1);
   }
 
   get supportsClose() {
-    return supportsFeature(this._attr, 2);
+    return supportsFeature(this.stateObj, 2);
   }
 
   get supportsSetPosition() {
-    return supportsFeature(this._attr, 4);
+    return supportsFeature(this.stateObj, 4);
   }
 
   get supportsStop() {
-    return supportsFeature(this._attr, 8);
+    return supportsFeature(this.stateObj, 8);
   }
 
   get supportsOpenTilt() {
-    return supportsFeature(this._attr, 16);
+    return supportsFeature(this.stateObj, 16);
   }
 
   get supportsCloseTilt() {
-    return supportsFeature(this._attr, 32);
+    return supportsFeature(this.stateObj, 32);
   }
 
   get supportsStopTilt() {
-    return supportsFeature(this._attr, 64);
+    return supportsFeature(this.stateObj, 64);
   }
 
   get supportsSetTiltPosition() {
-    return supportsFeature(this._attr, 128);
+    return supportsFeature(this.stateObj, 128);
   }
 
   get isTiltOnly() {
