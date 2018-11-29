@@ -3,6 +3,7 @@ import {
   svg,
   LitElement,
   PropertyDeclarations,
+  PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import { until } from "lit-html/directives/until";
@@ -32,6 +33,8 @@ interface Config extends LovelaceCardConfig {
 class HuiSensorCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
+  private _history?: any;
+  private _date?: Date;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -107,27 +110,22 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
                     ${
                       this._config.graph === "line" &&
                       stateObj.attributes.unit_of_measurement
-                        ? until(
-                            this._getHistory().then((history) => {
-                              return svg`
-                                <svg
-                                  width="100%"
-                                  height="100%"
-                                  viewBox="0 0 500 100"
-                                >
-                                  <path
-                                    d="${history}"
-                                    fill="none"
-                                    stroke="var(--accent-color)"
-                                    stroke-width="5"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                  />
-                                </svg>
-                              `;
-                            }),
-                            html``
-                          )
+                        ? svg`
+                            <svg
+                              width="100%"
+                              height="100%"
+                              viewBox="0 0 500 100"
+                            >
+                              <path
+                                d="${this._history}"
+                                fill="none"
+                                stroke="var(--accent-color)"
+                                stroke-width="5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          `
                         : this._config.graph === "line" &&
                           !stateObj.attributes.unit_of_measurement
                         ? html`
@@ -145,6 +143,21 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         }
       </ha-card>
     `;
+  }
+
+  protected firstUpdated(): void {
+    this._date = new Date();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    const minute = 60000;
+    if (changedProps.has("_config")) {
+      this._getHistory();
+    }
+
+    if (new Date().getTime() - this._date!.getTime() >= minute) {
+      this._getHistory();
+    }
   }
 
   private _handleClick(): void {
@@ -260,7 +273,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return [_Zx, _Zy];
   }
 
-  private async _getHistory(): Promise<string> {
+  private async _getHistory(): Promise<void> {
     const endTime = new Date();
     const startTime = new Date();
     startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
@@ -273,7 +286,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     );
 
     if (stateHistory[0].length < 1) {
-      return "";
+      return;
     }
     const coords = this._coordinates(
       stateHistory[0],
@@ -281,7 +294,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       500,
       this._config!.detail!
     );
-    return this._getPath(coords);
+    this._history = this._getPath(coords);
   }
 
   private renderStyle(): TemplateResult {
