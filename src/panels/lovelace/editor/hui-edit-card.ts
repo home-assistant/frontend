@@ -415,8 +415,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       configElement.setConfig(conf);
     } catch (err) {
       this._errorMsg = html`
-        Your config is not supported by the UI editor:<br /><b
-          >${err.message}.</b
+        Your config is not supported by the UI editor:<br /><b>${err.message}</b
         ><br />Falling back to YAML editor.
       `;
       this._configElement = null;
