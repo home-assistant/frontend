@@ -1,8 +1,8 @@
 import {
   html,
+  svg,
   LitElement,
   PropertyDeclarations,
-  svg,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import { until } from "lit-html/directives/until";
@@ -17,6 +17,7 @@ import stateIcon from "../../../common/entity/state_icon";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { fetchRecent } from "../../../data/history";
 
 interface Config extends LovelaceCardConfig {
   entity: string;
@@ -143,12 +144,14 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     width: number,
     detail: number
   ): number[][] {
-    history = history.filter((item) => !Number.isNaN(Number(item.state)));
-    const min = Math.min.apply(Math, history.map((item) => Number(item.state)));
-    const max = Math.max.apply(Math, history.map((item) => Number(item.state)));
+    history = history.map((item) => Number(item.state));
+    history = history.filter((item) => !Number.isNaN(item.state));
+
+    const min = Math.min.apply(Math, history.map((item) => item.state));
+    const max = Math.max.apply(Math, history.map((item) => item.state));
     const now = new Date().getTime();
 
-    const reduce = (res, item, point = false) => {
+    const reduce = (res, item, point) => {
       const age = now - new Date(item.last_changed).getTime();
       let key = Math.abs(age / (1000 * 3600) - hours);
       if (point) {
@@ -163,7 +166,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       res[key].push(item);
       return res;
     };
-    history = history.reduce((res, item) => reduce(res, item), []);
+    history = history.reduce((res, item) => reduce(res, item, false), []);
     if (detail > 1) {
       history = history.map((entry) =>
         entry.reduce((res, item) => reduce(res, item, true), [])
@@ -249,7 +252,12 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     const startTime = new Date();
     startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
 
-    const stateHistory = await this._fetchRecent(startTime, endTime);
+    const stateHistory = await fetchRecent(
+      this.hass,
+      this._config!.entity,
+      startTime,
+      endTime
+    );
 
     if (stateHistory[0].length < 1) {
       return "";
@@ -261,19 +269,6 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       this._config!.detail!
     );
     return this._getPath(coords);
-  }
-
-  private async _fetchRecent(startTime: Date, endTime: Date): Promise<{}> {
-    let url = "history/period";
-    if (startTime) {
-      url += "/" + startTime.toISOString();
-    }
-    url += "?filter_entity_id=" + this._config!.entity;
-    if (endTime) {
-      url += "&end_time=" + endTime.toISOString();
-    }
-
-    return this.hass!.callApi("GET", url);
   }
 
   private renderStyle(): TemplateResult {
