@@ -88,13 +88,16 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
     const target = ev.target! as EditorTarget;
     const value = target.value || target.selected;
     const entity = this.entities![target.index!];
+    const glanceOptions = new GlanceOptions(entity);
 
     if (
-      (target.configValue! === "name" && value === entity.name) ||
-      (target.configValue! === "icon" && value === entity.icon) ||
-      (target.configValue! === "tap_action" && value === entity.tap_action) ||
-      (target.configValue! === "hold_action" && value === entity.hold_action) ||
-      (target.configValue! === "service" && value === entity.service)
+      (target.configValue! === "name" && value === glanceOptions._name) ||
+      (target.configValue! === "icon" && value === glanceOptions._icon) ||
+      (target.configValue! === "tap_action" &&
+        value === glanceOptions._tapaction) ||
+      (target.configValue! === "hold_action" &&
+        value === glanceOptions._holdaction) ||
+      (target.configValue! === "service" && value === glanceOptions._service)
     ) {
       return;
     }
