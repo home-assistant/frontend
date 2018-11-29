@@ -1,3 +1,4 @@
+import { supportsFeature } from "../common/entity/supports-feature";
 export default class MediaPlayerEntity {
   constructor(hass, stateObj) {
     this.hass = hass;
@@ -62,57 +63,53 @@ export default class MediaPlayerEntity {
     return progress;
   }
 
-  /* eslint-disable no-bitwise */
-
   get supportsPause() {
-    return (this._feat & 1) !== 0;
+    return supportsFeature(this._attr, 1);
   }
 
   get supportsVolumeSet() {
-    return (this._feat & 4) !== 0;
+    return supportsFeature(this._attr, 4);
   }
 
   get supportsVolumeMute() {
-    return (this._feat & 8) !== 0;
+    return supportsFeature(this._attr, 8);
   }
 
   get supportsPreviousTrack() {
-    return (this._feat & 16) !== 0;
+    return supportsFeature(this._attr, 16);
   }
 
   get supportsNextTrack() {
-    return (this._feat & 32) !== 0;
+    return supportsFeature(this._attr, 32);
   }
 
   get supportsTurnOn() {
-    return (this._feat & 128) !== 0;
+    return supportsFeature(this._attr, 128);
   }
 
   get supportsTurnOff() {
-    return (this._feat & 256) !== 0;
+    return supportsFeature(this._attr, 256);
   }
 
   get supportsPlayMedia() {
-    return (this._feat & 512) !== 0;
+    return supportsFeature(this._attr, 512);
   }
 
   get supportsVolumeButtons() {
-    return (this._feat & 1024) !== 0;
+    return supportsFeature(this._attr, 1024);
   }
 
   get supportsSelectSource() {
-    return (this._feat & 2048) !== 0;
+    return supportsFeature(this._attr, 2048);
   }
 
   get supportsSelectSoundMode() {
-    return (this._feat & 65536) !== 0;
+    return supportsFeature(this._attr, 65536);
   }
 
   get supportsPlay() {
-    return (this._feat & 16384) !== 0;
+    return supportsFeature(this._attr, 16384);
   }
-
-  /* eslint-enable no-bitwise */
 
   get primaryTitle() {
     return this._attr.media_title;

@@ -8,6 +8,7 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 const SUPPORT_PAUSE = 1;
 const SUPPORT_NEXT_TRACK = 32;
@@ -49,13 +50,6 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
       `;
     }
 
-    const supportsPlay =
-      // tslint:disable-next-line:no-bitwise
-      stateObj.attributes.supported_features! & SUPPORTS_PLAY;
-    const supportsNext =
-      // tslint:disable-next-line:no-bitwise
-      stateObj.attributes.supported_features! & SUPPORT_NEXT_TRACK;
-
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row
@@ -77,7 +71,8 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
             : html`
                 <div class="controls">
                   ${
-                    stateObj.state !== "playing" && !supportsPlay
+                    stateObj.state !== "playing" &&
+                    !supportsFeature(stateObj, SUPPORTS_PLAY)
                       ? ""
                       : html`
                           <paper-icon-button
@@ -87,7 +82,7 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
                         `
                   }
                   ${
-                    supportsNext
+                    supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
                       ? html`
                           <paper-icon-button
                             icon="hass:skip-next"
@@ -120,7 +115,7 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
     }
 
     // tslint:disable-next-line:no-bitwise
-    return stateObj.attributes.supported_features! & SUPPORT_PAUSE
+    return supportsFeature(stateObj, SUPPORT_PAUSE)
       ? "hass:pause"
       : "hass:stop";
   }
