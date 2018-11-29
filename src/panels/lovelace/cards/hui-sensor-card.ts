@@ -153,10 +153,12 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     const minute = 60000;
     if (changedProps.has("_config")) {
       this._getHistory();
+      this._date = new Date();
     }
 
     if (Date.now() - this._date!.getTime() >= minute) {
       this._getHistory();
+      this._date = new Date();
     }
   }
 
