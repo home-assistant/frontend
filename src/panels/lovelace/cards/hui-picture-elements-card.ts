@@ -10,7 +10,7 @@ import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 
 interface Config extends LovelaceCardConfig {
   title?: string;
-  image: string;
+  image?: string;
   camera_image?: string;
   state_image?: {};
   aspect_ratio?: string;
