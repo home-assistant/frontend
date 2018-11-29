@@ -5,7 +5,7 @@ import {
   PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
@@ -69,9 +69,9 @@ class HuiEntitiesToggle extends LitElement {
     `;
   }
 
-  private _callService(ev): void {
-    const turnOn = ev.target.checked;
-    turnOnOffEntities(this.hass!, this._toggleEntities!, turnOn);
+  private _callService(ev: MouseEvent): void {
+    const turnOn = (ev.target as PaperToggleButtonElement).checked;
+    turnOnOffEntities(this.hass!, this._toggleEntities!, turnOn!);
   }
 }
 
