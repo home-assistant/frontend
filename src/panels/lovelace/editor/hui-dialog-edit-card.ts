@@ -20,7 +20,7 @@ declare global {
 }
 
 const dialogShowEvent = "show-edit-card";
-const dialogTag = "hui-dialog-edit-config";
+const dialogTag = "hui-dialog-edit-card";
 
 export interface EditCardDialogParams {
   cardConfig: LovelaceCardConfig;
@@ -81,7 +81,7 @@ export class HuiDialogEditCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-dialog-edit-config": HuiDialogEditCard;
+    "hui-dialog-edit-card": HuiDialogEditCard;
   }
 }
 
