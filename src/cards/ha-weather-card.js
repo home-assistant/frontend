@@ -1,7 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import { computeStateName } from "../common/entity/compute_state_name";
+import computeStateName from "../common/entity/compute_state_name";
 
 import "../components/ha-card";
 import "../components/ha-icon";
