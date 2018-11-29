@@ -82,7 +82,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     if (String(cardConfig.id) !== this._cardId) {
       this._configValue = { format: "yaml", value: undefined };
       this._configState = "OK";
-      this._uiEditor = false;
+      this._uiEditor = true;
       this._cardId = String(cardConfig.id);
       this._loadConfigElement(cardConfig);
     }
@@ -404,6 +404,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     try {
       configElement = await elClass.getConfigElement();
     } catch (err) {
+      this._uiEditor = false;
       this._configElement = null;
       return;
     }
@@ -415,6 +416,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         Your config is not supported by the UI editor:<br /><b>${err.message}</b
         ><br />Falling back to YAML editor.
       `;
+      this._uiEditor = false;
       this._configElement = null;
       return;
     }
@@ -425,7 +427,6 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     );
     this._configValue = { format: "json", value: conf };
     this._configElement = configElement;
-    this._uiEditor = true;
     this._isToggleAvailable = true;
     this._updatePreview(conf);
   }
