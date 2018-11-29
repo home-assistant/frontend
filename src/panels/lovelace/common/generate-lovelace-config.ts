@@ -52,6 +52,11 @@ const computeCards = (
         type: "media-control",
         entity: entityId,
       });
+    } else if (domain === "plant") {
+      cards.push({
+        type: "plant-status",
+        entity: entityId,
+      });
     } else if (domain === "weather") {
       cards.push({
         type: "weather-forecast",
