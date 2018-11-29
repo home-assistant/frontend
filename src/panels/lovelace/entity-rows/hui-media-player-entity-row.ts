@@ -49,6 +49,13 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
       `;
     }
 
+    const supportsPlay =
+      // tslint:disable-next-line:no-bitwise
+      stateObj.attributes.supported_features! & SUPPORTS_PLAY;
+    const supportsNext =
+      // tslint:disable-next-line:no-bitwise
+      stateObj.attributes.supported_features! & SUPPORT_NEXT_TRACK;
+
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row
@@ -57,21 +64,30 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
         .showSecondary="false"
       >
         ${
-          !this._isOff(stateObj.state)
+          OFF_STATES.includes(stateObj.state)
             ? html`
+                <div>
+                  ${
+                    this.localize(`state.media_player.${stateObj.state}`) ||
+                      this.localize(`state.default.${stateObj.state}`) ||
+                      stateObj.state
+                  }
+                </div>
+              `
+            : html`
                 <div class="controls">
                   ${
-                    this._computeControlIcon(stateObj)
-                      ? html`
+                    stateObj.state !== "playing" && !supportsPlay
+                      ? ""
+                      : html`
                           <paper-icon-button
                             icon="${this._computeControlIcon(stateObj)}"
                             @click="${this._playPause}"
                           ></paper-icon-button>
                         `
-                      : ""
                   }
                   ${
-                    this._supportsNext(stateObj)
+                    supportsNext
                       ? html`
                           <paper-icon-button
                             icon="hass:skip-next"
@@ -81,17 +97,9 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
                       : ""
                   }
                 </div>
+                <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
               `
-            : ""
         }
-        ${
-          this._isOff(stateObj.state)
-            ? html`
-                <div>${this._computeState(stateObj.state)}</div>
-              `
-            : ""
-        }
-        <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
       </hui-generic-entity-row>
     `;
   }
@@ -108,10 +116,7 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
 
   private _computeControlIcon(stateObj: HassEntity): string {
     if (stateObj.state !== "playing") {
-      // tslint:disable-next-line:no-bitwise
-      return stateObj.attributes.supported_features! & SUPPORTS_PLAY
-        ? "hass:play"
-        : "";
+      return "hass:play";
     }
 
     // tslint:disable-next-line:no-bitwise
@@ -121,10 +126,6 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
   }
 
   private _computeMediaTitle(stateObj: HassEntity): string {
-    if (this._isOff(stateObj.state)) {
-      return "";
-    }
-
     let prefix;
     let suffix;
 
@@ -148,43 +149,16 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
     return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
   }
 
-  private _computeState(state: string): string {
-    return (
-      this.localize(`state.media_player.${state}`) ||
-      this.localize(`state.default.${state}`) ||
-      state
-    );
-  }
-
-  private _callService(service: string): void {
-    this.hass!.callService("media_player", service, {
+  private _playPause(): void {
+    this.hass!.callService("media_player", "media_play_pause", {
       entity_id: this._config!.entity,
     });
   }
 
-  private _playPause(event: MouseEvent): void {
-    event.stopPropagation();
-    this._callService("media_play_pause");
-  }
-
-  private _nextTrack(event: MouseEvent): void {
-    event.stopPropagation();
-    const stateObj = this.hass!.states[this._config!.entity];
-    // tslint:disable-next-line:no-bitwise
-    if (stateObj.attributes.supported_features! & SUPPORT_NEXT_TRACK) {
-      this._callService("media_next_track");
-    }
-  }
-
-  private _isOff(state: string): boolean {
-    return OFF_STATES.includes(state);
-  }
-
-  private _supportsNext(stateObj: HassEntity): boolean {
-    return (
-      // tslint:disable-next-line:no-bitwise
-      !!(stateObj.attributes.supported_features! & SUPPORT_NEXT_TRACK)
-    );
+  private _nextTrack(): void {
+    this.hass!.callService("media_player", "media_next_track", {
+      entity_id: this._config!.entity,
+    });
   }
 }
 
