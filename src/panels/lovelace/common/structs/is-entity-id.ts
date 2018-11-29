@@ -1,4 +1,4 @@
-export const isEntityId = (value) => {
+export function isEntityId(value: any): string | boolean {
   if (typeof value !== "string") {
     return "entity id should be a string";
   }
@@ -6,4 +6,4 @@ export const isEntityId = (value) => {
     return "entity id should be in the format 'domain.entity'";
   }
   return true;
-};
+}
