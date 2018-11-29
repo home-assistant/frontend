@@ -155,7 +155,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       this._getHistory();
     }
 
-    if (new Date().getTime() - this._date!.getTime() >= minute) {
+    if (Date.now() - this._date!.getTime() >= minute) {
       this._getHistory();
     }
   }
