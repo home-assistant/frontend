@@ -105,6 +105,24 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    let content;
+    if (!this._configElement !== undefined) {
+      if (this._uiEditor) {
+        content = html`
+          <div class="element-editor">${this._configElement}</div>
+        `;
+      } else {
+        content = html`
+          <hui-yaml-editor
+            .hass="${this.hass}"
+            .cardId="${this._cardId}"
+            .yaml="${this._configValue!.value}"
+            @yaml-changed="${this._handleYamlChanged}"
+          ></hui-yaml-editor>
+        `;
+      }
+    }
+
     return html`
       ${this.renderStyle()}
       <paper-dialog with-backdrop>
@@ -124,28 +142,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                 `
               : ""
           }
-          ${
-            this._configElement !== undefined
-              ? html`
-                  ${
-                    this._uiEditor
-                      ? html`
-                          <div class="element-editor">
-                            ${this._configElement}
-                          </div>
-                        `
-                      : html`
-                          <hui-yaml-editor
-                            .hass="${this.hass}"
-                            .cardId="${this._cardId}"
-                            .yaml="${this._configValue!.value}"
-                            @yaml-changed="${this._handleYamlChanged}"
-                          ></hui-yaml-editor>
-                        `
-                  }
-                `
-              : ""
-          }
+          ${content}
           <hr />
           <hui-card-preview .hass="${this.hass}"></hui-card-preview>
         </paper-dialog-scrollable>
