@@ -1,15 +1,23 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "@polymer/paper-fab/paper-fab";
 import "../../components/entity/ha-state-label-badge";
-import "./components/hui-card-options.ts";
+import "./components/hui-card-options";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
+import EventsMixin from "../../mixins/events-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
+import {
+  registerAddCardDialog,
+  showAddCardDialog,
+} from "./editor/hui-dialog-add-card";
 
-class HUIView extends PolymerElement {
+let registeredDialog = false;
+
+class HUIView extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -44,6 +52,18 @@ class HUIView extends PolymerElement {
           margin: 4px 4px 8px;
         }
 
+        paper-fab {
+          position: sticky;
+          float: right;
+          bottom: 16px;
+          right: 16px;
+          z-index: 1;
+        }
+
+        paper-fab[hidden] {
+          display: none;
+        }
+
         @media (max-width: 500px) {
           :host {
             padding-left: 0;
@@ -64,6 +84,13 @@ class HUIView extends PolymerElement {
       </style>
       <div id="badges"></div>
       <div id="columns"></div>
+      <paper-fab
+        hidden$="{{!editMode}}"
+        elevated="2"
+        icon="hass:plus"
+        title="Add Card"
+        on-click="_addCard"
+      ></paper-fab>
     `;
   }
 
@@ -91,6 +118,23 @@ class HUIView extends PolymerElement {
     super();
     this._cards = [];
     this._badges = [];
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (!registeredDialog) {
+      registeredDialog = true;
+      registerAddCardDialog(this);
+    }
+  }
+
+  _addCard() {
+    showAddCardDialog(this, {
+      viewId: this.config.id,
+      reloadLovelace: () => {
+        this.fire("config-refresh");
+      },
+    });
   }
 
   _createBadges(config) {

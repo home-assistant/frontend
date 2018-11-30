@@ -71,3 +71,16 @@ export const deleteCard = (
     type: "lovelace/config/card/delete",
     card_id: cardId,
   });
+
+export const addCard = (
+  hass: HomeAssistant,
+  viewId: string,
+  config: LovelaceCardConfig | string,
+  configFormat: "json" | "yaml"
+): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config/card/add",
+    view_id: viewId,
+    card_config: config,
+    format: configFormat,
+  });
