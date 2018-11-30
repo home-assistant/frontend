@@ -24,6 +24,9 @@ class HaForm extends EventsMixin(PolymerElement) {
           display: inline-block;
           padding: 22px 0;
         }
+        paper-dropdown-menu {
+          width: 100%;
+        }
       </style>
       <template is="dom-if" if="[[_isArray(schema)]]" restamp="">
         <template is="dom-if" if="[[error.base]]">

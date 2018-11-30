@@ -646,6 +646,11 @@
                                         "password": "Password"
                                     }
                                 },
+                                "select_mfa_module": {
+                                    "data": {
+                                        "multi_factor_auth_module": "Two-factor Authentication Method"
+                                    }
+                                },
                                 "mfa": {
                                     "data": {
                                         "code": "Two-factor Authentication Code"
