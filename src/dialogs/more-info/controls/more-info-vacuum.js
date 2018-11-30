@@ -8,6 +8,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-attributes";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 class MoreInfoVacuum extends PolymerElement {
   static get template() {
@@ -158,56 +159,52 @@ class MoreInfoVacuum extends PolymerElement {
     };
   }
 
-  /* eslint-disable no-bitwise */
-
   supportsPause(stateObj) {
-    return (stateObj.attributes.supported_features & 4) !== 0;
+    return supportsFeature(stateObj, 4);
   }
 
   supportsStop(stateObj) {
-    return (stateObj.attributes.supported_features & 8) !== 0;
+    return supportsFeature(stateObj, 8);
   }
 
   supportsReturnHome(stateObj) {
-    return (stateObj.attributes.supported_features & 16) !== 0;
+    return supportsFeature(stateObj, 16);
   }
 
   supportsFanSpeed(stateObj) {
-    return (stateObj.attributes.supported_features & 32) !== 0;
+    return supportsFeature(stateObj, 32);
   }
 
   supportsBattery(stateObj) {
-    return (stateObj.attributes.supported_features & 64) !== 0;
+    return supportsFeature(stateObj, 64);
   }
 
   supportsStatus(stateObj) {
-    return (stateObj.attributes.supported_features & 128) !== 0;
+    return supportsFeature(stateObj, 128);
   }
 
   supportsLocate(stateObj) {
-    return (stateObj.attributes.supported_features & 512) !== 0;
+    return supportsFeature(stateObj, 512);
   }
 
   supportsCleanSpot(stateObj) {
-    return (stateObj.attributes.supported_features & 1024) !== 0;
+    return supportsFeature(stateObj, 1024);
   }
 
   supportsStart(stateObj) {
-    return (stateObj.attributes.supported_features & 8192) !== 0;
+    return supportsFeature(stateObj, 8192);
   }
 
   supportsCommandBar(stateObj) {
     return (
-      ((stateObj.attributes.supported_features & 4) !== 0) |
-      ((stateObj.attributes.supported_features & 8) !== 0) |
-      ((stateObj.attributes.supported_features & 16) !== 0) |
-      ((stateObj.attributes.supported_features & 512) !== 0) |
-      ((stateObj.attributes.supported_features & 1024) !== 0) |
-      ((stateObj.attributes.supported_features & 8192) !== 0)
+      supportsFeature(stateObj, 4) |
+      supportsFeature(stateObj, 8) |
+      supportsFeature(stateObj, 16) |
+      supportsFeature(stateObj, 512) |
+      supportsFeature(stateObj, 1024) |
+      supportsFeature(stateObj, 8192)
     );
   }
-
-  /* eslint-enable no-bitwise */
 
   fanSpeedChanged(fanSpeedIndex) {
     var fanSpeedInput;

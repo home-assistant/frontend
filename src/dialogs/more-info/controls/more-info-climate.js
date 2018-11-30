@@ -13,6 +13,7 @@ import "../../../components/ha-paper-slider";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
 import featureClassNames from "../../../common/entity/feature_class_names";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -385,45 +386,45 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   supportsTemperature(stateObj) {
     return (
-      (stateObj.attributes.supported_features & 1) !== 0 &&
+      supportsFeature(stateObj, 1) &&
       typeof stateObj.attributes.temperature === "number"
     );
   }
 
   supportsTemperatureRange(stateObj) {
     return (
-      (stateObj.attributes.supported_features & 6) !== 0 &&
+      supportsFeature(stateObj, 6) &&
       (typeof stateObj.attributes.target_temp_low === "number" ||
         typeof stateObj.attributes.target_temp_high === "number")
     );
   }
 
   supportsHumidity(stateObj) {
-    return (stateObj.attributes.supported_features & 8) !== 0;
+    return supportsFeature(stateObj, 8);
   }
 
   supportsFanMode(stateObj) {
-    return (stateObj.attributes.supported_features & 64) !== 0;
+    return supportsFeature(stateObj, 64);
   }
 
   supportsOperationMode(stateObj) {
-    return (stateObj.attributes.supported_features & 128) !== 0;
+    return supportsFeature(stateObj, 128);
   }
 
   supportsSwingMode(stateObj) {
-    return (stateObj.attributes.supported_features & 512) !== 0;
+    return supportsFeature(stateObj, 512);
   }
 
   supportsAwayMode(stateObj) {
-    return (stateObj.attributes.supported_features & 1024) !== 0;
+    return supportsFeature(stateObj, 1024);
   }
 
   supportsAuxHeat(stateObj) {
-    return (stateObj.attributes.supported_features & 2048) !== 0;
+    return supportsFeature(stateObj, 2048);
   }
 
   supportsOn(stateObj) {
-    return (stateObj.attributes.supported_features & 4096) !== 0;
+    return supportsFeature(stateObj, 4096);
   }
 
   computeClassNames(stateObj) {
