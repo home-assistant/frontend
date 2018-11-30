@@ -81,24 +81,14 @@ export function parseTextToColoredPre(text) {
 
   const addSpan = (content) => {
     const span = document.createElement("span");
-    if (state.bold) {
-      span.classList.add("bold");
-    }
-    if (state.italic) {
-      span.classList.add("italic");
-    }
-    if (state.underline) {
-      span.classList.add("underline");
-    }
-    if (state.strikethrough) {
-      span.classList.add("strikethrough");
-    }
-    if (state.foregroundColor !== null) {
+    if (state.bold) span.classList.add("bold");
+    if (state.italic) span.classList.add("italic");
+    if (state.underline) span.classList.add("underline");
+    if (state.strikethrough) span.classList.add("strikethrough");
+    if (state.foregroundColor !== null)
       span.classList.add(`fg-${state.foregroundColor}`);
-    }
-    if (state.backgroundColor !== null) {
+    if (state.backgroundColor !== null)
       span.classList.add(`bg-${state.backgroundColor}`);
-    }
     span.appendChild(document.createTextNode(content));
     pre.appendChild(span);
   };
@@ -106,9 +96,7 @@ export function parseTextToColoredPre(text) {
   /* eslint-disable no-constant-condition */
   while (true) {
     const match = re.exec(text);
-    if (match === null) {
-      break;
-    }
+    if (match === null) break;
 
     const j = match.index;
     addSpan(text.substring(i, j));
@@ -151,6 +139,10 @@ export function parseTextToColoredPre(text) {
         case 29:
           state.strikethrough = false;
           break;
+        case 30:
+          // foreground black
+          state.foregroundColor = null;
+          break;
         case 31:
           state.foregroundColor = "red";
           break;
@@ -172,8 +164,8 @@ export function parseTextToColoredPre(text) {
         case 37:
           state.foregroundColor = "white";
           break;
-        case 30:
         case 39:
+          // foreground reset
           state.foregroundColor = null;
           break;
         case 40:
@@ -201,6 +193,7 @@ export function parseTextToColoredPre(text) {
           state.backgroundColor = "white";
           break;
         case 49:
+          // background reset
           state.backgroundColor = null;
           break;
       }
