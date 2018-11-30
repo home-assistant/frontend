@@ -301,7 +301,8 @@
                 "period": "Period"
             },
             "logbook": {
-                "showing_entries": "Showing entries for"
+                "showing_entries": "Showing entries for",
+                "period": "Period"
             },
             "mailbox": {
                 "empty": "You do not have any messages",
@@ -615,7 +616,9 @@
                     "header": "Multi-factor Authentication Modules",
                     "disable": "Disable",
                     "enable": "Enable",
-                    "confirm_disable": "Are you sure you want to disable {name}?"
+                    "add": "Add",
+                    "confirm_disable": "Are you sure you want to disable {name}?",
+                    "count": "Added keys: {count}"
                 },
                 "mfa_setup": {
                     "title_aborted": "Aborted",
@@ -655,7 +658,9 @@
                                 "invalid_code": "Invalid authentication code"
                             },
                             "abort": {
-                                "login_expired": "Session expired, please login again."
+                                "login_expired": "Session expired, please login again.",
+                                "too_many_retry": "Too many failed attempts, please login again.",
+                                "not_supported": "This authentication method is not supported in this browser."
                             }
                         },
                         "legacy_api_password": {
