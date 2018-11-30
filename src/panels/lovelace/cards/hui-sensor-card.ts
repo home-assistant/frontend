@@ -6,6 +6,7 @@ import {
   PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import "@polymer/paper-spinner/paper-spinner";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -18,6 +19,118 @@ import stateIcon from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { fetchRecent } from "../../../data/history";
+
+const midPoint = (
+  _Ax: number,
+  _Ay: number,
+  _Bx: number,
+  _By: number
+): number[] => {
+  const _Zx = (_Ax - _Bx) / 2 + _Bx;
+  const _Zy = (_Ay - _By) / 2 + _By;
+  return [_Zx, _Zy];
+};
+
+const getPath = (coords: number[][]): string => {
+  let next;
+  let Z;
+  const X = 0;
+  const Y = 1;
+  let path = "";
+  let last = coords.filter(Boolean)[0];
+
+  path += `M ${last[X]},${last[Y]}`;
+
+  for (const coord of coords) {
+    next = coord;
+    Z = midPoint(last[X], last[Y], next[X], next[Y]);
+    path += ` ${Z[X]},${Z[Y]}`;
+    path += ` Q${next[X]},${next[Y]}`;
+    last = next;
+  }
+
+  path += ` ${next[X]},${next[Y]}`;
+  return path;
+};
+
+const calcPoints = (
+  history: any,
+  hours: number,
+  width: number,
+  detail: number,
+  min: number,
+  max: number
+): number[][] => {
+  const coords = [] as number[][];
+  const margin = 5;
+  const height = 80;
+  width -= 10;
+  let yRatio = (max - min) / height;
+  yRatio = yRatio !== 0 ? yRatio : height;
+  let xRatio = width / (hours - (detail === 1 ? 1 : 0));
+  xRatio = isFinite(xRatio) ? xRatio : width;
+  const getCoords = (item, i, offset = 0, depth = 1) => {
+    if (depth > 1) {
+      return item.forEach((subItem, index) =>
+        getCoords(subItem, i, index, depth - 1)
+      );
+    }
+    const average =
+      item.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
+      item.length;
+
+    const x = xRatio * (i + offset / 6) + margin;
+    const y = height - (average - min) / yRatio + margin * 2;
+    return coords.push([x, y]);
+  };
+
+  history.forEach((item, i) => getCoords(item, i, 0, detail));
+  if (coords.length === 1) {
+    coords[1] = [width + margin, coords[0][1]];
+  }
+
+  coords.push([width + margin, coords[coords.length - 1][1]]);
+  return coords;
+};
+
+const coordinates = (
+  history: any,
+  hours: number,
+  width: number,
+  detail: number
+): number[][] => {
+  history.forEach((item) => (item.state = Number(item.state)));
+  history = history.filter((item) => !Number.isNaN(item.state));
+
+  const min = Math.min.apply(Math, history.map((item) => item.state));
+  const max = Math.max.apply(Math, history.map((item) => item.state));
+  const now = new Date().getTime();
+
+  const reduce = (res, item, point) => {
+    const age = now - new Date(item.last_changed).getTime();
+
+    let key = Math.abs(age / (1000 * 3600) - hours);
+    if (point) {
+      key = (key - Math.floor(key)) * 60;
+      key = Number((Math.round(key / 10) * 10).toString()[0]);
+    } else {
+      key = Math.floor(key);
+    }
+    if (!res[key]) {
+      res[key] = [];
+    }
+    res[key].push(item);
+    return res;
+  };
+
+  history = history.reduce((res, item) => reduce(res, item, false), []);
+  if (detail > 1) {
+    history = history.map((entry) =>
+      entry.reduce((res, item) => reduce(res, item, true), [])
+    );
+  }
+  return calcPoints(history, hours, width, detail, min, max);
+};
 
 interface Config extends LovelaceCardConfig {
   entity: string;
@@ -108,7 +221,8 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
                   <div>
                     ${
                       this._config.graph === "line" &&
-                      stateObj.attributes.unit_of_measurement
+                      stateObj.attributes.unit_of_measurement &&
+                      this._history
                         ? svg`
                             <svg
                               width="100%"
@@ -134,7 +248,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
                               graph.
                             </div>
                           `
-                        : ""
+                        : svg`
+                            <svg
+                              width="100%"
+                              height="100%"
+                              viewBox="0 0 500 100"
+                            ></svg>
+                          `
                     }
                   </div>
                 </div>
@@ -146,132 +266,20 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     this._date = new Date();
+    this._getHistory();
   }
 
   protected updated(changedProps: PropertyValues) {
     const minute = 60000;
     if (changedProps.has("_config")) {
       this._getHistory();
-      this._date = new Date();
-    }
-
-    if (Date.now() - this._date!.getTime() >= minute) {
+    } else if (Date.now() - this._date!.getTime() >= minute) {
       this._getHistory();
-      this._date = new Date();
     }
   }
 
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
-  }
-
-  private _coordinates(
-    history: any,
-    hours: number,
-    width: number,
-    detail: number
-  ): number[][] {
-    history = history.map((item) => Number(item.state));
-    history = history.filter((item) => !Number.isNaN(item.state));
-
-    const min = Math.min.apply(Math, history.map((item) => item.state));
-    const max = Math.max.apply(Math, history.map((item) => item.state));
-    const now = new Date().getTime();
-
-    const reduce = (res, item, point) => {
-      const age = now - new Date(item.last_changed).getTime();
-      let key = Math.abs(age / (1000 * 3600) - hours);
-      if (point) {
-        key = (key - Math.floor(key)) * 60;
-        key = Number((Math.round(key / 10) * 10).toString()[0]);
-      } else {
-        key = Math.floor(key);
-      }
-      if (!res[key]) {
-        res[key] = [];
-      }
-      res[key].push(item);
-      return res;
-    };
-    history = history.reduce((res, item) => reduce(res, item, false), []);
-    if (detail > 1) {
-      history = history.map((entry) =>
-        entry.reduce((res, item) => reduce(res, item, true), [])
-      );
-    }
-    return this._calcPoints(history, hours, width, detail, min, max);
-  }
-
-  private _calcPoints(
-    history,
-    hours,
-    width: number,
-    detail: number,
-    min: number,
-    max: number
-  ): number[][] {
-    const coords = [] as number[][];
-    const margin = 5;
-    const height = 80;
-    width -= 10;
-    let yRatio = (max - min) / height;
-    yRatio = yRatio !== 0 ? yRatio : height;
-    let xRatio = width / (hours - (detail === 1 ? 1 : 0));
-    xRatio = isFinite(xRatio) ? xRatio : width;
-    const getCoords = (item, i, offset = 0, depth = 1) => {
-      if (depth > 1) {
-        return item.forEach((subItem, index) =>
-          getCoords(subItem, i, index, depth - 1)
-        );
-      }
-      const average =
-        item.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
-        item.length;
-
-      const x = xRatio * (i + offset / 6) + margin;
-      const y = height - (average - min) / yRatio + margin * 2;
-      return coords.push([x, y]);
-    };
-
-    history.forEach((item, i) => getCoords(item, i, 0, detail));
-    if (coords.length === 1) {
-      coords[1] = [width + margin, coords[0][1]];
-    }
-    coords.push([width + margin, coords[coords.length - 1][1]]);
-    return coords;
-  }
-
-  private _getPath(coords: number[][]): string {
-    let next;
-    let Z;
-    const X = 0;
-    const Y = 1;
-    let path = "";
-    let last = coords.filter(Boolean)[0];
-
-    path += `M ${last[X]},${last[Y]}`;
-
-    for (const coord of coords) {
-      next = coord;
-      Z = this._midPoint(last[X], last[Y], next[X], next[Y]);
-      path += ` ${Z[X]},${Z[Y]}`;
-      path += ` Q${next[X]},${next[Y]}`;
-      last = next;
-    }
-
-    path += ` ${next[X]},${next[Y]}`;
-    return path;
-  }
-
-  private _midPoint(
-    _Ax: number,
-    _Ay: number,
-    _Bx: number,
-    _By: number
-  ): number[] {
-    const _Zx = (_Ax - _Bx) / 2 + _Bx;
-    const _Zy = (_Ay - _By) / 2 + _By;
-    return [_Zx, _Zy];
   }
 
   private async _getHistory(): Promise<void> {
@@ -289,13 +297,16 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     if (stateHistory[0].length < 1) {
       return;
     }
-    const coords = this._coordinates(
+
+    const coords = coordinates(
       stateHistory[0],
       this._config!.hours_to_show!,
       500,
       this._config!.detail!
     );
-    this._history = this._getPath(coords);
+
+    this._history = getPath(coords);
+    this._date = new Date();
   }
 
   private renderStyle(): TemplateResult {
