@@ -266,7 +266,6 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     this._date = new Date();
-    this._getHistory();
   }
 
   protected updated(changedProps: PropertyValues) {
