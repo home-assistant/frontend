@@ -93,11 +93,9 @@ export function parseTextToColoredPre(text) {
     pre.appendChild(span);
   };
 
-  /* eslint-disable no-constant-condition */
-  while (true) {
-    const match = re.exec(text);
-    if (match === null) break;
-
+  /* eslint-disable no-cond-assign */
+  let match;
+  while ((match = re.exec(text)) !== null) {
     const j = match.index;
     addSpan(text.substring(i, j));
     i = j + match[0].length;
