@@ -34,7 +34,7 @@ class HassioSupervisorLog extends PolymerElement {
           color: rgb(222, 56, 43);
         }
         .fg-green {
-          /* color: rgb(57, 181, 74); */
+          color: rgb(57, 181, 74);
         }
         .fg-yellow {
           color: rgb(255, 199, 6);
@@ -252,12 +252,8 @@ class HassioSupervisorLog extends PolymerElement {
         this.$.content.appendChild(HassioSupervisorLog.parseLogsToPre(text));
       },
       () => {
-        while (this.$.content.lastChild) {
-          this.$.content.removeChild(this.$.content.lastChild);
-        }
-        this.$.content.appendChild(
-          HassioSupervisorLog.parseLogsToPre("Error fetching logs")
-        );
+        this.$.content.innerHTML =
+          '<span class="fg-red bold">Error fetching logs</span>';
       }
     );
   }
