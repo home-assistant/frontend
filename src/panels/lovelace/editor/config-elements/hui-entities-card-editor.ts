@@ -1,6 +1,6 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "superstruct";
+import { struct } from "../../common/structs/struct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -24,11 +24,11 @@ import "../../../../components/ha-icon";
 
 const entitiesConfigStruct = struct.union([
   {
-    entity: "string",
+    entity: "entity-id",
     name: "string?",
-    icon: "string?",
+    icon: "icon?",
   },
-  "string",
+  "entity-id",
 ]);
 
 const cardConfigStruct = struct({
