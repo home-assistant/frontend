@@ -16,6 +16,9 @@ class HassioSupervisorLog extends PolymerElement {
           white-space: pre-wrap;
           overflow-wrap: break-word;
         }
+        .fg-green {
+          color: var(--primary-text-color) !important;
+        }
       </style>
       ${ANSI_HTML_STYLE}
       <paper-card>
