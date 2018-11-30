@@ -92,7 +92,7 @@ const CONFIGS = [
     heading: "Custom column width",
     config: `
 - type: glance
-  column_width: calc(100% / 7)
+  columns: 7
   entities:
     - device_tracker.demo_paulus
     - media_player.living_room
