@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { supportsFeature } from "./supports-feature";
 
 // Expects classNames to be an object mapping feature-bit -> className
 export default function featureClassNames(
@@ -9,12 +10,9 @@ export default function featureClassNames(
     return "";
   }
 
-  const features = stateObj.attributes.supported_features;
-
   return Object.keys(classNames)
     .map((feature) =>
-      // tslint:disable-next-line
-      (features & Number(feature)) !== 0 ? classNames[feature] : ""
+      supportsFeature(stateObj, Number(feature)) ? classNames[feature] : ""
     )
     .filter((attr) => attr !== "")
     .join(" ");
