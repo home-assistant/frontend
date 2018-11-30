@@ -269,6 +269,10 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
   }
 
   protected updated(changedProps: PropertyValues) {
+    if (this._config && this._config.graph !== "line") {
+      return;
+    }
+
     const minute = 60000;
     if (changedProps.has("_config")) {
       this._getHistory();
