@@ -6,7 +6,6 @@ import {
   PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { until } from "lit-html/directives/until";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
