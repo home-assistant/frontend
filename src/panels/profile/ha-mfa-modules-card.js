@@ -45,10 +45,24 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <paper-card heading="[[localize('ui.panel.profile.mfa.header')]]">
         <template is="dom-repeat" items="[[mfaModules]]" as="module">
           <paper-item>
-            <paper-item-body two-line="">
-              <div>[[module.name]]</div>
-              <div secondary="">[[module.id]]</div>
-            </paper-item-body>
+            <template is="dom-if" if="[[!module.count]]">
+              <paper-item-body two-line="">
+                <div>[[module.name]]</div>
+                <div secondary="">[[module.id]]</div>
+              </paper-item-body>
+            </template>
+            <template is="dom-if" if="[[module.count]]">
+              <paper-item-body three-line="">
+                <div>[[module.name]]</div>
+                <div secondary="">[[module.id]]</div>
+                <div secondary="">[[localize('ui.panel.profile.mfa.count', 'count', module.count)]]</div>
+              </paper-item-body>
+            </template>
+            <template is="dom-if" if="[[_both(module.enabled, module.multiple)]]">
+              <paper-button on-click="_enable"
+                >[[localize('ui.panel.profile.mfa.add')]]</paper-button
+              >
+            </template>
             <template is="dom-if" if="[[module.enabled]]">
               <paper-button on-click="_disable"
                 >[[localize('ui.panel.profile.mfa.disable')]]</paper-button
@@ -93,6 +107,10 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         dialogImport: () => import("./ha-mfa-module-setup-flow"),
       });
     }
+  }
+
+  _both(a, b) {
+    return a && b;
   }
 
   _enable(ev) {

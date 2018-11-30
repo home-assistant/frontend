@@ -3,6 +3,7 @@ import "@polymer/paper-button/paper-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import "../components/ha-form";
 import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
+import { authenticate } from "../common/auth/webauthn";
 
 class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
   static get template() {
@@ -153,6 +154,27 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
     }
 
     this.setProperties(props);
+    if (step.step_id === 'mfa') {
+      this._processMfa(step);
+    }
+  }
+
+  async _processMfa(step) {
+    const placeholders = step.description_placeholders || {};
+    const data = step.data || {};
+
+    switch (placeholders.mfa_module_id) {
+      case 'webauthn':
+        if (data.options) {
+          try {
+            this._stepData.token = await authenticate(step.data.options);
+          } catch (e) {
+            this._stepData.error = e.type;
+          }
+          this._handleSubmit();
+        }
+        break;
+    }
   }
 
   _equals(a, b) {

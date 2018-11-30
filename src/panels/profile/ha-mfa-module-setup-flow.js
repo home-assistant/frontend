@@ -12,6 +12,8 @@ import "../../resources/ha-style";
 import EventsMixin from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
+import { register } from "../../common/auth/webauthn";
+
 let instance = 0;
 
 /*
@@ -237,6 +239,25 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // We got a new form if there are no errors.
     if (Object.keys(step.errors).length === 0) {
       this._stepData = {};
+    }
+
+    this._processMfa(step);
+  }
+
+  async _processMfa(step) {
+    const data = step.data || {};
+
+    switch (step.handler) {
+      case 'webauthn':
+        if (step.step_id === 'init' && data.options) {
+          try {
+            this._stepData.token = await register(data.options);
+          } catch (e) {
+            this._stepData.error = e.type;
+          }
+          this._submitStep();
+        }
+        break;
     }
   }
 
