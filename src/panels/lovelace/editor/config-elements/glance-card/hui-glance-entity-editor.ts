@@ -87,7 +87,7 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
   }
 
   protected _optionChanged(ev: Event): void {
-    const target = ev.target! as EditorTarget;
+    const target = ev.currentTarget! as EditorTarget;
     const value = target.value || target.selected;
     const index = target.parentElement!.index!;
     const entity = this.entities![index];

@@ -94,7 +94,7 @@ export class HuiEntityEditor extends LitElement {
   }
 
   private _valueChanged(ev: Event): void {
-    const target = ev.target! as EditorTarget;
+    const target = ev.currentTarget! as EditorTarget;
     const newConfigEntities = this.entities!.concat();
 
     if (target.value === "") {
