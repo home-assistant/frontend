@@ -27,7 +27,7 @@ import "../../../components/ha-icon";
 
 export interface ConfigEntity extends EntityConfig {
   tap_action?: "toggle" | "call-service" | "more-info";
-  hold_action?: "toggle" | "call-service" | "more-info";
+  hold_action?: "toggle" | "call-service" | "more-info" | "";
   service?: string;
   service_data?: object;
 }

@@ -1,29 +1,38 @@
 import { ConfigEntity } from "../../../cards/hui-glance-card";
 
 export class GlanceOptions {
-  private entityConf?: ConfigEntity;
+  private entityConf: ConfigEntity;
 
   constructor(entityConf: ConfigEntity) {
-    this.entityConf = entityConf;
+    const defaults = {
+      name: "",
+      icon: "",
+      tap_action: "more-info" as "more-info",
+      hold_action: "" as "",
+      service: "",
+    };
+    const values = { ...defaults, ...entityConf };
+
+    this.entityConf = values;
   }
 
-  get _name(): string {
-    return this.entityConf!.name || "";
+  get name(): string {
+    return this.entityConf.name!;
   }
 
-  get _icon(): string {
-    return this.entityConf!.icon || "";
+  get icon(): string {
+    return this.entityConf.icon!;
   }
 
-  get _tapaction(): string {
-    return this.entityConf!.tap_action || "more-info";
+  get tap_action(): string {
+    return this.entityConf.tap_action!;
   }
 
-  get _holdaction(): string {
-    return this.entityConf!.hold_action || "";
+  get hold_action(): string {
+    return this.entityConf.hold_action!;
   }
 
-  get _service(): string {
-    return this.entityConf!.service || "";
+  get service(): string {
+    return this.entityConf.service!;
   }
 }

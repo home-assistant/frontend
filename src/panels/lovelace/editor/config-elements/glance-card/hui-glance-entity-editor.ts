@@ -29,28 +29,25 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
 
     return html`
       <paper-toggle-button>Options</paper-toggle-button>
-      <div class="options">
+      <div class="options" .index="${index}">
         <paper-input
           label="Name"
-          .value="${glanceOptions._name}"
+          .value="${glanceOptions.name}"
           .configValue="${"name"}"
-          .index="${index}"
           @value-changed="${this._optionChanged}"
         ></paper-input>
         <paper-input
           label="Icon"
-          .value="${glanceOptions._icon}"
+          .value="${glanceOptions.icon}"
           .configValue="${"icon"}"
-          .index="${index}"
           @value-changed="${this._optionChanged}"
         ></paper-input>
         <paper-dropdown-menu label="Toggle Action">
           <paper-listbox
             slot="dropdown-content"
-            .selected="${glanceOptions._tapaction}"
+            .selected="${glanceOptions.tap_action}"
             attr-for-selected="action"
             .configValue="${"tap_action"}"
-            .index="${index}"
             @selected-item-changed="${this._optionChanged}"
           >
             <paper-item action="more-info">More Info Dialog</paper-item>
@@ -61,10 +58,9 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
         <paper-dropdown-menu label="Hold Action">
           <paper-listbox
             slot="dropdown-content"
-            .selected="${glanceOptions._holdaction}"
+            .selected="${glanceOptions.hold_action}"
             attr-for-selected="action"
             .configValue="${"hold_action"}"
-            .index="${index}"
             @selected-item-changed="${this._optionChanged}"
           >
             <paper-item action="">No Action</paper-item>
@@ -73,13 +69,19 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
             <paper-item action="call-service">Call Service</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-input
-          label="Service"
-          .value="${glanceOptions._service}"
-          .configValue="${"service"}"
-          .index="${index}"
-          @value-changed="${this._optionChanged}"
-        ></paper-input>
+        ${
+          glanceOptions.hold_action === "call-service" ||
+          glanceOptions.tap_action === "call-service"
+            ? html`
+                <paper-input
+                  label="Service"
+                  .value="${glanceOptions.service}"
+                  .configValue="${"service"}"
+                  @value-changed="${this._optionChanged}"
+                ></paper-input>
+              `
+            : ""
+        }
       </div>
     `;
   }
@@ -87,18 +89,11 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
   protected _optionChanged(ev: Event): void {
     const target = ev.target! as EditorTarget;
     const value = target.value || target.selected;
-    const entity = this.entities![target.index!];
+    const index = target.parentElement!.index!;
+    const entity = this.entities![index];
     const glanceOptions = new GlanceOptions(entity);
 
-    if (
-      (target.configValue! === "name" && value === glanceOptions._name) ||
-      (target.configValue! === "icon" && value === glanceOptions._icon) ||
-      (target.configValue! === "tap_action" &&
-        value === glanceOptions._tapaction) ||
-      (target.configValue! === "hold_action" &&
-        value === glanceOptions._holdaction) ||
-      (target.configValue! === "service" && value === glanceOptions._service)
-    ) {
+    if (glanceOptions[target.configValue!] === value) {
       return;
     }
 
