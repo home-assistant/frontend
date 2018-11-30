@@ -1,5 +1,6 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import { struct } from "../../common/structs/struct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -20,6 +21,26 @@ import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 
+const entitiesConfigStruct = struct.union([
+  {
+    entity: "entity-id",
+    name: "string?",
+    icon: "icon?",
+  },
+  "entity-id",
+]);
+
+const cardConfigStruct = struct({
+  type: "string",
+  id: "string|number",
+  title: "string|number?",
+  theme: "string?",
+  columns: "number?",
+  show_name: "boolean?",
+  show_state: "boolean?",
+  entities: [entitiesConfigStruct],
+});
+
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
   public hass?: HomeAssistant;
@@ -27,6 +48,8 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   private _configEntities?: ConfigEntity[];
 
   public setConfig(config: Config): void {
+    config = cardConfigStruct(config);
+
     this._config = { type: "glance", ...config };
     this._configEntities = processEditorEntities(config.entities);
   }
