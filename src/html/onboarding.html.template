@@ -33,7 +33,7 @@
         Home Assistant
       </div>
 
-      <ha-onboarding>Initializing…</ha-onboarding>
+      <ha-onboarding>Initializing</ha-onboarding>
     </div>
     <% if (!latestBuild) { %>
       <script src="/static/custom-elements-es5-adapter.js"></script>
