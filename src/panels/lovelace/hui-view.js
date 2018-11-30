@@ -11,9 +11,9 @@ import EventsMixin from "../../mixins/events-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import {
-  registerAddCardDialog,
-  showAddCardDialog,
-} from "./editor/hui-dialog-add-card";
+  registerEditCardDialog,
+  showEditCardDialog,
+} from "./editor/hui-dialog-edit-card";
 
 let registeredDialog = false;
 
@@ -124,12 +124,12 @@ class HUIView extends EventsMixin(PolymerElement) {
     super.connectedCallback();
     if (!registeredDialog) {
       registeredDialog = true;
-      registerAddCardDialog(this);
+      registerEditCardDialog(this);
     }
   }
 
   _addCard() {
-    showAddCardDialog(this, {
+    showEditCardDialog(this, {
       viewId: this.config.id,
       reloadLovelace: () => {
         this.fire("config-refresh");

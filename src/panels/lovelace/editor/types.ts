@@ -7,6 +7,12 @@ export interface YamlChangedEvent extends Event {
   };
 }
 
+export interface CardPickedEvent extends Event {
+  detail: {
+    config: LovelaceCardConfig;
+  };
+}
+
 export interface ConfigValue {
   format: "json" | "yaml";
   value?: string | LovelaceCardConfig;

@@ -23,7 +23,8 @@ const dialogShowEvent = "show-edit-card";
 const dialogTag = "hui-dialog-edit-card";
 
 export interface EditCardDialogParams {
-  cardConfig: LovelaceCardConfig;
+  cardConfig?: LovelaceCardConfig;
+  viewId?: string | number;
   reloadLovelace: () => void;
 }
 
@@ -60,7 +61,10 @@ export class HuiDialogEditCard extends LitElement {
     if (!this._params) {
       return html``;
     }
-    if (!this._params.cardConfig.id) {
+    if (
+      (this._params.cardConfig && !this._params.cardConfig.id) ||
+      (!this._params.cardConfig && !this._params.viewId)
+    ) {
       return html`
         <hui-migrate-config
           .hass="${this.hass}"
@@ -70,6 +74,7 @@ export class HuiDialogEditCard extends LitElement {
     }
     return html`
       <hui-edit-card
+        .viewId="${this._params.viewId}"
         .cardConfig="${this._params.cardConfig}"
         .hass="${this.hass}"
         @reload-lovelace="${this._params.reloadLovelace}"
