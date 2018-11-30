@@ -79,7 +79,7 @@ export class HuiEntityEditor extends LitElement {
     const index = target.parentElement!.index!;
     const newConfigEntities = this.entities!.concat();
 
-    newConfigEntities[index!] = {
+    newConfigEntities[index] = {
       ...newConfigEntities[index!],
       [target.configValue!]: value,
     };
