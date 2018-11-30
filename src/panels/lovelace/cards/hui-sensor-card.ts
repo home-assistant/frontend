@@ -152,6 +152,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return {
       hass: {},
       _config: {},
+      _history: {},
     };
   }
 
