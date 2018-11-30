@@ -1,4 +1,5 @@
 import { supportsFeature } from "../common/entity/supports-feature";
+
 export default class MediaPlayerEntity {
   constructor(hass, stateObj) {
     this.hass = hass;
