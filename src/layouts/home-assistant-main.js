@@ -16,6 +16,8 @@ import NavigateMixin from "../mixins/navigate-mixin";
 import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");
 
+import computeRTL from "../common/util/compute_rtl";
+
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
 class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
@@ -176,11 +178,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   computeRTL(hass) {
-    var lang = hass.selectedLanguage || hass.language;
-    if (hass.translationMetadata.translations[lang]) {
-      return hass.translationMetadata.translations[lang].isRTL || false;
-    }
-    return false;
+    return computeRTL(hass);
   }
 }
 
