@@ -11,7 +11,8 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "show-edit-card": {
-      cardConfig: LovelaceCardConfig;
+      cardConfig?: LovelaceCardConfig;
+      viewId?: string | number;
       reloadLovelace: () => void;
     };
   }

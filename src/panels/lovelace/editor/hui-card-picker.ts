@@ -6,6 +6,7 @@ import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { getElementTag } from "../common/get-element-tag";
+import { CardPickTarget } from "./types";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
@@ -55,7 +56,7 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _cardPicked(ev: Event): void {
-    const type = ev.currentTarget!.type;
+    const type = (ev.currentTarget! as CardPickTarget).type;
     const tag = getElementTag(type);
 
     const elClass = customElements.get(tag);

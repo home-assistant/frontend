@@ -39,6 +39,9 @@ import { getElementTag } from "../common/get-element-tag";
 
 declare global {
   interface HASSDomEvents {
+    "card-picked": {
+      config: LovelaceCardConfig;
+    };
     "yaml-changed": {
       yaml: string;
     };
@@ -95,7 +98,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       return;
     }
     if (String(viewId) !== this._viewId) {
-      this._configValue = { format: "json", value: undefined };
+      this._configValue = { format: "yaml", value: undefined };
       this._configState = "OK";
       this._uiEditor = true;
       this._errorMsg = undefined;
@@ -391,7 +394,6 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         value: yaml.safeDump(ev.detail.config),
       };
     }
-    this._loading = false;
   }
 
   private _handleYamlChanged(ev: YamlChangedEvent): void {
@@ -506,6 +508,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     this._configValue = { format: "json", value: conf };
     this._configElement = configElement;
     this._isToggleAvailable = true;
+    await this.updateComplete;
     this._updatePreview(conf);
     return true;
   }

@@ -36,3 +36,7 @@ export interface EditorTarget extends EventTarget {
   checked?: boolean;
   configValue?: string;
 }
+
+export interface CardPickTarget extends EventTarget {
+  type: string;
+}
