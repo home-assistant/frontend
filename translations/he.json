@@ -619,6 +619,7 @@
                 "mfa_setup": {
                     "title_aborted": "הופסק",
                     "title_success": "הצליח!",
+                    "step_done": "הגדרה בוצעה עבור {step}",
                     "close": "סגור",
                     "submit": "שלח"
                 }
@@ -711,6 +712,20 @@
                         "required_fields": "מלא את כל השדות הדרושים"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "פריטים מסומנים",
+                        "clear_items": "נקה פריטים מסומנים",
+                        "add_item": "הוסף פריט"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "save": "שמור"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -779,7 +794,9 @@
                 "clear_code": "נקה",
                 "disarm": "לא דרוך",
                 "arm_home": "דרוך בבית",
-                "arm_away": "דרוך לא בבית"
+                "arm_away": "דרוך לא בבית",
+                "arm_night": "דריכה לילית",
+                "armed_custom_bypass": "מעקף מותאם"
             },
             "automation": {
                 "last_triggered": "הפעלה אחרונה",
@@ -831,7 +848,11 @@
                 }
             },
             "water_heater": {
-                "target_temperature": "טמפרטורת היעד"
+                "currently": "כעת",
+                "on_off": "הפעלה \/ כיבוי",
+                "target_temperature": "טמפרטורת היעד",
+                "operation": "פעולה",
+                "away_mode": "מצב מחוץ לבית"
             }
         },
         "components": {

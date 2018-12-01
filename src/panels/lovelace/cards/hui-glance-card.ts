@@ -10,48 +10,47 @@ import { classMap } from "lit-html/directives/classMap";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
+import { EntityConfig } from "../entity-rows/types";
+import { toggleEntity } from "../common/entity/toggle-entity";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 import processConfigEntities from "../common/process-config-entities";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import toggleEntity from "../common/entity/toggle-entity";
 
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-export interface EntityConfig {
-  name: string;
-  icon: string;
-  entity: string;
-  tap_action: "toggle" | "call-service" | "more-info";
+export interface ConfigEntity extends EntityConfig {
+  tap_action?: "toggle" | "call-service" | "more-info";
   hold_action?: "toggle" | "call-service" | "more-info";
   service?: string;
   service_data?: object;
 }
 
-export interface Config extends LovelaceConfig {
+export interface Config extends LovelaceCardConfig {
   show_name?: boolean;
   show_state?: boolean;
   title?: string;
   theme?: string;
-  entities: EntityConfig[];
+  entities: ConfigEntity[];
   columns?: number;
 }
 
 export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/hui-glance-card-editor");
+    await import("../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }
 
   public hass?: HomeAssistant;
   private _config?: Config;
-  private _configEntities?: EntityConfig[];
+  private _configEntities?: ConfigEntity[];
 
   static get properties(): PropertyDeclarations {
     return {
@@ -242,12 +241,12 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private handleClick(ev: MouseEvent, hold: boolean): void {
-    const config = (ev.currentTarget as any).entityConf as EntityConfig;
+    const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     const entityId = config.entity;
     const action = hold ? config.hold_action : config.tap_action || "more-info";
     switch (action) {
       case "toggle":
-        toggleEntity(this.hass, entityId);
+        toggleEntity(this.hass!, entityId);
         break;
       case "call-service":
         const [domain, service] = config.service!.split(".", 2);

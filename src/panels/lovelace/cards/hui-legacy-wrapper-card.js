@@ -34,6 +34,7 @@ export default class LegacyWrapperCard extends HTMLElement {
       this._ensureElement(this._tag);
       this.lastChild.hass = hass;
       this.lastChild.stateObj = hass.states[entityId];
+      this.lastChild.config = this._config;
     } else {
       this._ensureElement("HUI-ERROR-CARD");
       this.lastChild.setConfig(

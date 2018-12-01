@@ -7,7 +7,7 @@ import "./components/hui-card-options.ts";
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
 import createCardElement from "./common/create-card-element";
-import computeCardSize from "./common/compute-card-size";
+import { computeCardSize } from "./common/compute-card-size";
 
 class HUIView extends PolymerElement {
   static get template() {
@@ -147,7 +147,7 @@ class HUIView extends PolymerElement {
 
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
-      wrapper.cardId = cardConfig.id;
+      wrapper.cardConfig = cardConfig;
       wrapper.editMode = this.editMode;
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);

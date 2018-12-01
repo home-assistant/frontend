@@ -2,11 +2,16 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/paper-button/paper-button";
 
+import { registerSaveDialog } from "./editor/hui-dialog-save-config";
+import { fetchConfig } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
+import localizeMixin from "../../mixins/localize-mixin";
 
-class Lovelace extends PolymerElement {
+let registeredDialog = false;
+
+class Lovelace extends localizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -110,16 +115,30 @@ class Lovelace extends PolymerElement {
 
   async _fetchConfig() {
     try {
-      const conf = await this.hass.callWS({ type: "lovelace/config" });
+      const conf = await fetchConfig(this.hass);
       this.setProperties({
         _config: conf,
         _state: "loaded",
       });
     } catch (err) {
-      this.setProperties({
-        _state: "error",
-        _errorMsg: err.message,
-      });
+      if (err.code === "file_not_found") {
+        const {
+          generateLovelaceConfig,
+        } = await import("./common/generate-lovelace-config");
+        this.setProperties({
+          _config: generateLovelaceConfig(this.hass, this.localize),
+          _state: "loaded",
+        });
+        if (!registeredDialog) {
+          registeredDialog = true;
+          registerSaveDialog(this);
+        }
+      } else {
+        this.setProperties({
+          _state: "error",
+          _errorMsg: err.message,
+        });
+      }
     }
   }
 

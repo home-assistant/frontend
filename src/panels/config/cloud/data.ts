@@ -9,6 +9,7 @@ export const updatePref = (
   prefs: {
     google_enabled?: boolean;
     alexa_enabled?: boolean;
+    google_allow_unlock?: boolean;
   }
 ) =>
   hass.callWS({

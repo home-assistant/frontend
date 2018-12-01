@@ -13,6 +13,9 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
         paper-card {
           cursor: pointer;
         }
+        .not_available {
+          opacity: 0.6;
+        }
         a.repo {
           display: block;
           color: var(--primary-text-color);
@@ -35,12 +38,13 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
             as="addon"
             sort="sortAddons"
           >
-            <paper-card on-click="addonTapped">
+            <paper-card class$="[[computeClass(addon)]]" on-click="addonTapped">
               <div class="card-content">
                 <hassio-card-content
                   hass="[[hass]]"
                   title="[[addon.name]]"
                   description="[[addon.description]]"
+                  available="[[addon.available]]"
                   icon="[[computeIcon(addon)]]"
                   icon-title="[[computeIconTitle(addon)]]"
                   icon-class="[[computeIconClass(addon)]]"
@@ -76,13 +80,19 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
       return addon.installed !== addon.version
         ? "New version available"
         : "Add-on is installed";
-    return "Add-on is not installed";
+    return addon.available
+      ? "Add-on is not installed"
+      : "Add-on is not available on your system";
   }
 
   computeIconClass(addon) {
     if (addon.installed)
       return addon.installed !== addon.version ? "update" : "installed";
-    return "";
+    return !addon.available ? "not_available" : "";
+  }
+
+  computeClass(addon) {
+    return !addon.available ? "not_available" : "";
   }
 
   addonTapped(ev) {

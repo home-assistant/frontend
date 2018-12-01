@@ -25,13 +25,18 @@ export class CloudGooglePref extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const enabled = this.cloudStatus!.google_enabled;
+    if (!this.cloudStatus) {
+      return html``;
+    }
+
+    const { google_enabled, google_allow_unlock } = this.cloudStatus.prefs;
 
     return html`
       ${this.renderStyle()}
       <paper-card heading="Google Assistant">
         <paper-toggle-button
-          .checked="${enabled}"
+          id="google_enabled"
+          .checked="${google_enabled}"
           @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
@@ -61,8 +66,16 @@ export class CloudGooglePref extends LitElement {
             the Google Home or Android phone.</em
           >
           ${
-            enabled
+            google_enabled
               ? html`
+                  <div class="unlock">
+                    <div>Allow unlocking locks</div>
+                    <paper-toggle-button
+                      id="google_allow_unlock"
+                      .checked="${google_allow_unlock}"
+                      @change="${this._toggleChanged}"
+                    ></paper-toggle-button>
+                  </div>
                   <p>Exposed entities:</p>
                   <cloud-exposed-entities
                     .hass="${this.hass}"
@@ -76,7 +89,7 @@ export class CloudGooglePref extends LitElement {
         <div class="card-actions">
           <ha-call-api-button
             .hass="${this.hass}"
-            .disabled="${!enabled}"
+            .disabled="${!google_enabled}"
             path="cloud/google_actions/sync"
             >Sync devices</ha-call-api-button
           >
@@ -88,7 +101,7 @@ export class CloudGooglePref extends LitElement {
   private async _toggleChanged(ev) {
     const toggle = ev.target as PaperToggleButtonElement;
     try {
-      await updatePref(this.hass!, { google_enabled: toggle.checked! });
+      await updatePref(this.hass!, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       toggle.checked = !toggle.checked;
@@ -109,6 +122,14 @@ export class CloudGooglePref extends LitElement {
         ha-call-api-button {
           color: var(--primary-color);
           font-weight: 500;
+        }
+        .unlock {
+          display: flex;
+          flex-direction: row;
+          padding-top: 16px;
+        }
+        .unlock > div {
+          flex: 1;
         }
       </style>
     `;

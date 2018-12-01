@@ -144,7 +144,8 @@
             "performance": "Jõudlus",
             "high_demand": "Kõrge nõudlus",
             "heat_pump": "Soojuspump",
-            "gas": "Gaas"
+            "gas": "Gaas",
+            "manual": "Käsitsi"
         },
         "configurator": {
             "configure": "Seadista",
@@ -578,7 +579,7 @@
                     "description": "Iga ajutine juurdepääsutõend kehtib ühe seansi jaoks. Ajutised juurdepääsutõendid kustutatakse automaatselt pärast välja logimist. Sinu konto jaoks on praegu aktiivsed järgmised ajutised juurdepääsutõendid.",
                     "token_title": "Ajutine juurdepääsutõend {clientId} jaoks",
                     "created_at": "Loodud {date}",
-                    "confirm_delete": "Oled kindel, et soovid kustutada ajutise juurdepääsutõendi {nimi} jaoks?",
+                    "confirm_delete": "Oled kindel, et soovid kustutada ajutise juurdepääsutõendi {name} jaoks?",
                     "delete_failed": "Ajutise juurdepääsutõendi kustutamine ebaõnnestus.",
                     "last_used": "Viimati kasutatud {date} asukohast {location}",
                     "not_used": "Pole kunagi kasutatud",
@@ -589,7 +590,7 @@
                     "description": "Loo pikaajalised juurdepääsutõendid, mis võimaldavad sinu skriptidel suhelda sinu Home Assistant serveriga. Iga juurdepääsutõend kehtib kümme aastat loomisest alates. Praegu on aktiivsed järgmised pikaajalised juurdepääsutõendid.",
                     "learn_auth_requests": "Loe, kuidas teha tõendatud päringuid.",
                     "created_at": "Loodud {date}",
-                    "confirm_delete": "Oled kindel, et soovid kustutada juurdepääsutõendi {nimi} jaoks?",
+                    "confirm_delete": "Oled kindel, et soovid kustutada juurdepääsutõendi {name} jaoks?",
                     "delete_failed": "Juurdepääsutõendi kustutamine ebaõnnestus.",
                     "create": "Loo juurdepääsutõend",
                     "create_failed": "Juurdepääsutõendi loomine ebaõnnestus.",
@@ -614,7 +615,7 @@
                     "header": "Mitmeastmelise autentimise moodulid",
                     "disable": "Keela",
                     "enable": "Luba",
-                    "confirm_disable": "Oled kindel, et soovid keelata kasutaja {nimi}?"
+                    "confirm_disable": "Oled kindel, et soovid keelata kasutaja {name}?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Katkestatud",

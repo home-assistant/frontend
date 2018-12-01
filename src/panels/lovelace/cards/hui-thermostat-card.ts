@@ -15,7 +15,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -33,14 +34,20 @@ const thermostatConfig = {
 
 const modeIcons = {
   auto: "hass:autorenew",
+  manual: "hass:cursor-pointer",
   heat: "hass:fire",
   cool: "hass:snowflake",
   off: "hass:power",
+  fan_only: "hass:fan",
+  eco: "hass:leaf",
+  dry: "hass:water-percent",
+  idle: "hass:power-sleep",
 };
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entity: string;
   theme?: string;
+  name?: string;
 }
 
 function formatTemp(temps: string[]): string {
@@ -91,7 +98,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">${computeStateName(stateObj)}</div>
+            <div class="title">${this._config.name ||
+              computeStateName(stateObj)}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">
                 ${stateObj.attributes.current_temperature}
@@ -193,9 +201,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           overflow: hidden;
           --rail-border-color: transparent;
           --auto-color: green;
+          --eco-color: springgreen;
           --cool-color: #2b9af9;
           --heat-color: #ff8100;
+          --manual-color: #44739e;
           --off-color: #8a8a8a;
+          --fan_only-color: #8a8a8a;
+          --dry-color: #efbd07;
+          --idle-color: #8a8a8a;
           --unknown-color: #bac;
         }
         #root {
@@ -211,8 +224,23 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         .heat {
           --mode-color: var(--heat-color);
         }
+        .manual {
+          --mode-color: var(--manual-color);
+        }
         .off {
           --mode-color: var(--off-color);
+        }
+        .fan_only {
+          --mode-color: var(--fan_only-color);
+        }
+        .eco {
+          --mode-color: var(--eco-color);
+        }
+        .dry {
+          --mode-color: var(--dry-color);
+        }
+        .idle {
+          --mode-color: var(--idle-color);
         }
         .unknown-mode {
           --mode-color: var(--unknown-color);

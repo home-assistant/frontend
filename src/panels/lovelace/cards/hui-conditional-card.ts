@@ -1,7 +1,8 @@
-import computeCardSize from "../common/compute-card-size";
 import createCardElement from "../common/create-card-element";
+import { computeCardSize } from "../common/compute-card-size";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 interface Condition {
   entity: string;
@@ -9,8 +10,8 @@ interface Condition {
   state_not?: string;
 }
 
-interface Config extends LovelaceConfig {
-  card: LovelaceConfig;
+interface Config extends LovelaceCardConfig {
+  card: LovelaceCardConfig;
   conditions: Condition[];
 }
 
@@ -72,7 +73,7 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
   }
 
   public getCardSize() {
-    return computeCardSize(this._card);
+    return computeCardSize(this._card!);
   }
 }
 

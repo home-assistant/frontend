@@ -144,7 +144,8 @@
             "performance": "Prestatie",
             "high_demand": "Hoge vraag",
             "heat_pump": "Warmtepomp",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Handmatig"
         },
         "configurator": {
             "configure": "Configureer",
@@ -710,6 +711,27 @@
                     "create_account": "Account aanmaken",
                     "error": {
                         "required_fields": "Vul alle verplichte velden in"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Geselecteerde items",
+                        "clear_items": "Geselecteerde items wissen",
+                        "add_item": "Item toevoegen"
+                    }
+                },
+                "editor": {
+                    "edit": {
+                        "header": "Kaart configuratie",
+                        "save": "Opslaan"
+                    },
+                    "migrate": {
+                        "header": "Configuratie incompatibel",
+                        "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant kan ID's voor al je kaarten en weergaven automatisch voor je toevoegen door op de knop 'Migrate config' te klikken.",
+                        "migrate": "Configuratie migreren"
                     }
                 }
             }
