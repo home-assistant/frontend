@@ -7,6 +7,11 @@ export interface ShoppingListItem {
   complete: boolean;
 }
 
+export const fetchLists = (hass: HomeAssistant): Promise<ShoppingListItem[]> =>
+  hass.callWS({
+    type: "shopping_list/lists",
+  });
+
 export const fetchItems = (
   hass: HomeAssistant,
   listId: string
