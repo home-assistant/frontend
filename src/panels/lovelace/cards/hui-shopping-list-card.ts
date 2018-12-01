@@ -119,6 +119,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                     slot="item-icon"
                     id="${index}"
                     ?checked="${item.complete}"
+                    .listId="${item.list_id}"
                     .itemId="${item.id}"
                     @click="${this._completeItem}"
                     tabindex="0"
@@ -126,7 +127,8 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                   <paper-item-body>
                     <paper-input
                       no-label-float
-                      .value="${item.name}"
+                      value="${item.name}"
+                      .listId="${item.list_id}"
                       .itemId="${item.id}"
                       @change="${this._saveEdit}"
                     ></paper-input>
@@ -170,6 +172,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                             slot="item-icon"
                             id="${index}"
                             ?checked="${item.complete}"
+                            .listId="${item.list_id}"
                             .itemId="${item.id}"
                             @click="${this._completeItem}"
                             tabindex="0"
@@ -177,7 +180,8 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                           <paper-item-body>
                             <paper-input
                               no-label-float
-                              .value="${item.name}"
+                              value="${item.name}"
+                              .listId="${item.list_id}"
                               .itemId="${item.id}"
                               @change="${this._saveEdit}"
                             ></paper-input>
@@ -251,7 +255,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     if (this.hass) {
       const checkedItems: ShoppingListItem[] = [];
       const uncheckedItems: ShoppingListItem[] = [];
-      const items = await fetchItems(this.hass);
+      const items = await fetchItems(this.hass, "0");
       for (const key in items) {
         if (items[key].complete) {
           checkedItems.push(items[key]);
@@ -265,13 +269,13 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _completeItem(ev): void {
-    updateItem(this.hass!, ev.target.itemId, {
+    updateItem(this.hass!, "0", ev.target.itemId, {
       complete: ev.target.checked,
     }).catch(() => this._fetchData());
   }
 
   private _saveEdit(ev): void {
-    updateItem(this.hass!, ev.target.itemId, {
+    updateItem(this.hass!, "0", ev.target.itemId, {
       name: ev.target.value,
     }).catch(() => this._fetchData());
 
@@ -280,7 +284,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
 
   private _clearItems(): void {
     if (this.hass) {
-      clearItems(this.hass).catch(() => this._fetchData());
+      clearItems(this.hass, "0").catch(() => this._fetchData());
     }
   }
 
@@ -292,7 +296,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     const newItem = this._newItem;
 
     if (newItem.value!.length > 0) {
-      addItem(this.hass!, newItem.value!).catch(() => this._fetchData());
+      addItem(this.hass!, "0", newItem.value!).catch(() => this._fetchData());
     }
 
     newItem.value = "";
