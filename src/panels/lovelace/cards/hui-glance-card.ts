@@ -47,6 +47,9 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     await import("../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }
+  public static getStubConfig(hass: HomeAssistant): LovelaceCardConfig {
+    return { type: "glance", entities: [] };
+  }
 
   public hass?: HomeAssistant;
   private _config?: Config;

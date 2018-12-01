@@ -35,6 +35,7 @@ import {
 } from "./types";
 import { extYamlSchema } from "./yaml-ext-schema";
 import { EntityConfig } from "../entity-rows/types";
+import { getElementTag } from "../common/get-element-tag";
 
 declare global {
   interface HASSDomEvents {
@@ -49,8 +50,6 @@ declare global {
     };
   }
 }
-
-const CUSTOM_TYPE_PREFIX = "custom:";
 
 export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   protected hass?: HomeAssistant;
@@ -383,13 +382,16 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _handleCardPicked(ev: CardPickedEvent): void {
-    this._configValue = {
-      format: "yaml",
-      value: yaml.safeDump(ev.detail.config),
-    };
+  private async _handleCardPicked(ev: CardPickedEvent): Promise<void> {
     this._isSavingAvailable = true;
-    this._loadConfigElement(ev.detail.config);
+    const succes = await this._loadConfigElement(ev.detail.config);
+    if (!succes) {
+      this._configValue = {
+        format: "yaml",
+        value: yaml.safeDump(ev.detail.config),
+      };
+    }
+    this._loading = false;
   }
 
   private _handleYamlChanged(ev: YamlChangedEvent): void {
@@ -462,9 +464,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     return JSON.stringify(configValue) !== JSON.stringify(this._originalConfig);
   }
 
-  private async _loadConfigElement(conf: LovelaceCardConfig): Promise<void> {
+  private async _loadConfigElement(conf: LovelaceCardConfig): Promise<boolean> {
     if (!conf) {
-      return;
+      return false;
     }
 
     this._errorMsg = undefined;
@@ -472,9 +474,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     this._configElement = undefined;
     this._isToggleAvailable = false;
 
-    const tag = conf.type.startsWith(CUSTOM_TYPE_PREFIX)
-      ? conf!.type.substr(CUSTOM_TYPE_PREFIX.length)
-      : `hui-${conf!.type}-card`;
+    const tag = getElementTag(conf.type);
 
     const elClass = customElements.get(tag);
     let configElement;
@@ -484,7 +484,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     } catch (err) {
       this._uiEditor = false;
       this._configElement = null;
-      return;
+      return false;
     }
 
     try {
@@ -496,7 +496,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       `;
       this._uiEditor = false;
       this._configElement = null;
-      return;
+      return false;
     }
 
     configElement.hass = this.hass;
@@ -507,6 +507,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     this._configElement = configElement;
     this._isToggleAvailable = true;
     this._updatePreview(conf);
+    return true;
   }
 }
 

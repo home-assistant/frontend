@@ -4,6 +4,8 @@ import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import { getElementTag } from "../common/get-element-tag";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
@@ -11,6 +13,15 @@ const cards = [
   { name: "Glance", type: "glance" },
 ];
 
+function s4() {
+  return Math.floor((1 + Math.random()) * 0x10000)
+    .toString(16)
+    .substring(1);
+}
+
+function uid() {
+  return s4() + s4() + s4() + s4() + s4();
+}
 export class HuiCardPicker extends LitElement {
   protected hass?: HomeAssistant;
 
@@ -44,33 +55,20 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _cardPicked(ev: Event): void {
-    const config = { type: ev.currentTarget!.type, id: this._uid() };
-    fireEvent(this, "card-picked", {
-      config,
-    });
-  }
+    const type = ev.currentTarget!.type;
+    const tag = getElementTag(type);
 
-  private _s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
+    const elClass = customElements.get(tag);
+    let config: LovelaceCardConfig = { type, id: uid() };
 
-  private _uid() {
-    return (
-      this._s4() +
-      this._s4() +
-      "-" +
-      this._s4() +
-      "-" +
-      this._s4() +
-      "-" +
-      this._s4() +
-      "-" +
-      this._s4() +
-      this._s4() +
-      this._s4()
-    );
+    try {
+      const cardConfig = elClass.getStubConfig(this.hass);
+      config = { ...config, ...cardConfig };
+    } finally {
+      fireEvent(this, "card-picked", {
+        config,
+      });
+    }
   }
 }
 
