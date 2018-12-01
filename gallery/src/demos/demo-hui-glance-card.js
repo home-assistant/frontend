@@ -89,7 +89,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Custom column width",
+    heading: "Custom number of columns",
     config: `
 - type: glance
   columns: 7
