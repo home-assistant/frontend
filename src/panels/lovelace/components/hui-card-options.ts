@@ -1,5 +1,5 @@
-import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import "@polymer/paper-button/paper-button";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showEditCardDialog } from "../editor/hui-dialog-edit-card";
 

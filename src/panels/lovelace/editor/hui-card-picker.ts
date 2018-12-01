@@ -7,49 +7,69 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { getElementTag } from "../common/get-element-tag";
 import { CardPickTarget } from "./types";
+import uid from "../../../common/util/uid";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
+  { name: "Conditional", type: "conditional" },
   { name: "Entities", type: "entities" },
+  { name: "Entity Button", type: "entity-button" },
+  { name: "Entity Filter", type: "entity-filter" },
+  { name: "Gauge", type: "gauge" },
   { name: "Glance", type: "glance" },
+  { name: "History Graph", type: "history-graph" },
+  { name: "Horizontal Stack", type: "horizontal-graph" },
+  { name: "iFrame", type: "iframe" },
+  { name: "Light", type: "light" },
+  { name: "Map", type: "map" },
+  { name: "Markdown", type: "markdown" },
+  { name: "Media Control", type: "media-control" },
+  { name: "Picture", type: "picture" },
+  { name: "Picture Elements", type: "picture-elements" },
+  { name: "Picture Entity", type: "picture-entity" },
+  { name: "Picture Glance", type: "picture-glance" },
+  { name: "Plant Status", type: "plant-status" },
+  { name: "Sensor", type: "sensor" },
+  { name: "Shopping List", type: "shopping-list" },
+  { name: "Thermostat", type: "thermostat" },
+  { name: "Vertical Stack", type: "vertical-stack" },
+  { name: "Weather Forecast", type: "weather-forecast" },
 ];
 
-function s4() {
-  return Math.floor((1 + Math.random()) * 0x10000)
-    .toString(16)
-    .substring(1);
-}
-
-function uid() {
-  return s4() + s4() + s4() + s4() + s4();
-}
 export class HuiCardPicker extends LitElement {
   protected hass?: HomeAssistant;
 
   protected render(): TemplateResult {
     return html`
       ${this.renderStyle()}
-      ${
-        cards.map((card) => {
-          return html`
-            <paper-button
-              elevated
-              @click="${this._cardPicked}"
-              .type="${card.type}"
-              >${card.name}</paper-button
-            >
-          `;
-        })
-      }
+      <h3>Pick the card you want to add:</h3>
+      <div class="cards-container">
+        ${
+          cards.map((card) => {
+            return html`
+              <paper-button
+                raised
+                @click="${this._cardPicked}"
+                .type="${card.type}"
+                >${card.name}</paper-button
+              >
+            `;
+          })
+        }
+      </div>
     `;
   }
 
   private renderStyle(): TemplateResult {
     return html`
       <style>
-        :host {
+        .cards-container {
+          display: flex;
+          flex-wrap: wrap;
+          margin-bottom: 10px;
         }
-        paper-button {
+        .cards-container paper-button {
+          flex: 1 0 25%;
         }
       </style>
     `;

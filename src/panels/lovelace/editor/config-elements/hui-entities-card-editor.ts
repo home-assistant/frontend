@@ -21,7 +21,6 @@ import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
 
 const entitiesConfigStruct = struct.union([
   {
