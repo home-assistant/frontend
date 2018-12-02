@@ -16,7 +16,7 @@ import computeStateDomain from "../../common/entity/compute_state_domain";
 import isComponentLoaded from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import EventsMixin from "../../mixins/events-mixin";
-import computeRTL from "../../common/util/compute_rtl";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*

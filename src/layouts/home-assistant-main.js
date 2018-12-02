@@ -12,7 +12,7 @@ import "./partial-cards";
 import "./partial-panel-resolver";
 import EventsMixin from "../mixins/events-mixin";
 import NavigateMixin from "../mixins/navigate-mixin";
-import computeRTL from "../common/util/compute_rtl";
+import { computeRTL } from "../common/util/compute_rtl";
 
 import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");

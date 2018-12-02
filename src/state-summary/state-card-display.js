@@ -7,7 +7,7 @@ import LocalizeMixin from "../mixins/localize-mixin";
 
 import computeStateDisplay from "../common/entity/compute_state_display";
 import attributeClassNames from "../common/entity/attribute_class_names";
-import computeRTL from "../common/util/compute_rtl";
+import { computeRTL } from "../common/util/compute_rtl";
 
 /*
  * @appliesMixin LocalizeMixin

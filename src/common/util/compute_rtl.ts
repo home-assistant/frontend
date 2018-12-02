@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../../types";
 
-export computeRTL = (hass: HomeAssistant) => {
+export function computeRTL(hass: HomeAssistant) {
   const lang = hass.language || "en";
   if (hass.translationMetadata.translations[lang]) {
     return hass.translationMetadata.translations[lang].isRTL || false;
