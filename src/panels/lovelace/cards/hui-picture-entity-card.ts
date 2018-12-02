@@ -9,15 +9,13 @@ import computeDomain from "../../../common/entity/compute_domain";
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 
-import { toggleEntity } from "../common/entity/toggle-entity";
 import { longPress } from "../common/directives/long-press-directive";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-
-const UNAVAILABLE = "Unavailable";
+import { handleClick } from "../common/handle-click";
+import { UNAVAILABLE } from "../../../data/entity";
 
 interface Config extends LovelaceCardConfig {
   entity: string;
@@ -77,9 +75,6 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
       throw new Error("State Ojbect does not exist for this entity");
     }
 
-    const available = !(stateObj.state === UNAVAILABLE);
-
-    let footer = html``;
     const name = this._config.name || computeStateName(stateObj);
     const state = computeStateDisplay(
       this.localize,
@@ -87,6 +82,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
       this.hass.language
     );
 
+    let footer: TemplateResult | string = "";
     if (this._config.show_name && this._config.show_state) {
       footer = html`
         <div class="footer both">
@@ -108,12 +104,12 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card
         id="card"
-        @ha-click="${() => this.handleClick(false)}"
-        @ha-hold="${() => this.handleClick(true)}"
+        @ha-click="${this._handleClick}"
+        @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
         class="${
           classMap({
-            clickable: Boolean(available),
+            clickable: stateObj.state !== UNAVAILABLE,
           })
         }"
       >
@@ -168,32 +164,12 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private handleClick(hold: boolean): void {
-    const stateObj = this.hass!.states[this._config!.entity];
-    const entityId = stateObj.entity_id;
-    const action = hold
-      ? this._config!.hold_action
-      : this._config!.tap_action || "more-info";
-    switch (action) {
-      case "toggle":
-        toggleEntity(this.hass!, entityId);
-        break;
-      case "call-service":
-        if (!this._config!.service) {
-          return;
-        }
-        const [domain, service] = this._config!.service!.split(".", 2);
-        const serviceData = {
-          entity_id: entityId,
-          ...this._config!.service_data,
-        };
-        this.hass!.callService(domain, service, serviceData);
-        break;
-      case "more-info":
-        fireEvent(this, "hass-more-info", { entityId });
-        break;
-      default:
-    }
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
