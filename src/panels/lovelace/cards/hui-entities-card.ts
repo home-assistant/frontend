@@ -44,8 +44,8 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     return document.createElement("hui-entities-card-editor");
   }
 
-  public static getStubConfig(hass: HomeAssistant): LovelaceCardConfig {
-    return { type: "entities", entities: [] };
+  public static getStubConfig(): object {
+    return { entities: [] };
   }
 
   protected _hass?: HomeAssistant;

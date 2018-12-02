@@ -4,6 +4,6 @@ function s4() {
     .substring(1);
 }
 
-export default function uid() {
+export function uid() {
   return s4() + s4() + s4() + s4() + s4();
 }

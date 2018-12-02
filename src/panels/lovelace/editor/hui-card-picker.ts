@@ -5,9 +5,9 @@ import "@polymer/paper-button/paper-button";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { getElementTag } from "../common/get-element-tag";
+import { getCardElementTag } from "../common/get-card-element-tag";
 import { CardPickTarget } from "./types";
-import uid from "../../../common/util/uid";
+import { uid } from "../../../common/util/uid";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
@@ -77,19 +77,19 @@ export class HuiCardPicker extends LitElement {
 
   private _cardPicked(ev: Event): void {
     const type = (ev.currentTarget! as CardPickTarget).type;
-    const tag = getElementTag(type);
+    const tag = getCardElementTag(type);
 
     const elClass = customElements.get(tag);
     let config: LovelaceCardConfig = { type, id: uid() };
 
-    try {
+    if (elClass.getStubConfig) {
       const cardConfig = elClass.getStubConfig(this.hass);
       config = { ...config, ...cardConfig };
-    } finally {
-      fireEvent(this, "card-picked", {
-        config,
-      });
     }
+
+    fireEvent(this, "card-picked", {
+      config,
+    });
   }
 }
 

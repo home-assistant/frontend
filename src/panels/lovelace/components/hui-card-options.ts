@@ -13,6 +13,7 @@ declare global {
     "show-edit-card": {
       cardConfig?: LovelaceCardConfig;
       viewId?: string | number;
+      add: boolean;
       reloadLovelace: () => void;
     };
   }
@@ -60,6 +61,7 @@ export class HuiCardOptions extends LitElement {
     }
     showEditCardDialog(this, {
       cardConfig: this.cardConfig,
+      add: false,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }

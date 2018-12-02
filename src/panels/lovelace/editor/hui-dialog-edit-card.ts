@@ -19,16 +19,18 @@ declare global {
   }
 }
 
+let registeredDialog = false;
 const dialogShowEvent = "show-edit-card";
 const dialogTag = "hui-dialog-edit-card";
 
 export interface EditCardDialogParams {
   cardConfig?: LovelaceCardConfig;
   viewId?: string | number;
+  add: boolean;
   reloadLovelace: () => void;
 }
 
-export const registerEditCardDialog = (element: HTMLElement) =>
+const registerEditCardDialog = (element: HTMLElement) =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
@@ -38,7 +40,13 @@ export const registerEditCardDialog = (element: HTMLElement) =>
 export const showEditCardDialog = (
   element: HTMLElement,
   editCardDialogParams: EditCardDialogParams
-) => fireEvent(element, dialogShowEvent, editCardDialogParams);
+) => {
+  if (!registeredDialog) {
+    registeredDialog = true;
+    registerEditCardDialog(element);
+  }
+  fireEvent(element, dialogShowEvent, editCardDialogParams);
+};
 
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
@@ -62,8 +70,10 @@ export class HuiDialogEditCard extends LitElement {
       return html``;
     }
     if (
-      (this._params.cardConfig && !this._params.cardConfig.id) ||
-      (!this._params.cardConfig && !this._params.viewId)
+      (!this._params.add &&
+        this._params.cardConfig &&
+        !this._params.cardConfig.id) ||
+      (this._params.add && !this._params.viewId)
     ) {
       return html`
         <hui-migrate-config
@@ -74,13 +84,23 @@ export class HuiDialogEditCard extends LitElement {
     }
     return html`
       <hui-edit-card
+        .hass="${this.hass}"
         .viewId="${this._params.viewId}"
         .cardConfig="${this._params.cardConfig}"
-        .hass="${this.hass}"
         @reload-lovelace="${this._params.reloadLovelace}"
+        @cancel-edit-card="${this._cancel}"
       >
       </hui-edit-card>
     `;
+  }
+
+  private _cancel() {
+    this._params = {
+      add: false,
+      reloadLovelace: () => {
+        return;
+      },
+    };
   }
 }
 
