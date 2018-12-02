@@ -124,7 +124,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
           .cameraImage="${
             computeDomain(this._config.entity) === "camera"
               ? this._config.entity
-              : this._config.camera_imag
+              : this._config.camera_image
           }"
           .entity="${this._config.entity}"
           .aspectRatio="${this._config.aspect_ratio}"
