@@ -37,6 +37,7 @@ class StateInfo extends PolymerElement {
         :host([rtl]) .info {
           margin-right: 56px;
           margin-left: 0;
+          text-align: right;
         }
 
         .name {
