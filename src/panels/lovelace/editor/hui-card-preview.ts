@@ -6,8 +6,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
 import { ConfigError } from "./types";
-
-const CUSTOM_TYPE_PREFIX = "custom:";
+import { getCardElementTag } from "../common/get-card-element-tag";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
@@ -39,9 +38,7 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    const tag = configValue.type.startsWith(CUSTOM_TYPE_PREFIX)
-      ? configValue.type.substr(CUSTOM_TYPE_PREFIX.length)
-      : `hui-${configValue.type}-card`;
+    const tag = getCardElementTag(configValue.type);
 
     if (tag.toUpperCase() === this._element.tagName) {
       this._element.setConfig(configValue);

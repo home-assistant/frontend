@@ -43,6 +43,11 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     await import("../editor/config-elements/hui-entities-card-editor");
     return document.createElement("hui-entities-card-editor");
   }
+
+  public static getStubConfig(): object {
+    return { entities: [] };
+  }
+
   protected _hass?: HomeAssistant;
   protected _config?: Config;
   protected _configEntities?: ConfigEntity[];
