@@ -410,12 +410,11 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       const cardConfig = yaml.safeLoad(yamlConfig, {
         schema: extYamlSchema,
       }) as LovelaceCardConfig;
+      this._uiEditor = !this._uiEditor;
       if (cardConfig.type !== this._cardType) {
         const succes = await this._loadConfigElement(cardConfig);
         if (!succes) {
           this._loadedDialog();
-        } else {
-          this._uiEditor = !this._uiEditor;
         }
         this._cardType = cardConfig.type;
       } else {
