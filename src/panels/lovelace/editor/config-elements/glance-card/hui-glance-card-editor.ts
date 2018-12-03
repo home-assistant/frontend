@@ -1,6 +1,5 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "../../common/structs/struct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -14,6 +13,7 @@ import { LovelaceCardEditor } from "../../../types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { Config, ConfigEntity } from "../../../cards/hui-glance-card";
 import { configElementStyle } from "../config-elements-style";
+import { struct } from "../../../common/structs/struct";
 
 import "./hui-glance-entity-editor";
 import "../../../../../components/entity/state-badge";

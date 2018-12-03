@@ -90,14 +90,19 @@ export class HuiGlanceEntityEditor extends HuiEntityEditor {
     const target = ev.currentTarget! as EditorTarget;
     const value = target.value || target.selected;
     const index = target.parentElement!.index!;
-    const entity = this.entities![index];
+    let entity = this.entities![index];
     const glanceOptions = new GlanceOptions(entity);
 
     if (glanceOptions[target.configValue!] === value) {
       return;
     }
 
-    super._optionChanged(ev);
+    entity = {
+      ...entity,
+      [target.configValue!]: value,
+    };
+
+    this._commitChangedOptions(entity, index);
   }
 
   protected renderStyle(): TemplateResult {
