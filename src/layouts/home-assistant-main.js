@@ -12,6 +12,7 @@ import "./partial-cards";
 import "./partial-panel-resolver";
 import EventsMixin from "../mixins/events-mixin";
 import NavigateMixin from "../mixins/navigate-mixin";
+import { computeRTL } from "../common/util/compute_rtl";
 
 import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");
@@ -115,7 +116,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
       rtl: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: "computeRTL(hass)",
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -175,12 +176,8 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     return NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
   }
 
-  computeRTL(hass) {
-    var lang = hass.selectedLanguage || hass.language;
-    if (hass.translationMetadata.translations[lang]) {
-      return hass.translationMetadata.translations[lang].isRTL || false;
-    }
-    return false;
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 
