@@ -47,6 +47,9 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     await import("../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }
+  public static getStubConfig(): object {
+    return { entities: [] };
+  }
 
   public hass?: HomeAssistant;
   private _config?: Config;
