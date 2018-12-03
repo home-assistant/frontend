@@ -1,5 +1,7 @@
 import { HomeAssistant } from "../types";
 
+export const SYSTEM_INBOX = "system-inbox";
+
 export interface ShoppingListItem {
   list_id: string;
   id: string;

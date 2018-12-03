@@ -17,6 +17,7 @@ import {
   ShoppingListItem,
   clearItems,
   addItem,
+  SYSTEM_INBOX,
 } from "../../../data/shopping-list";
 
 export interface Config extends LovelaceCardConfig {
@@ -255,7 +256,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     if (this.hass) {
       const checkedItems: ShoppingListItem[] = [];
       const uncheckedItems: ShoppingListItem[] = [];
-      const items = await fetchItems(this.hass, "system-inbox");
+      const items = await fetchItems(this.hass, SYSTEM_INBOX);
       for (const key in items) {
         if (items[key].complete) {
           checkedItems.push(items[key]);
@@ -269,13 +270,13 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _completeItem(ev): void {
-    updateItem(this.hass!, "system-inbox", ev.target.itemId, {
+    updateItem(this.hass!, SYSTEM_INBOX, ev.target.itemId, {
       complete: ev.target.checked,
     }).catch(() => this._fetchData());
   }
 
   private _saveEdit(ev): void {
-    updateItem(this.hass!, "system-inbox", ev.target.itemId, {
+    updateItem(this.hass!, SYSTEM_INBOX, ev.target.itemId, {
       name: ev.target.value,
     }).catch(() => this._fetchData());
 
@@ -284,7 +285,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
 
   private _clearItems(): void {
     if (this.hass) {
-      clearItems(this.hass, "system-inbox").catch(() => this._fetchData());
+      clearItems(this.hass, SYSTEM_INBOX).catch(() => this._fetchData());
     }
   }
 
@@ -296,7 +297,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     const newItem = this._newItem;
 
     if (newItem.value!.length > 0) {
-      addItem(this.hass!, "system-inbox", newItem.value!).catch(() =>
+      addItem(this.hass!, SYSTEM_INBOX, newItem.value!).catch(() =>
         this._fetchData()
       );
     }
