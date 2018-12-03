@@ -33,12 +33,12 @@ export const migrateConfig = (hass: HomeAssistant): Promise<void> =>
 export const saveConfig = (
   hass: HomeAssistant,
   config: LovelaceConfig | string,
-  configFormat: "json" | "yaml"
+  format: "json" | "yaml"
 ): Promise<void> =>
   hass.callWS({
     type: "lovelace/config/save",
     config,
-    format: configFormat,
+    format,
   });
 
 export const getCardConfig = (
@@ -54,13 +54,13 @@ export const updateCardConfig = (
   hass: HomeAssistant,
   cardId: string,
   config: LovelaceCardConfig | string,
-  configFormat: "json" | "yaml"
+  format: "json" | "yaml"
 ): Promise<void> =>
   hass.callWS({
     type: "lovelace/config/card/update",
     card_id: cardId,
     card_config: config,
-    format: configFormat,
+    format,
   });
 
 export const deleteCard = (
@@ -70,4 +70,17 @@ export const deleteCard = (
   hass.callWS({
     type: "lovelace/config/card/delete",
     card_id: cardId,
+  });
+
+export const addCard = (
+  hass: HomeAssistant,
+  viewId: string,
+  config: LovelaceCardConfig | string,
+  format: "json" | "yaml"
+): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config/card/add",
+    view_id: viewId,
+    card_config: config,
+    format,
   });

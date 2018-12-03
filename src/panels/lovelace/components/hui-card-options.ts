@@ -1,10 +1,7 @@
-import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import "@polymer/paper-button/paper-button";
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
-  showEditCardDialog,
-  registerEditCardDialog,
-} from "../editor/hui-dialog-edit-card";
+import { showEditCardDialog } from "../editor/hui-dialog-edit-card";
 
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
@@ -14,13 +11,13 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "show-edit-card": {
-      cardConfig: LovelaceCardConfig;
+      cardConfig?: LovelaceCardConfig;
+      viewId?: string | number;
+      add: boolean;
       reloadLovelace: () => void;
     };
   }
 }
-
-let registeredDialog = false;
 
 export class HuiCardOptions extends LitElement {
   public cardConfig?: LovelaceCardConfig;
@@ -28,14 +25,6 @@ export class HuiCardOptions extends LitElement {
 
   static get properties(): PropertyDeclarations {
     return { hass: {} };
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!registeredDialog) {
-      registeredDialog = true;
-      registerEditCardDialog(this);
-    }
   }
 
   protected render() {
@@ -72,6 +61,7 @@ export class HuiCardOptions extends LitElement {
     }
     showEditCardDialog(this, {
       cardConfig: this.cardConfig,
+      add: false,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }
