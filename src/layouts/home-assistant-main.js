@@ -116,7 +116,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
       rtl: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: "computeRTL(hass)",
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -176,7 +176,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     return NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
   }
 
-  computeRTL(hass) {
+  _computeRTL(hass) {
     return computeRTL(hass);
   }
 }

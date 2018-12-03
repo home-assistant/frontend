@@ -78,7 +78,7 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
       rtl: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: "computeRTL(hass)",
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -95,7 +95,7 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
     return classes.join(" ");
   }
 
-  computeRTL(hass) {
+  _computeRTL(hass) {
     return computeRTL(hass);
   }
 }

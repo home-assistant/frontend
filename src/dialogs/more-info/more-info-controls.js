@@ -156,7 +156,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
       rtl: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: "computeRTL(hass)",
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -202,7 +202,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
     this.fire("more-info-page", { page: "settings" });
   }
 
-  computeRTL(hass) {
+  _computeRTL(hass) {
     return computeRTL(hass);
   }
 }
