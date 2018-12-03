@@ -4,6 +4,7 @@ import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/app-route/app-route";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-button/paper-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
@@ -31,6 +32,7 @@ import "./hui-view";
 import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
 import { showSaveDialog } from "./editor/hui-dialog-save-config";
+import { showEditViewDialog } from "./editor/hui-dialog-edit-view";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -54,8 +56,23 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         --paper-tabs-selection-bar-color: var(--text-primary-color, #FFF);
         text-transform: uppercase;
       }
+      #add-view {
+        background: var(--paper-fab-background, var(--accent-color));
+        position: absolute;
+        height: 44px;
+      }
       app-toolbar a {
         color: var(--text-primary-color, white);
+      }
+      paper-button.warning:not([disabled]) {
+        color: var(--google-red-500);
+      }
+      app-toolbar.secondary {
+        background-color: var(--light-primary-color);
+        color: var(--primary-text-color, #333);
+        font-size: 14px;
+        font-weight: 500;
+        height: auto;
       }
       #view {
         min-height: calc(100vh - 112px);
@@ -131,10 +148,20 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
                 </template>
               </paper-tab>
             </template>
+            <template is='dom-if' if="[[_editMode]]">
+              <paper-button id="add-view" on-click="_addView">
+                <ha-icon title="Add View" icon="hass:plus"></ha-icon>
+              </paper-button>
+            </template>
           </paper-tabs>
         </div>
       </app-header>
-
+      <template is='dom-if' if="[[_editMode]]">
+        <app-toolbar class="secondary">
+          <paper-button on-click="_editView">EDIT VIEW</paper-button>
+          <paper-button class="warning" on-click="_deleteView">DELETE VIEW</paper-button>
+        </app-toolbar>
+      </template>
       <div id='view' on-rebuild-view='_debouncedConfigChanged'></div>
     </app-header-layout>
     `;
@@ -293,6 +320,39 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   _editModeChanged() {
     this._selectView(this._curView);
+  }
+
+  _editView() {
+    const viewConfig = this.config.views[this._curView];
+    if (viewConfig.cards) {
+      delete viewConfig.cards;
+    }
+    showEditViewDialog(this, {
+      viewConfig,
+      add: false,
+      reloadLovelace: () => {
+        this.fire("config-refresh");
+      },
+    });
+  }
+
+  _addView() {
+    showEditViewDialog(this, {
+      add: true,
+      reloadLovelace: () => {
+        this.fire("config-refresh");
+      },
+    });
+  }
+
+  _deleteView() {
+    const viewConfig = this.config.views[this._curView];
+    if (viewConfig.cards && viewConfig.cards.length > 0) {
+      alert(
+        "You can't delete a view that has card in them. Remove the cards first."
+      );
+      return;
+    }
   }
 
   _handleViewSelected(ev) {

@@ -14,7 +14,6 @@ import "@polymer/paper-dialog/paper-dialog";
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-button/paper-button";
-import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../types";
 import {
@@ -108,7 +107,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     this._dialog.open();
   }
 
-  protected async updated(changedProperties: PropertyValues): Promise<void> {
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (
       !changedProperties.has("cardConfig") &&
@@ -331,6 +330,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           this._configValue!.format
         );
       }
+      fireEvent(this, "reload-lovelace");
       this._closeDialog();
       this._saveDone();
     } catch (err) {
