@@ -9,6 +9,14 @@ import { getCardElementTag } from "../common/get-card-element-tag";
 import { CardPickTarget } from "./types";
 import { uid } from "../../../common/util/uid";
 
+declare global {
+  interface HASSDomEvents {
+    "card-picked": {
+      config: LovelaceCardConfig;
+    };
+  }
+}
+
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
   { name: "Conditional", type: "conditional" },
@@ -82,7 +90,7 @@ export class HuiCardPicker extends LitElement {
     const elClass = customElements.get(tag);
     let config: LovelaceCardConfig = { type, id: uid() };
 
-    if (elClass.getStubConfig) {
+    if (elClass && elClass.getStubConfig) {
       const cardConfig = elClass.getStubConfig(this.hass);
       config = { ...config, ...cardConfig };
     }
