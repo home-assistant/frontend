@@ -7,6 +7,12 @@ export interface YamlChangedEvent extends Event {
   };
 }
 
+export interface CardPickedEvent extends Event {
+  detail: {
+    config: LovelaceCardConfig;
+  };
+}
+
 export interface ConfigValue {
   format: "json" | "yaml";
   value?: string | LovelaceCardConfig;
@@ -29,4 +35,8 @@ export interface EditorTarget extends EventTarget {
   index?: number;
   checked?: boolean;
   configValue?: string;
+}
+
+export interface CardPickTarget extends EventTarget {
+  type: string;
 }

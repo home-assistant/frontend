@@ -42,10 +42,6 @@ const cardConfigStruct = struct({
 
 export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
-  private _configEntities?: ConfigEntity[];
-
   static get properties(): PropertyDeclarations {
     return { hass: {}, _config: {}, _configEntities: {} };
   }
@@ -57,6 +53,10 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   get _theme(): string {
     return this._config!.theme || "Backend-selected";
   }
+
+  public hass?: HomeAssistant;
+  private _config?: Config;
+  private _configEntities?: ConfigEntity[];
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
