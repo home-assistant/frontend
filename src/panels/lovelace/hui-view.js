@@ -2,7 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/entity/ha-state-label-badge";
-import "./components/hui-card-options.ts";
+import "./components/hui-card-options";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 

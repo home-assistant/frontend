@@ -1,18 +1,18 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 
 import "../cards/hui-alarm-panel-card";
-import "../cards/hui-conditional-card.ts";
-import "../cards/hui-entities-card.ts";
-import "../cards/hui-entity-button-card.ts";
+import "../cards/hui-conditional-card";
+import "../cards/hui-entities-card";
+import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-filter-card";
-import "../cards/hui-error-card.ts";
-import "../cards/hui-glance-card.ts";
+import "../cards/hui-error-card";
+import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
-import "../cards/hui-horizontal-stack-card.ts";
-import "../cards/hui-iframe-card.ts";
+import "../cards/hui-horizontal-stack-card";
+import "../cards/hui-iframe-card";
 import "../cards/hui-light-card";
 import "../cards/hui-map-card";
-import "../cards/hui-markdown-card.ts";
+import "../cards/hui-markdown-card";
 import "../cards/hui-media-control-card";
 import "../cards/hui-picture-card";
 import "../cards/hui-picture-elements-card";
@@ -20,9 +20,9 @@ import "../cards/hui-picture-entity-card";
 import "../cards/hui-picture-glance-card";
 import "../cards/hui-plant-status-card";
 import "../cards/hui-sensor-card";
-import "../cards/hui-vertical-stack-card.ts";
+import "../cards/hui-vertical-stack-card";
 import "../cards/hui-shopping-list-card";
-import "../cards/hui-thermostat-card.ts";
+import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-gauge-card";
 
