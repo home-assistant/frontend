@@ -25,8 +25,8 @@ interface Config extends LovelaceCardConfig {
   camera_image?: string;
   state_image?: {};
   aspect_ratio?: string;
-  tap_action?: "toggle" | "call-service" | "more-info";
-  hold_action?: "toggle" | "call-service" | "more-info";
+  tap_action?: "toggle" | "call-service" | "more-info" | "navigate";
+  hold_action?: "toggle" | "call-service" | "more-info" | "navigate";
   service?: string;
   service_data?: object;
   show_name?: boolean;
