@@ -41,7 +41,8 @@ class LongPress extends HTMLElement implements LongPress {
     this.ripple.primary = true;
 
     [
-      isTouch ? "touchcancel" : "mouseout",
+      "touchcancel",
+      "mouseout",
       "mouseup",
       "touchmove",
       "mousewheel",
@@ -80,6 +81,9 @@ class LongPress extends HTMLElement implements LongPress {
     });
 
     const clickStart = (ev: Event) => {
+      if (ev instanceof TouchEvent) {
+        ev.preventDefault();
+      }
       this.held = false;
       let x;
       let y;
@@ -96,7 +100,10 @@ class LongPress extends HTMLElement implements LongPress {
       }, this.holdTime);
     };
 
-    const clickEnd = () => {
+    const clickEnd = (ev: Event) => {
+      if (ev instanceof TouchEvent) {
+        ev.preventDefault();
+      }
       clearTimeout(this.timer);
       this.stopAnimation();
       if (isTouch && this.timer === undefined) {
@@ -110,14 +117,11 @@ class LongPress extends HTMLElement implements LongPress {
       }
     };
 
-    if (isTouch) {
-      element.addEventListener("touchstart", clickStart, { passive: true });
-      element.addEventListener("touchend", clickEnd);
-      element.addEventListener("touchcancel", clickEnd);
-    } else {
-      element.addEventListener("mousedown", clickStart, { passive: true });
-      element.addEventListener("click", clickEnd);
-    }
+    element.addEventListener("touchstart", clickStart, { passive: true });
+    element.addEventListener("touchend", clickEnd);
+    element.addEventListener("touchcancel", clickEnd);
+    element.addEventListener("mousedown", clickStart, { passive: true });
+    element.addEventListener("click", clickEnd);
   }
 
   private startAnimation(x: number, y: number) {
