@@ -33,6 +33,7 @@ import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
 import { showSaveDialog } from "./editor/hui-dialog-save-config";
 import { showEditViewDialog } from "./editor/hui-dialog-edit-view";
+import { confDeleteView } from "./editor/delete-view";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -327,6 +328,9 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     if (viewConfig.cards) {
       delete viewConfig.cards;
     }
+    if (viewConfig.badges) {
+      delete viewConfig.badges;
+    }
     showEditViewDialog(this, {
       viewConfig,
       add: false,
@@ -353,6 +357,14 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       );
       return;
     }
+    if (!viewConfig.id) {
+      this._editView();
+      return;
+    }
+    confDeleteView(this.hass, viewConfig.id, () => {
+      this.fire("config-refresh");
+      this._selectView(0);
+    });
   }
 
   _handleViewSelected(ev) {

@@ -22,6 +22,7 @@ import {
 } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+import { EditorTarget } from "./types";
 
 declare global {
   interface HASSDomEvents {
@@ -235,12 +236,12 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _valueChanged(ev: LovelaceViewEditorEvent): void {
+  private _valueChanged(ev: Event): void {
     if (!this._config || !this.hass) {
       return;
     }
 
-    const target = ev.target! as EditorTarget;
+    const target = ev.currentTarget! as EditorTarget;
 
     if (
       (target.configValue! === "title" && target.value === this._title) ||
