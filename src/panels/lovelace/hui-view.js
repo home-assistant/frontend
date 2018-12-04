@@ -22,6 +22,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
           padding: 4px 4px 0;
           transform: translateZ(0);
           position: relative;
+          min-height: calc(100vh - 155px);
         }
 
         #badges {
@@ -49,7 +50,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
         }
 
         paper-fab {
-          position: fixed;
+          position: sticky;
           float: right;
           bottom: 16px;
           right: 16px;

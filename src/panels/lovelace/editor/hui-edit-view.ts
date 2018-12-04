@@ -15,8 +15,8 @@ import "@polymer/paper-dialog/paper-dialog";
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../components/hui-theme-select-editor";
 import "../components/hui-entity-editor";
+import "./config-elements/hui-view-editor";
 import { HomeAssistant } from "../../../types";
 import {
   addView,
@@ -25,7 +25,7 @@ import {
 } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { EditorTarget, EntitiesEditorEvent } from "./types";
+import { EntitiesEditorEvent, ViewEditEvent } from "./types";
 import { processEditorEntities } from "./process-editor-entities";
 import { EntityConfig } from "../entity-rows/types";
 
@@ -81,7 +81,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
       this._badges = processEditorEntities(badges);
       this._config = viewConfig;
     } else if (changedProperties.has("add")) {
-      this._config = { cards: [] };
+      this._config = {};
       this._badges = [];
     }
     this._resizeDialog();
@@ -91,65 +91,16 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  get _id(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.id || "";
-  }
-
-  get _title(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.title || "";
-  }
-
-  get _icon(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.icon || "";
-  }
-
-  get _theme(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.theme || "Backend-selected";
-  }
-
   protected render(): TemplateResult {
     let content;
     switch (this._curTab) {
       case "tab-settings":
         content = html`
-          <div class="card-config">
-            <paper-input
-              label="ID"
-              value="${this._id}"
-              .configValue="${"id"}"
-              @value-changed="${this._valueChanged}"
-            ></paper-input>
-            <paper-input
-              label="Title"
-              value="${this._title}"
-              .configValue="${"title"}"
-              @value-changed="${this._valueChanged}"
-            ></paper-input>
-            <paper-input
-              label="Icon"
-              value="${this._icon}"
-              .configValue="${"icon"}"
-              @value-changed="${this._valueChanged}"
-            ></paper-input>
-            <hui-theme-select-editor
-              .hass="${this.hass}"
-              .value="${this._theme}"
-              .configValue="${"theme"}"
-              @theme-changed="${this._valueChanged}"
-            ></hui-theme-select-editor>
-          </div>
+          <hui-view-editor
+            .hass="${this.hass}"
+            .config="${this._config}"
+            @view-config-changed="${this._viewConfigChanged}"
+          ></hui-view-editor>
         `;
         break;
       case "tab-badges":
@@ -244,13 +195,13 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
 
   private _closeDialog(): void {
     this._curTabIndex = 0;
-    this._config = { cards: [] };
+    this._config = {};
     this._badges = [];
     this.viewConfig = undefined;
     this._dialog.close();
   }
 
-  private _handleTabSelected(ev): void {
+  private _handleTabSelected(ev: CustomEvent): void {
     if (!ev.detail.value) {
       return;
     }
@@ -294,22 +245,9 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _valueChanged(ev: Event): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const target = ev.currentTarget! as EditorTarget;
-
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
-    }
-
-    if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue]: target.value,
-      };
+  private _viewConfigChanged(ev: ViewEditEvent): void {
+    if (ev.detail && ev.detail.config) {
+      this._config = ev.detail.config;
     }
   }
 
