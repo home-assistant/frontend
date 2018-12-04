@@ -318,7 +318,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
     if (viewIndex === "unused") {
       view = document.createElement("hui-unused-entities");
-      view.config = this.config;
+      view.setConfig(this.config);
     } else {
       const viewConfig = this.config.views[this._curView];
       if (viewConfig.panel) {
