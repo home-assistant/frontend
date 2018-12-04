@@ -327,9 +327,8 @@ class HUIRoot extends NavigateMixin(
   }
 
   _editView() {
-    const { cards, badges, ...viewConfig } = this.config.views[this._curView];
     showEditViewDialog(this, {
-      viewConfig,
+      viewConfig: this.config.views[this._curView],
       add: false,
       reloadLovelace: () => {
         this.fire("config-refresh");

@@ -49,7 +49,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
         }
 
         paper-fab {
-          position: sticky;
+          position: fixed;
           float: right;
           bottom: 16px;
           right: 16px;
