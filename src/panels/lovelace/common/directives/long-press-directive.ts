@@ -107,7 +107,7 @@ class LongPress extends HTMLElement implements LongPress {
       window.setTimeout(() => (this.cooldownStart = false), 100);
     };
 
-    const clickEnd = (ev: Event) => {
+    const clickEnd = () => {
       if (this.cooldownEnd) {
         return;
       }
@@ -123,10 +123,10 @@ class LongPress extends HTMLElement implements LongPress {
       window.setTimeout(() => (this.cooldownEnd = false), 100);
     };
 
-    element.addEventListener("touchstart", clickStart);
+    element.addEventListener("touchstart", clickStart, { passive: true });
     element.addEventListener("touchend", clickEnd);
     element.addEventListener("touchcancel", clickEnd);
-    element.addEventListener("mousedown", clickStart);
+    element.addEventListener("mousedown", clickStart, { passive: true });
     element.addEventListener("click", clickEnd);
   }
 
