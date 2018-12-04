@@ -69,7 +69,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
 
-    const stateObj = this.hass!.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
       throw new Error("State Ojbect does not exist for this entity");
@@ -102,17 +102,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
 
     return html`
       ${this.renderStyle()}
-      <ha-card
-        id="card"
-        @ha-click="${this._handleClick}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
-        class="${
-          classMap({
-            clickable: stateObj.state !== UNAVAILABLE,
-          })
-        }"
-      >
+      <ha-card>
         <hui-image
           .hass="${this.hass}"
           .image="${this._config.image}"
@@ -124,6 +114,14 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
           }"
           .entity="${this._config.entity}"
           .aspectRatio="${this._config.aspect_ratio}"
+          @ha-click="${this._handleClick}"
+          @ha-hold="${this._handleHold}"
+          .longPress="${longPress()}"
+          class="${
+            classMap({
+              clickable: stateObj.state !== UNAVAILABLE,
+            })
+          }"
         ></hui-image>
         ${footer}
       </ha-card>
