@@ -159,7 +159,6 @@ class HaCards extends PolymerElement {
       },
 
       states: Object,
-      panelVisible: Boolean,
 
       viewVisible: {
         type: Boolean,
@@ -173,19 +172,11 @@ class HaCards extends PolymerElement {
   }
 
   static get observers() {
-    return [
-      "updateCards(columns, states, panelVisible, viewVisible, orderedGroupEntities)",
-    ];
+    return ["updateCards(columns, states, viewVisible, orderedGroupEntities)"];
   }
 
-  updateCards(
-    columns,
-    states,
-    panelVisible,
-    viewVisible,
-    orderedGroupEntities
-  ) {
-    if (!panelVisible || !viewVisible) {
+  updateCards(columns, states, viewVisible, orderedGroupEntities) {
+    if (!viewVisible) {
       if (this.$.main.parentNode) {
         this.$.main._parentNode = this.$.main.parentNode;
         this.$.main.parentNode.removeChild(this.$.main);
@@ -200,7 +191,7 @@ class HaCards extends PolymerElement {
       timeOut.after(10),
       () => {
         // Things might have changed since it got scheduled.
-        if (this.panelVisible && this.viewVisible) {
+        if (this.viewVisible) {
           this.cards = this.computeCards(columns, states, orderedGroupEntities);
         }
       }

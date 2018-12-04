@@ -2,13 +2,11 @@ import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import "@polymer/app-layout/app-drawer/app-drawer";
 import "@polymer/app-route/app-route";
 import "@polymer/iron-media-query/iron-media-query";
-import "@polymer/iron-pages/iron-pages";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../util/ha-url-sync";
 
-import "./partial-cards";
 import "./partial-panel-resolver";
 import EventsMixin from "../mixins/events-mixin";
 import NavigateMixin from "../mixins/navigate-mixin";
@@ -31,21 +29,16 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
         :host([rtl]) {
           direction: rtl;
         }
-        iron-pages,
+        partial-panel-resolver,
         ha-sidebar {
           /* allow a light tap highlight on the actual interface elements  */
           -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
         }
-        iron-pages {
+        partial-panel-resolver {
           height: 100%;
         }
       </style>
       <ha-url-sync hass="[[hass]]"></ha-url-sync>
-      <app-route
-        route="{{route}}"
-        pattern="/states"
-        tail="{{statesRouteTail}}"
-      ></app-route>
       <ha-voice-command-dialog
         hass="[[hass]]"
         id="voiceDialog"
@@ -73,29 +66,12 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
           ></ha-sidebar>
         </app-drawer>
 
-        <iron-pages
-          attr-for-selected="id"
-          fallback-selection="panel-resolver"
-          selected="[[hass.panelUrl]]"
-          selected-attribute="panel-visible"
-        >
-          <partial-cards
-            id="states"
-            narrow="[[narrow]]"
-            hass="[[hass]]"
-            show-menu="[[dockedSidebar]]"
-            route="[[statesRouteTail]]"
-            show-tabs=""
-          ></partial-cards>
-
-          <partial-panel-resolver
-            id="panel-resolver"
-            narrow="[[narrow]]"
-            hass="[[hass]]"
-            route="[[route]]"
-            show-menu="[[dockedSidebar]]"
-          ></partial-panel-resolver>
-        </iron-pages>
+        <partial-panel-resolver
+          narrow="[[narrow]]"
+          hass="[[hass]]"
+          route="[[route]]"
+          show-menu="[[dockedSidebar]]"
+        ></partial-panel-resolver>
       </app-drawer-layout>
     `;
   }
@@ -108,7 +84,6 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: "_routeChanged",
       },
-      statesRouteTail: Object,
       dockedSidebar: {
         type: Boolean,
         computed: "computeDockedSidebar(hass)",
