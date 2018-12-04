@@ -19,6 +19,8 @@ class LongPress extends HTMLElement implements LongPress {
   protected ripple: any;
   protected timer: number | undefined;
   protected held: boolean;
+  protected cooldownStart: boolean;
+  protected cooldownEnd: boolean;
 
   constructor() {
     super();
@@ -26,6 +28,8 @@ class LongPress extends HTMLElement implements LongPress {
     this.ripple = document.createElement("mwc-ripple");
     this.timer = undefined;
     this.held = false;
+    this.cooldownStart = false;
+    this.cooldownEnd = false;
   }
 
   public connectedCallback() {
@@ -81,8 +85,8 @@ class LongPress extends HTMLElement implements LongPress {
     });
 
     const clickStart = (ev: Event) => {
-      if (ev instanceof TouchEvent && ev.cancelable) {
-        ev.preventDefault();
+      if (this.cooldownStart) {
+        return;
       }
       this.held = false;
       let x;
@@ -98,25 +102,25 @@ class LongPress extends HTMLElement implements LongPress {
         this.startAnimation(x, y);
         this.held = true;
       }, this.holdTime);
+
+      this.cooldownStart = true;
+      window.setTimeout(() => (this.cooldownStart = false), 100);
     };
 
     const clickEnd = (ev: Event) => {
+      if (this.cooldownEnd) {
+        return;
+      }
       clearTimeout(this.timer);
       this.stopAnimation();
-      if (ev instanceof TouchEvent) {
-        if (ev.cancelable) {
-          ev.preventDefault();
-        }
-        if (this.timer === undefined) {
-          return;
-        }
-      }
       this.timer = undefined;
       if (this.held) {
         element.dispatchEvent(new Event("ha-hold"));
       } else {
         element.dispatchEvent(new Event("ha-click"));
       }
+      this.cooldownEnd = true;
+      window.setTimeout(() => (this.cooldownEnd = false), 100);
     };
 
     element.addEventListener("touchstart", clickStart);
