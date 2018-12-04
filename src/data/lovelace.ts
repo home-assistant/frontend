@@ -12,6 +12,7 @@ export interface LovelaceViewConfig {
   cards?: LovelaceCardConfig[];
   id?: string;
   icon?: string;
+  theme?: string;
 }
 
 export interface LovelaceCardConfig {
@@ -82,5 +83,38 @@ export const addCard = (
     type: "lovelace/config/card/add",
     view_id: viewId,
     card_config: config,
+    format,
+  });
+
+export const updateViewConfig = (
+  hass: HomeAssistant,
+  viewId: string,
+  config: LovelaceViewConfig | string,
+  format: "json" | "yaml"
+): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config/view/update",
+    view_id: viewId,
+    view_config: config,
+    format,
+  });
+
+export const deleteView = (
+  hass: HomeAssistant,
+  viewId: string
+): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config/view/delete",
+    view_id: viewId,
+  });
+
+export const addView = (
+  hass: HomeAssistant,
+  config: LovelaceViewConfig | string,
+  format: "json" | "yaml"
+): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config/view/add",
+    view_config: config,
     format,
   });
