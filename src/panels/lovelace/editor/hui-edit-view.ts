@@ -7,10 +7,9 @@ import {
 import { TemplateResult } from "lit-html";
 
 import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-
+import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
@@ -37,6 +36,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
       viewConfig: {},
       add: {},
       _config: {},
+      _badges: {},
       _saving: {},
       _curTab: {},
     };
