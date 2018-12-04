@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-export const DEFAULT_LIST = "system-inbox";
+export const LIST_SYSTEM_INBOX = "system-inbox";
 
 export interface ShoppingListItem {
   list_id: string;
