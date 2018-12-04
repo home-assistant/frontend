@@ -65,16 +65,11 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected render(): TemplateResult {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || !this.hass.states[this._config.entity]) {
       return html``;
     }
 
     const stateObj = this.hass.states[this._config.entity];
-
-    if (!stateObj) {
-      throw new Error("State Ojbect does not exist for this entity");
-    }
-
     const name = this._config.name || computeStateName(stateObj);
     const state = computeStateDisplay(
       this.localize,
