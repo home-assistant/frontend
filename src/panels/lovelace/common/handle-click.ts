@@ -3,11 +3,12 @@ import { LovelaceElementConfig } from "../elements/types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { toggleEntity } from "../../../../src/panels/lovelace/common/entity/toggle-entity";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 export const handleClick = (
   node: HTMLElement,
   hass: HomeAssistant,
-  config: LovelaceElementConfig,
+  config: LovelaceElementConfig | LovelaceCardConfig,
   hold: boolean
 ): void => {
   let action = config.tap_action || "more-info";
