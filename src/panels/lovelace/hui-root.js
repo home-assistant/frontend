@@ -4,6 +4,7 @@ import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/app-route/app-route";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-button/paper-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
@@ -16,6 +17,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 
 import EventsMixin from "../../mixins/events-mixin";
+import localizeMixin from "../../mixins/localize-mixin";
 import NavigateMixin from "../../mixins/navigate-mixin";
 
 import "../../layouts/ha-app-layout";
@@ -31,12 +33,16 @@ import "./hui-view";
 import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
 import { showSaveDialog } from "./editor/hui-dialog-save-config";
+import { showEditViewDialog } from "./editor/hui-dialog-edit-view";
+import { confDeleteView } from "./editor/delete-view";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
 const JS_CACHE = {};
 
-class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
+class HUIRoot extends NavigateMixin(
+  EventsMixin(localizeMixin(PolymerElement))
+) {
   static get template() {
     return html`
     <style include='ha-style'>
@@ -54,8 +60,23 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         --paper-tabs-selection-bar-color: var(--text-primary-color, #FFF);
         text-transform: uppercase;
       }
+      #add-view {
+        background: var(--paper-fab-background, var(--accent-color));
+        position: absolute;
+        height: 44px;
+      }
       app-toolbar a {
         color: var(--text-primary-color, white);
+      }
+      paper-button.warning:not([disabled]) {
+        color: var(--google-red-500);
+      }
+      app-toolbar.secondary {
+        background-color: var(--light-primary-color);
+        color: var(--primary-text-color, #333);
+        font-size: 14px;
+        font-weight: 500;
+        height: auto;
       }
       #view {
         min-height: calc(100vh - 112px);
@@ -103,7 +124,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
               <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
                 <paper-item on-click="_handleRefresh">Refresh</paper-item>
                 <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
-                <paper-item on-click="_editModeEnable">Configure UI (alpha)</paper-item>
+                <paper-item on-click="_editModeEnable">[[localize("ui.panel.lovelace.editor.configure_ui")]] (alpha)</paper-item>
                 <paper-item on-click="_handleHelp">Help</paper-item>
               </paper-listbox>
             </paper-menu-button>
@@ -115,7 +136,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
               icon='hass:close'
               on-click='_editModeDisable'
             ></paper-icon-button>
-            <div main-title>Edit UI</div>
+            <div main-title>[[localize("ui.panel.lovelace.editor.header")]]</div>
           </app-toolbar>
         </template>
 
@@ -131,10 +152,20 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
                 </template>
               </paper-tab>
             </template>
+            <template is='dom-if' if="[[_editMode]]">
+              <paper-button id="add-view" on-click="_addView">
+                <ha-icon title=[[localize("ui.panel.lovelace.editor.edit_view.add")]] icon="hass:plus"></ha-icon>
+              </paper-button>
+            </template>
           </paper-tabs>
         </div>
       </app-header>
-
+      <template is='dom-if' if="[[_editMode]]">
+        <app-toolbar class="secondary">
+          <paper-button on-click="_editView">[[localize("ui.panel.lovelace.editor.edit_view.edit")]]</paper-button>
+          <paper-button class="warning" on-click="_deleteView">[[localize("ui.panel.lovelace.editor.edit_view.delete")]]</paper-button>
+        </app-toolbar>
+      </template>
       <div id='view' on-rebuild-view='_debouncedConfigChanged'></div>
     </app-header-layout>
     `;
@@ -295,10 +326,52 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     this._selectView(this._curView);
   }
 
+  _editView() {
+    const { cards, badges, ...viewConfig } = this.config.views[this._curView];
+    showEditViewDialog(this, {
+      viewConfig,
+      add: false,
+      reloadLovelace: () => {
+        this.fire("config-refresh");
+      },
+    });
+  }
+
+  _addView() {
+    showEditViewDialog(this, {
+      add: true,
+      reloadLovelace: () => {
+        this.fire("config-refresh");
+      },
+    });
+  }
+
+  _deleteView() {
+    const viewConfig = this.config.views[this._curView];
+    if (viewConfig.cards && viewConfig.cards.length > 0) {
+      alert(
+        "You can't delete a view that has card in them. Remove the cards first."
+      );
+      return;
+    }
+    if (!viewConfig.id) {
+      this._editView();
+      return;
+    }
+    confDeleteView(this.hass, viewConfig.id, () => {
+      this.fire("config-refresh");
+      this._navigateView(0);
+    });
+  }
+
   _handleViewSelected(ev) {
     const index = ev.detail.selected;
-    if (index !== this._curView) {
-      const id = this.config.views[index].id || index;
+    this._navigateView(index);
+  }
+
+  _navigateView(viewIndex) {
+    if (viewIndex !== this._curView) {
+      const id = this.config.views[viewIndex].id || viewIndex;
       this.navigate(`/lovelace/${id}`);
     }
     scrollToTarget(this, this.$.layout.header.scrollTarget);

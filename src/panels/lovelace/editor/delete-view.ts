@@ -1,16 +1,16 @@
-import { deleteCard } from "../../../data/lovelace";
+import { deleteView } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 
-export async function confDeleteCard(
+export async function confDeleteView(
   hass: HomeAssistant,
-  cardId: string,
+  viewId: string,
   reloadLovelace: () => void
 ): Promise<void> {
-  if (!confirm("Are you sure you want to delete this card?")) {
+  if (!confirm("Are you sure you want to delete this view?")) {
     return;
   }
   try {
-    await deleteCard(hass, String(cardId));
+    await deleteView(hass, String(viewId));
     reloadLovelace();
   } catch (err) {
     alert(`Deleting failed: ${err.message}`);
