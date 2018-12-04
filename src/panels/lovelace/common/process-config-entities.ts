@@ -30,11 +30,10 @@ export const processConfigEntities = <T extends EntityConfig>(
             `Entity object at position ${index} is missing entity field.`
           );
         }
+        config = entityConf as T;
       } else {
         throw new Error(`Invalid entity specified at position ${index}.`);
       }
-
-      config = entityConf as T;
 
       if (!isValidEntityId(config.entity)) {
         throw new Error(
