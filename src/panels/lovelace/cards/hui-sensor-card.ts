@@ -13,6 +13,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 import stateIcon from "../../../common/entity/state_icon";
 
@@ -139,6 +140,7 @@ interface Config extends LovelaceCardConfig {
   graph?: string;
   unit?: string;
   detail?: number;
+  theme?: string;
   hours_to_show?: number;
 }
 
@@ -163,6 +165,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
     const cardConfig = {
       detail: 1,
+      theme: "default",
       hours_to_show: 24,
       ...config,
     };
@@ -262,8 +265,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (this._config && this._config.graph !== "line") {
+    if (!this._config || this._config.graph !== "line" || !this.hass) {
       return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
+      applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }
 
     const minute = 60000;
