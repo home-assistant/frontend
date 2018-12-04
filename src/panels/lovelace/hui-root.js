@@ -324,13 +324,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _editView() {
-    const viewConfig = this.config.views[this._curView];
-    if (viewConfig.cards) {
-      delete viewConfig.cards;
-    }
-    if (viewConfig.badges) {
-      delete viewConfig.badges;
-    }
+    const { cards, badges, ...viewConfig } = this.config.views[this._curView];
     showEditViewDialog(this, {
       viewConfig,
       add: false,

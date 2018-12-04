@@ -85,8 +85,7 @@ export class HuiDialogEditView extends LitElement {
         .hass="${this.hass}"
         .viewConfig="${this._params.viewConfig}"
         .add="${this._params.add}"
-        @reload-lovelace="${this._params.reloadLovelace}"
-        @cancel-edit-view="${this._cancel}"
+        .reloadLovelace="${this._params.reloadLovelace}"
       >
       </hui-edit-view>
     `;

@@ -43,6 +43,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
 
   public viewConfig?: LovelaceViewConfig;
   public add?: boolean;
+  public reloadLovelace?: () => {};
   protected hass?: HomeAssistant;
   private _config?: LovelaceViewConfig;
   private _saving: boolean;
@@ -195,24 +196,21 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     this._updateConfigInBackend();
   }
 
-  private _saveDone(): void {
-    this._saving = false;
-  }
-
   private async _resizeDialog(): Promise<void> {
     await this.updateComplete;
     fireEvent(this._dialog, "iron-resize");
   }
 
   private _closeDialog(): void {
-    fireEvent(this, "cancel-edit-view");
+    this._config = { cards: [] };
+    this.viewConfig = undefined;
     this._dialog.close();
   }
 
   private async _updateConfigInBackend(): Promise<void> {
     if (!this._isConfigChanged()) {
       this._closeDialog();
-      this._saveDone();
+      this._saving = false;
       return;
     }
 
@@ -227,12 +225,12 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
           "json"
         );
       }
-      fireEvent(this, "reload-lovelace");
+      this.reloadLovelace!();
       this._closeDialog();
-      this._saveDone();
+      this._saving = false;
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
-      this._saveDone();
+      this._saving = false;
     }
   }
 
@@ -243,11 +241,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
 
     const target = ev.currentTarget! as EditorTarget;
 
-    if (
-      (target.configValue! === "title" && target.value === this._title) ||
-      (target.configValue! === "icon" && target.value === this._icon) ||
-      (target.configValue! === "theme" && target.value === this._theme)
-    ) {
+    if (this[`_${target.configValue}`] === target.value) {
       return;
     }
 
