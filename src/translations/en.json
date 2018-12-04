@@ -442,7 +442,8 @@
     },
     "common": {
       "loading": "Loading",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "save": "Save"
     },
     "components": {
       "entity": {
@@ -767,10 +768,20 @@
           }
         },
         "editor": {
-          "edit": {
+          "header": "Edit UI",
+          "configure_ui": "Configure UI",
+          "edit_view": {
+            "header": "View Configuration",
+            "add": "Add view",
+            "edit": "Edit view",
+            "delete": "Delete view"
+          },
+          "edit_card": {
             "header": "Card Configuration",
-            "save": "Save",
-            "toggle_editor": "Toggle Editor"
+            "toggle_editor": "Toggle Editor",
+            "add": "Add Card",
+            "edit": "Edit",
+            "delete": "Delete"
           },
           "save_config": {
             "header": "Take control of your Lovelace UI",

@@ -3,6 +3,7 @@ import "@polymer/paper-button/paper-button";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showEditCardDialog } from "../editor/hui-dialog-edit-card";
 
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -19,7 +20,7 @@ declare global {
   }
 }
 
-export class HuiCardOptions extends LitElement {
+export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
 
@@ -50,8 +51,14 @@ export class HuiCardOptions extends LitElement {
       <slot></slot>
       <div>
         <paper-button class="warning" @click="${this._deleteCard}"
-          >DELETE</paper-button
-        ><paper-button @click="${this._editCard}">EDIT</paper-button>
+          >${
+            this.localize("ui.panel.lovelace.editor.edit_card.delete")
+          }</paper-button
+        ><paper-button @click="${this._editCard}"
+          >${
+            this.localize("ui.panel.lovelace.editor.edit_card.edit")
+          }</paper-button
+        >
       </div>
     `;
   }

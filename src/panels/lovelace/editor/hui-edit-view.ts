@@ -109,7 +109,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     return html`
       ${this.renderStyle()}
       <paper-dialog with-backdrop>
-        <h2>${this.localize("ui.panel.lovelace.editor.edit.header")}</h2>
+        <h2>${this.localize("ui.panel.lovelace.editor.edit_view.header")}</h2>
         <paper-dialog-scrollable>
           <div class="card-config">
             <paper-input
@@ -150,7 +150,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${this.localize("ui.panel.lovelace.editor.edit.save")}</paper-button
+            ${this.localize("ui.common.save")}</paper-button
           >
         </div>
       </paper-dialog>
