@@ -7,6 +7,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { getCardElementTag } from "../common/get-card-element-tag";
 import { CardPickTarget } from "./types";
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+
 import { uid } from "../../../common/util/uid";
 
 declare global {
@@ -44,13 +46,13 @@ const cards = [
   { name: "Weather Forecast", type: "weather-forecast" },
 ];
 
-export class HuiCardPicker extends LitElement {
+export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
   protected hass?: HomeAssistant;
 
   protected render(): TemplateResult {
     return html`
       ${this.renderStyle()}
-      <h3>Pick the card you want to add:</h3>
+      <h3>${this.localize("ui.panel.lovelace.editor.edit_card.pick_card")}</h3>
       <div class="cards-container">
         ${
           cards.map((card) => {

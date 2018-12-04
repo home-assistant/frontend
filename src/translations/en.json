@@ -778,6 +778,7 @@
           },
           "edit_card": {
             "header": "Card Configuration",
+            "pick_card": "Pick the card you want to add.",
             "toggle_editor": "Toggle Editor",
             "add": "Add Card",
             "edit": "Edit",

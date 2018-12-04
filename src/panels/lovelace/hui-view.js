@@ -8,11 +8,12 @@ import "./components/hui-card-options";
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
 import EventsMixin from "../../mixins/events-mixin";
+import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/hui-dialog-edit-card";
 
-class HUIView extends EventsMixin(PolymerElement) {
+class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -83,7 +84,7 @@ class HUIView extends EventsMixin(PolymerElement) {
         hidden$="{{!editMode}}"
         elevated="2"
         icon="hass:plus"
-        title="Add Card"
+        title=[[localize("ui.panel.lovelace.editor.edit_card.add")]]
         on-click="_addCard"
       ></paper-fab>
     `;
