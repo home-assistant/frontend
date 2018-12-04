@@ -81,7 +81,7 @@ class LongPress extends HTMLElement implements LongPress {
     });
 
     const clickStart = (ev: Event) => {
-      if (ev instanceof TouchEvent) {
+      if (ev instanceof TouchEvent && ev.cancelable) {
         ev.preventDefault();
       }
       this.held = false;
@@ -104,7 +104,9 @@ class LongPress extends HTMLElement implements LongPress {
       clearTimeout(this.timer);
       this.stopAnimation();
       if (ev instanceof TouchEvent) {
-        ev.preventDefault();
+        if (ev.cancelable) {
+          ev.preventDefault();
+        }
         if (this.timer === undefined) {
           return;
         }
