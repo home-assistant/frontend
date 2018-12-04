@@ -123,7 +123,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
-    this._defaultPage = localStorage.defaultPage || "states";
+    this._defaultPage = localStorage.defaultPage || "lovelace";
     this.addEventListener("hass-open-menu", () => this.handleOpenMenu());
     this.addEventListener("hass-close-menu", () => this.handleCloseMenu());
     this.addEventListener("hass-start-voice", (ev) =>
@@ -160,7 +160,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   connectedCallback() {
     super.connectedCallback();
     if (document.location.pathname === "/") {
-      this.navigate(`/${localStorage.defaultPage || "states"}`, true);
+      this.navigate(`/${localStorage.defaultPage || "lovelace"}`, true);
     }
   }
 
