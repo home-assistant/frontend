@@ -90,15 +90,6 @@ export class HuiDialogEditView extends LitElement {
       </hui-edit-view>
     `;
   }
-
-  private _cancel() {
-    this._params = {
-      add: undefined,
-      reloadLovelace: () => {
-        return;
-      },
-    };
-  }
 }
 
 declare global {

@@ -24,12 +24,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { EditorTarget } from "./types";
 
-declare global {
-  interface HASSDomEvents {
-    "cancel-edit-view": {};
-  }
-}
-
 export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   static get properties(): PropertyDeclarations {
     return {
