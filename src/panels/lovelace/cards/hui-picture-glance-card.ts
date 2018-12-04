@@ -14,7 +14,7 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
-import processConfigEntities from "../common/process-config-entities";
+import { processConfigEntities } from "../common/process-config-entities";
 import computeDomain from "../../../common/entity/compute_domain";
 import stateIcon from "../../../common/entity/state_icon";
 

@@ -15,10 +15,10 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { EntityConfig } from "../entity-rows/types";
 import { toggleEntity } from "../common/entity/toggle-entity";
+import { processConfigEntities } from "../common/process-config-entities";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
-import processConfigEntities from "../common/process-config-entities";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/entity/state-badge";
@@ -71,7 +71,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     this._config = { theme: "default", ...config };
-    const entities = processConfigEntities(config.entities);
+    const entities = processConfigEntities<ConfigEntity>(config.entities);
 
     for (const entity of entities) {
       if (
