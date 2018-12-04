@@ -145,13 +145,15 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
     return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
   }
 
-  private _playPause(): void {
+  private _playPause(ev: MouseEvent): void {
+    ev.stopPropagation();
     this.hass!.callService("media_player", "media_play_pause", {
       entity_id: this._config!.entity,
     });
   }
 
-  private _nextTrack(): void {
+  private _nextTrack(ev: MouseEvent): void {
+    ev.stopPropagation();
     this.hass!.callService("media_player", "media_next_track", {
       entity_id: this._config!.entity,
     });
