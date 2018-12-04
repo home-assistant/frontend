@@ -10,7 +10,7 @@ export async function confDeleteView(
     return;
   }
   try {
-    await deleteView(hass, viewId);
+    await deleteView(hass, String(viewId));
     reloadLovelace();
   } catch (err) {
     alert(`Deleting failed: ${err.message}`);

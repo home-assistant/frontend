@@ -10,7 +10,7 @@ export async function confDeleteCard(
     return;
   }
   try {
-    await deleteCard(hass, cardId);
+    await deleteCard(hass, String(cardId));
     reloadLovelace();
   } catch (err) {
     alert(`Deleting failed: ${err.message}`);
