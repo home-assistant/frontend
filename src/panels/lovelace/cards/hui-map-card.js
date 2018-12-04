@@ -6,7 +6,7 @@ import Leaflet from "leaflet";
 import "../../map/ha-entity-marker";
 
 import setupLeafletMap from "../../../common/dom/setup-leaflet-map";
-import processConfigEntities from "../common/process-config-entities";
+import { processConfigEntities } from "../common/process-config-entities";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
