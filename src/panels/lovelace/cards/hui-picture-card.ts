@@ -52,18 +52,17 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
-    const isClickable =
-      this._config.navigation_path ||
-      this._config.camera_image ||
-      this._config.service;
-
     return html`
       ${this.renderStyle()}
       <ha-card>
         <hui-image
           class="${
             classMap({
-              clickable: Boolean(isClickable),
+              clickable: Boolean(
+                this._config.navigation_path ||
+                  this._config.camera_image ||
+                  this._config.service
+              ),
             })
           }"
           @click="${this._handleClick}"
