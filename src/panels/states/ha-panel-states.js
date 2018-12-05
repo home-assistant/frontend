@@ -1,3 +1,5 @@
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -6,23 +8,21 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-pages/iron-pages";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../components/ha-cards";
-import "../components/ha-icon";
-import "../components/ha-menu-button";
-import "../components/ha-start-voice-button";
+import "../../components/ha-cards";
+import "../../components/ha-icon";
+import "../../components/ha-menu-button";
+import "../../components/ha-start-voice-button";
 
-import "./ha-app-layout";
+import "../../layouts/ha-app-layout";
 
-import extractViews from "../common/entity/extract_views";
-import getViewEntities from "../common/entity/get_view_entities";
-import computeStateName from "../common/entity/compute_state_name";
-import computeStateDomain from "../common/entity/compute_state_domain";
-import computeLocationName from "../common/config/location_name";
-import NavigateMixin from "../mixins/navigate-mixin";
-import EventsMixin from "../mixins/events-mixin";
+import extractViews from "../../common/entity/extract_views";
+import getViewEntities from "../../common/entity/get_view_entities";
+import computeStateName from "../../common/entity/compute_state_name";
+import computeStateDomain from "../../common/entity/compute_state_domain";
+import computeLocationName from "../../common/config/location_name";
+import NavigateMixin from "../../mixins/navigate-mixin";
+import EventsMixin from "../../mixins/events-mixin";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const ALWAYS_SHOW_DOMAIN = ["persistent_notification", "configurator"];
@@ -44,6 +44,10 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
         ha-app-layout {
           min-height: 100%;
           background-color: var(--secondary-background-color, #e5e5e5);
+        }
+
+        iron-pages {
+          height: 100%;
         }
 
         paper-tabs {
@@ -205,7 +209,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       showTabs: {
         type: Boolean,
-        value: false,
+        value: true,
       },
     };
   }
@@ -416,4 +420,4 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 }
 
-customElements.define("partial-cards", PartialCards);
+customElements.define("ha-panel-states", PartialCards);
