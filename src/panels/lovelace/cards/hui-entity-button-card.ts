@@ -23,15 +23,19 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 
+interface ActionConfig {
+  action?: "toggle" | "call-service" | "more-info";
+  service?: string;
+  service_data?: object;
+}
+
 interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   icon?: string;
   theme?: string;
-  tap_action?: "toggle" | "call-service" | "more-info";
-  hold_action?: "toggle" | "call-service" | "more-info";
-  service?: string;
-  service_data?: object;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }
 
 class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
@@ -196,18 +200,29 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     if (!stateObj) {
       return;
     }
+
     const entityId = stateObj.entity_id;
-    const action = hold ? config.hold_action : config.tap_action || "more-info";
+
+    let actionType;
+    if (hold && config.hold_action) {
+      actionType = config.hold_action;
+    } else if (!hold && config.tap_action) {
+      actionType = config.tap_action;
+    }
+
+    const action =
+      actionType && actionType.action ? actionType.action : "more-info";
+
     switch (action) {
       case "toggle":
         toggleEntity(this.hass!, entityId);
         break;
       case "call-service":
-        if (!config.service) {
+        if (!actionType.service) {
           return;
         }
-        const [domain, service] = config.service.split(".", 2);
-        const serviceData = { entity_id: entityId, ...config.service_data };
+        const [domain, service] = actionType.service.split(".", 2);
+        const serviceData = { entity_id: entityId, ...actionType.service_data };
         this.hass!.callService(domain, service, serviceData);
         break;
       case "more-info":
