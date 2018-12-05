@@ -9,6 +9,7 @@ export const handleClick = (
   hass: HomeAssistant,
   config: {
     entity?: string;
+    camera_image?: string;
     hold_action?: ActionConfig;
     tap_action?: ActionConfig;
   },
@@ -30,8 +31,10 @@ export const handleClick = (
 
   switch (actionConfig.action) {
     case "more-info":
-      if (config.entity) {
-        fireEvent(node, "hass-more-info", { entityId: config.entity });
+      if (config.entity || config.camera_image) {
+        fireEvent(node, "hass-more-info", {
+          entityId: config.entity ? config.entity! : config.camera_image!,
+        });
       }
       break;
     case "navigate":
