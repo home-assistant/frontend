@@ -8,6 +8,7 @@ export interface LovelaceElementConfig {
   hold_action?: ActionConfig;
   service?: string;
   service_data?: object;
+  navigation_path?: string;
   tap_action?: ActionConfig;
   title?: string;
 }
