@@ -72,9 +72,12 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
 
     for (const entity of entities) {
       if (
-        (entity.tap_action === "call-service" ||
-          entity.hold_action === "call-service") &&
-        !entity.service
+        (entity.tap_action &&
+          entity.tap_action.action === "call-service" &&
+          !entity.tap_action.service) ||
+        (entity.hold_action &&
+          entity.hold_action.action === "call-service" &&
+          !entity.hold_action.service)
       ) {
         throw new Error(
           'Missing required property "service" when tap_action or hold_action is call-service'
