@@ -11,7 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../src/managers/notification-manager";
 
-const DEMOS = require.context("./demos", true, /^(.*\.(js$))[^.]*$/im);
+const DEMOS = require.context("./demos", true, /^(.*\.(ts$))[^.]*$/im);
 
 const fixPath = (path) => path.substr(2, path.length - 5);
 
@@ -118,6 +118,22 @@ class HaGallery extends PolymerElement {
                   </a>
                 </template>
               </paper-card>
+
+              <paper-card heading="Util demos">
+                <div class='card-content intro'>
+                  <p>
+                    Test pages for our utility functions.
+                  </p>
+                </div>
+                <template is='dom-repeat' items='[[_utilDemos]]'>
+                  <a href='#[[item]]'>
+                    <paper-item>
+                      <paper-item-body>{{ item }}</paper-item-body>
+                      <iron-icon icon="hass:chevron-right"></iron-icon>
+                    </paper-item>
+                  </a>
+                </template>
+              </paper-card>
             </div>
           </template>
         </div>
@@ -144,6 +160,10 @@ class HaGallery extends PolymerElement {
       _moreInfoDemos: {
         type: Array,
         computed: "_computeMoreInfos(_demos)",
+      },
+      _utilDemos: {
+        type: Array,
+        computed: "_computeUtil(_demos)",
       },
     };
   }
@@ -178,7 +198,7 @@ class HaGallery extends PolymerElement {
     while (root.lastChild) root.removeChild(root.lastChild);
 
     if (demo) {
-      DEMOS(`./${demo}.js`);
+      DEMOS(`./${demo}.ts`);
       const el = document.createElement(demo);
       root.appendChild(el);
     }
@@ -198,6 +218,10 @@ class HaGallery extends PolymerElement {
 
   _computeMoreInfos(demos) {
     return demos.filter((demo) => demo.includes("more-info"));
+  }
+
+  _computeUtil(demos) {
+    return demos.filter((demo) => demo.includes("util"));
   }
 }
 

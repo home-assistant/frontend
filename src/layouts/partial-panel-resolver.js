@@ -54,6 +54,10 @@ function ensureLoaded(panel) {
       imported = import(/* webpackChunkName: "panel-lovelace" */ "../panels/lovelace/ha-panel-lovelace");
       break;
 
+    case "states":
+      imported = import(/* webpackChunkName: "panel-states" */ "../panels/states/ha-panel-states");
+      break;
+
     case "history":
       imported = import(/* webpackChunkName: "panel-history" */ "../panels/history/ha-panel-history");
       break;

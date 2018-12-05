@@ -144,7 +144,8 @@
             "performance": "Vysoký výkon",
             "high_demand": "Vysoký výkon",
             "heat_pump": "Tepelné čerpadlo",
-            "gas": "Plyn"
+            "gas": "Plyn",
+            "manual": "Ruční"
         },
         "configurator": {
             "configure": "Nakonfigurovat",
@@ -578,7 +579,7 @@
                     "description": "Každý obnovovací token představuje relaci přihlášení. Aktualizační tokeny budou automaticky odstraněny po klepnutí na tlačítko Odhlásit. Následující tokeny obnovení jsou v současné době aktivní pro váš účet.",
                     "token_title": "Obnovit token pro {clientId}",
                     "created_at": "Vytvořeno {date}",
-                    "confirm_delete": "Opravdu že chcete odstranit token pro {název}?",
+                    "confirm_delete": "Opravdu že chcete odstranit token pro {name}?",
                     "delete_failed": "Nepodařilo se smazat token.",
                     "last_used": "Naposledy použito {date} z {location}",
                     "not_used": "Nikdy nebylo použito",
@@ -710,6 +711,28 @@
                     "create_account": "Vytvořit účet",
                     "error": {
                         "required_fields": "Vyplňte všechna povinná pole"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Označené položky",
+                        "clear_items": "Vymazat označené položky",
+                        "add_item": "Přidat položku"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Konfigurace karty",
+                        "save": "Uložit",
+                        "toggle_editor": "Přepnout Editor"
+                    },
+                    "migrate": {
+                        "header": "Konfigurace není kompatibilní",
+                        "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant může automaticky přidávat ID ke všem kartám a pohledům stisknutím tlačítka Migrate config.",
+                        "migrate": "Migrovat konfiguraci"
                     }
                 }
             }

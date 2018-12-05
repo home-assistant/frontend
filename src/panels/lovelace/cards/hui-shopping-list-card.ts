@@ -9,17 +9,17 @@ import "../../../components/ha-icon";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import {
   fetchItems,
-  completeItem,
-  saveEdit,
+  updateItem,
   ShoppingListItem,
   clearItems,
   addItem,
 } from "../../../data/shopping-list";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   title?: string;
 }
 
@@ -256,15 +256,15 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _completeItem(ev): void {
-    completeItem(this.hass!, ev.target.itemId, ev.target.checked).catch(() =>
-      this._fetchData()
-    );
+    updateItem(this.hass!, ev.target.itemId, {
+      complete: ev.target.checked,
+    }).catch(() => this._fetchData());
   }
 
   private _saveEdit(ev): void {
-    saveEdit(this.hass!, ev.target.itemId, ev.target.value).catch(() =>
-      this._fetchData()
-    );
+    updateItem(this.hass!, ev.target.itemId, {
+      name: ev.target.value,
+    }).catch(() => this._fetchData());
 
     ev.target.blur();
   }

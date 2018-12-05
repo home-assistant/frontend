@@ -11,7 +11,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 import { HomeAssistant } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { migrateConfig } from "../common/data";
+import { migrateConfig } from "../../../data/lovelace";
 
 export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
   protected hass?: HomeAssistant;
@@ -95,6 +95,7 @@ export class HuiMigrateConfig extends hassLocalizeLitMixin(LitElement) {
     try {
       await migrateConfig(this.hass!);
       this._closeDialog();
+      this._migrating = false;
       fireEvent(this, "reload-lovelace");
     } catch (err) {
       alert(`Migration failed: ${err.message}`);

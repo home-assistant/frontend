@@ -144,7 +144,8 @@
             "performance": "Rendimiento",
             "high_demand": "Alta Demanda",
             "heat_pump": "Bomba de Calor",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -710,6 +711,28 @@
                     "create_account": "Crear una cuenta",
                     "error": {
                         "required_fields": "Completar todos los campos requeridos"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "lementos marcados",
+                        "clear_items": "Borrar elementos marcados",
+                        "add_item": "Agregar elemento"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Configuración de la tarjeta",
+                        "save": "Guardar",
+                        "toggle_editor": "Cambiar editor"
+                    },
+                    "migrate": {
+                        "header": "Configuración inválida",
+                        "para_no_id": "Este elemento no tiene un ID. Por favor agregue uno a este elemento en 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant puede agregar ID a todas sus tarjetas y vistas automáticamente por usted presionando el botón 'Migrar configuración'.",
+                        "migrate": "Migrar configuración"
                     }
                 }
             }

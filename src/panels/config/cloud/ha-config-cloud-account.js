@@ -10,14 +10,18 @@ import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
 
 import "../ha-config-section";
+import "./cloud-webhooks";
 
 import formatDateTime from "../../../common/datetime/format_date_time";
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 import { fetchSubscriptionInfo } from "./data";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
+
+let registeredWebhookDialog = false;
 
 /*
  * @appliesMixin EventsMixin
@@ -129,6 +133,11 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               hass="[[hass]]"
               cloud-status="[[cloudStatus]]"
             ></cloud-google-pref>
+
+            <cloud-webhooks
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+            ></cloud-webhooks>
           </ha-config-section>
         </div>
       </hass-subpage>
@@ -152,9 +161,26 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._fetchSubscriptionInfo();
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (!registeredWebhookDialog) {
+      registeredWebhookDialog = true;
+      fireEvent(this, "register-dialog", {
+        dialogShowEvent: "manage-cloud-webhook",
+        dialogTag: "cloud-webhook-manage-dialog",
+        dialogImport: () => import("./cloud-webhook-manage-dialog"),
+      });
+    }
+  }
+
   async _fetchSubscriptionInfo() {
     this._subscription = await fetchSubscriptionInfo(this.hass);
-    if (this._subscription.provider && this.cloudStatus.cloud !== "connected") {
+    if (
+      this._subscription.provider &&
+      this.cloudStatus &&
+      this.cloudStatus.cloud !== "connected"
+    ) {
       this.fire("ha-refresh-cloud-status");
     }
   }
