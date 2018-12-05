@@ -14,7 +14,11 @@ export interface ConfigEntity extends EntityConfig {
 export const handleClick = (
   node: HTMLElement,
   hass: HomeAssistant,
-  config: LovelaceElementConfig | LovelaceCardConfig | ConfigEntity,
+  config:
+    | LovelaceElementConfig
+    | LovelaceCardConfig
+    | ConfigEntity
+    | LovelaceElementConfig,
   hold: boolean
 ): void => {
   let actionConfig;
