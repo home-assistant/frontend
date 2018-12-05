@@ -22,7 +22,8 @@ export interface LovelaceCardConfig {
 }
 
 export interface ActionConfig {
-  action?: "toggle" | "call-service" | "more-info" | "none";
+  action?: "toggle" | "call-service" | "more-info" | "navigate" | "none";
+  navigation_path?: string;
   service?: string;
   service_data?: object;
 }
