@@ -160,6 +160,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
         paper-tabs {
           --paper-tabs-selection-bar-color: var(--primary-color);
           text-transform: uppercase;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
         paper-button paper-spinner {
           width: 14px;
