@@ -20,7 +20,6 @@ import { UNAVAILABLE } from "../../../data/entity";
 interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
-  navigation_path?: string;
   image?: string;
   camera_image?: string;
   state_image?: {};
