@@ -12,6 +12,7 @@ class HaCard extends PolymerElement {
           border-radius: 2px;
           transition: all 0.3s ease-out;
           background-color: var(--paper-card-background-color, white);
+          color: var(--primary-text-color);
         }
         .header {
           @apply --paper-font-headline;
