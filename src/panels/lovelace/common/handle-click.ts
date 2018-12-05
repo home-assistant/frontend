@@ -9,7 +9,6 @@ import { EntityConfig } from "../entity-rows/types";
 export interface ConfigEntity extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
-  navigation_path?: string;
 }
 
 export const handleClick = (
@@ -39,7 +38,10 @@ export const handleClick = (
       }
       break;
     case "navigate":
-      navigate(node, config.navigation_path ? config.navigation_path : "");
+      navigate(
+        node,
+        actionConfig.navigation_path ? actionConfig.navigation_path : ""
+      );
       break;
     case "toggle":
       toggleEntity(hass, config.entity!);
