@@ -1,29 +1,31 @@
-import "@polymer/paper-button/paper-button";
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import "@polymer/paper-button/paper-button";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { showEditCardDialog } from "../editor/hui-dialog-edit-card";
+
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
-import { LovelaceConfig } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
-let registeredDialog = false;
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "show-edit-card": {
+      cardConfig?: LovelaceCardConfig;
+      viewId?: string | number;
+      add: boolean;
+      reloadLovelace: () => void;
+    };
+  }
+}
 
-export class HuiCardOptions extends LitElement {
-  public cardConfig?: LovelaceConfig;
+export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
+  public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
     return { hass: {} };
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!registeredDialog) {
-      registeredDialog = true;
-      fireEvent(this, "register-dialog", {
-        dialogShowEvent: "show-edit-card",
-        dialogTag: "hui-dialog-edit-card",
-        dialogImport: () => import("../editor/hui-dialog-edit-card"),
-      });
-    }
   }
 
   protected render() {
@@ -42,17 +44,45 @@ export class HuiCardOptions extends LitElement {
           color: var(--primary-color);
           font-weight: 500;
         }
+        paper-button.warning:not([disabled]) {
+          color: var(--google-red-500);
+        }
       </style>
       <slot></slot>
-      <div><paper-button @click="${this._editCard}">EDIT</paper-button></div>
+      <div>
+        <paper-button class="warning" @click="${this._deleteCard}"
+          >${
+            this.localize("ui.panel.lovelace.editor.edit_card.delete")
+          }</paper-button
+        ><paper-button @click="${this._editCard}"
+          >${
+            this.localize("ui.panel.lovelace.editor.edit_card.edit")
+          }</paper-button
+        >
+      </div>
     `;
   }
-  private _editCard() {
-    fireEvent(this, "show-edit-card", {
-      hass: this.hass,
+  private _editCard(): void {
+    if (!this.cardConfig) {
+      return;
+    }
+    showEditCardDialog(this, {
       cardConfig: this.cardConfig,
+      add: false,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
+  }
+  private _deleteCard(): void {
+    if (!this.cardConfig) {
+      return;
+    }
+    if (!this.cardConfig.id) {
+      this._editCard();
+      return;
+    }
+    confDeleteCard(this.hass!, this.cardConfig.id, () =>
+      fireEvent(this, "config-refresh")
+    );
   }
 }
 

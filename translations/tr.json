@@ -13,6 +13,7 @@
         "dev-templates": "Taslaklar",
         "dev-mqtt": "MQTT",
         "dev-info": "Bilgi",
+        "calendar": "Takvim",
         "profile": "Profil"
     },
     "state": {
@@ -139,7 +140,8 @@
             "performance": "Performans",
             "high_demand": "Yüksek talep",
             "heat_pump": "Isı pompası",
-            "gas": "Gaz"
+            "gas": "Gaz",
+            "manual": "Manuel"
         },
         "configurator": {
             "configure": "Ayarla",
@@ -233,6 +235,25 @@
                 "initializing": "Başlatılıyor ({query_stage})",
                 "dead": "Ölü ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Açık, gece",
+            "cloudy": "Bulutlu",
+            "fog": "Sis",
+            "lightning": "Yıldırım",
+            "lightning-rainy": "Yıldırım, yağmurlu",
+            "partlycloudy": "Parçalı bulutlu",
+            "rainy": "Yağmurlu",
+            "snowy": "Karlı",
+            "snowy-rainy": "Karlı, yağmurlu",
+            "sunny": "Güneşli",
+            "windy": "Rüzgarlı",
+            "windy-variant": "Rüzgarlı"
+        },
+        "vacuum": {
+            "error": "Hata",
+            "off": "Kapalı",
+            "on": "Açık"
         }
     },
     "state_badge": {
@@ -322,6 +343,9 @@
                         "header": "Otomasyon Düzenleyici"
                     },
                     "editor": {
+                        "save": "Kaydet",
+                        "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinize emin misiniz?",
+                        "alias": "İsim",
                         "triggers": {
                             "delete": "Sil",
                             "type": {
@@ -330,7 +354,9 @@
                                 },
                                 "zone": {
                                     "zone": "Bölge",
-                                    "event": "Olay:"
+                                    "event": "Olay:",
+                                    "enter": "Girince",
+                                    "leave": "Çıkınca"
                                 },
                                 "state": {
                                     "for": "İçin"
@@ -354,26 +380,38 @@
                                     "value_template": "Değer şablonu (isteğe bağlı)"
                                 },
                                 "sun": {
-                                    "label": "Güneş"
+                                    "label": "Güneş",
+                                    "before": "Önce:",
+                                    "after": "Sonra:",
+                                    "sunrise": "Gün Doğumu",
+                                    "sunset": "Gün Batımı"
                                 },
                                 "template": {
                                     "label": "Şablon",
                                     "value_template": "Değer şablonu"
                                 },
                                 "time": {
-                                    "label": "Zaman"
+                                    "label": "Zaman",
+                                    "after": "Sonra",
+                                    "before": "Önce"
                                 },
                                 "zone": {
-                                    "entity": "Konumlu girdi"
+                                    "label": "Bölge",
+                                    "entity": "Konumlu girdi",
+                                    "zone": "Bölge"
                                 }
                             }
                         },
                         "actions": {
                             "duplicate": "Kopya",
                             "delete": "Sil",
+                            "delete_confirm": "Silmek istediğinize emin misiniz?",
                             "type": {
                                 "delay": {
                                     "delay": "Gecikme"
+                                },
+                                "condition": {
+                                    "label": "Durum"
                                 },
                                 "event": {
                                     "event": "Olay:",
@@ -390,6 +428,18 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave ağınızı yönetin"
+                },
+                "users": {
+                    "caption": "Kullanıcılar",
+                    "description": "Kullanıcıları yönet",
+                    "picker": {
+                        "title": "Kullanıcılar"
+                    },
+                    "editor": {
+                        "rename_user": "Kullanıcıyı yeniden adlandır",
+                        "change_password": "Parolayı değiştir",
+                        "delete_user": "Kullanıcıyı sil"
+                    }
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
@@ -419,14 +469,22 @@
             },
             "profile": {
                 "push_notifications": {
-                    "description": "Bu cihaza bildirimler gönder"
+                    "description": "Bu cihaza bildirimler gönder",
+                    "link_promo": "Daha fazla bilgi edinin"
                 },
                 "refresh_tokens": {
-                    "description": "Her yenileme jetonu bir oturum açma oturumunu temsil eder. Yenileme jetonları, çıkış yapmak istediğinizde otomatik olarak kaldırılacaktır. Aşağıdaki yenileme jetonları hesabınız için şu anda aktif."
+                    "description": "Her yenileme jetonu bir oturum açma oturumunu temsil eder. Yenileme jetonları, çıkış yapmak istediğinizde otomatik olarak kaldırılacaktır. Aşağıdaki yenileme jetonları hesabınız için şu anda aktif.",
+                    "created_at": "{date} tarihinde oluşturuldu",
+                    "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
+                    "not_used": "Hiç kullanılmadı"
                 },
                 "long_lived_access_tokens": {
+                    "created_at": "{date} tarihinde oluşturuldu",
+                    "prompt_name": "Ad?",
+                    "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
                     "not_used": "Hiç kullanılmamış"
                 },
+                "current_user": "{fullName} olarak giriş yaptınız.",
                 "logout": "Çıkış yap",
                 "change_password": {
                     "header": "Parolayı Değiştir",
@@ -448,6 +506,77 @@
                     "step_done": "Kurulumun {step} adımı tamamlandı",
                     "close": "Kapat",
                     "submit": "Gönder"
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "working": "Lütfen bekleyin",
+                    "unknown_error": "Bir şeyler ters gitti",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Kullanıcı Adı",
+                                        "password": "Parola"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola"
+                            },
+                            "abort": {
+                                "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Parolası"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Geçersiz API parolası"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Kullanıcı"
+                                    },
+                                    "description": "Lütfen giriş yapmak istediğiniz bir kullanıcı seçin:"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "Bir kullanıcı hesabı oluşturarak başlayalım.",
+                    "required_field": "Gerekli",
+                    "data": {
+                        "name": "Ad",
+                        "username": "Kullanıcı Adı",
+                        "password": "Parola"
+                    },
+                    "create_account": "Hesap Oluştur"
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "clear_items": "Seçili ögeleri temizle",
+                        "add_item": "Öge Ekle"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "save": "Kaydet"
+                    }
                 }
             }
         },
@@ -476,6 +605,46 @@
             "persistent_notification": {
                 "dismiss": "Kapat"
             },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Hava basıncı",
+                    "humidity": "Nem",
+                    "temperature": "Sıcaklık",
+                    "visibility": "Görünürlük",
+                    "wind_speed": "Rüzgar hızı"
+                }
+            },
+            "fan": {
+                "speed": "Hız",
+                "oscillate": "Salınım",
+                "direction": "Yön"
+            },
+            "light": {
+                "brightness": "Parlaklık",
+                "effect": "Efekt"
+            },
+            "climate": {
+                "on_off": "Açık \/ kapalı",
+                "target_temperature": "Hedef sıcaklık",
+                "target_humidity": "Hedef nem",
+                "fan_mode": "Fan modu",
+                "swing_mode": "Salınım modu",
+                "away_mode": "Dışarıda modu"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "Kilitle",
+                "unlock": "Kilidi aç"
+            },
+            "media_player": {
+                "source": "Kaynak"
+            },
+            "vacuum": {
+                "actions": {
+                    "turn_on": "Aç",
+                    "turn_off": "Kapat"
+                }
+            },
             "water_heater": {
                 "currently": "Güncel olarak",
                 "on_off": "Açık \/ kapalı",
@@ -484,8 +653,20 @@
                 "away_mode": "Dışarıda modu"
             }
         },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Kaydet",
+                "name": "Ad"
+            }
+        },
         "auth_store": {
+            "ask": "Bu girişi kaydetmek istiyor musunuz?",
+            "decline": "Hayır teşekkürler",
             "confirm": "Girişi kaydet"
+        },
+        "notification_drawer": {
+            "empty": "Bildirim bulunmamakta",
+            "title": "Bildirimler"
         }
     },
     "domain": {

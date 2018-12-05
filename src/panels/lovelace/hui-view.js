@@ -1,15 +1,19 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "@polymer/paper-fab/paper-fab";
 import "../../components/entity/ha-state-label-badge";
-import "./components/hui-card-options.ts";
+import "./components/hui-card-options";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
+import EventsMixin from "../../mixins/events-mixin";
+import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
+import { showEditCardDialog } from "./editor/hui-dialog-edit-card";
 
-class HUIView extends PolymerElement {
+class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -18,6 +22,7 @@ class HUIView extends PolymerElement {
           padding: 4px 4px 0;
           transform: translateZ(0);
           position: relative;
+          min-height: calc(100vh - 155px);
         }
 
         #badges {
@@ -44,6 +49,18 @@ class HUIView extends PolymerElement {
           margin: 4px 4px 8px;
         }
 
+        paper-fab {
+          position: sticky;
+          float: right;
+          bottom: 16px;
+          right: 16px;
+          z-index: 1;
+        }
+
+        paper-fab[hidden] {
+          display: none;
+        }
+
         @media (max-width: 500px) {
           :host {
             padding-left: 0;
@@ -64,6 +81,13 @@ class HUIView extends PolymerElement {
       </style>
       <div id="badges"></div>
       <div id="columns"></div>
+      <paper-fab
+        hidden$="{{!editMode}}"
+        elevated="2"
+        icon="hass:plus"
+        title=[[localize("ui.panel.lovelace.editor.edit_card.add")]]
+        on-click="_addCard"
+      ></paper-fab>
     `;
   }
 
@@ -91,6 +115,16 @@ class HUIView extends PolymerElement {
     super();
     this._cards = [];
     this._badges = [];
+  }
+
+  _addCard() {
+    showEditCardDialog(this, {
+      viewId: this.config.id,
+      add: true,
+      reloadLovelace: () => {
+        this.fire("config-refresh");
+      },
+    });
   }
 
   _createBadges(config) {

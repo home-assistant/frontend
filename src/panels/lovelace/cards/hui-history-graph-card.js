@@ -5,7 +5,7 @@ import "../../../components/ha-card";
 import "../../../components/state-history-charts";
 import "../../../data/ha-state-history-data";
 
-import processConfigEntities from "../common/process-config-entities";
+import { processConfigEntities } from "../common/process-config-entities";
 
 class HuiHistoryGraphCard extends PolymerElement {
   static get template() {

@@ -144,7 +144,8 @@
             "performance": "Leeschtung",
             "high_demand": "Héich Ufro",
             "heat_pump": "Heizung",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Astellen",
@@ -574,30 +575,30 @@
                     "dropdown_label": "Thema"
                 },
                 "refresh_tokens": {
-                    "header": "Tokeny Odświeżenia",
+                    "header": "Token erneieren",
                     "description": "All Sessioun Token representéiert eng Login Sessioun. Sessioun's Token ginn automatesch gelëscht wann dir op auslogge klickt. Folgend Sessioun's Token si fir de Moment fir Ären Account aktiv.",
-                    "token_title": "Token odświeżenia dla {clientId}",
-                    "created_at": "Utworzono {date}",
-                    "confirm_delete": "Jesteś pewien że chcesz usunąć token odświeżenia dla {name}?",
-                    "delete_failed": "Nie udało się usunąć tokena odświeżenia.",
-                    "last_used": "Ostatnio użyty {date} z miejsca {location}",
-                    "not_used": "Nigdy nie został użyty",
-                    "current_token_tooltip": "Nie można usunąć obecnego tokena odświeżenia."
+                    "token_title": "Token erneiren fir {clientId}",
+                    "created_at": "Erstallt um {date}",
+                    "confirm_delete": "Sécher fir den Erneierungs Token fir {name} ze läsche?",
+                    "delete_failed": "Fehler beim läschen vum Erneierungs Token",
+                    "last_used": "Läscht benotz um {date} vun {location}",
+                    "not_used": "Nach nie benotzt ginn",
+                    "current_token_tooltip": "Fehler beim läschen vum aktuellen Erneierungs Token"
                 },
                 "long_lived_access_tokens": {
                     "header": "Lang gëlteg Access Token",
                     "description": "Erstellt laang gëlteg Access Token déi et äre Skripten erlabe mat ärem Home Assistant z'interagéieren. All eenzelen Token ass gëlteg fir 10 Joer. Folgend Access Token sinn am Moment aktiv.",
-                    "learn_auth_requests": "Naucz się robić uwierzytelnione żądania.",
-                    "created_at": "Utworzono {date}",
-                    "confirm_delete": "Jesteś pewien że chcesz usunąć token dostępu dla {name}?",
-                    "delete_failed": "Nie udało się usunąć tokena dostępu.",
-                    "create": "Utwórz Token",
-                    "create_failed": "Nie udało się utworzyć tokena dostępu.",
-                    "prompt_name": "Nazwa?",
-                    "prompt_copy_token": "Zapisz swój token dostępu. Nie zostanie więcej pokazany.",
-                    "empty_state": "Nie posiadasz jeszcze długoterminowych tokenów dostępu.",
-                    "last_used": "Ostatnio użyty {date} z miejsca {location}",
-                    "not_used": "Nigdy nie został użyty"
+                    "learn_auth_requests": "Leiert wéi een \"authenticated requests\" erstellt.",
+                    "created_at": "Erstallt um {date}",
+                    "confirm_delete": "Sécher fir den Access Token fir {name} ze läsche?",
+                    "delete_failed": "Fehler beim läschen vum Access Token",
+                    "create": "Token erstellen",
+                    "create_failed": "Fehler beim erstellen vum Access Token",
+                    "prompt_name": "Numm?",
+                    "prompt_copy_token": "Kopéiert den Access Token. E gëtt nie méi ugewisen.",
+                    "empty_state": "Et ginn nach keng laang gëlteg Access Token.",
+                    "last_used": "Fir d'Läscht benotzt um {date} vun {location}",
+                    "not_used": "Nach nie benotzt ginn"
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
                 "is_owner": "Dir sidd Proprietär.",
@@ -710,6 +711,28 @@
                     "create_account": "Kont erstellen",
                     "error": {
                         "required_fields": "Fëllt all néideg Felder aus"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markéiert Elementer",
+                        "clear_items": "Markéiert Elementer läschen",
+                        "add_item": "Element dobäisetzen"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kaart Konfiguratioun",
+                        "save": "Späicheren",
+                        "toggle_editor": "Editeur ëmschalten"
+                    },
+                    "migrate": {
+                        "header": "Konfiguratioun net kompatibel",
+                        "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant kann ID's zu all äre Kaarten automatesch dobäisetzen andeem dir de Knäppche 'Konfiguratioun migréieren' dréckt.",
+                        "migrate": "Konfiguratioun migréieren"
                     }
                 }
             }

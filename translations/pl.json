@@ -45,8 +45,8 @@
                 "on": "włączony"
             },
             "moisture": {
-                "off": "sucho",
-                "on": "wilgotno"
+                "off": "brak wilgoci",
+                "on": "wilgoć"
             },
             "gas": {
                 "off": "brak",
@@ -144,7 +144,8 @@
             "performance": "wydajność",
             "high_demand": "duży rozbiór",
             "heat_pump": "pompa ciepła",
-            "gas": "gaz"
+            "gas": "gaz",
+            "manual": "manualnie"
         },
         "configurator": {
             "configure": "Skonfiguruj",
@@ -330,7 +331,7 @@
                                 "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
                                 "core": "Przeładuj rdzeń",
                                 "group": "Przeładuj grupy",
-                                "automation": "Przeładuj reguły automatyzacji",
+                                "automation": "Przeładuj automatyzacje",
                                 "script": "Przeładuj skrypty"
                             },
                             "server_management": {
@@ -386,8 +387,8 @@
                                 "homeassistant": {
                                     "label": "Home Assistant",
                                     "event": "Zdarzenie:",
-                                    "start": "Początek",
-                                    "shutdown": "Zamknięcie systemu"
+                                    "start": "uruchomienie",
+                                    "shutdown": "zakończenie"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -403,8 +404,8 @@
                                 "sun": {
                                     "label": "Słońce",
                                     "event": "Zdarzenie:",
-                                    "sunrise": "Wschód słońca",
-                                    "sunset": "Zachód słońca",
+                                    "sunrise": "wschód słońca",
+                                    "sunset": "zachód słońca",
                                     "offset": "Przesunięcie (opcjonalnie)"
                                 },
                                 "template": {
@@ -451,8 +452,8 @@
                                     "after": "Po:",
                                     "before_offset": "Przed przesunięciem (opcjonalnie)",
                                     "after_offset": "Po przesunięciu (opcjonalnie)",
-                                    "sunrise": "Wschód słońca",
-                                    "sunset": "Zachód słońca"
+                                    "sunrise": "wschód słońca",
+                                    "sunset": "zachód słońca"
                                 },
                                 "template": {
                                     "label": "Szablon",
@@ -712,6 +713,28 @@
                         "required_fields": "Wypełnij wszystkie wymagane pola"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Pozycje zaznaczone",
+                        "clear_items": "Wyczyść zaznaczone pozycje",
+                        "add_item": "Dodaj pozycję"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Konfiguracja karty",
+                        "save": "Zapisz",
+                        "toggle_editor": "Przełącz edytor"
+                    },
+                    "migrate": {
+                        "header": "Konfiguracja niekompatybilna",
+                        "para_no_id": "Ten element nie ma ID. Dodaj ID do tego elementu w \"ui-lovelace.yaml\".",
+                        "para_migrate": "Home Assistant może automatycznie dodać ID do wszystkich twoich kart i widoków, po kliknięciu przycisku \"Migracja konfiguracji\".",
+                        "migrate": "Migracja konfiguracji"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -745,7 +768,7 @@
                 "activate": "Aktywuj"
             },
             "script": {
-                "execute": "Wykonaj"
+                "execute": "Uruchom"
             },
             "weather": {
                 "attributes": {

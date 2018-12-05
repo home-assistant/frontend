@@ -5,7 +5,7 @@ import "@polymer/paper-spinner/paper-spinner";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { getCardConfig } from "../common/data";
+import { getCardConfig } from "../../../data/lovelace";
 
 export class HuiYAMLEditor extends LitElement {
   public cardId?: string;

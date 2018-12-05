@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-textarea";
 import createCardElement from "../common/create-card-element";
 import createErrorCardConfig from "../common/create-error-card-config";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCard } from "../types";
 import { ConfigError } from "./types";
-
-const CUSTOM_TYPE_PREFIX = "custom:";
+import { getCardElementTag } from "../common/get-card-element-tag";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
@@ -28,7 +28,7 @@ export class HuiCardPreview extends HTMLElement {
     this._createCard(configValue);
   }
 
-  set config(configValue: LovelaceConfig) {
+  set config(configValue: LovelaceCardConfig) {
     if (!configValue) {
       return;
     }
@@ -38,18 +38,20 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    const tag = configValue.type.startsWith(CUSTOM_TYPE_PREFIX)
-      ? configValue.type.substr(CUSTOM_TYPE_PREFIX.length)
-      : `hui-${configValue.type}-card`;
+    const tag = getCardElementTag(configValue.type);
 
     if (tag.toUpperCase() === this._element.tagName) {
-      this._element.setConfig(configValue);
+      try {
+        this._element.setConfig(configValue);
+      } catch (err) {
+        this._createCard(createErrorCardConfig(err.message, configValue));
+      }
     } else {
       this._createCard(configValue);
     }
   }
 
-  private _createCard(configValue: LovelaceConfig): void {
+  private _createCard(configValue: LovelaceCardConfig): void {
     if (this._element) {
       this.removeChild(this._element);
     }

@@ -3,36 +3,37 @@ import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
-import { navigate } from "../../../common/navigate";
 import { HomeAssistant } from "../../../types";
-
+import { longPress } from "../common/directives/long-press-directive";
+import { processConfigEntities } from "../common/process-config-entities";
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
-import processConfigEntities from "../common/process-config-entities";
 import computeDomain from "../../../common/entity/compute_domain";
 import stateIcon from "../../../common/entity/state_icon";
-import toggleEntity from "../common/entity/toggle-entity";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-image";
+import { handleClick } from "../common/handle-click";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { toggleEntity } from "../common/entity/toggle-entity";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entities: EntityConfig[];
   title?: string;
-  navigation_path?: string;
   image?: string;
   camera_image?: string;
   state_image?: {};
   aspect_ratio?: string;
   entity?: string;
-  force_dialog?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }
 
 class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
@@ -87,19 +88,22 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
 
-    const isClickable =
-      this._config.navigation_path || this._config.camera_image;
-
     return html`
       ${this.renderStyle()}
       <ha-card>
         <hui-image
           class="${
             classMap({
-              clickable: Boolean(isClickable),
+              clickable: Boolean(
+                this._config.tap_action ||
+                  this._config.hold_action ||
+                  this._config.camera_image
+              ),
             })
           }"
-          @click="${this._handleImageClick}"
+          @ha-click="${this._handleTap}"
+          @ha-hold="${this._handleHold}"
+          .longPress="${longPress()}"
           .hass="${this.hass}"
           .image="${this._config.image}"
           .stateImage="${this._config.state_image}"
@@ -167,22 +171,20 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
+  }
+
   private _openDialog(ev: MouseEvent): void {
     fireEvent(this, "hass-more-info", { entityId: (ev.target as any).entity });
   }
 
   private _callService(ev: MouseEvent): void {
-    toggleEntity(this.hass, (ev.target as any).entity);
-  }
-
-  private _handleImageClick(): void {
-    if (this._config!.navigation_path) {
-      navigate(this, this._config!.navigation_path!);
-    } else if (this._config!.camera_image) {
-      fireEvent(this, "hass-more-info", {
-        entityId: this._config!.camera_image,
-      });
-    }
+    toggleEntity(this.hass!, (ev.target as any).entity);
   }
 
   private renderStyle(): TemplateResult {
