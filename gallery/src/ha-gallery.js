@@ -220,7 +220,7 @@ class HaGallery extends PolymerElement {
     return demos.filter((demo) => demo.includes("more-info"));
   }
 
-  _computeUtils(demos) {
+  _computeUtil(demos) {
     return demos.filter((demo) => demo.includes("util"));
   }
 }
