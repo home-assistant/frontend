@@ -25,9 +25,14 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
+interface ActionConfig {
+  action?: "toggle" | "call-service" | "more-info";
+  service?: string;
+  service_data?: object;
+}
 export interface ConfigEntity extends EntityConfig {
-  tap_action?: "toggle" | "call-service" | "more-info";
-  hold_action?: "toggle" | "call-service" | "more-info";
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
   service?: string;
   service_data?: object;
 }
@@ -246,14 +251,27 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   private handleClick(ev: MouseEvent, hold: boolean): void {
     const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     const entityId = config.entity;
-    const action = hold ? config.hold_action : config.tap_action || "more-info";
+
+    let actionType;
+    if (hold && config.hold_action) {
+      actionType = config.hold_action;
+    } else if (!hold && config.tap_action) {
+      actionType = config.tap_action;
+    }
+
+    const action =
+      actionType && actionType.action ? actionType.action : "more-info";
+
     switch (action) {
       case "toggle":
         toggleEntity(this.hass!, entityId);
         break;
       case "call-service":
-        const [domain, service] = config.service!.split(".", 2);
-        const serviceData = { entity_id: entityId, ...config.service_data };
+        if (!actionType.service) {
+          return;
+        }
+        const [domain, service] = actionType.service!.split(".", 2);
+        const serviceData = { entity_id: entityId, ...actionType.service_data };
         this.hass!.callService(domain, service, serviceData);
         break;
       case "more-info":
