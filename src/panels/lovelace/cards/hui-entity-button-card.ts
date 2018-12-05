@@ -15,23 +15,20 @@ import stateIcon from "../../../common/entity/state_icon";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import { toggleEntity } from "../common/entity/toggle-entity";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { handleClick } from "../common/handle-click";
 
 interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   icon?: string;
   theme?: string;
-  tap_action?: "toggle" | "call-service" | "more-info";
-  hold_action?: "toggle" | "call-service" | "more-info";
-  service?: string;
-  service_data?: object;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }
 
 class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
@@ -82,8 +79,8 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card
-        @ha-click="${() => this.handleClick(false)}"
-        @ha-hold="${() => this.handleClick(true)}"
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       >
         ${
@@ -187,34 +184,12 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private handleClick(hold: boolean): void {
-    const config = this._config;
-    if (!config) {
-      return;
-    }
-    const stateObj = this.hass!.states[config.entity];
-    if (!stateObj) {
-      return;
-    }
-    const entityId = stateObj.entity_id;
-    const action = hold ? config.hold_action : config.tap_action || "more-info";
-    switch (action) {
-      case "toggle":
-        toggleEntity(this.hass!, entityId);
-        break;
-      case "call-service":
-        if (!config.service) {
-          return;
-        }
-        const [domain, service] = config.service.split(".", 2);
-        const serviceData = { entity_id: entityId, ...config.service_data };
-        this.hass!.callService(domain, service, serviceData);
-        break;
-      case "more-info":
-        fireEvent(this, "hass-more-info", { entityId });
-        break;
-      default:
-    }
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 

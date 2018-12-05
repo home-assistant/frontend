@@ -21,6 +21,36 @@ export interface LovelaceCardConfig {
   [key: string]: any;
 }
 
+export interface ToggleActionConfig {
+  action: "toggle";
+}
+
+export interface CallServiceActionConfig {
+  action: "call-service";
+  service: string;
+  service_data?: { [key: string]: any };
+}
+
+export interface NavigateActionConfig {
+  action: "navigate";
+  navigation_path: string;
+}
+
+export interface MoreInfoActionConfig {
+  action: "more-info";
+}
+
+export interface NoActionConfig {
+  action: "none";
+}
+
+export type ActionConfig =
+  | ToggleActionConfig
+  | CallServiceActionConfig
+  | NavigateActionConfig
+  | MoreInfoActionConfig
+  | NoActionConfig;
+
 export const fetchConfig = (hass: HomeAssistant): Promise<LovelaceConfig> =>
   hass.callWS({
     type: "lovelace/config",
