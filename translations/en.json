@@ -723,7 +723,7 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "Card Configuration",
                         "save": "Save",
                         "toggle_editor": "Toggle Editor"

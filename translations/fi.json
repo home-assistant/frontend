@@ -144,7 +144,8 @@
             "performance": "Tehokas",
             "high_demand": "Täysi teho",
             "heat_pump": "Lämpöpumppu",
-            "gas": "Kaasu"
+            "gas": "Kaasu",
+            "manual": "käsisäätöinen"
         },
         "configurator": {
             "configure": "Määrittele",
@@ -619,7 +620,8 @@
             },
             "page-authorize": {
                 "initializing": "Alustetaan",
-                "logging_in_with": "Kirjaudutaan sisään",
+                "authorizing_client": "Olet antamassa pääsyn {clientId} Home Assistant ympäristöösi.",
+                "logging_in_with": "Kirjaudutaan sisään **{authProviderName}**.",
                 "pick_auth_provider": "Tai kirjaudu sisään joillakin seuraavista",
                 "abort_intro": "Kirjautuminen on keskeytetty",
                 "form": {
@@ -681,6 +683,9 @@
                                     },
                                     "description": "Valitse käyttäjä, jolla haluat kirjautua:"
                                 }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Tietokonettasi ei ole sallittu."
                             }
                         }
                     }
@@ -699,6 +704,28 @@
                     "create_account": "Luo tili",
                     "error": {
                         "required_fields": "Täytä kaikki pakolliset kentät"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Valitut",
+                        "clear_items": "Tyhjää valitut",
+                        "add_item": "Lisää"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kortti-asetukset",
+                        "save": "Tallenna",
+                        "toggle_editor": "Vaihda editori"
+                    },
+                    "migrate": {
+                        "header": "Epäkelvot asetukset",
+                        "para_no_id": "Elementillä ei ole ID. Lisää ID elementille 'ui-lovelace.yaml'-tiedostossa.",
+                        "para_migrate": "Home Assistant voi lisätä ID:t kaikkiin kortteihisi ja näkymiin automaattisesti painamalla 'Tuo vanhat asetukset'-nappia.",
+                        "migrate": "Tuo vanhat asetukset"
                     }
                 }
             }
@@ -769,7 +796,9 @@
                 "clear_code": "Tyhjennä",
                 "disarm": "Poista hälytys",
                 "arm_home": "Viritä (kotona)",
-                "arm_away": "Viritä (poissa)"
+                "arm_away": "Viritä (poissa)",
+                "arm_night": "Viritä yöksi",
+                "armed_custom_bypass": "Mukautettu ohitus"
             },
             "automation": {
                 "last_triggered": "Viimeksi käynnistetty",

@@ -144,7 +144,8 @@
             "performance": "Prestanda",
             "high_demand": "Hög efterfrågan",
             "heat_pump": "Värmepump",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Konfigurera",
@@ -589,7 +590,7 @@
                     "description": "Skapa långlivade åtkomsttokens för att låta dina skript interagera med din hemassistentenhet. Varje token kommer att vara giltig i 10 år från skapandet. Följande långlivade åtkomsttoken är för närvarande aktiva.",
                     "learn_auth_requests": "Lär dig hur du gör autentiserade förfrågningar.",
                     "created_at": "Skapades den {date}",
-                    "confirm_delete": "Är du säker du vill radera åtkomsttoken för {namn}?",
+                    "confirm_delete": "Är du säker du vill radera åtkomsttoken för {name}?",
                     "delete_failed": "Det gick inte att ta bort åtkomsttoken.",
                     "create": "Skapa token",
                     "create_failed": "Det gick inte att skapa åtkomsttoken.",
@@ -710,6 +711,28 @@
                     "create_account": "Skapa konto",
                     "error": {
                         "required_fields": "Fyll i alla fält som krävs"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markerade objekt",
+                        "clear_items": "Rensa avbockade objekt",
+                        "add_item": "Lägg till objekt"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kortkonfiguration",
+                        "save": "Spara",
+                        "toggle_editor": "Visa \/ Dölj redigerare"
+                    },
+                    "migrate": {
+                        "header": "Konfigurationen är inte giltig",
+                        "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\".",
+                        "para_migrate": "Home Assistant kan automatiskt lägga till IDn till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
+                        "migrate": "Migrera konfigurationen"
                     }
                 }
             }

@@ -557,7 +557,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "通知推送",
-                    "description": "傳送通知推送至此裝置",
+                    "description": "傳送通知推送至此裝置。",
                     "error_load_platform": "設定 notify.html5。",
                     "error_use_https": "需要啟用前端 SSL 加密。",
                     "push_notifications": "通知推送",
@@ -723,7 +723,7 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "卡片設定",
                         "save": "儲存",
                         "toggle_editor": "切換編輯器"

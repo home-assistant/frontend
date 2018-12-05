@@ -331,7 +331,7 @@
                                 "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
                                 "core": "Przeładuj rdzeń",
                                 "group": "Przeładuj grupy",
-                                "automation": "Przeładuj reguły automatyzacji",
+                                "automation": "Przeładuj automatyzacje",
                                 "script": "Przeładuj skrypty"
                             },
                             "server_management": {
@@ -723,7 +723,7 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "Konfiguracja karty",
                         "save": "Zapisz",
                         "toggle_editor": "Przełącz edytor"

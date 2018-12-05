@@ -144,7 +144,8 @@
             "performance": "Prestazioni",
             "high_demand": "Forte richiesta",
             "heat_pump": "Pompa di calore",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manuale"
         },
         "configurator": {
             "configure": "Configura",
@@ -545,9 +546,9 @@
                         "no_device": "Entità senza dispositivi",
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
                         "restart_confirm": "Riavvia Home Assistant per terminare la rimozione di questa integrazione",
-                        "manuf": "da {produttore}",
+                        "manuf": "da {manufacturer}",
                         "hub": "Connesso via",
-                        "firmware": "Firmware: {versione}",
+                        "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo non disponibile",
                         "entity_unavailable": "entità non disponibile"
                     }
@@ -712,6 +713,28 @@
                         "required_fields": "Compila tutti i campi richiesti"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Elementi selezionati",
+                        "clear_items": "Cancella gli elementi selezionati",
+                        "add_item": "Aggiungi elemento"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Configurazione della scheda",
+                        "save": "Salva",
+                        "toggle_editor": "Attiva \/ disattiva l'editor"
+                    },
+                    "migrate": {
+                        "header": "Configurazione incompatibile",
+                        "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e visualizzazioni automaticamente premendo il pulsante \"Eporta configurazione\".",
+                        "migrate": "Esporta configurazione"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -794,7 +817,7 @@
             },
             "fan": {
                 "speed": "Velocità",
-                "oscillate": "Oscillante",
+                "oscillate": "Oscillazione",
                 "direction": "Direzione"
             },
             "light": {
@@ -836,9 +859,9 @@
             "water_heater": {
                 "currently": "Attualmente",
                 "on_off": "Acceso \/ Spento",
-                "target_temperature": "Temperatura di riferimento",
+                "target_temperature": "Temperatura da raggiungere",
                 "operation": "Operazione",
-                "away_mode": "Modalità Assente"
+                "away_mode": "Modalità fuori casa"
             }
         },
         "components": {
