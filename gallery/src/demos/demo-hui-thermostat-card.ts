@@ -75,7 +75,7 @@ class DemoThermostatEntity extends PolymerElement {
     };
   }
 
-  ready() {
+  public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
     hass.addEntities(ENTITIES);
