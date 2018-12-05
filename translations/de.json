@@ -144,7 +144,8 @@
             "performance": "Leistung",
             "high_demand": "Hoher Verbrauch",
             "heat_pump": "Wärmepumpe",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Handbuch"
         },
         "configurator": {
             "configure": "Konfigurieren",
@@ -710,6 +711,25 @@
                     "create_account": "Benutzerkonto anlegen",
                     "error": {
                         "required_fields": "Fülle alle Pflichtfelder aus."
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markierte Items",
+                        "clear_items": "Markierte Elemente löschen",
+                        "add_item": "Item hinzufügen"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "save": "Speichern",
+                        "toggle_editor": "Editor umschalten"
+                    },
+                    "migrate": {
+                        "header": "Konfiguration inkompatibel",
+                        "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu."
                     }
                 }
             }

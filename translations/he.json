@@ -722,7 +722,7 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "save": "שמור"
                     }
                 }
