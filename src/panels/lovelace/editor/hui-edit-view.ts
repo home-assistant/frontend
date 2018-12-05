@@ -78,8 +78,8 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
           (changedProperties.get("viewConfig") as LovelaceViewConfig).id)
     ) {
       const { cards, badges, ...viewConfig } = this.viewConfig;
-      this._badges = processEditorEntities(badges);
       this._config = viewConfig;
+      this._badges = processEditorEntities(badges);
     } else if (changedProperties.has("add")) {
       this._config = {};
       this._badges = [];
@@ -228,6 +228,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
 
     try {
       if (this.add) {
+        this._config.cards = [];
         await addView(this.hass!, this._config, "json");
       } else {
         await updateViewConfig(
