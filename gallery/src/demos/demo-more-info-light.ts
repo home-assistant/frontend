@@ -8,16 +8,7 @@ import getEntity from "../data/entity";
 import provideHass from "../data/provide_hass";
 
 import "../components/demo-more-infos";
-
-/* eslint-disable no-unused-vars */
-
-const SUPPORT_BRIGHTNESS = 1;
-const SUPPORT_COLOR_TEMP = 2;
-const SUPPORT_EFFECT = 4;
-const SUPPORT_FLASH = 8;
-const SUPPORT_COLOR = 16;
-const SUPPORT_TRANSITION = 32;
-const SUPPORT_WHITE_VALUE = 128;
+import { SUPPORT_BRIGHTNESS } from "../../../src/data/light";
 
 const ENTITIES = [
   getEntity("light", "bed_light", "on", {
@@ -49,7 +40,7 @@ class DemoMoreInfoLight extends PolymerElement {
     };
   }
 
-  ready() {
+  public ready() {
     super.ready();
     const hass = provideHass(this);
     hass.addEntities(ENTITIES);
