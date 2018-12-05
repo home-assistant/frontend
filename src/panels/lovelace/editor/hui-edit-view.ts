@@ -22,7 +22,6 @@ import {
   addView,
   updateViewConfig,
   LovelaceViewConfig,
-  LovelaceCardConfig,
 } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
