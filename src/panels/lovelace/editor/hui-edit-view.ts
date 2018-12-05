@@ -7,13 +7,16 @@ import {
 import { TemplateResult } from "lit-html";
 
 import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
 import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../components/hui-theme-select-editor";
+import "../components/hui-entity-editor";
+import "./config-elements/hui-view-editor";
 import { HomeAssistant } from "../../../types";
 import {
   addView,
@@ -22,7 +25,9 @@ import {
 } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { EditorTarget } from "./types";
+import { EntitiesEditorEvent, ViewEditEvent } from "./types";
+import { processEditorEntities } from "./process-editor-entities";
+import { EntityConfig } from "../entity-rows/types";
 
 export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   static get properties(): PropertyDeclarations {
@@ -31,7 +36,9 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
       viewConfig: {},
       add: {},
       _config: {},
+      _badges: {},
       _saving: {},
+      _curTab: {},
     };
   }
 
@@ -40,11 +47,15 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   public reloadLovelace?: () => {};
   protected hass?: HomeAssistant;
   private _config?: LovelaceViewConfig;
+  private _badges?: EntityConfig[];
   private _saving: boolean;
+  private _curTabIndex: number;
+  private _curTab?: string;
 
   protected constructor() {
     super();
     this._saving = false;
+    this._curTabIndex = 0;
   }
 
   public async showDialog(): Promise<void> {
@@ -66,9 +77,12 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
         this.viewConfig.id !==
           (changedProperties.get("viewConfig") as LovelaceViewConfig).id)
     ) {
-      this._config = this.viewConfig;
+      const { cards, badges, ...viewConfig } = this.viewConfig;
+      this._badges = processEditorEntities(badges);
+      this._config = viewConfig;
     } else if (changedProperties.has("add")) {
-      this._config = { cards: [] };
+      this._config = {};
+      this._badges = [];
     }
     this._resizeDialog();
   }
@@ -77,67 +91,47 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  get _id(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.id || "";
-  }
-
-  get _title(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.title || "";
-  }
-
-  get _icon(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.icon || "";
-  }
-
-  get _theme(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.theme || "Backend-selected";
-  }
-
   protected render(): TemplateResult {
+    let content;
+    switch (this._curTab) {
+      case "tab-settings":
+        content = html`
+          <hui-view-editor
+            .hass="${this.hass}"
+            .config="${this._config}"
+            @view-config-changed="${this._viewConfigChanged}"
+          ></hui-view-editor>
+        `;
+        break;
+      case "tab-badges":
+        content = html`
+          <hui-entity-editor
+            .hass="${this.hass}"
+            .entities="${this._badges}"
+            @entities-changed="${this._badgesChanged}"
+          ></hui-entity-editor>
+        `;
+        break;
+      case "tab-cards":
+        content = html`
+          Cards
+        `;
+        break;
+    }
     return html`
       ${this.renderStyle()}
       <paper-dialog with-backdrop>
         <h2>${this.localize("ui.panel.lovelace.editor.edit_view.header")}</h2>
-        <paper-dialog-scrollable>
-          <div class="card-config">
-            <paper-input
-              label="ID"
-              value="${this._id}"
-              .configValue="${"id"}"
-              @value-changed="${this._valueChanged}"
-            ></paper-input>
-            <paper-input
-              label="Title"
-              value="${this._title}"
-              .configValue="${"title"}"
-              @value-changed="${this._valueChanged}"
-            ></paper-input>
-            <paper-input
-              label="Icon"
-              value="${this._icon}"
-              .configValue="${"icon"}"
-              @value-changed="${this._valueChanged}"
-            ></paper-input>
-            <hui-theme-select-editor
-              .hass="${this.hass}"
-              .value="${this._theme}"
-              .configValue="${"theme"}"
-              @theme-changed="${this._valueChanged}"
-            ></hui-theme-select-editor>
-          </div>
-        </paper-dialog-scrollable>
+        <paper-tabs
+          scrollable
+          hide-scroll-buttons
+          .selected="${this._curTabIndex}"
+          @selected-item-changed="${this._handleTabSelected}"
+        >
+          <paper-tab id="tab-settings">Settings</paper-tab>
+          <paper-tab id="tab-badges">Badges</paper-tab>
+        </paper-tabs>
+        <paper-dialog-scrollable> ${content} </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._closeDialog}"
             >${this.localize("ui.common.cancel")}</paper-button
@@ -162,6 +156,10 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
       <style>
         paper-dialog {
           width: 650px;
+        }
+        paper-tabs {
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          text-transform: uppercase;
         }
         paper-button paper-spinner {
           width: 14px;
@@ -196,26 +194,45 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _closeDialog(): void {
-    this._config = { cards: [] };
+    this._curTabIndex = 0;
+    this._config = {};
+    this._badges = [];
     this.viewConfig = undefined;
     this._dialog.close();
   }
 
+  private _handleTabSelected(ev: CustomEvent): void {
+    if (!ev.detail.value) {
+      return;
+    }
+    this._curTab = ev.detail.value.id;
+    this._resizeDialog();
+  }
+
   private async _updateConfigInBackend(): Promise<void> {
+    if (!this._config) {
+      return;
+    }
     if (!this._isConfigChanged()) {
       this._closeDialog();
       this._saving = false;
       return;
     }
 
+    if (this._badges) {
+      this._config.badges = this._badges.map((entityConf) => {
+        return entityConf.entity;
+      });
+    }
+
     try {
       if (this.add) {
-        await addView(this.hass!, this._config!, "json");
+        await addView(this.hass!, this._config, "json");
       } else {
         await updateViewConfig(
           this.hass!,
           this.viewConfig!.id!,
-          this._config!,
+          this._config,
           "json"
         );
       }
@@ -228,23 +245,17 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _valueChanged(ev: Event): void {
-    if (!this._config || !this.hass) {
+  private _viewConfigChanged(ev: ViewEditEvent): void {
+    if (ev.detail && ev.detail.config) {
+      this._config = ev.detail.config;
+    }
+  }
+
+  private _badgesChanged(ev: EntitiesEditorEvent): void {
+    if (!this._badges || !this.hass || !ev.detail || !ev.detail.entities) {
       return;
     }
-
-    const target = ev.currentTarget! as EditorTarget;
-
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
-    }
-
-    if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue]: target.value,
-      };
-    }
+    this._badges = ev.detail.entities;
   }
 
   private _isConfigChanged(): boolean {
