@@ -10,6 +10,7 @@ import "../entity-rows/hui-lock-entity-row";
 import "../entity-rows/hui-media-player-entity-row";
 import "../entity-rows/hui-scene-entity-row";
 import "../entity-rows/hui-script-entity-row";
+import "../entity-rows/hui-sensor-entity-row";
 import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-timer-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
@@ -28,6 +29,7 @@ const SPECIAL_TYPES = new Set([
   "weblink",
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
+  alert: "toggle",
   automation: "toggle",
   climate: "climate",
   cover: "cover",
@@ -42,6 +44,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   lock: "lock",
   scene: "scene",
   script: "script",
+  sensor: "sensor",
   timer: "timer",
   switch: "toggle",
   vacuum: "toggle",

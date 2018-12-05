@@ -144,7 +144,8 @@
             "performance": "效能",
             "high_demand": "高用量",
             "heat_pump": "暖氣",
-            "gas": "瓦斯模式"
+            "gas": "瓦斯模式",
+            "manual": "手動"
         },
         "configurator": {
             "configure": "設定",
@@ -556,7 +557,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "通知推送",
-                    "description": "傳送通知推送至此裝置",
+                    "description": "傳送通知推送至此裝置。",
                     "error_load_platform": "設定 notify.html5。",
                     "error_use_https": "需要啟用前端 SSL 加密。",
                     "push_notifications": "通知推送",
@@ -710,6 +711,28 @@
                     "create_account": "創建帳號",
                     "error": {
                         "required_fields": "填寫所有所需欄位"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "已選取項目",
+                        "clear_items": "清除已選取項目",
+                        "add_item": "新增項目"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "卡片設定",
+                        "save": "儲存",
+                        "toggle_editor": "切換編輯器"
+                    },
+                    "migrate": {
+                        "header": "設定不相容",
+                        "para_no_id": "該元件未含 ID，請於「ui-lovelace.yaml」中為該元件新增 ID。",
+                        "para_migrate": "Home Assistant 能於您點選「遷移設定」按鈕後，自動新增 ID 與視圖至所有卡片。",
+                        "migrate": "遷移設定"
                     }
                 }
             }

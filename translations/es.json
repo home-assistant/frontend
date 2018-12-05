@@ -144,7 +144,8 @@
             "performance": "Rendimiento",
             "high_demand": "Alta demanda",
             "heat_pump": "Bomba de calor",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -589,7 +590,7 @@
                     "description": "Crea tokens de acceso de larga duración para permitir que tus scripts interactúen con tu Home Assistant. Cada token será válido por 10 años desde la creación. Los siguientes tokens de acceso de larga duración están actualmente activos.",
                     "learn_auth_requests": "Aprenda a realizar solicitudes autenticadas.",
                     "created_at": "Creado el {date}",
-                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {nombre}?",
+                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {name}?",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "create": "Crear Token",
                     "create_failed": "No se ha podido crear el token de acceso.",
@@ -710,6 +711,28 @@
                     "create_account": "Crear una cuenta",
                     "error": {
                         "required_fields": "Complete todos los campos requeridos"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Elementos marcados",
+                        "clear_items": "Borrar elementos marcados",
+                        "add_item": "Añadir artículo"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Configuración de la tarjeta",
+                        "save": "Guardar",
+                        "toggle_editor": "Alternar editor"
+                    },
+                    "migrate": {
+                        "header": "Configuración incompatible",
+                        "para_no_id": "Este elemento no tiene un ID. Por favor agregue uno  este elemento en 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant puede agregar ID a todas sus tarjetas y vistas automáticamente por usted presionando el botón 'Migrar configuración'.",
+                        "migrate": "Migrar configuración"
                     }
                 }
             }

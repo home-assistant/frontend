@@ -15,6 +15,11 @@ declare global {
   var __VERSION__: string;
 }
 
+export interface WebhookError {
+  code: number;
+  message: string;
+}
+
 export interface Credential {
   auth_provider_type: string;
   auth_provider_id: string;

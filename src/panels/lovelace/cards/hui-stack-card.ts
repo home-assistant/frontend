@@ -3,11 +3,12 @@ import { TemplateResult } from "lit-html";
 
 import createCardElement from "../common/create-card-element";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 
-interface Config extends LovelaceConfig {
-  cards: LovelaceConfig[];
+interface Config extends LovelaceCardConfig {
+  cards: LovelaceCardConfig[];
 }
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {

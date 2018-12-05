@@ -11,31 +11,30 @@ export const fetchItems = (hass: HomeAssistant): Promise<ShoppingListItem[]> =>
     type: "shopping_list/items",
   });
 
-export const saveEdit = (
+export const updateItem = (
   hass: HomeAssistant,
   itemId: number,
-  name: string
+  item: {
+    name?: string;
+    complete?: boolean;
+  }
 ): Promise<ShoppingListItem> =>
-  hass.callApi("POST", "shopping_list/item/" + itemId, {
-    name,
-  });
-
-export const completeItem = (
-  hass: HomeAssistant,
-  itemId: number,
-  complete: boolean
-): Promise<void> =>
-  hass.callApi("POST", "shopping_list/item/" + itemId, {
-    complete,
+  hass.callWS({
+    type: "shopping_list/items/update",
+    item_id: itemId,
+    ...item,
   });
 
 export const clearItems = (hass: HomeAssistant): Promise<void> =>
-  hass.callApi("POST", "shopping_list/clear_completed");
+  hass.callWS({
+    type: "shopping_list/items/clear",
+  });
 
 export const addItem = (
   hass: HomeAssistant,
   name: string
 ): Promise<ShoppingListItem> =>
-  hass.callApi("POST", "shopping_list/item", {
+  hass.callWS({
+    type: "shopping_list/items/add",
     name,
   });

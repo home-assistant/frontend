@@ -144,7 +144,8 @@
             "performance": "Performance",
             "high_demand": "Forte demande",
             "heat_pump": "Pompe à chaleur",
-            "gas": "Gaz"
+            "gas": "Gaz",
+            "manual": "Manuel"
         },
         "configurator": {
             "configure": "Configurer",
@@ -712,6 +713,26 @@
                         "required_fields": "Remplissez tous les champs requis"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Éléments cochés",
+                        "add_item": "Ajouter un élément"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "save": "Enregistrer",
+                        "toggle_editor": "Activer\/désactiver l’éditeur"
+                    },
+                    "migrate": {
+                        "header": "Configuration incompatible",
+                        "para_no_id": "Cet élément n'a pas d'identifiant. Veuillez ajouter un identifiant à cet élément dans 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant peut ajouter automatiquement des identifiants à toutes vos cartes et vues en appuyant sur le bouton «Migrer la configuration».",
+                        "migrate": "Migrer la configuration"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -849,7 +870,7 @@
                 "service": "Service"
             },
             "relative_time": {
-                "past": "{time} auparavant",
+                "past": "Il y a {time}",
                 "future": "Dans {time}",
                 "never": "Jamais",
                 "duration": {

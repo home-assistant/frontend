@@ -1,9 +1,10 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import "@polymer/paper-checkbox/paper-checkbox";
+import { struct } from "../../common/structs/struct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { processEditorEntities } from "../process-editor-entities";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -12,12 +13,33 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config, ConfigEntity } from "../../cards/hui-glance-card";
+import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
+
+const entitiesConfigStruct = struct.union([
+  {
+    entity: "entity-id",
+    name: "string?",
+    icon: "icon?",
+  },
+  "entity-id",
+]);
+
+const cardConfigStruct = struct({
+  type: "string",
+  id: "string|number",
+  title: "string|number?",
+  theme: "string?",
+  columns: "number?",
+  show_name: "boolean?",
+  show_state: "boolean?",
+  entities: [entitiesConfigStruct],
+});
 
 export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
@@ -26,6 +48,8 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
   private _configEntities?: ConfigEntity[];
 
   public setConfig(config: Config): void {
+    config = cardConfigStruct(config);
+
     this._config = { type: "glance", ...config };
     this._configEntities = processEditorEntities(config.entities);
   }
@@ -52,42 +76,48 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
-      ${this.renderStyle()}
-      <paper-input
-        label="Title"
-        value="${this._title}"
-        .configValue="${"title"}"
-        @value-changed="${this._valueChanged}"
-      ></paper-input>
-      <hui-theme-select-editor
-        .hass="${this.hass}"
-        .value="${this._theme}"
-        .configValue="${"theme"}"
-        @theme-changed="${this._valueChanged}"
-      ></hui-theme-select-editor>
-      <paper-input
-        label="Columns"
-        value="${this._columns}"
-        .configValue="${"columns"}"
-        @value-changed="${this._valueChanged}"
-      ></paper-input>
+      ${configElementStyle}
+      <div class="card-config">
+        <paper-input
+          label="Title"
+          value="${this._title}"
+          .configValue="${"title"}"
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
+        <div class="side-by-side">
+          <hui-theme-select-editor
+            .hass="${this.hass}"
+            .value="${this._theme}"
+            .configValue="${"theme"}"
+            @theme-changed="${this._valueChanged}"
+          ></hui-theme-select-editor>
+          <paper-input
+            label="Columns"
+            value="${this._columns}"
+            .configValue="${"columns"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+        </div>
+        <div class="side-by-side">
+          <paper-toggle-button
+            ?checked="${this._config!.show_name !== false}"
+            .configValue="${"show_name"}"
+            @change="${this._valueChanged}"
+            >Show Entity's Name?</paper-toggle-button
+          >
+          <paper-toggle-button
+            ?checked="${this._config!.show_state !== false}"
+            .configValue="${"show_state"}"
+            @change="${this._valueChanged}"
+            >Show Entity's State Text?</paper-toggle-button
+          >
+        </div>
+      </div>
       <hui-entity-editor
         .hass="${this.hass}"
         .entities="${this._configEntities}"
         @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>
-      <paper-checkbox
-        ?checked="${this._config!.show_name !== false}"
-        .configValue="${"show_name"}"
-        @change="${this._valueChanged}"
-        >Show Entity's Name?</paper-checkbox
-      >
-      <paper-checkbox
-        ?checked="${this._config!.show_state !== false}"
-        .configValue="${"show_state"}"
-        @change="${this._valueChanged}"
-        >Show Entity's State Text?</paper-checkbox
-      >
     `;
   }
 
@@ -116,17 +146,6 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       };
     }
     fireEvent(this, "config-changed", { config: this._config });
-  }
-
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-checkbox {
-          display: block;
-          padding-top: 16px;
-        }
-      </style>
-    `;
   }
 }
 

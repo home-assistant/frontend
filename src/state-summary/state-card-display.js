@@ -7,6 +7,7 @@ import LocalizeMixin from "../mixins/localize-mixin";
 
 import computeStateDisplay from "../common/entity/compute_state_display";
 import attributeClassNames from "../common/entity/attribute_class_names";
+import { computeRTL } from "../common/util/compute_rtl";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -21,6 +22,11 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
           @apply --layout-baseline;
         }
 
+        :host([rtl]) {
+          direction: rtl;
+          text-align: right;
+        }
+
         state-info {
           flex: 1 1 auto;
           min-width: 0;
@@ -33,6 +39,12 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
           max-width: 40%;
           flex: 0 0 auto;
         }
+        :host([rtl]) .state {
+          margin-right: 16px;
+          margin-left: 0;
+          text-align: left;
+        }
+
         .state.has-unit_of_measurement {
           white-space: nowrap;
         }
@@ -63,6 +75,11 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -76,6 +93,10 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
       attributeClassNames(stateObj, ["unit_of_measurement"]),
     ];
     return classes.join(" ");
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 customElements.define("state-card-display", StateCardDisplay);
