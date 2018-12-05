@@ -723,9 +723,10 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "Kaart configuratie",
-                        "save": "Opslaan"
+                        "save": "Opslaan",
+                        "toggle_editor": "Toggle Editor"
                     },
                     "migrate": {
                         "header": "Configuratie incompatibel",
@@ -748,7 +749,7 @@
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
             "week": "{count} {count, plural,\none {week}\nother {weken}\n}",
             "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
-            "minute": "{count} {count, plural,\néén {minuut}\nandere {minuten}\n}",
+            "minute": "{count} {count, plural,\none {minuut}\nother {minuten}\n}",
             "hour": "{count} {count, plural,\none {uur}\nother {uur}\n}"
         },
         "login-form": {

@@ -723,7 +723,7 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "Kortkonfigurasjon",
                         "save": "Lagre",
                         "toggle_editor": "Bytt redigering"
