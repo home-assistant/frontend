@@ -41,7 +41,11 @@ export class HuiCardPreview extends HTMLElement {
     const tag = getCardElementTag(configValue.type);
 
     if (tag.toUpperCase() === this._element.tagName) {
-      this._element.setConfig(configValue);
+      try {
+        this._element.setConfig(configValue);
+      } catch (err) {
+        this._createCard(createErrorCardConfig(err.message, configValue));
+      }
     } else {
       this._createCard(configValue);
     }
