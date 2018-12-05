@@ -768,7 +768,8 @@
                 "activate": "Activate"
             },
             "script": {
-                "execute": "Execute"
+                "execute": "Execute",
+                "last_action": "Last Action"
             },
             "weather": {
                 "attributes": {
@@ -862,6 +863,14 @@
                 "target_temperature": "Target temperature",
                 "operation": "Operation",
                 "away_mode": "Away mode"
+            },
+            "sun": {
+                "elevation": "Elevation",
+                "rising": "Rising",
+                "setting": "Setting"
+            },
+            "updater": {
+                "title": "Update Instructions"
             }
         },
         "components": {

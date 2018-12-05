@@ -28,7 +28,7 @@ class MoreInfoSun extends LocalizeMixin(PolymerElement) {
         </div>
       </template>
       <div class="data-entry layout justified horizontal">
-        <div class="key">Elevation</div>
+        <div class="key">[[localize('ui.card.sun.elevation')]]</div>
         <div class="value">[[stateObj.attributes.elevation]]</div>
       </div>
     `;
@@ -63,7 +63,11 @@ class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   }
 
   itemCaption(type) {
-    return type === "ris" ? "Rising " : "Setting ";
+    if (type === "ris") {
+      return this.localize("ui.card.sun.rising");
+    } else {
+      return this.localize("ui.card.sun.setting");
+    }
   }
 
   itemDate(type) {
