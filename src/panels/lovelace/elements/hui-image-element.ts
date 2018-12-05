@@ -33,7 +33,10 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
       throw Error("Error in element configuration");
     }
 
-    this.classList.toggle("clickable", config.tap_action !== "none");
+    this.classList.toggle(
+      "clickable",
+      config.tap_action && config.tap_action.action !== "none"
+    );
     this._config = config;
   }
 
