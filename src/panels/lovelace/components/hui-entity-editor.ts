@@ -42,15 +42,24 @@ export class HuiEntityEditor extends LitElement {
             `;
           })
         }
+        <ha-entity-picker
+          .hass="${this.hass}"
+          @change="${this._addEntity}"
+        ></ha-entity-picker>
       </div>
-      <paper-button noink raised @click="${this._addEntity}"
-        >Add Entity</paper-button
-      >
     `;
   }
 
-  private _addEntity() {
-    this.entities = this.entities!.concat({ entity: "" });
+  private _addEntity(ev: Event): void {
+    const target = ev.target! as EditorTarget;
+    if (target.value === "") {
+      return;
+    }
+    const newConfigEntities = this.entities!.concat({
+      entity: target.value as string,
+    });
+    target.value = "";
+    fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
   private _valueChanged(ev: Event): void {
