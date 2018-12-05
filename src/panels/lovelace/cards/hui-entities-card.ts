@@ -14,8 +14,9 @@ import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, EntityRow } from "../entity-rows/types";
-import { LovelaceCard, LovelaceConfig, LovelaceCardEditor } from "../types";
-import processConfigEntities from "../common/process-config-entities";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import { processConfigEntities } from "../common/process-config-entities";
 import createRowElement from "../common/create-row-element";
 import computeDomain from "../../../common/entity/compute_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
@@ -29,7 +30,7 @@ export interface ConfigEntity extends EntityConfig {
   url?: string;
 }
 
-export interface Config extends LovelaceConfig {
+export interface Config extends LovelaceCardConfig {
   show_header_toggle?: boolean;
   title?: string;
   entities: ConfigEntity[];
@@ -42,6 +43,11 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     await import("../editor/config-elements/hui-entities-card-editor");
     return document.createElement("hui-entities-card-editor");
   }
+
+  public static getStubConfig(): object {
+    return { entities: [] };
+  }
+
   protected _hass?: HomeAssistant;
   protected _config?: Config;
   protected _configEntities?: ConfigEntity[];

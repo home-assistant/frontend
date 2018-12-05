@@ -144,7 +144,8 @@
             "performance": "Jõudlus",
             "high_demand": "Kõrge nõudlus",
             "heat_pump": "Soojuspump",
-            "gas": "Gaas"
+            "gas": "Gaas",
+            "manual": "Käsitsi"
         },
         "configurator": {
             "configure": "Seadista",

@@ -15,7 +15,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -43,9 +44,10 @@ const modeIcons = {
   idle: "hass:power-sleep",
 };
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entity: string;
   theme?: string;
+  name?: string;
 }
 
 function formatTemp(temps: string[]): string {
@@ -96,7 +98,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">${computeStateName(stateObj)}</div>
+            <div class="title">${this._config.name ||
+              computeStateName(stateObj)}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">
                 ${stateObj.attributes.current_temperature}

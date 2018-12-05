@@ -144,7 +144,8 @@
             "performance": "Rendiment",
             "high_demand": "Plena potència",
             "heat_pump": "Bomba de calor",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -231,7 +232,7 @@
             "default": {
                 "initializing": "Inicialitzant",
                 "dead": "No disponible",
-                "sleeping": "En espera",
+                "sleeping": "Dormint",
                 "ready": "A punt"
             },
             "query_stage": {
@@ -296,11 +297,11 @@
                 "microphone_tip": "Toqueu el micròfon a la part superior dreta i dieu \"Add candy to my shopping list\""
             },
             "history": {
-                "showing_entries": "S'estan mostrant entrades per a",
+                "showing_entries": "Mostrant entrades de",
                 "period": "Període"
             },
             "logbook": {
-                "showing_entries": "S'estan mostrant entrades per a"
+                "showing_entries": "Mostrant entrades de"
             },
             "mailbox": {
                 "empty": "No teniu missatges",
@@ -536,7 +537,7 @@
                     "caption": "Integracions",
                     "description": "Gestioneu dispositius i serveis connectats",
                     "discovered": "Descobert",
-                    "configured": "Configurat",
+                    "configured": "Configurades",
                     "new": "Configureu una nova integració",
                     "configure": "Configurar",
                     "none": "Encara no hi ha res configurat",
@@ -712,6 +713,28 @@
                         "required_fields": "Ompliu tots els camps obligatoris"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Elements seleccionats",
+                        "clear_items": "Esborra els elements seleccionats",
+                        "add_item": "Afegir element"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Targeta de Configuració",
+                        "save": "Desa",
+                        "toggle_editor": "Commuta l'editor"
+                    },
+                    "migrate": {
+                        "header": "Configuració incompatible",
+                        "para_no_id": "Aquest element no té ID. Afegiu un ID per aquest element a 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant pot afegir ID's a totes les vostres targetes i visualitzacions automàticament fent clic al botó \"Migrar la configuració\".",
+                        "migrate": "Migrar la configuració"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -723,8 +746,8 @@
             "cancel": "Cancel·lar"
         },
         "duration": {
-            "day": "{count} {count, plural,\none {dia}\nother {dies}\n}",
-            "week": "{count} {count, plural,\none {setmana}\nother {setmanes}\n}",
+            "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+            "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}",
             "second": "{count} {count, plural,\none {segon}\nother {segons}\n}",
             "minute": "{count} {count, plural,\none {minut}\nother {minuts}\n}",
             "hour": "{count} {count, plural,\none {hora}\nother {hores}\n}"

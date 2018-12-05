@@ -164,7 +164,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </template>
           </p>
           <p>
-            <a href='/lovelace'>Try out the new Lovelace UI (experimental)</a>
+            <a href='/states'>Go back to the old states page</a>
             <div id="love" style="cursor:pointer;" on-click="_toggleDefaultPage">[[_defaultPageText()]]</div
           </p>
         </div>
@@ -364,15 +364,15 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _defaultPageText() {
     return `>> ${
-      localStorage.defaultPage === "lovelace" ? "Remove" : "Set"
-    } lovelace as default page on this device <<`;
+      localStorage.defaultPage === "states" ? "Remove" : "Set"
+    } the old states as default page on this device <<`;
   }
 
   _toggleDefaultPage() {
-    if (localStorage.defaultPage === "lovelace") {
+    if (localStorage.defaultPage === "states") {
       delete localStorage.defaultPage;
     } else {
-      localStorage.defaultPage = "lovelace";
+      localStorage.defaultPage = "states";
     }
     this.$.love.innerText = this._defaultPageText();
   }

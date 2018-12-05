@@ -1,4 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+} from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
 import yaml from "js-yaml";
@@ -9,76 +14,63 @@ import "@polymer/paper-dialog/paper-dialog";
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-button/paper-button";
-import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../types";
-import { updateCardConfig } from "../common/data";
+import {
+  addCard,
+  updateCardConfig,
+  LovelaceCardConfig,
+} from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 import "./hui-yaml-editor";
+import "./hui-card-picker";
 import "./hui-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiCardPreview } from "./hui-card-preview";
-import { LovelaceCardEditor, LovelaceConfig } from "../types";
-import { YamlChangedEvent, ConfigValue, ConfigError } from "./types";
+import { LovelaceCardEditor } from "../types";
+import {
+  YamlChangedEvent,
+  CardPickedEvent,
+  ConfigValue,
+  ConfigError,
+} from "./types";
 import { extYamlSchema } from "./yaml-ext-schema";
+import { EntityConfig } from "../entity-rows/types";
+import { getCardElementTag } from "../common/get-card-element-tag";
 
-const CUSTOM_TYPE_PREFIX = "custom:";
+declare global {
+  interface HASSDomEvents {
+    "yaml-changed": {
+      yaml: string;
+    };
+    "entities-changed": {
+      entities: EntityConfig[];
+    };
+    "config-changed": {
+      config: LovelaceCardConfig;
+    };
+    "cancel-edit-card": {};
+  }
+}
 
 export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
-  protected hass?: HomeAssistant;
-  private _cardId?: string;
-  private _originalConfig?: LovelaceConfig;
-  private _configElement?: LovelaceCardEditor | null;
-  private _uiEditor?: boolean;
-  private _configValue?: ConfigValue;
-  private _configState?: string;
-  private _loading?: boolean;
-  private _isToggleAvailable?: boolean;
-  private _saving: boolean;
-
   static get properties(): PropertyDeclarations {
     return {
-      _hass: {},
+      hass: {},
+      cardConfig: {},
+      viewId: {},
       _cardId: {},
-      _originalConfig: {},
       _configElement: {},
       _configValue: {},
       _configState: {},
+      _errorMsg: {},
       _uiEditor: {},
       _saving: {},
       _loading: {},
-      _isToggleAvailable: {},
     };
-  }
-
-  protected constructor() {
-    super();
-    this._saving = false;
-  }
-
-  set cardConfig(cardConfig: LovelaceConfig) {
-    this._originalConfig = cardConfig;
-    if (String(cardConfig.id) !== this._cardId) {
-      this._loading = true;
-      this._uiEditor = true;
-      this._configElement = undefined;
-      this._configValue = { format: "yaml", value: undefined };
-      this._configState = "OK";
-      this._isToggleAvailable = false;
-      this._cardId = String(cardConfig.id);
-      this._loadConfigElement();
-    }
-  }
-
-  public async showDialog(): Promise<void> {
-    // Wait till dialog is rendered.
-    if (this._dialog == null) {
-      await this.updateComplete;
-    }
-    this._dialog.open();
   }
 
   private get _dialog(): PaperDialogElement {
@@ -89,11 +81,95 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     return this.shadowRoot!.querySelector("hui-card-preview")!;
   }
 
+  public cardConfig?: LovelaceCardConfig;
+  public viewId?: string | number;
+  protected hass?: HomeAssistant;
+  private _cardId?: string;
+  private _configElement?: LovelaceCardEditor | null;
+  private _uiEditor?: boolean;
+  private _configValue?: ConfigValue;
+  private _configState?: string;
+  private _loading?: boolean;
+  private _saving: boolean;
+  private _errorMsg?: TemplateResult;
+  private _cardType?: string;
+
+  protected constructor() {
+    super();
+    this._saving = false;
+  }
+
+  public async showDialog(): Promise<void> {
+    // Wait till dialog is rendered.
+    if (this._dialog == null) {
+      await this.updateComplete;
+    }
+    this._dialog.open();
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (
+      !changedProperties.has("cardConfig") &&
+      !changedProperties.has("viewId")
+    ) {
+      return;
+    }
+
+    this._configValue = { format: "yaml", value: undefined };
+    this._configState = "OK";
+    this._uiEditor = true;
+    this._errorMsg = undefined;
+    this._configElement = undefined;
+
+    if (this.cardConfig && String(this.cardConfig.id) !== this._cardId) {
+      this._loading = true;
+      this._cardId = String(this.cardConfig.id);
+      this._loadConfigElement(this.cardConfig);
+    } else {
+      this._cardId = undefined;
+    }
+
+    if (this.viewId && !this.cardConfig) {
+      this._resizeDialog();
+    }
+  }
+
   protected render(): TemplateResult {
+    let content;
+    let preview;
+    if (this._configElement !== undefined) {
+      if (this._uiEditor) {
+        content = html`
+          <div class="element-editor">${this._configElement}</div>
+        `;
+      } else {
+        content = html`
+          <hui-yaml-editor
+            .hass="${this.hass}"
+            .cardId="${this._cardId}"
+            .yaml="${this._configValue!.value}"
+            @yaml-changed="${this._handleYamlChanged}"
+          ></hui-yaml-editor>
+        `;
+      }
+      preview = html`
+        <hr />
+        <hui-card-preview .hass="${this.hass}"> </hui-card-preview>
+      `;
+    } else if (this.viewId && !this.cardConfig) {
+      content = html`
+        <hui-card-picker
+          .hass="${this.hass}"
+          @card-picked="${this._handleCardPicked}"
+        ></hui-card-picker>
+      `;
+    }
+
     return html`
       ${this.renderStyle()}
       <paper-dialog with-backdrop>
-        <h2>${this.localize("ui.panel.lovelace.editor.edit.header")}</h2>
+        <h2>${this.localize("ui.panel.lovelace.editor.edit_card.header")}</h2>
         <paper-spinner
           ?active="${this._loading}"
           alt="Loading"
@@ -103,31 +179,27 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           class="${classMap({ hidden: this._loading! })}"
         >
           ${
-            this._uiEditor && this._configElement !== null
+            this._errorMsg
               ? html`
-                  <div class="element-editor">${this._configElement}</div>
+                  <div class="error">${this._errorMsg}</div>
                 `
-              : html`
-                  <hui-yaml-editor
-                    .hass="${this.hass}"
-                    .cardId="${this._cardId}"
-                    .yaml="${this._configValue!.value}"
-                    @yaml-changed="${this._handleYamlChanged}"
-                  ></hui-yaml-editor>
-                `
+              : ""
           }
-          <hui-card-preview .hass="${this.hass}"></hui-card-preview>
+          ${content} ${preview}
         </paper-dialog-scrollable>
         ${
           !this._loading
             ? html`
                 <div class="paper-dialog-buttons">
                   <paper-button
-                    ?disabled="${!this._isToggleAvailable}"
+                    ?hidden="${!this._configValue || !this._configValue.value}"
+                    ?disabled="${
+                      this._configElement === null || this._configState !== "OK"
+                    }"
                     @click="${this._toggleEditor}"
                     >${
                       this.localize(
-                        "ui.panel.lovelace.editor.edit.toggle_editor"
+                        "ui.panel.lovelace.editor.edit_card.toggle_editor"
                       )
                     }</paper-button
                   >
@@ -135,20 +207,19 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                     >${this.localize("ui.common.cancel")}</paper-button
                   >
                   <paper-button
-                    ?disabled="${this._saving}"
+                    ?hidden="${!this._configValue || !this._configValue.value}"
+                    ?disabled="${this._saving || this._configState !== "OK"}"
                     @click="${this._save}"
                   >
                     <paper-spinner
                       ?active="${this._saving}"
                       alt="Saving"
                     ></paper-spinner>
-                    ${
-                      this.localize("ui.panel.lovelace.editor.edit.save")
-                    }</paper-button
+                    ${this.localize("ui.common.save")}</paper-button
                   >
                 </div>
               `
-            : html``
+            : ""
         }
       </paper-dialog>
     `;
@@ -182,38 +253,23 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           display: none;
         }
         .element-editor {
-          margin-bottom: 16px;
+          margin-bottom: 8px;
+        }
+        .error {
+          color: #ef5350;
+          border-bottom: 1px solid #ef5350;
+        }
+        hr {
+          color: #000;
+          opacity: 0.12;
+        }
+        hui-card-preview {
+          padding-top: 8px;
+          margin-bottom: 4px;
+          display: block;
         }
       </style>
     `;
-  }
-
-  private _toggleEditor(): void {
-    if (!this._isToggleAvailable) {
-      alert("You can't switch editor.");
-      return;
-    }
-    if (this._uiEditor && this._configValue!.format === "json") {
-      if (this._isConfigChanged()) {
-        this._configValue = {
-          format: "yaml",
-          value: yaml.safeDump(this._configValue!.value),
-        };
-      } else {
-        this._configValue = { format: "yaml", value: undefined };
-      }
-      this._uiEditor = !this._uiEditor;
-    } else if (this._configElement && this._configValue!.format === "yaml") {
-      this._configValue = {
-        format: "json",
-        value: yaml.safeLoad(this._configValue!.value, {
-          schema: extYamlSchema,
-        }),
-      };
-      this._configElement.setConfig(this._configValue!.value as LovelaceConfig);
-      this._uiEditor = !this._uiEditor;
-    }
-    this._resizeDialog();
   }
 
   private _save(): void {
@@ -237,6 +293,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _closeDialog(): void {
+    this.cardConfig = undefined;
+    this.viewId = undefined;
+    fireEvent(this, "cancel-edit-card");
     this._dialog.close();
   }
 
@@ -254,18 +313,37 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     }
 
     try {
-      await updateCardConfig(
-        this.hass!,
-        this._cardId!,
-        this._configValue!.value!,
-        this._configValue!.format
-      );
+      if (this.viewId) {
+        await addCard(
+          this.hass!,
+          String(this.viewId),
+          this._configValue!.value!,
+          this._configValue!.format
+        );
+      } else {
+        await updateCardConfig(
+          this.hass!,
+          this._cardId!,
+          this._configValue!.value!,
+          this._configValue!.format
+        );
+      }
+      fireEvent(this, "reload-lovelace");
       this._closeDialog();
       this._saveDone();
-      fireEvent(this, "reload-lovelace");
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
       this._saveDone();
+    }
+  }
+
+  private async _handleCardPicked(ev: CardPickedEvent): Promise<void> {
+    const succes = await this._loadConfigElement(ev.detail.config);
+    if (!succes) {
+      this._configValue = {
+        format: "yaml",
+        value: yaml.safeDump(ev.detail.config),
+      };
     }
   }
 
@@ -274,14 +352,10 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     try {
       const config = yaml.safeLoad(this._configValue.value, {
         schema: extYamlSchema,
-      }) as LovelaceConfig;
+      }) as LovelaceCardConfig;
       this._updatePreview(config);
       this._configState = "OK";
-      if (!this._isToggleAvailable && this._configElement !== null) {
-        this._isToggleAvailable = true;
-      }
     } catch (err) {
-      this._isToggleAvailable = false;
       this._configState = "YAML_ERROR";
       this._setPreviewError({
         type: "YAML Error",
@@ -290,12 +364,12 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _handleUIConfigChanged(value: LovelaceConfig): void {
+  private _handleUIConfigChanged(value: LovelaceCardConfig): void {
     this._configValue = { format: "json", value };
     this._updatePreview(value);
   }
 
-  private _updatePreview(config: LovelaceConfig) {
+  private _updatePreview(config: LovelaceCardConfig) {
     if (!this._previewEl) {
       return;
     }
@@ -318,8 +392,42 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     this._resizeDialog();
   }
 
+  private async _toggleEditor(): Promise<void> {
+    if (this._uiEditor && this._configValue!.format === "json") {
+      if (this._isConfigChanged()) {
+        this._configValue = {
+          format: "yaml",
+          value: yaml.safeDump(this._configValue!.value),
+        };
+      } else {
+        this._configValue = { format: "yaml", value: undefined };
+      }
+      this._uiEditor = !this._uiEditor;
+    } else if (this._configElement && this._configValue!.format === "yaml") {
+      const yamlConfig = this._configValue!.value;
+      const cardConfig = yaml.safeLoad(yamlConfig, {
+        schema: extYamlSchema,
+      }) as LovelaceCardConfig;
+      this._uiEditor = !this._uiEditor;
+      if (cardConfig.type !== this._cardType) {
+        const succes = await this._loadConfigElement(cardConfig);
+        if (!succes) {
+          this._loadedDialog();
+        }
+        this._cardType = cardConfig.type;
+      } else {
+        this._configValue = {
+          format: "json",
+          value: cardConfig,
+        };
+        this._configElement.setConfig(cardConfig);
+      }
+    }
+    this._resizeDialog();
+  }
+
   private _isConfigValid() {
-    if (!this._cardId || !this._configValue || !this._configValue.value) {
+    if (!this._configValue || !this._configValue.value) {
       return false;
     }
     if (this._configState === "OK") {
@@ -330,43 +438,59 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _isConfigChanged(): boolean {
+    if (this.viewId) {
+      return true;
+    }
     const configValue =
       this._configValue!.format === "yaml"
         ? yaml.safeDump(this._configValue!.value)
         : this._configValue!.value;
-    return JSON.stringify(configValue) !== JSON.stringify(this._originalConfig);
+    return JSON.stringify(configValue) !== JSON.stringify(this.cardConfig);
   }
 
-  private async _loadConfigElement(): Promise<void> {
-    if (!this._originalConfig) {
-      return;
+  private async _loadConfigElement(conf: LovelaceCardConfig): Promise<boolean> {
+    if (!conf) {
+      return false;
     }
-    const conf = this._originalConfig;
-    const tag = conf.type.startsWith(CUSTOM_TYPE_PREFIX)
-      ? conf!.type.substr(CUSTOM_TYPE_PREFIX.length)
-      : `hui-${conf!.type}-card`;
+
+    this._errorMsg = undefined;
+    this._loading = true;
+    this._configElement = undefined;
+
+    const tag = getCardElementTag(conf.type);
 
     const elClass = customElements.get(tag);
     let configElement;
 
-    try {
+    if (elClass && elClass.getConfigElement) {
       configElement = await elClass.getConfigElement();
-    } catch (err) {
-      this._configElement = null;
+    } else {
       this._uiEditor = false;
-      return;
+      this._configElement = null;
+      return false;
     }
 
-    this._isToggleAvailable = true;
+    try {
+      configElement.setConfig(conf);
+    } catch (err) {
+      this._errorMsg = html`
+        Your config is not supported by the UI editor:<br /><b>${err.message}</b
+        ><br />Falling back to YAML editor.
+      `;
+      this._uiEditor = false;
+      this._configElement = null;
+      return false;
+    }
 
-    configElement.setConfig(conf);
     configElement.hass = this.hass;
     configElement.addEventListener("config-changed", (ev) =>
       this._handleUIConfigChanged(ev.detail.config)
     );
     this._configValue = { format: "json", value: conf };
     this._configElement = configElement;
+    await this.updateComplete;
     this._updatePreview(conf);
+    return true;
   }
 }
 

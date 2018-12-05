@@ -6,20 +6,22 @@ import {
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import computeStateName from "../../../common/entity/compute_state_name";
 
 import "../../../components/ha-card";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   entity: string;
-  title?: string;
-  unit_of_measurement?: string;
+  name?: string;
+  unit?: string;
   min?: number;
   max?: number;
   severity?: object;
@@ -87,12 +89,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
                     <div id="percent">
                       ${stateObj.state}
                       ${
-                        this._config.unit_of_measurement ||
+                        this._config.unit ||
                           stateObj.attributes.unit_of_measurement ||
                           ""
                       }
                     </div>
-                    <div id="title">${this._config.title}</div>
+                    <div id="name">
+                      ${this._config.name || computeStateName(stateObj)}
+                    </div>
                   </div>
                 </div>
               `
@@ -210,7 +214,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         .gauge-data #percent {
           font-size: calc(var(--base-unit) * 0.55);
         }
-        .gauge-data #title {
+        .gauge-data #name {
           padding-top: calc(var(--base-unit) * 0.15);
           font-size: calc(var(--base-unit) * 0.3);
         }

@@ -3,13 +3,18 @@ import { TemplateResult } from "lit-html";
 
 import createHuiElement from "../common/create-hui-element";
 
-import { LovelaceCard, LovelaceConfig } from "../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 
-interface Config extends LovelaceConfig {
+interface Config extends LovelaceCardConfig {
   title?: string;
-  image: string;
+  image?: string;
+  camera_image?: string;
+  state_image?: {};
+  aspect_ratio?: string;
+  entity?: string;
   elements: LovelaceElementConfig[];
 }
 
@@ -38,7 +43,10 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   public setConfig(config: Config): void {
     if (!config) {
       throw new Error("Invalid Configuration");
-    } else if (!config.image) {
+    } else if (
+      !(config.image || config.camera_image || config.state_image) ||
+      (config.state_image && !config.entity)
+    ) {
       throw new Error("Invalid Configuration: image required");
     } else if (!Array.isArray(config.elements)) {
       throw new Error("Invalid Configuration: elements required");
@@ -55,13 +63,19 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
-        <div id="root">
-          <img src="${this._config.image}" /> ${
-            this._config.elements.map((elementConfig: LovelaceElementConfig) =>
-              this._createHuiElement(elementConfig)
-            )
-          }
-        </div>
+        <hui-image
+          .hass="${this._hass}"
+          .image="${this._config.image}"
+          .stateImage="${this._config.state_image}"
+          .cameraImage="${this._config.camera_image}"
+          .entity="${this._config.entity}"
+          .aspectRatio="${this._config.aspect_ratio}"
+        ></hui-image>
+        ${
+          this._config.elements.map((elementConfig: LovelaceElementConfig) =>
+            this._createHuiElement(elementConfig)
+          )
+        }
       </ha-card>
     `;
   }
@@ -71,14 +85,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       <style>
         ha-card {
           overflow: hidden;
-        }
-        #root {
           position: relative;
-          overflow: hidden;
-        }
-        #root img {
-          display: block;
-          width: 100%;
         }
         .element {
           position: absolute;
