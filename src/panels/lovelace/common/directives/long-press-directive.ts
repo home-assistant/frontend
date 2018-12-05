@@ -107,8 +107,11 @@ class LongPress extends HTMLElement implements LongPress {
       window.setTimeout(() => (this.cooldownStart = false), 100);
     };
 
-    const clickEnd = () => {
-      if (this.cooldownEnd) {
+    const clickEnd = (ev: Event) => {
+      if (
+        this.cooldownEnd ||
+        (ev instanceof TouchEvent && this.timer === undefined)
+      ) {
         return;
       }
       clearTimeout(this.timer);
