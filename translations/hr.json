@@ -99,6 +99,17 @@
                 "off": "Zatvoreno",
                 "on": "Otvori"
             },
+            "garage_door": {
+                "off": "Zatvoren",
+                "on": "Otvoreno"
+            },
+            "heat": {
+                "off": "Normalno"
+            },
+            "window": {
+                "off": "Zatvoreno",
+                "on": "Otvoreno"
+            },
             "lock": {
                 "off": "Zaključano",
                 "on": "Otključano"
@@ -127,7 +138,8 @@
             "performance": "Performanse",
             "high_demand": "Velike potražnje",
             "heat_pump": "Toplinska pumpa",
-            "gas": "Plin"
+            "gas": "Plin",
+            "manual": "Priručnik"
         },
         "configurator": {
             "configure": "Konfiguriranje",
@@ -223,15 +235,27 @@
             }
         },
         "weather": {
+            "clear-night": "Vedro, noć",
             "cloudy": "Oblačno",
             "fog": "Magla",
             "lightning": "Munja",
+            "lightning-rainy": "Munja, kišna",
             "partlycloudy": "Djelomično oblačno",
             "pouring": "Lije",
             "rainy": "Kišovito",
             "snowy": "Snježno",
+            "snowy-rainy": "Snježno, kišno",
             "sunny": "Sunčano",
-            "windy": "Vjetrovito"
+            "windy": "Vjetrovito",
+            "windy-variant": "Vjetrovito"
+        },
+        "vacuum": {
+            "cleaning": "Čišćenje",
+            "error": "Greška",
+            "idle": "Besposlen",
+            "off": "Ugašeno",
+            "on": "Upaljeno",
+            "paused": "Pauzirano"
         }
     },
     "state_badge": {
@@ -263,33 +287,183 @@
                 "add_item": "Dodaj stavku",
                 "microphone_tip": "Dodirnite mikrofon u gornjem desnom kutu i recite “Add candy to my shopping list”"
             },
+            "history": {
+                "showing_entries": "Prikazivanje stavki za",
+                "period": "Razdoblje"
+            },
             "logbook": {
                 "showing_entries": "Prikaži entitete za"
             },
+            "mailbox": {
+                "empty": "Nemate nijednu poruku",
+                "playback_title": "Reprodukcija poruke",
+                "delete_prompt": "Izbrisati ovu poruku?",
+                "delete_button": "Izbrisati"
+            },
             "config": {
+                "header": "Konfigurirajte Home Assistant",
                 "core": {
+                    "caption": "Općenito",
                     "section": {
                         "core": {
-                            "header": "Konfiguracija i kontrola poslužitelja"
+                            "header": "Konfiguracija i kontrola poslužitelja",
+                            "validation": {
+                                "check_config": "Provjerite konfiguraciju",
+                                "valid": "Konfiguracija valjana!",
+                                "invalid": "Konfiguracija nije važeća"
+                            },
+                            "reloading": {
+                                "core": "Ponovno učitati jezgru",
+                                "group": "Ponovno učitajte grupe",
+                                "automation": "Ponovo učitajte automatizacije"
+                            },
+                            "server_management": {
+                                "heading": "Upravljanje poslužiteljem",
+                                "introduction": "Kontrolirajte vaš Home Assistant server ... iz Home Assistant.",
+                                "restart": "Ponovno pokretanje"
+                            }
                         }
                     }
                 },
-                "zwave": {
-                    "caption": "Z-Wave"
+                "customize": {
+                    "description": "Prilagodite entitete"
                 },
                 "automation": {
+                    "caption": "Automatizacija",
+                    "description": "Stvaranje i uređivanje automatizacija",
                     "picker": {
-                        "header": "Urednik Automatizacije "
+                        "header": "Urednik Automatizacije ",
+                        "introduction": "Automatizacijski urednik omogućuje stvaranje i uređivanje automatizacije. Molimo pročitajte [upute] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) kako biste bili sigurni da ste ispravno konfigurirali Home Assistant.",
+                        "pick_automation": "Odaberite automatizaciju za uređivanje",
+                        "no_automations": "Nismo mogli pronaći nikakve automatizirane uređaje",
+                        "add_automation": "Dodaj automatizaciju"
                     },
                     "editor": {
+                        "introduction": "Upotrijebite automatizaciju kako bi vaš dom oživio",
+                        "default_name": "Nova automatizacija",
+                        "save": "Spremi",
+                        "unsaved_confirm": "Imate nespremljene izmjene. Jeste li sigurni da želite napustiti?",
+                        "alias": "Ime",
+                        "triggers": {
+                            "introduction": "Okidači su ono što pokreće obradu pravila o automatizaciji. Moguće je odrediti više okidača za isto pravilo. Kada pokrenete okidač, Home Assistant provjerit će uvjete, ako ih ima i pozvati akciju. \n\n [Saznajte više o pokretačima.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "delete": "Obriši",
+                            "unsupported_platform": "Nepodržana platforma: {platform}",
+                            "type": {
+                                "state": {
+                                    "from": "Od",
+                                    "for": "Za"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Događaj:",
+                                    "start": "Početak",
+                                    "shutdown": "Ugasiti"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Tema"
+                                },
+                                "numeric_state": {
+                                    "label": "Numeričko stanje",
+                                    "above": "Iznad",
+                                    "below": "Ispod",
+                                    "value_template": "Predložak vrijednosti (nije obavezno)"
+                                },
+                                "sun": {
+                                    "label": "Sunce",
+                                    "event": "Event:",
+                                    "sunrise": "Izlazak sunca",
+                                    "sunset": "Zalazak sunca",
+                                    "offset": "Offset (nije obavezno)"
+                                },
+                                "template": {
+                                    "label": "Predložak",
+                                    "value_template": "Predložak vrijednosti"
+                                },
+                                "time": {
+                                    "label": "Vrijeme",
+                                    "at": "U"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entitet s lokacijom",
+                                    "zone": "Zona",
+                                    "event": "Event:",
+                                    "enter": "Unesite",
+                                    "leave": "Napustiti"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Uvjeti",
+                            "introduction": "Uvjeti su neobvezni dio pravila o automatizaciji i mogu se upotrebljavati kako bi se spriječilo da se neka akcija dogodi prilikom pokretanja. Uvjeti izgledaju vrlo slični pokretačima, ali su vrlo različiti. Okidač će pogledati događaje koji se događaju u sustavu, a stanje samo gleda kako sustav izgleda upravo sada. Okidač može primijetiti da je prekidač uključen. Stanje može vidjeti samo ako je uključen ili isključen prekidač. \n\n [Saznajte više o uvjetima.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Dodaj uvjet",
+                            "duplicate": "Dupliciran",
+                            "delete": "Obriši",
+                            "delete_confirm": "Sigurno želite pobrisati?",
+                            "unsupported_condition": "Nepodržano stanje: {condition}",
+                            "type_select": "Vrsta uvjeta",
+                            "type": {
+                                "state": {
+                                    "label": "Stanje",
+                                    "state": "Stanje"
+                                },
+                                "numeric_state": {
+                                    "label": "Numeričko stanje",
+                                    "above": "Iznad",
+                                    "below": "Ispod",
+                                    "value_template": "Predložak vrijednosti (opciono)"
+                                },
+                                "sun": {
+                                    "label": "Sunce",
+                                    "before": "Prije:",
+                                    "after": "Nakon:",
+                                    "before_offset": "Prije pomaka (izborno)",
+                                    "after_offset": "Nakon pomaka (izborno)",
+                                    "sunrise": "Izlazak sunca",
+                                    "sunset": "Zalazak sunca"
+                                },
+                                "template": {
+                                    "label": "Predložak",
+                                    "value_template": "Predložak vrijednosti"
+                                },
+                                "time": {
+                                    "label": "Vrijeme",
+                                    "after": "Nakon",
+                                    "before": "Prije"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entitet sa lokacijom",
+                                    "zone": "Zona"
+                                }
+                            }
+                        },
                         "actions": {
+                            "header": "Akcije",
+                            "introduction": "Radnje su ono što će Home Assistant učiniti kada se aktivira automatizacija. \n\n [Saznajte više o radnjama.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Dodajte radnju",
                             "duplicate": "Dupliciraj",
                             "delete": "Obriši",
                             "delete_confirm": "Sigurno želite pobrisati?",
                             "unsupported_action": "Nepodržana radnja: {action}",
+                            "type_select": "Vrsta akcije",
                             "type": {
+                                "service": {
+                                    "label": "Zovi servis",
+                                    "service_data": "Podaci o usluzi"
+                                },
                                 "delay": {
+                                    "label": "Odgoditi",
                                     "delay": "Odgodi"
+                                },
+                                "wait_template": {
+                                    "label": "Čekaj",
+                                    "wait_template": "Čekaj predložak",
+                                    "timeout": "Vremensko ograničenje (opcionalno)"
+                                },
+                                "condition": {
+                                    "label": "Stanje"
                                 },
                                 "event": {
                                     "label": "Pokreni događaj",
@@ -297,19 +471,25 @@
                                     "service_data": "Servisni podaci"
                                 }
                             }
-                        },
-                        "triggers": {
-                            "type": {
-                                "state": {
-                                    "for": "Za"
-                                }
-                            }
                         }
                     }
                 },
+                "zwave": {
+                    "caption": "Z-Wave"
+                },
                 "users": {
                     "caption": "Korisnici",
-                    "description": "Upravljanje korisnicima"
+                    "description": "Upravljanje korisnicima",
+                    "picker": {
+                        "title": "Korisnici"
+                    },
+                    "editor": {
+                        "rename_user": "Preimenuj korisnika",
+                        "change_password": "Promijeni lozinku",
+                        "activate_user": "Aktivirajte korisnika",
+                        "deactivate_user": "Deaktivirajte korisnika",
+                        "delete_user": "Izbriši korisnika"
+                    }
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
@@ -422,7 +602,8 @@
                             "step": {
                                 "init": {
                                     "data": {
-                                        "username": "Korisničko ime"
+                                        "username": "Korisničko ime",
+                                        "password": "Lozinka"
                                     }
                                 },
                                 "mfa": {
@@ -433,6 +614,7 @@
                                 }
                             },
                             "error": {
+                                "invalid_auth": "Neispravno korisničko ime ili lozinka",
                                 "invalid_code": "Pogrešan kod za provjeru autentičnosti "
                             },
                             "abort": {
@@ -442,26 +624,49 @@
                         "legacy_api_password": {
                             "step": {
                                 "init": {
+                                    "data": {
+                                        "password": "API lozinka"
+                                    },
                                     "description": "Unesite API lozinku u svoj http config:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kôd autentifikacije s dva faktora"
+                                    }
                                 }
                             },
+                            "error": {
+                                "invalid_auth": "Nevažeća lozinka za API",
+                                "invalid_code": "Nevažeći kôd za autentifikaciju"
+                            },
                             "abort": {
+                                "no_api_password_set": "Nemate konfiguriranu lozinku za API.",
                                 "login_expired": "Sesija istekla, molim vas prijavite se ponovno."
                             }
                         },
                         "trusted_networks": {
                             "step": {
                                 "init": {
+                                    "data": {
+                                        "user": "Korisnik"
+                                    },
                                     "description": "Odaberite korisnika kojim se želite prijaviti:"
                                 }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Računalo nije na popisu dopuštenih."
                             }
                         }
                     }
                 }
             },
             "page-onboarding": {
+                "intro": "Jeste li spremni probuditi svoj dom, vratiti svoju privatnost i pridružiti se svjetskoj zajednici tinkerera?",
                 "user": {
+                    "intro": "Započnimo stvaranjem korisničkog računa.",
+                    "required_field": "Potreban",
                     "data": {
+                        "name": "Ime",
                         "username": "Korisničko ime",
                         "password": "Lozinka"
                     },
@@ -470,18 +675,52 @@
                         "required_fields": "Ispunite sva potrebna polja"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Označene stavke",
+                        "clear_items": "Izbrišite označene stavke",
+                        "add_item": "Dodaj stavku"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Konfiguracija Kartice ",
+                        "save": "Spremi",
+                        "toggle_editor": "Uključi uređivač"
+                    },
+                    "migrate": {
+                        "header": "Konfiguracija nije kompatibilna",
+                        "para_no_id": "Ovaj element nema ID. Dodajte ID ovom elementu u 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant može dodati ID-ove na sve vaše kartice i pogleda automatski za vas pritiskom na gumb 'Migriraj konfiguriranje'.",
+                        "migrate": "Migriraj konfiguraciju"
+                    }
+                }
             }
         },
         "sidebar": {
             "log_out": "Odjava",
             "developer_tools": "Razvojni alati"
         },
+        "common": {
+            "loading": "Učitavam",
+            "cancel": "Otkazati"
+        },
         "duration": {
             "day": "{count} {count, plural,\n  one {dan}\n  other {dani}\n}",
             "week": "{count} {count, plural,\n  one {tjedan}\n  other {tjedni}\n}",
-            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekunde}\n}"
+            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekunde}\n}",
+            "minute": "{broj} {broj, množina, jedna {minuta} druge {minute}}",
+            "hour": "{broj} {broj, množina, jedan {sat} drugi {sati}}"
+        },
+        "login-form": {
+            "password": "Lozinka"
         },
         "card": {
+            "camera": {
+                "not_available": "Slika nije dostupna"
+            },
             "scene": {
                 "activate": "Aktivirati"
             },
@@ -497,14 +736,24 @@
                     "wind_speed": "Brzina vjetra"
                 },
                 "cardinal_direction": {
-                    "n": "N"
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW"
                 }
             },
             "alarm_control_panel": {
-                "code": "Kod"
+                "code": "Kod",
+                "disarm": "Deaktiviraj",
+                "arm_home": "Aktiviran doma",
+                "arm_away": "Aktiviran odsutno",
+                "arm_night": "Aktiviran nočni",
+                "armed_custom_bypass": "Prilagođena obilaznica"
             },
             "fan": {
                 "speed": "Brzina",
+                "oscillate": "Oscilirati",
                 "direction": "Smjer"
             },
             "light": {
@@ -549,6 +798,14 @@
             }
         },
         "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entitet"
+                }
+            },
+            "relative_time": {
+                "past": "{vrijeme} prije"
+            },
             "history_charts": {
                 "loading_history": "Učitavanje povijesti stanja ...",
                 "no_history_found": "Nije pronađena povijest stanja."
@@ -607,5 +864,12 @@
         "updater": "Ažuriranje",
         "weblink": "WebLink",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Vlažnost",
+            "visibility": "Vidljivost",
+            "wind_speed": "Brzina vjetra"
+        }
     }
 }

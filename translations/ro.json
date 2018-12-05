@@ -369,7 +369,7 @@
                             "duplicate": "Dublura",
                             "delete": "Ștergeți",
                             "delete_confirm": "Sigur doriți să ștergeți?",
-                            "unsupported_platform": "Platformă neacceptată: {platforma}",
+                            "unsupported_platform": "Platformă neacceptată: {platform}",
                             "type_select": "Tip acțiune",
                             "type": {
                                 "event": {
@@ -577,8 +577,8 @@
                     "header": "Tokenuri de innoire",
                     "description": "Fiecare token de innoire reprezinta o sesiune de logare. Tokenuriile de innoire vor fi inlaturate cand se da click pe log out. Urmatoarele tokenuri de innoire sunt active in contul dumneavoastra.",
                     "token_title": "înnoirea token pentru {clientId}",
-                    "created_at": "Creat in {data}",
-                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {nume}?",
+                    "created_at": "Creat in {date}",
+                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {name}?",
                     "delete_failed": "Ştergerea tokenului de acces eşuată",
                     "last_used": "Ultima utilizate la {data} din {locaţie}",
                     "not_used": "Nu a fost utilizat niciodata",
@@ -588,8 +588,8 @@
                     "header": "Tokenuri de acces de lunga durata",
                     "description": "Creați tokenuri de acces cu durată lungă de viață pentru a permite script-urilor dvs. să interacționeze cu instanța dvs. Home Assistant. Fiecare token va fi valabil timp de 10 ani de la creatie. Următoarele tokenuri de acces de lungă durată sunt active la ora actuala.",
                     "learn_auth_requests": "Aflați cum să faceți cereri autentificate.",
-                    "created_at": "Creat in {data}",
-                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {nume}?",
+                    "created_at": "Creat in {date}",
+                    "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {name}?",
                     "delete_failed": "Ştergerea tokenului de acces eşuată",
                     "create": "Creaza un Token",
                     "create_failed": "Crearea tokenului de acces eşuată",
@@ -726,8 +726,8 @@
             "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
             "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}",
             "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
-            "minute": "{count}{count, plural,\n  un { minute }\n  alte { minutes }\n}",
-            "hour": "{count}{count, plural,\n  o { hour }\n  alte { hours }\n}"
+            "minute": "{count} {count, plural,\n  one { minute }\n  other { minutes }\n}",
+            "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}"
         },
         "login-form": {
             "password": "Parola",

@@ -579,7 +579,7 @@
                     "description": "Každý obnovovací token představuje relaci přihlášení. Aktualizační tokeny budou automaticky odstraněny po klepnutí na tlačítko Odhlásit. Následující tokeny obnovení jsou v současné době aktivní pro váš účet.",
                     "token_title": "Obnovit token pro {clientId}",
                     "created_at": "Vytvořeno {date}",
-                    "confirm_delete": "Opravdu že chcete odstranit token pro {název}?",
+                    "confirm_delete": "Opravdu že chcete odstranit token pro {name}?",
                     "delete_failed": "Nepodařilo se smazat token.",
                     "last_used": "Naposledy použito {date} z {location}",
                     "not_used": "Nikdy nebylo použito",
@@ -723,7 +723,7 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "Konfigurace karty",
                         "save": "Uložit",
                         "toggle_editor": "Přepnout Editor"

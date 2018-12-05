@@ -145,7 +145,7 @@
             "high_demand": "Magas igénybevétel",
             "heat_pump": "Hőszivattyú",
             "gas": "Gáz",
-            "manual": "Kézikönyv"
+            "manual": "Manuális"
         },
         "configurator": {
             "configure": "Beállítás",
@@ -600,7 +600,7 @@
                     "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt"
                 },
-                "current_user": "Jelenleg bejelentkezve mint {fullName}.",
+                "current_user": "Jelenleg {fullName} felhasználóként vagy bejelentkezve.",
                 "is_owner": "Tulajdonos vagy.",
                 "logout": "Kijelentkezés",
                 "change_password": {
@@ -717,17 +717,22 @@
             "lovelace": {
                 "cards": {
                     "shopping-list": {
-                        "checked_items": "Ellenőrzött elemek ",
-                        "clear_items": "Ellenőrzött elemek ",
-                        "add_item": "Elem hozzáadása"
+                        "checked_items": "Kijelölt tételek",
+                        "clear_items": "Kijelölt tételek törlése",
+                        "add_item": "Tétel hozzáadása"
                     }
                 },
                 "editor": {
-                    "edit": {
-                        "save": "Mentés"
+                    "edit_card": {
+                        "header": "Kártya Konfiguráció",
+                        "save": "Mentés",
+                        "toggle_editor": "Szerkesztő"
                     },
                     "migrate": {
-                        "header": "Inkompatibilis konfiguráció!"
+                        "header": "Inkompatibilis Konfiguráció",
+                        "para_no_id": "Ez az elem nem rendelkezik azonosítóval. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!",
+                        "para_migrate": "A Home Assistant a 'Konfiguráció áttelepítése' gomb megnyomásával az összes kártyához és nézethez automatikusan létre tud hozni azonosítókat.",
+                        "migrate": "Konfiguráció áttelepítése"
                     }
                 }
             }
