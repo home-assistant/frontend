@@ -12,7 +12,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import { longPress } from "../common/directives/long-press-directive";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -25,10 +25,8 @@ interface Config extends LovelaceCardConfig {
   camera_image?: string;
   state_image?: {};
   aspect_ratio?: string;
-  tap_action?: "toggle" | "call-service" | "more-info" | "navigate";
-  hold_action?: "toggle" | "call-service" | "more-info" | "navigate";
-  service?: string;
-  service_data?: object;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
   show_name?: boolean;
   show_state?: boolean;
 }
@@ -109,7 +107,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
           }"
           .entity="${this._config.entity}"
           .aspectRatio="${this._config.aspect_ratio}"
-          @ha-click="${this._handleClick}"
+          @ha-click="${this._handleTap}"
           @ha-hold="${this._handleHold}"
           .longPress="${longPress()}"
           class="${
@@ -157,7 +155,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _handleClick() {
+  private _handleTap() {
     handleClick(this, this.hass!, this._config!, false);
   }
 

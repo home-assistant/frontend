@@ -3,19 +3,30 @@ import { LovelaceElementConfig } from "../elements/types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { toggleEntity } from "../../../../src/panels/lovelace/common/entity/toggle-entity";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
+import { EntityConfig } from "../entity-rows/types";
+
+export interface ConfigEntity extends EntityConfig {
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  navigation_path?: string;
+}
 
 export const handleClick = (
   node: HTMLElement,
   hass: HomeAssistant,
-  config: LovelaceElementConfig | LovelaceCardConfig,
+  config: LovelaceElementConfig | LovelaceCardConfig | ConfigEntity,
   hold: boolean
 ): void => {
-  let action = config.tap_action || "more-info";
-
+  let actionConfig;
   if (hold && config.hold_action) {
-    action = config.hold_action;
+    actionConfig = config.hold_action;
+  } else if (!hold && config.tap_action) {
+    actionConfig = config.tap_action;
   }
+
+  const action =
+    actionConfig && actionConfig.action ? actionConfig.action : "more-info";
 
   if (action === "none") {
     return;
@@ -34,14 +45,15 @@ export const handleClick = (
       toggleEntity(hass, config.entity!);
       break;
     case "call-service": {
-      if (config.service) {
-        const [domain, service] = config.service.split(".", 2);
-        const serviceData = {
-          entity_id: config.entity,
-          ...config.service_data,
-        };
-        hass.callService(domain, service, serviceData);
+      if (!actionConfig.service) {
+        return;
       }
+      const [domain, service] = actionConfig.service.split(".", 2);
+      const serviceData = {
+        entity_id: config.entity,
+        ...actionConfig.service_data,
+      };
+      hass.callService(domain, service, serviceData);
     }
   }
 };
