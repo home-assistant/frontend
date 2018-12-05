@@ -20,7 +20,7 @@ export const computeTooltip = (
         : config.entity;
   }
 
-  switch (config.tap_action) {
+  switch (config.tap_action && config.tap_action.action) {
     case "navigate":
       tooltip = `Navigate to ${config.navigation_path}`;
       break;

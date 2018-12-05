@@ -7,14 +7,12 @@ import {
 import { TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/classMap";
 
-import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { EntityConfig } from "../entity-rows/types";
-import { toggleEntity } from "../common/entity/toggle-entity";
 import { processConfigEntities } from "../common/process-config-entities";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
@@ -24,12 +22,11 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { handleClick } from "../common/handle-click";
 
 export interface ConfigEntity extends EntityConfig {
-  tap_action?: "toggle" | "call-service" | "more-info";
-  hold_action?: "toggle" | "call-service" | "more-info";
-  service?: string;
-  service_data?: object;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }
 
 export interface Config extends LovelaceCardConfig {
@@ -75,9 +72,12 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
 
     for (const entity of entities) {
       if (
-        (entity.tap_action === "call-service" ||
-          entity.hold_action === "call-service") &&
-        !entity.service
+        (entity.tap_action &&
+          entity.tap_action.action === "call-service" &&
+          !entity.tap_action.service) ||
+        (entity.hold_action &&
+          entity.hold_action.action === "call-service" &&
+          !entity.hold_action.service)
       ) {
         throw new Error(
           'Missing required property "service" when tap_action or hold_action is call-service'
@@ -203,8 +203,8 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
       <div
         class="entity"
         .entityConf="${entityConf}"
-        @ha-click="${(ev) => this.handleClick(ev, false)}"
-        @ha-hold="${(ev) => this.handleClick(ev, true)}"
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       >
         ${
@@ -243,24 +243,14 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private handleClick(ev: MouseEvent, hold: boolean): void {
+  private _handleTap(ev: MouseEvent) {
     const config = (ev.currentTarget as any).entityConf as ConfigEntity;
-    const entityId = config.entity;
-    const action = hold ? config.hold_action : config.tap_action || "more-info";
-    switch (action) {
-      case "toggle":
-        toggleEntity(this.hass!, entityId);
-        break;
-      case "call-service":
-        const [domain, service] = config.service!.split(".", 2);
-        const serviceData = { entity_id: entityId, ...config.service_data };
-        this.hass!.callService(domain, service, serviceData);
-        break;
-      case "more-info":
-        fireEvent(this, "hass-more-info", { entityId });
-        break;
-      default:
-    }
+    handleClick(this, this.hass!, config, false);
+  }
+
+  private _handleHold(ev: MouseEvent) {
+    const config = (ev.currentTarget as any).entityConf as ConfigEntity;
+    handleClick(this, this.hass!, config, true);
   }
 }
 
