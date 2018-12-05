@@ -240,12 +240,12 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _handleTap(ev) {
+  private _handleTap(ev: MouseEvent) {
     const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     handleClick(this, this.hass!, config, false);
   }
 
-  private _handleHold(ev) {
+  private _handleHold(ev: MouseEvent) {
     const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     handleClick(this, this.hass!, config, true);
   }
