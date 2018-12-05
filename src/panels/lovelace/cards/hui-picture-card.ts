@@ -3,17 +3,17 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "../../../components/ha-card";
 
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-import { navigate } from "../../../common/navigate";
+import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/classMap";
+import { handleClick } from "../common/handle-click";
+import { longPress } from "../common/directives/long-press-directive";
 
 interface Config extends LovelaceCardConfig {
   image?: string;
-  navigation_path?: string;
-  service?: string;
-  service_data?: object;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }
 
 export class HuiPictureCard extends LitElement implements LovelaceCard {
@@ -46,11 +46,13 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card
-        @click="${this.handleClick}"
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
         class="${
           classMap({
             clickable: Boolean(
-              this._config.navigation_path || this._config.service
+              this._config.tap_action || this._config.hold_action
             ),
           })
         }"
@@ -77,14 +79,12 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private handleClick(): void {
-    if (this._config!.navigation_path) {
-      navigate(this, this._config!.navigation_path!);
-    }
-    if (this._config!.service) {
-      const [domain, service] = this._config!.service!.split(".", 2);
-      this.hass!.callService(domain, service, this._config!.service_data);
-    }
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
