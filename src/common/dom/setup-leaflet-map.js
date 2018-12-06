@@ -1,7 +1,9 @@
-import Leaflet from "leaflet";
-
 // Sets up a Leaflet map on the provided DOM element
-export default function setupLeafletMap(mapElement) {
+export const setupLeafletMap = async (mapElement) => {
+  const Leaflet = (await import(/* webpackChunkName: "leaflet" */ "leaflet"))
+    .default;
+  Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
+
   const map = Leaflet.map(mapElement);
   const style = document.createElement("link");
   style.setAttribute("href", "/static/images/leaflet/leaflet.css");
@@ -21,5 +23,5 @@ export default function setupLeafletMap(mapElement) {
     }
   ).addTo(map);
 
-  return map;
-}
+  return [map, Leaflet];
+};
