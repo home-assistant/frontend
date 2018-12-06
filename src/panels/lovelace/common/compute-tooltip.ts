@@ -21,40 +21,43 @@ export const computeTooltip = (
         : config.entity;
   }
 
-  if (
-    config.tap_action &&
-    config.tap_action.action &&
-    config.tap_action.action !== "none"
-  ) {
-    tooltip += "Tap: " + computeActionTooltip(stateName, config.tap_action);
-  }
+  const tapTooltip = config.tap_action
+    ? computeActionTooltip(stateName, config.tap_action, false)
+    : "";
+  const holdTooltip = config.hold_action
+    ? computeActionTooltip(stateName, config.hold_action, true)
+    : "";
 
-  if (
-    config.hold_action &&
-    config.hold_action.action &&
-    config.hold_action.action !== "none"
-  ) {
-    tooltip += "\nHold: " + computeActionTooltip(stateName, config.hold_action);
-  }
+  const newline = tapTooltip && holdTooltip ? "\n" : "";
+
+  tooltip = tapTooltip + newline + holdTooltip;
 
   return tooltip;
 };
 
-function computeActionTooltip(state: string, action: ActionConfig) {
-  let tooltip = "";
+function computeActionTooltip(
+  state: string,
+  config: ActionConfig,
+  isHold: boolean
+) {
+  if (!config || !config.action || config.action === "none") {
+    return "";
+  }
 
-  switch (action.action) {
+  let tooltip = isHold ? "Hold: " : "Tap: ";
+
+  switch (config.action) {
     case "navigate":
-      tooltip = `Navigate to ${action.navigation_path}`;
+      tooltip += `Navigate to ${config.navigation_path}`;
       break;
     case "toggle":
-      tooltip = `Toggle ${state}`;
+      tooltip += `Toggle ${state}`;
       break;
     case "call-service":
-      tooltip = `Call service ${action.service}`;
+      tooltip += `Call service ${config.service}`;
       break;
     case "more-info":
-      tooltip = `Show more-info: ${state}`;
+      tooltip += `Show more-info: ${state}`;
       break;
   }
 
