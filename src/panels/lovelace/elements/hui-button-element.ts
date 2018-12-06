@@ -64,7 +64,7 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
               })
             }"
           ></ha-icon>
-          <span> ${this._config.name || computeStateName(stateObj)} </span>
+          <span> ${this._config.title || computeStateName(stateObj)} </span>
         </div>
       </paper-button>
     `;

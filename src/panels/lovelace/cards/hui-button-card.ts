@@ -12,7 +12,7 @@ import { LovelaceElement } from "../elements/types";
 
 interface Config extends LovelaceCardConfig {
   entity: string;
-  name?: string;
+  title?: string;
   icon?: string;
   theme?: string;
   tap_action?: ActionConfig;
