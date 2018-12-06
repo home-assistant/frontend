@@ -33,7 +33,7 @@ import "./hui-view";
 import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
 import { showSaveDialog } from "./editor/hui-dialog-save-config";
-import { showEditViewDialog } from "./editor/hui-dialog-edit-view";
+import { showEditViewDialog } from "./editor/show-edit-view-dialog";
 import { confDeleteView } from "./editor/delete-view";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
