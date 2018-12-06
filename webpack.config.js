@@ -16,6 +16,7 @@ if (!version) {
 }
 const VERSION = version[0];
 const isCI = process.env.CI === "true";
+const isStatsBuild = process.env.STATS === "1";
 
 const generateJSPage = (entrypoint, latestBuild) => {
   return new HtmlWebpackPlugin({
@@ -50,10 +51,6 @@ function createConfig(isProdBuild, latestBuild) {
   if (latestBuild) {
     entry["service-worker-hass"] = "./src/entrypoints/service-worker-hass.js";
   }
-
-  const chunkFilename = isProdBuild
-    ? "[chunkhash].chunk.js"
-    : "[name].chunk.js";
 
   return {
     mode: isProdBuild ? "production" : "development",
@@ -161,6 +158,7 @@ function createConfig(isProdBuild, latestBuild) {
       ),
       isProdBuild &&
         !isCI &&
+        !isStatsBuild &&
         new CompressionPlugin({
           cache: true,
           exclude: [/\.js\.map$/, /\.LICENSE$/, /\.py$/, /\.txt$/],
@@ -223,7 +221,10 @@ function createConfig(isProdBuild, latestBuild) {
         if (!isProdBuild || dontHash.has(chunk.name)) return `${chunk.name}.js`;
         return `${chunk.name}-${chunk.hash.substr(0, 8)}.js`;
       },
-      chunkFilename: chunkFilename,
+      chunkFilename:
+        isProdBuild && !isStatsBuild
+          ? "[chunkhash].chunk.js"
+          : "[name].chunk.js",
       path: path.resolve(__dirname, buildPath),
       publicPath,
     },
@@ -243,7 +244,7 @@ function createConfig(isProdBuild, latestBuild) {
 
 const isProdBuild = process.env.NODE_ENV === "production";
 const configs = [createConfig(isProdBuild, /* latestBuild */ true)];
-if (isProdBuild) {
+if (isProdBuild && !isStatsBuild) {
   configs.push(createConfig(isProdBuild, /* latestBuild */ false));
 }
 module.exports = configs;
