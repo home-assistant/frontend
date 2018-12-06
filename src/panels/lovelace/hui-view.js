@@ -11,7 +11,7 @@ import EventsMixin from "../../mixins/events-mixin";
 import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
-import { showEditCardDialog } from "./editor/hui-dialog-edit-card";
+import { showEditCardDialog } from "./editor/show-edit-dialog";
 
 class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
   static get template() {

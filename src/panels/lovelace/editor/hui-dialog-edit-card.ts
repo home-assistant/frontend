@@ -2,7 +2,7 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import "./hui-edit-card";
 import "./hui-migrate-config";
@@ -11,7 +11,6 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "reload-lovelace": undefined;
-    "show-edit-card": EditCardDialogParams;
   }
   // for add event listener
   interface HTMLElementEventMap {
@@ -19,34 +18,12 @@ declare global {
   }
 }
 
-let registeredDialog = false;
-const dialogShowEvent = "show-edit-card";
-const dialogTag = "hui-dialog-edit-card";
-
 export interface EditCardDialogParams {
   cardConfig?: LovelaceCardConfig;
   viewId?: string | number;
   add: boolean;
   reloadLovelace: () => void;
 }
-
-const registerEditCardDialog = (element: HTMLElement) =>
-  fireEvent(element, "register-dialog", {
-    dialogShowEvent,
-    dialogTag,
-    dialogImport: () => import("./hui-dialog-edit-card"),
-  });
-
-export const showEditCardDialog = (
-  element: HTMLElement,
-  editCardDialogParams: EditCardDialogParams
-) => {
-  if (!registeredDialog) {
-    registeredDialog = true;
-    registerEditCardDialog(element);
-  }
-  fireEvent(element, dialogShowEvent, editCardDialogParams);
-};
 
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
@@ -110,4 +87,4 @@ declare global {
   }
 }
 
-customElements.define(dialogTag, HuiDialogEditCard);
+customElements.define("hui-dialog-edit-card", HuiDialogEditCard);
