@@ -10,6 +10,9 @@ export interface LovelaceElementConfig {
   service_data?: object;
   tap_action?: ActionConfig;
   title?: string;
+  theme?: string;
+  icon?: string;
+  name?: string;
 }
 
 export interface LovelaceElement extends HTMLElement {

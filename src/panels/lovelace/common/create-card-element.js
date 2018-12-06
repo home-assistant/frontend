@@ -1,9 +1,9 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 
 import "../cards/hui-alarm-panel-card";
+import "../cards/hui-button-card";
 import "../cards/hui-conditional-card";
 import "../cards/hui-entities-card";
-import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-filter-card";
 import "../cards/hui-error-card";
 import "../cards/hui-glance-card";
@@ -30,9 +30,9 @@ import createErrorCardConfig from "./create-error-card-config";
 
 const CARD_TYPES = new Set([
   "alarm-panel",
+  "button",
   "conditional",
   "entities",
-  "entity-button",
   "entity-filter",
   "error",
   "gauge",

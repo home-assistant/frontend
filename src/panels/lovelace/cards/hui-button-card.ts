@@ -1,15 +1,9 @@
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  PropertyValues,
-} from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import "../../../components/ha-card";
 import createHuiElement from "../common/create-hui-element";
 
-import isValidEntityId from "../../../common/entity/valid_entity_id";
 import { HomeAssistant } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard } from "../types";
@@ -27,7 +21,7 @@ interface Config extends LovelaceCardConfig {
 
 class HuiButtonCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
-  public hass?: HomeAssistant;
+  private _hass?: HomeAssistant;
   private _config?: Config;
 
   static get properties(): PropertyDeclarations {
@@ -37,35 +31,24 @@ class HuiButtonCard extends hassLocalizeLitMixin(LitElement)
     };
   }
 
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
+    for (const el of this.shadowRoot!.querySelectorAll("hui-button-element")) {
+      const element = el as LovelaceElement;
+      element.hass = this._hass;
+    }
+  }
+
   public getCardSize(): number {
     return 2;
   }
 
   public setConfig(config: Config): void {
-    if (!isValidEntityId(config.entity)) {
-      throw new Error("Invalid Entity");
-    }
-
     this._config = { theme: "default", ...config };
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
-    return true;
-  }
-
   protected render(): TemplateResult {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this._hass) {
       return html``;
     }
 
@@ -76,7 +59,7 @@ class HuiButtonCard extends hassLocalizeLitMixin(LitElement)
     element.hass = this._hass;
 
     return html`
-      ${element}
+      <ha-card> ${element} </ha-card>
     `;
   }
 }

@@ -1,5 +1,6 @@
 import { html, LitElement, PropertyValues } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import { styleMap } from "lit-html/directives/styleMap";
 
 import "../../../components/buttons/ha-call-service-button";
 
@@ -12,10 +13,10 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import { styleMap } from "lit-html/directives/styleMap";
+import isValidEntityId from "../../../common/entity/valid_entity_id";
 
 export class HuiButtonElement extends LitElement implements LovelaceElement {
-  private _hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   private _config?: LovelaceElementConfig;
 
   static get properties() {
@@ -27,50 +28,44 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
       throw Error("Invalid Configuration");
     }
 
+    if (config.entity && !isValidEntityId(config.entity)) {
+      throw new Error("Invalid Entity");
+    }
+
     this._config = { theme: "default", ...config };
   }
 
   protected render(): TemplateResult {
-    if (!this._hass || !this._config) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
-    const stateObj = this._hass.states[this._config.entity];
+    const stateObj = this._config.entity
+      ? this.hass.states[this._config.entity]
+      : undefined;
 
     return html`
       ${this.renderStyle()}
-      ${
-        !stateObj
-          ? html`
-              <div class="not-found">
-                Entity not available: ${this._config.entity}
-              </div>
-            `
-          : html`
-              <paper-button
-                @ha-click="${this._handleTap}"
-                @ha-hold="${this._handleHold}"
-                .longPress="${longPress()}"
-              >
-                <div>
-                  <ha-icon
-                    data-domain="${computeStateDomain(stateObj)}"
-                    data-state="${stateObj.state}"
-                    .icon="${this._config.icon || stateIcon(stateObj)}"
-                    style="${
-                      styleMap({
-                        filter: this._computeBrightness(stateObj),
-                        color: this._computeColor(stateObj),
-                      })
-                    }"
-                  ></ha-icon>
-                  <span>
-                    ${this._config.name || computeStateName(stateObj)}
-                  </span>
-                </div>
-              </paper-button>
-            `
-      }
+      <paper-button
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
+      >
+        <div>
+          <ha-icon
+            data-domain="${computeStateDomain(stateObj)}"
+            data-state="${(stateObj && stateObj.state) || ""}"
+            .icon="${this._config.icon || stateIcon(stateObj)}"
+            style="${
+              styleMap({
+                filter: this._computeBrightness(stateObj),
+                color: this._computeColor(stateObj),
+              })
+            }"
+          ></ha-icon>
+          <span> ${this._config.name || computeStateName(stateObj)} </span>
+        </div>
+      </paper-button>
     `;
   }
 
@@ -115,25 +110,24 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
           margin: auto;
           text-align: center;
         }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
-        }
       </style>
     `;
   }
 
-  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.brightness) {
+  private _computeBrightness(
+    stateObj: HassEntity | LightEntity | undefined
+  ): string {
+    if (!stateObj || !stateObj.attributes.brightness) {
       return "";
     }
     const brightness = stateObj.attributes.brightness;
     return `brightness(${(brightness + 245) / 5}%)`;
   }
 
-  private _computeColor(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.hs_color) {
+  private _computeColor(
+    stateObj: HassEntity | LightEntity | undefined
+  ): string {
+    if (!stateObj || !stateObj.attributes.hs_color) {
       return "";
     }
     const { hue, sat } = stateObj.attributes.hs_color;
