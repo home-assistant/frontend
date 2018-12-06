@@ -79,7 +79,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     ) {
       const { cards, badges, ...viewConfig } = this.viewConfig;
       this._config = viewConfig;
-      this._badges = processEditorEntities(badges);
+      this._badges = badges ? processEditorEntities(badges) : [];
     } else if (changedProperties.has("add")) {
       this._config = {};
       this._badges = [];
