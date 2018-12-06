@@ -8,8 +8,6 @@ import { TemplateResult } from "lit-html";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { styleMap } from "lit-html/directives/styleMap";
-import { jQuery } from "../../../resources/jquery";
-import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard } from "../types";
@@ -23,6 +21,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 
 const lightConfig = {
   radius: 80,
@@ -49,11 +48,15 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   public hass?: HomeAssistant;
   private _config?: Config;
   private _brightnessTimout?: number;
+  private _roundSliderStyle?: TemplateResult;
+  private _jQuery?: any;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _config: {},
+      roundSliderStyle: {},
+      _jQuery: {},
     };
   }
 
@@ -124,10 +127,15 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected firstUpdated(): void {
+  protected async firstUpdated(): Promise<void> {
+    const loaded = await loadRoundslider();
+
+    this._roundSliderStyle = loaded.roundSliderStyle;
+    this._jQuery = loaded.jQuery;
+
     const brightness = this.hass!.states[this._config!.entity].attributes
       .brightness;
-    jQuery("#light", this.shadowRoot).roundSlider({
+    this._jQuery("#light", this.shadowRoot).roundSlider({
       ...lightConfig,
       change: (value) => this._setBrightness(value),
       drag: (value) => this._dragEvent(value),
@@ -139,13 +147,13 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || !this._jQuery) {
       return;
     }
 
     const attrs = this.hass!.states[this._config!.entity].attributes;
 
-    jQuery("#light", this.shadowRoot).roundSlider({
+    this._jQuery("#light", this.shadowRoot).roundSlider({
       value: Math.round((attrs.brightness / 254) * 100) || 0,
     });
 
@@ -157,7 +165,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
 
   private renderStyle(): TemplateResult {
     return html`
-      ${roundSliderStyle}
+      ${this._roundSliderStyle}
       <style>
         :host {
           display: block;
