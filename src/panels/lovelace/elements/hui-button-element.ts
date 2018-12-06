@@ -1,8 +1,9 @@
 import { html, LitElement, PropertyValues } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import { styleMap } from "lit-html/directives/styleMap";
+import "@polymer/paper-button/paper-button";
 
-import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-icon";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant, LightEntity } from "../../../types";
