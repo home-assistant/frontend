@@ -1,6 +1,6 @@
+import "../elements/hui-button-element";
 import "../elements/hui-icon-element";
 import "../elements/hui-image-element";
-import "../elements/hui-service-button-element";
 import "../elements/hui-state-badge-element";
 import "../elements/hui-state-icon-element";
 import "../elements/hui-state-label-element";
@@ -10,9 +10,9 @@ import createErrorCardConfig from "./create-error-card-config";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const ELEMENT_TYPES = new Set([
+  "button",
   "icon",
   "image",
-  "service-button",
   "state-badge",
   "state-icon",
   "state-label",
