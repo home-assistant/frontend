@@ -233,7 +233,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
       } else {
         await updateViewConfig(
           this.hass!,
-          this.viewConfig!.id!,
+          String(this.viewConfig!.id!),
           this._config,
           "json"
         );
