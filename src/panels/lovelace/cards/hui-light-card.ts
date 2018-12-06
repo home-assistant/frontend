@@ -326,9 +326,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
 
   private _handleHold() {
     fireEvent(this, "hass-more-info", {
-      entityId: this._config!.entity
-        ? this._config!.entity!
-        : this._config!.camera_image!,
+      entityId: this._config!.entity,
     });
   }
 }
