@@ -1,7 +1,7 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "@polymer/paper-button/paper-button";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { showEditCardDialog } from "../editor/hui-dialog-edit-card";
+import { showEditCardDialog } from "../editor/show-edit-card-dialog";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
