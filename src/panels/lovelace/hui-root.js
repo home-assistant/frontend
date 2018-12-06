@@ -140,7 +140,7 @@ class HUIRoot extends NavigateMixin(
           </app-toolbar>
         </template>
 
-        <div sticky hidden$="[[_computeTabsHidden(config.views)]]">
+        <div sticky hidden$="[[_computeTabsHidden(config.views, _editMode)]]">
           <paper-tabs scrollable selected="[[_curView]]" on-iron-activate="_handleViewSelected">
             <template is="dom-repeat" items="[[config.views]]">
               <paper-tab>
@@ -160,7 +160,7 @@ class HUIRoot extends NavigateMixin(
           </paper-tabs>
         </div>
       </app-header>
-      <template is='dom-if' if="[[_editMode]]">
+      <template is='dom-if' if="[[_computeEditVisible(_editMode, config.views)]]">
         <app-toolbar class="secondary">
           <paper-button on-click="_editView">[[localize("ui.panel.lovelace.editor.edit_view.edit")]]</paper-button>
           <paper-button class="warning" on-click="_deleteView">[[localize("ui.panel.lovelace.editor.edit_view.delete")]]</paper-button>
@@ -280,8 +280,8 @@ class HUIRoot extends NavigateMixin(
     return config.title || "Home Assistant";
   }
 
-  _computeTabsHidden(views) {
-    return views.length < 2;
+  _computeTabsHidden(views, editMode) {
+    return views.length < 2 && !editMode;
   }
 
   _computeTabTitle(title) {
@@ -304,6 +304,10 @@ class HUIRoot extends NavigateMixin(
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
+  _computeEditVisible(editMode, views) {
+    return editMode && views[this._curView];
+  }
+
   _editModeEnable() {
     if (this.config._frontendAuto) {
       showSaveDialog(this, {
@@ -316,10 +320,18 @@ class HUIRoot extends NavigateMixin(
       return;
     }
     this._editMode = true;
+    if (this.config.views.length < 2) {
+      this.$.view.classList.remove("tabs-hidden");
+      this.fire("iron-resize");
+    }
   }
 
   _editModeDisable() {
     this._editMode = false;
+    if (this.config.views.length < 2) {
+      this.$.view.classList.add("tabs-hidden");
+      this.fire("iron-resize");
+    }
   }
 
   _editModeChanged() {
@@ -393,6 +405,10 @@ class HUIRoot extends NavigateMixin(
       view.setConfig(this.config);
     } else {
       const viewConfig = this.config.views[this._curView];
+      if (!viewConfig) {
+        this._editModeEnable();
+        return;
+      }
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;

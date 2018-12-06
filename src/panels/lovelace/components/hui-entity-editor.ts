@@ -1,5 +1,4 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import "@polymer/paper-button/paper-button";
 import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
@@ -83,9 +82,6 @@ export class HuiEntityEditor extends LitElement {
       <style>
         .entities {
           padding-left: 20px;
-        }
-        paper-button {
-          margin: 8px 0;
         }
       </style>
     `;
