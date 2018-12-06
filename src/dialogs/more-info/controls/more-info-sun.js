@@ -65,9 +65,8 @@ class MoreInfoSun extends LocalizeMixin(PolymerElement) {
   itemCaption(type) {
     if (type === "ris") {
       return this.localize("ui.card.sun.rising");
-    } else {
-      return this.localize("ui.card.sun.setting");
     }
+    return this.localize("ui.card.sun.setting");
   }
 
   itemDate(type) {
