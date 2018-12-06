@@ -13,15 +13,16 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
+import { toggleEntity } from "../common/entity/toggle-entity";
 
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 
 const lightConfig = {
   radius: 80,
@@ -102,14 +103,14 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
                           color: this._computeColor(stateObj),
                         })
                       }"
-                      @ha-click="${() => this._handleClick(false)}"
-                      @ha-hold="${() => this._handleClick(true)}"
+                      @ha-click="${this._handleTap}"
+                      @ha-hold="${this._handleHold}"
                       .longPress="${longPress()}"
                     ></ha-icon>
                     <div
                       class="brightness"
-                      @ha-click="${() => this._handleClick(false)}"
-                      @ha-hold="${() => this._handleClick(true)}"
+                      @ha-click="${this._handleTap}"
+                      @ha-hold="${this._handleHold}"
                       .longPress="${longPress()}"
                     ></div>
                     <div class="name">
@@ -319,18 +320,13 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleClick(hold: boolean): void {
-    const entityId = this._config!.entity;
+  private _handleTap() {
+    toggleEntity(this.hass!, this._config!.entity!);
+  }
 
-    if (hold) {
-      fireEvent(this, "hass-more-info", {
-        entityId,
-      });
-      return;
-    }
-
-    this.hass!.callService("light", "toggle", {
-      entity_id: entityId,
+  private _handleHold() {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config!.entity,
     });
   }
 }
