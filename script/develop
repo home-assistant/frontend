@@ -4,6 +4,8 @@
 # Stop on errors
 set -e
 
+cd "$(dirname "$0")/.."
+
 BUILD_DIR=build
 OUTPUT_DIR=hass_frontend
 OUTPUT_DIR_ES5=hass_frontend_es5
