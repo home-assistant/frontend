@@ -42,7 +42,7 @@ export class HuiDialogEditView extends LitElement {
     if (
       !this._params.add &&
       this._params.viewConfig &&
-      !this._params.viewConfig.id
+      !("id" in this._params.viewConfig)
     ) {
       return html`
         <hui-migrate-config
