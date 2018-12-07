@@ -207,7 +207,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   private _delete() {
     if (this._config!.cards && this._config!.cards!.length > 0) {
       alert(
-        "You can't delete a view that has card in them. Remove the cards first."
+        "You can't delete a view that has cards in it. Remove the cards first."
       );
       return;
     }
