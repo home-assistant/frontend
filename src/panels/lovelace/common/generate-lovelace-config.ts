@@ -94,7 +94,7 @@ const computeDefaultViewStates = (hass: HomeAssistant): HassEntities => {
 
 const generateViewConfig = (
   localize: LocalizeFunc,
-  id: string,
+  path: string,
   title: string | undefined,
   icon: string | undefined,
   entities: HassEntities,
@@ -158,7 +158,7 @@ const generateViewConfig = (
     });
 
   return {
-    id,
+    path,
     title,
     icon,
     badges,

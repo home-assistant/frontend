@@ -3,9 +3,8 @@ import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import "./hui-edit-card";
-import "./hui-migrate-config";
+import { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
   // for fire event
@@ -16,13 +15,6 @@ declare global {
   interface HTMLElementEventMap {
     "reload-lovelace": HASSDomEvent<undefined>;
   }
-}
-
-export interface EditCardDialogParams {
-  cardConfig?: LovelaceCardConfig;
-  viewId?: string | number;
-  add: boolean;
-  reloadLovelace: () => void;
 }
 
 export class HuiDialogEditCard extends LitElement {
@@ -46,24 +38,12 @@ export class HuiDialogEditCard extends LitElement {
     if (!this._params) {
       return html``;
     }
-    if (
-      (!this._params.add &&
-        this._params.cardConfig &&
-        !("id" in this._params.cardConfig)) ||
-      (this._params.add && !this._params.viewId)
-    ) {
-      return html`
-        <hui-migrate-config
-          .hass="${this.hass}"
-          @reload-lovelace="${this._params.reloadLovelace}"
-        ></hui-migrate-config>
-      `;
-    }
     return html`
       <hui-edit-card
         .hass="${this.hass}"
-        .viewId="${this._params.viewId}"
+        .viewIndex="${this._params.viewIndex}"
         .cardConfig="${this._params.cardConfig}"
+        .add="${this._params.add}"
         @reload-lovelace="${this._params.reloadLovelace}"
         @cancel-edit-card="${this._cancel}"
       >
@@ -73,7 +53,6 @@ export class HuiDialogEditCard extends LitElement {
 
   private _cancel() {
     this._params = {
-      add: false,
       reloadLovelace: () => {
         return;
       },

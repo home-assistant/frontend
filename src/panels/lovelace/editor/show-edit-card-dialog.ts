@@ -14,8 +14,8 @@ const dialogTag = "hui-dialog-edit-card";
 
 export interface EditCardDialogParams {
   cardConfig?: LovelaceCardConfig;
-  viewId?: string | number;
-  add: boolean;
+  viewIndex?: number;
+  add?: boolean;
   reloadLovelace: () => void;
 }
 

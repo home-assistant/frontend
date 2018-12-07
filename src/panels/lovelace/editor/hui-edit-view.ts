@@ -80,8 +80,8 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     if (
       this.viewConfig &&
       (!changedProperties.get("viewConfig") ||
-        this.viewConfig.id !==
-          (changedProperties.get("viewConfig") as LovelaceViewConfig).id)
+        this.viewConfig.index !==
+          (changedProperties.get("viewConfig") as LovelaceViewConfig).index)
     ) {
       const { cards, badges, ...viewConfig } = this.viewConfig;
       this._config = viewConfig;
@@ -220,7 +220,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
       );
       return;
     }
-    confDeleteView(this.hass!, String(this.viewConfig!.id!), () => {
+    confDeleteView(this.hass!, String(this.viewConfig!.index!), () => {
       this._closeDialog();
       this.reloadLovelace!();
       navigate(this, `/lovelace/0`);
@@ -267,14 +267,9 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     try {
       if (this.add) {
         this._config.cards = [];
-        await addView(this.hass!, this._config, "json");
+        await addView(this.hass!, this._config);
       } else {
-        await updateViewConfig(
-          this.hass!,
-          String(this.viewConfig!.id!),
-          this._config,
-          "json"
-        );
+        await updateViewConfig(this.hass!, this._config);
       }
       this.reloadLovelace!();
       this._closeDialog();

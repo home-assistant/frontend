@@ -120,12 +120,15 @@ class Lovelace extends localizeMixin(PolymerElement) {
   async _fetchConfig(force) {
     try {
       const conf = await fetchConfig(this.hass, force);
+      const {
+        formatLovelaceConfig,
+      } = await import("./common/format-lovelace-config");
       this.setProperties({
-        _config: conf,
+        _config: formatLovelaceConfig(conf),
         _state: "loaded",
       });
     } catch (err) {
-      if (err.code === "file_not_found") {
+      if (err.code === "config_not_found") {
         const {
           generateLovelaceConfig,
         } = await import("./common/generate-lovelace-config");
@@ -138,10 +141,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
           registerSaveDialog(this);
         }
       } else {
-        this.setProperties({
-          _state: "error",
-          _errorMsg: err.message,
-        });
+        this.setProperties({ _state: "error", _errorMsg: err.message });
       }
     }
   }

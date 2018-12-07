@@ -9,8 +9,6 @@ import { getCardElementTag } from "../common/get-card-element-tag";
 import { CardPickTarget } from "./types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
-import { uid } from "../../../common/util/uid";
-
 declare global {
   interface HASSDomEvents {
     "card-picked": {
@@ -90,7 +88,7 @@ export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
     const tag = getCardElementTag(type);
 
     const elClass = customElements.get(tag);
-    let config: LovelaceCardConfig = { type, id: uid() };
+    let config: LovelaceCardConfig = { type };
 
     if (elClass && elClass.getStubConfig) {
       const cardConfig = elClass.getStubConfig(this.hass);

@@ -9,18 +9,6 @@ import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "show-edit-card": {
-      cardConfig?: LovelaceCardConfig;
-      viewId?: string | number;
-      add: boolean;
-      reloadLovelace: () => void;
-    };
-  }
-}
-
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
@@ -79,11 +67,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
     if (!this.cardConfig) {
       return;
     }
-    if (!this.cardConfig.id) {
-      this._editCard();
-      return;
-    }
-    confDeleteCard(this.hass!, this.cardConfig.id, () =>
+    confDeleteCard(this.hass!, this.cardConfig, () =>
       fireEvent(this, "config-refresh")
     );
   }

@@ -24,12 +24,11 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     return { hass: {}, _config: {} };
   }
 
-  get _id(): string {
+  get _path(): string {
     if (!this._config) {
       return "";
     }
-
-    return "id" in this._config ? this._config.id! : "";
+    return this._config.path || "";
   }
 
   get _title(): string {
@@ -69,9 +68,9 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="ID"
-          value="${this._id}"
-          .configValue="${"id"}"
+          label="Path"
+          value="${this._path}"
+          .configValue="${"path"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input

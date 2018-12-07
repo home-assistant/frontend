@@ -4,7 +4,6 @@ import { TemplateResult } from "lit-html";
 import { HomeAssistant } from "../../../types";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import "./hui-edit-view";
-import "./hui-migrate-config";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
 
 declare global {
@@ -38,18 +37,6 @@ export class HuiDialogEditView extends LitElement {
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
-    }
-    if (
-      !this._params.add &&
-      this._params.viewConfig &&
-      !("id" in this._params.viewConfig)
-    ) {
-      return html`
-        <hui-migrate-config
-          .hass="${this.hass}"
-          @reload-lovelace="${this._params.reloadLovelace}"
-        ></hui-migrate-config>
-      `;
     }
     return html`
       <hui-edit-view

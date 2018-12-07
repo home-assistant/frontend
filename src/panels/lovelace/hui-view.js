@@ -119,7 +119,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
 
   _addCard() {
     showEditCardDialog(this, {
-      viewId: "id" in this.config ? String(this.config.id) : undefined,
+      viewIndex: this.config.index,
       add: true,
       reloadLovelace: () => {
         this.fire("config-refresh");

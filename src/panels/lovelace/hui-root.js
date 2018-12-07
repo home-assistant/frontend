@@ -258,12 +258,12 @@ class HUIRoot extends NavigateMixin(
   _routeChanged(route) {
     const views = this.config && this.config.views;
     if (route.path === "" && route.prefix === "/lovelace" && views) {
-      this.navigate(`/lovelace/${views[0].id || 0}`, true);
+      this.navigate(`/lovelace/${views[0].path || 0}`, true);
     } else if (this.routeData.view) {
       const view = this.routeData.view;
       let index = 0;
       for (let i = 0; i < views.length; i++) {
-        if (views[i].id === view || i === parseInt(view)) {
+        if (views[i].path === view || i === parseInt(view)) {
           index = i;
           break;
         }
@@ -272,8 +272,8 @@ class HUIRoot extends NavigateMixin(
     }
   }
 
-  _computeViewId(id, index) {
-    return id || index;
+  _computeViewPath(path, index) {
+    return path || index;
   }
 
   _computeTitle(config) {
@@ -360,8 +360,8 @@ class HUIRoot extends NavigateMixin(
 
   _navigateView(viewIndex) {
     if (viewIndex !== this._curView) {
-      const id = this.config.views[viewIndex].id || viewIndex;
-      this.navigate(`/lovelace/${id}`);
+      const path = this.config.views[viewIndex].path || viewIndex;
+      this.navigate(`/lovelace/${path}`);
     }
     scrollToTarget(this, this.$.layout.header.scrollTarget);
   }

@@ -10,11 +10,7 @@ import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../types";
 
-import {
-  saveConfig,
-  migrateConfig,
-  LovelaceConfig,
-} from "../../../data/lovelace";
+import { saveConfig, LovelaceConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
@@ -139,8 +135,7 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
     this._saving = true;
     delete this._params.config._frontendAuto;
     try {
-      await saveConfig(this.hass, this._params.config, "json");
-      await migrateConfig(this.hass);
+      await saveConfig(this.hass, this._params.config);
       this._saving = false;
       this._closeDialog();
       this._params.reloadLovelace!();
