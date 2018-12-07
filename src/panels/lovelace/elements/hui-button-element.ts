@@ -56,7 +56,7 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
               ? html`
                   <ha-icon
                     .dataDomain="${computeStateDomain(stateObj)}"
-                    dataState="${stateObj.state}"
+                    .dataState="${stateObj.state}"
                     .icon="${this._config.icon || stateIcon(stateObj!)}"
                   ></ha-icon>
                   <span>
