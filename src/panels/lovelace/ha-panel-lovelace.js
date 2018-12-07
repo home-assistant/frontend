@@ -28,7 +28,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
           route="[[route]]"
           config="[[_config]]"
           columns="[[_columns]]"
-          on-config-refresh="_fetchConfig"
+          on-config-refresh="_forceFetchConfig"
         ></hui-root>
       </template>
       <template
@@ -48,7 +48,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
         >
-          <paper-button on-click="_fetchConfig"
+          <paper-button on-click="_forceFetchConfig"
             >Reload ui-lovelace.yaml</paper-button
           >
         </hass-error-screen>
@@ -96,7 +96,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
   }
 
   ready() {
-    this._fetchConfig();
+    this._fetchConfig(false);
     this._updateColumns = this._updateColumns.bind(this);
     this.mqls = [300, 600, 900, 1200].map((width) => {
       const mql = matchMedia(`(min-width: ${width}px)`);
@@ -113,9 +113,13 @@ class Lovelace extends localizeMixin(PolymerElement) {
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   }
 
-  async _fetchConfig() {
+  _forceFetchConfig() {
+    this._fetchConfig(true);
+  }
+
+  async _fetchConfig(force) {
     try {
-      const conf = await fetchConfig(this.hass);
+      const conf = await fetchConfig(this.hass, force);
       this.setProperties({
         _config: conf,
         _state: "loaded",
