@@ -125,7 +125,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
         _state: "loaded",
       });
     } catch (err) {
-      if (err.code === "file_not_found") {
+      if (err.code === "config_not_found") {
         const {
           generateLovelaceConfig,
         } = await import("./common/generate-lovelace-config");

@@ -67,13 +67,11 @@ export const migrateConfig = (hass: HomeAssistant): Promise<void> =>
 
 export const saveConfig = (
   hass: HomeAssistant,
-  config: LovelaceConfig | string,
-  format: "json" | "yaml"
+  config: LovelaceConfig | string
 ): Promise<void> =>
   hass.callWS({
     type: "lovelace/config/save",
     config,
-    format,
   });
 
 export const getCardConfig = (
