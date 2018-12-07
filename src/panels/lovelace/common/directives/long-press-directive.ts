@@ -110,7 +110,9 @@ class LongPress extends HTMLElement implements LongPress {
     const clickEnd = (ev: Event) => {
       if (
         this.cooldownEnd ||
-        (ev instanceof TouchEvent && this.timer === undefined)
+        ("TouchEvent" in window &&
+          ev instanceof TouchEvent &&
+          this.timer === undefined)
       ) {
         return;
       }
