@@ -10,7 +10,9 @@ class MoreInfoScript extends LocalizeMixin(PolymerElement) {
 
       <div class="layout vertical">
         <div class="data-entry layout justified horizontal">
-          <div class="key">[[localize('ui.card.script.last_action')]]</div>
+          <div class="key">
+            [[localize('ui.dialogs.more_info_control.script.last_action')]]
+          </div>
           <div class="value">[[stateObj.attributes.last_action]]</div>
         </div>
       </div>

@@ -16,7 +16,7 @@ class MoreInfoUpdater extends LocalizeMixin(PolymerElement) {
           class="link"
           href="https://www.home-assistant.io/docs/installation/updating/"
           target="_blank"
-          >[[localize('ui.card.updater.title')]]</a
+          >[[localize('ui.dialogs.more_info_control.updater.title')]]</a
         >
       </div>
     `;
