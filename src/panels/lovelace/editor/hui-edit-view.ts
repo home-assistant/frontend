@@ -11,9 +11,6 @@ import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-menu-button/paper-menu-button.js";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
@@ -148,7 +145,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
             !this.add
               ? html`
                   <paper-icon-button
-                    class="warning"
+                    class="delete"
                     title="Delete"
                     icon="hass:delete"
                     @click="${this._delete}"
@@ -190,8 +187,9 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
           height: 14px;
           margin-right: 20px;
         }
-        paper-icon-button.warning:not([disabled]) {
+        paper-icon-button.delete {
           margin-right: auto;
+          color: var(--secondary-text-color);
         }
         paper-spinner {
           display: none;

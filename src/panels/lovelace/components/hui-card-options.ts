@@ -44,7 +44,8 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
           color: var(--primary-color);
           font-weight: 500;
         }
-        paper-icon-button.warning:not([disabled]) {
+        paper-icon-button.delete {
+          color: var(--secondary-text-color);
           float: right;
         }
       </style>
@@ -56,7 +57,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
           }</paper-button
         >
         <paper-icon-button
-          class="warning"
+          class="delete"
           icon="hass:delete"
           @click="${this._deleteCard}"
           title="${this.localize("ui.panel.lovelace.editor.edit_card.delete")}"
