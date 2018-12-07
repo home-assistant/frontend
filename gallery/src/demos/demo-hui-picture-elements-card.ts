@@ -56,7 +56,8 @@ const CONFIGS = [
         --iron-icon-fill-color: rgba(50, 50, 50, .75)
     - type: image
       entity: light.bed_light
-      tap_action: toggle
+      tap_action:
+        action: toggle
       image: /images/light_bulb_off.png
       state_image:
         'on': /images/light_bulb_on.png
