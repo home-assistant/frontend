@@ -8,11 +8,15 @@ import "./hui-error-entity-row";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
+import computeStateDisplay from "../../../common/entity/compute_state_display";
+import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+
 interface SensorEntityConfig extends EntityConfig {
   format?: "relative" | "date" | "time" | "datetime";
 }
 
-class HuiSensorEntityRow extends LitElement implements EntityRow {
+class HuiSensorEntityRow extends hassLocalizeLitMixin(LitElement)
+  implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: SensorEntityConfig;
 
@@ -58,7 +62,7 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
                     .format="${this._config.format}"
                   ></hui-timestamp-display>
                 `
-              : stateObj.state
+              : computeStateDisplay(this.localize, stateObj, this.hass.language)
           }
         </div>
       </hui-generic-entity-row>

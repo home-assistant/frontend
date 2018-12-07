@@ -11,7 +11,7 @@ import EventsMixin from "../../mixins/events-mixin";
 import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
-import { showEditCardDialog } from "./editor/hui-dialog-edit-card";
+import { showEditCardDialog } from "./editor/show-edit-card-dialog";
 
 class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
@@ -119,7 +119,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
 
   _addCard() {
     showEditCardDialog(this, {
-      viewId: this.config.id,
+      viewId: "id" in this.config ? String(this.config.id) : undefined,
       add: true,
       reloadLovelace: () => {
         this.fire("config-refresh");
