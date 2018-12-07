@@ -6,13 +6,11 @@ import {
 } from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
-import { jQuery } from "../../../resources/jquery";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard } from "../types";
@@ -20,6 +18,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 
 const thermostatConfig = {
   radius: 150,
@@ -58,11 +57,15 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
+  private _roundSliderStyle?: TemplateResult;
+  private _jQuery?: any;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _config: {},
+      roundSliderStyle: {},
+      _jQuery: {},
     };
   }
 
@@ -134,7 +137,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected firstUpdated(): void {
+  protected async firstUpdated(): Promise<void> {
+    const loaded = await loadRoundslider();
+
+    this._roundSliderStyle = loaded.roundSliderStyle;
+    this._jQuery = loaded.jQuery;
+
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     const _sliderType =
@@ -143,7 +151,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         ? "range"
         : "min-range";
 
-    jQuery("#thermostat", this.shadowRoot).roundSlider({
+    this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
       radius: this.clientWidth / 3,
       min: stateObj.attributes.min_temp,
@@ -155,7 +163,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || !this._jQuery) {
       return;
     }
 
@@ -179,7 +187,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       sliderValue = uiValue = stateObj.attributes.temperature;
     }
 
-    jQuery("#thermostat", this.shadowRoot).roundSlider({
+    this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       value: sliderValue,
     });
     this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = uiValue;
@@ -192,7 +200,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
   private renderStyle(): TemplateResult {
     return html`
-      ${roundSliderStyle}
+      ${this._roundSliderStyle}
       <style>
         :host {
           display: block;
