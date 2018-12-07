@@ -17,7 +17,7 @@ const domainIcons = {
   input_datetime: inputDateTimeIcon,
 };
 
-export default function stateIcon(state: HassEntity | undefined) {
+export default function stateIcon(state: HassEntity) {
   if (!state) {
     return DEFAULT_DOMAIN_ICON;
   }

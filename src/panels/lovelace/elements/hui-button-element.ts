@@ -45,6 +45,8 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
       ? this.hass.states[this._config.entity]
       : undefined;
 
+    console.log(this._config.title);
+
     return html`
       ${this.renderStyle()}
       <paper-button
@@ -53,18 +55,23 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
         .longPress="${longPress()}"
       >
         <div>
-          <ha-icon
-            data-domain="${computeStateDomain(stateObj)}"
-            data-state="${(stateObj && stateObj.state) || ""}"
-            .icon="${this._config.icon || stateIcon(stateObj)}"
-            style="${
-              styleMap({
-                filter: this._computeBrightness(stateObj),
-                color: this._computeColor(stateObj),
-              })
-            }"
-          ></ha-icon>
-          <span> ${this._config.title || computeStateName(stateObj)} </span>
+          ${
+            stateObj
+              ? html`
+                  <ha-icon
+                    .dataDomain="${computeStateDomain(stateObj)}"
+                    dataState="${stateObj.state}"
+                    .icon="${this._config.icon || stateIcon(stateObj!)}"
+                  ></ha-icon>
+                  <span>
+                    ${this._config.title || computeStateName(stateObj!)}
+                  </span>
+                `
+              : html`
+                  <ha-icon .icon="${this._config.icon}"></ha-icon>
+                  <span>${this._config.title}</span>
+                `
+          }
         </div>
       </paper-button>
     `;
@@ -113,29 +120,6 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
         }
       </style>
     `;
-  }
-
-  private _computeBrightness(
-    stateObj: HassEntity | LightEntity | undefined
-  ): string {
-    if (!stateObj || !stateObj.attributes.brightness) {
-      return "";
-    }
-    const brightness = stateObj.attributes.brightness;
-    return `brightness(${(brightness + 245) / 5}%)`;
-  }
-
-  private _computeColor(
-    stateObj: HassEntity | LightEntity | undefined
-  ): string {
-    if (!stateObj || !stateObj.attributes.hs_color) {
-      return "";
-    }
-    const { hue, sat } = stateObj.attributes.hs_color;
-    if (sat <= 10) {
-      return "";
-    }
-    return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
   private _handleTap() {

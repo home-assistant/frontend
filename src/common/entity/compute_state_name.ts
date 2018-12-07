@@ -5,10 +5,7 @@ type CachedDisplayEntity = HassEntity & {
   _entityDisplay?: string;
 };
 
-export default function computeStateName(stateObj: HassEntity | undefined) {
-  if (!stateObj) {
-    return "";
-  }
+export default function computeStateName(stateObj: HassEntity) {
   const state = stateObj as CachedDisplayEntity;
 
   if (state._entityDisplay === undefined) {
