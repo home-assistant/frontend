@@ -34,15 +34,17 @@ const CONFIGS = [
 - type: picture-elements
   image: /images/floorplan.png
   elements:
-    - type: service-button
+    - type: button
       title: Lights Off
       style:
         top: 97%
         left: 90%
         padding: 0px
-      service: light.turn_off
-      service_data:
-        entity_id: group.all_lights
+      tap_action:
+        type: call-service
+        service: light.turn_off
+        service_data:
+          entity_id: group.all_lights
     - type: icon
       icon: mdi:cctv
       entity: camera.demo_camera

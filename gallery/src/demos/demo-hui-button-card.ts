@@ -15,60 +15,55 @@ const CONFIGS = [
   {
     heading: "Basic example",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
     `,
   },
   {
     heading: "With Name",
     config: `
-- type: entity-button
-  name: Bedroom
+- type: button
+  title: Bedroom
   entity: light.bed_light
     `,
   },
   {
     heading: "With Icon",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
   icon: mdi:hotel
     `,
   },
   {
-    heading: "Without State",
-    config: `
-- type: entity-button
-  entity: light.bed_light
-  show_state: false
-    `,
-  },
-  {
     heading: "Custom Tap Action (toggle)",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
-  tap_action: toggle
+  tap_action:
+    action: toggle
     `,
   },
   {
     heading: "Running Service",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
-  service: light.toggle
+  tap_action:
+    type: call-service
+    service: light.toggle
     `,
   },
   {
     heading: "Invalid Entity",
     config: `
-- type: entity-button
+- type: button
   entity: sensor.invalid_entity
     `,
   },
 ];
 
-class DemoEntityButtonEntity extends PolymerElement {
+class DemoButtonCard extends PolymerElement {
   static get template() {
     return html`
       <demo-cards
@@ -96,4 +91,4 @@ class DemoEntityButtonEntity extends PolymerElement {
   }
 }
 
-customElements.define("demo-hui-entity-button-card", DemoEntityButtonEntity);
+customElements.define("demo-hui-button-card", DemoButtonCard);

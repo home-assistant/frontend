@@ -1,13 +1,16 @@
 import { html, LitElement, PropertyValues } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import { styleMap } from "lit-html/directives/styleMap";
 import "@polymer/paper-button/paper-button";
 
 import "../../../components/ha-icon";
+import "../entity-rows/hui-error-entity-row";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, LightEntity } from "../../../types";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
+import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
@@ -19,7 +22,7 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
   private _config?: LovelaceElementConfig;
 
   static get properties() {
-    return { _config: {} };
+    return { hass: {}, _config: {} };
   }
 
   public setConfig(config: LovelaceElementConfig): void {
@@ -43,6 +46,14 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
       ? this.hass.states[this._config.entity]
       : undefined;
 
+    if (this._config.entity && !stateObj) {
+      return html`
+        <hui-error-entity-row
+          .entity="${this._config.entity}"
+        ></hui-error-entity-row>
+      `;
+    }
+
     return html`
       ${this.renderStyle()}
       <paper-button
@@ -55,9 +66,15 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
             stateObj
               ? html`
                   <ha-icon
-                    .dataDomain="${computeStateDomain(stateObj)}"
-                    .dataState="${stateObj.state}"
+                    data-domain="${computeStateDomain(stateObj)}"
+                    data-state="${stateObj.state}"
                     .icon="${this._config.icon || stateIcon(stateObj!)}"
+                    style="${
+                      styleMap({
+                        filter: this._computeBrightness(stateObj),
+                        color: this._computeColor(stateObj),
+                      })
+                    }"
                   ></ha-icon>
                   <span>
                     ${this._config.title || computeStateName(stateObj!)}
@@ -113,9 +130,29 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
           display: flex;
           margin: auto;
           text-align: center;
+          white-space: nowrap;
+          color: var(--primary-color);
         }
       </style>
     `;
+  }
+
+  private _computeBrightness(stateObj: HassEntity | LightEntity): string {
+    if (!stateObj.attributes.brightness) {
+      return "";
+    }
+    const brightness = stateObj.attributes.brightness;
+    return `brightness(${(brightness + 245) / 5}%)`;
+  }
+  private _computeColor(stateObj: HassEntity | LightEntity): string {
+    if (!stateObj.attributes.hs_color) {
+      return "";
+    }
+    const { hue, sat } = stateObj.attributes.hs_color;
+    if (sat <= 10) {
+      return "";
+    }
+    return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
   private _handleTap() {

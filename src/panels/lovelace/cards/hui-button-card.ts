@@ -2,8 +2,8 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import "../../../components/ha-card";
-import createHuiElement from "../common/create-hui-element";
 
+import createHuiElement from "../common/create-hui-element";
 import { HomeAssistant } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard } from "../types";
