@@ -178,6 +178,8 @@ const CONFIGS = [
       tap_action:
         action: call-service
         service: light.turn_on
+        service_data:
+          entity_id: light.ceiling_lights
     - device_tracker.demo_paulus
     - media_player.living_room
     - sun.sun
