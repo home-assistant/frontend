@@ -50,13 +50,14 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
       </style>
       <slot></slot>
       <div>
+        <paper-button @click="${this._editCard}"
+          >${
+            this.localize("ui.panel.lovelace.editor.edit_card.edit")
+          }</paper-button
+        >
         <paper-button class="warning" @click="${this._deleteCard}"
           >${
             this.localize("ui.panel.lovelace.editor.edit_card.delete")
-          }</paper-button
-        ><paper-button @click="${this._editCard}"
-          >${
-            this.localize("ui.panel.lovelace.editor.edit_card.edit")
           }</paper-button
         >
       </div>
