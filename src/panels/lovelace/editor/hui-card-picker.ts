@@ -28,7 +28,7 @@ const cards = [
   { name: "Gauge", type: "gauge" },
   { name: "Glance", type: "glance" },
   { name: "History Graph", type: "history-graph" },
-  { name: "Horizontal Stack", type: "horizontal-graph" },
+  { name: "Horizontal Stack", type: "horizontal-stack" },
   { name: "iFrame", type: "iframe" },
   { name: "Light", type: "light" },
   { name: "Map", type: "map" },
