@@ -1,5 +1,6 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "@polymer/paper-button/paper-button";
+import "@polymer/paper-icon-button/paper-icon-button";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showEditCardDialog } from "../editor/show-edit-card-dialog";
 
@@ -38,14 +39,14 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
           box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
             rgba(0, 0, 0, 0.12) 0px 1px 5px 0px,
             rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
-          text-align: right;
         }
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
         }
-        paper-button.warning:not([disabled]) {
-          color: var(--google-red-500);
+        paper-icon-button.delete {
+          color: var(--secondary-text-color);
+          float: right;
         }
       </style>
       <slot></slot>
@@ -55,11 +56,12 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             this.localize("ui.panel.lovelace.editor.edit_card.edit")
           }</paper-button
         >
-        <paper-button class="warning" @click="${this._deleteCard}"
-          >${
-            this.localize("ui.panel.lovelace.editor.edit_card.delete")
-          }</paper-button
-        >
+        <paper-icon-button
+          class="delete"
+          icon="hass:delete"
+          @click="${this._deleteCard}"
+          title="${this.localize("ui.panel.lovelace.editor.edit_card.delete")}"
+        ></paper-icon-button>
       </div>
     `;
   }

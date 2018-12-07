@@ -49,7 +49,7 @@ export class HuiDialogEditCard extends LitElement {
     if (
       (!this._params.add &&
         this._params.cardConfig &&
-        !this._params.cardConfig.id) ||
+        !("id" in this._params.cardConfig)) ||
       (this._params.add && !this._params.viewId)
     ) {
       return html`
