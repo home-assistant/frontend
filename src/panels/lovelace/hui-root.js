@@ -59,19 +59,27 @@ class HUIRoot extends NavigateMixin(
         --paper-tabs-selection-bar-color: var(--text-primary-color, #FFF);
         text-transform: uppercase;
       }
+      paper-tab.iron-selected .edit-view-icon{
+        display: inline-flex;
+      }
+      .edit-view-icon {
+        padding-left: 8px;
+        display: none;
+      }
       #add-view {
         position: absolute;
         height: 44px;
+      }
+      #add-view ha-icon {
+        background-color: var(--accent-color);
+        border-radius: 5px;
+        margin-top: 4px;
       }
       app-toolbar a {
         color: var(--text-primary-color, white);
       }
       paper-button.warning:not([disabled]) {
         color: var(--google-red-500);
-      }
-      #add-view ha-icon {
-        background-color: var(--accent-color);
-        border-radius: 5px;
       }
       #view {
         min-height: calc(100vh - 112px);
@@ -89,9 +97,6 @@ class HUIRoot extends NavigateMixin(
       }
       paper-item {
         cursor: pointer;
-      }
-      .edit-view-icon {
-        padding-left: 8px;
       }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
@@ -148,7 +153,7 @@ class HUIRoot extends NavigateMixin(
                 <template is="dom-if" if="[[!item.icon]]">
                   [[_computeTabTitle(item.title)]]
                 </template>
-                <template is='dom-if' if="[[_computeEditVisible(_editMode, config.views)]]">
+                <template is='dom-if' if="[[_editMode]]">
                  <ha-icon class="edit-view-icon" on-click="_editView" icon="hass:pencil"></ha-icon>
                 </template>
               </paper-tab>
@@ -297,10 +302,6 @@ class HUIRoot extends NavigateMixin(
 
   _handleHelp() {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
-  }
-
-  _computeEditVisible(editMode, views) {
-    return editMode && views[this._curView];
   }
 
   _editModeEnable() {
