@@ -1,14 +1,12 @@
 import { html, LitElement, PropertyValues } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { styleMap } from "lit-html/directives/styleMap";
 import "@polymer/paper-button/paper-button";
 
 import "../../../components/ha-icon";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
-import { HomeAssistant, LightEntity } from "../../../types";
+import { HomeAssistant } from "../../../types";
 import { handleClick } from "../common/handle-click";
-import { HassEntity } from "home-assistant-js-websocket";
 import { longPress } from "../common/directives/long-press-directive";
 import computeStateName from "../../../common/entity/compute_state_name";
 import stateIcon from "../../../common/entity/state_icon";
@@ -44,8 +42,6 @@ export class HuiButtonElement extends LitElement implements LovelaceElement {
     const stateObj = this._config.entity
       ? this.hass.states[this._config.entity]
       : undefined;
-
-    console.log(this._config.title);
 
     return html`
       ${this.renderStyle()}
