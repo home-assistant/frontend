@@ -33,8 +33,7 @@ import "./hui-view";
 import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
 import { showSaveDialog } from "./editor/hui-dialog-save-config";
-import { showEditViewDialog } from "./editor/hui-dialog-edit-view";
-import { confDeleteView } from "./editor/delete-view";
+import { showEditViewDialog } from "./editor/show-edit-view-dialog";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -61,7 +60,6 @@ class HUIRoot extends NavigateMixin(
         text-transform: uppercase;
       }
       #add-view {
-        background: var(--paper-fab-background, var(--accent-color));
         position: absolute;
         height: 44px;
       }
@@ -71,12 +69,9 @@ class HUIRoot extends NavigateMixin(
       paper-button.warning:not([disabled]) {
         color: var(--google-red-500);
       }
-      app-toolbar.secondary {
-        background-color: var(--light-primary-color);
-        color: var(--primary-text-color, #333);
-        font-size: 14px;
-        font-weight: 500;
-        height: auto;
+      #add-view ha-icon {
+        background-color: var(--accent-color);
+        border-radius: 5px;
       }
       #view {
         min-height: calc(100vh - 112px);
@@ -94,6 +89,9 @@ class HUIRoot extends NavigateMixin(
       }
       paper-item {
         cursor: pointer;
+      }
+      .edit-view-icon {
+        padding-left: 8px;
       }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
@@ -140,7 +138,7 @@ class HUIRoot extends NavigateMixin(
           </app-toolbar>
         </template>
 
-        <div sticky hidden$="[[_computeTabsHidden(config.views)]]">
+        <div sticky hidden$="[[_computeTabsHidden(config.views, _editMode)]]">
           <paper-tabs scrollable selected="[[_curView]]" on-iron-activate="_handleViewSelected">
             <template is="dom-repeat" items="[[config.views]]">
               <paper-tab>
@@ -149,6 +147,9 @@ class HUIRoot extends NavigateMixin(
                 </template>
                 <template is="dom-if" if="[[!item.icon]]">
                   [[_computeTabTitle(item.title)]]
+                </template>
+                <template is='dom-if' if="[[_computeEditVisible(_editMode, config.views)]]">
+                 <ha-icon class="edit-view-icon" on-click="_editView" icon="hass:pencil"></ha-icon>
                 </template>
               </paper-tab>
             </template>
@@ -160,12 +161,6 @@ class HUIRoot extends NavigateMixin(
           </paper-tabs>
         </div>
       </app-header>
-      <template is='dom-if' if="[[_editMode]]">
-        <app-toolbar class="secondary">
-          <paper-button on-click="_editView">[[localize("ui.panel.lovelace.editor.edit_view.edit")]]</paper-button>
-          <paper-button class="warning" on-click="_deleteView">[[localize("ui.panel.lovelace.editor.edit_view.delete")]]</paper-button>
-        </app-toolbar>
-      </template>
       <div id='view' on-rebuild-view='_debouncedConfigChanged'></div>
     </app-header-layout>
     `;
@@ -280,8 +275,8 @@ class HUIRoot extends NavigateMixin(
     return config.title || "Home Assistant";
   }
 
-  _computeTabsHidden(views) {
-    return views.length < 2;
+  _computeTabsHidden(views, editMode) {
+    return views.length < 2 && !editMode;
   }
 
   _computeTabTitle(title) {
@@ -304,6 +299,10 @@ class HUIRoot extends NavigateMixin(
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
+  _computeEditVisible(editMode, views) {
+    return editMode && views[this._curView];
+  }
+
   _editModeEnable() {
     if (this.config._frontendAuto) {
       showSaveDialog(this, {
@@ -316,10 +315,18 @@ class HUIRoot extends NavigateMixin(
       return;
     }
     this._editMode = true;
+    if (this.config.views.length < 2) {
+      this.$.view.classList.remove("tabs-hidden");
+      this.fire("iron-resize");
+    }
   }
 
   _editModeDisable() {
     this._editMode = false;
+    if (this.config.views.length < 2) {
+      this.$.view.classList.add("tabs-hidden");
+      this.fire("iron-resize");
+    }
   }
 
   _editModeChanged() {
@@ -342,24 +349,6 @@ class HUIRoot extends NavigateMixin(
       reloadLovelace: () => {
         this.fire("config-refresh");
       },
-    });
-  }
-
-  _deleteView() {
-    const viewConfig = this.config.views[this._curView];
-    if (viewConfig.cards && viewConfig.cards.length > 0) {
-      alert(
-        "You can't delete a view that has card in them. Remove the cards first."
-      );
-      return;
-    }
-    if (!viewConfig.id) {
-      this._editView();
-      return;
-    }
-    confDeleteView(this.hass, viewConfig.id, () => {
-      this.fire("config-refresh");
-      this._navigateView(0);
     });
   }
 
@@ -393,6 +382,10 @@ class HUIRoot extends NavigateMixin(
       view.setConfig(this.config);
     } else {
       const viewConfig = this.config.views[this._curView];
+      if (!viewConfig) {
+        this._editModeEnable();
+        return;
+      }
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;

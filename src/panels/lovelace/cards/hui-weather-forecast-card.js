@@ -1,4 +1,4 @@
-import "../../../cards/ha-camera-card";
+import "../../../cards/ha-weather-card";
 
 import LegacyWrapperCard from "./hui-legacy-wrapper-card";
 
