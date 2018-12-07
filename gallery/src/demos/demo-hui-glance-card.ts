@@ -172,10 +172,14 @@ const CONFIGS = [
 - type: glance
   entities:
     - entity: lock.kitchen_door
-      tap_action: toggle
+      tap_action:
+        type: toggle
     - entity: light.ceiling_lights
-      tap_action: call-service
-      service: light.turn_on
+      tap_action:
+        action: call-service
+        service: light.turn_on
+        service_data:
+          entity_id: light.ceiling_lights
     - device_tracker.demo_paulus
     - media_player.living_room
     - sun.sun

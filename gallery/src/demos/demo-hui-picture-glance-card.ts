@@ -83,6 +83,23 @@ const CONFIGS = [
     - binary_sensor.basement_floor_wet
     `,
   },
+  {
+    heading: "Custom tap action",
+    config: `
+- type: picture-glance
+  image: /images/living_room.png
+  title: Living room
+  entity: light.ceiling_lights
+  tap_action:
+    action: toggle
+  entities:
+    - entity: switch.decorative_lights
+      icon: mdi:power
+      tap_action:
+        action: toggle
+    - binary_sensor.basement_floor_wet
+    `,
+  },
 ];
 
 class DemoPicGlance extends PolymerElement {
