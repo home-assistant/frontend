@@ -51,9 +51,13 @@ export type ActionConfig =
   | MoreInfoActionConfig
   | NoActionConfig;
 
-export const fetchConfig = (hass: HomeAssistant): Promise<LovelaceConfig> =>
+export const fetchConfig = (
+  hass: HomeAssistant,
+  force: boolean
+): Promise<LovelaceConfig> =>
   hass.callWS({
     type: "lovelace/config",
+    force,
   });
 
 export const migrateConfig = (hass: HomeAssistant): Promise<void> =>

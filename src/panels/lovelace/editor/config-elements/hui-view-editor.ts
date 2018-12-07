@@ -28,7 +28,8 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     if (!this._config) {
       return "";
     }
-    return this._config.id || "";
+
+    return "id" in this._config ? this._config.id! : "";
   }
 
   get _title(): string {

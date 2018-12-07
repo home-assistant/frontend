@@ -1,7 +1,6 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import Leaflet from "leaflet";
 
 import "../../components/ha-menu-button";
 import "../../components/ha-icon";
@@ -11,9 +10,7 @@ import "./ha-entity-marker";
 import computeStateDomain from "../../common/entity/compute_state_domain";
 import computeStateName from "../../common/entity/compute_state_name";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import setupLeafletMap from "../../common/dom/setup-leaflet-map";
-
-Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
+import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -61,14 +58,14 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    var map = (this._map = setupLeafletMap(this.$.map));
+    this.loadMap();
+  }
 
+  async loadMap() {
+    [this._map, this.Leaflet] = await setupLeafletMap(this.$.map);
     this.drawEntities(this.hass);
-
-    setTimeout(() => {
-      map.invalidateSize();
-      this.fitMap();
-    }, 1);
+    this._map.invalidateSize();
+    this.fitMap();
   }
 
   disconnectedCallback() {
@@ -82,14 +79,14 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
     if (this._mapItems.length === 0) {
       this._map.setView(
-        new Leaflet.LatLng(
+        new this.Leaflet.LatLng(
           this.hass.config.latitude,
           this.hass.config.longitude
         ),
         14
       );
     } else {
-      bounds = new Leaflet.latLngBounds(
+      bounds = new this.Leaflet.latLngBounds(
         this._mapItems.map((item) => item.getLatLng())
       );
       this._map.fitBounds(bounds.pad(0.5));
@@ -108,7 +105,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     }
     var mapItems = (this._mapItems = []);
 
-    Object.keys(hass.states).forEach(function(entityId) {
+    Object.keys(hass.states).forEach((entityId) => {
       var entity = hass.states[entityId];
       var title = computeStateName(entity);
 
@@ -137,7 +134,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
           iconHTML = title;
         }
 
-        icon = Leaflet.divIcon({
+        icon = this.Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
           className: "",
@@ -145,7 +142,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
         // create market with the icon
         mapItems.push(
-          Leaflet.marker(
+          this.Leaflet.marker(
             [entity.attributes.latitude, entity.attributes.longitude],
             {
               icon: icon,
@@ -157,7 +154,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
         // create circle around it
         mapItems.push(
-          Leaflet.circle(
+          this.Leaflet.circle(
             [entity.attributes.latitude, entity.attributes.longitude],
             {
               interactive: false,
@@ -181,7 +178,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         .join("");
       /* Leaflet clones this element before adding it to the map. This messes up
          our Polymer object and we can't pass data through. Thus we hack like this. */
-      icon = Leaflet.divIcon({
+      icon = this.Leaflet.divIcon({
         html:
           "<ha-entity-marker entity-id='" +
           entity.entity_id +
@@ -196,7 +193,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
       // create market with the icon
       mapItems.push(
-        Leaflet.marker(
+        this.Leaflet.marker(
           [entity.attributes.latitude, entity.attributes.longitude],
           {
             icon: icon,
@@ -208,7 +205,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       // create circle around if entity has accuracy
       if (entity.attributes.gps_accuracy) {
         mapItems.push(
-          Leaflet.circle(
+          this.Leaflet.circle(
             [entity.attributes.latitude, entity.attributes.longitude],
             {
               interactive: false,
