@@ -93,6 +93,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
           ></hui-theme-select-editor>
           <paper-input
             label="Columns"
+            type="number"
             value="${this._columns}"
             .configValue="${"columns"}"
             @value-changed="${this._valueChanged}"
@@ -127,22 +128,21 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     }
     const target = ev.target! as EditorTarget;
 
-    if (
-      (target.configValue! === "title" && target.value === this._title) ||
-      (target.configValue! === "theme" && target.value === this._theme) ||
-      (target.configValue! === "columns" && target.value === this._columns)
-    ) {
+    if (this[`_${target.configValue}`] === target.value) {
       return;
     }
-
     if (ev.detail && ev.detail.entities) {
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
+      let value: any = target.value;
+      if (target.type === "number") {
+        value = Number(value);
+      }
       this._config = {
         ...this._config,
         [target.configValue!]:
-          target.checked !== undefined ? target.checked : target.value,
+          target.checked !== undefined ? target.checked : value,
       };
     }
     fireEvent(this, "config-changed", { config: this._config });
