@@ -10,6 +10,10 @@ import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import "@polymer/paper-dialog/paper-dialog";
+import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox/paper-listbox.js";
+import "@polymer/paper-menu-button/paper-menu-button.js";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
@@ -28,6 +32,8 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { EntitiesEditorEvent, ViewEditEvent } from "./types";
 import { processEditorEntities } from "./process-editor-entities";
 import { EntityConfig } from "../entity-rows/types";
+import { confDeleteView } from "./delete-view";
+import { navigate } from "../../../common/navigate";
 
 export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   static get properties(): PropertyDeclarations {
@@ -146,6 +152,15 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
             ></paper-spinner>
             ${this.localize("ui.common.save")}</paper-button
           >
+          <paper-menu-button no-animations>
+            <paper-icon-button
+              icon="hass:dots-vertical"
+              slot="dropdown-trigger"
+            ></paper-icon-button>
+            <paper-listbox slot="dropdown-content">
+              <paper-item @click="${this._delete}">Delete</paper-item>
+            </paper-listbox>
+          </paper-menu-button>
         </div>
       </paper-dialog>
     `;
@@ -187,6 +202,20 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   private _save(): void {
     this._saving = true;
     this._updateConfigInBackend();
+  }
+
+  private _delete() {
+    if (this._config!.cards && this._config!.cards!.length > 0) {
+      alert(
+        "You can't delete a view that has card in them. Remove the cards first."
+      );
+      return;
+    }
+    confDeleteView(this.hass!, this._config!.id!, () => {
+      this._closeDialog();
+      this.reloadLovelace!();
+      navigate(this, `/lovelace/0`);
+    });
   }
 
   private async _resizeDialog(): Promise<void> {
