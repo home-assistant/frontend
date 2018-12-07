@@ -19,7 +19,7 @@ import {
   addItem,
 } from "../../../data/shopping-list";
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   title?: string;
 }
 

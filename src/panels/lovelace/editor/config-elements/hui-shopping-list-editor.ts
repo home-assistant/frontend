@@ -8,7 +8,7 @@ import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-glance-card";
+import { Config } from "../../cards/hui-shopping-list-card";
 
 const cardConfigStruct = struct({
   type: "string",
