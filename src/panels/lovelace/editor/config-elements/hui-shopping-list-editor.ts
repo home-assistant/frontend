@@ -1,23 +1,19 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "../../common/structs/struct";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@polymer/paper-input/paper-input";
 
+import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config } from "../../cards/hui-glance-card";
-import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
   id: "string|number",
-  title: "string|number?",
+  title: "string?",
 });
 
 export class HuiShoppingListEditor extends hassLocalizeLitMixin(LitElement)
@@ -45,7 +41,6 @@ export class HuiShoppingListEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
-      ${configElementStyle}
       <div class="card-config">
         <paper-input
           label="Title"
@@ -53,7 +48,6 @@ export class HuiShoppingListEditor extends hassLocalizeLitMixin(LitElement)
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        </div>
       </div>
     `;
   }
@@ -70,8 +64,7 @@ export class HuiShoppingListEditor extends hassLocalizeLitMixin(LitElement)
     if (target.configValue) {
       this._config = {
         ...this._config,
-        [target.configValue!]:
-          target.checked !== undefined ? target.checked : target.value,
+        [target.configValue!]: target.value,
       };
     }
     fireEvent(this, "config-changed", { config: this._config });
