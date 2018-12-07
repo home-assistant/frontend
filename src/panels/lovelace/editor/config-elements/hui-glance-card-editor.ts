@@ -93,6 +93,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
           ></hui-theme-select-editor>
           <paper-input
             label="Columns"
+            type="number"
             value="${this._columns}"
             .configValue="${"columns"}"
             @value-changed="${this._valueChanged}"
@@ -135,7 +136,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
       let value: any = target.value;
-      if (target.configValue === "columns") {
+      if (target.type === "number") {
         value = Number(value);
       }
       this._config = {
