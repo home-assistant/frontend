@@ -120,11 +120,8 @@ class Lovelace extends localizeMixin(PolymerElement) {
   async _fetchConfig(force) {
     try {
       const conf = await fetchConfig(this.hass, force);
-      const {
-        formatLovelaceConfig,
-      } = await import("./common/format-lovelace-config");
       this.setProperties({
-        _config: formatLovelaceConfig(conf),
+        _config: conf,
         _state: "loaded",
       });
     } catch (err) {

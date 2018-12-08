@@ -7,14 +7,16 @@ import { showEditCardDialog } from "../editor/show-edit-card-dialog";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../data/lovelace";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
+  protected path?: [number, number];
+  protected config?: LovelaceConfig;
 
   static get properties(): PropertyDeclarations {
-    return { hass: {} };
+    return { hass: {}, path: {}, config: {} };
   }
 
   protected render() {
@@ -58,7 +60,8 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
       return;
     }
     showEditCardDialog(this, {
-      cardConfig: this.cardConfig,
+      path: this.path!,
+      config: this.config!,
       add: false,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });

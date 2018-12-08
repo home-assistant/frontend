@@ -393,9 +393,11 @@ class HUIRoot extends NavigateMixin(
         view.editMode = this._editMode;
       } else {
         view = document.createElement("hui-view");
+        view.lovelaceConfig = this.config;
         view.config = viewConfig;
         view.columns = this.columns;
         view.editMode = this._editMode;
+        view.index = viewIndex;
       }
       if (viewConfig.background) background = viewConfig.background;
     }

@@ -97,9 +97,11 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: "_hassChanged",
       },
+      lovelaceConfig: Object,
       config: Object,
       columns: Number,
       editMode: Boolean,
+      index: Number,
     };
   }
 
@@ -169,23 +171,24 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
 
     const elements = [];
     const elementsToAppend = [];
-    for (const cardConfig of config.cards) {
+    config.cards.forEach((cardConfig, cardIndex) => {
       const element = createCardElement(cardConfig);
       element.hass = this.hass;
       elements.push(element);
 
       if (!this.editMode) {
         elementsToAppend.push(element);
-        continue;
+        return;
       }
 
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
-      wrapper.cardConfig = cardConfig;
+      wrapper.config = this.lovelaceConfig;
       wrapper.editMode = this.editMode;
+      wrapper.path = [this.index, cardIndex];
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);
-    }
+    });
 
     let columns = [];
     const columnEntityCount = [];

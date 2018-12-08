@@ -41,8 +41,8 @@ export class HuiDialogEditCard extends LitElement {
     return html`
       <hui-edit-card
         .hass="${this.hass}"
-        .viewIndex="${this._params.viewIndex}"
-        .cardConfig="${this._params.cardConfig}"
+        .config="${this._params.config}"
+        .path="${this._params.path}"
         .add="${this._params.add}"
         @reload-lovelace="${this._params.reloadLovelace}"
         @cancel-edit-card="${this._cancel}"
@@ -52,11 +52,7 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _cancel() {
-    this._params = {
-      reloadLovelace: () => {
-        return;
-      },
-    };
+    this._params = undefined;
   }
 }
 
