@@ -21,7 +21,21 @@ const Icons = {
   triggered: "hass:bell-ring",
 };
 
+export const Config = {
+  title: "",
+  entity: "",
+  states: "",
+};
+
 class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
+  static async getConfigElement() {
+    await import("../editor/config-elements/hui-alarm-panel-card-editor");
+    return document.createElement("hui-alarm-panel-card-editor");
+  }
+  static getStubConfig() {
+    return { states: ["arm_home", "arm_away"] };
+  }
+
   static get template() {
     return html`
     <style>
