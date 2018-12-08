@@ -18,17 +18,23 @@ import computeStateName from "../../../common/entity/compute_state_name";
 
 import "../../../components/ha-card";
 
+export interface SeverityConfig {
+  green?: number;
+  yellow?: number;
+  red?: number;
+}
+
 export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   unit?: string;
   min?: number;
   max?: number;
-  severity?: object;
+  severity?: SeverityConfig;
   theme?: string;
 }
 
-const severityMap = {
+export const severityMap = {
   red: "var(--label-badge-red)",
   green: "var(--label-badge-green)",
   yellow: "var(--label-badge-yellow)",

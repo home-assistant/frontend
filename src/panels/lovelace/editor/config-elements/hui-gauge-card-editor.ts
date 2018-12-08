@@ -1,9 +1,7 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import { struct } from "../../common/structs/struct";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -11,7 +9,7 @@ import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-gauge-card";
+import { Config, SeverityConfig } from "../../cards/hui-gauge-card";
 import { configElementStyle } from "./config-elements-style";
 
 import "../../components/hui-theme-select-editor";
@@ -33,11 +31,17 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
   public hass?: HomeAssistant;
   private _config?: Config;
+  private _useSeverity?: boolean;
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
 
-    this._config = { type: "gauge", ...config };
+    this._useSeverity = config.severity ? true : false;
+
+    this._config = {
+      type: "gauge",
+      ...config,
+    };
   }
 
   static get properties(): PropertyDeclarations {
@@ -57,7 +61,7 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _theme(): string {
-    return this._config!.theme || "Backend-selected";
+    return this._config!.theme || "default";
   }
 
   get _min(): number {
@@ -68,13 +72,17 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.max || 100;
   }
 
+  get _severity(): SeverityConfig | undefined {
+    return this._config!.severity || undefined;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
 
     return html`
-      ${configElementStyle}
+      ${configElementStyle} ${this.renderStyle()}
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
@@ -107,20 +115,105 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
         </div>
         <div class="side-by-side">
           <paper-input
+            type="number"
             label="Minimum"
             value="${this._min}"
             .configValue=${"min"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
+            type="number"
             label="Maximum"
             value="${this._max}"
             .configValue=${"max"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
+        <div class="side-by-side">
+          <paper-toggle-button
+            ?checked="${this._useSeverity !== false}"
+            @change="${this._toggleSeverity}"
+            >Define Severity?</paper-toggle-button
+          >
+          <div class="severity">
+            <paper-input
+              type="number"
+              label="Green"
+              value="${this._severity ? this._severity.green : 0}"
+              .configValue=${"green"}
+              @value-changed="${this._severityChanged}"
+            ></paper-input>
+            <paper-input
+              type="number"
+              label="Yellow"
+              value="${this._severity ? this._severity.yellow : 0}"
+              .configValue=${"yellow"}
+              @value-changed="${this._severityChanged}"
+            ></paper-input>
+            <paper-input
+              type="number"
+              label="Red"
+              value="${this._severity ? this._severity.red : 0}"
+              .configValue=${"red"}
+              @value-changed="${this._severityChanged}"
+            ></paper-input>
+          </div>
+        </div>
       </div>
     `;
+  }
+
+  private renderStyle(): TemplateResult {
+    return html`
+      <style>
+        .severity {
+          display: none;
+          width: 100%;
+          padding-left: 16px;
+          flex-direction: row;
+          flex-wrap: wrap;
+        }
+        .severity > * {
+          flex: 1 0 30%;
+          padding-right: 4px;
+        }
+        paper-toggle-button[checked] ~ .severity {
+          display: flex;
+        }
+      </style>
+    `;
+  }
+
+  private _toggleSeverity(ev: EntitiesEditorEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const target = ev.target! as EditorTarget;
+
+    this._config.severity = target.checked
+      ? {
+          green: 0,
+          yellow: 0,
+          red: 0,
+        }
+      : undefined;
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _severityChanged(ev: EntitiesEditorEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const target = ev.target! as EditorTarget;
+    const severity = {
+      ...this._config.severity,
+      [target.configValue!]: Number(target.value),
+    };
+    this._config = {
+      ...this._config,
+      severity,
+    };
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
@@ -134,10 +227,7 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
       if (target.type === "number") {
         value = Number(value);
       }
-      this._config = {
-        ...this._config,
-        [target.configValue!]: value,
-      };
+      this._config = { ...this._config, [target.configValue!]: value };
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
