@@ -95,6 +95,7 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
             .hass="${this.hass}"
             .value="${this._entity}"
             .configValue=${"entity"}
+            .domainFilter=${"sensor"}
             @change="${this._valueChanged}"
             allow-custom-entity
           ></ha-entity-picker>
