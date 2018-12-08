@@ -32,6 +32,7 @@ class HuiAlarmPanelCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     await import("../editor/config-elements/hui-alarm-panel-card-editor");
     return document.createElement("hui-alarm-panel-card-editor");
   }
+
   static getStubConfig() {
     return { states: ["arm_home", "arm_away"] };
   }
