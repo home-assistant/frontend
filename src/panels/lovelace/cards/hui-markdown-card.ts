@@ -4,16 +4,24 @@ import { classMap } from "lit-html/directives/classMap";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { TemplateResult } from "lit-html";
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   content: string;
   title?: string;
 }
 
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-markdown-card-editor");
+    return document.createElement("hui-markdown-card-editor");
+  }
+  public static getStubConfig(): object {
+    return { content: " " };
+  }
+
   private _config?: Config;
 
   static get properties(): PropertyDeclarations {
