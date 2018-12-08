@@ -5,10 +5,12 @@ export const formatLovelaceConfig = (
 ): LovelaceConfig => {
   config.views.forEach((view, viewIndex) => {
     view.index = viewIndex;
-    view.cards!.forEach((card, cardIndex) => {
-      card.view_index = viewIndex;
-      card.index = cardIndex;
-    });
+    if (view.cards) {
+      view.cards.forEach((card, cardIndex) => {
+        card.view_index = viewIndex;
+        card.index = cardIndex;
+      });
+    }
   });
 
   return config;
