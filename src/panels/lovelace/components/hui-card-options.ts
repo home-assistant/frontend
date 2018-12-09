@@ -7,16 +7,17 @@ import { showEditCardDialog } from "../editor/show-edit-card-dialog";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import { Lovelace } from "../types";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
+  protected lovelace?: Lovelace;
   protected path?: [number, number];
-  protected config?: LovelaceConfig;
 
   static get properties(): PropertyDeclarations {
-    return { hass: {}, path: {}, config: {} };
+    return { hass: {}, lovelace: {}, path: {} };
   }
 
   protected render() {
@@ -56,23 +57,21 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
     `;
   }
   private _editCard(): void {
-    if (!this.cardConfig) {
+    if (!this.lovelace) {
       return;
     }
     showEditCardDialog(this, {
+      lovelace: this.lovelace!,
       path: this.path!,
-      config: this.config!,
       add: false,
       reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }
   private _deleteCard(): void {
-    if (!this.cardConfig) {
+    if (!this.lovelace) {
       return;
     }
-    confDeleteCard(this.hass!, this.cardConfig, () =>
-      fireEvent(this, "config-refresh")
-    );
+    confDeleteCard(this.lovelace, this.path!);
   }
 }
 

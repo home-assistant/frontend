@@ -1,5 +1,16 @@
 import { HomeAssistant } from "../../types";
-import { LovelaceCardConfig } from "../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../data/lovelace";
+
+export interface Lovelace {
+  hass: HomeAssistant;
+  config: LovelaceConfig;
+  editMode: boolean;
+  autoGen: boolean;
+  legacy: boolean;
+  save: (newConfig: LovelaceConfig) => Promise<void>;
+  addCard: (path: [number], cardConfig: LovelaceCardConfig) => Promise<void>;
+  deleteCard: (path: [number, number]) => Promise<void>;
+}
 
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;

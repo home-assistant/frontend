@@ -183,6 +183,9 @@ class HUIRoot extends NavigateMixin(
         type: Object,
         observer: "_configChanged",
       },
+      lovelace: {
+        type: Object,
+      },
       columns: {
         type: Number,
         observer: "_columnsChanged",
@@ -393,7 +396,7 @@ class HUIRoot extends NavigateMixin(
         view.editMode = this._editMode;
       } else {
         view = document.createElement("hui-view");
-        view.lovelaceConfig = this.config;
+        view.lovelace = this.lovelace;
         view.config = viewConfig;
         view.columns = this.columns;
         view.editMode = this._editMode;

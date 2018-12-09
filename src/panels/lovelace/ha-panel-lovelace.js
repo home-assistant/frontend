@@ -8,6 +8,7 @@ import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
 import localizeMixin from "../../mixins/localize-mixin";
+import { generateLovelace } from "./common/lovelace";
 
 let registeredDialog = false;
 
@@ -25,6 +26,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
           hass="[[hass]]"
+          lovelace="[[lovelace]]"
           route="[[route]]"
           config="[[_config]]"
           columns="[[_columns]]"
@@ -59,40 +61,22 @@ class Lovelace extends localizeMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
+      lovelace: Object,
+      narrow: { type: Boolean, value: false },
+      showMenu: { type: Boolean, value: false },
       route: Object,
-
-      _columns: {
-        type: Number,
-        value: 1,
-      },
-
-      _state: {
-        type: String,
-        value: "loading",
-      },
-
+      _columns: { type: Number, value: 1 },
+      _state: { type: String, value: "loading" },
       _errorMsg: String,
-
-      _config: {
-        type: Object,
-        value: null,
-      },
+      _config: { type: Object, value: null },
     };
   }
 
   static get observers() {
-    return ["_updateColumns(narrow, showMenu)"];
+    return [
+      "_updateColumns(narrow, showMenu)",
+      "_lovelaceConfigChanged(lovelace.config)",
+    ];
   }
 
   ready() {
@@ -113,6 +97,10 @@ class Lovelace extends localizeMixin(PolymerElement) {
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   }
 
+  _lovelaceConfigChanged() {
+    this._config = this.lovelace.config;
+  }
+
   _forceFetchConfig() {
     this._fetchConfig(true);
   }
@@ -121,6 +109,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
     try {
       const conf = await fetchConfig(this.hass, force);
       this.setProperties({
+        lovelace: generateLovelace(this.hass, conf, false, false),
         _config: conf,
         _state: "loaded",
       });
@@ -138,6 +127,7 @@ class Lovelace extends localizeMixin(PolymerElement) {
           registerSaveDialog(this);
         }
       } else {
+        console.log(err);
         this.setProperties({ _state: "error", _errorMsg: err.message });
       }
     }

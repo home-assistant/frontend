@@ -97,7 +97,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: "_hassChanged",
       },
-      lovelaceConfig: Object,
+      lovelace: Object,
       config: Object,
       columns: Number,
       editMode: Boolean,
@@ -121,7 +121,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
 
   _addCard() {
     showEditCardDialog(this, {
-      viewIndex: this.config.index,
+      path: [this.config.index],
       add: true,
       reloadLovelace: () => {
         this.fire("config-refresh");
@@ -183,7 +183,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
 
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
-      wrapper.config = this.lovelaceConfig;
+      wrapper.lovelace = this.lovelace;
       wrapper.editMode = this.editMode;
       wrapper.path = [this.index, cardIndex];
       wrapper.appendChild(element);

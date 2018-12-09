@@ -70,39 +70,3 @@ export const saveConfig = (
     type: "lovelace/config/save",
     config,
   });
-
-async function notImplemented() {
-  alert("Not implemented yet...");
-}
-
-export const updateCardConfig = (
-  hass: HomeAssistant,
-  config: LovelaceCardConfig
-): Promise<void> => notImplemented();
-
-export const deleteCard = (
-  hass: HomeAssistant,
-  viewIndex: number,
-  cardIndex: number
-): Promise<void> => notImplemented();
-
-export const addCard = (
-  hass: HomeAssistant,
-  viewIndex: number,
-  config: LovelaceCardConfig
-): Promise<void> => notImplemented();
-
-export const updateViewConfig = (
-  hass: HomeAssistant,
-  config: LovelaceViewConfig
-): Promise<void> => notImplemented();
-
-export const deleteView = (
-  hass: HomeAssistant,
-  viewIndex: number
-): Promise<void> => notImplemented();
-
-export const addView = (
-  hass: HomeAssistant,
-  config: LovelaceViewConfig
-): Promise<void> => notImplemented();

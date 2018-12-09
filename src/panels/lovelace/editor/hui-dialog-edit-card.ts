@@ -38,12 +38,17 @@ export class HuiDialogEditCard extends LitElement {
     if (!this._params) {
       return html``;
     }
+    if (this._params.add && !this._params.cardConfig) {
+      // Card picker
+      return html``;
+    }
     return html`
       <hui-edit-card
         .hass="${this.hass}"
-        .config="${this._params.config}"
+        .lovelace="${this._params.lovelace}"
         .path="${this._params.path}"
         .add="${this._params.add}"
+        .cardConfig="${this._params.cardConfig}"
         @reload-lovelace="${this._params.reloadLovelace}"
         @cancel-edit-card="${this._cancel}"
       >

@@ -30,7 +30,7 @@ import "./hui-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiCardPreview } from "./hui-card-preview";
-import { LovelaceCardEditor } from "../types";
+import { LovelaceCardEditor, Lovelace } from "../types";
 import {
   YamlChangedEvent,
   CardPickedEvent,
@@ -82,10 +82,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
   }
 
   public cardConfig?: LovelaceCardConfig;
-  public viewIndex?: number;
+  public path?: [number, number];
   protected hass?: HomeAssistant;
-  private _cardIndex?: number;
-  private _viewIndex?: number;
+  protected lovelace?: Lovelace;
   private _configElement?: LovelaceCardEditor | null;
   private _uiEditor?: boolean;
   private _configValue?: ConfigValue;
@@ -332,7 +331,12 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
       if (this.viewIndex) {
         await addCard(this.hass!, this.viewIndex, configValue);
       } else {
-        await updateCardConfig(this.hass!, configValue);
+        await updateCardConfig(
+          this.hass!,
+          this._viewIndex!,
+          this._cardIndex!,
+          configValue
+        );
       }
       fireEvent(this, "reload-lovelace");
       this._closeDialog();
