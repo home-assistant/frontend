@@ -17,7 +17,6 @@ import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
   LovelaceCardConfig,
-  LovelaceConfig,
 } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
@@ -249,8 +248,9 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     this._saving = true;
 
     const viewConf: LovelaceViewConfig = {
-      ...this._config,
+      cards: this._cards,
       badges: this._badges!.map((entityConf) => entityConf.entity),
+      ...this._config,
     };
 
     if (this._creatingView) {

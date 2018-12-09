@@ -330,20 +330,14 @@ class HUIRoot extends NavigateMixin(
 
   _editView() {
     showEditViewDialog(this, {
-      viewConfig: this.config.views[this._curView],
-      add: false,
-      reloadLovelace: () => {
-        this.fire("config-refresh");
-      },
+      lovelace: this.lovelace,
+      viewIndex: this._curView,
     });
   }
 
   _addView() {
     showEditViewDialog(this, {
-      add: true,
-      reloadLovelace: () => {
-        this.fire("config-refresh");
-      },
+      lovelace: this.lovelace,
     });
   }
 
