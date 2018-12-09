@@ -12,7 +12,7 @@ import { TemplateResult } from "lit-html";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 
 interface LovelacePanelConfig {
-  legacy: boolean;
+  mode: "yaml" | "storage";
 }
 
 class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
@@ -147,7 +147,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
       config: conf,
       autoGen: gen,
       editMode: this.lovelace ? this.lovelace.editMode : false,
-      legacy: this.panel!.config.legacy,
+      mode: this.panel!.config.mode,
       setEditMode: (editMode: boolean) => {
         if (!editMode || !this.lovelace!.autoGen) {
           this._updateLovelace({ editMode });

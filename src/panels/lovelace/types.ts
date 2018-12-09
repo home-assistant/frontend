@@ -5,7 +5,7 @@ export interface Lovelace {
   config: LovelaceConfig;
   editMode: boolean;
   autoGen: boolean;
-  legacy: boolean;
+  mode: "yaml" | "storage";
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
 }
