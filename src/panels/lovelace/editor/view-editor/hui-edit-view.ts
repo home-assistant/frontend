@@ -12,7 +12,7 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "../../components/hui-entity-editor";
-import "../config-elements/hui-view-editor";
+import "./hui-view-editor";
 import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
