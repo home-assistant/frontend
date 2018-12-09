@@ -228,7 +228,6 @@ export const generateLovelaceConfig = (
   }
 
   return {
-    _frontendAuto: true,
     title,
     views,
   };

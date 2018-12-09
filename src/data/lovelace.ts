@@ -1,7 +1,6 @@
 import { HomeAssistant } from "../types";
 
 export interface LovelaceConfig {
-  _frontendAuto: boolean;
   title?: string;
   views: LovelaceViewConfig[];
 }

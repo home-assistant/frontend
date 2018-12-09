@@ -1,10 +1,11 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import { HomeAssistant } from "../../../types";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "./hui-edit-card";
 import { EditCardDialogParams } from "./show-edit-card-dialog";
+import { LovelaceCardConfig } from "../../../../data/lovelace";
 
 declare global {
   // for fire event
@@ -20,44 +21,58 @@ declare global {
 export class HuiDialogEditCard extends LitElement {
   protected hass?: HomeAssistant;
   private _params?: EditCardDialogParams;
+  private _cardConfig?: LovelaceCardConfig;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _params: {},
+      _cardConfig: {},
     };
   }
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
-    await this.updateComplete;
-    (this.shadowRoot!.children[0] as any).showDialog();
+    this._cardConfig =
+      params.path.length === 2
+        ? (this._cardConfig = params.lovelace.config.views[
+            params.path[0]
+          ].cards![params.path[1]])
+        : undefined;
   }
 
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
-    if (this._params.add && !this._params.cardConfig) {
+    if (!this._cardConfig) {
       // Card picker
-      return html``;
+      return html`
+        <hui-dialog-pick-card
+          .hass="${this.hass}"
+          .cardPicked="${this._cardPicked}"
+        ></hui-dialog-pick-card>
+      `;
     }
     return html`
       <hui-edit-card
         .hass="${this.hass}"
         .lovelace="${this._params.lovelace}"
         .path="${this._params.path}"
-        .add="${this._params.add}"
-        .cardConfig="${this._params.cardConfig}"
-        @reload-lovelace="${this._params.reloadLovelace}"
-        @cancel-edit-card="${this._cancel}"
+        .cardConfig="${this._cardConfig}"
+        .closeDialog="${this._cancel}"
       >
       </hui-edit-card>
     `;
   }
 
+  private _cardPicked(cardConf: LovelaceCardConfig) {
+    this._cardConfig = cardConf;
+  }
+
   private _cancel() {
     this._params = undefined;
+    this._cardConfig = undefined;
   }
 }
 

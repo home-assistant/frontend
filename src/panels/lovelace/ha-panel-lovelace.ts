@@ -1,20 +1,22 @@
 import "@polymer/paper-button/paper-button";
 
-import { registerSaveDialog } from "./editor/hui-dialog-save-config";
-import { fetchConfig } from "../../data/lovelace";
+import { fetchConfig, LovelaceConfig, saveConfig } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
-import { generateLovelace } from "./common/lovelace";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, PanelInfo } from "../../types";
 import { Lovelace } from "./types";
 import { LitElement, html, PropertyValues } from "@polymer/lit-element";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 import { TemplateResult } from "lit-html";
+import { showSaveDialog } from "./editor/show-save-config-dialog";
 
-let registeredDialog = false;
+interface LovelacePanelConfig {
+  legacy: boolean;
+}
 
 class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
+  public panel?: PanelInfo<LovelacePanelConfig>;
   public hass?: HomeAssistant;
   public narrow?: boolean;
   public showMenu?: boolean;
@@ -50,7 +52,6 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
           .hass="${this.hass}"
           .lovelace="${this.lovelace}"
           .route="${this.route}"
-          .config="${this.lovelace!.config}"
           .columns="${this._columns}"
           @config-refresh="${this._forceFetchConfig}"
         ></hui-root>
@@ -120,34 +121,64 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
   }
 
   private async _fetchConfig(force) {
-    try {
-      const conf = await fetchConfig(this.hass!, force);
-      this.lovelace = generateLovelace(this.hass!, conf, false, false);
-      this._state = "loaded";
-    } catch (err) {
-      if (err.code === "config_not_found") {
-        const {
-          generateLovelaceConfig,
-        } = await import("./common/generate-lovelace-config");
-        this.lovelace = generateLovelace(
-          this.hass!,
-          generateLovelaceConfig(this.hass!, this.localize),
-          false,
-          false
-        );
-        this._state = "loaded";
+    let conf;
+    let gen: boolean;
 
-        if (!registeredDialog) {
-          registeredDialog = true;
-          registerSaveDialog(this);
-        }
-      } else {
+    try {
+      conf = await fetchConfig(this.hass!, force);
+      gen = false;
+    } catch (err) {
+      if (err.code !== "config_not_found") {
         // tslint:disable-next-line
         console.log(err);
         this._state = "error";
         this._errorMsg = err.message;
+        return;
       }
+      const {
+        generateLovelaceConfig,
+      } = await import("./common/generate-lovelace-config");
+      conf = generateLovelaceConfig(this.hass!, this.localize);
+      gen = true;
     }
+
+    this._state = "loaded";
+    this.lovelace = {
+      config: conf,
+      autoGen: gen,
+      editMode: this.lovelace ? this.lovelace.editMode : false,
+      legacy: this.panel!.config.legacy,
+      setEditMode: (editMode: boolean) => {
+        if (!editMode || !this.lovelace!.autoGen) {
+          this._updateLovelace({ editMode });
+          return;
+        }
+        showSaveDialog(this, {
+          lovelace: this.lovelace!,
+        });
+      },
+      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+        const { config, autoGen } = this.lovelace!;
+        try {
+          // Optimistic update
+          this._updateLovelace({ config: newConfig, autoGen: false });
+          await saveConfig(this.hass!, newConfig);
+        } catch (err) {
+          // tslint:disable-next-line
+          console.error(err);
+          // Rollback the optimistic update
+          this._updateLovelace({ config, autoGen });
+          throw err;
+        }
+      },
+    };
+  }
+
+  private _updateLovelace(props: Partial<Lovelace>) {
+    this.lovelace = {
+      ...this.lovelace!,
+      ...props,
+    };
   }
 }
 

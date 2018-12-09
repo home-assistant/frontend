@@ -1,8 +1,8 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import { HomeAssistant } from "../../../types";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "./hui-edit-view";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
 
@@ -41,9 +41,8 @@ export class HuiDialogEditView extends LitElement {
     return html`
       <hui-edit-view
         .hass="${this.hass}"
-        .viewConfig="${this._params.viewConfig}"
-        .add="${this._params.add}"
-        .reloadLovelace="${this._params.reloadLovelace}"
+        .lovelace="${this._params.lovelace}"
+        .viewIndex="${this._params.viewIndex}"
       >
       </hui-edit-view>
     `;

@@ -2,7 +2,7 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { showEditCardDialog } from "../editor/show-edit-card-dialog";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
@@ -57,21 +57,13 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
     `;
   }
   private _editCard(): void {
-    if (!this.lovelace) {
-      return;
-    }
     showEditCardDialog(this, {
       lovelace: this.lovelace!,
       path: this.path!,
-      add: false,
-      reloadLovelace: () => fireEvent(this, "config-refresh"),
     });
   }
   private _deleteCard(): void {
-    if (!this.lovelace) {
-      return;
-    }
-    confDeleteCard(this.lovelace, this.path!);
+    confDeleteCard(this.lovelace!, this.path!);
   }
 }
 

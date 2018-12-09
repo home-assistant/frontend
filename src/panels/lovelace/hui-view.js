@@ -11,7 +11,7 @@ import EventsMixin from "../../mixins/events-mixin";
 import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
-import { showEditCardDialog } from "./editor/show-edit-card-dialog";
+import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 
 class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
@@ -82,7 +82,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
       <div id="badges"></div>
       <div id="columns"></div>
       <paper-fab
-        hidden$="{{!editMode}}"
+        hidden$="[[!lovelace.editMode]]"
         elevated="2"
         icon="hass:plus"
         title=[[localize("ui.panel.lovelace.editor.edit_card.add")]]
@@ -184,7 +184,6 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
       wrapper.lovelace = this.lovelace;
-      wrapper.editMode = this.editMode;
       wrapper.path = [this.index, cardIndex];
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);

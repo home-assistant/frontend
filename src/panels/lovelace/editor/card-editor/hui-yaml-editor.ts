@@ -2,8 +2,8 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import "@polymer/paper-input/paper-textarea";
 
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export class HuiYAMLEditor extends LitElement {
   protected hass?: HomeAssistant;

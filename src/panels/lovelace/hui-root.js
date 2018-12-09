@@ -32,8 +32,7 @@ import "./hui-unused-entities";
 import "./hui-view";
 import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
-import { showSaveDialog } from "./editor/hui-dialog-save-config";
-import { showEditViewDialog } from "./editor/show-edit-view-dialog";
+import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -181,6 +180,7 @@ class HUIRoot extends NavigateMixin(
       },
       config: {
         type: Object,
+        computed: "_computeConfig(lovelace)",
         observer: "_configChanged",
       },
       lovelace: {
@@ -219,6 +219,7 @@ class HUIRoot extends NavigateMixin(
       _editMode: {
         type: Boolean,
         value: false,
+        computed: "_computeEditMode(lovelace)",
         observer: "_editModeChanged",
       },
 
@@ -308,17 +309,7 @@ class HUIRoot extends NavigateMixin(
   }
 
   _editModeEnable() {
-    if (this.config._frontendAuto) {
-      showSaveDialog(this, {
-        config: this.config,
-        reloadLovelace: () => {
-          this.fire("config-refresh");
-          this._editMode = true;
-        },
-      });
-      return;
-    }
-    this._editMode = true;
+    this.lovelace.setEditMode(true);
     if (this.config.views.length < 2) {
       this.$.view.classList.remove("tabs-hidden");
       this.fire("iron-resize");
@@ -326,7 +317,7 @@ class HUIRoot extends NavigateMixin(
   }
 
   _editModeDisable() {
-    this._editMode = false;
+    this.lovelace.setEditMode(false);
     if (this.config.views.length < 2) {
       this.$.view.classList.add("tabs-hidden");
       this.fire("iron-resize");
@@ -393,13 +384,11 @@ class HUIRoot extends NavigateMixin(
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
-        view.editMode = this._editMode;
       } else {
         view = document.createElement("hui-view");
         view.lovelace = this.lovelace;
         view.config = viewConfig;
         view.columns = this.columns;
-        view.editMode = this._editMode;
         view.index = viewIndex;
       }
       if (viewConfig.background) background = viewConfig.background;
@@ -456,6 +445,14 @@ class HUIRoot extends NavigateMixin(
           console.warn("Unknown resource type specified: ${resource.type}");
       }
     });
+  }
+
+  _computeConfig(lovelace) {
+    return lovelace ? lovelace.config : null;
+  }
+
+  _computeEditMode(lovelace) {
+    return lovelace ? lovelace.editMode : false;
   }
 }
 customElements.define("hui-root", HUIRoot);

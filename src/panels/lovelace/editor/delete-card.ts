@@ -1,4 +1,5 @@
 import { Lovelace } from "../types";
+import { deleteCard } from "./config-util";
 
 export async function confDeleteCard(
   lovelace: Lovelace,
@@ -8,7 +9,7 @@ export async function confDeleteCard(
     return;
   }
   try {
-    await lovelace.deleteCard(path);
+    await lovelace.saveConfig(deleteCard(lovelace.config, path));
   } catch (err) {
     alert(`Deleting failed: ${err.message}`);
   }
