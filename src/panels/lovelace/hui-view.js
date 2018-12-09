@@ -176,7 +176,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
       element.hass = this.hass;
       elements.push(element);
 
-      if (!this.editMode) {
+      if (!this.lovelace.editMode) {
         elementsToAppend.push(element);
         return;
       }
