@@ -366,7 +366,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
   _defaultPageText() {
     return `>> ${
       localStorage.defaultPage === OPT_IN_PANEL ? "Remove" : "Set"
-    } as default page on this device <<`;
+    } ${OPT_IN_PANEL} as default page on this device <<`;
   }
 
   _toggleDefaultPage() {
