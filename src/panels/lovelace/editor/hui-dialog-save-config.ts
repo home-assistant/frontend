@@ -10,7 +10,6 @@ import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../types";
 
-import { saveConfig } from "../../../data/lovelace";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { SaveDialogParams } from "./show-save-config-dialog";
 

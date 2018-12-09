@@ -3,7 +3,6 @@ import { TemplateResult } from "lit-html";
 import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { CardPickTarget } from "../types";
