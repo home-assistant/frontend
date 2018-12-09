@@ -134,8 +134,14 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     this._roundSliderStyle = loaded.roundSliderStyle;
     this._jQuery = loaded.jQuery;
 
-    const brightness = this.hass!.states[this._config!.entity].attributes
-      .brightness;
+    const stateObj = this.hass!.states[this._config!.entity] as LightEntity;
+
+    if (!stateObj) {
+      return;
+    }
+
+    const brightness = stateObj.attributes.brightness || 0;
+
     this._jQuery("#light", this.shadowRoot).roundSlider({
       ...lightConfig,
       change: (value) => this._setBrightness(value),
@@ -152,7 +158,13 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
       return;
     }
 
-    const attrs = this.hass!.states[this._config!.entity].attributes;
+    const stateObj = this.hass!.states[this._config!.entity];
+
+    if (!stateObj) {
+      return;
+    }
+
+    const attrs = stateObj.attributes;
 
     this._jQuery("#light", this.shadowRoot).roundSlider({
       value: Math.round((attrs.brightness / 254) * 100) || 0,

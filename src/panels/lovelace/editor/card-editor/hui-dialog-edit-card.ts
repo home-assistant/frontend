@@ -3,9 +3,10 @@ import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
-import "./hui-edit-card";
-import { EditCardDialogParams } from "./show-edit-card-dialog";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
+import "./hui-edit-card";
+import "./hui-dialog-pick-card";
+import { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
   // for fire event
@@ -29,6 +30,12 @@ export class HuiDialogEditCard extends LitElement {
       _params: {},
       _cardConfig: {},
     };
+  }
+
+  constructor() {
+    super();
+    this._cardPicked = this._cardPicked.bind(this);
+    this._cancel = this._cancel.bind(this);
   }
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
