@@ -253,14 +253,10 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
       ...this._config,
     };
 
-    if (this._creatingView) {
-      viewConf.cards = [];
-    }
-
     const lovelace = this.lovelace!;
 
     try {
-      await this.lovelace!.saveConfig(
+      await lovelace.saveConfig(
         this._creatingView
           ? addView(lovelace.config, viewConf)
           : replaceView(lovelace.config, this.viewIndex!, viewConf)
