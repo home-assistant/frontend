@@ -26,8 +26,15 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
             .cardPicked="${this.cardPicked}"
           ></hui-card-picker>
         </paper-dialog-scrollable>
+        <div class="paper-dialog-buttons">
+          <paper-button @click="${this._skipPick}">SKIP</paper-button>
+        </div>
       </paper-dialog>
     `;
+  }
+
+  private _skipPick() {
+    this.cardPicked!({ type: "" });
   }
 }
 
