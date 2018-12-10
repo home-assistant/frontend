@@ -124,11 +124,14 @@ class HUIRoot extends NavigateMixin(
             >
               <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
               <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
-                <template is='dom-if' if="[[_yamlMode]]">  
+                <template is='dom-if' if="[[_yamlMode]]">
                   <paper-item on-click="_handleRefresh">Refresh</paper-item>
                 </template>
                 <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
-                <paper-item on-click="_editModeEnable">[[localize("ui.panel.lovelace.editor.configure_ui")]] (alpha)</paper-item>
+                <paper-item on-click="_editModeEnable">[[localize("ui.panel.lovelace.editor.configure_ui")]]</paper-item>
+                <template is='dom-if' if="[[_storageMode]]">
+                  <paper-item on-click="_handleFullEditor">Raw config editor</paper-item>
+                </template>
                 <paper-item on-click="_handleHelp">Help</paper-item>
               </paper-listbox>
             </paper-menu-button>
@@ -195,6 +198,10 @@ class HUIRoot extends NavigateMixin(
       _yamlMode: {
         type: Boolean,
         computed: "_computeYamlMode(lovelace)",
+      },
+      _storageMode: {
+        type: Boolean,
+        computed: "_computeStorageMode(lovelace)",
       },
       _editMode: {
         type: Boolean,
@@ -285,6 +292,10 @@ class HUIRoot extends NavigateMixin(
 
   _handleHelp() {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
+  }
+
+  _handleFullEditor() {
+    this.lovelace.enableFullEditMode();
   }
 
   _editModeEnable() {
@@ -430,6 +441,10 @@ class HUIRoot extends NavigateMixin(
 
   _computeYamlMode(lovelace) {
     return lovelace ? lovelace.mode === "yaml" : false;
+  }
+
+  _computeStorageMode(lovelace) {
+    return lovelace ? lovelace.mode === "storage" : false;
   }
 
   _computeEditMode(lovelace) {
