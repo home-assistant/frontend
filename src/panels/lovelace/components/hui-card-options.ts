@@ -1,32 +1,22 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { showEditCardDialog } from "../editor/show-edit-card-dialog";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "show-edit-card": {
-      cardConfig?: LovelaceCardConfig;
-      viewId?: string | number;
-      add: boolean;
-      reloadLovelace: () => void;
-    };
-  }
-}
+import { Lovelace } from "../types";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
+  protected lovelace?: Lovelace;
+  protected path?: [number, number];
 
   static get properties(): PropertyDeclarations {
-    return { hass: {} };
+    return { hass: {}, lovelace: {}, path: {} };
   }
 
   protected render() {
@@ -66,26 +56,13 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
     `;
   }
   private _editCard(): void {
-    if (!this.cardConfig) {
-      return;
-    }
     showEditCardDialog(this, {
-      cardConfig: this.cardConfig,
-      add: false,
-      reloadLovelace: () => fireEvent(this, "config-refresh"),
+      lovelace: this.lovelace!,
+      path: this.path!,
     });
   }
   private _deleteCard(): void {
-    if (!this.cardConfig) {
-      return;
-    }
-    if (!this.cardConfig.id) {
-      this._editCard();
-      return;
-    }
-    confDeleteCard(this.hass!, this.cardConfig.id, () =>
-      fireEvent(this, "config-refresh")
-    );
+    confDeleteCard(this.lovelace!, this.path!);
   }
 }
 

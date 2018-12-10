@@ -1,5 +1,5 @@
-import { LovelaceCardConfig } from "../../../data/lovelace";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { Lovelace } from "../../types";
 
 declare global {
   // for fire event
@@ -13,10 +13,8 @@ const dialogShowEvent = "show-edit-card";
 const dialogTag = "hui-dialog-edit-card";
 
 export interface EditCardDialogParams {
-  cardConfig?: LovelaceCardConfig;
-  viewId?: string | number;
-  add: boolean;
-  reloadLovelace: () => void;
+  lovelace: Lovelace;
+  path: [number] | [number, number];
 }
 
 const registerEditCardDialog = (element: HTMLElement) =>
