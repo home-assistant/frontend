@@ -4,8 +4,8 @@ import { LovelaceCardConfig, LovelaceConfig } from "../../data/lovelace";
 export interface Lovelace {
   config: LovelaceConfig;
   editMode: boolean;
-  autoGen: boolean;
-  mode: "yaml" | "storage";
+  mode: "generated" | "yaml" | "storage";
+  enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
 }
