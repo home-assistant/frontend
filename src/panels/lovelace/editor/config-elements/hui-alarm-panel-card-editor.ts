@@ -61,12 +61,11 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
 
-    const availableStates = [
-      "arm_home",
-      "arm_away",
-      "arm_night",
-      "arm_custom_bypass",
-    ];
+    const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
+    const availableStates = states.filter((state) => {
+      return this._states.indexOf(state) === -1;
+    });
+    console.log(this._states);
 
     return html`
       ${configElementStyle}
@@ -88,16 +87,11 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
           ></ha-entity-picker>
         </div>
         <span>Used States</span> ${
-          repeat(
-            this._states!,
-            (item) =>
-              html`
-                <paper-item>
-                  <ha-icon .icon="hass:close"</ha-icon>
-                  <div>${item}</div>
-                </paper-item>
-              `
-          )
+          this._states.map((state, index) => {
+            return html`
+              <paper-item .index="${index}">${state}</paper-item>
+            `;
+          })
         }
         <paper-dropdown-menu
           label="Available States"
@@ -126,14 +120,14 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
     if (!target.value || this._states.indexOf(target.value) >= 0) {
       return;
     }
-    const states = this._states;
-    states.push(target.value);
-    if (target.configValue) {
-      this._config = {
-        ...this._config,
-        states,
-      };
-    }
+    const newStates = this._states;
+    newStates.push(target.value);
+    console.log(newStates);
+    this._config = {
+      ...this._config,
+      states: newStates,
+    };
+    target.value = "";
     fireEvent(this, "config-changed", { config: this._config });
   }
 
