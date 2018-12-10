@@ -124,7 +124,9 @@ class HUIRoot extends NavigateMixin(
             >
               <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
               <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
-                <paper-item on-click="_handleRefresh">Refresh</paper-item>
+                <template is='dom-if' if="[[_yamlMode]]">  
+                  <paper-item on-click="_handleRefresh">Refresh</paper-item>
+                </template>
                 <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
                 <paper-item on-click="_editModeEnable">[[localize("ui.panel.lovelace.editor.configure_ui")]] (alpha)</paper-item>
                 <paper-item on-click="_handleHelp">Help</paper-item>
@@ -174,55 +176,32 @@ class HUIRoot extends NavigateMixin(
     return {
       narrow: Boolean,
       showMenu: Boolean,
-      hass: {
-        type: Object,
-        observer: "_hassChanged",
-      },
+      hass: { type: Object, observer: "_hassChanged" },
       config: {
         type: Object,
         computed: "_computeConfig(lovelace)",
         observer: "_configChanged",
       },
-      lovelace: {
-        type: Object,
-      },
-      columns: {
-        type: Number,
-        observer: "_columnsChanged",
-      },
-
-      _curView: {
-        type: Number,
-        value: 0,
-      },
-
-      route: {
-        type: Object,
-        observer: "_routeChanged",
-      },
-
-      notificationsOpen: {
-        type: Boolean,
-        value: false,
-      },
-
-      _persistentNotifications: {
-        type: Array,
-        value: [],
-      },
-
+      lovelace: { type: Object },
+      columns: { type: Number, observer: "_columnsChanged" },
+      _curView: { type: Number, value: 0 },
+      route: { type: Object, observer: "_routeChanged" },
+      notificationsOpen: { type: Boolean, value: false },
+      _persistentNotifications: { type: Array, value: [] },
       _notifications: {
         type: Array,
         computed: "_updateNotifications(hass.states, _persistentNotifications)",
       },
-
+      _yamlMode: {
+        type: Boolean,
+        computed: "_computeYamlMode(lovelace)",
+      },
       _editMode: {
         type: Boolean,
         value: false,
         computed: "_computeEditMode(lovelace)",
         observer: "_editModeChanged",
       },
-
       routeData: Object,
     };
   }
@@ -309,6 +288,10 @@ class HUIRoot extends NavigateMixin(
   }
 
   _editModeEnable() {
+    if (this._yamlMode) {
+      window.alert("The edit UI is not available when in YAML mode.");
+      return;
+    }
     this.lovelace.setEditMode(true);
     if (this.config.views.length < 2) {
       this.$.view.classList.remove("tabs-hidden");
@@ -443,6 +426,10 @@ class HUIRoot extends NavigateMixin(
 
   _computeConfig(lovelace) {
     return lovelace ? lovelace.config : null;
+  }
+
+  _computeYamlMode(lovelace) {
+    return lovelace ? lovelace.mode === "yaml" : false;
   }
 
   _computeEditMode(lovelace) {
