@@ -16,6 +16,8 @@ interface LovelacePanelConfig {
   mode: "yaml" | "storage";
 }
 
+let editorLoaded = false;
+
 class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
   public panel?: PanelInfo<LovelacePanelConfig>;
   public hass?: HomeAssistant;
@@ -23,7 +25,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
   public showMenu?: boolean;
   public route?: object;
   private _columns?: number;
-  private _state?: "loading" | "loaded" | "error";
+  private _state?: "loading" | "loaded" | "error" | "yaml-editor";
   private _errorMsg?: string;
   private lovelace?: Lovelace;
   private mqls?: MediaQueryList[];
@@ -40,6 +42,11 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
       _errorMsg: String,
       _config: { type: {}, value: null },
     };
+  }
+
+  constructor() {
+    super();
+    this._closeEditor = this._closeEditor.bind(this);
   }
 
   public render(): TemplateResult {
@@ -80,6 +87,15 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
       `;
     }
 
+    if (state === "yaml-editor") {
+      return html`
+        <hui-editor
+          .lovelace="${this.lovelace}"
+          .closeEditor="${this._closeEditor}"
+        ></hui-editor>
+      `;
+    }
+
     return html`
       <hass-loading-screen
         .narrow="${this.narrow}"
@@ -103,6 +119,10 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
       return mql;
     });
     this._updateColumns();
+  }
+
+  private _closeEditor() {
+    this._state = "loaded";
   }
 
   private _updateColumns() {
@@ -144,6 +164,13 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
       config: conf,
       editMode: this.lovelace ? this.lovelace.editMode : false,
       mode: confMode,
+      enableFullEditMode: () => {
+        if (!editorLoaded) {
+          editorLoaded = true;
+          import("./hui-editor");
+        }
+        this._state = "yaml-editor";
+      },
       setEditMode: (editMode: boolean) => {
         if (!editMode || this.lovelace!.mode !== "generated") {
           this._updateLovelace({ editMode });
