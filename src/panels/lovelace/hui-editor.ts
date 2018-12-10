@@ -11,6 +11,8 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { Lovelace } from "./types";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 
+const TAB_INSERT = "  ";
+
 class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
@@ -49,7 +51,28 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   protected firstUpdated() {
-    this.textArea.value = yaml.safeDump(this.lovelace!.config);
+    const textArea = this.textArea;
+    textArea.value = yaml.safeDump(this.lovelace!.config);
+    textArea.addEventListener("keydown", (e) => {
+      if (e.keyCode !== 9) {
+        return;
+      }
+
+      e.preventDefault();
+
+      // tab was pressed, get caret position/selection
+      const val = textArea.value;
+      const start = textArea.selectionStart;
+      const end = textArea.selectionEnd;
+
+      // set textarea value to: text before caret + tab + text after caret
+      textArea.value =
+        val.substring(0, start) + TAB_INSERT + val.substring(end);
+
+      // put caret at right position again
+      textArea.selectionStart = textArea.selectionEnd =
+        start + TAB_INSERT.length;
+    });
   }
 
   protected renderStyle() {
