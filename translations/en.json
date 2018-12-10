@@ -726,13 +726,32 @@
                     "edit_card": {
                         "header": "Card Configuration",
                         "save": "Save",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "pick_card": "Pick the card you want to add.",
+                        "add": "Add Card",
+                        "edit": "Edit",
+                        "delete": "Delete"
                     },
                     "migrate": {
                         "header": "Configuration Incompatible",
                         "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
                         "migrate": "Migrate config"
+                    },
+                    "header": "Edit UI",
+                    "configure_ui": "Configure UI",
+                    "edit_view": {
+                        "header": "View Configuration",
+                        "add": "Add view",
+                        "edit": "Edit view",
+                        "delete": "Delete view"
+                    },
+                    "save_config": {
+                        "header": "Take control of your Lovelace UI",
+                        "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace components become available. If you take control we will no longer make changes automatically for you.",
+                        "para_sure": "Are you sure you want to take control of your user interface?",
+                        "cancel": "Never mind",
+                        "save": "Take control"
                     }
                 }
             }
@@ -743,7 +762,8 @@
         },
         "common": {
             "loading": "Loading",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "save": "Save"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",

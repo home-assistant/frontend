@@ -301,7 +301,7 @@
                 "period": "Zäitraum"
             },
             "logbook": {
-                "showing_entries": "Weist Beiträg fir"
+                "showing_entries": "Weist Beiträg fir"
             },
             "mailbox": {
                 "empty": "Dir hutt keng Noriicht",
@@ -403,7 +403,7 @@
                                 },
                                 "sun": {
                                     "label": "Sonn",
-                                    "event": "Evenement",
+                                    "event": "Evenement:",
                                     "sunrise": "Sonnenopgank",
                                     "sunset": "Sonnenënnergank",
                                     "offset": "Versat (optional)"
@@ -726,13 +726,31 @@
                     "edit_card": {
                         "header": "Kaart Konfiguratioun",
                         "save": "Späicheren",
-                        "toggle_editor": "Editeur ëmschalten"
+                        "toggle_editor": "Editeur ëmschalten",
+                        "pick_card": "Wielt d'Kaart aus déi soll dobäigesat ginn.",
+                        "add": "Kaart dobäisetzen",
+                        "edit": "Änneren",
+                        "delete": "Läschen"
                     },
                     "migrate": {
                         "header": "Konfiguratioun net kompatibel",
                         "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant kann ID's zu all äre Kaarten automatesch dobäisetzen andeem dir de Knäppche 'Konfiguratioun migréieren' dréckt.",
                         "migrate": "Konfiguratioun migréieren"
+                    },
+                    "header": "UI änneren",
+                    "configure_ui": "UI konfiguréieren",
+                    "edit_view": {
+                        "header": "Konfiguratioun kucken",
+                        "add": "Vue dobäisetzen",
+                        "edit": "Vue änneren",
+                        "delete": "Vue läschen"
+                    },
+                    "save_config": {
+                        "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
+                        "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
+                        "cancel": "Vergiess et",
+                        "save": "Kontroll iwwerhuelen"
                     }
                 }
             }
@@ -743,7 +761,8 @@
         },
         "common": {
             "loading": "Lued",
-            "cancel": "Ofbriechen"
+            "cancel": "Ofbriechen",
+            "save": "Späicheren"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",

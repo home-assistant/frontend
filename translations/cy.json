@@ -142,7 +142,8 @@
             "performance": "Perfformiad",
             "high_demand": "Galw uchel",
             "heat_pump": "Pwmp gwres",
-            "gas": "Nwy"
+            "gas": "Nwy",
+            "manual": "Llawlyfr"
         },
         "configurator": {
             "configure": "Ffurfweddu",
