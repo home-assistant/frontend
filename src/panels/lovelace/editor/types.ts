@@ -1,4 +1,8 @@
-import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
+import {
+  LovelaceCardConfig,
+  LovelaceViewConfig,
+  ActionConfig,
+} from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
 import { InputType } from "zlib";
 
@@ -37,6 +41,7 @@ export interface EditorTarget extends EventTarget {
   checked?: boolean;
   configValue?: string;
   type?: InputType;
+  config: ActionConfig;
 }
 
 export interface CardPickTarget extends EventTarget {

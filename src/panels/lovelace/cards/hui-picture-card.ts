@@ -2,7 +2,7 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 
 import "../../../components/ha-card";
 
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { TemplateResult } from "lit-html";
@@ -10,20 +10,31 @@ import { classMap } from "lit-html/directives/classMap";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   image?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
 }
 
 export class HuiPictureCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-picture-card-editor");
+    return document.createElement("hui-picture-card-editor");
+  }
+  public static getStubConfig(): object {
+    return {
+      image:
+        "https://github.com/home-assistant/home-assistant-assets/blob/master/logo.png?raw=true",
+      tap_action: { action: "more-info" },
+      hold_action: { action: "none" },
+    };
+  }
+
   public hass?: HomeAssistant;
   protected _config?: Config;
 
   static get properties(): PropertyDeclarations {
-    return {
-      _config: {},
-    };
+    return { _config: {} };
   }
 
   public getCardSize(): number {
