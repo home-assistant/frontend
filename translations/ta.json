@@ -113,7 +113,8 @@
             "performance": "செயல்திறன்",
             "high_demand": "அதிக தேவை",
             "heat_pump": "வெப்ப பம்ப்",
-            "gas": "வாயு"
+            "gas": "வாயு",
+            "manual": "கையேடு"
         },
         "configurator": {
             "configure": "உள்ளமை",

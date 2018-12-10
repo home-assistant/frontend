@@ -142,7 +142,8 @@
             "performance": "ประสิทธิภาพ",
             "high_demand": "ความต้องการสูง",
             "heat_pump": "ปั๊มความร้อน",
-            "gas": "แก๊ส"
+            "gas": "แก๊ส",
+            "manual": "คู่มือ"
         },
         "configurator": {
             "configure": "ตั้งค่า",

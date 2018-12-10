@@ -66,5 +66,10 @@
     },
     "domain": {
         "zwave": "Z-Wave"
+    },
+    "state": {
+        "climate": {
+            "manual": "Rankinis"
+        }
     }
 }

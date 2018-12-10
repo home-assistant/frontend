@@ -81,7 +81,8 @@
             "fan_only": "ファンのみ",
             "eco": "エコ",
             "performance": "パフォーマンス",
-            "gas": "ガス"
+            "gas": "ガス",
+            "manual": "マニュアル"
         },
         "configurator": {
             "configure": "設定",
