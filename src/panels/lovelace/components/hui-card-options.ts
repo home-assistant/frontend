@@ -8,6 +8,7 @@ import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { Lovelace } from "../types";
+import { swapCard } from "../editor/config-util";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
@@ -47,6 +48,19 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
           }</paper-button
         >
         <paper-icon-button
+          icon="hass:arrow-up"
+          @click="${this._cardUp}"
+          ?disabled="${this.path![1] === 0}"
+        ></paper-icon-button>
+        <paper-icon-button
+          icon="hass:arrow-down"
+          @click="${this._cardDown}"
+          ?disabled="${
+            this.lovelace!.config.views[this.path![0]].cards!.length ===
+              this.path![1] + 1
+          }"
+        ></paper-icon-button>
+        <paper-icon-button
           class="delete"
           icon="hass:delete"
           @click="${this._deleteCard}"
@@ -55,12 +69,30 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
       </div>
     `;
   }
+
   private _editCard(): void {
     showEditCardDialog(this, {
       lovelace: this.lovelace!,
       path: this.path!,
     });
   }
+
+  private _cardUp(): void {
+    const lovelace = this.lovelace!;
+    const path = this.path!;
+    lovelace.saveConfig(
+      swapCard(lovelace.config, path, [path[0], path[1] - 1])
+    );
+  }
+
+  private _cardDown(): void {
+    const lovelace = this.lovelace!;
+    const path = this.path!;
+    lovelace.saveConfig(
+      swapCard(lovelace.config, path, [path[0], path[1] + 1])
+    );
+  }
+
   private _deleteCard(): void {
     confDeleteCard(this.lovelace!, this.path!);
   }
