@@ -159,3 +159,11 @@ export type GroupEntity = HassEntityBase & {
     control?: "hidden";
   };
 };
+
+export interface PanelInfo<T = unknown> {
+  component_name: string;
+  icon?: string;
+  title?: string;
+  url_path: string;
+  config: T;
+}
