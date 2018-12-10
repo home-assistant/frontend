@@ -89,6 +89,38 @@ export const deleteCard = (
   };
 };
 
+export const swapCard = (
+  config: LovelaceConfig,
+  path1: [number, number],
+  path2: [number, number]
+): LovelaceConfig => {
+  const card1 = config.views[path1[0]].cards![path1[1]];
+  const card2 = config.views[path2[0]].cards![path2[1]];
+
+  const origView1 = config.views[path1[0]];
+  const newView1 = {
+    ...origView1,
+    cards: origView1.cards!.map((origCard, index) =>
+      index === path1[1] ? card2 : origCard
+    ),
+  };
+
+  const origView2 = path1[0] === path2[0] ? newView1 : config.views[path2[0]];
+  const newView2 = {
+    ...origView2,
+    cards: origView2.cards!.map((origCard, index) =>
+      index === path2[1] ? card1 : origCard
+    ),
+  };
+
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === path2[0] ? newView2 : index === path1[0] ? newView1 : origView
+    ),
+  };
+};
+
 export const addView = (
   config: LovelaceConfig,
   viewConfig: LovelaceViewConfig
