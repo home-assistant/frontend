@@ -10,6 +10,7 @@ import { LitElement, html, PropertyValues } from "@polymer/lit-element";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 import { TemplateResult } from "lit-html";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
+import { generateLovelaceConfig } from "./common/generate-lovelace-config";
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -121,12 +122,11 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
   }
 
   private async _fetchConfig(force) {
-    let conf;
-    let gen: boolean;
+    let conf: LovelaceConfig;
+    let confMode: Lovelace["mode"] = this.panel!.config.mode;
 
     try {
       conf = await fetchConfig(this.hass!, force);
-      gen = false;
     } catch (err) {
       if (err.code !== "config_not_found") {
         // tslint:disable-next-line
@@ -135,21 +135,17 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
         this._errorMsg = err.message;
         return;
       }
-      const {
-        generateLovelaceConfig,
-      } = await import("./common/generate-lovelace-config");
       conf = generateLovelaceConfig(this.hass!, this.localize);
-      gen = true;
+      confMode = "generated";
     }
 
     this._state = "loaded";
     this.lovelace = {
       config: conf,
-      autoGen: gen,
       editMode: this.lovelace ? this.lovelace.editMode : false,
-      mode: this.panel!.config.mode,
+      mode: confMode,
       setEditMode: (editMode: boolean) => {
-        if (!editMode || !this.lovelace!.autoGen) {
+        if (!editMode || this.lovelace!.mode !== "generated") {
           this._updateLovelace({ editMode });
           return;
         }
@@ -158,16 +154,16 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-        const { config, autoGen } = this.lovelace!;
+        const { config, mode } = this.lovelace!;
         try {
           // Optimistic update
-          this._updateLovelace({ config: newConfig, autoGen: false });
+          this._updateLovelace({ config: newConfig, mode: "storage" });
           await saveConfig(this.hass!, newConfig);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);
           // Rollback the optimistic update
-          this._updateLovelace({ config, autoGen });
+          this._updateLovelace({ config, mode });
           throw err;
         }
       },
