@@ -10,40 +10,8 @@ import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../types";
 
-import {
-  saveConfig,
-  migrateConfig,
-  LovelaceConfig,
-} from "../../../data/lovelace";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "show-save-config": SaveDialogParams;
-  }
-}
-
-const dialogShowEvent = "show-save-config";
-const dialogTag = "hui-dialog-save-config";
-
-export interface SaveDialogParams {
-  config: LovelaceConfig;
-  reloadLovelace: () => void;
-}
-
-export const registerSaveDialog = (element: HTMLElement) =>
-  fireEvent(element, "register-dialog", {
-    dialogShowEvent,
-    dialogTag,
-    dialogImport: () => import("./hui-dialog-save-config"),
-  });
-
-export const showSaveDialog = (
-  element: HTMLElement,
-  saveDialogParams: SaveDialogParams
-) => fireEvent(element, dialogShowEvent, saveDialogParams);
+import { SaveDialogParams } from "./show-save-config-dialog";
 
 export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
   protected hass?: HomeAssistant;
@@ -137,13 +105,11 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
       return;
     }
     this._saving = true;
-    delete this._params.config._frontendAuto;
     try {
-      await saveConfig(this.hass, this._params.config, "json");
-      await migrateConfig(this.hass);
+      const lovelace = this._params!.lovelace;
+      await lovelace.saveConfig(lovelace.config);
       this._saving = false;
       this._closeDialog();
-      this._params.reloadLovelace!();
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
       this._saving = false;
@@ -157,4 +123,4 @@ declare global {
   }
 }
 
-customElements.define(dialogTag, HuiSaveConfig);
+customElements.define("hui-dialog-save-config", HuiSaveConfig);

@@ -2,22 +2,11 @@ import { html, LitElement } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import "@polymer/paper-button/paper-button";
 
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-import { getCardElementTag } from "../common/get-card-element-tag";
-import { CardPickTarget } from "./types";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-
-import { uid } from "../../../common/util/uid";
-
-declare global {
-  interface HASSDomEvents {
-    "card-picked": {
-      config: LovelaceCardConfig;
-    };
-  }
-}
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCardConfig } from "../../../../data/lovelace";
+import { getCardElementTag } from "../../common/get-card-element-tag";
+import { CardPickTarget } from "../types";
+import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
@@ -47,7 +36,8 @@ const cards = [
 ];
 
 export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
-  protected hass?: HomeAssistant;
+  public hass?: HomeAssistant;
+  public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
   protected render(): TemplateResult {
     return html`
@@ -90,16 +80,14 @@ export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
     const tag = getCardElementTag(type);
 
     const elClass = customElements.get(tag);
-    let config: LovelaceCardConfig = { type, id: uid() };
+    let config: LovelaceCardConfig = { type };
 
     if (elClass && elClass.getStubConfig) {
       const cardConfig = elClass.getStubConfig(this.hass);
       config = { ...config, ...cardConfig };
     }
 
-    fireEvent(this, "card-picked", {
-      config,
-    });
+    this.cardPicked!(config);
   }
 }
 

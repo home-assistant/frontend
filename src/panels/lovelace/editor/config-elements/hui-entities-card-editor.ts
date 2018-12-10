@@ -33,7 +33,6 @@ const entitiesConfigStruct = struct.union([
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   title: "string|number?",
   theme: "string?",
   show_header_toggle: "boolean?",
