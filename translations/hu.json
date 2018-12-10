@@ -292,7 +292,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Törlés sikeres",
+                "clear_completed": "Kijelöltek törlése",
                 "add_item": "Tétel hozzáadása",
                 "microphone_tip": "Koppints a jobb felső sarokban található mikrofonra, és mondd ki: \"Add candy to my shopping list\""
             },
@@ -726,13 +726,32 @@
                     "edit_card": {
                         "header": "Kártya Konfiguráció",
                         "save": "Mentés",
-                        "toggle_editor": "Szerkesztő"
+                        "toggle_editor": "Szerkesztő",
+                        "pick_card": "Válaszd ki a kártyát amit hozzá szeretnél adni.",
+                        "add": "Kártya hozzáadása",
+                        "edit": "Szerkesztés",
+                        "delete": "Törlés"
                     },
                     "migrate": {
                         "header": "Inkompatibilis Konfiguráció",
                         "para_no_id": "Ez az elem nem rendelkezik azonosítóval. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!",
                         "para_migrate": "A Home Assistant a 'Konfiguráció áttelepítése' gomb megnyomásával az összes kártyához és nézethez automatikusan létre tud hozni azonosítókat.",
                         "migrate": "Konfiguráció áttelepítése"
+                    },
+                    "header": "Felhasználói felület szerkesztése",
+                    "configure_ui": "Felhasználói felület konfigurálása",
+                    "edit_view": {
+                        "header": "Nézet konfigurálása",
+                        "add": "Nézet hozzáadása",
+                        "edit": "Nézet szerkesztése",
+                        "delete": "Nézet törlése"
+                    },
+                    "save_config": {
+                        "header": "Vedd át az irányítást a Lovelace UI felett",
+                        "para": "Alapértelmezés szerint a Home Assistant kezeli a felhasználói felületet, és frissíti azt, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, többé nem fogunk automatikusan módosításokat végezni számodra.",
+                        "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
+                        "cancel": "Mégsem",
+                        "save": "Irányítás átvétele"
                     }
                 }
             }
@@ -743,7 +762,8 @@
         },
         "common": {
             "loading": "Betöltés",
-            "cancel": "Mégse"
+            "cancel": "Mégse",
+            "save": "Mentés"
         },
         "duration": {
             "day": "{count} {count, plural,\none {nap}\nother {nap}\n}",
