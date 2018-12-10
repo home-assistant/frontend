@@ -32,8 +32,7 @@ import "./hui-unused-entities";
 import "./hui-view";
 import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
-import { showSaveDialog } from "./editor/hui-dialog-save-config";
-import { showEditViewDialog } from "./editor/show-edit-view-dialog";
+import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -181,7 +180,11 @@ class HUIRoot extends NavigateMixin(
       },
       config: {
         type: Object,
+        computed: "_computeConfig(lovelace)",
         observer: "_configChanged",
+      },
+      lovelace: {
+        type: Object,
       },
       columns: {
         type: Number,
@@ -216,6 +219,7 @@ class HUIRoot extends NavigateMixin(
       _editMode: {
         type: Boolean,
         value: false,
+        computed: "_computeEditMode(lovelace)",
         observer: "_editModeChanged",
       },
 
@@ -258,12 +262,12 @@ class HUIRoot extends NavigateMixin(
   _routeChanged(route) {
     const views = this.config && this.config.views;
     if (route.path === "" && route.prefix === "/lovelace" && views) {
-      this.navigate(`/lovelace/${views[0].id || 0}`, true);
+      this.navigate(`/lovelace/${views[0].path || 0}`, true);
     } else if (this.routeData.view) {
       const view = this.routeData.view;
       let index = 0;
       for (let i = 0; i < views.length; i++) {
-        if (views[i].id === view || i === parseInt(view)) {
+        if (views[i].path === view || i === parseInt(view)) {
           index = i;
           break;
         }
@@ -272,8 +276,8 @@ class HUIRoot extends NavigateMixin(
     }
   }
 
-  _computeViewId(id, index) {
-    return id || index;
+  _computeViewPath(path, index) {
+    return path || index;
   }
 
   _computeTitle(config) {
@@ -305,17 +309,7 @@ class HUIRoot extends NavigateMixin(
   }
 
   _editModeEnable() {
-    if (this.config._frontendAuto) {
-      showSaveDialog(this, {
-        config: this.config,
-        reloadLovelace: () => {
-          this.fire("config-refresh");
-          this._editMode = true;
-        },
-      });
-      return;
-    }
-    this._editMode = true;
+    this.lovelace.setEditMode(true);
     if (this.config.views.length < 2) {
       this.$.view.classList.remove("tabs-hidden");
       this.fire("iron-resize");
@@ -323,7 +317,7 @@ class HUIRoot extends NavigateMixin(
   }
 
   _editModeDisable() {
-    this._editMode = false;
+    this.lovelace.setEditMode(false);
     if (this.config.views.length < 2) {
       this.$.view.classList.add("tabs-hidden");
       this.fire("iron-resize");
@@ -336,20 +330,14 @@ class HUIRoot extends NavigateMixin(
 
   _editView() {
     showEditViewDialog(this, {
-      viewConfig: this.config.views[this._curView],
-      add: false,
-      reloadLovelace: () => {
-        this.fire("config-refresh");
-      },
+      lovelace: this.lovelace,
+      viewIndex: this._curView,
     });
   }
 
   _addView() {
     showEditViewDialog(this, {
-      add: true,
-      reloadLovelace: () => {
-        this.fire("config-refresh");
-      },
+      lovelace: this.lovelace,
     });
   }
 
@@ -360,8 +348,8 @@ class HUIRoot extends NavigateMixin(
 
   _navigateView(viewIndex) {
     if (viewIndex !== this._curView) {
-      const id = this.config.views[viewIndex].id || viewIndex;
-      this.navigate(`/lovelace/${id}`);
+      const path = this.config.views[viewIndex].path || viewIndex;
+      this.navigate(`/lovelace/${path}`);
     }
     scrollToTarget(this, this.$.layout.header.scrollTarget);
   }
@@ -390,12 +378,12 @@ class HUIRoot extends NavigateMixin(
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
-        view.editMode = this._editMode;
       } else {
         view = document.createElement("hui-view");
+        view.lovelace = this.lovelace;
         view.config = viewConfig;
         view.columns = this.columns;
-        view.editMode = this._editMode;
+        view.index = viewIndex;
       }
       if (viewConfig.background) background = viewConfig.background;
     }
@@ -451,6 +439,14 @@ class HUIRoot extends NavigateMixin(
           console.warn("Unknown resource type specified: ${resource.type}");
       }
     });
+  }
+
+  _computeConfig(lovelace) {
+    return lovelace ? lovelace.config : null;
+  }
+
+  _computeEditMode(lovelace) {
+    return lovelace ? lovelace.editMode : false;
   }
 }
 customElements.define("hui-root", HUIRoot);
