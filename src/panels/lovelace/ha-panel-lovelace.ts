@@ -167,7 +167,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
       enableFullEditMode: () => {
         if (!editorLoaded) {
           editorLoaded = true;
-          import("./hui-editor");
+          import(/* webpackChunkName: "lovelace-yaml-editor" */ "./hui-editor");
         }
         this._state = "yaml-editor";
       },
