@@ -726,13 +726,32 @@
                     "edit_card": {
                         "header": "Konfiguracja karty",
                         "save": "Zapisz",
-                        "toggle_editor": "Przełącz edytor"
+                        "toggle_editor": "Przełącz edytor",
+                        "pick_card": "Wybierz kartę, którą chcesz dodać.",
+                        "add": "Dodaj kartę",
+                        "edit": "Edytuj",
+                        "delete": "Usuń"
                     },
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",
                         "para_no_id": "Ten element nie ma ID. Dodaj ID do tego elementu w \"ui-lovelace.yaml\".",
                         "para_migrate": "Home Assistant może automatycznie dodać ID do wszystkich twoich kart i widoków, po kliknięciu przycisku \"Migracja konfiguracji\".",
                         "migrate": "Migracja konfiguracji"
+                    },
+                    "header": "Edycja interfejsu użytkownika",
+                    "configure_ui": "Konfiguracja interfejsu użytkownika",
+                    "edit_view": {
+                        "header": "Konfiguracja widoku",
+                        "add": "Dodaj widok",
+                        "edit": "Edytuj widok",
+                        "delete": "Usuń widok"
+                    },
+                    "save_config": {
+                        "header": "Przejmij kontrolę nad interfejsem użytkownika Lovelace",
+                        "para": "Domyślnie Home Assistant będzie zarządzać interfejsem użytkownika, aktualizując go, gdy pojawią się nowe encje lub komponenty Lovelace. Jeśli przejmiesz kontrolę, Home Assistant nie będzie już automatycznie wprowadzać dla ciebie zmian.",
+                        "para_sure": "Czy na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
+                        "cancel": "Nieważne",
+                        "save": "Przejmuję kontrolę"
                     }
                 }
             }
@@ -743,7 +762,8 @@
         },
         "common": {
             "loading": "Ładowanie",
-            "cancel": "Anuluj"
+            "cancel": "Anuluj",
+            "save": "Zapisz"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n}",

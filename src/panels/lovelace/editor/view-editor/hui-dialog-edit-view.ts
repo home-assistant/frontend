@@ -1,10 +1,9 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import { HomeAssistant } from "../../../types";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "./hui-edit-view";
-import "./hui-migrate-config";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
 
 declare global {
@@ -39,24 +38,11 @@ export class HuiDialogEditView extends LitElement {
     if (!this._params) {
       return html``;
     }
-    if (
-      !this._params.add &&
-      this._params.viewConfig &&
-      !("id" in this._params.viewConfig)
-    ) {
-      return html`
-        <hui-migrate-config
-          .hass="${this.hass}"
-          @reload-lovelace="${this._params.reloadLovelace}"
-        ></hui-migrate-config>
-      `;
-    }
     return html`
       <hui-edit-view
         .hass="${this.hass}"
-        .viewConfig="${this._params.viewConfig}"
-        .add="${this._params.add}"
-        .reloadLovelace="${this._params.reloadLovelace}"
+        .lovelace="${this._params.lovelace}"
+        .viewIndex="${this._params.viewIndex}"
       >
       </hui-edit-view>
     `;

@@ -144,7 +144,8 @@
             "performance": "Ydeevne",
             "high_demand": "Høj efterspørgsel",
             "heat_pump": "Varmepumpe",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "brugervejledning"
         },
         "configurator": {
             "configure": "Konfigurer",

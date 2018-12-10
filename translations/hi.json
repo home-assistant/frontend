@@ -34,7 +34,8 @@
         "climate": {
             "heat": "गर्मी",
             "cool": "ठंडा",
-            "dry": "सूखा"
+            "dry": "सूखा",
+            "manual": "गाइड"
         },
         "device_tracker": {
             "home": "घर"

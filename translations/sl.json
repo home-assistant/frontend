@@ -726,13 +726,32 @@
                     "edit_card": {
                         "header": "Konfiguracija kartice",
                         "save": "Shrani",
-                        "toggle_editor": "Preklop na urejevalnik"
+                        "toggle_editor": "Preklop na urejevalnik",
+                        "pick_card": "Izberite kartico, ki jo želite dodati.",
+                        "add": "Dodaj kartico",
+                        "edit": "Uredi",
+                        "delete": "Izbriši"
                     },
                     "migrate": {
                         "header": "Konfiguracija Nezdružljiva",
                         "para_no_id": "Ta element nima ID-ja. Prosimo, dodajte ID tega elementa v 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant lahko doda ID-je vsem vašim karticam in pogledom samodejno s pritiskom gumba »Migriraj nastavitve«.",
                         "migrate": "Migriraj nastavitve"
+                    },
+                    "header": "Uredi UI",
+                    "configure_ui": "Konfiguriraj UI",
+                    "edit_view": {
+                        "header": "Prikaži konfiguracijo",
+                        "add": "Dodaj pogled",
+                        "edit": "Uredi pogled",
+                        "delete": "Izbriši pogled"
+                    },
+                    "save_config": {
+                        "header": "Prevzemite nadzor nad lovelace vmesnikom",
+                        "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik, ga posodabljal, ko bodo na voljo nove entitete ali komponente Lovelace. Če prevzamete nadzor, vam ga ne bo več samodejno popravljal.",
+                        "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
+                        "cancel": "Pozabi",
+                        "save": "Prevzemite nadzor"
                     }
                 }
             }
@@ -743,7 +762,8 @@
         },
         "common": {
             "loading": "Nalaganje",
-            "cancel": "Prekliči"
+            "cancel": "Prekliči",
+            "save": "Shrani"
         },
         "duration": {
             "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",

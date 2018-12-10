@@ -144,7 +144,8 @@
             "performance": "Yting",
             "high_demand": "Høg etterspurnad",
             "heat_pump": "Varmepumpe",
-            "gas": "Gass"
+            "gas": "Gass",
+            "manual": "Håndbok"
         },
         "configurator": {
             "configure": "Konfigurerer",

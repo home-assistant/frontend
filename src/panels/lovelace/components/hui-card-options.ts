@@ -1,31 +1,23 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "@polymer/paper-button/paper-button";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { showEditCardDialog } from "../editor/show-edit-card-dialog";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "show-edit-card": {
-      cardConfig?: LovelaceCardConfig;
-      viewId?: string | number;
-      add: boolean;
-      reloadLovelace: () => void;
-    };
-  }
-}
+import { Lovelace } from "../types";
+import { swapCard } from "../editor/config-util";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
   protected hass?: HomeAssistant;
+  protected lovelace?: Lovelace;
+  protected path?: [number, number];
 
   static get properties(): PropertyDeclarations {
-    return { hass: {} };
+    return { hass: {}, lovelace: {}, path: {} };
   }
 
   protected render() {
@@ -38,14 +30,14 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
           box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
             rgba(0, 0, 0, 0.12) 0px 1px 5px 0px,
             rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
-          text-align: right;
         }
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
         }
-        paper-button.warning:not([disabled]) {
-          color: var(--google-red-500);
+        paper-icon-button.delete {
+          color: var(--secondary-text-color);
+          float: right;
         }
       </style>
       <slot></slot>
@@ -55,35 +47,54 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             this.localize("ui.panel.lovelace.editor.edit_card.edit")
           }</paper-button
         >
-        <paper-button class="warning" @click="${this._deleteCard}"
-          >${
-            this.localize("ui.panel.lovelace.editor.edit_card.delete")
-          }</paper-button
-        >
+        <paper-icon-button
+          icon="hass:arrow-up"
+          @click="${this._cardUp}"
+          ?disabled="${this.path![1] === 0}"
+        ></paper-icon-button>
+        <paper-icon-button
+          icon="hass:arrow-down"
+          @click="${this._cardDown}"
+          ?disabled="${
+            this.lovelace!.config.views[this.path![0]].cards!.length ===
+              this.path![1] + 1
+          }"
+        ></paper-icon-button>
+        <paper-icon-button
+          class="delete"
+          icon="hass:delete"
+          @click="${this._deleteCard}"
+          title="${this.localize("ui.panel.lovelace.editor.edit_card.delete")}"
+        ></paper-icon-button>
       </div>
     `;
   }
+
   private _editCard(): void {
-    if (!this.cardConfig) {
-      return;
-    }
     showEditCardDialog(this, {
-      cardConfig: this.cardConfig,
-      add: false,
-      reloadLovelace: () => fireEvent(this, "config-refresh"),
+      lovelace: this.lovelace!,
+      path: this.path!,
     });
   }
-  private _deleteCard(): void {
-    if (!this.cardConfig) {
-      return;
-    }
-    if (!this.cardConfig.id) {
-      this._editCard();
-      return;
-    }
-    confDeleteCard(this.hass!, this.cardConfig.id, () =>
-      fireEvent(this, "config-refresh")
+
+  private _cardUp(): void {
+    const lovelace = this.lovelace!;
+    const path = this.path!;
+    lovelace.saveConfig(
+      swapCard(lovelace.config, path, [path[0], path[1] - 1])
     );
+  }
+
+  private _cardDown(): void {
+    const lovelace = this.lovelace!;
+    const path = this.path!;
+    lovelace.saveConfig(
+      swapCard(lovelace.config, path, [path[0], path[1] + 1])
+    );
+  }
+
+  private _deleteCard(): void {
+    confDeleteCard(this.lovelace!, this.path!);
   }
 }
 

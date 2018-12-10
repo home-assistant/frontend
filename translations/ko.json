@@ -726,13 +726,32 @@
                     "edit_card": {
                         "header": "카드 구성",
                         "save": "저장하기",
-                        "toggle_editor": "에디터 전환"
+                        "toggle_editor": "에디터 전환",
+                        "pick_card": "추가하려는 카드를 선택해주세요",
+                        "add": "카드 추가",
+                        "edit": "편집",
+                        "delete": "삭제"
                     },
                     "migrate": {
                         "header": "설정이 호환되지 않습니다",
                         "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요.",
                         "para_migrate": "Home Assistant 는 '설정 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 보기에 ID를 추가 할 수 있습니다.",
                         "migrate": "설정 마이그레이션"
+                    },
+                    "header": "UI 편집",
+                    "configure_ui": "UI 구성",
+                    "edit_view": {
+                        "header": "구성 보기",
+                        "add": "뷰 추가",
+                        "edit": "뷰 편집",
+                        "delete": "뷰 삭제"
+                    },
+                    "save_config": {
+                        "header": "Lovelace UI 직접 관리하기",
+                        "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
+                        "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
+                        "cancel": "아닙니다",
+                        "save": "직접 관리할께요"
                     }
                 }
             }
@@ -743,7 +762,8 @@
         },
         "common": {
             "loading": "읽는중",
-            "cancel": "취소"
+            "cancel": "취소",
+            "save": "저장"
         },
         "duration": {
             "day": "{count} {count, plural,\none {일}\nother {일}\n}",

@@ -100,7 +100,8 @@
             "performance": "کارایی",
             "high_demand": "تقاضای بالا",
             "heat_pump": "پمپ حرارتی",
-            "gas": "گاز"
+            "gas": "گاز",
+            "manual": "کتابچه راهنمای"
         },
         "configurator": {
             "configure": "پیکربندی",
