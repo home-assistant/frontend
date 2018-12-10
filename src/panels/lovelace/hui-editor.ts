@@ -91,13 +91,19 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
           height: 100vh;
         }
 
+        paper-button {
+          font-size: 16px;
+        }
+
         .content {
-          height: calc(100vh - 64px);
+          height: calc(100vh - 68px);
         }
 
         textarea {
-          height: calc(100% - 16px);
+          box-sizing: border-box;
+          height: 100%;
           width: 100%;
+          resize: none;
           border: 0;
           outline: 0;
           font-size: 12pt;
