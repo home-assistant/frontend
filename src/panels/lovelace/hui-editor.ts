@@ -96,6 +96,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
         }
 
         textarea {
+          box-sizing: border-box;
           height: calc(100% - 16px);
           width: 100%;
           border: 0;

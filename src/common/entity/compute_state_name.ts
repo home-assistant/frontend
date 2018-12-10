@@ -6,6 +6,9 @@ type CachedDisplayEntity = HassEntity & {
 };
 
 export default function computeStateName(stateObj: HassEntity) {
+  if (!stateObj) {
+    return;
+  }
   const state = stateObj as CachedDisplayEntity;
 
   if (state._entityDisplay === undefined) {
