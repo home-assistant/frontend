@@ -10,6 +10,7 @@ import "../home-assistant-main";
 import "../ha-init-page";
 import "../../resources/ha-style";
 import registerServiceWorker from "../../util/register-service-worker";
+import { DEFAULT_PANEL } from "../../common/const";
 
 import HassBaseMixin from "./hass-base-mixin";
 import AuthMixin from "./auth-mixin";
@@ -94,7 +95,7 @@ class HomeAssistant extends ext(PolymerElement, [
   }
 
   computePanelUrl(routeData) {
-    return (routeData && routeData.panel) || "lovelace";
+    return (routeData && routeData.panel) || DEFAULT_PANEL;
   }
 
   panelUrlChanged(newPanelUrl) {
