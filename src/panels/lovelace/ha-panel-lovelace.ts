@@ -81,7 +81,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
           .showMenu="${this.showMenu}"
         >
           <paper-button on-click="_forceFetchConfig"
-            >Reload ui-lovelace.yaml</paper-button
+            >Reload Lovelace</paper-button
           >
         </hass-error-screen>
       `;
