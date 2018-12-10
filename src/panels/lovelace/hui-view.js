@@ -11,7 +11,7 @@ import EventsMixin from "../../mixins/events-mixin";
 import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
-import { showEditCardDialog } from "./editor/show-edit-card-dialog";
+import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 
 class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
@@ -82,7 +82,7 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
       <div id="badges"></div>
       <div id="columns"></div>
       <paper-fab
-        hidden$="{{!editMode}}"
+        hidden$="[[!lovelace.editMode]]"
         elevated="2"
         icon="hass:plus"
         title=[[localize("ui.panel.lovelace.editor.edit_card.add")]]
@@ -97,9 +97,11 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: "_hassChanged",
       },
+      lovelace: Object,
       config: Object,
       columns: Number,
       editMode: Boolean,
+      index: Number,
     };
   }
 
@@ -119,11 +121,8 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
 
   _addCard() {
     showEditCardDialog(this, {
-      viewId: "id" in this.config ? String(this.config.id) : undefined,
-      add: true,
-      reloadLovelace: () => {
-        this.fire("config-refresh");
-      },
+      lovelace: this.lovelace,
+      path: [this.index],
     });
   }
 
@@ -169,23 +168,23 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
 
     const elements = [];
     const elementsToAppend = [];
-    for (const cardConfig of config.cards) {
+    config.cards.forEach((cardConfig, cardIndex) => {
       const element = createCardElement(cardConfig);
       element.hass = this.hass;
       elements.push(element);
 
-      if (!this.editMode) {
+      if (!this.lovelace.editMode) {
         elementsToAppend.push(element);
-        continue;
+        return;
       }
 
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
-      wrapper.cardConfig = cardConfig;
-      wrapper.editMode = this.editMode;
+      wrapper.lovelace = this.lovelace;
+      wrapper.path = [this.index, cardIndex];
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);
-    }
+    });
 
     let columns = [];
     const columnEntityCount = [];

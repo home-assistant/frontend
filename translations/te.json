@@ -142,7 +142,8 @@
             "performance": "ప్రదర్శన",
             "high_demand": "అధిక డిమాండ్",
             "heat_pump": "వేడి పంపు",
-            "gas": "వాయువు"
+            "gas": "వాయువు",
+            "manual": "మాన్యువల్"
         },
         "configurator": {
             "configure": "కాన్ఫిగర్",

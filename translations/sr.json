@@ -26,6 +26,9 @@
             "query_stage": {
                 "initializing": "Učitavanje ({query_stage})"
             }
+        },
+        "climate": {
+            "manual": "Упутство"
         }
     },
     "state_badge": {

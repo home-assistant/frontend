@@ -6,7 +6,7 @@ import { EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
+import { configElementStyle } from "../config-elements/config-elements-style";
 
 import "../../components/hui-theme-select-editor";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
@@ -24,12 +24,11 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     return { hass: {}, _config: {} };
   }
 
-  get _id(): string {
+  get _path(): string {
     if (!this._config) {
       return "";
     }
-
-    return "id" in this._config ? this._config.id! : "";
+    return this._config.path || "";
   }
 
   get _title(): string {
@@ -69,12 +68,6 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="ID"
-          value="${this._id}"
-          .configValue="${"id"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
-        <paper-input
           label="Title"
           value="${this._title}"
           .configValue="${"title"}"
@@ -84,6 +77,12 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
           label="Icon"
           value="${this._icon}"
           .configValue="${"icon"}"
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
+        <paper-input
+          label="URL Path"
+          value="${this._path}"
+          .configValue="${"path"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <hui-theme-select-editor

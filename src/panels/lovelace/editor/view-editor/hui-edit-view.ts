@@ -1,9 +1,4 @@
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  PropertyValues,
-} from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
 import "@polymer/paper-spinner/paper-spinner";
@@ -11,52 +6,50 @@ import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-icon-button/paper-icon-button.js";
-import "@polymer/paper-item/paper-item.js";
-import "@polymer/paper-listbox/paper-listbox.js";
-import "@polymer/paper-menu-button/paper-menu-button.js";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../components/hui-entity-editor";
-import "./config-elements/hui-view-editor";
-import { HomeAssistant } from "../../../types";
+import "../../components/hui-entity-editor";
+import "./hui-view-editor";
+import { HomeAssistant } from "../../../../types";
 import {
-  addView,
-  updateViewConfig,
   LovelaceViewConfig,
-} from "../../../data/lovelace";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { EntitiesEditorEvent, ViewEditEvent } from "./types";
-import { processEditorEntities } from "./process-editor-entities";
-import { EntityConfig } from "../entity-rows/types";
-import { confDeleteView } from "./delete-view";
-import { navigate } from "../../../common/navigate";
+  LovelaceCardConfig,
+} from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
+import { EntitiesEditorEvent, ViewEditEvent } from "../types";
+import { processEditorEntities } from "../process-editor-entities";
+import { EntityConfig } from "../../entity-rows/types";
+import { navigate } from "../../../../common/navigate";
+import { Lovelace } from "../../types";
+import { deleteView, addView, replaceView } from "../config-util";
 
 export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
+  public lovelace?: Lovelace;
+  public viewIndex?: number;
+  protected hass?: HomeAssistant;
+  private _config?: LovelaceViewConfig;
+  private _badges?: EntityConfig[];
+  private _cards?: LovelaceCardConfig[];
+  private _saving: boolean;
+  private _curTabIndex: number;
+  private _curTab?: string;
+
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      viewConfig: {},
-      add: {},
+      lovelace: {},
+      viewIndex: {},
       _config: {},
       _badges: {},
+      _cards: {},
       _saving: {},
       _curTab: {},
     };
   }
-
-  public viewConfig?: LovelaceViewConfig;
-  public add?: boolean;
-  public reloadLovelace?: () => {};
-  protected hass?: HomeAssistant;
-  private _config?: LovelaceViewConfig;
-  private _badges?: EntityConfig[];
-  private _saving: boolean;
-  private _curTabIndex: number;
-  private _curTab?: string;
 
   protected constructor() {
     super();
@@ -69,28 +62,21 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     if (this._dialog == null) {
       await this.updateComplete;
     }
-    this._dialog.open();
-  }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (!changedProperties.has("viewConfig") && !changedProperties.has("add")) {
-      return;
-    }
-    if (
-      this.viewConfig &&
-      (!changedProperties.get("viewConfig") ||
-        this.viewConfig.id !==
-          (changedProperties.get("viewConfig") as LovelaceViewConfig).id)
-    ) {
-      const { cards, badges, ...viewConfig } = this.viewConfig;
-      this._config = viewConfig;
-      this._badges = badges ? processEditorEntities(badges) : [];
-    } else if (changedProperties.has("add")) {
+    if (this.viewIndex === undefined) {
       this._config = {};
       this._badges = [];
+      this._cards = [];
+    } else {
+      const { cards, badges, ...viewConfig } = this.lovelace!.config.views[
+        this.viewIndex
+      ];
+      this._config = viewConfig;
+      this._badges = badges ? processEditorEntities(badges) : [];
+      this._cards = cards;
     }
-    this._resizeDialog();
+
+    this._dialog.open();
   }
 
   private get _dialog(): PaperDialogElement {
@@ -139,6 +125,18 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
         </paper-tabs>
         <paper-dialog-scrollable> ${content} </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
+          ${
+            this.viewIndex !== undefined
+              ? html`
+                  <paper-icon-button
+                    class="delete"
+                    title="Delete"
+                    icon="hass:delete"
+                    @click="${this._delete}"
+                  ></paper-icon-button>
+                `
+              : ""
+          }
           <paper-button @click="${this._closeDialog}"
             >${this.localize("ui.common.cancel")}</paper-button
           >
@@ -152,15 +150,6 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
             ></paper-spinner>
             ${this.localize("ui.common.save")}</paper-button
           >
-          <paper-menu-button no-animations>
-            <paper-icon-button
-              icon="hass:dots-vertical"
-              slot="dropdown-trigger"
-            ></paper-icon-button>
-            <paper-listbox slot="dropdown-content">
-              <paper-item @click="${this._delete}">Delete</paper-item>
-            </paper-listbox>
-          </paper-menu-button>
         </div>
       </paper-dialog>
     `;
@@ -182,6 +171,10 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
           height: 14px;
           margin-right: 20px;
         }
+        paper-icon-button.delete {
+          margin-right: auto;
+          color: var(--secondary-text-color);
+        }
         paper-spinner {
           display: none;
         }
@@ -199,23 +192,27 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
-  private _save(): void {
-    this._saving = true;
-    this._updateConfigInBackend();
-  }
-
-  private _delete() {
-    if (this._config!.cards && this._config!.cards!.length > 0) {
+  private async _delete() {
+    if (this._cards && this._cards.length > 0) {
       alert(
-        "You can't delete a view that has card in them. Remove the cards first."
+        "You can't delete a view that has cards in it. Remove the cards first."
       );
       return;
     }
-    confDeleteView(this.hass!, this._config!.id!, () => {
+
+    if (!confirm("Are you sure you want to delete this view?")) {
+      return;
+    }
+
+    try {
+      await this.lovelace!.saveConfig(
+        deleteView(this.lovelace!.config, this.viewIndex!)
+      );
       this._closeDialog();
-      this.reloadLovelace!();
       navigate(this, `/lovelace/0`);
-    });
+    } catch (err) {
+      alert(`Deleting failed: ${err.message}`);
+    }
   }
 
   private async _resizeDialog(): Promise<void> {
@@ -225,9 +222,9 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
 
   private _closeDialog(): void {
     this._curTabIndex = 0;
+    this.lovelace = undefined;
     this._config = {};
     this._badges = [];
-    this.viewConfig = undefined;
     this._dialog.close();
   }
 
@@ -239,39 +236,35 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     this._resizeDialog();
   }
 
-  private async _updateConfigInBackend(): Promise<void> {
+  private async _save(): Promise<void> {
     if (!this._config) {
       return;
     }
     if (!this._isConfigChanged()) {
       this._closeDialog();
-      this._saving = false;
       return;
     }
 
-    if (this._badges) {
-      this._config.badges = this._badges.map((entityConf) => {
-        return entityConf.entity;
-      });
-    }
+    this._saving = true;
+
+    const viewConf: LovelaceViewConfig = {
+      cards: this._cards,
+      badges: this._badges!.map((entityConf) => entityConf.entity),
+      ...this._config,
+    };
+
+    const lovelace = this.lovelace!;
 
     try {
-      if (this.add) {
-        this._config.cards = [];
-        await addView(this.hass!, this._config, "json");
-      } else {
-        await updateViewConfig(
-          this.hass!,
-          String(this.viewConfig!.id!),
-          this._config,
-          "json"
-        );
-      }
-      this.reloadLovelace!();
+      await lovelace.saveConfig(
+        this._creatingView
+          ? addView(lovelace.config, viewConf)
+          : replaceView(lovelace.config, this.viewIndex!, viewConf)
+      );
       this._closeDialog();
-      this._saving = false;
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
+    } finally {
       this._saving = false;
     }
   }
@@ -290,10 +283,15 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _isConfigChanged(): boolean {
-    if (!this.add) {
-      return true;
-    }
-    return JSON.stringify(this._config) !== JSON.stringify(this.viewConfig);
+    return (
+      this._creatingView ||
+      JSON.stringify(this._config) !==
+        JSON.stringify(this.lovelace!.config.views[this.viewIndex!])
+    );
+  }
+
+  private get _creatingView(): boolean {
+    return this.viewIndex === undefined;
   }
 }
 

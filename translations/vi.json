@@ -140,7 +140,8 @@
             "performance": "Hiệu suất",
             "high_demand": "Nhu cầu cao",
             "heat_pump": "Bơm nhiệt",
-            "gas": "Khí"
+            "gas": "Khí",
+            "manual": "Hướng dẫn"
         },
         "configurator": {
             "configure": "Cấu hình",

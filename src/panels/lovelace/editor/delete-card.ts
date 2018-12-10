@@ -1,17 +1,15 @@
-import { deleteCard } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
+import { Lovelace } from "../types";
+import { deleteCard } from "./config-util";
 
 export async function confDeleteCard(
-  hass: HomeAssistant,
-  cardId: string,
-  reloadLovelace: () => void
+  lovelace: Lovelace,
+  path: [number, number]
 ): Promise<void> {
   if (!confirm("Are you sure you want to delete this card?")) {
     return;
   }
   try {
-    await deleteCard(hass, String(cardId));
-    reloadLovelace();
+    await lovelace.saveConfig(deleteCard(lovelace.config, path));
   } catch (err) {
     alert(`Deleting failed: ${err.message}`);
   }
