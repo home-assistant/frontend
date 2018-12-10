@@ -11,6 +11,7 @@ import "./partial-panel-resolver";
 import EventsMixin from "../mixins/events-mixin";
 import NavigateMixin from "../mixins/navigate-mixin";
 import { computeRTL } from "../common/util/compute_rtl";
+import { DEFAULT_PANEL } from "../common/const";
 
 import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");
@@ -98,7 +99,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
-    this._defaultPage = localStorage.defaultPage || "lovelace";
+    this._defaultPage = localStorage.defaultPage || DEFAULT_PANEL;
     this.addEventListener("hass-open-menu", () => this.handleOpenMenu());
     this.addEventListener("hass-close-menu", () => this.handleCloseMenu());
     this.addEventListener("hass-start-voice", (ev) =>
@@ -135,7 +136,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
   connectedCallback() {
     super.connectedCallback();
     if (document.location.pathname === "/") {
-      this.navigate(`/${localStorage.defaultPage || "lovelace"}`, true);
+      this.navigate(`/${localStorage.defaultPage || DEFAULT_PANEL}`, true);
     }
   }
 
