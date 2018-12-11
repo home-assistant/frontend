@@ -433,7 +433,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     return persistent.concat(configurator);
   }
 
-  private _handleRefresh() {
+  private _handleRefresh(): void {
     fireEvent(this, "config-refresh");
   }
 
