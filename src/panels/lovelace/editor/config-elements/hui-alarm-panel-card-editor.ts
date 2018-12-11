@@ -53,7 +53,7 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _states(): string[] {
-    return this._config!.states || ["arm_home", "arm_away"];
+    return this._config!.states || [];
   }
 
   protected render(): TemplateResult {
@@ -68,7 +68,7 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
     console.log(this._states);
 
     return html`
-      ${configElementStyle}
+      ${configElementStyle} ${this.renderStyle()}
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
@@ -89,20 +89,30 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
         <span>Used States</span> ${
           this._states.map((state, index) => {
             return html`
-              <paper-item .index="${index}">${state}</paper-item>
+              <div class="states">
+                <paper-item>${state}</paper-item>
+                <paper-icon-button
+                  class="deleteState"
+                  slot="item-icon"
+                  .value="${index}"
+                  icon="hass:close"
+                  @click=${this._stateRemoved}
+                ></paper-icon-button>
+              </div>
             `;
           })
         }
         <paper-dropdown-menu
           label="Available States"
           dynamic-align
+          close-on-activate
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
             ${
               availableStates.map((state) => {
                 return html`
-                  <paper-item theme="${state}">${state}</paper-item>
+                  <paper-item .value="${state}">${state}</paper-item>
                 `;
               })
             }
@@ -112,12 +122,48 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
+  private renderStyle(): TemplateResult {
+    return html`
+      <style>
+        .states {
+          display: flex;
+          flex-direction: row;
+        }
+        .deleteState {
+          visibility: hidden;
+        }
+        .states:hover > .deleteState {
+          visibility: visible;
+        }
+      </style>
+    `;
+  }
+
+  private _stateRemoved(ev: EntitiesEditorEvent): void {
+    if (!this._config || !this._states || !this.hass) {
+      return;
+    }
+
+    const target = ev.target! as EditorTarget;
+    const index = Number(target.value);
+    if (index > -1) {
+      const newStates = this._states;
+      newStates.splice(index, 1);
+      this._config = {
+        ...this._config,
+        states: newStates,
+      };
+      fireEvent(this, "config-changed", { config: this._config });
+    }
+  }
+
   private _stateAdded(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (!target.value || this._states.indexOf(target.value) >= 0) {
+    console.log(target.value);
+    if (!target.value) {
       return;
     }
     const newStates = this._states;
