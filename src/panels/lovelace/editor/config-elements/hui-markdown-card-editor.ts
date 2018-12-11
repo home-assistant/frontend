@@ -51,13 +51,13 @@ export class HuiMarkdownCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <paper-input
           label="Title"
-          value="${this._title}"
+          .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-textarea
           label="Content"
-          value="${this._content}"
+          .value="${this._content}"
           .configValue="${"content"}"
           @value-changed="${this._valueChanged}"
           autocapitalize="none"

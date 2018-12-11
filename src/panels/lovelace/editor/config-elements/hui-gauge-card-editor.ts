@@ -86,7 +86,7 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
         <div class="side-by-side">
           <paper-input
             label="Title"
-            value="${this._title}"
+            .value="${this._title}"
             .configValue=${"title"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
@@ -102,7 +102,7 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
         <div class="side-by-side">
           <paper-input
             label="Unit"
-            value="${this._unit}"
+            .value="${this._unit}"
             .configValue=${"unit"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
@@ -117,14 +117,14 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
           <paper-input
             type="number"
             label="Minimum"
-            value="${this._min}"
+            .value="${this._min}"
             .configValue=${"min"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
             type="number"
             label="Maximum"
-            value="${this._max}"
+            .value="${this._max}"
             .configValue=${"max"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
@@ -139,21 +139,21 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
             <paper-input
               type="number"
               label="Green"
-              value="${this._severity ? this._severity.green : 0}"
+              .value="${this._severity ? this._severity.green : 0}"
               .configValue=${"green"}
               @value-changed="${this._severityChanged}"
             ></paper-input>
             <paper-input
               type="number"
               label="Yellow"
-              value="${this._severity ? this._severity.yellow : 0}"
+              .value="${this._severity ? this._severity.yellow : 0}"
               .configValue=${"yellow"}
               @value-changed="${this._severityChanged}"
             ></paper-input>
             <paper-input
               type="number"
               label="Red"
-              value="${this._severity ? this._severity.red : 0}"
+              .value="${this._severity ? this._severity.red : 0}"
               .configValue=${"red"}
               @value-changed="${this._severityChanged}"
             ></paper-input>
