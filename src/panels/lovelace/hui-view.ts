@@ -67,7 +67,7 @@ class HUIView extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
-  protected renderStyles() {
+  protected renderStyles(): TemplateResult {
     return html`
       <style>
         :host {
@@ -176,14 +176,14 @@ class HUIView extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _addCard() {
+  private _addCard(): void {
     showEditCardDialog(this, {
       lovelace: this.lovelace!,
       path: [this.index!],
     });
   }
 
-  private _createBadges(config: LovelaceViewConfig) {
+  private _createBadges(config: LovelaceViewConfig): void {
     const root = this.shadowRoot!.getElementById("badges")!;
 
     while (root.lastChild) {
@@ -216,7 +216,7 @@ class HUIView extends hassLocalizeLitMixin(LitElement) {
     root.style.display = elements.length > 0 ? "block" : "none";
   }
 
-  private _createCards(config: LovelaceViewConfig) {
+  private _createCards(config: LovelaceViewConfig): void {
     const root = this.shadowRoot!.getElementById("columns")!;
 
     while (root.lastChild) {
