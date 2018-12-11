@@ -1,3 +1,11 @@
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+} from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
+import { classMap } from "lit-html/directives/classMap";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
@@ -10,6 +18,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
+import { HassEntities } from "home-assistant-js-websocket";
 
 import scrollToTarget from "../../common/dom/scroll-to-target";
 
@@ -18,28 +27,20 @@ import "../../components/ha-start-voice-button";
 import "../../components/ha-icon";
 import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
+import debounce from "../../common/util/debounce";
+import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
+import { HomeAssistant } from "../../types";
+import { LovelaceConfig } from "../../data/lovelace";
+import { navigate } from "../../common/navigate";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeNotifications } from "./common/compute-notifications";
 import "./components/notifications/hui-notification-drawer";
 import "./components/notifications/hui-notifications-button";
 import "./hui-unused-entities";
 import "./hui-view";
-import debounce from "../../common/util/debounce";
 import createCardElement from "./common/create-card-element";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  PropertyValues,
-} from "@polymer/lit-element";
-import { HomeAssistant } from "../../types";
 import { Lovelace } from "./types";
-import { LovelaceConfig } from "../../data/lovelace";
-import { HassEntities } from "home-assistant-js-websocket";
-import { navigate } from "../../common/navigate";
-import { fireEvent } from "../../common/dom/fire_event";
-import { classMap } from "lit-html/directives/classMap";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -52,8 +53,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   public lovelace?: Lovelace;
   public columns?: number;
   public route?: { path: string; prefix: string };
-  public routeData?: { view: string };
-  private _curView: number;
+  private _routeData?: { view: string };
+  private _curView: number | "unused";
   private notificationsOpen?: boolean;
   private _persistentNotifications?: Notification[];
   private _haStyle?: DocumentFragment;
@@ -69,7 +70,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       lovelace: {},
       columns: {},
       route: {},
-      routeData: {},
+      _routeData: {},
       _curView: {},
       notificationsOpen: {},
       _persistentNotifications: {},
@@ -102,11 +103,11 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  protected render() : TemplateResult {
+  protected render(): TemplateResult {
     return html`
     ${this.renderStyle()}
     <app-route .route="${this.route}" pattern="/:view" data="${
-      this.routeData
+      this._routeData
     }" @data-changed="${this._routeDataChanged}"></app-route>
     <hui-notification-drawer
       .hass="${this.hass}"
@@ -353,8 +354,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         views
       ) {
         navigate(this, `/lovelace/${views[0].path || 0}`, true);
-      } else if (this.routeData!.view) {
-        const selectedView = this.routeData!.view;
+      } else if (this._routeData!.view) {
+        const selectedView = this._routeData!.view;
         const selectedViewInt = parseInt(selectedView, 10);
         let index = 0;
         for (let i = 0; i < views.length; i++) {
@@ -397,11 +398,11 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     return this.lovelace!.config;
   }
 
-  private get _yamlMode() {
+  private get _yamlMode(): boolean {
     return this.lovelace!.mode === "yaml";
   }
 
-  private get _storageMode():string {
+  private get _storageMode(): boolean {
     return this.lovelace!.mode === "storage";
   }
 
@@ -418,7 +419,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _routeDataChanged(ev): void {
-    this.routeData = ev.detail.value;
+    this._routeData = ev.detail.value;
   }
 
   private _handleNotificationsOpenChanged(ev): void {
@@ -474,7 +475,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   private _editView() {
     showEditViewDialog(this, {
       lovelace: this.lovelace!,
-      viewIndex: this._curView,
+      viewIndex: this._curView as number,
     });
   }
 
@@ -497,7 +498,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
 
-  private _selectView(viewIndex: number): void {
+  private _selectView(viewIndex: HUIRoot["_curView"]): void {
     this._curView = viewIndex;
 
     // Recreate a new element to clear the applied themes.
