@@ -33,10 +33,12 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             rgba(0, 0, 0, 0.12) 0px 1px 5px 0px,
             rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
         }
-        paper-button,
-        paper-icon-button {
+        paper-button {
           color: var(--primary-color);
           font-weight: 500;
+        }
+        paper-icon-button {
+          color: var(--primary-text-color);
         }
         paper-icon-button.delete {
           color: var(--secondary-text-color);
@@ -44,6 +46,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
         }
         paper-item.header {
           color: var(--primary-color);
+          font-weight: 500;
         }
       </style>
       <slot></slot>
@@ -74,7 +77,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             slot="dropdown-trigger"
           ></paper-icon-button>
           <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
-            <paper-item disabled class="header">Move card to view:</paper-item>
+            <paper-item disabled class="header">Move card to view</paper-item>
             ${
               this.lovelace!.config.views.map((view, index) => {
                 if (index === this.path![0]) {
