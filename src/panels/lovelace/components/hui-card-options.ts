@@ -14,9 +14,9 @@ import { swapCard, moveCard } from "../editor/config-util";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
-  protected hass?: HomeAssistant;
-  protected lovelace?: Lovelace;
-  protected path?: [number, number];
+  public hass?: HomeAssistant;
+  public lovelace?: Lovelace;
+  public path?: [number, number];
 
   static get properties(): PropertyDeclarations {
     return { hass: {}, lovelace: {}, path: {} };
