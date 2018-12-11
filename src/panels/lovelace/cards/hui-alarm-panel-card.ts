@@ -78,7 +78,7 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
+    if (changedProps.has("_config") || changedProps.has("_code")) {
       return true;
     }
 
