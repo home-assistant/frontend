@@ -10,7 +10,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { styleMap } from "lit-html/directives/styleMap";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -38,7 +38,7 @@ const lightConfig = {
   showTooltip: false,
 };
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   theme?: string;
@@ -46,6 +46,14 @@ interface Config extends LovelaceCardConfig {
 
 export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-light-card-editor");
+    return document.createElement("hui-light-card-editor");
+  }
+  public static getStubConfig(): object {
+    return {};
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
   private _brightnessTimout?: number;
