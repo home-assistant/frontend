@@ -128,6 +128,7 @@ class HUIRoot extends NavigateMixin(
                   <paper-item on-click="_handleRefresh">Refresh</paper-item>
                 </template>
                 <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
+                <paper-item on-click="_handleGeneratedMode">[[_computeGenModeToggle(lovelace.mode)]]</paper-item>
                 <paper-item on-click="_editModeEnable">[[localize("ui.panel.lovelace.editor.configure_ui")]]</paper-item>
                 <template is='dom-if' if="[[_storageMode]]">
                   <paper-item on-click="_handleFullEditor">Raw config editor</paper-item>
@@ -286,6 +287,10 @@ class HUIRoot extends NavigateMixin(
     this._selectView("unused");
   }
 
+  _handleGeneratedMode() {
+    this.lovelace.setGeneratedMode(this.lovelace.mode !== "temp_generated");
+  }
+
   _deselect(ev) {
     ev.target.selected = null;
   }
@@ -301,6 +306,10 @@ class HUIRoot extends NavigateMixin(
   _editModeEnable() {
     if (this._yamlMode) {
       window.alert("The edit UI is not available when in YAML mode.");
+      return;
+    }
+    if (this.lovelace.mode === "temp_generated") {
+      window.alert("The edit UI is not available when in generated mode.");
       return;
     }
     this.lovelace.setEditMode(true);
@@ -433,6 +442,12 @@ class HUIRoot extends NavigateMixin(
           console.warn("Unknown resource type specified: ${resource.type}");
       }
     });
+  }
+
+  _computeGenModeToggle(mode) {
+    return mode === "temp_generated"
+      ? "Disable generated mode"
+      : "Enable generated mode";
   }
 
   _computeConfig(lovelace) {

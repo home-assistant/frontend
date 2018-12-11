@@ -141,7 +141,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
     this._fetchConfig(true);
   }
 
-  private async _fetchConfig(force) {
+  private async _fetchConfig(force: boolean) {
     let conf: LovelaceConfig;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
 
@@ -170,6 +170,15 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
           import(/* webpackChunkName: "lovelace-yaml-editor" */ "./hui-editor");
         }
         this._state = "yaml-editor";
+      },
+      setGeneratedMode: (generatedMode: boolean) => {
+        if (generatedMode) {
+          conf = generateLovelaceConfig(this.hass!, this.localize);
+          confMode = "temp_generated";
+          this._updateLovelace({ config: conf, mode: confMode });
+        } else {
+          this._fetchConfig(false);
+        }
       },
       setEditMode: (editMode: boolean) => {
         if (!editMode || this.lovelace!.mode !== "generated") {
