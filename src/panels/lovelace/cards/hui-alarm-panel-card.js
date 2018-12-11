@@ -22,7 +22,7 @@ const Icons = {
 };
 
 export const Config = {
-  title: "",
+  name: "",
   entity: "",
   states: "",
 };

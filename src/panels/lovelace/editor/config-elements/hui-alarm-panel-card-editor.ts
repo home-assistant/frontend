@@ -19,11 +19,9 @@ import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
-import { repeat } from "lit-html/directives/repeat";
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   entity: "string?",
   name: "string?",
   states: "array?",
@@ -62,10 +60,6 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
     }
 
     const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
-    const availableStates = states.filter((state) => {
-      return this._states.indexOf(state) === -1;
-    });
-    console.log(this._states);
 
     return html`
       ${configElementStyle} ${this.renderStyle()}
@@ -104,15 +98,13 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
         }
         <paper-dropdown-menu
           label="Available States"
-          dynamic-align
-          close-on-activate
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
             ${
-              availableStates.map((state) => {
+              states.map((state) => {
                 return html`
-                  <paper-item .value="${state}">${state}</paper-item>
+                  <paper-item>${state}</paper-item>
                 `;
               })
             }
@@ -162,13 +154,11 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     const target = ev.target! as EditorTarget;
-    console.log(target.value);
-    if (!target.value) {
+    if (!target.value || this._states.indexOf(target.value) >= 0) {
       return;
     }
     const newStates = this._states;
     newStates.push(target.value);
-    console.log(newStates);
     this._config = {
       ...this._config,
       states: newStates,
@@ -182,7 +172,6 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     const target = ev.target! as EditorTarget;
-
     if (this[`_${target.configValue}`] === target.value) {
       return;
     }
