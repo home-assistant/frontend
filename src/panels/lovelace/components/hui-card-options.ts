@@ -1,6 +1,8 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import "@polymer/paper-button/paper-button";
+import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-listbox/paper-listbox";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
@@ -8,7 +10,7 @@ import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { Lovelace } from "../types";
-import { swapCard } from "../editor/config-util";
+import { swapCard, moveCard } from "../editor/config-util";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
@@ -31,13 +33,17 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             rgba(0, 0, 0, 0.12) 0px 1px 5px 0px,
             rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
         }
-        paper-button {
+        paper-button,
+        paper-icon-button {
           color: var(--primary-color);
           font-weight: 500;
         }
         paper-icon-button.delete {
           color: var(--secondary-text-color);
           float: right;
+        }
+        paper-item.header {
+          color: var(--primary-color);
         }
       </style>
       <slot></slot>
@@ -60,6 +66,29 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
               this.path![1] + 1
           }"
         ></paper-icon-button>
+        <paper-menu-button vertical-offset="48">
+          <paper-icon-button
+            title="Move card to a different view"
+            icon="hass:file-replace"
+            ?disabled="${this.lovelace!.config.views.length === 1}"
+            slot="dropdown-trigger"
+          ></paper-icon-button>
+          <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
+            <paper-item disabled class="header">Move card to view:</paper-item>
+            ${
+              this.lovelace!.config.views.map((view, index) => {
+                if (index === this.path![0]) {
+                  return;
+                }
+                return html`
+                  <paper-item @click="${this._moveCard}" .index="${index}"
+                    >${view.title}</paper-item
+                  >
+                `;
+              })
+            }
+          </paper-listbox>
+        </paper-menu-button>
         <paper-icon-button
           class="delete"
           icon="hass:delete"
@@ -90,6 +119,14 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
     const path = this.path!;
     lovelace.saveConfig(
       swapCard(lovelace.config, path, [path[0], path[1] + 1])
+    );
+  }
+
+  private _moveCard(ev: MouseEvent): void {
+    const lovelace = this.lovelace!;
+    const path = this.path!;
+    lovelace.saveConfig(
+      moveCard(lovelace.config, path, [(ev.currentTarget! as any).index])
     );
   }
 
