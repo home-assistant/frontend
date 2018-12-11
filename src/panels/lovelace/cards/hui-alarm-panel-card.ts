@@ -25,6 +25,8 @@ const ICONS = {
   triggered: "hass:bell-ring",
 };
 
+const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
+
 export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
@@ -152,84 +154,27 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
                   .value="${this._code}"
                 ></paper-input>
                 <div id="keypad">
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"1"}"
-                    @click="${this._handlePadClick}"
-                    >1</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"2"}"
-                    @click="${this._handlePadClick}"
-                    >2</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"3"}"
-                    @click="${this._handlePadClick}"
-                    >3</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"4"}"
-                    @click="${this._handlePadClick}"
-                    >4</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"5"}"
-                    @click="${this._handlePadClick}"
-                    >5</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"6"}"
-                    @click="${this._handlePadClick}"
-                    >6</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"7"}"
-                    @click="${this._handlePadClick}"
-                    >7</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"8"}"
-                    @click="${this._handlePadClick}"
-                    >8</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"9"}"
-                    @click="${this._handlePadClick}"
-                    >9</paper-button
-                  >
-                  <paper-button disabled></paper-button>
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"0"}"
-                    @click="${this._handlePadClick}"
-                    >0</paper-button
-                  >
-                  <paper-button
-                    noink
-                    raised
-                    .value="${"clear"}"
-                    @click="${this._handlePadClick}"
-                    >${this._label("clear_code")}</paper-button
-                  >
+                  ${
+                    BUTTONS.map((value) => {
+                      return !value
+                        ? html`
+                            <paper-button disabled></paper-button>
+                          `
+                        : html`
+                            <paper-button
+                              noink
+                              raised
+                              .value="${value}"
+                              @click="${this._handlePadClick}"
+                              >${
+                                value === "clear"
+                                  ? this._label("clear_code")
+                                  : value
+                              }</paper-button
+                            >
+                          `;
+                    })
+                  }
                 </div>
               `
         }
