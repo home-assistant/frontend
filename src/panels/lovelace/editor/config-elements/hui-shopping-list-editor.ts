@@ -12,7 +12,6 @@ import { Config } from "../../cards/hui-shopping-list-card";
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   title: "string?",
 });
 
