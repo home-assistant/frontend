@@ -14,7 +14,6 @@ import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   title: "string?",
   content: "string",
 });
