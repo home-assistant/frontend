@@ -1,9 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "@polymer/paper-fab/paper-fab";
 import "../../components/entity/ha-state-label-badge";
-import "./components/hui-card-options";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
@@ -12,6 +10,8 @@ import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
+
+let editCodeLoaded = false;
 
 class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
@@ -97,7 +97,10 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: "_hassChanged",
       },
-      lovelace: Object,
+      lovelace: {
+        type: Object,
+        observer: "_lovelaceChanged",
+      },
       config: Object,
       columns: Number,
       editMode: Boolean,
@@ -245,6 +248,13 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
     this._cards.forEach((element) => {
       element.hass = hass;
     });
+  }
+
+  _lovelaceChanged(lovelace) {
+    if (lovelace.editMode && !editCodeLoaded) {
+      editCodeLoaded = true;
+      import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
+    }
   }
 }
 
