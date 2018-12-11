@@ -66,7 +66,7 @@ export class HuiThermostatCardEditor extends hassLocalizeLitMixin(LitElement)
             .hass="${this.hass}"
             .value="${this._entity}"
             .configValue=${"entity"}
-            .domainFilter=${"climate"}
+            domain-filter=${"climate"}
             @change="${this._valueChanged}"
             allow-custom-entity
           ></ha-entity-picker>

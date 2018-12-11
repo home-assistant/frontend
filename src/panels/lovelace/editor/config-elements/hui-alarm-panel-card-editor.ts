@@ -71,7 +71,7 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
             .hass="${this.hass}"
             .value="${this._entity}"
             .configValue=${"entity"}
-            .domainFilter=${"alarm_control_panel"}
+            domain-filter=${"alarm_control_panel"}
             @change="${this._valueChanged}"
             allow-custom-entity
           ></ha-entity-picker>
