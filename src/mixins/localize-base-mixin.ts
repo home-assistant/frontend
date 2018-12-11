@@ -1,4 +1,5 @@
 import IntlMessageFormat from "intl-messageformat/src/main";
+import { HomeAssistant } from "../types";
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -32,6 +33,7 @@ export interface FormatsType {
 export type LocalizeFunc = (key: string, ...args: any[]) => string;
 
 export interface LocalizeMixin {
+  hass?: HomeAssistant;
   localize: LocalizeFunc;
 }
 

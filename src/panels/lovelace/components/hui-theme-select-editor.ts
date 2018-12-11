@@ -19,7 +19,7 @@ declare global {
 
 export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
   public value?: string;
-  protected hass?: HomeAssistant;
+  public hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
     return {
