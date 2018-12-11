@@ -88,7 +88,7 @@ describe("moveCard", () => {
           cards: [{ type: "v1-c1" }, { type: "v1-c2" }],
         },
         {
-          cards: [{ type: "v2-c2" }],
+          cards: [{ type: "v2-c1" }, { type: "v2-c2" }],
         },
       ],
     };
@@ -97,10 +97,10 @@ describe("moveCard", () => {
     const expected = {
       views: [
         {
-          cards: [{ type: "v2-c2" }, { type: "v1-c2" }, { type: "v2-c1" }],
+          cards: [{ type: "v1-c1" }, { type: "v1-c2" }, { type: "v2-c1" }],
         },
         {
-          cards: [{ type: "v1-c1" }],
+          cards: [{ type: "v2-c2" }],
         },
       ],
     };

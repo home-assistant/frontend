@@ -45,8 +45,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
           float: right;
         }
         paper-item.header {
-          color: var(--primary-color);
-          font-weight: 500;
+          color: var(--primary-text-color);
+          text-transform: uppercase;
+          font-weight: bold;
         }
       </style>
       <slot></slot>
