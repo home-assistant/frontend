@@ -56,21 +56,21 @@ export class HuiIframeCardEditor extends hassLocalizeLitMixin(LitElement)
         <div class="side-by-side">
           <paper-input
             label="Title"
-            value="${this._title}"
+            .value="${this._title}"
             .configValue="${"title"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
             label="Aspect Ratio"
             type="number"
-            value="${Number(this._aspect_ratio.replace("%", ""))}"
+            .value="${Number(this._aspect_ratio.replace("%", ""))}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
         <paper-input
           label="Url"
-          value="${this._url}"
+          .value="${this._url}"
           .configValue="${"url"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
