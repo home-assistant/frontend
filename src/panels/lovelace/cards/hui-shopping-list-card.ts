@@ -9,7 +9,7 @@ import "../../../components/ha-icon";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import {
   fetchItems,
@@ -19,12 +19,20 @@ import {
   addItem,
 } from "../../../data/shopping-list";
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   title?: string;
 }
 
 class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-shopping-list-editor");
+    return document.createElement("hui-shopping-list-card-editor");
+  }
+  public static getStubConfig(): object {
+    return {};
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
   private _uncheckedItems?: ShoppingListItem[];
@@ -33,6 +41,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
 
   static get properties() {
     return {
+      hass: {},
       _config: {},
       _uncheckedItems: {},
       _checkedItems: {},
