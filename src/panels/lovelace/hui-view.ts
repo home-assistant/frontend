@@ -45,7 +45,7 @@ class HUIView extends hassLocalizeLitMixin(LitElement) {
     this._badges = [];
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     return html`
       ${this.renderStyles()}
       <div id="badges"></div>
