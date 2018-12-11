@@ -18,7 +18,6 @@ import "../../../../components/ha-icon";
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   entity: "string?",
   name: "string?",
   states: "array?",
