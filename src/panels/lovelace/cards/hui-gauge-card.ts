@@ -6,7 +6,7 @@ import {
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -18,17 +18,23 @@ import computeStateName from "../../../common/entity/compute_state_name";
 
 import "../../../components/ha-card";
 
-interface Config extends LovelaceCardConfig {
+export interface SeverityConfig {
+  green?: number;
+  yellow?: number;
+  red?: number;
+}
+
+export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   unit?: string;
   min?: number;
   max?: number;
-  severity?: object;
+  severity?: SeverityConfig;
   theme?: string;
 }
 
-const severityMap = {
+export const severityMap = {
   red: "var(--label-badge-red)",
   green: "var(--label-badge-green)",
   yellow: "var(--label-badge-yellow)",
@@ -36,6 +42,14 @@ const severityMap = {
 };
 
 class HuiGaugeCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-gauge-card-editor");
+    return document.createElement("hui-gauge-card-editor");
+  }
+  public static getStubConfig(): object {
+    return {};
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
 
