@@ -331,7 +331,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
     const view = this._view;
