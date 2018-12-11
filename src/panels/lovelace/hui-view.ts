@@ -5,9 +5,11 @@ import {
   PropertyDeclarations,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { PolymerElement } from "@polymer/polymer";
 
 import "../../components/entity/ha-state-label-badge";
+// This one is for types
+// tslint:disable-next-line
+import { HaStateLabelBadge } from "../../components/entity/ha-state-label-badge";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
@@ -28,7 +30,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
   public columns?: number;
   public index?: number;
   private _cards: LovelaceCard[];
-  private _badges: Array<{ element: PolymerElement; entityId: string }>;
+  private _badges: Array<{ element: HaStateLabelBadge; entityId: string }>;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -158,10 +160,8 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     } else if (changedProperties.has("hass")) {
       this._badges.forEach((badge) => {
         const { element, entityId } = badge;
-        element.setProperties({
-          hass: this.hass,
-          state: this.hass!.states[entityId],
-        });
+        element.hass = this.hass!;
+        element.state = this.hass!.states[entityId];
       });
     }
 
@@ -196,17 +196,9 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
 
     const elements: HUIView["_badges"] = [];
     for (const entityId of config.badges) {
-      if (!(entityId in this.hass!.states)) {
-        continue;
-      }
-
-      const element = document.createElement(
-        "ha-state-label-badge"
-      ) as PolymerElement;
-      element.setProperties({
-        hass: this.hass,
-        state: this.hass!.states[entityId],
-      });
+      const element = document.createElement("ha-state-label-badge");
+      element.hass = this.hass;
+      element.state = this.hass!.states[entityId];
       elements.push({ element, entityId });
       root.appendChild(element);
     }
