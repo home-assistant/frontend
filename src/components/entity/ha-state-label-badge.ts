@@ -184,7 +184,7 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
 
   private startInterval(stateObj) {
     this.clearInterval();
-    if (computeStateDomain(stateObj) === "timer") {
+    if (stateObj && computeStateDomain(stateObj) === "timer") {
       this.calculateTimerRemaining(stateObj);
 
       if (stateObj.state === "active") {
