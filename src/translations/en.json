@@ -614,6 +614,10 @@
                   "label": "Time",
                   "at": "At"
                 },
+                "webhook": {
+                  "label": "Webhook",
+                  "webhook_id": "Webhook ID"
+                },
                 "zone": {
                   "label": "Zone",
                   "entity": "Entity with location",
