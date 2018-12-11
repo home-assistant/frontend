@@ -136,6 +136,8 @@ class HUIView extends hassLocalizeLitMixin(LitElement) {
   }
 
   protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
     const lovelace = this.lovelace!;
 
     if (lovelace.editMode && !editCodeLoaded) {
