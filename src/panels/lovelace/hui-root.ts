@@ -401,7 +401,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     return this.lovelace!.mode === "yaml";
   }
 
-  private get _storageMode() {
+  private get _storageMode():string {
     return this.lovelace!.mode === "storage";
   }
 
