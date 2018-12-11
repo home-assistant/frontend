@@ -87,7 +87,17 @@ export class CloudWebhooks extends LitElement {
   private _renderBody() {
     if (!this.cloudStatus || !this._localHooks || !this._cloudHooks) {
       return html`
-        <div class="loading">Loading…</div>
+        <div class="body-text">Loading…</div>
+      `;
+    }
+
+    if (this._localHooks.length === 0) {
+      return html`
+        <div class="body-text">
+          Looks like you have no webhooks yet. Get started by configuring a
+          <a href="/config/integrations">webhook-based integration</a> or by
+          creating a <a href="/config/automation/new">webhook automation</a>.
+        </div>
       `;
     }
 
@@ -206,7 +216,7 @@ export class CloudWebhooks extends LitElement {
         .body {
           padding: 0 16px 8px;
         }
-        .loading {
+        .body-text {
           padding: 0 16px;
         }
         .webhook {
@@ -226,6 +236,7 @@ export class CloudWebhooks extends LitElement {
         .footer {
           padding: 16px;
         }
+        .body-text a,
         .footer a {
           color: var(--primary-color);
         }
