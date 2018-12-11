@@ -10,10 +10,14 @@ import { classMap } from "lit-html/directives/classMap";
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
+import { callAlarmAction } from "../../../data/alarm_control_panel";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+
+import createErrorCardConfig from "../common/create-error-card-config";
 
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
+import "./hui-error-card";
 
 const ICONS = {
   armed_away: "hass:security-lock",
@@ -98,86 +102,83 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
     }
     const stateObj = this.hass.states[this._config.entity];
 
+    if (!stateObj) {
+      const errorConfig = createErrorCardConfig(
+        "Entity not Found!",
+        this._config
+      );
+      const element = document.createElement("hui-error-card");
+      element.setConfig(errorConfig);
+      return html`
+        ${element}
+      `;
+    }
+
     return html`
       ${this.renderStyle()}
-      <ha-card
-        .header="${this._config.name || this._label(stateObj.state)}"
-        class="${classMap({ "not-found": !stateObj })}"
-      >
+      <ha-card .header="${this._config.name || this._label(stateObj.state)}">
+        <ha-label-badge
+          class="${classMap({ [stateObj.state]: true })}"
+          .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
+          .label="${this._stateIconLabel(stateObj.state)}"
+        ></ha-label-badge>
         ${
-          !stateObj
+          stateObj.state === "disarmed"
             ? html`
-                <div class="not-found">
-                  Entity not available: ${this._config.entity}
-                </div>
-              `
-            : html`
-                <ha-label-badge
-                  class="${classMap({ [stateObj.state]: true })}"
-                  .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
-                  .label="${this._stateIconLabel(stateObj.state)}"
-                ></ha-label-badge>
-                ${
-                  stateObj.state === "disarmed" && this._config!.states
-                    ? html`
-                        <div id="armActions" class="actions">
-                          ${
-                            this._config.states!.map((state) => {
-                              return html`
-                                <paper-button
-                                  noink
-                                  raised
-                                  .action="${state}"
-                                  @click="${this._handleActionClick}"
-                                  >${this._label(state)}</paper-button
-                                >
-                              `;
-                            })
-                          }
-                        </div>
-                      `
-                    : html`
-                        <div id="disarmActions" class="actions">
-                          <paper-button
-                            noink
-                            raised
-                            .action="${"disarm"}"
-                            @click="${this._handleActionClick}"
-                            >${this._label("disarm")}</paper-button
-                          >
-                        </div>
-                      `
-                }
-                <paper-input
-                  label="Alarm Code"
-                  type="password"
-                  .value="${this._code}"
-                ></paper-input>
-                <div id="keypad">
+                <div id="armActions" class="actions">
                   ${
-                    BUTTONS.map((value) => {
-                      return !value
-                        ? html`
-                            <paper-button disabled></paper-button>
-                          `
-                        : html`
-                            <paper-button
-                              noink
-                              raised
-                              .value="${value}"
-                              @click="${this._handlePadClick}"
-                              >${
-                                value === "clear"
-                                  ? this._label("clear_code")
-                                  : value
-                              }</paper-button
-                            >
-                          `;
+                    this._config.states!.map((state) => {
+                      return html`
+                        <paper-button
+                          noink
+                          raised
+                          .action="${state}"
+                          @click="${this._handleActionClick}"
+                          >${this._label(state)}</paper-button
+                        >
+                      `;
                     })
                   }
                 </div>
               `
+            : html`
+                <div id="disarmActions" class="actions">
+                  <paper-button
+                    noink
+                    raised
+                    .action="${"disarm"}"
+                    @click="${this._handleActionClick}"
+                    >${this._label("disarm")}</paper-button
+                  >
+                </div>
+              `
         }
+        <paper-input
+          label="Alarm Code"
+          type="password"
+          .value="${this._code}"
+        ></paper-input>
+        <div id="keypad">
+          ${
+            BUTTONS.map((value) => {
+              return value === ""
+                ? html`
+                    <paper-button disabled></paper-button>
+                  `
+                : html`
+                    <paper-button
+                      noink
+                      raised
+                      .value="${value}"
+                      @click="${this._handlePadClick}"
+                      >${
+                        value === "clear" ? this._label("clear_code") : value
+                      }</paper-button
+                    >
+                  `;
+            })
+          }
+        </div>
       </ha-card>
     `;
   }
@@ -204,13 +205,11 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _handleActionClick(e: MouseEvent): void {
-    this.hass!.callService(
-      "alarm_control_panel",
-      "alarm_" + (e.currentTarget! as any).action,
-      {
-        entity_id: this._config!.entity_id,
-        code: this._code,
-      }
+    callAlarmAction(
+      this.hass!,
+      this._config!.entity_id,
+      (e.currentTarget! as any).action,
+      this._code!
     );
     this._code = "";
   }
