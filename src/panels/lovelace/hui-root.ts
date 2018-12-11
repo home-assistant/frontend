@@ -102,7 +102,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  protected render() {
+  protected render() : TemplateResult {
     return html`
     ${this.renderStyle()}
     <app-route .route="${this.route}" pattern="/:view" data="${
