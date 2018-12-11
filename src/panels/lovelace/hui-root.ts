@@ -262,7 +262,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
-  protected renderStyle() {
+  protected renderStyle(): TemplateResult {
     if (!this._haStyle) {
       this._haStyle = document.importNode(
         (document.getElementById("ha-style")!
@@ -421,14 +421,14 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     this.routeData = ev.detail.value;
   }
 
-  private _handleNotificationsOpenChanged(ev) {
+  private _handleNotificationsOpenChanged(ev): void {
     this.notificationsOpen = ev.detail.value;
   }
 
   private _updateNotifications(
     states: HassEntities,
     persistent: Array<unknown>
-  ) {
+  ): Array<unknown> {
     const configurator = computeNotifications(states);
     return persistent.concat(configurator);
   }
@@ -437,7 +437,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     fireEvent(this, "config-refresh");
   }
 
-  private _handleUnusedEntities() {
+  private _handleUnusedEntities(): void {
     this._selectView("unused");
   }
 
@@ -445,7 +445,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     ev.target.selected = null;
   }
 
-  private _handleHelp() {
+  private _handleHelp(): void {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
@@ -460,7 +460,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _editModeDisable() {
+  private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
     if (this.config.views.length < 2) {
       fireEvent(this, "iron-resize");
@@ -489,7 +489,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     this._navigateView(index);
   }
 
-  private _navigateView(viewIndex) {
+  private _navigateView(viewIndex: number): void {
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       navigate(this, `/lovelace/${path}`);
@@ -497,7 +497,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
 
-  private _selectView(viewIndex) {
+  private _selectView(viewIndex: number): void {
     this._curView = viewIndex;
 
     // Recreate a new element to clear the applied themes.
