@@ -441,7 +441,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     this._selectView("unused");
   }
 
-  private _deselect(ev) {
+  private _deselect(ev): void {
     ev.target.selected = null;
   }
 
