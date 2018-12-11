@@ -161,4 +161,11 @@ class HaLabelBadge extends LitElement {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-label-badge": HaLabelBadge;
+  }
+}
+
 customElements.define("ha-label-badge", HaLabelBadge);
