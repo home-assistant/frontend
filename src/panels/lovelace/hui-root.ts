@@ -467,7 +467,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _editModeChanged() {
+  private _editModeChanged(): void {
     this._selectView(this._curView);
   }
 
