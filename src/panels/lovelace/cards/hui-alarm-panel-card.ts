@@ -262,7 +262,7 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
           }
         }
         paper-input {
-          margin: 0 auto 24px;
+          margin: 0 auto 8px;
           max-width: 150px;
           font-size: calc(var(--base-unit));
           text-align: center;
