@@ -42,7 +42,7 @@ export class HuiIframeCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _aspect_ratio(): string {
-    return this._config!.aspect_ratio || "50%";
+    return this._config!.aspect_ratio || "";
   }
 
   protected render(): TemplateResult {
@@ -86,7 +86,6 @@ export class HuiIframeCardEditor extends hassLocalizeLitMixin(LitElement)
     let value = target.value;
 
     if (target.configValue! === "aspect_ratio" && target.value) {
-      value = target.value.replace("%", "");
       value += "%";
     }
 
