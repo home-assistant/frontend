@@ -1,20 +1,73 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  html,
+  LitElement,
+  PropertyValues,
+  PropertyDeclarations,
+} from "@polymer/lit-element";
 
 import "../../components/entity/ha-state-label-badge";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
-import EventsMixin from "../../mixins/events-mixin";
-import localizeMixin from "../../mixins/localize-mixin";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
+import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
+import { HomeAssistant } from "../../types";
+import { Lovelace, LovelaceCard } from "./types";
+import { LovelaceViewConfig } from "../../data/lovelace";
+import { PolymerElement } from "@polymer/polymer";
 
 let editCodeLoaded = false;
 
-class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
-  static get template() {
+class HUIView extends hassLocalizeLitMixin(LitElement) {
+  public hass?: HomeAssistant;
+  public lovelace?: Lovelace;
+  public columns?: number;
+  public index?: number;
+  private _cards: LovelaceCard[];
+  private _badges: Array<{ element: PolymerElement; entityId: string }>;
+
+  static get properties(): PropertyDeclarations {
+    return {
+      hass: {},
+      lovelace: {},
+      columns: {},
+      index: {},
+      _cards: {},
+      _badges: {},
+    };
+  }
+
+  constructor() {
+    super();
+    this._cards = [];
+    this._badges = [];
+  }
+
+  protected render() {
+    return html`
+      ${this.renderStyles()}
+      <div id="badges"></div>
+      <div id="columns"></div>
+      ${
+        this.lovelace!.editMode
+          ? html`
+              <paper-fab
+                elevated="2"
+                icon="hass:plus"
+                title="${
+                  this.localize("ui.panel.lovelace.editor.edit_card.add")
+                }"
+                @click="${this._addCard}"
+              ></paper-fab>
+            `
+          : ""
+      }
+    `;
+  }
+
+  protected renderStyles() {
     return html`
       <style>
         :host {
@@ -79,58 +132,58 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
           }
         }
       </style>
-      <div id="badges"></div>
-      <div id="columns"></div>
-      <paper-fab
-        hidden$="[[!lovelace.editMode]]"
-        elevated="2"
-        icon="hass:plus"
-        title=[[localize("ui.panel.lovelace.editor.edit_card.add")]]
-        on-click="_addCard"
-      ></paper-fab>
     `;
   }
 
-  static get properties() {
-    return {
-      hass: {
-        type: Object,
-        observer: "_hassChanged",
-      },
-      lovelace: {
-        type: Object,
-        observer: "_lovelaceChanged",
-      },
-      config: Object,
-      columns: Number,
-      editMode: Boolean,
-      index: Number,
-    };
+  protected updated(changedProperties: PropertyValues): void {
+    const lovelace = this.lovelace!;
+
+    if (lovelace.editMode && !editCodeLoaded) {
+      editCodeLoaded = true;
+      import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
+    }
+
+    let editModeChanged = false;
+    let configChanged = false;
+
+    if (changedProperties.has("lovelace")) {
+      const oldLovelace = changedProperties.get("lovelace") as Lovelace;
+      editModeChanged =
+        !oldLovelace || lovelace.editMode !== oldLovelace.editMode;
+      configChanged = !oldLovelace || lovelace.config !== oldLovelace.config;
+    }
+
+    if (configChanged) {
+      this._createBadges(lovelace.config.views[this.index!]);
+    } else if (changedProperties.has("hass")) {
+      this._badges.forEach((badge) => {
+        const { element, entityId } = badge;
+        element.setProperties({
+          hass: this.hass,
+          state: this.hass!.states[entityId],
+        });
+      });
+    }
+
+    if (configChanged || editModeChanged || changedProperties.has("columns")) {
+      this._createCards(lovelace.config.views[this.index!]);
+    } else if (changedProperties.has("hass")) {
+      this._cards.forEach((element) => {
+        element.hass = this.hass;
+      });
+    }
   }
 
-  static get observers() {
-    return [
-      // Put all properties in 1 observer so we only call configChanged once
-      "_createBadges(config)",
-      "_createCards(config, columns, editMode)",
-    ];
-  }
-
-  constructor() {
-    super();
-    this._cards = [];
-    this._badges = [];
-  }
-
-  _addCard() {
+  private _addCard() {
     showEditCardDialog(this, {
-      lovelace: this.lovelace,
-      path: [this.index],
+      lovelace: this.lovelace!,
+      path: [this.index!],
     });
   }
 
-  _createBadges(config) {
-    const root = this.$.badges;
+  private _createBadges(config: LovelaceViewConfig) {
+    const root = this.shadowRoot!.getElementById("badges")!;
+
     while (root.lastChild) {
       root.removeChild(root.lastChild);
     }
@@ -141,14 +194,18 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
       return;
     }
 
-    const elements = [];
+    const elements: HUIView["_badges"] = [];
     for (const entityId of config.badges) {
-      if (!(entityId in this.hass.states)) continue;
+      if (!(entityId in this.hass!.states)) {
+        continue;
+      }
 
-      const element = document.createElement("ha-state-label-badge");
+      const element = document.createElement(
+        "ha-state-label-badge"
+      ) as PolymerElement;
       element.setProperties({
         hass: this.hass,
-        state: this.hass.states[entityId],
+        state: this.hass!.states[entityId],
       });
       elements.push({ element, entityId });
       root.appendChild(element);
@@ -157,8 +214,8 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
     root.style.display = elements.length > 0 ? "block" : "none";
   }
 
-  _createCards(config) {
-    const root = this.$.columns;
+  private _createCards(config: LovelaceViewConfig) {
+    const root = this.shadowRoot!.getElementById("columns")!;
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -169,14 +226,14 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
       return;
     }
 
-    const elements = [];
-    const elementsToAppend = [];
+    const elements: LovelaceCard[] = [];
+    const elementsToAppend: HTMLElement[] = [];
     config.cards.forEach((cardConfig, cardIndex) => {
-      const element = createCardElement(cardConfig);
+      const element = createCardElement(cardConfig) as LovelaceCard;
       element.hass = this.hass;
       elements.push(element);
 
-      if (!this.lovelace.editMode) {
+      if (!this.lovelace!.editMode) {
         elementsToAppend.push(element);
         return;
       }
@@ -184,14 +241,14 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
       wrapper.lovelace = this.lovelace;
-      wrapper.path = [this.index, cardIndex];
+      wrapper.path = [this.index!, cardIndex];
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);
     });
 
-    let columns = [];
-    const columnEntityCount = [];
-    for (let i = 0; i < this.columns; i++) {
+    let columns: HTMLElement[][] = [];
+    const columnEntityCount: number[] = [];
+    for (let i = 0; i < this.columns!; i++) {
       columns.push([]);
       columnEntityCount.push(0);
     }
@@ -233,28 +290,14 @@ class HUIView extends localizeMixin(EventsMixin(PolymerElement)) {
     this._cards = elements;
 
     if ("theme" in config) {
-      applyThemesOnElement(root, this.hass.themes, config.theme);
+      applyThemesOnElement(root, this.hass!.themes, config.theme);
     }
   }
+}
 
-  _hassChanged(hass) {
-    this._badges.forEach((badge) => {
-      const { element, entityId } = badge;
-      element.setProperties({
-        hass,
-        state: hass.states[entityId],
-      });
-    });
-    this._cards.forEach((element) => {
-      element.hass = hass;
-    });
-  }
-
-  _lovelaceChanged(lovelace) {
-    if (lovelace.editMode && !editCodeLoaded) {
-      editCodeLoaded = true;
-      import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
-    }
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-view": HUIView;
   }
 }
 
