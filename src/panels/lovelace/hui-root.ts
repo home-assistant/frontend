@@ -44,6 +44,7 @@ import { HUIView } from "./hui-view";
 import createCardElement from "./common/create-card-element";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { Lovelace } from "./types";
+import { afterNextRender } from "../../common/util/render-status";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -57,10 +58,11 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   public columns?: number;
   public route?: { path: string; prefix: string };
   private _routeData?: { view: string };
-  private _curView: number | "unused";
+  private _curView?: number | "unused";
   private notificationsOpen?: boolean;
   private _persistentNotifications?: Notification[];
   private _haStyle?: DocumentFragment;
+  private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
   private _unsubNotifications?: () => void;
@@ -82,9 +84,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
 
   constructor() {
     super();
-    this._curView = 0;
     this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView),
+      () => this._selectView(this._curView, true),
       100
     );
   }
@@ -349,6 +350,9 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       huiView.hass = this.hass;
     }
 
+    let newSelectView;
+    let force = false;
+
     if (changedProperties.has("route")) {
       const views = this.config && this.config.views;
       if (
@@ -367,9 +371,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
             break;
           }
         }
-        if (index !== this._curView) {
-          this._selectView(index);
-        }
+        newSelectView = index;
       }
     }
 
@@ -379,14 +381,19 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         | undefined;
 
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
+        this._viewCache = {};
         this._loadResources(this.lovelace!.config.resources || []);
         // On config change, recreate the view from scratch.
-        this._selectView(this._curView);
+        force = true;
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
-        this._editModeChanged();
+        force = true;
       }
+    }
+
+    if (newSelectView !== undefined || force) {
+      this._selectView(newSelectView, force);
     }
   }
 
@@ -442,7 +449,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _handleUnusedEntities(): void {
-    this._selectView("unused");
+    this._selectView("unused", false);
   }
 
   private _deselect(ev): void {
@@ -471,10 +478,6 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _editModeChanged(): void {
-    this._selectView(this._curView);
-  }
-
   private _editView() {
     showEditViewDialog(this, {
       lovelace: this.lovelace!,
@@ -501,27 +504,46 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"]): void {
+  private async _selectView(
+    viewIndex: HUIRoot["_curView"],
+    force: boolean
+  ): Promise<void> {
+    if (!force && this._curView === viewIndex) {
+      return;
+    }
+
+    viewIndex = viewIndex === undefined ? 0 : viewIndex;
+
     this._curView = viewIndex;
 
     // Recreate a new element to clear the applied themes.
     const root = this._view;
+
     if (root.lastChild) {
       root.removeChild(root.lastChild);
     }
 
-    let view;
-    let background = this.config.background || "";
-
     if (viewIndex === "unused") {
-      view = document.createElement("hui-unused-entities");
-      view.setConfig(this.config);
+      const unusedEntities = document.createElement("hui-unused-entities");
+      unusedEntities.setConfig(this.config);
+      root.style.background = this.config.background || "";
+      root.appendChild(unusedEntities);
+      return;
+    }
+
+    let view;
+    const viewConfig = this.config.views[viewIndex];
+
+    if (!viewConfig) {
+      this._editModeEnable();
+      return;
+    }
+
+    if (!force && this._viewCache![viewIndex]) {
+      view = this._viewCache![viewIndex];
     } else {
-      const viewConfig = this.config.views[this._curView];
-      if (!viewConfig) {
-        this._editModeEnable();
-        return;
-      }
+      await new Promise((resolve) => afterNextRender(resolve));
+
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
@@ -532,14 +554,12 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         view.columns = this.columns;
         view.index = viewIndex;
       }
-      if (viewConfig.background) {
-        background = viewConfig.background;
-      }
+      this._viewCache![viewIndex] = view;
     }
 
-    this._view.style.background = background;
-
     view.hass = this.hass;
+    root.style.background =
+      viewConfig.background || this.config.background || "";
     root.appendChild(view);
   }
 
