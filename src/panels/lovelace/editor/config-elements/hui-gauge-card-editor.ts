@@ -17,7 +17,6 @@ import "../../components/hui-entity-editor";
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   title: "string?",
   entity: "string?",
   unit: "string?",
