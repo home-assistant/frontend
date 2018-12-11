@@ -13,7 +13,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 
 import "../../../components/ha-card";
@@ -43,7 +43,7 @@ const modeIcons = {
   idle: "hass:power-sleep",
 };
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
@@ -55,6 +55,15 @@ function formatTemp(temps: string[]): string {
 
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-thermostat-card-editor");
+    return document.createElement("hui-thermostat-card-editor");
+  }
+
+  public static getStubConfig(): object {
+    return { entity: "" };
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
   private _roundSliderStyle?: TemplateResult;
