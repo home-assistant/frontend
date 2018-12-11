@@ -4,7 +4,6 @@ import { struct } from "../../common/structs/struct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-input/paper-input";
 
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
@@ -14,14 +13,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config } from "../../cards/hui-alarm-panel-card";
 import { configElementStyle } from "./config-elements-style";
 
-import "../../../../components/entity/state-badge";
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
-import "../../../../components/ha-card";
+import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
 
 const cardConfigStruct = struct({
   type: "string",
+  id: "string|number",
   entity: "string?",
   name: "string?",
   states: "array?",
@@ -85,13 +82,12 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
             return html`
               <div class="states">
                 <paper-item>${state}</paper-item>
-                <paper-icon-button
+                <ha-icon
                   class="deleteState"
-                  slot="item-icon"
                   .value="${index}"
                   icon="hass:close"
                   @click=${this._stateRemoved}
-                ></paper-icon-button>
+                ></ha-icon>
               </div>
             `;
           })
@@ -126,6 +122,9 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
         }
         .states:hover > .deleteState {
           visibility: visible;
+        }
+        ha-icon {
+          padding-top: 12px;
         }
       </style>
     `;
