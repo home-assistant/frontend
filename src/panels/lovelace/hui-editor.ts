@@ -131,4 +131,10 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-editor": LovelaceFullConfigEditor;
+  }
+}
+
 customElements.define("hui-editor", LovelaceFullConfigEditor);
