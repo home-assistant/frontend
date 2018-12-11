@@ -417,7 +417,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
 
-  private _routeDataChanged(ev) {
+  private _routeDataChanged(ev): void {
     this.routeData = ev.detail.value;
   }
 
