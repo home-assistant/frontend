@@ -4,19 +4,21 @@ import {
   PropertyValues,
   PropertyDeclarations,
 } from "@polymer/lit-element";
+import { TemplateResult } from "lit-html";
+import { PolymerElement } from "@polymer/polymer";
 
 import "../../components/entity/ha-state-label-badge";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
+import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
+import { LovelaceViewConfig } from "../../data/lovelace";
+import { HomeAssistant } from "../../types";
+
+import { Lovelace, LovelaceCard } from "./types";
 import createCardElement from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../types";
-import { Lovelace, LovelaceCard } from "./types";
-import { LovelaceViewConfig } from "../../data/lovelace";
-import { PolymerElement } from "@polymer/polymer";
 
 let editCodeLoaded = false;
 
@@ -108,10 +110,6 @@ class HUIView extends hassLocalizeLitMixin(LitElement) {
           bottom: 16px;
           right: 16px;
           z-index: 1;
-        }
-
-        paper-fab[hidden] {
-          display: none;
         }
 
         @media (max-width: 500px) {
