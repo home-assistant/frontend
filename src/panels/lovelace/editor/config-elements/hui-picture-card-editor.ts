@@ -22,7 +22,6 @@ import { ActionConfig } from "../../../../data/lovelace";
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   image: "string?",
   tap_action: "object?",
   hold_action: "object?",
