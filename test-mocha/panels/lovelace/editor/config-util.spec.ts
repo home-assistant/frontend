@@ -106,4 +106,26 @@ describe("moveCard", () => {
     };
     assert.deepEqual(expected, result);
   });
+
+  it("move a card to the same view", () => {
+    const config: LovelaceConfig = {
+      views: [
+        {
+          cards: [{ type: "v1-c1" }, { type: "v1-c2" }],
+        },
+        {
+          cards: [{ type: "v2-c1" }, { type: "v2-c2" }],
+        },
+      ],
+    };
+
+    const result = function() {
+      moveCard(config, [1, 0], [1]);
+    };
+    assert.throws(
+      result,
+      Error,
+      "You can not move a card to the view it is in."
+    );
+  });
 });

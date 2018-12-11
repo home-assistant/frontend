@@ -126,9 +126,12 @@ export const moveCard = (
   fromPath: [number, number],
   toPath: [number]
 ): LovelaceConfig => {
-  const card = config.views[fromPath[0]].cards![fromPath[1]];
-
+  if (fromPath[0] === toPath[0]) {
+    throw new Error("You can not move a card to the view it is in.");
+  }
   const fromView = config.views[fromPath[0]];
+  const card = fromView.cards![fromPath[1]];
+
   const newView1 = {
     ...fromView,
     cards: (fromView.cards || []).filter(
