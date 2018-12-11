@@ -119,7 +119,7 @@ describe("moveCard", () => {
       ],
     };
 
-    const result = function() {
+    const result = () => {
       moveCard(config, [1, 0], [1]);
     };
     assert.throws(

@@ -38,6 +38,9 @@ import "./components/notifications/hui-notification-drawer";
 import "./components/notifications/hui-notifications-button";
 import "./hui-unused-entities";
 import "./hui-view";
+// Not a duplicate import, this one is for type
+// tslint:disable-next-line
+import { HUIView } from "./hui-view";
 import createCardElement from "./common/create-card-element";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { Lovelace } from "./types";
@@ -336,10 +339,10 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     super.updated(changedProperties);
 
     const view = this._view;
-    const huiView = view.lastChild as any;
+    const huiView = view.lastChild as HUIView;
 
     if (changedProperties.has("columns") && huiView) {
-      (this._view.lastChild as any).columns = this.columns;
+      huiView.columns = this.columns;
     }
 
     if (changedProperties.has("hass") && huiView) {

@@ -22,7 +22,7 @@ import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 
 let editCodeLoaded = false;
 
-class HUIView extends hassLocalizeLitMixin(LitElement) {
+export class HUIView extends hassLocalizeLitMixin(LitElement) {
   public hass?: HomeAssistant;
   public lovelace?: Lovelace;
   public columns?: number;
