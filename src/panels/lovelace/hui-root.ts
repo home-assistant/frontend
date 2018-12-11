@@ -449,7 +449,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
 
-  private _editModeEnable() {
+  private _editModeEnable(): void {
     if (this._yamlMode) {
       window.alert("The edit UI is not available when in YAML mode.");
       return;
