@@ -95,7 +95,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     );
   }
 
-  public disconnectedCallback() {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._unsubNotifications) {
       this._unsubNotifications();
