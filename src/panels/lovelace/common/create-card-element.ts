@@ -8,6 +8,7 @@ import "../cards/hui-entity-filter-card";
 import {
   createErrorCardElement,
   createErrorCardConfig,
+  HuiErrorCard,
 } from "../cards/hui-error-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
@@ -28,6 +29,8 @@ import "../cards/hui-shopping-list-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-gauge-card";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 const CARD_TYPES = new Set([
   "alarm-panel",
@@ -59,23 +62,29 @@ const CARD_TYPES = new Set([
 const CUSTOM_TYPE_PREFIX = "custom:";
 const TIMEOUT = 2000;
 
-function _createElement(tag, config) {
-  const element = document.createElement(tag);
+const _createElement = (
+  tag: string,
+  config: LovelaceCardConfig
+): LovelaceCard | HuiErrorCard => {
+  const element = document.createElement(tag) as LovelaceCard;
   try {
     element.setConfig(config);
   } catch (err) {
-    // eslint-disable-next-line
+    // tslint:disable-next-line
     console.error(tag, err);
-    // eslint-disable-next-line
     return _createErrorElement(err.message, config);
   }
   return element;
-}
+};
 
-const _createErrorElement = (error, config) =>
-  createErrorCardElement(createErrorCardConfig(error, config));
+const _createErrorElement = (
+  error: string,
+  config: LovelaceCardConfig
+): HuiErrorCard => createErrorCardElement(createErrorCardConfig(error, config));
 
-export default function createCardElement(config) {
+export const createCardElement = (
+  config: LovelaceCardConfig
+): LovelaceCard | HuiErrorCard => {
   if (!config || typeof config !== "object" || !config.type) {
     return _createErrorElement("No card type configured.", config);
   }
@@ -111,4 +120,4 @@ export default function createCardElement(config) {
   }
 
   return _createElement(`hui-${config.type}-card`, config);
-}
+};
