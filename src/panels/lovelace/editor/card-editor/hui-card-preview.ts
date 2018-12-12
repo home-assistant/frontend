@@ -1,6 +1,6 @@
 import "@polymer/paper-input/paper-textarea";
 
-import createCardElement from "../../common/create-card-element";
+import { createCardElement } from "../../common/create-card-element";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCard } from "../../types";

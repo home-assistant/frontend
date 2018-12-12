@@ -2,15 +2,16 @@ import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 
 import "./cards/hui-entities-card";
 
-import computeUnusedEntities from "./common/compute-unused-entities";
-import createCardElement from "./common/create-card-element";
+import { computeUnusedEntities } from "./common/compute-unused-entities";
+import { createCardElement } from "./common/create-card-element";
 import { HomeAssistant } from "../../types";
 import { TemplateResult } from "lit-html";
 import { LovelaceCard } from "./types";
+import { LovelaceConfig } from "../../data/lovelace";
 
 export class HuiUnusedEntities extends LitElement {
   private _hass?: HomeAssistant;
-  private _config?: object;
+  private _config?: LovelaceConfig;
   private _element?: LovelaceCard;
 
   static get properties(): PropertyDeclarations {
@@ -29,10 +30,7 @@ export class HuiUnusedEntities extends LitElement {
     this._element.hass = this._hass;
   }
 
-  public setConfig(config: object): void {
-    if (!config) {
-      throw new Error("Card config incorrect");
-    }
+  public setConfig(config: LovelaceConfig): void {
     this._config = config;
     this._createElement();
   }
@@ -62,7 +60,7 @@ export class HuiUnusedEntities extends LitElement {
 
   private _createElement(): void {
     if (this._hass) {
-      const entities = computeUnusedEntities(this._hass, this._config).map(
+      const entities = computeUnusedEntities(this._hass, this._config!).map(
         (entity) => ({
           entity,
           secondary_info: "entity-id",

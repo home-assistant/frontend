@@ -5,6 +5,7 @@ export interface LovelaceConfig {
   views: LovelaceViewConfig[];
   background?: string;
   resources?: Array<{ type: "css" | "js" | "module" | "html"; url: string }>;
+  excluded_entities?: string[];
 }
 
 export interface LovelaceViewConfig {
