@@ -36,12 +36,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeNotifications } from "./common/compute-notifications";
 import "./components/notifications/hui-notification-drawer";
 import "./components/notifications/hui-notifications-button";
-import "./hui-unused-entities";
 import "./hui-view";
 // Not a duplicate import, this one is for type
 // tslint:disable-next-line
 import { HUIView } from "./hui-view";
-import createCardElement from "./common/create-card-element";
+import { createCardElement } from "./common/create-card-element";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
@@ -49,6 +48,15 @@ import { afterNextRender } from "../../common/util/render-status";
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
 const JS_CACHE = {};
+
+declare global {
+  // tslint:disable-next-line
+  interface HASSDomEvents {
+    "rebuild-view": {};
+  }
+}
+
+let loadedUnusedEntities = false;
 
 class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   public narrow?: boolean;
@@ -58,7 +66,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   public columns?: number;
   public route?: { path: string; prefix: string };
   private _routeData?: { view: string };
-  private _curView?: number | "unused";
+  private _curView?: number | "hass-unused-entities";
   private notificationsOpen?: boolean;
   private _persistentNotifications?: Notification[];
   private _haStyle?: DocumentFragment;
@@ -361,6 +369,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         views
       ) {
         navigate(this, `/lovelace/${views[0].path || 0}`, true);
+      } else if (this._routeData!.view === "hass-unused-entities") {
+        newSelectView = "hass-unused-entities";
       } else if (this._routeData!.view) {
         const selectedView = this._routeData!.view;
         const selectedViewInt = parseInt(selectedView, 10);
@@ -449,7 +459,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _handleUnusedEntities(): void {
-    this._selectView("unused", false);
+    navigate(this, `/lovelace/hass-unused-entities`);
   }
 
   private _deselect(ev): void {
@@ -523,9 +533,14 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       root.removeChild(root.lastChild);
     }
 
-    if (viewIndex === "unused") {
+    if (viewIndex === "hass-unused-entities") {
+      if (!loadedUnusedEntities) {
+        loadedUnusedEntities = true;
+        await import("./hui-unused-entities");
+      }
       const unusedEntities = document.createElement("hui-unused-entities");
       unusedEntities.setConfig(this.config);
+      unusedEntities.hass = this.hass!;
       root.style.background = this.config.background || "";
       root.appendChild(unusedEntities);
       return;
