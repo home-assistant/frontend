@@ -48,7 +48,7 @@ export class HuiLovelaceEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _valueChanged(ev: Event): void {
-    if (!this.config || !this.hass) {
+    if (!this.config) {
       return;
     }
 
