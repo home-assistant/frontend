@@ -30,6 +30,7 @@ declare global {
 export class HuiActionEditor extends LitElement {
   public config?: ActionConfig;
   public label?: string;
+  public actions?: string[];
   protected hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
@@ -56,10 +57,9 @@ export class HuiActionEditor extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this.actions) {
       return html``;
     }
-    const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
     return html`
       ${this.renderStyle()}
       <paper-dropdown-menu
@@ -69,10 +69,10 @@ export class HuiActionEditor extends LitElement {
       >
         <paper-listbox
           slot="dropdown-content"
-          .selected="${actions.indexOf(this._action)}"
+          .selected="${this.actions.indexOf(this._action)}"
         >
           ${
-            actions.map((action) => {
+            this.actions.map((action) => {
               return html`
                 <paper-item>${action}</paper-item>
               `;
@@ -105,7 +105,7 @@ export class HuiActionEditor extends LitElement {
                 max-rows="10"
                 .value="${this._service_data}"
                 .configValue="${"service_data"}"
-                @value-changed="${this._valueChanged}"
+                @focusout="${this._valueChanged}"
               ></paper-textarea>
             `
           : ""

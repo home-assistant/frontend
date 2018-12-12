@@ -60,7 +60,6 @@ class HaServicePicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _fireChanged(ev) {
-    console.log("fire change");
     ev.stopPropagation();
     this.fire("change");
   }
