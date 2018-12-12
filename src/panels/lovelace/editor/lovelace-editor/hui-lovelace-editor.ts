@@ -20,34 +20,23 @@ declare global {
 
 export class HuiLovelaceEditor extends hassLocalizeLitMixin(LitElement) {
   static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
+    return { hass: {}, config: {} };
   }
 
   get _title(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.title || "";
+    return this.config!.title || "";
   }
 
   public hass?: HomeAssistant;
-  private _config?: LovelaceConfig;
-
-  set config(config: LovelaceConfig) {
-    this._config = config;
-  }
+  public config?: LovelaceConfig;
 
   protected render(): TemplateResult {
-    if (!this.hass) {
-      return html``;
-    }
-
     return html`
       ${configElementStyle}
       <div class="card-config">
         <paper-input
           label="Title"
-          value="${this._title}"
+          .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
@@ -56,7 +45,7 @@ export class HuiLovelaceEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _valueChanged(ev: Event): void {
-    if (!this._config || !this.hass) {
+    if (!this.config || !this.hass) {
       return;
     }
 
@@ -70,7 +59,7 @@ export class HuiLovelaceEditor extends hassLocalizeLitMixin(LitElement) {
 
     if (target.configValue) {
       newConfig = {
-        ...this._config,
+        ...this.config,
         [target.configValue]: target.value,
       };
     }

@@ -144,6 +144,11 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                       @click="${this._editLovelace}"
                     ></paper-icon-button>
                   </div>
+                  <paper-icon-button
+                    icon="hass:help-circle"
+                    title="Help"
+                    @click="${this._handleHelp}"
+                  ></paper-icon-button>
                   <paper-menu-button
                     no-animations
                     horizontal-align="right"
@@ -157,14 +162,9 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
                     >
-                      <paper-item @click="${this._editModeDisable}"
-                        >Close UI editor</paper-item
-                      >
                       <paper-item @click="${this.lovelace!.enableFullEditMode}"
                         >Raw config editor</paper-item
                       >
-                      <paper-item>Add custom resources</paper-item>
-                      <paper-item @click="${this._handleHelp}">Help</paper-item>
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
@@ -443,10 +443,6 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
 
   private get _yamlMode(): boolean {
     return this.lovelace!.mode === "yaml";
-  }
-
-  private get _storageMode(): boolean {
-    return this.lovelace!.mode === "storage";
   }
 
   private get _editMode() {
