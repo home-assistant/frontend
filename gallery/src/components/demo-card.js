@@ -78,6 +78,10 @@ class DemoCard extends PolymerElement {
       hass.resources = demoResources;
       hass.language = "en";
       hass.states = demoStates;
+      hass.themes = {
+        default_theme: "default",
+        themes: {},
+      };
       el.hass = hass;
     }
 
