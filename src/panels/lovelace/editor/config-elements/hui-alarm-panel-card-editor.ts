@@ -63,7 +63,7 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
         <div class="side-by-side">
           <paper-input
             label="Name"
-            value="${this._name}"
+            .value="${this._name}"
             .configValue="${"name"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>

@@ -89,7 +89,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
         <div class="side-by-side">
           <paper-input
             label="Name"
-            value="${this._name}"
+            .value="${this._name}"
             .configValue="${"name"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
@@ -105,7 +105,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
         <div class="side-by-side">
           <paper-input
             label="Icon"
-            value="${this._icon}"
+            .value="${this._icon}"
             .configValue="${"icon"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
@@ -131,14 +131,14 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
         <div class="side-by-side">
           <paper-input
             label="Units"
-            value="${this._unit}"
+            .value="${this._unit}"
             .configValue="${"unit"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
             label="Graph Detail"
             type="number"
-            value="${this._detail}"
+            .value="${this._detail}"
             .configValue="${"detail"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
@@ -153,7 +153,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
           <paper-input
             label="Hours To Show"
             type="number"
-            value="${this._hours_to_show}"
+            .value="${this._hours_to_show}"
             .configValue="${"hours_to_show"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
