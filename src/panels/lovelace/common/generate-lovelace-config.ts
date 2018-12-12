@@ -42,6 +42,11 @@ const computeCards = (
         type: "alarm-panel",
         entity: entityId,
       });
+    } else if (domain === "camera") {
+      cards.push({
+        type: "picture-entity",
+        entity: entityId,
+      });
     } else if (domain === "climate") {
       cards.push({
         type: "thermostat",
