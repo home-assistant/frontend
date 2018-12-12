@@ -1,7 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
-class MoreInfoUpdater extends PolymerElement {
+class MoreInfoUpdater extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -15,7 +16,7 @@ class MoreInfoUpdater extends PolymerElement {
           class="link"
           href="https://www.home-assistant.io/docs/installation/updating/"
           target="_blank"
-          >Update Instructions</a
+          >[[localize('ui.dialogs.more_info_control.updater.title')]]</a
         >
       </div>
     `;
