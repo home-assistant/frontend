@@ -536,7 +536,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     if (viewIndex === "hass-unused-entities") {
       if (!loadedUnusedEntities) {
         loadedUnusedEntities = true;
-        await import("./hui-unused-entities");
+        await import(/* webpackChunkName: "hui-unused-entities" */ "./hui-unused-entities");
       }
       const unusedEntities = document.createElement("hui-unused-entities");
       unusedEntities.setConfig(this.config);
