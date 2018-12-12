@@ -8,6 +8,7 @@ import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
 import yaml from "js-yaml";
 
+import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
@@ -30,7 +31,7 @@ import { YamlChangedEvent, ConfigValue, ConfigError } from "../types";
 import { extYamlSchema } from "../yaml-ext-schema";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
-import { addCard, replaceCard } from "../config-util";
+import { addCard, replaceCard, moveCard } from "../config-util";
 
 declare global {
   interface HASSDomEvents {
@@ -160,6 +161,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
             ? html`
                 <div class="paper-dialog-buttons">
                   <paper-button
+                    class="toggle-button"
                     ?hidden="${!this._configValue || !this._configValue.value}"
                     ?disabled="${
                       this._configElement === null || this._configState !== "OK"
@@ -235,6 +237,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           padding-top: 8px;
           margin-bottom: 4px;
           display: block;
+        }
+        .toggle-button {
+          margin-right: auto;
         }
       </style>
     `;
