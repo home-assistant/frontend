@@ -126,7 +126,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                   <paper-item-body>
                     <paper-input
                       no-label-float
-                      value="${item.name}"
+                      .value="${item.name}"
                       .itemId="${item.id}"
                       @change="${this._saveEdit}"
                     ></paper-input>
@@ -177,7 +177,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                           <paper-item-body>
                             <paper-input
                               no-label-float
-                              value="${item.name}"
+                              .value="${item.name}"
                               .itemId="${item.id}"
                               @change="${this._saveEdit}"
                             ></paper-input>
