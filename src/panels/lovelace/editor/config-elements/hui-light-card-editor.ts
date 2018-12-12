@@ -58,7 +58,7 @@ export class HuiLightCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <paper-input
           label="Name"
-          value="${this._name}"
+          .value="${this._name}"
           .configValue="${"name"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
