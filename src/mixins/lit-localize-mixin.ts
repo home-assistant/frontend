@@ -37,13 +37,15 @@ export const hassLocalizeLitMixin = <T extends LitElement>(
     public connectedCallback(): void {
       super.connectedCallback();
 
-      let language;
-      let resources;
-      if (this.hass) {
-        language = this.hass.language;
-        resources = this.hass.resources;
+      if (this.localize === empty) {
+        let language;
+        let resources;
+        if (this.hass) {
+          language = this.hass.language;
+          resources = this.hass.resources;
+        }
+        this.localize = this.__computeLocalize(language, resources);
       }
-      this.localize = this.__computeLocalize(language, resources);
     }
 
     public updated(changedProperties: PropertyValues) {

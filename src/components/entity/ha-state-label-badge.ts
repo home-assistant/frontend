@@ -84,7 +84,9 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
     super.firstUpdated(changedProperties);
     this.addEventListener("click", (ev) => {
       ev.stopPropagation();
-      fireEvent(this, "hass-more-info", { entityId: this.state!.entity_id });
+      if (this.state) {
+        fireEvent(this, "hass-more-info", { entityId: this.state.entity_id });
+      }
     });
   }
 
