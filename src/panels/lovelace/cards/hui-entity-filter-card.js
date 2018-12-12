@@ -1,6 +1,6 @@
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import createCardElement from "../common/create-card-element";
+import { createCardElement } from "../common/create-card-element";
 import { processConfigEntities } from "../common/process-config-entities";
 
 function getEntities(hass, filterState, entities) {

@@ -9,7 +9,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import {
   createErrorCardElement,
   createErrorCardConfig,
+  HuiErrorCard,
 } from "../cards/hui-error-card";
+import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const ELEMENT_TYPES = new Set([
@@ -22,21 +24,25 @@ const ELEMENT_TYPES = new Set([
 ]);
 const TIMEOUT = 2000;
 
-const _createElement = (tag, config) => {
-  const element = document.createElement(tag);
+const _createElement = (
+  tag: string,
+  config: LovelaceElementConfig
+): LovelaceElement | HuiErrorCard => {
+  const element = document.createElement(tag) as LovelaceElement;
   try {
     element.setConfig(config);
   } catch (err) {
-    // eslint-disable-next-line
+    // tslint:disable-next-line
     console.error(tag, err);
-    // eslint-disable-next-line
     return _createErrorElement(err.message, config);
   }
   return element;
 };
 
-const _createErrorElement = (error, config) =>
-  createErrorCardElement(createErrorCardConfig(error, config));
+const _createErrorElement = (
+  error: string,
+  config: LovelaceElementConfig
+): HuiErrorCard => createErrorCardElement(createErrorCardConfig(error, config));
 
 function _hideErrorElement(element) {
   element.style.display = "None";
@@ -45,7 +51,9 @@ function _hideErrorElement(element) {
   }, TIMEOUT);
 }
 
-export default function createHuiElement(config) {
+export const createHuiElement = (
+  config: LovelaceElementConfig
+): LovelaceElement | HuiErrorCard => {
   if (!config || typeof config !== "object" || !config.type) {
     return _createErrorElement("No element type configured.", config);
   }
@@ -78,4 +86,4 @@ export default function createHuiElement(config) {
   }
 
   return _createElement(`hui-${config.type}-element`, config);
-}
+};
