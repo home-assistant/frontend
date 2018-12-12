@@ -6,7 +6,10 @@ import "../elements/hui-state-icon-element";
 import "../elements/hui-state-label-element";
 
 import { fireEvent } from "../../../common/dom/fire_event";
-import createErrorCardConfig from "./create-error-card-config";
+import {
+  createErrorCardElement,
+  createErrorCardConfig,
+} from "../cards/hui-error-card";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const ELEMENT_TYPES = new Set([
@@ -19,7 +22,7 @@ const ELEMENT_TYPES = new Set([
 ]);
 const TIMEOUT = 2000;
 
-function _createElement(tag, config) {
+const _createElement = (tag, config) => {
   const element = document.createElement(tag);
   try {
     element.setConfig(config);
@@ -30,11 +33,10 @@ function _createElement(tag, config) {
     return _createErrorElement(err.message, config);
   }
   return element;
-}
+};
 
-function _createErrorElement(error, config) {
-  return _createElement("hui-error-card", createErrorCardConfig(error, config));
-}
+const _createErrorElement = (error, config) =>
+  createErrorCardElement(createErrorCardConfig(error, config));
 
 function _hideErrorElement(element) {
   element.style.display = "None";

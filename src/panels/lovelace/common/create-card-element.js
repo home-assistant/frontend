@@ -5,7 +5,10 @@ import "../cards/hui-conditional-card";
 import "../cards/hui-entities-card";
 import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-filter-card";
-import "../cards/hui-error-card";
+import {
+  createErrorCardElement,
+  createErrorCardConfig,
+} from "../cards/hui-error-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
@@ -25,8 +28,6 @@ import "../cards/hui-shopping-list-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-gauge-card";
-
-import createErrorCardConfig from "./create-error-card-config";
 
 const CARD_TYPES = new Set([
   "alarm-panel",
@@ -71,9 +72,8 @@ function _createElement(tag, config) {
   return element;
 }
 
-function _createErrorElement(error, config) {
-  return _createElement("hui-error-card", createErrorCardConfig(error, config));
-}
+const _createErrorElement = (error, config) =>
+  createErrorCardElement(createErrorCardConfig(error, config));
 
 export default function createCardElement(config) {
   if (!config || typeof config !== "object" || !config.type) {
