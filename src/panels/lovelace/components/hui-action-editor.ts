@@ -1,12 +1,20 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 
 import "../../../components/ha-service-picker";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { EditorTarget } from "../editor/types";
-import { ActionConfig } from "../../../data/lovelace";
+import {
+  ActionConfig,
+  NavigateActionConfig,
+  CallServiceActionConfig,
+} from "../../../data/lovelace";
 
 declare global {
   // for fire event
@@ -33,15 +41,18 @@ export class HuiActionEditor extends LitElement {
   }
 
   get _navigation_path(): string {
-    return this.config!.navigation_path || ""; // TODO Why is this only seeing ToggleActionConfig?
+    const config = this.config! as NavigateActionConfig;
+    return config.navigation_path || "";
   }
 
   get _service(): string {
-    return this.config!.service || ""; // TODO Why is this only seeing ToggleActionConfig?
+    const config = this.config! as CallServiceActionConfig;
+    return config.service || "";
   }
 
   get _service_data(): { [key: string]: any } {
-    return {}; // TODO Need advice on how to handle this free-form data
+    const config = this.config! as CallServiceActionConfig;
+    return config.service_data || {};
   }
 
   protected render(): TemplateResult {
@@ -51,11 +62,12 @@ export class HuiActionEditor extends LitElement {
 
     const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
 
+    console.log(this._service_data);
+
     return html`
       ${this.renderStyle()}
       <paper-dropdown-menu
         .label="${this.label}"
-        dynamic-align
         .configValue="${"action"}"
         @value-changed="${this._valueChanged}"
       >
@@ -77,7 +89,7 @@ export class HuiActionEditor extends LitElement {
           ? html`
               <paper-input
                 label="Navigation Path"
-                value="${this._navigation_path}"
+                .value="${this._navigation_path}"
                 .configValue="${"navigation_path"}"
                 @value-changed="${this._valueChanged}"
               ></paper-input>
@@ -93,6 +105,11 @@ export class HuiActionEditor extends LitElement {
                 .configValue="${"service"}"
                 @on-change="${this._valueChanged}"
               ></ha-service-picker>
+              <paper-textarea
+                max-rows="10"
+                .value="${this._service_data}"
+                @value-changed="${this._valueChanged}"
+              ></paper-textarea>
             `
           : ""
       }
@@ -103,6 +120,7 @@ export class HuiActionEditor extends LitElement {
     if (!this.hass) {
       return;
     }
+    console.log("action change");
     const target = ev.target! as EditorTarget;
     if (
       this.config &&
@@ -112,6 +130,7 @@ export class HuiActionEditor extends LitElement {
     }
     if (target.configValue) {
       this.config = { ...this.config!, [target.configValue!]: target.value };
+      console.log("apply action to config: " + target.value);
       fireEvent(this, "action-changed");
     }
   }
@@ -119,8 +138,8 @@ export class HuiActionEditor extends LitElement {
   private renderStyle(): TemplateResult {
     return html`
       <style>
-        .entities {
-          padding-left: 20px;
+        paper-textarea {
+          --paper-input-container-shared-input-style_-_font-family: monospace;
         }
       </style>
     `;

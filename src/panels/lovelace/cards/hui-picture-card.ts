@@ -24,7 +24,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): object {
     return {
       image:
-        "https://github.com/home-assistant/home-assistant-assets/blob/master/logo.png?raw=true",
+        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
       tap_action: { action: "more-info" },
       hold_action: { action: "none" },
     };

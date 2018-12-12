@@ -1,11 +1,8 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "../../common/structs/struct";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-input/paper-input";
 
+import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -13,12 +10,9 @@ import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { Config } from "../../cards/hui-picture-card";
 import { configElementStyle } from "./config-elements-style";
-
-import "../../../../components/entity/state-badge";
-import "../../components/hui-action-editor";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon";
 import { ActionConfig } from "../../../../data/lovelace";
+
+import "../../components/hui-action-editor";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -67,7 +61,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <paper-input
           label="Image Url"
-          value="${this._image}"
+          .value="${this._image}"
           .configValue="${"image"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
