@@ -11,16 +11,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { Lovelace } from "../types";
 import { swapCard } from "../editor/config-util";
-import { fireEvent } from "../../../common/dom/fire_event";
-
-declare global {
-  interface HASSDomEvents {
-    "show-move-card-view": {
-      path: [number, number];
-      lovelace: Lovelace;
-    };
-  }
-}
+import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
 
 export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   public cardConfig?: LovelaceCardConfig;
@@ -147,16 +138,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _moveCard(): void {
-    const dialogShowEvent = "show-move-card-view";
-    const dialogTag = "hui-dialog-move-card-view";
-    fireEvent(this, "register-dialog", {
-      dialogShowEvent,
-      dialogTag,
-      dialogImport: () =>
-        import("../editor/card-editor/hui-dialog-move-card-view"),
-    });
-
-    fireEvent(this, dialogShowEvent, {
+    showMoveCardViewDialog(this, {
       path: this.path!,
       lovelace: this.lovelace!,
     });
