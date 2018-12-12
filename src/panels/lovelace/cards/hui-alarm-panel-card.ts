@@ -219,11 +219,11 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
         ha-label-badge {
           --ha-label-badge-color: var(--alarm-state-color);
           --label-badge-text-color: var(--alarm-state-color);
+          --label-badge-background-color: var(--paper-card-background-color);
           color: var(--alarm-state-color);
           position: absolute;
           right: 12px;
           top: 12px;
-          --label-badge-background-color: var(--paper-card-background-color);
         }
         .disarmed {
           --alarm-state-color: var(--alarm-color-disarmed);
