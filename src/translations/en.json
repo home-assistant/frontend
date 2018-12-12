@@ -472,6 +472,19 @@
       }
     },
     "dialogs": {
+      "more_info_control": {
+        "script": {
+          "last_action": "Last Action"
+        },
+        "sun": {
+          "elevation": "Elevation",
+          "rising": "Rising",
+          "setting": "Setting"
+        },
+        "updater": {
+          "title": "Update Instructions"
+        }
+      },
       "more_info_settings": {
         "save": "Save",
         "name": "Name",
