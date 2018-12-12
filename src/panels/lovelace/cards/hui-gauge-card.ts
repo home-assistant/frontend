@@ -17,7 +17,10 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import createErrorCardConfig from "../common/create-error-card-config";
+import {
+  createErrorCardConfig,
+  createErrorCardElement,
+} from "./hui-error-card";
 
 export interface SeverityConfig {
   green?: number;
@@ -94,14 +97,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     if (error) {
-      const errorConfig = createErrorCardConfig(
-        "Entity not Found!",
-        this._config
-      );
-      const element = document.createElement("hui-error-card");
-      element.setConfig(errorConfig);
       return html`
-        ${element}
+        ${createErrorCardElement(createErrorCardConfig(error, this._config))}
       `;
     }
 
