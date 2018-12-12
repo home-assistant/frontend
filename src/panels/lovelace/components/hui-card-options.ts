@@ -87,7 +87,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
                 }
                 return html`
                   <paper-item @click="${this._moveCard}" .index="${index}"
-                    >${view.title}</paper-item
+                    >${view.title || "Unnamed view"}</paper-item
                   >
                 `;
               })
