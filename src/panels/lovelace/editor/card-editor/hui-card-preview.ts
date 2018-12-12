@@ -1,12 +1,12 @@
 import "@polymer/paper-input/paper-textarea";
 
 import createCardElement from "../../common/create-card-element";
-import createErrorCardConfig from "../../common/create-error-card-config";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
+import { createErrorCardConfig } from "../../cards/hui-error-card";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
