@@ -23,12 +23,15 @@ export class HuiLovelaceEditor extends hassLocalizeLitMixin(LitElement) {
     return { hass: {}, config: {} };
   }
 
-  get _title(): string {
-    return this.config!.title || "";
-  }
-
   public hass?: HomeAssistant;
   public config?: LovelaceConfig;
+
+  get _title(): string {
+    if (!this.config) {
+      return "";
+    }
+    return this.config.title || "";
+  }
 
   protected render(): TemplateResult {
     return html`
