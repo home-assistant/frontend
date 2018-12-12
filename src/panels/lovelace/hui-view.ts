@@ -24,6 +24,24 @@ import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 
 let editCodeLoaded = false;
 
+// Find column with < 5 entities, else column with lowest count
+const getColumnIndex = (columnEntityCount: number[], size: number) => {
+  let minIndex = 0;
+  for (let i = 0; i < columnEntityCount.length; i++) {
+    if (columnEntityCount[i] < 5) {
+      minIndex = i;
+      break;
+    }
+    if (columnEntityCount[i] < columnEntityCount[minIndex]) {
+      minIndex = i;
+    }
+  }
+
+  columnEntityCount[minIndex] += size;
+
+  return minIndex;
+};
+
 export class HUIView extends hassLocalizeLitMixin(LitElement) {
   public hass?: HomeAssistant;
   public lovelace?: Lovelace;
@@ -245,28 +263,12 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
       columnEntityCount.push(0);
     }
 
-    // Find column with < 5 entities, else column with lowest count
-    function getColumnIndex(size) {
-      let minIndex = 0;
-      for (let i = 0; i < columnEntityCount.length; i++) {
-        if (columnEntityCount[i] < 5) {
-          minIndex = i;
-          break;
-        }
-        if (columnEntityCount[i] < columnEntityCount[minIndex]) {
-          minIndex = i;
-        }
-      }
-
-      columnEntityCount[minIndex] += size;
-
-      return minIndex;
-    }
-
     elements.forEach((el, index) => {
       const cardSize = computeCardSize(el);
       // Element to append might be the wrapped card when we're editing.
-      columns[getColumnIndex(cardSize)].push(elementsToAppend[index]);
+      columns[getColumnIndex(columnEntityCount, cardSize)].push(
+        elementsToAppend[index]
+      );
     });
 
     // Remove empty columns
