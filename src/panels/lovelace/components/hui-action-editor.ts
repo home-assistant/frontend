@@ -15,6 +15,8 @@ import {
   NavigateActionConfig,
   CallServiceActionConfig,
 } from "../../../data/lovelace";
+import { configElementStyle } from "../editor/config-elements/config-elements-style";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 declare global {
   // for fire event
@@ -50,9 +52,9 @@ export class HuiActionEditor extends LitElement {
     return config.service || "";
   }
 
-  get _service_data(): string {
+  get _service_data(): { [key: string]: any } {
     const config = this.config! as CallServiceActionConfig;
-    return JSON.stringify(config.service_data) || "{}";
+    return config.service_data || {};
   }
 
   protected render(): TemplateResult {
@@ -61,7 +63,7 @@ export class HuiActionEditor extends LitElement {
     }
     const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
     return html`
-      ${this.renderStyle()}
+      ${configElementStyle} ${this.renderStyle()}
       <paper-dropdown-menu
         .label="${this.label}"
         .configValue="${"action"}"
@@ -101,16 +103,49 @@ export class HuiActionEditor extends LitElement {
                 .configValue="${"service"}"
                 @change="${this._valueChanged}"
               ></ha-service-picker>
-              <paper-textarea
-                max-rows="10"
-                .value="${this._service_data}"
+              <h3>Service Data</h3>
+              <div class="side-by-side">
+                <paper-input id="keyInput" label="Key"></paper-input>
+                <paper-input id="valueInput" label="Value"></paper-input>
+              </div>
+              <paper-button
+                @click="${this._addData}"
                 .configValue="${"service_data"}"
-                @value-changed="${this._valueChanged}"
-              ></paper-textarea>
+                >Add Data
+              </paper-button>
             `
           : ""
       }
     `;
+  }
+
+  private _key(): PaperInputElement {
+    return this.shadowRoot!.getElementById("keyInput") as PaperInputElement;
+  }
+
+  private _value(): PaperInputElement {
+    return this.shadowRoot!.getElementById("valueInput") as PaperInputElement;
+  }
+
+  private _addData(ev: Event): void {
+    if (!this.hass) {
+      return;
+    }
+    const target = ev.target! as EditorTarget;
+    if (!this._key().value || !this._value().value) {
+      return;
+    }
+    const data = this._service_data;
+    data[this._key().value!] = this._value().value;
+    if (this.config && this.config[this[`${target.configValue}`]] === data) {
+      return;
+    }
+    if (target.configValue) {
+      this.config = { ...this.config!, [target.configValue]: data };
+      fireEvent(this, "action-changed");
+    }
+    this._key().value = "";
+    this._value().value = "";
   }
 
   private _valueChanged(ev: Event): void {
@@ -125,11 +160,7 @@ export class HuiActionEditor extends LitElement {
       return;
     }
     if (target.configValue) {
-      let value: any = target.value;
-      if (target.configValue === "service_data") {
-        value = JSON.parse(value);
-      }
-      this.config = { ...this.config!, [target.configValue!]: target.value };
+      this.config = { ...this.config!, [target.configValue]: target.value };
       fireEvent(this, "action-changed");
     }
   }
