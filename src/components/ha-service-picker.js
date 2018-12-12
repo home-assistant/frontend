@@ -4,11 +4,12 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "./ha-combo-box";
 
 import LocalizeMixin from "../mixins/localize-mixin";
+import EventsMixin from "../mixins/events-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
  */
-class HaServicePicker extends LocalizeMixin(PolymerElement) {
+class HaServicePicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <ha-combo-box
@@ -16,6 +17,7 @@ class HaServicePicker extends LocalizeMixin(PolymerElement) {
         items="[[_services]]"
         value="{{value}}"
         allow-custom-value=""
+        on-change="_fireChanged"
       ></ha-combo-box>
     `;
   }
@@ -55,6 +57,12 @@ class HaServicePicker extends LocalizeMixin(PolymerElement) {
       });
 
     this._services = result;
+  }
+
+  _fireChanged(ev) {
+    console.log("fire change");
+    ev.stopPropagation();
+    this.fire("change");
   }
 }
 

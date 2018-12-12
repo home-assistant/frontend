@@ -50,20 +50,16 @@ export class HuiActionEditor extends LitElement {
     return config.service || "";
   }
 
-  get _service_data(): { [key: string]: any } {
+  get _service_data(): string {
     const config = this.config! as CallServiceActionConfig;
-    return config.service_data || {};
+    return JSON.stringify(config.service_data) || "{}";
   }
 
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
-
     const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
-
-    console.log(this._service_data);
-
     return html`
       ${this.renderStyle()}
       <paper-dropdown-menu
@@ -103,11 +99,12 @@ export class HuiActionEditor extends LitElement {
                 .hass="${this.hass}"
                 .value="${this._service}"
                 .configValue="${"service"}"
-                @on-change="${this._valueChanged}"
+                @change="${this._valueChanged}"
               ></ha-service-picker>
               <paper-textarea
                 max-rows="10"
                 .value="${this._service_data}"
+                .configValue="${"service_data"}"
                 @value-changed="${this._valueChanged}"
               ></paper-textarea>
             `
@@ -120,7 +117,6 @@ export class HuiActionEditor extends LitElement {
     if (!this.hass) {
       return;
     }
-    console.log("action change");
     const target = ev.target! as EditorTarget;
     if (
       this.config &&
@@ -129,8 +125,11 @@ export class HuiActionEditor extends LitElement {
       return;
     }
     if (target.configValue) {
+      let value: any = target.value;
+      if (target.configValue === "service_data") {
+        value = JSON.parse(value);
+      }
       this.config = { ...this.config!, [target.configValue!]: target.value };
-      console.log("apply action to config: " + target.value);
       fireEvent(this, "action-changed");
     }
   }
