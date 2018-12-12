@@ -9,6 +9,18 @@ interface Config extends LovelaceCardConfig {
   origConfig: LovelaceCardConfig;
 }
 
+export const createErrorCardElement = (config) => {
+  const el = document.createElement("hui-error-card");
+  el.setConfig(config);
+  return el;
+};
+
+export const createErrorCardConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
 class HuiErrorCard extends LitElement implements LovelaceCard {
   private _config?: Config;
 

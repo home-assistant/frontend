@@ -1,5 +1,9 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 
+import {
+  createErrorCardElement,
+  createErrorCardConfig,
+} from "../cards/hui-error-card";
 import "../entity-rows/hui-climate-entity-row";
 import "../entity-rows/hui-cover-entity-row";
 import "../entity-rows/hui-group-entity-row";
@@ -18,8 +22,6 @@ import "../special-rows/hui-call-service-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
-
-import createErrorCardConfig from "./create-error-card-config";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const SPECIAL_TYPES = new Set([
@@ -51,7 +53,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
 };
 const TIMEOUT = 2000;
 
-function _createElement(tag, config) {
+const _createElement = (tag, config) => {
   const element = document.createElement(tag);
   try {
     if ("setConfig" in element) element.setConfig(config);
@@ -63,18 +65,17 @@ function _createElement(tag, config) {
   }
 
   return element;
-}
+};
 
-function _createErrorElement(error, config) {
-  return _createElement("hui-error-card", createErrorCardConfig(error, config));
-}
+const _createErrorElement = (error, config) =>
+  createErrorCardElement(createErrorCardConfig(error, config));
 
-function _hideErrorElement(element) {
+const _hideErrorElement = (element) => {
   element.style.display = "None";
   return window.setTimeout(() => {
     element.style.display = "";
   }, TIMEOUT);
-}
+};
 
 export default function createRowElement(config) {
   let tag;
