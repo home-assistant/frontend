@@ -43,6 +43,7 @@ import "./hui-view";
 import { HUIView } from "./hui-view";
 import createCardElement from "./common/create-card-element";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
+import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 
@@ -121,18 +122,51 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       .narrow="${this.narrow}"
     ></hui-notification-drawer>
     <ha-app-layout id="layout">
-      <app-header slot="header" effects="waterfall" fixed condenses>
+      <app-header slot="header" effects="waterfall" class="${classMap({
+        "edit-mode": this._editMode,
+      })}" fixed condenses>
         ${
           this._editMode
             ? html`
-                <app-toolbar>
+                <app-toolbar class="edit-mode">
                   <paper-icon-button
                     icon="hass:close"
                     @click="${this._editModeDisable}"
                   ></paper-icon-button>
                   <div main-title>
-                    ${this.localize("ui.panel.lovelace.editor.header")}
+                    ${
+                      this.config.title ||
+                        this.localize("ui.panel.lovelace.editor.header")
+                    }
+                    <paper-icon-button
+                      icon="hass:pencil"
+                      class="edit-icon"
+                      @click="${this._editLovelace}"
+                    ></paper-icon-button>
                   </div>
+                  <paper-menu-button
+                    no-animations
+                    horizontal-align="right"
+                    horizontal-offset="-5"
+                  >
+                    <paper-icon-button
+                      icon="hass:dots-vertical"
+                      slot="dropdown-trigger"
+                    ></paper-icon-button>
+                    <paper-listbox
+                      @iron-select="${this._deselect}"
+                      slot="dropdown-content"
+                    >
+                      <paper-item @click="${this._editModeDisable}"
+                        >Close UI editor</paper-item
+                      >
+                      <paper-item @click="${this.lovelace!.enableFullEditMode}"
+                        >Raw config editor</paper-item
+                      >
+                      <paper-item>Add custom resources</paper-item>
+                      <paper-item @click="${this._handleHelp}">Help</paper-item>
+                    </paper-listbox>
+                  </paper-menu-button>
                 </app-toolbar>
               `
             : html`
@@ -180,16 +214,6 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                           this.localize("ui.panel.lovelace.editor.configure_ui")
                         }</paper-item
                       >
-                      ${
-                        this._storageMode
-                          ? html`
-                              <paper-item
-                                @click="${this.lovelace!.enableFullEditMode}"
-                                >Raw config editor</paper-item
-                              >
-                            `
-                          : ""
-                      }
                       <paper-item @click="${this._handleHelp}">Help</paper-item>
                     </paper-listbox>
                   </paper-menu-button>
@@ -224,7 +248,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                               this._editMode
                                 ? html`
                                     <ha-icon
-                                      class="edit-view-icon"
+                                      class="edit-icon view"
                                       @click="${this._editView}"
                                       icon="hass:pencil"
                                     ></ha-icon>
@@ -293,11 +317,20 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
-        paper-tab.iron-selected .edit-view-icon {
+        .edit-mode {
+          background-color: #455a64;
+        }
+        .edit-mode div[main-title] {
+          pointer-events: auto;
+        }
+        paper-tab.iron-selected .edit-icon {
           display: inline-flex;
         }
-        .edit-view-icon {
+        .edit-icon {
+          color: var(--accent-color);
           padding-left: 8px;
+        }
+        .edit-icon.view {
           display: none;
         }
         #add-view {
@@ -476,6 +509,10 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     if (this.config.views.length < 2) {
       fireEvent(this, "iron-resize");
     }
+  }
+
+  private _editLovelace() {
+    showEditLovelaceDialog(this, this.lovelace!);
   }
 
   private _editView() {
