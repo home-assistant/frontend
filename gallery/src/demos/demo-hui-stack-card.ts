@@ -9,6 +9,9 @@ const ENTITIES = [
   getEntity("light", "kitchen_lights", "on", {
     friendly_name: "Kitchen Lights",
   }),
+  getEntity("light", "bed_light", "on", {
+    friendly_name: "Bed Lights",
+  }),
   getEntity("device_tracker", "demo_paulus", "work", {
     source_type: "gps",
     latitude: 32.877105,
