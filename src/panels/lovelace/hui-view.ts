@@ -18,7 +18,7 @@ import { LovelaceViewConfig } from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
 
 import { Lovelace, LovelaceCard } from "./types";
-import createCardElement from "./common/create-card-element";
+import { createCardElement } from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 
