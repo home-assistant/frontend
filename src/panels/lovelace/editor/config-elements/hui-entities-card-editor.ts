@@ -73,7 +73,7 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <paper-input
           label="Title"
-          value="${this._title}"
+          .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>

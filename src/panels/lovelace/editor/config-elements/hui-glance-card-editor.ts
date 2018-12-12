@@ -79,7 +79,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <paper-input
           label="Title"
-          value="${this._title}"
+          .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
@@ -93,7 +93,7 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
           <paper-input
             label="Columns"
             type="number"
-            value="${this._columns}"
+            .value="${this._columns}"
             .configValue="${"columns"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
