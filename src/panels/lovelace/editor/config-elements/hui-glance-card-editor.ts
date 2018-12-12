@@ -1,11 +1,11 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "../../common/structs/struct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
+import { struct } from "../../common/structs/struct";
 import { processEditorEntities } from "../process-editor-entities";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";

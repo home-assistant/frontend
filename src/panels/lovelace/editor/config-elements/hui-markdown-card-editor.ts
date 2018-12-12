@@ -1,9 +1,9 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "../../common/structs/struct";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 
+import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
