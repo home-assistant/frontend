@@ -31,7 +31,7 @@ import { YamlChangedEvent, ConfigValue, ConfigError } from "../types";
 import { extYamlSchema } from "../yaml-ext-schema";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
-import { addCard, replaceCard, moveCard } from "../config-util";
+import { addCard, replaceCard } from "../config-util";
 
 declare global {
   interface HASSDomEvents {
