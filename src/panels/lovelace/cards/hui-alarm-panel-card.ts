@@ -122,37 +122,24 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
           .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
           .label="${this._stateIconLabel(stateObj.state)}"
         ></ha-label-badge>
-        ${
-          stateObj.state === "disarmed"
-            ? html`
-                <div id="armActions" class="actions">
-                  ${
-                    this._config.states!.map((state) => {
-                      return html`
-                        <paper-button
-                          noink
-                          raised
-                          .action="${state}"
-                          @click="${this._handleActionClick}"
-                          >${this._label(state)}</paper-button
-                        >
-                      `;
-                    })
-                  }
-                </div>
-              `
-            : html`
-                <div id="disarmActions" class="actions">
-                  <paper-button
-                    noink
-                    raised
-                    .action="${"disarm"}"
-                    @click="${this._handleActionClick}"
-                    >${this._label("disarm")}</paper-button
-                  >
-                </div>
-              `
-        }
+        <div id="armActions" class="actions">
+          ${
+            (stateObj.state === "disarmed"
+              ? this._config.states!
+              : ["disarm"]
+            ).map((state) => {
+              return html`
+                <paper-button
+                  noink
+                  raised
+                  .action="${state}"
+                  @click="${this._handleActionClick}"
+                  >${this._label(state)}</paper-button
+                >
+              `;
+            })
+          }
+        </div>
         <paper-input
           label="Alarm Code"
           type="password"
@@ -236,6 +223,7 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
           position: absolute;
           right: 12px;
           top: 12px;
+          --label-badge-background-color: var(--paper-card-background-color);
         }
         .disarmed {
           --alarm-state-color: var(--alarm-color-disarmed);
@@ -301,11 +289,6 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
         }
         paper-button#disarm {
           color: var(--google-red-500);
-        }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
         }
       </style>
     `;
