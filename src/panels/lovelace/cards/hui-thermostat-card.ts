@@ -152,15 +152,21 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (!this._config || !this.hass || !this._jQuery) {
+    if (!this._config || !this.hass || !changedProps.has("hass")) {
       return;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
 
-    // If jQuery changed, we just rendered in firstUpdated
     if (
+      this._jQuery &&
+      // If jQuery changed, we just rendered in firstUpdated
       !changedProps.has("_jQuery") &&
       (!oldHass || oldHass.states[this._config.entity] !== stateObj)
     ) {
@@ -170,10 +176,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         value: sliderValue,
       });
       this._updateSetTemp(uiValue);
-    }
-
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
 

@@ -550,7 +550,6 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       } else {
         view = document.createElement("hui-view");
         view.lovelace = this.lovelace;
-        view.config = viewConfig;
         view.columns = this.columns;
         view.index = viewIndex;
       }
