@@ -125,7 +125,8 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
 
         .save-button {
           opacity: 0;
-          margin-left: -8px;
+          margin-left: -16px;
+          margin-top: -4px;
           transition: opacity 1.5s;
         }
 
