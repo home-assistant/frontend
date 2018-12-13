@@ -13,7 +13,7 @@ export default function parseAspectRatio(input: string) {
     return null;
   }
   try {
-    if (input.substr(input.length - 1) === "%") {
+    if (input.endsWith("%")) {
       return { w: 100, h: parseOrThrow(input.substr(0, input.length - 1)) };
     }
 
