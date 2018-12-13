@@ -78,6 +78,7 @@ class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (!changedProperties.has("format") || !this._connected) {
       return;
     }
