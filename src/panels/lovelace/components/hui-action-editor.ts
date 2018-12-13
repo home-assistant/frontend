@@ -51,17 +51,11 @@ export class HuiActionEditor extends LitElement {
     return config.service || "";
   }
 
-  get _service_data(): string {
-    const config = this.config! as CallServiceActionConfig;
-    return JSON.stringify(config.service_data) || "{}";
-  }
-
   protected render(): TemplateResult {
     if (!this.hass || !this.actions) {
       return html``;
     }
     return html`
-      ${this.renderStyle()}
       <paper-dropdown-menu
         .label="${this.label}"
         .configValue="${"action"}"
@@ -101,12 +95,7 @@ export class HuiActionEditor extends LitElement {
                 .configValue="${"service"}"
                 @change="${this._valueChanged}"
               ></ha-service-picker>
-              <paper-textarea
-                max-rows="10"
-                .value="${this._service_data}"
-                .configValue="${"service_data"}"
-                @focusout="${this._valueChanged}"
-              ></paper-textarea>
+              <h3>Toggle Editor to input Service Data</h3>
             `
           : ""
       }
@@ -125,23 +114,9 @@ export class HuiActionEditor extends LitElement {
       return;
     }
     if (target.configValue) {
-      let value: any = target.value;
-      if (target.configValue === "service_data") {
-        value = JSON.parse(value);
-      }
       this.config = { ...this.config!, [target.configValue!]: target.value };
       fireEvent(this, "action-changed");
     }
-  }
-
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-textarea {
-          --paper-input-container-shared-input-style_-_font-family: monospace;
-        }
-      </style>
-    `;
   }
 }
 
