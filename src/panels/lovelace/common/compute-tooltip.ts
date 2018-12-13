@@ -1,6 +1,7 @@
 import computeStateName from "../../../common/entity/compute_state_name";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig } from "../elements/types";
+import { ActionConfig } from "../../../data/lovelace";
 
 export const computeTooltip = (
   hass: HomeAssistant,
@@ -11,7 +12,7 @@ export const computeTooltip = (
   }
 
   let stateName = "";
-  let tooltip: string;
+  let tooltip = "";
 
   if (config.entity) {
     stateName =
@@ -20,19 +21,45 @@ export const computeTooltip = (
         : config.entity;
   }
 
-  switch (config.tap_action) {
-    case "navigate":
-      tooltip = `Navigate to ${config.navigation_path}`;
-      break;
-    case "toggle":
-      tooltip = `Toggle ${stateName}`;
-      break;
-    case "call-service":
-      tooltip = `Call service ${config.service}`;
-      break;
-    default:
-      tooltip = `Show more-info: ${stateName}`;
-  }
+  const tapTooltip = config.tap_action
+    ? computeActionTooltip(stateName, config.tap_action, false)
+    : "";
+  const holdTooltip = config.hold_action
+    ? computeActionTooltip(stateName, config.hold_action, true)
+    : "";
+
+  const newline = tapTooltip && holdTooltip ? "\n" : "";
+
+  tooltip = tapTooltip + newline + holdTooltip;
 
   return tooltip;
 };
+
+function computeActionTooltip(
+  state: string,
+  config: ActionConfig,
+  isHold: boolean
+) {
+  if (!config || !config.action || config.action === "none") {
+    return "";
+  }
+
+  let tooltip = isHold ? "Hold: " : "Tap: ";
+
+  switch (config.action) {
+    case "navigate":
+      tooltip += `Navigate to ${config.navigation_path}`;
+      break;
+    case "toggle":
+      tooltip += `Toggle ${state}`;
+      break;
+    case "call-service":
+      tooltip += `Call service ${config.service}`;
+      break;
+    case "more-info":
+      tooltip += `Show more-info: ${state}`;
+      break;
+  }
+
+  return tooltip;
+}

@@ -6,20 +6,20 @@ import {
 } from "@polymer/lit-element";
 import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
-import { jQuery } from "../../../resources/jquery";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { roundSliderStyle } from "../../../resources/jquery.roundslider";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
+import { afterNextRender } from "../../../common/util/render-status";
 
 const thermostatConfig = {
   radius: 150,
@@ -44,7 +44,7 @@ const modeIcons = {
   idle: "hass:power-sleep",
 };
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   entity: string;
   theme?: string;
   name?: string;
@@ -56,13 +56,27 @@ function formatTemp(temps: string[]): string {
 
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-thermostat-card-editor");
+    return document.createElement("hui-thermostat-card-editor");
+  }
+
+  public static getStubConfig(): object {
+    return { entity: "" };
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
+  private _roundSliderStyle?: TemplateResult;
+  private _jQuery?: any;
+  private _broadCard?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       _config: {},
+      roundSliderStyle: {},
+      _jQuery: {},
     };
   }
 
@@ -83,7 +97,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
-    const broadCard = this.clientWidth > 390;
     const mode = modeIcons[stateObj.attributes.operation_mode || ""]
       ? stateObj.attributes.operation_mode!
       : "unknown-mode";
@@ -92,8 +105,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       <ha-card
         class="${classMap({
           [mode]: true,
-          large: broadCard,
-          small: !broadCard,
+          large: this._broadCard!,
+          small: !this._broadCard,
         })}">
         <div id="root">
           <div id="thermostat"></div>
@@ -135,6 +148,45 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected firstUpdated(): void {
+    this._initialLoad();
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass || !changedProps.has("hass")) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || oldHass.themes !== this.hass.themes) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+
+    const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
+
+    if (
+      this._jQuery &&
+      // If jQuery changed, we just rendered in firstUpdated
+      !changedProps.has("_jQuery") &&
+      (!oldHass || oldHass.states[this._config.entity] !== stateObj)
+    ) {
+      const [sliderValue, uiValue] = this._genSliderValue(stateObj);
+
+      this._jQuery("#thermostat", this.shadowRoot).roundSlider({
+        value: sliderValue,
+      });
+      this._updateSetTemp(uiValue);
+    }
+  }
+
+  private async _initialLoad(): Promise<void> {
+    const loaded = await loadRoundslider();
+    await new Promise((resolve) => afterNextRender(resolve));
+
+    this._roundSliderStyle = loaded.roundSliderStyle;
+    this._jQuery = loaded.jQuery;
+
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     const _sliderType =
@@ -143,7 +195,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         ? "range"
         : "min-range";
 
-    jQuery("#thermostat", this.shadowRoot).roundSlider({
+    const [sliderValue, uiValue] = this._genSliderValue(stateObj);
+    this._broadCard = this.clientWidth > 390;
+    this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
       radius: this.clientWidth / 3,
       min: stateObj.attributes.min_temp,
@@ -151,18 +205,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       sliderType: _sliderType,
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
+      value: sliderValue,
     });
+    this._updateSetTemp(uiValue);
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
-
-    let sliderValue;
-    let uiValue;
+  private _genSliderValue(stateObj: ClimateEntity): [string | number, string] {
+    let sliderValue: string | number;
+    let uiValue: string;
 
     if (
       stateObj.attributes.target_temp_low &&
@@ -176,23 +226,16 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         String(stateObj.attributes.target_temp_high),
       ]);
     } else {
-      sliderValue = uiValue = stateObj.attributes.temperature;
+      sliderValue = stateObj.attributes.temperature;
+      uiValue = "" + stateObj.attributes.temperature;
     }
 
-    jQuery("#thermostat", this.shadowRoot).roundSlider({
-      value: sliderValue,
-    });
-    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = uiValue;
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
-    }
+    return [sliderValue, uiValue];
   }
 
   private renderStyle(): TemplateResult {
     return html`
-      ${roundSliderStyle}
+      ${this._roundSliderStyle}
       <style>
         :host {
           display: block;
@@ -366,10 +409,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
+  private _updateSetTemp(value: string): void {
+    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
+  }
+
   private _dragEvent(e): void {
-    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = formatTemp(
-      String(e.value).split(",")
-    );
+    this._updateSetTemp(formatTemp(String(e.value).split(",")));
   }
 
   private _setTemperature(e): void {

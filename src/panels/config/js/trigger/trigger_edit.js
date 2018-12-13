@@ -12,6 +12,7 @@ import StateTrigger from "./state";
 import SunTrigger from "./sun";
 import TemplateTrigger from "./template";
 import TimeTrigger from "./time";
+import WebhookTrigger from "./webhook";
 import ZoneTrigger from "./zone";
 
 const TYPES = {
@@ -23,6 +24,7 @@ const TYPES = {
   sun: SunTrigger,
   template: TemplateTrigger,
   time: TimeTrigger,
+  webhook: WebhookTrigger,
   zone: ZoneTrigger,
 };
 

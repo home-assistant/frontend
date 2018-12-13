@@ -1,46 +1,58 @@
 import { HomeAssistant } from "../../../types";
-import { LovelaceElementConfig } from "../elements/types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { toggleEntity } from "../../../../src/panels/lovelace/common/entity/toggle-entity";
+import { ActionConfig } from "../../../data/lovelace";
 
 export const handleClick = (
   node: HTMLElement,
   hass: HomeAssistant,
-  config: LovelaceElementConfig,
+  config: {
+    entity?: string;
+    camera_image?: string;
+    hold_action?: ActionConfig;
+    tap_action?: ActionConfig;
+  },
   hold: boolean
 ): void => {
-  let action = config.tap_action || "more-info";
+  let actionConfig: ActionConfig | undefined;
 
   if (hold && config.hold_action) {
-    action = config.hold_action;
+    actionConfig = config.hold_action;
+  } else if (!hold && config.tap_action) {
+    actionConfig = config.tap_action;
   }
 
-  if (action === "none") {
-    return;
+  if (!actionConfig) {
+    actionConfig = {
+      action: "more-info",
+    };
   }
 
-  switch (action) {
+  switch (actionConfig.action) {
     case "more-info":
-      if (config.entity) {
-        fireEvent(node, "hass-more-info", { entityId: config.entity });
+      if (config.entity || config.camera_image) {
+        fireEvent(node, "hass-more-info", {
+          entityId: config.entity ? config.entity! : config.camera_image!,
+        });
       }
       break;
     case "navigate":
-      navigate(node, config.navigation_path ? config.navigation_path : "");
+      if (actionConfig.navigation_path) {
+        navigate(node, actionConfig.navigation_path);
+      }
       break;
     case "toggle":
-      toggleEntity(hass, config.entity!);
+      if (config.entity) {
+        toggleEntity(hass, config.entity!);
+      }
       break;
     case "call-service": {
-      if (config.service) {
-        const [domain, service] = config.service.split(".", 2);
-        const serviceData = {
-          entity_id: config.entity,
-          ...config.service_data,
-        };
-        hass.callService(domain, service, serviceData);
+      if (!actionConfig.service) {
+        return;
       }
+      const [domain, service] = actionConfig.service.split(".", 2);
+      hass.callService(domain, service, actionConfig.service_data);
     }
   }
 };

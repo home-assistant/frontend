@@ -1,18 +1,18 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../layouts/partial-cards";
+import "../states/ha-panel-states";
 
 class HaPanelKiosk extends PolymerElement {
   static get template() {
     return html`
-      <partial-cards
+      <ha-panel-states
         id="kiosk-states"
         hass="[[hass]]"
         show-menu
         route="[[route]]"
         panel-visible
-      ></partial-cards>
+      ></ha-panel-states>
     `;
   }
 

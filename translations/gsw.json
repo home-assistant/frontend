@@ -348,6 +348,7 @@
                         },
                         "actions": {
                             "header": "Aktione",
+                            "unsupported_action": "Nicht unterstützte Aktion: {action}",
                             "type": {
                                 "delay": {
                                     "label": "Vrzögerig"
@@ -409,6 +410,13 @@
                 },
                 "mfa": {
                     "disable": "Deaktiviert"
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "edit_card": {
+                        "save": "Speichern"
+                    }
                 }
             }
         },

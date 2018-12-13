@@ -36,13 +36,13 @@
             "armed_custom_bypass": "Vklopljen izjeme po meri"
         },
         "automation": {
-            "off": "Izklopljena",
-            "on": "Vklopljena"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "binary_sensor": {
             "default": {
-                "off": "Izklopljeno",
-                "on": "Vklopljeno"
+                "off": "Izključen",
+                "on": "Vklopljen"
             },
             "moisture": {
                 "off": "Suho",
@@ -57,12 +57,12 @@
                 "on": "Zaznano"
             },
             "occupancy": {
-                "off": "Prosto",
-                "on": "Zasedeno"
+                "off": "Čisto",
+                "on": "Zaznano"
             },
             "smoke": {
                 "off": "Čisto",
-                "on": "Zaznan"
+                "on": "Zaznano"
             },
             "sound": {
                 "off": "Čisto",
@@ -144,7 +144,8 @@
             "performance": "Učinkovitost",
             "high_demand": "Visoka poraba",
             "heat_pump": "Toplotna črpalka",
-            "gas": "Plin"
+            "gas": "Plin",
+            "manual": "Ročno"
         },
         "configurator": {
             "configure": "Konfiguriraj",
@@ -216,16 +217,16 @@
             "on": "On"
         },
         "sensor": {
-            "off": "Off",
-            "on": "On"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "sun": {
             "above_horizon": "Nad obzorjem",
             "below_horizon": "Pod obzorjem"
         },
         "switch": {
-            "off": "Off",
-            "on": "On"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "zwave": {
             "default": {
@@ -281,7 +282,7 @@
             "arming": "Vklapljam",
             "disarming": "Izklopi",
             "triggered": "Sprožen",
-            "armed_custom_bypass": "Vklopljen"
+            "armed_custom_bypass": "Aktiven"
         },
         "device_tracker": {
             "home": "Doma",
@@ -430,8 +431,8 @@
                             "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \n\n [Več o pogojih.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Dodaj pogoj",
                             "duplicate": "Podvoji",
-                            "delete": "Briši",
-                            "delete_confirm": "Ste sigurni, da želite pobrisati?",
+                            "delete": "Izbriši",
+                            "delete_confirm": "Ste prepričani, da želite izbrisati?",
                             "unsupported_condition": "Nepodprti pogoj: {condition}",
                             "type_select": "Vrsta pogoja",
                             "type": {
@@ -443,7 +444,7 @@
                                     "label": "Numerično stanje",
                                     "above": "Nad",
                                     "below": "Pod",
-                                    "value_template": "Vrednostna predloga"
+                                    "value_template": "Vrednostna predloga (neobvezno)"
                                 },
                                 "sun": {
                                     "label": "Sonce",
@@ -465,7 +466,7 @@
                                 },
                                 "zone": {
                                     "label": "Območje",
-                                    "entity": "Subjekti z lokacijo",
+                                    "entity": "Subjekt z lokacijo",
                                     "zone": "Območje"
                                 }
                             }
@@ -475,8 +476,8 @@
                             "introduction": "Akcije so, kaj bo storil Home Assistent, ko se sproži avtomatizacija. \n\n [Več o dejavnostih.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Dodaj akcijo",
                             "duplicate": "Podvoji",
-                            "delete": "Briši",
-                            "delete_confirm": "Res želite pobrisati?",
+                            "delete": "Izbriši",
+                            "delete_confirm": "Ste prepričani, da želite izbrisati?",
                             "unsupported_action": "Nepodprta akcija: {action}",
                             "type_select": "Vrsta ukrepa",
                             "type": {
@@ -556,7 +557,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "Push obvestila",
-                    "description": "Prikazuj obvestila na tej napravi",
+                    "description": "Pošiljaj obvestila tej napravi",
                     "error_load_platform": "Konfiguriraj notify.html5 (push obvestila).",
                     "error_use_https": "Zahteva SSL za Frontend.",
                     "push_notifications": "Push obvestila",
@@ -712,6 +713,47 @@
                         "required_fields": "Izpolnite vsa zahtevana polja"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Označeni predmeti",
+                        "clear_items": "Počisti označene elemente",
+                        "add_item": "Dodaj element"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Konfiguracija kartice",
+                        "save": "Shrani",
+                        "toggle_editor": "Preklop na urejevalnik",
+                        "pick_card": "Izberite kartico, ki jo želite dodati.",
+                        "add": "Dodaj kartico",
+                        "edit": "Uredi",
+                        "delete": "Izbriši"
+                    },
+                    "migrate": {
+                        "header": "Konfiguracija Nezdružljiva",
+                        "para_no_id": "Ta element nima ID-ja. Prosimo, dodajte ID tega elementa v 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant lahko doda ID-je vsem vašim karticam in pogledom samodejno s pritiskom gumba »Migriraj nastavitve«.",
+                        "migrate": "Migriraj nastavitve"
+                    },
+                    "header": "Uredi UI",
+                    "configure_ui": "Konfiguriraj UI",
+                    "edit_view": {
+                        "header": "Prikaži konfiguracijo",
+                        "add": "Dodaj pogled",
+                        "edit": "Uredi pogled",
+                        "delete": "Izbriši pogled"
+                    },
+                    "save_config": {
+                        "header": "Prevzemite nadzor nad lovelace vmesnikom",
+                        "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik, ga posodabljal, ko bodo na voljo nove entitete ali komponente Lovelace. Če prevzamete nadzor, vam ga ne bo več samodejno popravljal.",
+                        "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
+                        "cancel": "Pozabi",
+                        "save": "Prevzemite nadzor"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -720,7 +762,8 @@
         },
         "common": {
             "loading": "Nalaganje",
-            "cancel": "Prekliči"
+            "cancel": "Prekliči",
+            "save": "Shrani"
         },
         "duration": {
             "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",

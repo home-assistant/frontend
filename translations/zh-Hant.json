@@ -557,7 +557,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "通知推送",
-                    "description": "傳送通知推送至此裝置",
+                    "description": "傳送通知推送至此裝置。",
                     "error_load_platform": "設定 notify.html5。",
                     "error_use_https": "需要啟用前端 SSL 加密。",
                     "push_notifications": "通知推送",
@@ -723,16 +723,35 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "卡片設定",
                         "save": "儲存",
-                        "toggle_editor": "切換編輯器"
+                        "toggle_editor": "切換編輯器",
+                        "pick_card": "選擇所要新增的卡片。",
+                        "add": "新增卡片",
+                        "edit": "編輯",
+                        "delete": "刪除"
                     },
                     "migrate": {
                         "header": "設定不相容",
                         "para_no_id": "該元件未含 ID，請於「ui-lovelace.yaml」中為該元件新增 ID。",
                         "para_migrate": "Home Assistant 能於您點選「遷移設定」按鈕後，自動新增 ID 與視圖至所有卡片。",
                         "migrate": "遷移設定"
+                    },
+                    "header": "編輯 UI",
+                    "configure_ui": "設定 UI",
+                    "edit_view": {
+                        "header": "檢視設定",
+                        "add": "新增視圖",
+                        "edit": "編輯視圖",
+                        "delete": "刪除視圖"
+                    },
+                    "save_config": {
+                        "header": "自行編輯 Lovelace UI",
+                        "para": "Home Assistant 於預設下，將維護您的使用者介面、於新物件或 Lovelace 元件可使用時進行更新。假如選擇自行編輯，系統將不再為您自動進行變更。",
+                        "para_sure": "確定要自行編輯使用者介面？",
+                        "cancel": "取消",
+                        "save": "儲存"
                     }
                 }
             }
@@ -743,7 +762,8 @@
         },
         "common": {
             "loading": "讀取中",
-            "cancel": "取消"
+            "cancel": "取消",
+            "save": "儲存"
         },
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",

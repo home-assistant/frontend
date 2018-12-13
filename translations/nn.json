@@ -144,7 +144,8 @@
             "performance": "Yting",
             "high_demand": "Høg etterspurnad",
             "heat_pump": "Varmepumpe",
-            "gas": "Gass"
+            "gas": "Gass",
+            "manual": "Håndbok"
         },
         "configurator": {
             "configure": "Konfigurerer",
@@ -477,7 +478,7 @@
                             "duplicate": "Dupliser",
                             "delete": "Slett",
                             "delete_confirm": "Er du sikker på at du vil slette?",
-                            "unsupported_action": "Ikkjestøtta handling: {action}",
+                            "unsupported_action": "Ikkje støtta handling: {action}",
                             "type_select": "Handlingstype",
                             "type": {
                                 "service": {

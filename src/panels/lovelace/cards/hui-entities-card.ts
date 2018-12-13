@@ -16,8 +16,8 @@ import { HomeAssistant } from "../../../types";
 import { EntityConfig, EntityRow } from "../entity-rows/types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import processConfigEntities from "../common/process-config-entities";
-import createRowElement from "../common/create-row-element";
+import { processConfigEntities } from "../common/process-config-entities";
+import { createRowElement } from "../common/create-row-element";
 import computeDomain from "../../../common/entity/compute_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
@@ -43,6 +43,11 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     await import("../editor/config-elements/hui-entities-card-editor");
     return document.createElement("hui-entities-card-editor");
   }
+
+  public static getStubConfig(): object {
+    return { entities: [] };
+  }
+
   protected _hass?: HomeAssistant;
   protected _config?: Config;
   protected _configEntities?: ConfigEntity[];
@@ -83,7 +88,8 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     this._configEntities = entities;
   }
 
-  protected updated(_changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
     if (this._hass && this._config) {
       applyThemesOnElement(this, this._hass.themes, this._config.theme);
     }

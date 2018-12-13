@@ -237,7 +237,7 @@
             },
             "query_stage": {
                 "initializing": "Initialiserer ({query_stage})",
-                "dead": "Død  ({query_stage})"
+                "dead": "Død ({query_stage})"
             }
         },
         "weather": {
@@ -723,16 +723,35 @@
                     }
                 },
                 "editor": {
-                    "edit": {
+                    "edit_card": {
                         "header": "Kortkonfigurasjon",
                         "save": "Lagre",
-                        "toggle_editor": "Bytt redigering"
+                        "toggle_editor": "Bytt redigering",
+                        "pick_card": "Velge det kortet du ønsker å legge til.",
+                        "add": "Legg til kort",
+                        "edit": "Rediger",
+                        "delete": "Slett"
                     },
                     "migrate": {
                         "header": "Konfigurasjon inkompatibel",
                         "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID til dette elementet i 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant kan legge til ID-er til alle dine kort og visninger automatisk for deg ved å trykke på 'Overfør konfigurasjon' knappen.",
                         "migrate": "Overfør konfigurasjon"
+                    },
+                    "header": "Rediger brukergrensesnitt",
+                    "configure_ui": "Konfigurer brukergrensesnitt",
+                    "edit_view": {
+                        "header": "Vis konfigurasjon",
+                        "add": "Legg til visning",
+                        "edit": "Rediger visning",
+                        "delete": "Slett visning"
+                    },
+                    "save_config": {
+                        "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
+                        "para": "Home Assistant hjelper som standard med å vedlikeholde brukergrensesnittet ditt, oppdaterer det når nye enheter eller Lovelace-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
+                        "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
+                        "cancel": "Glem det",
+                        "save": "Ta kontroll"
                     }
                 }
             }
@@ -743,7 +762,8 @@
         },
         "common": {
             "loading": "Laster",
-            "cancel": "Avbryt"
+            "cancel": "Avbryt",
+            "save": "Lagre"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",

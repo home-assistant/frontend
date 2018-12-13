@@ -12,6 +12,7 @@ import "../../../components/ha-water_heater-control";
 import "../../../components/ha-paper-slider";
 
 import featureClassNames from "../../../common/entity/feature_class_names";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -198,17 +199,17 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   supportsTemperature(stateObj) {
     return (
-      (stateObj.attributes.supported_features & 1) !== 0 &&
+      supportsFeature(stateObj, 1) &&
       typeof stateObj.attributes.temperature === "number"
     );
   }
 
   supportsOperationMode(stateObj) {
-    return (stateObj.attributes.supported_features & 2) !== 0;
+    return supportsFeature(stateObj, 2);
   }
 
   supportsAwayMode(stateObj) {
-    return (stateObj.attributes.supported_features & 4) !== 0;
+    return supportsFeature(stateObj, 4);
   }
 
   computeClassNames(stateObj) {

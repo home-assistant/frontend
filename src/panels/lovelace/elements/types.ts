@@ -1,14 +1,14 @@
 import { HomeAssistant } from "../../../types";
+import { ActionConfig } from "../../../data/lovelace";
 
 export interface LovelaceElementConfig {
   type: string;
   style: object;
   entity?: string;
-  hold_action?: string;
-  navigation_path?: string;
+  hold_action?: ActionConfig;
   service?: string;
   service_data?: object;
-  tap_action?: string;
+  tap_action?: ActionConfig;
   title?: string;
 }
 

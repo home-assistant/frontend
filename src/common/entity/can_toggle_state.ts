@@ -2,6 +2,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import canToggleDomain from "./can_toggle_domain";
 import computeStateDomain from "./compute_state_domain";
 import { HomeAssistant } from "../../types";
+import { supportsFeature } from "./supports-feature";
 
 export default function canToggleState(
   hass: HomeAssistant,
@@ -12,8 +13,7 @@ export default function canToggleState(
     return stateObj.state === "on" || stateObj.state === "off";
   }
   if (domain === "climate") {
-    // tslint:disable-next-line
-    return (stateObj.attributes.supported_features! & 4096) !== 0;
+    return supportsFeature(stateObj, 4096);
   }
 
   return canToggleDomain(hass, domain);

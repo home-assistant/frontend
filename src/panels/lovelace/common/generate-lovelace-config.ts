@@ -42,6 +42,11 @@ const computeCards = (
         type: "alarm-panel",
         entity: entityId,
       });
+    } else if (domain === "camera") {
+      cards.push({
+        type: "picture-entity",
+        entity: entityId,
+      });
     } else if (domain === "climate") {
       cards.push({
         type: "thermostat",
@@ -94,7 +99,7 @@ const computeDefaultViewStates = (hass: HomeAssistant): HassEntities => {
 
 const generateViewConfig = (
   localize: LocalizeFunc,
-  id: string,
+  path: string,
   title: string | undefined,
   icon: string | undefined,
   entities: HassEntities,
@@ -158,7 +163,7 @@ const generateViewConfig = (
     });
 
   return {
-    id,
+    path,
     title,
     icon,
     badges,
@@ -228,7 +233,6 @@ export const generateLovelaceConfig = (
   }
 
   return {
-    _frontendAuto: true,
     title,
     views,
   };

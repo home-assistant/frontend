@@ -1,13 +1,12 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "superstruct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { processEditorEntities } from "../process-editor-entities";
-
+import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -24,16 +23,15 @@ import "../../../../components/ha-icon";
 
 const entitiesConfigStruct = struct.union([
   {
-    entity: "string",
+    entity: "entity-id",
     name: "string?",
-    icon: "string?",
+    icon: "icon?",
   },
-  "string",
+  "entity-id",
 ]);
 
 const cardConfigStruct = struct({
   type: "string",
-  id: "string|number",
   title: "string|number?",
   theme: "string?",
   show_header_toggle: "boolean?",
@@ -42,10 +40,6 @@ const cardConfigStruct = struct({
 
 export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
-  private _configEntities?: ConfigEntity[];
-
   static get properties(): PropertyDeclarations {
     return { hass: {}, _config: {}, _configEntities: {} };
   }
@@ -57,6 +51,10 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   get _theme(): string {
     return this._config!.theme || "Backend-selected";
   }
+
+  public hass?: HomeAssistant;
+  private _config?: Config;
+  private _configEntities?: ConfigEntity[];
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
@@ -75,7 +73,7 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <paper-input
           label="Title"
-          value="${this._title}"
+          .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>

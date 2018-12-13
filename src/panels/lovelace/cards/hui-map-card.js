@@ -1,18 +1,15 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/paper-icon-button/paper-icon-button";
-import Leaflet from "leaflet";
 
 import "../../map/ha-entity-marker";
 
-import setupLeafletMap from "../../../common/dom/setup-leaflet-map";
-import processConfigEntities from "../common/process-config-entities";
+import { setupLeafletMap } from "../../../common/dom/setup-leaflet-map";
+import { processConfigEntities } from "../common/process-config-entities";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-
-Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
 
 class HuiMapCard extends PolymerElement {
   static get template() {
@@ -143,13 +140,14 @@ class HuiMapCard extends PolymerElement {
       window.addEventListener("resize", this._debouncedResizeListener);
     }
 
-    this._map = setupLeafletMap(this.$.map);
-    this._drawEntities(this.hass);
+    this.loadMap();
+  }
 
-    setTimeout(() => {
-      this._resetMap();
-      this._fitMap();
-    }, 1);
+  async loadMap() {
+    [this._map, this.Leaflet] = await setupLeafletMap(this.$.map);
+    this._drawEntities(this.hass);
+    this._map.invalidateSize();
+    this._fitMap();
   }
 
   disconnectedCallback() {
@@ -177,7 +175,7 @@ class HuiMapCard extends PolymerElement {
     const zoom = this._config.default_zoom;
     if (this._mapItems.length === 0) {
       this._map.setView(
-        new Leaflet.LatLng(
+        new this.Leaflet.LatLng(
           this.hass.config.latitude,
           this.hass.config.longitude
         ),
@@ -186,7 +184,7 @@ class HuiMapCard extends PolymerElement {
       return;
     }
 
-    const bounds = new Leaflet.latLngBounds(
+    const bounds = new this.Leaflet.latLngBounds(
       this._mapItems.map((item) => item.getLatLng())
     );
     this._map.fitBounds(bounds.pad(0.5));
@@ -245,7 +243,7 @@ class HuiMapCard extends PolymerElement {
           iconHTML = title;
         }
 
-        markerIcon = Leaflet.divIcon({
+        markerIcon = this.Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
           className: "",
@@ -253,7 +251,7 @@ class HuiMapCard extends PolymerElement {
 
         // create market with the icon
         mapItems.push(
-          Leaflet.marker([latitude, longitude], {
+          this.Leaflet.marker([latitude, longitude], {
             icon: markerIcon,
             interactive: false,
             title: title,
@@ -262,7 +260,7 @@ class HuiMapCard extends PolymerElement {
 
         // create circle around it
         mapItems.push(
-          Leaflet.circle([latitude, longitude], {
+          this.Leaflet.circle([latitude, longitude], {
             interactive: false,
             color: "#FF9800",
             radius: radius,
@@ -285,9 +283,9 @@ class HuiMapCard extends PolymerElement {
       el.setAttribute("entity-name", entityName);
       el.setAttribute("entity-picture", entityPicture || "");
 
-      /* Leaflet clones this element before adding it to the map. This messes up
+      /* this.Leaflet clones this element before adding it to the map. This messes up
          our Polymer object and we can't pass data through. Thus we hack like this. */
-      markerIcon = Leaflet.divIcon({
+      markerIcon = this.Leaflet.divIcon({
         html: el.outerHTML,
         iconSize: [48, 48],
         className: "",
@@ -295,7 +293,7 @@ class HuiMapCard extends PolymerElement {
 
       // create market with the icon
       mapItems.push(
-        Leaflet.marker([latitude, longitude], {
+        this.Leaflet.marker([latitude, longitude], {
           icon: markerIcon,
           title: computeStateName(stateObj),
         }).addTo(map)
@@ -304,7 +302,7 @@ class HuiMapCard extends PolymerElement {
       // create circle around if entity has accuracy
       if (gpsAccuracy) {
         mapItems.push(
-          Leaflet.circle([latitude, longitude], {
+          this.Leaflet.circle([latitude, longitude], {
             interactive: false,
             color: "#0288D1",
             radius: gpsAccuracy,

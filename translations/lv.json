@@ -144,7 +144,8 @@
             "performance": "Veiktspēja",
             "high_demand": "Augsts pieprasījums",
             "heat_pump": "Siltumsūknis",
-            "gas": "Gāze"
+            "gas": "Gāze",
+            "manual": "Rokasgrāmata"
         },
         "configurator": {
             "configure": "Konfigurēt",

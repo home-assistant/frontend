@@ -33,7 +33,10 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
       throw Error("Error in element configuration");
     }
 
-    this.classList.toggle("clickable", config.tap_action !== "none");
+    this.classList.toggle(
+      "clickable",
+      config.tap_action && config.tap_action.action !== "none"
+    );
     this._config = config;
   }
 
@@ -54,7 +57,7 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
         .stateFilter="${this._config.state_filter}"
         .title="${computeTooltip(this.hass!, this._config)}"
         .aspectRatio="${this._config.aspect_ratio}"
-        @ha-click="${this._handleClick}"
+        @ha-click="${this._handleTap}"
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       ></hui-image>
@@ -76,7 +79,7 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _handleClick() {
+  private _handleTap() {
     handleClick(this, this.hass!, this._config!, false);
   }
 

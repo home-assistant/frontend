@@ -442,7 +442,8 @@
     },
     "common": {
       "loading": "Loading",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "save": "Save"
     },
     "components": {
       "entity": {
@@ -471,6 +472,19 @@
       }
     },
     "dialogs": {
+      "more_info_control": {
+        "script": {
+          "last_action": "Last Action"
+        },
+        "sun": {
+          "elevation": "Elevation",
+          "rising": "Rising",
+          "setting": "Setting"
+        },
+        "updater": {
+          "title": "Update Instructions"
+        }
+      },
       "more_info_settings": {
         "save": "Save",
         "name": "Name",
@@ -612,6 +626,10 @@
                 "time": {
                   "label": "Time",
                   "at": "At"
+                },
+                "webhook": {
+                  "label": "Webhook",
+                  "webhook_id": "Webhook ID"
                 },
                 "zone": {
                   "label": "Zone",
@@ -767,10 +785,21 @@
           }
         },
         "editor": {
-          "edit": {
+          "header": "Edit UI",
+          "configure_ui": "Configure UI",
+          "edit_view": {
+            "header": "View Configuration",
+            "add": "Add view",
+            "edit": "Edit view",
+            "delete": "Delete view"
+          },
+          "edit_card": {
             "header": "Card Configuration",
-            "save": "Save",
-            "toggle_editor": "Toggle Editor"
+            "pick_card": "Pick the card you want to add.",
+            "toggle_editor": "Toggle Editor",
+            "add": "Add Card",
+            "edit": "Edit",
+            "delete": "Delete"
           },
           "save_config": {
             "header": "Take control of your Lovelace UI",

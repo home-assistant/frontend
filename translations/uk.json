@@ -73,7 +73,7 @@
                 "on": "Виявлено"
             },
             "opening": {
-                "off": "Закритий",
+                "off": "Закрито",
                 "on": "Відкритий"
             },
             "safety": {
@@ -101,11 +101,11 @@
                 "on": "Охолодження"
             },
             "door": {
-                "off": "Зачинено",
-                "on": "Відкрито"
+                "off": "Зачинені",
+                "on": "Відчинені"
             },
             "garage_door": {
-                "off": "Зачинено",
+                "off": "ЗачиненІ",
                 "on": "Відкрито"
             },
             "heat": {
@@ -114,7 +114,7 @@
             },
             "window": {
                 "off": "Зачинено",
-                "on": "Відкрито"
+                "on": "Відчинене"
             },
             "lock": {
                 "off": "Заблоковано",
@@ -144,7 +144,8 @@
             "performance": "Продуктивність",
             "high_demand": "Велике споживання",
             "heat_pump": "Тепловий насос",
-            "gas": "Газ"
+            "gas": "Газ",
+            "manual": "Вручну"
         },
         "configurator": {
             "configure": "Налаштувати",
@@ -247,6 +248,7 @@
             "lightning": "Блискавка",
             "lightning-rainy": "Блискавка, дощ",
             "partlycloudy": "Невелика хмарність",
+            "pouring": "Злива",
             "rainy": "Дощова",
             "snowy": "Сніжно",
             "snowy-rainy": "Сніг, дощ",
@@ -278,22 +280,11 @@
         }
     },
     "ui": {
-        "sidebar": {
-            "log_out": "Вийти",
-            "developer_tools": "Інструменти для розробників"
-        },
-        "common": {
-            "loading": "Завантаження",
-            "cancel": "Скасувати"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
-            "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}",
-            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
-            "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
-            "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}"
-        },
         "panel": {
+            "shopping-list": {
+                "add_item": "Додати елемент",
+                "microphone_tip": "Торкніться мікрофона у верхньому правому куті та скажіть \"Add candy to my shopping list\""
+            },
             "history": {
                 "showing_entries": "Показані записи для",
                 "period": "Період"
@@ -360,9 +351,48 @@
                         "alias": "Назва",
                         "triggers": {
                             "header": "Тригери",
+                            "unsupported_platform": "Непідтримувана платформа: {platform}",
                             "type": {
+                                "homeassistant": {
+                                    "start": "Початок",
+                                    "shutdown": "Завершення роботи"
+                                },
+                                "sun": {
+                                    "label": "Сонце",
+                                    "sunrise": "Схід сонця",
+                                    "sunset": "Захід сонця",
+                                    "offset": "Зміщення (необов'язково)"
+                                },
+                                "time": {
+                                    "label": "Час"
+                                },
                                 "state": {
                                     "for": "Протягом"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "before": "Перед:",
+                                    "after": "Після:",
+                                    "before_offset": "Перед зміщенням (необов'язково)",
+                                    "after_offset": "Після зміщення (необов'язково)"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Дії",
+                            "add": "Додати дію",
+                            "unsupported_action": "Непідтримувана дія: {action}",
+                            "type_select": "Тип дії",
+                            "type": {
+                                "delay": {
+                                    "label": "Затримка"
+                                },
+                                "wait_template": {
+                                    "label": "Чекати",
+                                    "timeout": "Тайм-аут (необов'язково)"
                                 }
                             }
                         }
@@ -507,7 +537,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Двофакторний ідентифікаційний код"
-                                    }
+                                    },
+                                    "description": "Відкрийте **{mfa_module_name}** на своєму пристрої, щоб переглянути свій двофакторний код автентифікації та підтвердити свою особу:"
                                 }
                             },
                             "error": {
@@ -525,6 +556,11 @@
                                         "password": "Пароль API"
                                     },
                                     "description": "Будь ласка, введіть пароль API в ваш http конфіг:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Двофакторний Код Автентифікації"
+                                    }
                                 }
                             },
                             "error": {
@@ -565,7 +601,50 @@
                         "required_fields": "Заповніть усі необхідні поля"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "add_item": "Додати елемент"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Конфігурація картки",
+                        "save": "Зберегти",
+                        "pick_card": "Виберіть картку, яку хочете додати.",
+                        "add": "Додати картку",
+                        "edit": "Редагувати",
+                        "delete": "Видалити"
+                    },
+                    "migrate": {
+                        "header": "Конфігурація несумісна"
+                    },
+                    "header": "Редагування інтерфейсу",
+                    "edit_view": {
+                        "header": "Перегляд Конфігурації "
+                    },
+                    "save_config": {
+                        "header": "Візьміть під свій контроль Lovelace UI"
+                    }
+                }
             }
+        },
+        "sidebar": {
+            "log_out": "Вийти",
+            "developer_tools": "Інструменти для розробників"
+        },
+        "common": {
+            "loading": "Завантаження",
+            "cancel": "Скасувати",
+            "save": "Зберегти"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+            "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}",
+            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+            "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+            "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}"
         },
         "login-form": {
             "password": "Пароль",
@@ -641,6 +720,12 @@
                 "code": "Код",
                 "lock": "Блокувати",
                 "unlock": "Розблокувати"
+            },
+            "vacuum": {
+                "actions": {
+                    "turn_on": "Ввімкнути",
+                    "turn_off": "Вимкнути"
+                }
             },
             "water_heater": {
                 "currently": "В даний час",

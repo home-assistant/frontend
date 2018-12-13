@@ -144,7 +144,8 @@
             "performance": "性能",
             "high_demand": "高需求",
             "heat_pump": "热泵",
-            "gas": "燃气"
+            "gas": "燃气",
+            "manual": "手动"
         },
         "configurator": {
             "configure": "设置",
@@ -712,6 +713,47 @@
                         "required_fields": "请填写所有必填字段"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "已完成项目",
+                        "clear_items": "清除已完成项目",
+                        "add_item": "新增项目"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "卡片配置",
+                        "save": "保存",
+                        "toggle_editor": "切换编辑器",
+                        "pick_card": "请选择要添加的卡片。",
+                        "add": "添加卡片",
+                        "edit": "编辑",
+                        "delete": "删除"
+                    },
+                    "migrate": {
+                        "header": "配置不兼容",
+                        "para_no_id": "此元素没有 ID。请在 'ui-lovelace.yaml' 中为此元素添加 ID。",
+                        "para_migrate": "通过点击“迁移配置”按钮，Home Assistant 可以自动为您的所有卡片和视图添加 ID。",
+                        "migrate": "迁移配置"
+                    },
+                    "header": "编辑 UI",
+                    "configure_ui": "配置 UI",
+                    "edit_view": {
+                        "header": "查看配置",
+                        "add": "添加视图",
+                        "edit": "编辑视图",
+                        "delete": "删除视图"
+                    },
+                    "save_config": {
+                        "header": "自行编辑您的 Lovelace UI",
+                        "para": "默认情况下，Home Assistant 将维护您的用户界面，并在新的实体或 Lovelace 组件可用时更新它。如果您选择自行编辑，我们将不再自动为您进行更改。",
+                        "para_sure": "您确定要自行编辑用户界面吗？",
+                        "cancel": "没关系",
+                        "save": "自行编辑"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -720,7 +762,8 @@
         },
         "common": {
             "loading": "加载中",
-            "cancel": "取消"
+            "cancel": "取消",
+            "save": "保存"
         },
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",

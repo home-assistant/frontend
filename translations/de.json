@@ -144,7 +144,8 @@
             "performance": "Leistung",
             "high_demand": "Hoher Verbrauch",
             "heat_pump": "Wärmepumpe",
-            "gas": "Gas"
+            "gas": "Gas",
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Konfigurieren",
@@ -712,6 +713,43 @@
                         "required_fields": "Fülle alle Pflichtfelder aus."
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markierte Items",
+                        "clear_items": "Markierte Elemente löschen",
+                        "add_item": "Item hinzufügen"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kartenkonfiguration",
+                        "save": "Speichern",
+                        "toggle_editor": "Editor umschalten",
+                        "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
+                        "add": "Karte hinzufügen",
+                        "edit": "Bearbeiten",
+                        "delete": "Löschen"
+                    },
+                    "migrate": {
+                        "header": "Konfiguration inkompatibel",
+                        "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu.",
+                        "migrate": "Konfiguration migrieren"
+                    },
+                    "header": "Benutzeroberfläche bearbeiten",
+                    "configure_ui": "Benutzeroberfläche konfigurieren",
+                    "edit_view": {
+                        "header": "Konfiguration anzeigen",
+                        "add": "Ansicht hinzufügen",
+                        "edit": "Ansicht bearbeiten",
+                        "delete": "Ansicht löschen"
+                    },
+                    "save_config": {
+                        "cancel": "Abbrechen",
+                        "save": "Kontrolle übernehmen"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -720,7 +758,8 @@
         },
         "common": {
             "loading": "Laden",
-            "cancel": "Abbrechen"
+            "cancel": "Abbrechen",
+            "save": "Speichern"
         },
         "duration": {
             "day": "{count} {count, plural,\none {Tag}\nother {Tage}\n}",
