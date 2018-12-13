@@ -31,6 +31,11 @@ describe("parseAspectRatio", () => {
     assert.deepEqual(r, ratio178);
   });
 
+  it("Parses 23%", () => {
+    const r = parseAspectRatio("23%");
+    assert.deepEqual(r, { w: 100, h: 23 });
+  });
+
   it("Skips null states", () => {
     const r = parseAspectRatio(null);
     assert.equal(r, null);
