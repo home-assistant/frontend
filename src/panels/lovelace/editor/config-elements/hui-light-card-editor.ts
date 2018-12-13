@@ -67,7 +67,7 @@ export class HuiLightCardEditor extends hassLocalizeLitMixin(LitElement)
             .hass="${this.hass}"
             .value="${this._entity}"
             .configValue=${"entity"}
-            .domainFilter=${"light"}
+            domain-filter="light"
             @change="${this._valueChanged}"
             allow-custom-entity
           ></ha-entity-picker>
