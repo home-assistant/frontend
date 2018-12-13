@@ -79,6 +79,7 @@ export class CloudWebhooks extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (changedProps.has("cloudStatus") && this.cloudStatus) {
       this._cloudHooks = this.cloudStatus.prefs.cloudhooks || {};
     }

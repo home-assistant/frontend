@@ -152,6 +152,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!this._config || !this.hass || !changedProps.has("hass")) {
       return;
     }
