@@ -132,7 +132,11 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
 
     return html`
       ${this.renderStyle()}
-      <paper-dialog with-backdrop opened>
+      <paper-dialog
+        with-backdrop
+        opened
+        @opened-changed="${this._openedChanged}"
+      >
         <h2>${this.localize("ui.panel.lovelace.editor.edit_card.header")}</h2>
         <paper-spinner
           ?active="${this._loading}"
@@ -435,6 +439,12 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
 
   private get _creatingCard(): boolean {
     return this.path!.length === 1;
+  }
+
+  private _openedChanged(ev) {
+    if (!ev.detail.value) {
+      this.closeDialog!();
+    }
   }
 }
 
