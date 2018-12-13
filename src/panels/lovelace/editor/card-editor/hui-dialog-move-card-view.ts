@@ -21,6 +21,7 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
   public async showDialog(params: MoveCardViewDialogParams): Promise<void> {
     this._params = params;
     await this.updateComplete;
+    this._dialog.open();
   }
 
   protected render(): TemplateResult {
@@ -28,6 +29,7 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
       <style>
         paper-item {
           margin: 8px;
+          cursor: pointer;
         }
         paper-item[active] {
           color: var(--primary-color);
@@ -47,7 +49,7 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
           will-change: opacity;
         }
       </style>
-      <paper-dialog with-backdrop opened>
+      <paper-dialog with-backdrop @opened-changed="${this._openedChanged}">
         <h2>Choose view to move card</h2>
         ${
           this._params!.lovelace!.config.views.map((view, index) => {
@@ -80,6 +82,12 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
 
     lovelace.saveConfig(moveCard(lovelace.config, path, [newView!]));
     this._dialog.close();
+  }
+
+  private _openedChanged(ev: MouseEvent) {
+    if (!(ev.detail as any).value) {
+      this._dialog.close();
+    }
   }
 }
 
