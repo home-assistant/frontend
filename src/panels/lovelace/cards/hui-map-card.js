@@ -11,7 +11,23 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
+export const Config = {
+  title: "",
+  aspect_ratio: "",
+  default_zoom: 14,
+  entities: [],
+};
+
 class HuiMapCard extends PolymerElement {
+  static async getConfigElement() {
+    await import("../editor/config-elements/hui-map-card-editor");
+    return document.createElement("hui-map-card-editor");
+  }
+
+  static getStubConfig() {
+    return { default_zoom: 14, entities: [] };
+  }
+
   static get template() {
     return html`
       <style>

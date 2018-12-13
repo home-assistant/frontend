@@ -11,11 +11,13 @@ import { EditorTarget } from "../editor/types";
 export class HuiEntityEditor extends LitElement {
   protected hass?: HomeAssistant;
   protected entities?: EntityConfig[];
+  protected domainFilter?: string;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       entities: {},
+      domainFilter: {},
     };
   }
 
@@ -43,6 +45,7 @@ export class HuiEntityEditor extends LitElement {
         }
         <ha-entity-picker
           .hass="${this.hass}"
+          .domainFilter="${this.domainFilter}"
           @change="${this._addEntity}"
         ></ha-entity-picker>
       </div>
