@@ -11,6 +11,7 @@ import { LovelaceCardConfig } from "../../../../data/lovelace";
 export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
   public hass?: HomeAssistant;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+  public closeDialog?: () => void;
 
   static get properties(): PropertyDeclarations {
     return {};
@@ -18,7 +19,11 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
 
   protected render(): TemplateResult {
     return html`
-      <paper-dialog with-backdrop opened>
+      <paper-dialog
+        with-backdrop
+        opened
+        @opened-changed="${this._openedChanged}"
+      >
         <h2>${this.localize("ui.panel.lovelace.editor.edit_card.header")}</h2>
         <paper-dialog-scrollable>
           <hui-card-picker
@@ -31,6 +36,12 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
         </div>
       </paper-dialog>
     `;
+  }
+
+  private _openedChanged(ev) {
+    if (!ev.detail.value) {
+      this.closeDialog!();
+    }
   }
 
   private _skipPick() {
