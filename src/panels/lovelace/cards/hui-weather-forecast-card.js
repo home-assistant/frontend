@@ -4,6 +4,7 @@ import LegacyWrapperCard from "./hui-legacy-wrapper-card";
 
 export const Config = {
   entity: "",
+  name: "",
 };
 
 class HuiWeatherForecastCard extends LegacyWrapperCard {

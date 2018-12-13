@@ -15,6 +15,7 @@ import "../../../../components/entity/ha-entity-picker";
 const cardConfigStruct = struct({
   type: "string",
   entity: "string?",
+  name: "string?",
 });
 
 export class HuiWeatherForecastCardEditor
@@ -37,6 +38,10 @@ export class HuiWeatherForecastCardEditor
     return this._config!.entity || "";
   }
 
+  get _name(): string {
+    return this._config!.name || "";
+  }
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -45,14 +50,22 @@ export class HuiWeatherForecastCardEditor
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <ha-entity-picker
-          .hass="${this.hass}"
-          .value="${this._entity}"
-          .configValue=${"entity"}
-          domain-filter="weather"
-          @change="${this._valueChanged}"
-          allow-custom-entity
-        ></ha-entity-picker>
+        <div class="side-by-side">
+          <paper-input
+            label="Name"
+            .value="${this._name}"
+            .configValue="${"name"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+          <ha-entity-picker
+            .hass="${this.hass}"
+            .value="${this._entity}"
+            .configValue=${"entity"}
+            domain-filter="weather"
+            @change="${this._valueChanged}"
+            allow-custom-entity
+          ></ha-entity-picker>
+        </div>
       </div>
     `;
   }
