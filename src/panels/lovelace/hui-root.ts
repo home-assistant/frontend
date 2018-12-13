@@ -424,13 +424,13 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         | undefined;
 
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        this._viewCache = {};
         this._loadResources(this.lovelace!.config.resources || []);
-        // On config change, recreate the view from scratch.
+        // On config change, recreate the current view from scratch.
         force = true;
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
+        // On edit mode change, recreate the current view from scratch
         force = true;
       }
     }
@@ -558,6 +558,10 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
 
     this._curView = viewIndex;
+
+    if (force) {
+      this._viewCache = {};
+    }
 
     // Recreate a new element to clear the applied themes.
     const root = this._view;
