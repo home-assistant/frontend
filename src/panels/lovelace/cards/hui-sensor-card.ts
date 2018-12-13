@@ -265,6 +265,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (!this._config || this._config.graph !== "line" || !this.hass) {
       return;
     }
