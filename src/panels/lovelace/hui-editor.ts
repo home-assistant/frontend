@@ -41,12 +41,10 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
               @click="${this.closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
-            <paper-button @click="${this._handleSave}"
-              >Save<ha-icon class="${classMap({
-                saved: this._saving! === false,
-                "save-button": true,
-              })}" icon="hass:check"></ha-icon></paper-spinner
-            ></paper-button>
+            <paper-button @click="${this._handleSave}">Save</paper-button>
+            <ha-icon class="save-button ${classMap({
+              saved: this._saving! === false,
+            })}" icon="hass:check">
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -101,9 +99,6 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
         app-header-layout {
           height: 100vh;
         }
-        app-toolbar {
-          background-color: #455a64;
-        }
         paper-button {
           font-size: 16px;
         }
@@ -126,22 +121,12 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
 
         .save-button {
           opacity: 0;
+          margin-left: -8px;
+          transition: opacity 1.5s;
         }
 
         .saved {
-          animation-name: opacityOn;
-          animation-duration: 1.5s;
-          animation-delay: 0.5s;
-          animation-fill-mode: forwards;
-        }
-
-        @keyframes opacityOn {
-          0% {
-            opacity: 0;
-          }
-          100% {
-            opacity: 1;
-          }
+          opacity: 1;
         }
       </style>
     `;

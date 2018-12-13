@@ -52,7 +52,6 @@ documentContainer.innerHTML = `<custom-style>
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
-      --edit-mode-header-background-color: #455a64; /* Edit Mode Changes Header Color */
 
       /* sidebar menu */
       --sidebar-text-color: var(--primary-text-color);

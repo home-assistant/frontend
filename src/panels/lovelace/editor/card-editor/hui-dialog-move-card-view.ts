@@ -3,25 +3,24 @@ import { TemplateResult } from "lit-html";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-import "@polymer/paper-listbox/paper-listbox";
+// tslint:disable-next-line:no-duplicate-imports
+import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
-import { Lovelace } from "../../types";
 import { moveCard } from "../config-util";
+import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
 
 export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
-  private lovelace?: Lovelace;
-  private path?: [number, number];
-  private newView?: number;
+  private _params?: MoveCardViewDialogParams;
 
   static get properties(): PropertyDeclarations {
-    return {};
+    return {
+      _params: {},
+    };
   }
 
-  public async showDialog(params): Promise<void> {
-    this.lovelace = params.lovelace;
-    this.path = params.path;
-    this.newView = this.path![0];
+  public async showDialog(params: MoveCardViewDialogParams): Promise<void> {
+    this._params = params;
     await this.updateComplete;
   }
 
@@ -31,51 +30,42 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
         paper-radio-button {
           display: block;
         }
-        paper-listbox {
-          background: var(
-            --paper-dialog-background-color,
-            var(--primary-background-color)
-          );
-        }
       </style>
       <paper-dialog with-backdrop opened>
         <h2>Move card to view</h2>
-        <paper-listbox>
-          <paper-radio-group
-            @selected-changed="${this._updateNewView}"
-            .selected="${this.path![0]}"
-          >
-            ${
-              this.lovelace!.config.views.map((view, index) => {
-                return html`
-                  <paper-radio-button .name="${index}"
-                    >${view.title}</paper-radio-button
-                  >
-                `;
-              })
-            }
-          </paper-radio-group>
-        </paper-listbox>
-        <div class="paper-dialog-buttons">
-          <paper-button dialog-confirm @click="${this._moveCard}"
-            >Ok</paper-button
-          >
-        </div>
+        <paper-radio-group
+          @selected-changed="${this._moveCard}"
+          .selected="${this._params!.path![0]}"
+        >
+          ${
+            this._params!.lovelace!.config.views.map((view, index) => {
+              return html`
+                <paper-radio-button .name="${index}"
+                  >${view.title}</paper-radio-button
+                >
+              `;
+            })
+          }
+        </paper-radio-group>
       </paper-dialog>
     `;
   }
 
-  private _moveCard(): void {
-    const lovelace = this.lovelace!;
-    const path = this.path!;
-    if (this.newView === this.path![0]) {
-      return;
-    }
-    lovelace.saveConfig(moveCard(lovelace.config, path, [this.newView!]));
+  private get _dialog(): PaperDialogElement {
+    return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  private _updateNewView(e: Event): void {
-    this.newView = (e.currentTarget! as any).selected;
+  private _moveCard(e: Event): void {
+    const newView = (e.currentTarget! as any).selected;
+    const lovelace = this._params!.lovelace!;
+    const path = this._params!.path!;
+
+    if (newView === path[0]) {
+      return;
+    }
+
+    lovelace.saveConfig(moveCard(lovelace.config, path, [newView!]));
+    this._dialog.close();
   }
 }
 

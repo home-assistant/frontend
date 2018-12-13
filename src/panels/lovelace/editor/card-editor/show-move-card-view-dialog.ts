@@ -9,8 +9,6 @@ declare global {
 }
 
 let registeredDialog = false;
-const dialogShowEvent = "show-move-card-view";
-const dialogTag = "hui-dialog-move-card-view";
 
 export interface MoveCardViewDialogParams {
   path: [number, number];
@@ -19,9 +17,10 @@ export interface MoveCardViewDialogParams {
 
 const registerEditCardDialog = (element: HTMLElement) =>
   fireEvent(element, "register-dialog", {
-    dialogShowEvent,
-    dialogTag,
-    dialogImport: () => import("./hui-dialog-move-card-view"),
+    dialogShowEvent: "show-move-card-view",
+    dialogTag: "hui-dialog-move-card-view",
+    dialogImport: () =>
+      import(/* webpackChunkName: "hui-dialog-move-card-view" */ "./hui-dialog-move-card-view"),
   });
 
 export const showMoveCardViewDialog = (
@@ -32,5 +31,5 @@ export const showMoveCardViewDialog = (
     registeredDialog = true;
     registerEditCardDialog(element);
   }
-  fireEvent(element, dialogShowEvent, moveCardViewDialogParams);
+  fireEvent(element, "show-move-card-view", moveCardViewDialogParams);
 };

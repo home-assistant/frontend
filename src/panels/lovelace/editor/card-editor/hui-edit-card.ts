@@ -8,7 +8,6 @@ import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
 import yaml from "js-yaml";
 
-import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
