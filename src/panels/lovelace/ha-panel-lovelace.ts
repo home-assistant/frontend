@@ -105,6 +105,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
   }
 
   public updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (changedProps.has("narrow") || changedProps.has("showMenu")) {
       this._updateColumns();
     }

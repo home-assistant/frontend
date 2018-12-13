@@ -88,7 +88,8 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     this._configEntities = entities;
   }
 
-  protected updated(_changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
     if (this._hass && this._config) {
       applyThemesOnElement(this, this._hass.themes, this._config.theme);
     }
