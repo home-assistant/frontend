@@ -67,6 +67,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
           font-weight: 500;
           font-size: 14px;
         }
+        paper-item {
+          cursor: pointer;
+        }
       </style>
       <slot></slot>
       <div class="options">
