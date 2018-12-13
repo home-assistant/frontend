@@ -70,6 +70,7 @@ export class CloudExposedEntities extends LitElement {
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (
       changedProperties.has("filter") &&
       changedProperties.get("filter") !== this.filter
