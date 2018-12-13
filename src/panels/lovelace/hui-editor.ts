@@ -102,6 +102,10 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
         paper-button {
           font-size: 16px;
         }
+        app-toolbar {
+          background-color: var(--dark-background-color, #455a64);
+          color: var(--dark-text-color);
+        }
 
         .content {
           height: calc(100vh - 68px);

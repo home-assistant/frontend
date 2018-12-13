@@ -328,7 +328,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
           text-transform: uppercase;
         }
         .edit-mode {
-          background-color: var(--dark-primary-color, #455a64);
+          background-color: var(--dark-background-color, #455a64);
+          color: var(--dark-text-color);
         }
         .edit-mode div[main-title] {
           pointer-events: auto;
