@@ -93,6 +93,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
 
   constructor() {
     super();
+    // The view can trigger a re-render when it knows that certain
+    // web components have been loaded.
     this._debouncedConfigChanged = debounce(
       () => this._selectView(this._curView, true),
       100
@@ -380,7 +382,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    const view = this._view;
+    const view = this._viewRoot;
     const huiView = view.lastChild as HUIView;
 
     if (changedProperties.has("columns") && huiView) {
@@ -436,6 +438,9 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
 
     if (newSelectView !== undefined || force) {
+      if (force && newSelectView === undefined) {
+        newSelectView = this._curView;
+      }
       this._selectView(newSelectView, force);
     }
   }
@@ -463,7 +468,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     return this.shadowRoot!.getElementById("layout");
   }
 
-  private get _view(): HTMLDivElement {
+  private get _viewRoot(): HTMLDivElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
 
@@ -535,11 +540,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _handleViewSelected(ev) {
-    const index = ev.detail.selected;
-    this._navigateView(index);
-  }
+    const viewIndex = ev.detail.selected as number;
 
-  private _navigateView(viewIndex: number): void {
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       navigate(this, `/lovelace/${path}`);
@@ -564,7 +566,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
 
     // Recreate a new element to clear the applied themes.
-    const root = this._view;
+    const root = this._viewRoot;
 
     if (root.lastChild) {
       root.removeChild(root.lastChild);
