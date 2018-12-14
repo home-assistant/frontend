@@ -13,7 +13,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { callAlarmAction } from "../../../data/alarm_control_panel";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
-import createErrorCardConfig from "../common/create-error-card-config";
+import createErrorConfig from "..\common\create-error-card-config";
 
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
@@ -103,10 +103,7 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
     const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
-      const errorConfig = createErrorCardConfig(
-        "Entity not Found!",
-        this._config
-      );
+      const errorConfig = createErrorConfig("Entity not Found!", this._config);
       const element = document.createElement("hui-error-card");
       element.setConfig(errorConfig);
       return html`
