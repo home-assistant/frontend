@@ -13,7 +13,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { callAlarmAction } from "../../../data/alarm_control_panel";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
-import createErrorConfig from "..\common\create-error-card-config";
+import createErrorConfig from "../common/create-error-card-config";
 
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
