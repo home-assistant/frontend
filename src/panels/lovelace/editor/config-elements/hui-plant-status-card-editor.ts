@@ -13,6 +13,7 @@ import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -36,7 +37,10 @@ export class HuiPlantStatusCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _entity(): string {
-    return this._config!.entity || "";
+    const entity = Object.keys(this.hass!.states).find(
+      (entityId) => computeDomain(entityId) === "plant"
+    );
+    return entity || "";
   }
 
   get _name(): string {
@@ -62,7 +66,7 @@ export class HuiPlantStatusCardEditor extends hassLocalizeLitMixin(LitElement)
             .hass="${this.hass}"
             .value="${this._entity}"
             .configValue=${"entity"}
-            .domain-filter="plant"
+            domain-filter="plant"
             @change="${this._valueChanged}"
             allow-custom-entity
           ></ha-entity-picker>
