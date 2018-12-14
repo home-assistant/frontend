@@ -36,6 +36,7 @@ const lightConfig = {
   lineCap: "round",
   handleSize: "+12",
   showTooltip: false,
+  animation: false,
 };
 
 interface Config extends LovelaceCardConfig {
