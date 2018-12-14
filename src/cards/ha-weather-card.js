@@ -196,6 +196,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       stateObj: Object,
+      config: Object,
       forecast: {
         type: Array,
         computed: "computeForecast(stateObj.attributes.forecast)",
