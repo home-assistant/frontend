@@ -67,7 +67,7 @@ export default class ExternalAuth extends Auth {
     const callbackPayload = { callback: CALLBACK_SET_TOKEN };
 
     if (window.externalApp) {
-      window.externalApp.getExternalAuth(callbackPayload);
+      window.externalApp.getExternalAuth(JSON.stringify(callbackPayload));
     } else {
       window.webkit!.messageHandlers.getExternalAuth.postMessage(
         callbackPayload
