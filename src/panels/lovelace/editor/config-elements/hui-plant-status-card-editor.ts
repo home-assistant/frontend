@@ -17,7 +17,7 @@ import computeDomain from "../../../../common/entity/compute_domain";
 
 const cardConfigStruct = struct({
   type: "string",
-  entity: "string?",
+  entity: "string",
   name: "string?",
 });
 
