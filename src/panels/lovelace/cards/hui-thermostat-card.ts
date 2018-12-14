@@ -30,6 +30,7 @@ const thermostatConfig = {
   lineCap: "round",
   handleSize: "+10",
   showTooltip: false,
+  animation: false,
 };
 
 const modeIcons = {
