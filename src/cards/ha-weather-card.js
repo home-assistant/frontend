@@ -39,6 +39,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           opacity: var(--dark-primary-opacity);
           padding: 24px 16px 16px;
           display: flex;
+          align-items: baseline;
         }
 
         .name {
@@ -195,6 +196,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get properties() {
     return {
       hass: Object,
+      config: Object,
       stateObj: Object,
       forecast: {
         type: Array,
@@ -274,7 +276,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeName(stateObj) {
-    return this.config.name || computeStateName(stateObj);
+    return (this.config && this.config.name) || computeStateName(stateObj);
   }
 
   showWeatherIcon(condition) {
