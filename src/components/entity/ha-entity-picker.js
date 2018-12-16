@@ -136,8 +136,8 @@ class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
     let entityIds = Object.keys(hass.states);
 
     if (domainFilter) {
-      entityIds = entityIds.filter((eid) =>
-        domainFilter.includes(eid.substr(0, eid.indexOf(".")))
+      entityIds = entityIds.filter(
+        eid.substr(0, eid.indexOf(".")) === domainFilter
       );
     }
 

@@ -97,7 +97,6 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
         <hui-entity-editor
           .hass="${this.hass}"
           .entities="${this._configEntities}"
-          .domainFilter="${"device_tracker,zone"}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
       </div>
