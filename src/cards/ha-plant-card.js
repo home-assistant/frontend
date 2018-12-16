@@ -119,7 +119,7 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
   }
 
   computeTitle(stateObj) {
-    return this.config.name || computeStateName(stateObj);
+    return (this.config && this.config.name) || computeStateName(stateObj);
   }
 
   computeAttributes(data) {
