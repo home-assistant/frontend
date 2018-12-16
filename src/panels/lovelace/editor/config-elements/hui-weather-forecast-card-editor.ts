@@ -7,7 +7,7 @@ import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-alarm-panel-card";
+import { Config } from "../../cards/hui-weather-forecast-card";
 import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/ha-entity-picker";
