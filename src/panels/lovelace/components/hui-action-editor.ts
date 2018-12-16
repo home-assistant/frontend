@@ -93,7 +93,7 @@ export class HuiActionEditor extends LitElement {
                 .hass="${this.hass}"
                 .value="${this._service}"
                 .configValue="${"service"}"
-                @change="${this._valueChanged}"
+                @value-changed="${this._valueChanged}"
               ></ha-service-picker>
               <h3>Toggle Editor to input Service Data</h3>
             `
@@ -112,6 +112,9 @@ export class HuiActionEditor extends LitElement {
       this.config[this[`${target.configValue}`]] === target.value
     ) {
       return;
+    }
+    if (target.configValue === "action") {
+      this.config = { action: "none" };
     }
     if (target.configValue) {
       this.config = { ...this.config!, [target.configValue!]: target.value };

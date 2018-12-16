@@ -5,6 +5,7 @@ import {
 } from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
 import { InputType } from "zlib";
+import { struct } from "../common/structs/struct";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -47,3 +48,10 @@ export interface EditorTarget extends EventTarget {
 export interface CardPickTarget extends EventTarget {
   type: string;
 }
+
+export const actionConfigStruct = struct({
+  action: "string",
+  navigation_path: "string?",
+  service: "string?",
+  service_data: "object?",
+});

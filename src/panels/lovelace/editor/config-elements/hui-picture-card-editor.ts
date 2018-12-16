@@ -3,7 +3,11 @@ import { TemplateResult } from "lit-html";
 import "@polymer/paper-input/paper-input";
 
 import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
+import {
+  EntitiesEditorEvent,
+  EditorTarget,
+  actionConfigStruct,
+} from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
@@ -17,8 +21,8 @@ import "../../components/hui-action-editor";
 const cardConfigStruct = struct({
   type: "string",
   image: "string?",
-  tap_action: "object?",
-  hold_action: "object?",
+  tap_action: actionConfigStruct,
+  hold_action: actionConfigStruct,
 });
 
 export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
