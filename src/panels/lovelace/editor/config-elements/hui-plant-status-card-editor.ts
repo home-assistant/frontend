@@ -37,10 +37,7 @@ export class HuiPlantStatusCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _entity(): string {
-    const entity = Object.keys(this.hass!.states).find(
-      (entityId) => computeDomain(entityId) === "plant"
-    );
-    return this._config!.entity || entity || "";
+    return this._config!.entity || "";
   }
 
   get _name(): string {
