@@ -111,7 +111,16 @@ class HuiMapCard extends PolymerElement {
       throw new Error("Error in card configuration.");
     }
 
-    this._configEntities = processConfigEntities(config.entities);
+    this._configSource = config.source;
+    this._configEntities = config.entities;
+
+    if (!this._configEntities && !this._configSource) {
+      throw new Error("Either entities or source must be defined");
+    }
+    if (this._configEntities && !Array.isArray(this._configEntities)) {
+      throw new Error("Entities need to be an array");
+    }
+
     this._config = config;
   }
 
@@ -205,7 +214,22 @@ class HuiMapCard extends PolymerElement {
     }
     const mapItems = (this._mapItems = []);
 
-    this._configEntities.forEach((entity) => {
+    var geoLoctionEntities = [];
+    Object.keys(this.hass.states).forEach((entityId) => {
+      const stateObj = this.hass.states[entityId];
+      if (
+        computeStateDomain(stateObj) === "geo_location" &&
+        stateObj.attributes.source === this._configSource
+      ) {
+        geoLoctionEntities.push(entityId);
+      }
+    });
+    if (this._configEntities) {
+      geoLoctionEntities = geoLoctionEntities.concat(this._configEntities);
+    }
+    var allEntities = processConfigEntities(geoLoctionEntities);
+
+    allEntities.forEach((entity) => {
       const entityId = entity.entity;
       if (!(entityId in hass.states)) {
         return;

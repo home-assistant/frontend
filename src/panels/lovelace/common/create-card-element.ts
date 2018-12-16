@@ -10,7 +10,6 @@ import {
   createErrorCardConfig,
   HuiErrorCard,
 } from "../cards/hui-error-card";
-import "../cards/hui-geo-location-map-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
@@ -41,7 +40,6 @@ const CARD_TYPES = new Set([
   "entity-filter",
   "error",
   "gauge",
-  "geo-location-map",
   "glance",
   "history-graph",
   "horizontal-stack",
