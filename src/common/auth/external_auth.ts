@@ -92,7 +92,7 @@ export default class ExternalAuth extends Auth {
     const callbackPayload = { callback: CALLBACK_REVOKE_TOKEN };
 
     if (window.externalApp) {
-      window.externalApp.revokeExternalAuth(callbackPayload);
+      window.externalApp.revokeExternalAuth(JSON.Stringify(callbackPayload));
     } else {
       window.webkit!.messageHandlers.revokeExternalAuth.postMessage(
         callbackPayload
