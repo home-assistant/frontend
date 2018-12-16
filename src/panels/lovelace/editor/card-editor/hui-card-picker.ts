@@ -15,6 +15,7 @@ const cards = [
   { name: "Entity Button", type: "entity-button" },
   { name: "Entity Filter", type: "entity-filter" },
   { name: "Gauge", type: "gauge" },
+  { name: "Geo Location Map", type: "geo-location-map" },
   { name: "Glance", type: "glance" },
   { name: "History Graph", type: "history-graph" },
   { name: "Horizontal Stack", type: "horizontal-stack" },
