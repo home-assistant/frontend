@@ -63,15 +63,15 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
-        <hui-image
-          .hass="${this._hass}"
-          .image="${this._config.image}"
-          .stateImage="${this._config.state_image}"
-          .cameraImage="${this._config.camera_image}"
-          .entity="${this._config.entity}"
-          .aspectRatio="${this._config.aspect_ratio}"
-        ></hui-image>
         <div id="root">
+          <hui-image
+            .hass="${this._hass}"
+            .image="${this._config.image}"
+            .stateImage="${this._config.state_image}"
+            .cameraImage="${this._config.camera_image}"
+            .entity="${this._config.entity}"
+            .aspectRatio="${this._config.aspect_ratio}"
+          ></hui-image>
           ${
             this._config.elements.map((elementConfig: LovelaceElementConfig) =>
               this._createHuiElement(elementConfig)
@@ -87,7 +87,14 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       <style>
         ha-card {
           overflow: hidden;
+        }
+        #root {
           position: relative;
+          overflow: hidden;
+        }
+        hui-image {
+          display: block;
+          width: 100%;
         }
         .element {
           position: absolute;
