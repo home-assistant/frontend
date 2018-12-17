@@ -38,7 +38,7 @@ export class HuiWeatherForecastCardEditor
   }
 
   get _name(): string {
-    return this._config!.name || "";
+    return this._config!.name || undefined;
   }
 
   protected render(): TemplateResult {
@@ -78,10 +78,14 @@ export class HuiWeatherForecastCardEditor
       return;
     }
     if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue!]: target.value,
-      };
+      if (target.value === undefined || target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [target.configValue!]: target.value,
+        };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
