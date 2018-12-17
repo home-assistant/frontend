@@ -111,25 +111,24 @@ class HuiMapCard extends PolymerElement {
       throw new Error("Error in card configuration.");
     }
 
-    this._configGeoLocationSources = config.geo_location_sources;
-    this._configEntities = config.entities;
-
-    if (!this._configEntities && !this._configGeoLocationSources) {
+    if (!config.entities && !config.geo_location_sources) {
       throw new Error(
         "Either entities or geo_location_sources must be defined"
       );
     }
-    if (this._configEntities && !Array.isArray(this._configEntities)) {
+    if (config.entities && !Array.isArray(config.entities)) {
       throw new Error("Entities need to be an array");
     }
     if (
-      this._configGeoLocationSources &&
-      !Array.isArray(this._configGeoLocationSources)
+      config.geo_location_sources &&
+      !Array.isArray(config.geo_location_sources)
     ) {
       throw new Error("Geo_location_sources needs to be an array");
     }
 
     this._config = config;
+    this._configGeoLocationSources = config.geo_location_sources;
+    this._configEntities = config.entities;
   }
 
   getCardSize() {
@@ -222,7 +221,7 @@ class HuiMapCard extends PolymerElement {
     }
     const mapItems = (this._mapItems = []);
 
-    var allEntities = [];
+    let allEntities = [];
     if (this._configEntities) {
       allEntities = allEntities.concat(this._configEntities);
     }
