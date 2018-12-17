@@ -2,6 +2,7 @@ import "../../../cards/ha-weather-card";
 
 import LegacyWrapperCard from "./hui-legacy-wrapper-card";
 
+// should be interface when converted to TS
 export const Config = {
   entity: "",
   name: "",

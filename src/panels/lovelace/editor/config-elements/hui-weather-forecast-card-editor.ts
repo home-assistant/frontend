@@ -26,8 +26,7 @@ export class HuiWeatherForecastCardEditor
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "weather-forecast", ...config };
+    this._config = config;
   }
 
   static get properties(): PropertyDeclarations {
