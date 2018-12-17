@@ -36,6 +36,7 @@ const lightConfig = {
   lineCap: "round",
   handleSize: "+12",
   showTooltip: false,
+  animation: false,
 };
 
 interface Config extends LovelaceCardConfig {
@@ -154,6 +155,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!this._config || !this.hass || !this._jQuery) {
       return;
     }
