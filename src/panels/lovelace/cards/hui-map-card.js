@@ -11,6 +11,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
+// should be interface when converted to TS
 export const Config = {
   title: "",
   aspect_ratio: "",
