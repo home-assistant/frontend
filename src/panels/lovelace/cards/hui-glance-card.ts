@@ -135,6 +135,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
     if (!this._config || !this.hass) {
       return;
     }
