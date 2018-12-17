@@ -133,15 +133,19 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      let value: any = target.value;
-      if (target.type === "number") {
-        value = Number(value);
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        let value: any = target.value;
+        if (target.type === "number") {
+          value = Number(value);
+        }
+        this._config = {
+          ...this._config,
+          [target.configValue!]:
+            target.checked !== undefined ? target.checked : value,
+        };
       }
-      this._config = {
-        ...this._config,
-        [target.configValue!]:
-          target.checked !== undefined ? target.checked : value,
-      };
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
