@@ -49,19 +49,19 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _title(): string {
-    return this._config!.title || "";
+    return this._config!.title || undefined;
   }
 
   get _aspect_ratio(): string {
-    return this._config!.aspect_ratio || "";
+    return this._config!.aspect_ratio || undefined;
   }
 
   get _default_zoom(): number {
-    return this._config!.default_zoom || 0;
+    return this._config!.default_zoom || undefined;
   }
 
   get _entities(): string[] {
-    return this._config!.entities || [];
+    return this._config!.entities || undefined;
   }
 
   protected render(): TemplateResult {
@@ -114,14 +114,18 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      let value: any = target.value;
-      if (target.type === "number") {
-        value = Number(value);
+      if (target.value === undefined || target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        let value: any = target.value;
+        if (target.type === "number") {
+          value = Number(value);
+        }
+        this._config = {
+          ...this._config,
+          [target.configValue!]: value,
+        };
       }
-      this._config = {
-        ...this._config,
-        [target.configValue!]: value,
-      };
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
