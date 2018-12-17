@@ -40,8 +40,7 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "map", ...config };
+    this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
 
