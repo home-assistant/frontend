@@ -114,7 +114,10 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      if (target.value === "") {
+      if (
+        target.value === "" ||
+        (target.type === "number" && isNaN(Number(target.value)))
+      ) {
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;
