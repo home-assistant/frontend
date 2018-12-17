@@ -57,7 +57,7 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _default_zoom(): number {
-    return this._config!.default_zoom || 0;
+    return this._config!.default_zoom || NaN;
   }
 
   get _entities(): string[] {
