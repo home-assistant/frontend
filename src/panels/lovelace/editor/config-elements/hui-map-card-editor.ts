@@ -61,7 +61,7 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _entities(): string[] {
-    return this._config!.entities || undefined;
+    return this._config!.entities || [];
   }
 
   protected render(): TemplateResult {
