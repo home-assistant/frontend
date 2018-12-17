@@ -30,8 +30,7 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "alarm-panel", ...config };
+    this._config = config;
   }
 
   static get properties(): PropertyDeclarations {
