@@ -56,6 +56,10 @@ export default (superClass) =>
           dockedSidebar: false,
           moreInfoEntityId: null,
           callService: async (domain, service, serviceData = {}) => {
+            if (__DEV__) {
+              // eslint-disable-next-line
+              console.log("Calling service", domain, service, serviceData);
+            }
             try {
               await callService(conn, domain, service, serviceData);
 
@@ -91,6 +95,15 @@ export default (superClass) =>
               }
               this.fire("hass-notification", { message });
             } catch (err) {
+              if (__DEV__) {
+                // eslint-disable-next-line
+                console.error(
+                  "Error calling service",
+                  domain,
+                  service,
+                  serviceData
+                );
+              }
               const message = this.localize(
                 "ui.notification_toast.service_call_failed",
                 "service",
@@ -106,21 +119,25 @@ export default (superClass) =>
             fetchWithAuth(auth, `${auth.data.hassUrl}${path}`, init),
           // For messages that do not get a response
           sendWS: (msg) => {
-            // eslint-disable-next-line
-            if (__DEV__) console.log("Sending", msg);
+            if (__DEV__) {
+              // eslint-disable-next-line
+              console.log("Sending", msg);
+            }
             conn.sendMessage(msg);
           },
           // For messages that expect a response
           callWS: (msg) => {
-            /* eslint-disable no-console */
-            if (__DEV__) console.log("Sending", msg);
+            if (__DEV__) {
+              /* eslint-disable no-console */
+              console.log("Sending", msg);
+            }
 
             const resp = conn.sendMessagePromise(msg);
 
             if (__DEV__) {
               resp.then(
                 (result) => console.log("Received", result),
-                (err) => console.log("Error", err)
+                (err) => console.error("Error", err)
               );
             }
             return resp;
