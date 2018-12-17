@@ -36,8 +36,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "sensor", ...config };
+    this._config = config;
   }
 
   static get properties(): PropertyDeclarations {

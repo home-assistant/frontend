@@ -34,13 +34,8 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-
     this._useSeverity = config.severity ? true : false;
-
-    this._config = {
-      type: "gauge",
-      ...config,
-    };
+    this._config = config;
   }
 
   static get properties(): PropertyDeclarations {
