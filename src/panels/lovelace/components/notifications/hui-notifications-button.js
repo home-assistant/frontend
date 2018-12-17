@@ -46,7 +46,7 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
 
   static get properties() {
     return {
-      notificationsOpen: {
+      open: {
         type: Boolean,
         notify: true,
       },
@@ -58,7 +58,7 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
   }
 
   _clicked() {
-    this.notificationsOpen = true;
+    this.open = true;
   }
 
   _hasNotifications(notifications) {
