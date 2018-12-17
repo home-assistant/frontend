@@ -18,8 +18,8 @@ interface RefreshTokenResponse {
 declare global {
   interface Window {
     externalApp?: {
-      getExternalAuth(payload: BasePayload);
-      revokeExternalAuth(payload: BasePayload);
+      getExternalAuth(payload: string);
+      revokeExternalAuth(payload: string);
     };
     webkit?: {
       messageHandlers: {
