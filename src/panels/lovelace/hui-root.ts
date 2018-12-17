@@ -68,7 +68,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   public route?: { path: string; prefix: string };
   private _routeData?: { view: string };
   private _curView?: number | "hass-unused-entities";
-  private notificationsOpen?: boolean;
+  private _notificationsOpen: boolean;
   private _persistentNotifications?: Notification[];
   private _haStyle?: DocumentFragment;
   private _viewCache?: { [viewId: string]: HUIView };
@@ -86,13 +86,14 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       route: {},
       _routeData: {},
       _curView: {},
-      notificationsOpen: {},
+      _notificationsOpen: {},
       _persistentNotifications: {},
     };
   }
 
   constructor() {
     super();
+    this._notificationsOpen = false;
     // The view can trigger a re-render when it knows that certain
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
@@ -127,7 +128,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     <hui-notification-drawer
       .hass="${this.hass}"
       .notifications="${this._notifications}"
-      .open="${this.notificationsOpen}"
+      .open="${this._notificationsOpen}"
       @open-changed="${this._handleNotificationsOpenChanged}"
       .narrow="${this.narrow}"
     ></hui-notification-drawer>
@@ -188,7 +189,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   <hui-notifications-button
                     .hass="${this.hass}"
-                    .notificationsOpen="{{notificationsOpen}}"
+                    .open="${this._notificationsOpen}"
+                    @open-changed="${this._handleNotificationsOpenChanged}"
                     .notifications="${this._notifications}"
                   ></hui-notifications-button>
                   <ha-start-voice-button
@@ -477,7 +479,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _handleNotificationsOpenChanged(ev): void {
-    this.notificationsOpen = ev.detail.value;
+    this._notificationsOpen = ev.detail.value;
   }
 
   private _updateNotifications(
