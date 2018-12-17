@@ -13,7 +13,6 @@ import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
-import computeDomain from "../../../../common/entity/compute_domain";
 
 const cardConfigStruct = struct({
   type: "string",
