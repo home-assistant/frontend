@@ -2,6 +2,7 @@ import "../../../cards/ha-plant-card";
 
 import LegacyWrapperCard from "./hui-legacy-wrapper-card";
 
+// should be interface when converted to TS
 export const Config = {
   name: "",
   entity: "",

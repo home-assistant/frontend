@@ -28,8 +28,7 @@ export class HuiPlantStatusCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "plant-status", ...config };
+    this._config = config;
   }
 
   static get properties(): PropertyDeclarations {
