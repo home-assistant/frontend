@@ -49,15 +49,15 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _title(): string {
-    return this._config!.title || undefined;
+    return this._config!.title || "";
   }
 
   get _aspect_ratio(): string {
-    return this._config!.aspect_ratio || undefined;
+    return this._config!.aspect_ratio || "";
   }
 
   get _default_zoom(): number {
-    return this._config!.default_zoom || undefined;
+    return this._config!.default_zoom || 0;
   }
 
   get _entities(): string[] {
@@ -114,7 +114,7 @@ export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      if (target.value === undefined || target.value === "") {
+      if (target.value === "") {
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;
