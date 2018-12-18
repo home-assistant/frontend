@@ -3,10 +3,30 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { createCardElement } from "../common/create-card-element";
 import { processConfigEntities } from "../common/process-config-entities";
 
-function getEntities(hass, filterState, entities) {
+function getEntities(
+  hass,
+  affirmativeFilterState,
+  negativeFilterState,
+  entities
+) {
   return entities.filter((entityConf) => {
     const stateObj = hass.states[entityConf.entity];
-    return stateObj && filterState.includes(stateObj.state);
+
+    let stateCheck = stateObj;
+
+    if (affirmativeFilterState != null)
+    {
+      stateCheck = stateCheck &&
+       affirmativeFilterState.includes(stateObj.state);
+    }
+
+    if (negativeFilterState != null)
+    {
+      stateCheck = stateCheck &&
+       !negativeFilterState.includes(stateObj.state);
+    }
+
+    return stateCheck;
   });
 }
 
@@ -57,6 +77,7 @@ class HuiEntitiesCard extends PolymerElement {
     const entitiesList = getEntities(
       this.hass,
       this._config.state_filter,
+      this._config.state_filter_not,
       this._configEntities
     );
 
