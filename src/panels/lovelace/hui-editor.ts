@@ -151,7 +151,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
     let value;
     const text = this.textArea.value;
 
-    if (text.includes("#")) {
+    if (text.includes("# ")) {
       if (
         !confirm(
           "Your config might contains comments, these will not be saved. Do you want to continue?"
