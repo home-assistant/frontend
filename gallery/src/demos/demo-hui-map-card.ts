@@ -29,6 +29,31 @@ const ENTITIES = [
     friendly_name: "Home",
     icon: "mdi:home",
   }),
+  getEntity("zone", "bushfire", "zoning", {
+    latitude: -33.8611,
+    longitude: 151.203,
+    radius: 35000,
+    friendly_name: "Bushfire Zone",
+    icon: "mdi:home",
+  }),
+  getEntity("geo_location", "nelsons_creek", "15", {
+    source: "bushfire_demo",
+    latitude: -34.07792,
+    longitude: 151.03219,
+    friendly_name: "Nelsons Creek",
+  }),
+  getEntity("geo_location", "forest_rd_nowra_hill", "8", {
+    source: "bushfire_demo",
+    latitude: -33.69452,
+    longitude: 151.19577,
+    friendly_name: "Forest Rd, Nowra Hill",
+  }),
+  getEntity("geo_location", "stoney_ridge_rd_kremnos", "20", {
+    source: "bushfire_demo",
+    latitude: -33.66584,
+    longitude: 150.97209,
+    friendly_name: "Stoney Ridge Rd, Kremnos",
+  }),
 ];
 
 const CONFIGS = [
@@ -114,6 +139,24 @@ const CONFIGS = [
   default_zoom: 8
   entities:
     - light.bed_light
+    `,
+  },
+  {
+    heading: "Geo Location Entities",
+    config: `
+- type: map
+  geo_location_sources:
+    - bushfire_demo
+    `,
+  },
+  {
+    heading: "Geo Location Entities with Home Zone",
+    config: `
+- type: map
+  geo_location_sources:
+    - bushfire_demo
+  entities:
+    - zone.bushfire
     `,
   },
 ];
