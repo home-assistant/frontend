@@ -100,10 +100,14 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue!]: target.value ? target.value : target.config,
-      };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [target.configValue!]: target.value ? target.value : target.config,
+        };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
