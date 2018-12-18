@@ -90,7 +90,8 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-mfa-module-setup-flow",
         dialogTag: "ha-mfa-module-setup-flow",
-        dialogImport: () => import("./ha-mfa-module-setup-flow"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "ha-mfa-module-setup-flow" */ "./ha-mfa-module-setup-flow"),
       });
     }
   }
