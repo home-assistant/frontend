@@ -48,7 +48,7 @@ export interface Config extends LovelaceCardConfig {
 export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-light-card-editor");
+    await import(/* webpackChunkName: "hui-light-card-editor" */ "../editor/config-elements/hui-light-card-editor");
     return document.createElement("hui-light-card-editor");
   }
   public static getStubConfig(): object {
