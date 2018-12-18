@@ -10,7 +10,7 @@ export const Config = {
 
 class HuiPlantStatusCard extends LegacyWrapperCard {
   static async getConfigElement() {
-    await import("../editor/config-elements/hui-plant-status-card-editor");
+    await import(/* webpackChunkName: "hui-plant-status-card-editor" */ "../editor/config-elements/hui-plant-status-card-editor");
     return document.createElement("hui-plant-status-card-editor");
   }
 

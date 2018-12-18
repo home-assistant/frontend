@@ -146,7 +146,7 @@ export interface Config extends LovelaceCardConfig {
 
 class HuiSensorCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-sensor-card-editor");
+    await import(/* webpackChunkName: "hui-sensor-card-editor" */ "../editor/config-elements/hui-sensor-card-editor");
     return document.createElement("hui-sensor-card-editor");
   }
 
