@@ -44,7 +44,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "more-info" };
+    return this._config!.tap_action || { action: "none" };
   }
 
   get _hold_action(): ActionConfig {
@@ -55,6 +55,8 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
     if (!this.hass) {
       return html``;
     }
+
+    const actions = ["navigate", "call-service", "none"];
 
     return html`
       ${configElementStyle}
@@ -70,7 +72,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
             label="Tap Action"
             .hass="${this.hass}"
             .config="${this._tap_action}"
-            .actions="${["navigate", "call-service", "none"]}"
+            .actions="${actions}"
             .configValue="${"tap_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
@@ -78,7 +80,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
             label=Hold Action"
             .hass="${this.hass}"
             .config="${this._hold_action}"
-            .actions="${["navigate", "call-service", "none"]}"
+            .actions="${actions}"
             .configValue="${"hold_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
