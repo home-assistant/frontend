@@ -10,7 +10,7 @@ export const Config = {
 
 class HuiWeatherForecastCard extends LegacyWrapperCard {
   static async getConfigElement() {
-    await import("../editor/config-elements/hui-weather-forecast-card-editor");
+    await import(/* webpackChunkName: "hui-weather-forecast-card-editor" */ "../editor/config-elements/hui-weather-forecast-card-editor");
     return document.createElement("hui-weather-forecast-card-editor");
   }
 
