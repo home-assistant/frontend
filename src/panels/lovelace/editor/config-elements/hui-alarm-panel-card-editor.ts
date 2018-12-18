@@ -173,10 +173,14 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue!]: target.value,
-      };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [target.configValue!]: target.value,
+        };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }

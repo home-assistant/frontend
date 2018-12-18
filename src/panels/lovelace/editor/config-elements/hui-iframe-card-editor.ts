@@ -92,7 +92,11 @@ export class HuiIframeCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      this._config = { ...this._config, [target.configValue!]: value };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = { ...this._config, [target.configValue!]: value };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
