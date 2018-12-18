@@ -70,7 +70,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
             .label="${"Tap Action"}"
             .hass="${this.hass}"
             .config="${this._tap_action}"
-            .actions="${["more-info", "navigate", "call-service", "none"]}"
+            .actions="${["navigate", "call-service", "none"]}"
             .configValue="${"tap_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
@@ -78,7 +78,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
             .label="${"Hold Action"}"
             .hass="${this.hass}"
             .config="${this._hold_action}"
-            .actions="${["more-info", "navigate", "call-service", "none"]}"
+            .actions="${["navigate", "call-service", "none"]}"
             .configValue="${"hold_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>

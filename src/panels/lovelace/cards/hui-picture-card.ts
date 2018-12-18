@@ -25,7 +25,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     return {
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
-      tap_action: { action: "more-info" },
+      tap_action: { action: "none" },
       hold_action: { action: "none" },
     };
   }
