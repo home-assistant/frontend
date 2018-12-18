@@ -21,10 +21,12 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
   public async showDialog(params: MoveCardViewDialogParams): Promise<void> {
     this._params = params;
     await this.updateComplete;
-    this._dialog.open();
   }
 
   protected render(): TemplateResult {
+    if (!this._params) {
+      return html``;
+    }
     return html`
       <style>
         paper-item {
@@ -49,7 +51,11 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
           will-change: opacity;
         }
       </style>
-      <paper-dialog with-backdrop @opened-changed="${this._openedChanged}">
+      <paper-dialog
+        with-backdrop
+        opened
+        @opened-changed="${this._openedChanged}"
+      >
         <h2>Choose view to move card</h2>
         ${
           this._params!.lovelace!.config.views.map((view, index) => {
@@ -73,12 +79,12 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
 
   private _moveCard(e: Event): void {
     const newView = (e.currentTarget! as any).index;
-    const lovelace = this._params!.lovelace!;
     const path = this._params!.path!;
-
     if (newView === path[0]) {
       return;
     }
+
+    const lovelace = this._params!.lovelace!;
 
     lovelace.saveConfig(moveCard(lovelace.config, path, [newView!]));
     this._dialog.close();
@@ -86,7 +92,7 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
 
   private _openedChanged(ev: MouseEvent) {
     if (!(ev.detail as any).value) {
-      this._dialog.close();
+      this._params = undefined;
     }
   }
 }

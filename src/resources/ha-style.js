@@ -35,7 +35,6 @@ documentContainer.innerHTML = `<custom-style>
       --secondary-text-color: #727272;
       --text-primary-color: #ffffff;
       --disabled-text-color: #bdbdbd;
-      --dark-text-color: #FFF;
 
       /* main interface colors */
       --primary-color: #03a9f4;
@@ -53,7 +52,6 @@ documentContainer.innerHTML = `<custom-style>
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
-      --dark-background-color: #455a64;
 
       /* sidebar menu */
       --sidebar-text-color: var(--primary-text-color);

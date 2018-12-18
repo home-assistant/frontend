@@ -317,6 +317,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
+          --dark-color: #455a64;
+          --text-dark-color: #fff;
         }
 
         ha-app-layout {
@@ -328,8 +330,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
           text-transform: uppercase;
         }
         .edit-mode {
-          background-color: var(--dark-background-color, #455a64);
-          color: var(--dark-text-color);
+          background-color: var(--dark-color, #455a64);
+          color: var(--text-dark-color);
         }
         .edit-mode div[main-title] {
           pointer-events: auto;

@@ -9,6 +9,9 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-input/paper-textarea.js";
+// tslint:disable-next-line:no-duplicate-imports
+import { PaperTextareaElement } from "@polymer/paper-input/paper-textarea.js";
 
 import { Lovelace } from "./types";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
@@ -22,11 +25,13 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   public closeEditor?: () => void;
   private _haStyle?: DocumentFragment;
   private _saving?: boolean;
+  private _changed?: boolean;
 
   static get properties() {
     return {
       lovelace: {},
       _saving: {},
+      _changed: {},
     };
   }
 
@@ -43,17 +48,18 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
             <div main-title>Edit Config</div>
             <paper-button @click="${this._handleSave}">Save</paper-button>
             <ha-icon class="save-button ${classMap({
-              saved: this._saving! === false,
+              saved: this._saving! === false && !this._changed!,
             })}" icon="hass:check">
           </app-toolbar>
         </app-header>
         <div class="content">
-          <textarea
+          <paper-textarea
             autocomplete="off"
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
-          ></textarea>
+            @value-changed="${this._yamlChanged}"
+          ></paper-textarea>
         </div>
       </app-header-layout>
     `;
@@ -144,15 +150,28 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
       value = yaml.safeLoad(this.textArea.value);
     } catch (err) {
       alert(`Unable to parse YAML: ${err}`);
+      this._saving = false;
       return;
     }
 
-    await this.lovelace!.saveConfig(value);
+    try {
+      await this.lovelace!.saveConfig(value);
+    } catch (err) {
+      alert(`Unable to save YAML: ${err}`);
+    }
     this._saving = false;
+    this._changed = false;
   }
 
-  private get textArea(): HTMLTextAreaElement {
-    return this.shadowRoot!.querySelector("textarea")!;
+  private _yamlChanged() {
+    if (this._changed) {
+      return;
+    }
+    this._changed = true;
+  }
+
+  private get textArea(): PaperTextareaElement {
+    return this.shadowRoot!.querySelector("paper-textarea")!;
   }
 }
 
