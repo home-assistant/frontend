@@ -41,7 +41,7 @@ export interface Config extends LovelaceCardConfig {
 class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement() {
-    await import("../editor/config-elements/hui-alarm-panel-card-editor");
+    await import(/* webpackChunkName: "hui-alarm-panel-card-editor" */ "../editor/config-elements/hui-alarm-panel-card-editor");
     return document.createElement("hui-alarm-panel-card-editor");
   }
 

@@ -40,7 +40,7 @@ export interface Config extends LovelaceCardConfig {
 class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-entities-card-editor");
+    await import(/* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor");
     return document.createElement("hui-entities-card-editor");
   }
 
