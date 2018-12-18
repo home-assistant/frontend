@@ -21,7 +21,8 @@ const registerEditCardDialog = (element: HTMLElement) =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
-    dialogImport: () => import("./hui-dialog-edit-card"),
+    dialogImport: () =>
+      import(/* webpackChunkName: "hui-dialog-edit-card" */ "./hui-dialog-edit-card"),
   });
 
 export const showEditCardDialog = (
