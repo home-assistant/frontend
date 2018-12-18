@@ -34,7 +34,7 @@ export class HuiActionEditor extends LitElement {
   protected hass?: HomeAssistant;
 
   static get properties(): PropertyDeclarations {
-    return { hass: {}, config: {} };
+    return { hass: {}, config: {}, label: {}, actions: {} };
   }
 
   get _action(): string {
