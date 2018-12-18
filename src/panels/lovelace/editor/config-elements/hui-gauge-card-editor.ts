@@ -218,7 +218,10 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
     const target = ev.target! as EditorTarget;
 
     if (target.configValue) {
-      if (target.value === "") {
+      if (
+        target.value === "" ||
+        (target.type === "number" && isNaN(Number(target.value)))
+      ) {
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;

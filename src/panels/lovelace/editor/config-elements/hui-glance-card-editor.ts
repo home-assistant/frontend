@@ -64,8 +64,8 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.theme || "Backend-selected";
   }
 
-  get _columns(): string {
-    return this._config!.columns ? String(this._config!.columns) : "";
+  get _columns(): number {
+    return this._config!.columns || NaN;
   }
 
   protected render(): TemplateResult {
@@ -126,14 +126,17 @@ export class HuiGlanceCardEditor extends hassLocalizeLitMixin(LitElement)
     }
     const target = ev.target! as EditorTarget;
 
-    if (this[`_${target.configValue}`] === target.value) {
+    if (target.configValue && this[`_${target.configValue}`] === target.value) {
       return;
     }
     if (ev.detail && ev.detail.entities) {
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      if (target.value === "") {
+      if (
+        target.value === "" ||
+        (target.type === "number" && isNaN(Number(target.value)))
+      ) {
         delete this._config[target.configValue!];
       } else {
         let value: any = target.value;
