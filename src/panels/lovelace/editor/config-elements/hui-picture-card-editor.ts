@@ -67,7 +67,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
         ></paper-input>
         <div class="side-by-side">
           <hui-action-editor
-            .label="${"Tap Action"}"
+            label="Tap Action"
             .hass="${this.hass}"
             .config="${this._tap_action}"
             .actions="${["navigate", "call-service", "none"]}"
@@ -75,7 +75,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
-            .label="${"Hold Action"}"
+            label=Hold Action"
             .hass="${this.hass}"
             .config="${this._hold_action}"
             .actions="${["navigate", "call-service", "none"]}"
