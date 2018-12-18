@@ -14,8 +14,8 @@ export default () => {
           !__DEV__
         ) {
           // Notify users here of a new frontend being available.
-          import("./show-new-frontend-toast").then((mod) =>
-            mod.default(installingWorker)
+          import(/* webpackChunkName: "show-new-frontend-toast" */ "./show-new-frontend-toast").then(
+            (mod) => mod.default(installingWorker)
           );
         }
       });

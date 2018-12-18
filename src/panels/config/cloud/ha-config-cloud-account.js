@@ -169,7 +169,8 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
       fireEvent(this, "register-dialog", {
         dialogShowEvent: "manage-cloud-webhook",
         dialogTag: "cloud-webhook-manage-dialog",
-        dialogImport: () => import("./cloud-webhook-manage-dialog"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "cloud-webhook-manage-dialog" */ "./cloud-webhook-manage-dialog"),
       });
     }
   }
