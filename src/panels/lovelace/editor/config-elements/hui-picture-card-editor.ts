@@ -77,7 +77,7 @@ export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
-            label=Hold Action"
+            label="Hold Action"
             .hass="${this.hass}"
             .config="${this._hold_action}"
             .actions="${actions}"
