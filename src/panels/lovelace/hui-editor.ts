@@ -9,9 +9,6 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-input/paper-textarea.js";
-// tslint:disable-next-line:no-duplicate-imports
-import { PaperTextareaElement } from "@polymer/paper-input/paper-textarea.js";
 
 import { Lovelace } from "./types";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
@@ -53,13 +50,13 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <paper-textarea
+          <textarea
             autocomplete="off"
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
-            @value-changed="${this._yamlChanged}"
-          ></paper-textarea>
+            @input="${this._yamlChanged}"
+          ></textarea>
         </div>
       </app-header-layout>
     `;
@@ -170,8 +167,8 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
     this._changed = true;
   }
 
-  private get textArea(): PaperTextareaElement {
-    return this.shadowRoot!.querySelector("paper-textarea")!;
+  private get textArea(): HTMLTextAreaElement {
+    return this.shadowRoot!.querySelector("textarea")!;
   }
 }
 
