@@ -133,7 +133,8 @@ class OzwLog extends EventsMixin(PolymerElement) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-ozwlog-dialog",
         dialogTag: "zwave-log-dialog",
-        dialogImport: () => import("./zwave-log-dialog"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "zwave-log-dialog" */ "./zwave-log-dialog"),
       });
     }
   }
