@@ -423,6 +423,10 @@
                                     "event": "Esemény:",
                                     "enter": "Érkezés",
                                     "leave": "Távozás"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -546,8 +550,8 @@
                         "no_device": "Entitások eszközök nélkül",
                         "delete_confirm": "Biztosan törölni szeretnéd ezt az integrációt?",
                         "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
-                        "manuf": "Gyártó: {manufacturer}",
-                        "hub": "Csatlakoztatva",
+                        "manuf": "{manufacturer} által",
+                        "hub": "Kapcsolódva",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "eszköz nem érhető el",
                         "entity_unavailable": "entitás nem érhető el"
@@ -620,7 +624,7 @@
                 "mfa_setup": {
                     "title_aborted": "Megszakítva",
                     "title_success": "Siker!",
-                    "step_done": "Beállítás kész {step}",
+                    "step_done": "{step} beállítás elvégezve",
                     "close": "Bezárás",
                     "submit": "Küldés"
                 }
@@ -699,7 +703,7 @@
                 }
             },
             "page-onboarding": {
-                "intro": "Készen állsz arra, hogy felébreszd az otthonod, visszaszerezed a magánéleted és csatlakozz egy világhálós közösséghez?",
+                "intro": "Készen állsz arra, hogy felébreszd az otthonod, visszaszerezd a magánéleted és csatlakozz egy világhálós közösséghez?",
                 "user": {
                     "intro": "Kezdjük a felhasználói fiók létrehozásával.",
                     "required_field": "Szükséges",
@@ -734,8 +738,8 @@
                     },
                     "migrate": {
                         "header": "Inkompatibilis Konfiguráció",
-                        "para_no_id": "Ez az elem nem rendelkezik azonosítóval. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!",
-                        "para_migrate": "A Home Assistant a 'Konfiguráció áttelepítése' gomb megnyomásával az összes kártyához és nézethez automatikusan létre tud hozni azonosítókat.",
+                        "para_no_id": "Ez az elem nem rendelkezik ID-val. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!",
+                        "para_migrate": "A Home Assistant a 'Konfiguráció áttelepítése' gomb megnyomásával az összes kártyához és nézethez automatikusan létre tud hozni ID-kat.",
                         "migrate": "Konfiguráció áttelepítése"
                     },
                     "header": "Felhasználói felület szerkesztése",

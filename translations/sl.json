@@ -423,6 +423,10 @@
                                     "event": "Dogodek:",
                                     "enter": "Vnesite",
                                     "leave": "Odidi"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },

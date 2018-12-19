@@ -423,6 +423,10 @@
                                     "event": "Händelse",
                                     "enter": "Ankommer",
                                     "leave": "Lämnar"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -726,13 +730,31 @@
                     "edit_card": {
                         "header": "Kortkonfiguration",
                         "save": "Spara",
-                        "toggle_editor": "Visa \/ Dölj redigerare"
+                        "toggle_editor": "Visa \/ Dölj redigerare",
+                        "pick_card": "Välj det kort du vill lägga till.",
+                        "add": "Lägg till kort",
+                        "edit": "Redigera",
+                        "delete": "Ta bort"
                     },
                     "migrate": {
                         "header": "Konfigurationen är inte giltig",
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\".",
                         "para_migrate": "Home Assistant kan automatiskt lägga till IDn till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
                         "migrate": "Migrera konfigurationen"
+                    },
+                    "header": "Ändra användargränssnittet",
+                    "configure_ui": "Konfigurera användargränssnittet",
+                    "edit_view": {
+                        "header": "Visa konfiguration",
+                        "add": "Lägg till vy",
+                        "edit": "Redigera vy",
+                        "delete": "Radera vy"
+                    },
+                    "save_config": {
+                        "header": "Ta kontroll över din Lovelace UI",
+                        "para_sure": "Är du säker på att du vill ta kontroll över ditt användargränssnitt?",
+                        "cancel": "Glöm det",
+                        "save": "Ta kontroll"
                     }
                 }
             }
@@ -743,7 +765,8 @@
         },
         "common": {
             "loading": "Läser in",
-            "cancel": "Avbryt"
+            "cancel": "Avbryt",
+            "save": "Spara"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",

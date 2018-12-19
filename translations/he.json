@@ -423,6 +423,10 @@
                                     "event": "אירוע:",
                                     "enter": "כניסה",
                                     "leave": "יציאה"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },

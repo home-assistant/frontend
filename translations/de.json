@@ -365,7 +365,7 @@
                         "alias": "Name",
                         "triggers": {
                             "header": "Auslöser",
-                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist mögliche, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Auslöser hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -423,12 +423,16 @@
                                     "event": "Ereignis:",
                                     "enter": "Betreten",
                                     "leave": "Verlassen"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
                         "conditions": {
                             "header": "Bedingungen",
-                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, dass ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.\n\n[Erfahre mehr über Bedingungen.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, ob ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.\n\n[Erfahre mehr über Bedingungen.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Bedingung hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -735,6 +739,7 @@
                     "migrate": {
                         "header": "Konfiguration inkompatibel",
                         "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu.",
+                        "para_migrate": "Home Assistant kann für alle Ihre Karten und Ansichten die IDs automatisch generieren, wenn Sie den \"Konfiguration migrieren\"-Button klicken.",
                         "migrate": "Konfiguration migrieren"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
@@ -746,6 +751,9 @@
                         "delete": "Ansicht löschen"
                     },
                     "save_config": {
+                        "header": "Lovelace Userinterface selbst verwalten",
+                        "para": "Standardmäßig verwaltet Home Assistant Ihre Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn Sie die Verwaltung selbst übernehmen, nehmen wir für Sie keine Änderungen mehr vor.",
+                        "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "cancel": "Abbrechen",
                         "save": "Kontrolle übernehmen"
                     }
