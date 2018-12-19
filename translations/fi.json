@@ -719,13 +719,25 @@
                     "edit_card": {
                         "header": "Kortti-asetukset",
                         "save": "Tallenna",
-                        "toggle_editor": "Vaihda editori"
+                        "toggle_editor": "Vaihda editori",
+                        "pick_card": "Valitse kortti jonka haluat lisätä",
+                        "add": "Lisää kortti",
+                        "edit": "Muokkaa",
+                        "delete": "Poista"
                     },
                     "migrate": {
                         "header": "Epäkelvot asetukset",
                         "para_no_id": "Elementillä ei ole ID. Lisää ID elementille 'ui-lovelace.yaml'-tiedostossa.",
                         "para_migrate": "Home Assistant voi lisätä ID:t kaikkiin kortteihisi ja näkymiin automaattisesti painamalla 'Tuo vanhat asetukset'-nappia.",
                         "migrate": "Tuo vanhat asetukset"
+                    },
+                    "header": "Muokkaa käyttöliittymää",
+                    "configure_ui": "Määrittele käyttöliittymä",
+                    "edit_view": {
+                        "header": "Näytä asetukset",
+                        "add": "Lisää näkymä",
+                        "edit": "Muokkaa näkymää",
+                        "delete": "Poista näkymä"
                     }
                 }
             }
@@ -736,7 +748,8 @@
         },
         "common": {
             "loading": "Ladataan",
-            "cancel": "Peruuta"
+            "cancel": "Peruuta",
+            "save": "Tallenna"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
@@ -755,7 +768,7 @@
                 "not_available": "Kuvaa ei saatavilla"
             },
             "persistent_notification": {
-                "dismiss": "Peruuta"
+                "dismiss": "Hylkää"
             },
             "scene": {
                 "activate": "Aktivoi"

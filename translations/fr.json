@@ -423,6 +423,10 @@
                                     "event": "Événement :",
                                     "enter": "Entre",
                                     "leave": "Quitter"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "ID Webhook"
                                 }
                             }
                         },
@@ -718,19 +722,40 @@
                 "cards": {
                     "shopping-list": {
                         "checked_items": "Éléments cochés",
+                        "clear_items": "Effacer éléments cochés",
                         "add_item": "Ajouter un élément"
                     }
                 },
                 "editor": {
                     "edit_card": {
+                        "header": "Configuration de la carte",
                         "save": "Enregistrer",
-                        "toggle_editor": "Activer\/désactiver l’éditeur"
+                        "toggle_editor": "Activer\/désactiver l’éditeur",
+                        "pick_card": "Choisissez l'automatisation à ajouter",
+                        "add": "Ajouter une action",
+                        "edit": "Modifier",
+                        "delete": "Supprimer"
                     },
                     "migrate": {
                         "header": "Configuration incompatible",
                         "para_no_id": "Cet élément n'a pas d'identifiant. Veuillez ajouter un identifiant à cet élément dans 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant peut ajouter automatiquement des identifiants à toutes vos cartes et vues en appuyant sur le bouton «Migrer la configuration».",
                         "migrate": "Migrer la configuration"
+                    },
+                    "header": "Modifier l'interface utilisateur",
+                    "configure_ui": "Configurer l'interface utilisateur",
+                    "edit_view": {
+                        "header": "Voir la configuration",
+                        "add": "Ajouter la vue\n",
+                        "edit": "Modifier la vue",
+                        "delete": "Supprimer la vue"
+                    },
+                    "save_config": {
+                        "header": "Prenez le controle de Lovelace UI",
+                        "para": "Par défaut Home Assistant va maintenir l'interface utilisateur, met à jour quand y'a de nouveaux entités ou composants de Lovelace sont disponibles. Si vous prenez le contrôle on ne fera plus de changements automatiques pour vous.",
+                        "para_sure": "Êtes-vous sûr de vouloir prendre le controle de l'interface utilisateur?",
+                        "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
+                        "save": "Prenez le contrôle"
                     }
                 }
             }
@@ -741,7 +766,8 @@
         },
         "common": {
             "loading": "Chargement",
-            "cancel": "Annuler"
+            "cancel": "Annuler",
+            "save": "Enregistrer"
         },
         "duration": {
             "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
@@ -801,7 +827,8 @@
                 "clear_code": "Effacer",
                 "disarm": "Désarmer",
                 "arm_home": "Armer (domicile)",
-                "arm_away": "Armer (absent)"
+                "arm_away": "Armer (absent)",
+                "arm_night": "Armer nuit"
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
