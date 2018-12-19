@@ -423,6 +423,10 @@
                                     "event": "Událost:",
                                     "enter": "Vstup",
                                     "leave": "Opuštění"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -726,13 +730,32 @@
                     "edit_card": {
                         "header": "Konfigurace karty",
                         "save": "Uložit",
-                        "toggle_editor": "Přepnout Editor"
+                        "toggle_editor": "Přepnout Editor",
+                        "pick_card": "Vyberte kartu, kterou chcete přidat.",
+                        "add": "Přidat kartu",
+                        "edit": "Upravit",
+                        "delete": "Odstranit"
                     },
                     "migrate": {
                         "header": "Konfigurace není kompatibilní",
                         "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant může automaticky přidávat ID ke všem kartám a pohledům stisknutím tlačítka Migrate config.",
                         "migrate": "Migrovat konfiguraci"
+                    },
+                    "header": "Upravit UI",
+                    "configure_ui": "Konfigurovat UI",
+                    "edit_view": {
+                        "header": "Zobrazit konfiguraci",
+                        "add": "Přidat pohled",
+                        "edit": "Upravit pohled",
+                        "delete": "Odstranit pohled"
+                    },
+                    "save_config": {
+                        "header": "Převzít kontrolu nad vaší Lovelace UI",
+                        "para": "Ve výchozím nastavení Home Assistant bude usprávovat vaše uživatelské rozhraní, aktualizovat při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu nebudeme již provádět změny automaticky za vás.",
+                        "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rohraním ?",
+                        "cancel": "Zahodit změnu",
+                        "save": "Převzít kontrolu"
                     }
                 }
             }
@@ -743,7 +766,8 @@
         },
         "common": {
             "loading": "Načítání",
-            "cancel": "Zrušit"
+            "cancel": "Zrušit",
+            "save": "Uložit"
         },
         "duration": {
             "day": "{count} {count, plural,\none {den}\nother {dny}\n}",

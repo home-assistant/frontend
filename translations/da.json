@@ -423,6 +423,10 @@
                                     "event": "Begivenhed",
                                     "enter": "Ankom",
                                     "leave": "Forlade"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook-ID"
                                 }
                             }
                         },
@@ -605,6 +609,10 @@
                 "logout": "Log af",
                 "change_password": {
                     "header": "Skift adgangskode",
+                    "current_password": "Nuværende adgangskode",
+                    "new_password": "Ny adgangskode",
+                    "confirm_new_password": "Bekræft ny adgangskode",
+                    "error_required": "Påkrævet",
                     "submit": "Gem og afslut"
                 },
                 "mfa": {
@@ -708,6 +716,30 @@
                         "required_fields": "Udfyld alle obligatoriske felter"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markerede elementer",
+                        "clear_items": "Ryd markerede elementer",
+                        "add_item": "Tilføj element"
+                    }
+                },
+                "editor": {
+                    "migrate": {
+                        "header": "Konfiguration ikke færdiggjort",
+                        "migrate": "Migrer opsætning"
+                    },
+                    "header": "Rediger UI",
+                    "configure_ui": "Konfigurer UI",
+                    "edit_view": {
+                        "header": "Vis konfiguration"
+                    },
+                    "edit_card": {
+                        "edit": "Rediger",
+                        "delete": "Slet"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -716,7 +748,8 @@
         },
         "common": {
             "loading": "Indlæser",
-            "cancel": "Annuller"
+            "cancel": "Annuller",
+            "save": "Gem"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",

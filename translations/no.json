@@ -423,6 +423,10 @@
                                     "event": "Hendelse:",
                                     "enter": "Ankommer",
                                     "leave": "Forlater"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
