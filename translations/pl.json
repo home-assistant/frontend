@@ -423,6 +423,10 @@
                                     "event": "Zdarzenie",
                                     "enter": "Wprowadź",
                                     "leave": "Opuść"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Identyfikator Webhook"
                                 }
                             }
                         },

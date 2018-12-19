@@ -423,6 +423,10 @@
                                     "event": "Evenement:",
                                     "enter": "Eran",
                                     "leave": "Verloossen"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -473,7 +477,7 @@
                         },
                         "actions": {
                             "header": "Aktiounen",
-                            "introduction": "Aktioune déi den HomeAssistant ausféiert wann den Automatisme ausgeléist gouf.\n[Léier méi iwwert Aktioune.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Aktioune déi den Home Assistant ausféiert wann den Automatisme ausgeléist gouf.\n[Léier méi iwwert Aktioune.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Aktioun dobäisetzen",
                             "duplicate": "Replikéiere",
                             "delete": "Läschen",
@@ -581,7 +585,7 @@
                     "created_at": "Erstallt um {date}",
                     "confirm_delete": "Sécher fir den Erneierungs Token fir {name} ze läsche?",
                     "delete_failed": "Fehler beim läschen vum Erneierungs Token",
-                    "last_used": "Läscht benotz um {date} vun {location}",
+                    "last_used": "Fir d'Läscht benotzt um {date} vun {location}",
                     "not_used": "Nach nie benotzt ginn",
                     "current_token_tooltip": "Fehler beim läschen vum aktuellen Erneierungs Token"
                 },
@@ -748,6 +752,7 @@
                     },
                     "save_config": {
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
+                        "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
                         "cancel": "Vergiess et",
                         "save": "Kontroll iwwerhuelen"
@@ -910,8 +915,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "{entity} gouf ausgeschalt",
-            "entity_turned_off": "{entity} gouf ugeschalt",
+            "entity_turned_on": "{entity} gouf ugeschalt",
+            "entity_turned_off": "{entity} gouf ausgeschalt",
             "service_called": "Service {service} operuff",
             "service_call_failed": "Fehler beim opruffen vun {service}",
             "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut..."

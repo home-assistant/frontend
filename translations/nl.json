@@ -423,6 +423,10 @@
                                     "event": "Gebeurtenis:",
                                     "enter": "Betreden",
                                     "leave": "Verlaten"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -726,13 +730,21 @@
                     "edit_card": {
                         "header": "Kaart configuratie",
                         "save": "Opslaan",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "delete": "Verwijder"
                     },
                     "migrate": {
                         "header": "Configuratie incompatibel",
                         "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant kan ID's voor al je kaarten en weergaven automatisch voor je toevoegen door op de knop 'Migrate config' te klikken.",
                         "migrate": "Configuratie migreren"
+                    },
+                    "edit_view": {
+                        "header": "Bekijk de configuratie"
+                    },
+                    "save_config": {
+                        "cancel": "Laat maar",
+                        "save": "Neem over"
                     }
                 }
             }
@@ -743,7 +755,8 @@
         },
         "common": {
             "loading": "Bezig met laden",
-            "cancel": "Annuleren"
+            "cancel": "Annuleren",
+            "save": "Bewaar"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
