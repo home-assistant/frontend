@@ -23,7 +23,6 @@ import { afterNextRender } from "../../../common/util/render-status";
 
 const thermostatConfig = {
   radius: 150,
-  step: 1,
   circleShape: "pie",
   startAngle: 315,
   width: 5,
@@ -197,6 +196,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         : "min-range";
 
     const [sliderValue, uiValue] = this._genSliderValue(stateObj);
+    const step = this._computeTemperatureStepSize();
     this._broadCard = this.clientWidth > 390;
     this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
@@ -204,10 +204,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       min: stateObj.attributes.min_temp,
       max: stateObj.attributes.max_temp,
       sliderType: _sliderType,
-      step: this._computeTemperatureStepSize(),
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
       value: sliderValue,
+      step,
     });
     this._updateSetTemp(uiValue);
   }
