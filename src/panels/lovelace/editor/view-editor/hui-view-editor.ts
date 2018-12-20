@@ -52,6 +52,13 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     return this._config.theme || "Backend-selected";
   }
 
+  get _hidden(): boolean {
+    if (!this._config) {
+      return false;
+    }
+    return this._config.hidden || false;
+  }
+
   public hass?: HomeAssistant;
   private _config?: LovelaceViewConfig;
 
@@ -73,12 +80,20 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        <paper-input
-          label="Icon"
-          .value="${this._icon}"
-          .configValue="${"icon"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
+        <div class="side-by-side">
+          <paper-toggle-button
+            ?checked="${this._hidden !== false}"
+            .configValue="${"hidden"}"
+            @change="${this._valueChanged}"
+            >Hide Tab?</paper-toggle-button
+          >
+          <paper-input
+            label="Icon"
+            .value="${this._icon}"
+            .configValue="${"icon"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+        </div>
         <paper-input
           label="URL Path"
           .value="${this._path}"

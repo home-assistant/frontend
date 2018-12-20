@@ -243,32 +243,34 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                     @iron-activate="${this._handleViewSelected}"
                   >
                     ${
-                      this.lovelace!.config.views.map(
-                        (view) => html`
-                          <paper-tab>
-                            ${
-                              view.icon
-                                ? html`
-                                    <ha-icon
-                                      title="${view.title}"
-                                      .icon="${view.icon}"
-                                    ></ha-icon>
-                                  `
-                                : view.title || "Unnamed view"
-                            }
-                            ${
-                              this._editMode
-                                ? html`
-                                    <ha-icon
-                                      class="edit-icon view"
-                                      @click="${this._editView}"
-                                      icon="hass:pencil"
-                                    ></ha-icon>
-                                  `
-                                : ""
-                            }
-                          </paper-tab>
-                        `
+                      this.lovelace!.config.views.map((view) =>
+                        view.hidden && view.path && !this._editMode
+                          ? ""
+                          : html`
+                              <paper-tab>
+                                ${
+                                  view.icon
+                                    ? html`
+                                        <ha-icon
+                                          title="${view.title}"
+                                          .icon="${view.icon}"
+                                        ></ha-icon>
+                                      `
+                                    : view.title || "Unnamed view"
+                                }
+                                ${
+                                  this._editMode
+                                    ? html`
+                                        <ha-icon
+                                          class="edit-icon view"
+                                          @click="${this._editView}"
+                                          icon="hass:pencil"
+                                        ></ha-icon>
+                                      `
+                                    : ""
+                                }
+                              </paper-tab>
+                            `
                       )
                     }
                     ${
