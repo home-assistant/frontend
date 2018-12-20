@@ -55,7 +55,12 @@ export default (superClass) =>
           translationMetadata: translationMetadata,
           dockedSidebar: false,
           moreInfoEntityId: null,
-          callService: async (domain, service, serviceData = {}) => {
+          callService: async (
+            domain,
+            service,
+            serviceData = {},
+            toast = true
+          ) => {
             if (__DEV__) {
               // eslint-disable-next-line
               console.log("Calling service", domain, service, serviceData);
@@ -93,7 +98,9 @@ export default (superClass) =>
                   `${domain}/${service}`
                 );
               }
-              this.fire("hass-notification", { message });
+              if (toast) {
+                this.fire("hass-notification", { message });
+              }
             } catch (err) {
               if (__DEV__) {
                 // eslint-disable-next-line

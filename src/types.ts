@@ -101,7 +101,8 @@ export interface HomeAssistant {
   callService: (
     domain: string,
     service: string,
-    serviceData?: { [key: string]: any }
+    serviceData?: { [key: string]: any },
+    toast?: boolean
   ) => Promise<void>;
   callApi: <T>(
     method: "GET" | "POST" | "PUT" | "DELETE",

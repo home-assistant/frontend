@@ -27,27 +27,31 @@ export interface LovelaceCardConfig {
   [key: string]: any;
 }
 
-export interface ToggleActionConfig {
+export interface ToggleActionConfig extends ActionBaseConfig {
   action: "toggle";
 }
 
-export interface CallServiceActionConfig {
+export interface CallServiceActionConfig extends ActionBaseConfig {
   action: "call-service";
   service: string;
   service_data?: { [key: string]: any };
 }
 
-export interface NavigateActionConfig {
+export interface NavigateActionConfig extends ActionBaseConfig {
   action: "navigate";
   navigation_path: string;
 }
 
-export interface MoreInfoActionConfig {
+export interface MoreInfoActionConfig extends ActionBaseConfig {
   action: "more-info";
 }
 
-export interface NoActionConfig {
+export interface NoActionConfig extends ActionBaseConfig {
   action: "none";
+}
+
+export interface ActionBaseConfig {
+  toast?: boolean;
 }
 
 export type ActionConfig =

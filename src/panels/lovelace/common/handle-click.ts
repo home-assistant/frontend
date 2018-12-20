@@ -44,7 +44,7 @@ export const handleClick = (
       break;
     case "toggle":
       if (config.entity) {
-        toggleEntity(hass, config.entity!);
+        toggleEntity(hass, config.entity!, actionConfig.toast);
       }
       break;
     case "call-service": {
@@ -52,7 +52,12 @@ export const handleClick = (
         return;
       }
       const [domain, service] = actionConfig.service.split(".", 2);
-      hass.callService(domain, service, actionConfig.service_data);
+      hass.callService(
+        domain,
+        service,
+        actionConfig.service_data,
+        actionConfig.toast
+      );
     }
   }
 };

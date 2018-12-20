@@ -4,7 +4,8 @@ import { HomeAssistant } from "../../../../types";
 export const turnOnOffEntity = (
   hass: HomeAssistant,
   entityId: string,
-  turnOn = true
+  turnOn = true,
+  toast = true
 ): Promise<void> => {
   const stateDomain = computeDomain(entityId);
   const serviceDomain = stateDomain === "group" ? "homeassistant" : stateDomain;
@@ -21,5 +22,10 @@ export const turnOnOffEntity = (
       service = turnOn ? "turn_on" : "turn_off";
   }
 
-  return hass.callService(serviceDomain, service, { entity_id: entityId });
+  return hass.callService(
+    serviceDomain,
+    service,
+    { entity_id: entityId },
+    toast
+  );
 };
