@@ -204,11 +204,23 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       min: stateObj.attributes.min_temp,
       max: stateObj.attributes.max_temp,
       sliderType: _sliderType,
+      step: this._computeTemperatureStepSize(),
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
       value: sliderValue,
     });
     this._updateSetTemp(uiValue);
+  }
+
+  private _computeTemperatureStepSize() {
+    const stateObj = this.hass!.states[this._config!.entity];
+    if (stateObj.attributes.target_temp_step) {
+      return stateObj.attributes.target_temp_step;
+    }
+    if (this.hass!.config.unit_system.temperature.indexOf("F") !== -1) {
+      return 1;
+    }
+    return 0.5;
   }
 
   private _genSliderValue(stateObj: ClimateEntity): [string | number, string] {
