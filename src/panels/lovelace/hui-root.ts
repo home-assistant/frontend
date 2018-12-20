@@ -244,7 +244,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                   >
                     ${
                       this.lovelace!.config.views.map((view) =>
-                        view.hidden && view.path && !this._editMode
+                        view.hidden && !this._editMode
                           ? ""
                           : html`
                               <paper-tab>
