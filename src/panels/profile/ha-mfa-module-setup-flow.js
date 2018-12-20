@@ -248,8 +248,8 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
     const data = step.data || {};
 
     switch (step.handler) {
-      case 'webauthn':
-        if (step.step_id === 'init' && data.options) {
+      case "webauthn":
+        if (step.step_id === "init" && data.options) {
           try {
             this._stepData.token = await register(data.options);
           } catch (e) {

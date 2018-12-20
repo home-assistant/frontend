@@ -12,16 +12,16 @@ export class WebAuthnError extends Error {
   constructor(type, message) {
     super(message || type);
 
-    this.name = 'WebAuthnError';
+    this.name = "WebAuthnError";
     this.type = type;
   }
 }
 
-WebAuthnError.UNSUPPORTED = 'unsupported';
-WebAuthnError.PROTOCOL = 'protocol';
-WebAuthnError.DOMAIN = 'domain';
-WebAuthnError.CREDENTIALS = 'credentials';
-WebAuthnError.CANCELLED = 'cancelled';
+WebAuthnError.UNSUPPORTED = "unsupported";
+WebAuthnError.PROTOCOL = "protocol";
+WebAuthnError.DOMAIN = "domain";
+WebAuthnError.CREDENTIALS = "credentials";
+WebAuthnError.CANCELLED = "cancelled";
 
 /**
  * Check browser supports WebAuthn.
@@ -37,7 +37,7 @@ function _checkBrowser() {
   if (!ArrayBuffer || !Uint8Array || !Uint8Array.from) {
     throw new WebAuthnError(WebAuthnError.UNSUPPORTED);
   }
-  if (location.protocol === 'http:') {
+  if (location.protocol === "http:") {
     throw new WebAuthnError(WebAuthnError.PROTOCOL);
   }
 }
@@ -48,9 +48,7 @@ function _checkBrowser() {
  * @private
  */
 function _handleCredentialsError(e) {
-  console.log('Error creating credential:', e.message);
-
-  if (e.name === 'SecurityError') {
+  if (e.name === "SecurityError") {
     throw new WebAuthnError(WebAuthnError.DOMAIN, e.message);
   } else if (e.code) {
     throw new WebAuthnError(WebAuthnError.CREDENTIALS, e.message);
@@ -67,7 +65,7 @@ function _handleCredentialsError(e) {
 export async function register(options) {
   _checkBrowser();
 
-  const arr = Uint8Array.from(atob(options), c => c.charCodeAt(0));
+  const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
   const data = CBOR.decode(arr.buffer);
 
   let attestation;
@@ -78,10 +76,10 @@ export async function register(options) {
   }
 
   const encoded = CBOR.encode({
-    "attestationObject": new Uint8Array(attestation.response.attestationObject),
-    "clientDataJSON": new Uint8Array(attestation.response.clientDataJSON),
-    "rawId": new Uint8Array(attestation.rawId),
-    "type": attestation.type,
+    attestationObject: new Uint8Array(attestation.response.attestationObject),
+    clientDataJSON: new Uint8Array(attestation.response.clientDataJSON),
+    rawId: new Uint8Array(attestation.rawId),
+    type: attestation.type,
   });
 
   return btoa(String.fromCharCode(...new Uint8Array(encoded)));
@@ -95,7 +93,7 @@ export async function register(options) {
 export async function authenticate(options) {
   _checkBrowser();
 
-  const arr = Uint8Array.from(atob(options), c => c.charCodeAt(0));
+  const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
   const data = CBOR.decode(arr.buffer);
 
   let assertion;
@@ -106,11 +104,11 @@ export async function authenticate(options) {
   }
 
   const encoded = CBOR.encode({
-    "credentialId": new Uint8Array(assertion.rawId),
-    "authenticatorData": new Uint8Array(assertion.response.authenticatorData),
-    "clientDataJSON": new Uint8Array(assertion.response.clientDataJSON),
-    "signature": new Uint8Array(assertion.response.signature),
-    "type": assertion.type
+    credentialId: new Uint8Array(assertion.rawId),
+    authenticatorData: new Uint8Array(assertion.response.authenticatorData),
+    clientDataJSON: new Uint8Array(assertion.response.clientDataJSON),
+    signature: new Uint8Array(assertion.response.signature),
+    type: assertion.type,
   });
 
   return btoa(String.fromCharCode(...new Uint8Array(encoded)));

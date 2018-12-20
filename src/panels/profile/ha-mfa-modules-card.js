@@ -55,10 +55,16 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <paper-item-body three-line="">
                 <div>[[module.name]]</div>
                 <div secondary="">[[module.id]]</div>
-                <div secondary="">[[localize('ui.panel.profile.mfa.count', 'count', module.count)]]</div>
+                <div secondary="">
+                  [[localize('ui.panel.profile.mfa.count', 'count',
+                  module.count)]]
+                </div>
               </paper-item-body>
             </template>
-            <template is="dom-if" if="[[_both(module.enabled, module.multiple)]]">
+            <template
+              is="dom-if"
+              if="[[_both(module.enabled, module.multiple)]]"
+            >
               <paper-button on-click="_enable"
                 >[[localize('ui.panel.profile.mfa.add')]]</paper-button
               >

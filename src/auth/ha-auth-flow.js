@@ -154,7 +154,7 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
     }
 
     this.setProperties(props);
-    if (step.step_id === 'mfa') {
+    if (step.step_id === "mfa") {
       this._processMfa(step);
     }
   }
@@ -164,7 +164,7 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
     const data = step.data || {};
 
     switch (placeholders.mfa_module_id) {
-      case 'webauthn':
+      case "webauthn":
         if (data.options) {
           try {
             this._stepData.token = await authenticate(step.data.options);
