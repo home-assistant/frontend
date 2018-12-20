@@ -19,6 +19,7 @@ export class WebAuthnError extends Error {
 
 WebAuthnError.UNSUPPORTED = 'unsupported';
 WebAuthnError.PROTOCOL = 'protocol';
+WebAuthnError.DOMAIN = 'domain';
 WebAuthnError.CREDENTIALS = 'credentials';
 WebAuthnError.CANCELLED = 'cancelled';
 
@@ -42,6 +43,23 @@ function _checkBrowser() {
 }
 
 /**
+ * Handle credentials error.
+ * @param {Error} e
+ * @private
+ */
+function _handleCredentialsError(e) {
+  console.log('Error creating credential:', e.message);
+
+  if (e.name === 'SecurityError') {
+    throw new WebAuthnError(WebAuthnError.DOMAIN, e.message);
+  } else if (e.code) {
+    throw new WebAuthnError(WebAuthnError.CREDENTIALS, e.message);
+  } else {
+    throw new WebAuthnError(WebAuthnError.CANCELLED, e.message);
+  }
+}
+
+/**
  * Register new token by WebAuthn.
  * @param {Object} options
  * @return {string}
@@ -55,10 +73,8 @@ export async function register(options) {
   let attestation;
   try {
     attestation = await navigator.credentials.create(data);
-  } catch (err) {
-    console.log('Error creating credential:', err);
-    const type = err.code ? WebAuthnError.CREDENTIALS : WebAuthnError.CANCELLED;
-    throw new WebAuthnError(type, err.message);
+  } catch (e) {
+    _handleCredentialsError(e);
   }
 
   const encoded = CBOR.encode({
@@ -85,10 +101,8 @@ export async function authenticate(options) {
   let assertion;
   try {
     assertion = await navigator.credentials.get(data);
-  } catch (err) {
-    console.log('Error creating credential:', err);
-    const type = err.code ? WebAuthnError.CREDENTIALS : WebAuthnError.CANCELLED;
-    throw new WebAuthnError(type, err.message);
+  } catch (e) {
+    _handleCredentialsError(e);
   }
 
   const encoded = CBOR.encode({
