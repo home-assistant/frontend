@@ -12,6 +12,7 @@ export const handleClick = (
     camera_image?: string;
     hold_action?: ActionConfig;
     tap_action?: ActionConfig;
+    toast?: boolean;
   },
   hold: boolean
 ): void => {
@@ -44,7 +45,7 @@ export const handleClick = (
       break;
     case "toggle":
       if (config.entity) {
-        toggleEntity(hass, config.entity!, actionConfig.toast);
+        toggleEntity(hass, config.entity!, config.toast);
       }
       break;
     case "call-service": {
@@ -56,7 +57,7 @@ export const handleClick = (
         domain,
         service,
         actionConfig.service_data,
-        actionConfig.toast
+        config.toast
       );
     }
   }

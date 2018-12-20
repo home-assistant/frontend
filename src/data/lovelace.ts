@@ -6,6 +6,7 @@ export interface LovelaceConfig {
   background?: string;
   resources?: Array<{ type: "css" | "js" | "module" | "html"; url: string }>;
   excluded_entities?: string[];
+  toast?: boolean;
 }
 
 export interface LovelaceViewConfig {
@@ -18,6 +19,7 @@ export interface LovelaceViewConfig {
   theme?: string;
   panel?: boolean;
   background?: string;
+  toast?: boolean;
 }
 
 export interface LovelaceCardConfig {
@@ -25,33 +27,30 @@ export interface LovelaceCardConfig {
   view_index?: number;
   type: string;
   [key: string]: any;
+  toast?: boolean;
 }
 
-export interface ToggleActionConfig extends ActionBaseConfig {
+export interface ToggleActionConfig {
   action: "toggle";
 }
 
-export interface CallServiceActionConfig extends ActionBaseConfig {
+export interface CallServiceActionConfig {
   action: "call-service";
   service: string;
   service_data?: { [key: string]: any };
 }
 
-export interface NavigateActionConfig extends ActionBaseConfig {
+export interface NavigateActionConfig {
   action: "navigate";
   navigation_path: string;
 }
 
-export interface MoreInfoActionConfig extends ActionBaseConfig {
+export interface MoreInfoActionConfig {
   action: "more-info";
 }
 
-export interface NoActionConfig extends ActionBaseConfig {
+export interface NoActionConfig {
   action: "none";
-}
-
-export interface ActionBaseConfig {
-  toast?: boolean;
 }
 
 export type ActionConfig =

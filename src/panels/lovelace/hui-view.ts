@@ -184,7 +184,10 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     }
 
     if (configChanged || editModeChanged || changedProperties.has("columns")) {
-      this._createCards(lovelace.config.views[this.index!]);
+      this._createCards({
+        toast: lovelace.config.toast,
+        ...lovelace.config.views[this.index!],
+      });
     } else if (changedProperties.has("hass")) {
       this._cards.forEach((element) => {
         element.hass = this.hass;
@@ -239,7 +242,10 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     const elements: LovelaceCard[] = [];
     const elementsToAppend: HTMLElement[] = [];
     config.cards.forEach((cardConfig, cardIndex) => {
-      const element = createCardElement(cardConfig) as LovelaceCard;
+      const element = createCardElement({
+        toast: config.toast,
+        ...cardConfig,
+      }) as LovelaceCard;
       element.hass = this.hass;
       elements.push(element);
 

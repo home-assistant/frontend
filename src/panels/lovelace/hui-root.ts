@@ -591,7 +591,10 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
 
     let view;
-    const viewConfig = this.config.views[viewIndex];
+    const viewConfig = {
+      toast: this.config.toast,
+      ...this.config.views[viewIndex],
+    };
 
     if (!viewConfig) {
       this._editModeEnable();
