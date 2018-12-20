@@ -1,6 +1,7 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
@@ -52,18 +53,11 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     return this._config.theme || "Backend-selected";
   }
 
-  get _hidden(): boolean {
-    if (!this._config) {
-      return false;
-    }
-    return this._config.hidden || false;
-  }
-
   public hass?: HomeAssistant;
   private _config?: LovelaceViewConfig;
 
   set config(config: LovelaceViewConfig) {
-    this._config = config;
+    this._config = { hidden: false, ...config };
   }
 
   protected render(): TemplateResult {
@@ -82,7 +76,7 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
         ></paper-input>
         <div class="side-by-side">
           <paper-toggle-button
-            ?checked="${this._hidden !== false}"
+            ?checked="${this._config!.hidden !== false}"
             .configValue="${"hidden"}"
             @change="${this._valueChanged}"
             >Hide Tab?</paper-toggle-button
@@ -126,7 +120,8 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     if (target.configValue) {
       newConfig = {
         ...this._config,
-        [target.configValue]: target.value,
+        [target.configValue!]:
+          target.checked !== undefined ? target.checked : target.value,
       };
     }
 
