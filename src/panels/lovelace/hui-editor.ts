@@ -29,12 +29,14 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   private _haStyle?: DocumentFragment;
   private _saving?: boolean;
   private _changed?: boolean;
+  private _hashAdded?: boolean;
 
   static get properties() {
     return {
       lovelace: {},
       _saving: {},
       _changed: {},
+      _hashAdded: {},
     };
   }
 
@@ -46,13 +48,26 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
           <app-toolbar>
             <paper-icon-button
               icon="hass:close"
-              @click="${this.closeEditor}"
+              @click="${this._closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
+            ${
+              this._hashAdded
+                ? html`
+                    <span class="comments">Comments will be not be saved!</span>
+                  `
+                : ""
+            }
             <paper-button @click="${this._handleSave}">Save</paper-button>
-            <ha-icon class="save-button ${classMap({
-              saved: this._saving! === false && !this._changed!,
-            })}" icon="hass:check">
+            <ha-icon
+              class="save-button
+            ${
+                classMap({
+                  saved: this._saving! === false || this._changed === true,
+                })
+              }"
+              icon="${this._changed ? "hass:circle-medium" : "hass:check"}"
+            ></ha-icon>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -72,6 +87,11 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
     const textArea = this.textArea;
     textArea.value = yaml.safeDump(this.lovelace!.config);
     textArea.addEventListener("keydown", (e) => {
+      if (e.keyCode === 51) {
+        this._hashAdded = true;
+        return;
+      }
+
       if (e.keyCode !== 9) {
         return;
       }
@@ -116,6 +136,10 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
           color: var(--dark-text-color);
         }
 
+        .comments {
+          font-size: 16px;
+        }
+
         .content {
           height: calc(100vh - 68px);
         }
@@ -146,23 +170,34 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
+  private _closeEditor() {
+    if (this._changed) {
+      if (
+        !confirm("You have unsafed changes, are you sure you want to exit?")
+      ) {
+        return;
+      }
+    }
+    window.onbeforeunload = null;
+    this.closeEditor!();
+  }
+
   private async _handleSave() {
     this._saving = true;
-    let value;
-    const text = this.textArea.value;
 
-    if (/^\s*#|#\s/m.test(text)) {
+    if (this._hashAdded) {
       if (
         !confirm(
-          "Your config might contains comments, these will not be saved. Do you want to continue?"
+          "Your config might contain comments, these will not be saved. Do you want to continue?"
         )
       ) {
         return;
       }
     }
 
+    let value;
     try {
-      value = yaml.safeLoad(text);
+      value = yaml.safeLoad(this.textArea.value);
     } catch (err) {
       alert(`Unable to parse YAML: ${err}`);
       this._saving = false;
@@ -179,16 +214,20 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
     } catch (err) {
       alert(`Unable to save YAML: ${err}`);
     }
+    window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
+    this._hashAdded = false;
   }
 
   private _yamlChanged() {
     if (this._changed) {
       return;
     }
+    window.onbeforeunload = () => {
+      return true;
+    };
     this._changed = true;
-
   }
 
   private get textArea(): HTMLTextAreaElement {
