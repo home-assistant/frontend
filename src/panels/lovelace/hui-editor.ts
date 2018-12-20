@@ -30,6 +30,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   private _saving?: boolean;
   private _changed?: boolean;
   private _hashAdded?: boolean;
+  private _hash?: boolean;
 
   static get properties() {
     return {
@@ -37,6 +38,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
       _saving: {},
       _changed: {},
       _hashAdded: {},
+      _hash: {},
     };
   }
 
@@ -52,7 +54,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
             ></paper-icon-button>
             <div main-title>Edit Config</div>
             ${
-              this._hashAdded
+              this._hash
                 ? html`
                     <span class="comments">Comments will be not be saved!</span>
                   `
@@ -221,6 +223,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _yamlChanged() {
+    this._hash = this._hashAdded || this.textArea.value.includes("#");
     if (this._changed) {
       return;
     }
