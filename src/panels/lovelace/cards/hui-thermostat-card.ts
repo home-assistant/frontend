@@ -54,6 +54,14 @@ function formatTemp(temps: string[]): string {
   return temps.filter(Boolean).join("-");
 }
 
+function computeTemperatureStepSize(hass: HomeAssistant, config: Config) {
+  const stateObj = hass.states[config.entity];
+  if (stateObj.attributes.target_temp_step) {
+    return stateObj.attributes.target_temp_step;
+  }
+  return hass.config.unit_system.temperature.indexOf("F") === 1 ? 1 : 0.5;
+}
+
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -196,7 +204,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         : "min-range";
 
     const [sliderValue, uiValue] = this._genSliderValue(stateObj);
-    const step = this._computeTemperatureStepSize();
+    const step = computeTemperatureStepSize(this.hass!, this._config!);
     this._broadCard = this.clientWidth > 390;
     this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
@@ -210,17 +218,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       step,
     });
     this._updateSetTemp(uiValue);
-  }
-
-  private _computeTemperatureStepSize() {
-    const stateObj = this.hass!.states[this._config!.entity];
-    if (stateObj.attributes.target_temp_step) {
-      return stateObj.attributes.target_temp_step;
-    }
-    if (this.hass!.config.unit_system.temperature.indexOf("F") !== -1) {
-      return 1;
-    }
-    return 0.5;
   }
 
   private _genSliderValue(stateObj: ClimateEntity): [string | number, string] {
