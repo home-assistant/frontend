@@ -8,7 +8,7 @@ enum ErrorType {
   PROTOCOL = "protocol",
   DOMAIN = "domain",
   CREDENTIALS = "credentials",
-  CANCELLED = "cancelled"
+  CANCELLED = "cancelled",
 }
 
 /**
@@ -61,8 +61,9 @@ function _handleCredentialsError(e) {
 
 /**
  * Register new token by WebAuthn.
+ * @param {string} options
  */
-export async function register(options:string) {
+export async function register(options) {
   _checkBrowser();
 
   const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
@@ -87,8 +88,9 @@ export async function register(options:string) {
 
 /**
  * Authenticate token by WebAuthn.
+ * @param {string} options
  */
-export async function authenticate(options:string) {
+export async function authenticate(options) {
   _checkBrowser();
 
   const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
