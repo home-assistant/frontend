@@ -166,7 +166,9 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
       case "webauthn":
         if (data.options) {
           try {
-            const { authenticate } = await import(/* webpackChunkName: "webauthn" */ "../common/auth/webauthn");
+            const {
+              authenticate,
+            } = await import(/* webpackChunkName: "webauthn" */ "../common/auth/webauthn");
             this._stepData.token = await authenticate(step.data.options);
           } catch (e) {
             this._stepData.error = e.type;
