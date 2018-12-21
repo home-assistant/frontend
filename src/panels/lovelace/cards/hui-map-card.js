@@ -11,7 +11,24 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
+// should be interface when converted to TS
+export const Config = {
+  title: "",
+  aspect_ratio: "",
+  default_zoom: 14,
+  entities: [],
+};
+
 class HuiMapCard extends PolymerElement {
+  static async getConfigElement() {
+    await import(/* webpackChunkName: "hui-map-card-editor" */ "../editor/config-elements/hui-map-card-editor");
+    return document.createElement("hui-map-card-editor");
+  }
+
+  static getStubConfig() {
+    return { entities: [] };
+  }
+
   static get template() {
     return html`
       <style>
