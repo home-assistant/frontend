@@ -26,7 +26,7 @@ class HuiMapCard extends PolymerElement {
   }
 
   static getStubConfig() {
-    return { default_zoom: 14, entities: [] };
+    return { entities: [] };
   }
 
   static get template() {
