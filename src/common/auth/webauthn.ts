@@ -1,15 +1,23 @@
 import * as CBOR from "cbor-js";
 
 /**
+ * WebAuthnError types.
+ */
+enum ErrorType {
+  UNSUPPORTED = "unsupported",
+  PROTOCOL = "protocol",
+  DOMAIN = "domain",
+  CREDENTIALS = "credentials",
+  CANCELLED = "cancelled"
+}
+
+/**
  * Custom exception class.
  */
 export class WebAuthnError extends Error {
-  /**
-   * @constructor
-   * @param {string} type
-   * @param {string=} message
-   */
-  constructor(type, message) {
+  public type: ErrorType;
+
+  constructor(type: ErrorType, message?: string) {
     super(message || type);
 
     this.name = "WebAuthnError";
@@ -17,28 +25,22 @@ export class WebAuthnError extends Error {
   }
 }
 
-WebAuthnError.UNSUPPORTED = "unsupported";
-WebAuthnError.PROTOCOL = "protocol";
-WebAuthnError.DOMAIN = "domain";
-WebAuthnError.CREDENTIALS = "credentials";
-WebAuthnError.CANCELLED = "cancelled";
-
 /**
  * Check browser supports WebAuthn.
  * @private
  */
 function _checkBrowser() {
   if (!navigator.credentials) {
-    throw new WebAuthnError(WebAuthnError.UNSUPPORTED);
+    throw new WebAuthnError(ErrorType.UNSUPPORTED);
   }
   if (!navigator.credentials.get || !navigator.credentials.create) {
-    throw new WebAuthnError(WebAuthnError.UNSUPPORTED);
+    throw new WebAuthnError(ErrorType.UNSUPPORTED);
   }
   if (!ArrayBuffer || !Uint8Array || !Uint8Array.from) {
-    throw new WebAuthnError(WebAuthnError.UNSUPPORTED);
+    throw new WebAuthnError(ErrorType.UNSUPPORTED);
   }
   if (location.protocol === "http:") {
-    throw new WebAuthnError(WebAuthnError.PROTOCOL);
+    throw new WebAuthnError(ErrorType.PROTOCOL);
   }
 }
 
@@ -49,20 +51,18 @@ function _checkBrowser() {
  */
 function _handleCredentialsError(e) {
   if (e.name === "SecurityError") {
-    throw new WebAuthnError(WebAuthnError.DOMAIN, e.message);
+    throw new WebAuthnError(ErrorType.DOMAIN, e.message);
   } else if (e.code) {
-    throw new WebAuthnError(WebAuthnError.CREDENTIALS, e.message);
+    throw new WebAuthnError(ErrorType.CREDENTIALS, e.message);
   } else {
-    throw new WebAuthnError(WebAuthnError.CANCELLED, e.message);
+    throw new WebAuthnError(ErrorType.CANCELLED, e.message);
   }
 }
 
 /**
  * Register new token by WebAuthn.
- * @param {Object} options
- * @return {string}
  */
-export async function register(options) {
+export async function register(options:string) {
   _checkBrowser();
 
   const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
@@ -87,10 +87,8 @@ export async function register(options) {
 
 /**
  * Authenticate token by WebAuthn.
- * @param {Object} options
- * @return {string}
  */
-export async function authenticate(options) {
+export async function authenticate(options:string) {
   _checkBrowser();
 
   const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
