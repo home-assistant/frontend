@@ -30,9 +30,11 @@ export class WebAuthnError extends Error {
  * @private
  */
 function _checkBrowser() {
+  // @ts-ignore
   if (!navigator.credentials) {
     throw new WebAuthnError(ErrorType.UNSUPPORTED);
   }
+  // @ts-ignore
   if (!navigator.credentials.get || !navigator.credentials.create) {
     throw new WebAuthnError(ErrorType.UNSUPPORTED);
   }
@@ -66,11 +68,13 @@ function _handleCredentialsError(e) {
 export async function register(options) {
   _checkBrowser();
 
+  // @ts-ignore
   const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
   const data = CBOR.decode(arr.buffer);
 
   let attestation;
   try {
+    // @ts-ignore
     attestation = await navigator.credentials.create(data);
   } catch (e) {
     _handleCredentialsError(e);
@@ -83,6 +87,7 @@ export async function register(options) {
     type: attestation.type,
   });
 
+  // @ts-ignore
   return btoa(String.fromCharCode(...new Uint8Array(encoded)));
 }
 
@@ -93,11 +98,13 @@ export async function register(options) {
 export async function authenticate(options) {
   _checkBrowser();
 
+  // @ts-ignore
   const arr = Uint8Array.from(atob(options), (c) => c.charCodeAt(0));
   const data = CBOR.decode(arr.buffer);
 
   let assertion;
   try {
+    // @ts-ignore
     assertion = await navigator.credentials.get(data);
   } catch (e) {
     _handleCredentialsError(e);
@@ -111,5 +118,6 @@ export async function authenticate(options) {
     type: assertion.type,
   });
 
+  // @ts-ignore
   return btoa(String.fromCharCode(...new Uint8Array(encoded)));
 }
