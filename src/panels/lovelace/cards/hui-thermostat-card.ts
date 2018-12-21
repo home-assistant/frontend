@@ -7,6 +7,9 @@ import {
 import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
 
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 
@@ -15,11 +18,9 @@ import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { afterNextRender } from "../../../common/util/render-status";
+import { UNIT_F } from "../../../common/const";
 
 const thermostatConfig = {
   radius: 150,
@@ -59,7 +60,7 @@ function computeTemperatureStepSize(hass: HomeAssistant, config: Config) {
   if (stateObj.attributes.target_temp_step) {
     return stateObj.attributes.target_temp_step;
   }
-  return hass.config.unit_system.temperature.indexOf("F") === 1 ? 1 : 0.5;
+  return hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5;
 }
 
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
