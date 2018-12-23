@@ -145,7 +145,11 @@
             "high_demand": "Hoher Verbrauch",
             "heat_pump": "Wärmepumpe",
             "gas": "Gas",
-            "manual": "Manuell"
+            "manual": "Manuell",
+            "standby": "Standby",
+            "night": "Nacht",
+            "frost_protection": "Frostschutz",
+            "comfort": "Komfort"
         },
         "configurator": {
             "configure": "Konfigurieren",

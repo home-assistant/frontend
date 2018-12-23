@@ -33,17 +33,21 @@ const thermostatConfig = {
   animation: false,
 };
 
-const modeIcons = {
-  auto: "hass:autorenew",
-  manual: "hass:cursor-pointer",
-  heat: "hass:fire",
-  cool: "hass:snowflake",
-  off: "hass:power",
-  fan_only: "hass:fan",
-  eco: "hass:leaf",
-  dry: "hass:water-percent",
-  idle: "hass:power-sleep",
-};
+const operationModes: Map<string, string> = new Map([
+  ["auto", "hass:autorenew"],
+  ["manual", "hass:cursor-pointer"],
+  ["heat", "hass:fire"],
+  ["cool", "hass:snowflake"],
+  ["off", "hass:power"],
+  ["fan_only", "hass:fan"],
+  ["eco", "hass:leaf"],
+  ["dry", "hass:water-percent"],
+  ["idle", "hass:power-sleep"],
+  ["Comfort", "hass:fire"],
+  ["Night", "hass:power-sleep"],
+  ["Frost Protection", "hass:snowflake"],
+  ["Standby", "hass:leaf"],
+]);
 
 export interface Config extends LovelaceCardConfig {
   entity: string;
@@ -53,6 +57,10 @@ export interface Config extends LovelaceCardConfig {
 
 function formatTemp(temps: string[]): string {
   return temps.filter(Boolean).join("-");
+}
+
+function formatOperationMode(operationMode?: string) {
+  return operationMode ? operationMode!.replace(/\s+/g, "_").toLowerCase() : "";
 }
 
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
@@ -98,14 +106,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
-    const mode = modeIcons[stateObj.attributes.operation_mode || ""]
+    const mode = operationModes.get(stateObj.attributes.operation_mode || "")
       ? stateObj.attributes.operation_mode!
       : "unknown-mode";
     return html`
       ${this.renderStyle()}
       <ha-card
         class="${classMap({
-          [mode]: true,
+          [formatOperationMode(mode)]: true,
           large: this._broadCard!,
           small: !this._broadCard,
         })}">
@@ -131,7 +139,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
             <div class="climate-info">
             <div id="set-temperature"></div>
             <div class="current-mode">${this.localize(
-              `state.climate.${stateObj.state}`
+              `state.climate.${formatOperationMode(stateObj.state)}`
             )}</div>
             <div class="modes">
               ${(stateObj.attributes.operation_list || []).map((modeItem) =>
@@ -165,7 +173,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
 
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
-
     if (
       this._jQuery &&
       // If jQuery changed, we just rendered in firstUpdated
@@ -253,6 +260,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           --fan_only-color: #8a8a8a;
           --dry-color: #efbd07;
           --idle-color: #8a8a8a;
+          --comfort-color: #ff5213;
+          --night-color: #59b2f9;
+          --frost_protection-color: #59b2f9;
+          --standby-color: #8a8a8a;
           --unknown-color: #bac;
         }
         #root {
@@ -285,6 +296,18 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         }
         .idle {
           --mode-color: var(--idle-color);
+        }
+        .comfort {
+          --mode-color: var(--comfort-color);
+        }
+        .night {
+          --mode-color: var(--night-color);
+        }
+        .standby {
+          --mode-color: var(--standby-color);
+        }
+        .frost_protection {
+          --mode-color: var(--frost_protection-color);
         }
         .unknown-mode {
           --mode-color: var(--unknown-color);
@@ -446,14 +469,15 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _renderIcon(mode: string, currentMode: string): TemplateResult {
-    if (!modeIcons[mode]) {
+    if (!operationModes.get(mode)) {
       return html``;
     }
     return html`
       <ha-icon
         class="${classMap({ "selected-icon": currentMode === mode })}"
-        .mode="${mode}"
-        .icon="${modeIcons[mode]}"
+        .mode="${formatOperationMode(mode)}"
+        .operationMode="${mode}"
+        .icon="${operationModes.get(mode)}"
         @click="${this._handleModeClick}"
       ></ha-icon>
     `;
@@ -462,7 +486,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   private _handleModeClick(e: MouseEvent): void {
     this.hass!.callService("climate", "set_operation_mode", {
       entity_id: this._config!.entity,
-      operation_mode: (e.currentTarget as any).mode,
+      operation_mode: (e.currentTarget as any).operationMode,
     });
   }
 }

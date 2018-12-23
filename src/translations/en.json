@@ -183,7 +183,11 @@
       "high_demand": "High demand",
       "heat_pump": "Heat pump",
       "gas": "Gas",
-      "manual": "Manual"
+      "manual": "Manual",
+      "standby": "Standby",
+      "night": "Night",
+      "frost_protection": "Frost Protection",
+      "comfort": "Comfort"
     },
     "configurator": {
       "configure": "Configure",
