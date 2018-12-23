@@ -138,32 +138,46 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
             })
           }
         </div>
-        <paper-input
-          label="Alarm Code"
-          type="password"
-          .value="${this._code}"
-        ></paper-input>
-        <div id="keypad">
-          ${
-            BUTTONS.map((value) => {
-              return value === ""
-                ? html`
-                    <paper-button disabled></paper-button>
-                  `
-                : html`
-                    <paper-button
-                      noink
-                      raised
-                      .value="${value}"
-                      @click="${this._handlePadClick}"
-                      >${
-                        value === "clear" ? this._label("clear_code") : value
-                      }</paper-button
-                    >
-                  `;
-            })
-          }
-        </div>
+        ${
+          !stateObj.attributes.code_format
+            ? html``
+            : html`
+                <paper-input
+                  label="Alarm Code"
+                  type="password"
+                  .value="${this._code}"
+                ></paper-input>
+              `
+        }
+        ${
+          stateObj.attributes.code_format !== "Number"
+            ? html``
+            : html`
+                <div id="keypad">
+                  ${
+                    BUTTONS.map((value) => {
+                      return value === ""
+                        ? html`
+                            <paper-button disabled></paper-button>
+                          `
+                        : html`
+                            <paper-button
+                              noink
+                              raised
+                              .value="${value}"
+                              @click="${this._handlePadClick}"
+                              >${
+                                value === "clear"
+                                  ? this._label("clear_code")
+                                  : value
+                              }</paper-button
+                            >
+                          `;
+                    })
+                  }
+                </div>
+              `
+        }
       </ha-card>
     `;
   }
