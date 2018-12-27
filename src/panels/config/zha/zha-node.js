@@ -70,7 +70,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
           <span>ZHA Node Management</span>
           <paper-icon-button
             class="toggle-help-icon"
-            on-click="toggleHelp"
+            on-click="(toggleHelp)"
             icon="hass:help-circle"
           ></paper-icon-button>
         </div>
@@ -83,7 +83,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
             <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
               <paper-listbox
                 slot="dropdown-content"
-                selected="{{selectedNode}}"
+                selected="{{ selectedNode }}"
               >
                 <template is="dom-repeat" items="[[nodes]]" as="state">
                   <paper-item>[[computeSelectCaption(state)]]</paper-item>
@@ -141,7 +141,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  selected="{{selectedEntity}}"
+                  selected="{{ selectedEntity }}"
                 >
                   <template is="dom-repeat" items="[[entities]]" as="state">
                     <paper-item>[[state.entity_id]]</paper-item>
@@ -161,7 +161,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                 >
                   <paper-listbox
                     slot="dropdown-content"
-                    selected="{{selectedCluster}}"
+                    selected="{{ selectedCluster }}"
                   >
                     <template is="dom-repeat" items="[[clusters]]" as="cluster">
                       <paper-item>[[computeClusterKey(cluster)]]</paper-item>
@@ -183,7 +183,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                   >
                     <paper-listbox
                       slot="dropdown-content"
-                      selected="{{selectedClusterAttribute}}"
+                      selected="{{ selectedClusterAttribute }}"
                     >
                       <template
                         is="dom-repeat"
@@ -198,6 +198,19 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                   </paper-dropdown-menu>
                 </div>
               </template>
+
+              <template
+                is="dom-if"
+                if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]"
+              >
+                <paper-input
+                  label="Value"
+                  type="string"
+                  value="{{ attributeValue }}"
+                  placeholder="Value to set"
+                ></paper-input>
+              </template>
+
               <template
                 is="dom-if"
                 if="[[computeNotClusterAttributeSelected()]]"
@@ -210,7 +223,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                   >
                     <paper-listbox
                       slot="dropdown-content"
-                      selected="{{selectedClusterCommand}}"
+                      selected="{{ selectedClusterCommand }}"
                     >
                       <template
                         is="dom-repeat"
@@ -226,34 +239,42 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                 </div>
               </template>
             </template>
-            <div class="card-actions">
+
+            <template
+              is="dom-if"
+              if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]"
+            >
               <template
                 is="dom-if"
-                if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]"
+                if="[[attributeValue && attributeValue !== '']]"
               >
-                <ha-call-service-button
-                  hass="[[hass]]"
-                  domain="zha"
-                  service="set_zigbee_cluster_attribute"
-                  service-data="[[computeClusterServiceData(selectedNode, selectedEntity, selectedCluster)]]"
-                  >Set Zigbee Attribute</ha-call-service-button
-                >
-                <ha-service-description
-                  hass="[[hass]]"
-                  domain="zha"
-                  service="set_zigbee_cluster_attribute"
-                  hidden$="[[!showHelp]]"
-                ></ha-service-description>
+                <div class="card-actions">
+                  <ha-call-service-button
+                    hass="[[hass]]"
+                    domain="zha"
+                    service="set_zigbee_cluster_attribute"
+                    service-data="[[computeClusterServiceData(selectedNode, selectedEntity, selectedCluster)]]"
+                    >Set Zigbee Attribute</ha-call-service-button
+                  >
+                  <ha-service-description
+                    hass="[[hass]]"
+                    domain="zha"
+                    service="set_zigbee_cluster_attribute"
+                    hidden$="[[!showHelp]]"
+                  ></ha-service-description>
+                </div>
               </template>
-              <template
-                is="dom-if"
-                if="[[computeIsClusterCommandSelected(selectedClusterCommand)]]"
-              >
+            </template>
+            <template
+              is="dom-if"
+              if="[[computeIsClusterCommandSelected(selectedClusterCommand)]]"
+            >
+              <div class="card-actions">
                 <ha-call-service-button
                   hass="[[hass]]"
                   domain="zha"
                   service="issue_zigbee_cluster_command"
-                  service-data="[[computeClusterServiceData(selectedNode, selectedEntity, selectedCluster)]]"
+                  service-data="[[computeClusterCommandServiceData(selectedClusterCommand)]]"
                   >Issue Zigbee Command</ha-call-service-button
                 >
                 <ha-service-description
@@ -262,8 +283,8 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                   service="issue_zigbee_cluster_command"
                   hidden$="[[!showHelp]]"
                 ></ha-service-description>
-              </template>
-            </div>
+              </div>
+            </template>
           </template>
         </paper-card>
       </ha-config-section>
@@ -340,6 +361,8 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
       values: {
         type: Array,
       },
+
+      attributeValue: String,
 
       showHelp: {
         type: Boolean,
@@ -459,6 +482,16 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
     };
   }
 
+  computeClusterCommandServiceData(selectedClusterCommand) {
+    return {
+      entity_id: this.entities[this.selectedEntity].entity_id,
+      cluster_id: this.clusters[this.selectedCluster].id,
+      cluster_type: this.clusters[this.selectedCluster].type,
+      command: this.clusterCommands[selectedClusterCommand].id,
+      command_type: this.clusterCommands[selectedClusterCommand].type,
+    };
+  }
+
   selectedEntityChanged(selectedEntity) {
     if (selectedEntity === -1) return;
     this.selectedCluster = -1;
@@ -520,8 +553,8 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
     this.selectedClusterAttribute = -1;
     this.selectedClusterCommand = -1;
     const ieee = this.nodes[this.selectedNode].attributes.ieee;
-    this.hass.callWS({ type: "zha/entities" }).then((devices) => {
-      this.setProperties({ entities: devices[ieee] });
+    this.hass.callWS({ type: "zha/entities" }).then((entities) => {
+      this.setProperties({ entities: entities[ieee] });
     });
   }
 
