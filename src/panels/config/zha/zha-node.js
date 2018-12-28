@@ -221,19 +221,9 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                   if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]"
                 >
                   <div class="card-actions">
-                    <ha-call-service-button
-                      hass="[[hass]]"
-                      domain="zha"
-                      service="get_zigbee_cluster_attribute"
-                      service-data="[[computeClusterServiceData(selectedNode, selectedEntity, selectedCluster)]]"
-                      >Get Zigbee Attribute</ha-call-service-button
+                    <ha-progress-button on-click="readZigbeeClusterAttribute"
+                      ><slot></slot>Get Zigbee Attribute</ha-progress-button
                     >
-                    <ha-service-description
-                      hass="[[hass]]"
-                      domain="zha"
-                      service="set_zigbee_cluster_attribute"
-                      hidden$="[[!showHelp]]"
-                    ></ha-service-description>
                     <ha-call-service-button
                       hass="[[hass]]"
                       domain="zha"
@@ -406,12 +396,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
     );
   }
 
-  serviceCalled(ev) {
-    var el = this;
-    if (ev.detail.success && ev.detail.service === "set_poll_intensity") {
-      el.saveEntity();
-    }
-  }
+  serviceCalled(ev) {}
 
   computeNodes(hass) {
     return Object.keys(hass.states)
@@ -504,6 +489,22 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
       command: this.clusterCommands[selectedClusterCommand].id,
       command_type: this.clusterCommands[selectedClusterCommand].type,
     };
+  }
+
+  computeReadAttributeServiceData() {
+    return {
+      entity_id: this.entities[this.selectedEntity].entity_id,
+      cluster_id: this.clusters[this.selectedCluster].id,
+      cluster_type: this.clusters[this.selectedCluster].type,
+      attribute: this.clusterAttributes[this.selectedClusterAttribute].id,
+      type: "zha/entities/clusters/attributes/value",
+    };
+  }
+
+  readZigbeeClusterAttribute() {
+    this.hass.callWS(this.computeReadAttributeServiceData()).then((value) => {
+      this.setProperties({ attributeValue: value });
+    });
   }
 
   selectedEntityChanged(selectedEntity) {
