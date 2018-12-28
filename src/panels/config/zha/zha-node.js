@@ -236,7 +236,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                       hass="[[hass]]"
                       domain="zha"
                       service="set_zigbee_cluster_attribute"
-                      service-data="[[computeSetAttributeServiceData(attributeValue, manufacturerCodeOverride)]]"
+                      service-data="[[computeSetAttributeServiceData(attributeValue)]]"
                       >Set Zigbee Attribute</ha-call-service-button
                     >
                     <ha-service-description
@@ -515,7 +515,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  computeSetAttributeServiceData(attributeValue, manufacturerCodeOverride) {
+  computeSetAttributeServiceData(attributeValue) {
     return {
       entity_id: this.entities[this.selectedEntity].entity_id,
       cluster_id: this.clusters[this.selectedCluster].id,
