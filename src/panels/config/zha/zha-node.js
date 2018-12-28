@@ -216,6 +216,14 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                     placeholder="Value"
                   ></paper-input>
                 </div>
+                <div class="input-text">
+                  <paper-input
+                    label="Manufacturer code override"
+                    type="number"
+                    value="{{ manufacturerCodeOverride }}"
+                    placeholder="Value"
+                  ></paper-input>
+                </div>
                 <template
                   is="dom-if"
                   if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]"
@@ -228,7 +236,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                       hass="[[hass]]"
                       domain="zha"
                       service="set_zigbee_cluster_attribute"
-                      service-data="[[computeClusterServiceData(selectedNode, selectedEntity, selectedCluster)]]"
+                      service-data="[[computeSetAttributeServiceData(attributeValue, manufacturerCodeOverride)]]"
                       >Set Zigbee Attribute</ha-call-service-button
                     >
                     <ha-service-description
@@ -368,6 +376,8 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
 
       attributeValue: String,
 
+      manufacturerCodeOverride: Number,
+
       showHelp: {
         type: Boolean,
         value: false,
@@ -474,7 +484,7 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
 
   computeClusterServiceData(selectedNode, selectedEntity, selectedCluster) {
     return {
-      ieee_address: this.nodes[selectedNode].ieee,
+      ieee_address: this.nodes[selectedNode].attributes.ieee,
       entity_id: this.entities[selectedEntity].entity_id,
       cluster_id: this.clusters[selectedCluster].id,
       cluster_type: this.clusters[selectedCluster].type,
@@ -497,7 +507,25 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
       cluster_id: this.clusters[this.selectedCluster].id,
       cluster_type: this.clusters[this.selectedCluster].type,
       attribute: this.clusterAttributes[this.selectedClusterAttribute].id,
+      manufacturer:
+        this.manufacturerCodeOverride != null
+          ? parseInt(this.manufacturerCodeOverride)
+          : this.nodes[this.selectedNode].attributes.manufacturer_code,
       type: "zha/entities/clusters/attributes/value",
+    };
+  }
+
+  computeSetAttributeServiceData(attributeValue, manufacturerCodeOverride) {
+    return {
+      entity_id: this.entities[this.selectedEntity].entity_id,
+      cluster_id: this.clusters[this.selectedCluster].id,
+      cluster_type: this.clusters[this.selectedCluster].type,
+      attribute: this.clusterAttributes[this.selectedClusterAttribute].id,
+      value: attributeValue,
+      manufacturer:
+        this.manufacturerCodeOverride != null
+          ? parseInt(this.manufacturerCodeOverride)
+          : this.nodes[this.selectedNode].attributes.manufacturer_code,
     };
   }
 
@@ -555,12 +583,14 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
     if (selectedClusterAttribute === -1) return;
     this.selectedClusterCommand = -1;
     this.attributeValue = "";
+    this.manufacturerCodeOverride = null;
   }
 
   selectedClusterCommandChanged(selectedClusterCommand) {
     if (selectedClusterCommand === -1) return;
     this.selectedClusterAttribute = -1;
     this.attributeValue = "";
+    this.manufacturerCodeOverride = null;
   }
 
   selectedNodeChanged(selectedNode) {
