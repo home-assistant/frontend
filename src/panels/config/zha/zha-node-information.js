@@ -7,12 +7,19 @@ class ZhaNodeInformation extends PolymerElement {
   static get template() {
     return html`
       <style include="iron-flex ha-style">
-        .content {
-          margin-top: 24px;
+        .node-info-header {
+          @apply (--paper-font-headline);
+          padding-left: 24px;
         }
 
         .node-info {
-          margin-left: 16px;
+          margin-left: 30px;
+          margin-top: 3px;
+          float: left;
+          font-weight: normal;
+        }
+        .node-info-button {
+          float: right;
         }
 
         paper-card {
@@ -24,23 +31,45 @@ class ZhaNodeInformation extends PolymerElement {
         paper-button[toggles][active] {
           background: lightgray;
         }
+        paper-button[toggles] {
+          margin-top: 3px;
+          height: 27px;
+          margin-right: 24px;
+        }
+
+        table {
+          border-collapse: collapse;
+        }
       </style>
 
-      <div class="content">
-        <paper-card heading="Node Information">
-          <div class="card-actions">
-            <paper-button
-              toggles=""
-              raised=""
-              noink=""
-              active="{{nodeInfoActive}}"
-              >Show</paper-button
-            >
+      <div>
+        <paper-card>
+          <div>
+            <span class="node-info-header">Node Information</span>
+            <div class="node-info-button">
+              <paper-button
+                toggles=""
+                raised=""
+                noink=""
+                active="{{nodeInfoActive}}"
+                >{{buttonLabel}}</paper-button
+              >
+            </div>
           </div>
           <template is="dom-if" if="{{nodeInfoActive}}">
-            <template is="dom-repeat" items="[[selectedNodeAttrs]]" as="state">
-              <div class="node-info"><span>[[state]]</span></div>
-            </template>
+            <table>
+              <template
+                is="dom-repeat"
+                items="[[selectedNodeAttrs]]"
+                as="state"
+              >
+                <tr>
+                  <th>
+                    <div class="node-info"><span>[[state]]</span></div>
+                  </th>
+                </tr>
+              </template>
+            </table>
           </template>
         </paper-card>
       </div>
@@ -66,7 +95,10 @@ class ZhaNodeInformation extends PolymerElement {
 
       nodeInfoActive: {
         type: Boolean,
+        observer: "toggleStateChanged",
       },
+
+      buttonLabel: String,
     };
   }
 
@@ -78,6 +110,14 @@ class ZhaNodeInformation extends PolymerElement {
       att.push(key + ": " + nodeAttrs[key]);
     });
     this.selectedNodeAttrs = att.sort();
+  }
+
+  toggleStateChanged(toggleState) {
+    if (toggleState) {
+      this.buttonLabel = "Hide";
+    } else {
+      this.buttonLabel = "Show";
+    }
   }
 }
 

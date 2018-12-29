@@ -81,7 +81,12 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
         </div>
         <span slot="introduction">
           Run ZHA commands that affect a single node. Pick a node to see a list
-          of available commands.
+          of available commands. <br /><br />Note: Sleepy (battery powered)
+          devices need to be awake when executing commands against them. You can
+          generally wake a sleepy device by triggering it. <br /><br />Some
+          devices such as Xiaomi sensors have a wake up button that you can
+          press at ~5 second intervals that keep devices awake while you
+          interact with them.
         </span>
         <paper-card class="content">
           <div class="device-picker">
