@@ -43,35 +43,29 @@ class ZhaNodeInformation extends PolymerElement {
       </style>
 
       <div>
-        <paper-card>
-          <div>
-            <span class="node-info-header">Node Information</span>
-            <div class="node-info-button">
-              <paper-button
-                toggles=""
-                raised=""
-                noink=""
-                active="{{nodeInfoActive}}"
-                >{{buttonLabel}}</paper-button
-              >
-            </div>
+        <div class="card-actions">
+          <span class="node-info-header">Node Information</span>
+          <div class="node-info-button">
+            <paper-button
+              toggles=""
+              raised=""
+              noink=""
+              active="{{nodeInfoActive}}"
+              >{{buttonLabel}}</paper-button
+            >
           </div>
-          <template is="dom-if" if="{{nodeInfoActive}}">
-            <table>
-              <template
-                is="dom-repeat"
-                items="[[selectedNodeAttrs]]"
-                as="state"
-              >
-                <tr>
-                  <th>
-                    <div class="node-info"><span>[[state]]</span></div>
-                  </th>
-                </tr>
-              </template>
-            </table>
-          </template>
-        </paper-card>
+        </div>
+        <template is="dom-if" if="{{nodeInfoActive}}">
+          <table>
+            <template is="dom-repeat" items="[[selectedNodeAttrs]]" as="state">
+              <tr>
+                <th>
+                  <div class="node-info"><span>[[state]]</span></div>
+                </th>
+              </tr>
+            </template>
+          </table>
+        </template>
       </div>
     `;
   }

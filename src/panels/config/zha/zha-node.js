@@ -72,239 +72,127 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
       <!-- Node card -->
       <ha-config-section is-wide="[[isWide]]">
         <div style="position: relative" slot="header">
-          <span>ZHA Node Management</span>
-          <paper-icon-button
-            class="toggle-help-icon"
-            on-click="toggleHelp"
-            icon="hass:help-circle"
-          ></paper-icon-button>
+            <span>ZHA Node Management</span>
+            <paper-icon-button class="toggle-help-icon" on-click="toggleHelp" icon="hass:help-circle"></paper-icon-button>
         </div>
         <span slot="introduction">
-          Run ZHA commands that affect a single node. Pick a node to see a list
-          of available commands. <br /><br />Note: Sleepy (battery powered)
-          devices need to be awake when executing commands against them. You can
-          generally wake a sleepy device by triggering it. <br /><br />Some
-          devices such as Xiaomi sensors have a wake up button that you can
-          press at ~5 second intervals that keep devices awake while you
-          interact with them.
+            Run ZHA commands that affect a single node. Pick a node to see a list
+            of available commands. <br /><br />Note: Sleepy (battery powered)
+            devices need to be awake when executing commands against them. You can
+            generally wake a sleepy device by triggering it. <br /><br />Some
+            devices such as Xiaomi sensors have a wake up button that you can
+            press at ~5 second intervals that keep devices awake while you
+            interact with them.
         </span>
         <paper-card class="content">
-          <div class="device-picker">
-            <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
-              <paper-listbox
-                slot="dropdown-content"
-                selected="{{ selectedNode }}"
-              >
-                <template is="dom-repeat" items="[[nodes]]" as="state">
-                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </div>
-          <template is="dom-if" if="[[!computeIsNodeSelected(selectedNode)]]">
-            <template is="dom-if" if="[[showHelp]]">
-              <div style="color: grey; padding: 12px">
-                Select node to view per-node options
-              </div>
-            </template>
-          </template>
-          <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
-            <!-- Node info card -->
-            <zha-node-information
-              id="zha-node-information"
-              nodes="[[nodes]]"
-              selected-node="[[selectedNode]]"
-            ></zha-node-information>
-            <div class="card-actions">
-              <ha-call-service-button
-                hass="[[hass]]"
-                domain="zha"
-                service="reconfigure_device"
-                service-data="[[computeNodeServiceData(selectedNode)]]"
-                >Reconfigure Node</ha-call-service-button
-              >
-              <ha-service-description
-                hass="[[hass]]"
-                domain="zha"
-                service="reconfigure_device"
-                hidden$="[[!showHelp]]"
-              ></ha-service-description>
-              <ha-call-service-button
-                hass="[[hass]]"
-                domain="zha"
-                service="remove"
-                service-data="[[computeNodeServiceData(selectedNode)]]"
-                >Remove Node</ha-call-service-button
-              >
-              <ha-service-description
-                hass="[[hass]]"
-                domain="zha"
-                service="remove"
-                hidden$="[[!showHelp]]"
-              ></ha-service-description>
-            </div>
             <div class="device-picker">
-              <paper-dropdown-menu
-                label="Entities of this node"
-                dynamic-align=""
-                class="flex"
-              >
-                <paper-listbox
-                  slot="dropdown-content"
-                  selected="{{ selectedEntity }}"
-                >
-                  <template is="dom-repeat" items="[[entities]]" as="state">
-                    <paper-item>[[state.entity_id]]</paper-item>
-                  </template>
-                </paper-listbox>
-              </paper-dropdown-menu>
-            </div>
-            <template
-              is="dom-if"
-              if="[[computeIsEntitySelected(selectedEntity)]]"
-            >
-              <div class="device-picker">
-                <paper-dropdown-menu
-                  label="Clusters of this entity"
-                  dynamic-align=""
-                  class="flex"
-                >
-                  <paper-listbox
-                    slot="dropdown-content"
-                    selected="{{ selectedCluster }}"
-                  >
-                    <template is="dom-repeat" items="[[clusters]]" as="cluster">
-                      <paper-item>[[computeClusterKey(cluster)]]</paper-item>
-                    </template>
-                  </paper-listbox>
+                <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
+                    <paper-listbox slot="dropdown-content" selected="{{ selectedNode }}">
+                        <template is="dom-repeat" items="[[nodes]]" as="state">
+                            <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                        </template>
+                    </paper-listbox>
                 </paper-dropdown-menu>
-              </div>
-            </template>
-            <template
-              is="dom-if"
-              if="[[computeIsClusterSelected(selectedCluster)]]"
-            >
-              <template is="dom-if" if="[[computeNotClusterCommandSelected()]]">
-                <div class="device-picker">
-                  <paper-dropdown-menu
-                    label="Attributes of this cluster"
-                    dynamic-align=""
-                    class="flex"
-                  >
-                    <paper-listbox
-                      slot="dropdown-content"
-                      selected="{{ selectedClusterAttribute }}"
-                    >
-                      <template
-                        is="dom-repeat"
-                        items="[[clusterAttributes]]"
-                        as="clusterAttribute"
-                      >
-                        <paper-item
-                          >[[computeClusterAttributeKey(clusterAttribute)]]</paper-item
-                        >
-                      </template>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
-                </div>
-              </template>
-
-              <template
-                is="dom-if"
-                if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]"
-              >
-                <div class="input-text">
-                  <paper-input
-                    label="Value"
-                    type="string"
-                    value="{{ attributeValue }}"
-                    placeholder="Value"
-                  ></paper-input>
-                </div>
-                <div class="input-text">
-                  <paper-input
-                    label="Manufacturer code override"
-                    type="number"
-                    value="{{ manufacturerCodeOverride }}"
-                    placeholder="Value"
-                  ></paper-input>
-                </div>
-                <template
-                  is="dom-if"
-                  if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]"
-                >
-                  <div class="card-actions">
-                    <ha-progress-button on-click="readZigbeeClusterAttribute"
-                      ><slot></slot>Get Zigbee Attribute</ha-progress-button
-                    >
-                    <ha-call-service-button
-                      hass="[[hass]]"
-                      domain="zha"
-                      service="set_zigbee_cluster_attribute"
-                      service-data="[[computeSetAttributeServiceData(attributeValue)]]"
-                      >Set Zigbee Attribute</ha-call-service-button
-                    >
-                    <ha-service-description
-                      hass="[[hass]]"
-                      domain="zha"
-                      service="set_zigbee_cluster_attribute"
-                      hidden$="[[!showHelp]]"
-                    ></ha-service-description>
-                  </div>
+            </div>
+            <template is="dom-if" if="[[!computeIsNodeSelected(selectedNode)]]">
+                <template is="dom-if" if="[[showHelp]]">
+                    <div style="color: grey; padding: 12px">
+                        Select node to view per-node options
+                    </div>
                 </template>
-              </template>
-
-              <template
-                is="dom-if"
-                if="[[computeNotClusterAttributeSelected()]]"
-              >
-                <div class="device-picker">
-                  <paper-dropdown-menu
-                    label="Commands of this cluster"
-                    dynamic-align=""
-                    class="flex"
-                  >
-                    <paper-listbox
-                      slot="dropdown-content"
-                      selected="{{ selectedClusterCommand }}"
-                    >
-                      <template
-                        is="dom-repeat"
-                        items="[[clusterCommands]]"
-                        as="clusterCommand"
-                      >
-                        <paper-item
-                          >[[computeClusterCommandKey(clusterCommand)]]</paper-item
-                        >
-                      </template>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
+            </template>
+            <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
+                <!-- Node info card -->
+                <zha-node-information id="zha-node-information" nodes="[[nodes]]" selected-node="[[selectedNode]]"></zha-node-information>
+                <div class="card-actions">
+                    <ha-call-service-button hass="[[hass]]" domain="zha" service="reconfigure_device" service-data="[[computeNodeServiceData(selectedNode)]]">Reconfigure
+                        Node</ha-call-service-button>
+                    <ha-service-description hass="[[hass]]" domain="zha" service="reconfigure_device" hidden$="[[!showHelp]]"></ha-service-description>
+                    <ha-call-service-button hass="[[hass]]" domain="zha" service="remove" service-data="[[computeNodeServiceData(selectedNode)]]">Remove
+                        Node</ha-call-service-button>
+                    <ha-service-description hass="[[hass]]" domain="zha" service="remove" hidden$="[[!showHelp]]"></ha-service-description>
                 </div>
-              </template>
-            </template>
-            <template
-              is="dom-if"
-              if="[[computeIsClusterCommandSelected(selectedClusterCommand)]]"
-            >
-              <div class="card-actions">
-                <ha-call-service-button
-                  hass="[[hass]]"
-                  domain="zha"
-                  service="issue_zigbee_cluster_command"
-                  service-data="[[computeClusterCommandServiceData(selectedClusterCommand)]]"
-                  >Issue Zigbee Command</ha-call-service-button
-                >
-                <ha-service-description
-                  hass="[[hass]]"
-                  domain="zha"
-                  service="issue_zigbee_cluster_command"
-                  hidden$="[[!showHelp]]"
-                ></ha-service-description>
-              </div>
-            </template>
-          </template>
+                <div class="device-picker">
+                    <paper-dropdown-menu label="Entities of this node" dynamic-align="" class="flex">
+                        <paper-listbox slot="dropdown-content" selected="{{ selectedEntity }}">
+                            <template is="dom-repeat" items="[[entities]]" as="state">
+                                <paper-item>[[state.entity_id]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
+                <template is="dom-if" if="[[computeIsEntitySelected(selectedEntity)]]">
+                    <div class="device-picker">
+                        <paper-dropdown-menu label="Clusters of this entity" dynamic-align="" class="flex">
+                            <paper-listbox slot="dropdown-content" selected="{{ selectedCluster }}">
+                                <template is="dom-repeat" items="[[clusters]]" as="cluster">
+                                    <paper-item>[[computeClusterKey(cluster)]]</paper-item>
+                                </template>
+                            </paper-listbox>
+                        </paper-dropdown-menu>
+                    </div>
+                </template>
+                <template is="dom-if" if="[[computeIsClusterSelected(selectedCluster)]]">
+
+                    <template is="dom-if" if="[[computeNotClusterCommandSelected()]]">
+                        <paper-card>
+                            <div class="device-picker">
+                                <paper-dropdown-menu label="Attributes of this cluster" dynamic-align="" class="flex">
+                                    <paper-listbox slot="dropdown-content" selected="{{ selectedClusterAttribute }}">
+                                        <template is="dom-repeat" items="[[clusterAttributes]]" as="clusterAttribute">
+                                            <paper-item>[[computeClusterAttributeKey(clusterAttribute)]]</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+
+                            <template is="dom-if" if="[[computeIsClusterAttributeSelected(selectedClusterAttribute)]]">
+                                <div class="input-text">
+                                    <paper-input label="Value" type="string" value="{{ attributeValue }}" placeholder="Value"></paper-input>
+                                </div>
+                                <div class="input-text">
+                                    <paper-input label="Manufacturer code override" type="number" value="{{ manufacturerCodeOverride }}"
+                                        placeholder="Value"></paper-input>
+                                </div>
+                                <div class="card-actions">
+                                    <ha-progress-button on-click="readZigbeeClusterAttribute">
+                                        <slot></slot>Get Zigbee Attribute
+                                    </ha-progress-button>
+                                    <ha-call-service-button hass="[[hass]]" domain="zha" service="set_zigbee_cluster_attribute"
+                                        service-data="[[computeSetAttributeServiceData(attributeValue)]]">Set Zigbee
+                                        Attribute</ha-call-service-button>
+                                    <ha-service-description hass="[[hass]]" domain="zha" service="set_zigbee_cluster_attribute"
+                                        hidden$="[[!showHelp]]"></ha-service-description>
+                                </div>
+                            </template>
+                        </paper-card>
+                    </template>
+                    <template is="dom-if" if="[[computeNotClusterAttributeSelected()]]">
+                        <paper-card>
+                            <div class="device-picker">
+                                <paper-dropdown-menu label="Commands of this cluster" dynamic-align="" class="flex">
+                                    <paper-listbox slot="dropdown-content" selected="{{ selectedClusterCommand }}">
+                                        <template is="dom-repeat" items="[[clusterCommands]]" as="clusterCommand">
+                                            <paper-item>[[computeClusterCommandKey(clusterCommand)]]</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+
+                            <template is="dom-if" if="[[computeIsClusterCommandSelected(selectedClusterCommand)]]">
+                                <div class="card-actions">
+                                    <ha-call-service-button hass="[[hass]]" domain="zha" service="issue_zigbee_cluster_command"
+                                        service-data="[[computeClusterCommandServiceData(selectedClusterCommand)]]">Issue
+                                        Zigbee Command</ha-call-service-button>
+                                    <ha-service-description hass="[[hass]]" domain="zha" service="issue_zigbee_cluster_command"
+                                        hidden$="[[!showHelp]]"></ha-service-description>
+                                </div>
+                            </template>
+                        </paper-card>
+                    </template>
+                </template>
         </paper-card>
-      </ha-config-section>
+    </ha-config-section>
     `;
   }
 
