@@ -43,6 +43,8 @@ export interface EditorTarget extends EventTarget {
   configValue?: string;
   type?: InputType;
   config: ActionConfig;
+  key?: string;
+  val?: string;
 }
 
 export interface CardPickTarget extends EventTarget {

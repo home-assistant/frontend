@@ -20,16 +20,16 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import { longPress } from "../common/directives/long-press-directive";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   image?: string;
   camera_image?: string;
-  state_image?: {};
+  state_image?: { [key: string]: string };
   aspect_ratio?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
