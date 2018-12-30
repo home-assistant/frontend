@@ -8,7 +8,7 @@ class ZhaNodeInformation extends PolymerElement {
     return html`
       <style include="iron-flex ha-style">
         .node-info-header {
-          @apply (--paper-font-headline);
+          @apply --paper-font-headline;
           padding-left: 24px;
         }
 
