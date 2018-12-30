@@ -184,7 +184,6 @@ export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
     if (this[`_${target.configValue}`] === target.config) {
       return;
     }
-    console.log("value-changed {} {}", target.configValue, target.value);
     if (
       target.configValue === "image" ||
       target.configValue === "camera_image" ||
@@ -200,7 +199,12 @@ export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value ? target.value : target.config,
+          [target.configValue!]:
+            target.checked !== undefined
+              ? target.checked
+              : target.value
+              ? target.value
+              : target.config,
         };
       }
     }

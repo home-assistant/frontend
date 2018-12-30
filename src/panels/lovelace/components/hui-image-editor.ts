@@ -251,9 +251,7 @@ export class HuiImageEditor extends LitElement {
 
   private _typeChanged(ev: Event): void {
     const target = ev.target! as EditorTarget;
-    console.log("type-changed");
     if (!this.hass || this.configValue === target.value) {
-      console.log("returned");
       return;
     }
     this.configValue = target.value;
