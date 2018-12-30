@@ -8,6 +8,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/buttons/ha-call-ws-api-button";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-service-description";
 import "../../../layouts/ha-app-layout";
@@ -155,9 +156,9 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                                         placeholder="Value"></paper-input>
                                 </div>
                                 <div class="card-actions">
-                                    <ha-progress-button on-click="readZigbeeClusterAttribute">
+                                    <ha-call-ws-api-button hass="[[hass]]" type="zha/entities/clusters/attributes/value" data="[[computeReadAttributeServiceData()]]"
                                         <slot></slot>Get Zigbee Attribute
-                                    </ha-progress-button>
+                                    </ha-call-ws-api-button>
                                     <ha-call-service-button hass="[[hass]]" domain="zha" service="set_zigbee_cluster_attribute"
                                         service-data="[[computeSetAttributeServiceData(attributeValue)]]">Set Zigbee
                                         Attribute</ha-call-service-button>
@@ -297,9 +298,18 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
+    this.addEventListener("hass-ws-api-called", (ev) => this.serviceCalled(ev));
   }
 
-  serviceCalled(ev) {}
+  serviceCalled(ev) {
+    if (
+      ev.detail &&
+      ev.detail.success &&
+      ev.detail.wsType === "zha/entities/clusters/attributes/value"
+    ) {
+      this.setProperties({ attributeValue: ev.detail.response });
+    }
+  }
 
   computeNodes(hass) {
     return Object.keys(hass.states)
@@ -404,7 +414,6 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
         this.manufacturerCodeOverride != null
           ? parseInt(this.manufacturerCodeOverride)
           : this.nodes[this.selectedNode].attributes.manufacturer_code,
-      type: "zha/entities/clusters/attributes/value",
     };
   }
 
@@ -420,12 +429,6 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
           ? parseInt(this.manufacturerCodeOverride)
           : this.nodes[this.selectedNode].attributes.manufacturer_code,
     };
-  }
-
-  readZigbeeClusterAttribute() {
-    this.hass.callWS(this.computeReadAttributeServiceData()).then((value) => {
-      this.setProperties({ attributeValue: value });
-    });
   }
 
   selectedEntityChanged(selectedEntity) {
