@@ -15,17 +15,17 @@ import "../../../layouts/ha-app-layout";
 import "../../../resources/ha-style";
 
 import "../ha-config-section";
-import "./zha-node-information";
 
 import sortByName from "../../../common/entity/states_sort_by_name";
 import computeStateName from "../../../common/entity/compute_state_name";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
+import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
  */
-class ZhaNode extends LocalizeMixin(PolymerElement) {
+class ZhaNode extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="iron-flex ha-style ha-form-style">
@@ -103,9 +103,10 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                 </template>
             </template>
             <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
-                <!-- Node info card -->
-                <zha-node-information id="zha-node-information" nodes="[[nodes]]" selected-node="[[selectedNode]]"></zha-node-information>
                 <div class="card-actions">
+                    <paper-button on-click="_nodeMoreInfo"
+                      >Node Information</paper-button
+                    >
                     <ha-call-service-button hass="[[hass]]" domain="zha" service="reconfigure_device" service-data="[[computeNodeServiceData(selectedNode)]]">Reconfigure
                         Node</ha-call-service-button>
                     <ha-service-description hass="[[hass]]" domain="zha" service="reconfigure_device" hidden$="[[!showHelp]]"></ha-service-description>
@@ -123,6 +124,11 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
                     </paper-dropdown-menu>
                 </div>
                 <template is="dom-if" if="[[computeIsEntitySelected(selectedEntity)]]">
+                    <div class="card-actions">
+                      <paper-button on-click="_entityMoreInfo"
+                        >Entity Information</paper-button
+                      >
+                    </div>
                     <div class="device-picker">
                         <paper-dropdown-menu label="Clusters of this entity" dynamic-align="" class="flex">
                             <paper-listbox slot="dropdown-content" selected="{{ selectedCluster }}">
@@ -498,6 +504,18 @@ class ZhaNode extends LocalizeMixin(PolymerElement) {
     const ieee = this.nodes[this.selectedNode].attributes.ieee;
     this.hass.callWS({ type: "zha/entities" }).then((entities) => {
       this.setProperties({ entities: entities[ieee] });
+    });
+  }
+
+  _nodeMoreInfo() {
+    this.fire("hass-more-info", {
+      entityId: this.nodes[this.selectedNode].entity_id,
+    });
+  }
+
+  _entityMoreInfo() {
+    this.fire("hass-more-info", {
+      entityId: this.entities[this.selectedEntity].entity_id,
     });
   }
 
