@@ -81,8 +81,15 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
     this.$.target_temperature.classList.toggle("in-flux", inFlux);
   }
 
+  _round(val) {
+    // round value to precision derived from step
+    // insired by https://github.com/soundar24/roundSlider/blob/master/src/roundslider.js
+    const s = this.step.toString().split(".");
+    return s[1] ? parseFloat(val.toFixed(s[1].length)) : Math.round(val);
+  }
+
   incrementValue() {
-    const newval = this.value + this.step;
+    const newval = this._round(this.value + this.step);
     if (this.value < this.max) {
       this.last_changed = Date.now();
       this.temperatureStateInFlux(true);
@@ -102,7 +109,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
   }
 
   decrementValue() {
-    const newval = this.value - this.step;
+    const newval = this._round(this.value - this.step);
     if (this.value > this.min) {
       this.last_changed = Date.now();
       this.temperatureStateInFlux(true);
