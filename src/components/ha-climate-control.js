@@ -84,7 +84,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
   _round(val) {
     // round value to precision derived from step
     // insired by https://github.com/soundar24/roundSlider/blob/master/src/roundslider.js
-    var s = this.step.toString().split(".");
+    const s = this.step.toString().split(".");
     return s[1] ? parseFloat(val.toFixed(s[1].length)) : Math.round(val);
   }
 
