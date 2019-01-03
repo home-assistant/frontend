@@ -7,6 +7,9 @@ import {
 import { classMap } from "lit-html/directives/classMap";
 import { TemplateResult } from "lit-html";
 
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 
@@ -15,15 +18,12 @@ import { HomeAssistant, ClimateEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { afterNextRender } from "../../../common/util/render-status";
+import { UNIT_F } from "../../../common/const";
 
 const thermostatConfig = {
   radius: 150,
-  step: 1,
   circleShape: "pie",
   startAngle: 315,
   width: 5,
@@ -53,6 +53,14 @@ export interface Config extends LovelaceCardConfig {
 
 function formatTemp(temps: string[]): string {
   return temps.filter(Boolean).join("-");
+}
+
+function computeTemperatureStepSize(hass: HomeAssistant, config: Config) {
+  const stateObj = hass.states[config.entity];
+  if (stateObj.attributes.target_temp_step) {
+    return stateObj.attributes.target_temp_step;
+  }
+  return hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5;
 }
 
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
@@ -197,6 +205,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         : "min-range";
 
     const [sliderValue, uiValue] = this._genSliderValue(stateObj);
+    const step = computeTemperatureStepSize(this.hass!, this._config!);
     this._broadCard = this.clientWidth > 390;
     this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
@@ -207,6 +216,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
       value: sliderValue,
+      step,
     });
     this._updateSetTemp(uiValue);
   }
