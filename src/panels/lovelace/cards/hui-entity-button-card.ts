@@ -17,12 +17,12 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   icon?: string;
@@ -33,6 +33,18 @@ interface Config extends LovelaceCardConfig {
 
 class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(/* webpackChunkName: "hui-entity-button-card-editor" */ "../editor/config-elements/hui-entity-button-card-editor");
+    return document.createElement("hui-entity-button-card-editor");
+  }
+
+  public static getStubConfig(): object {
+    return {
+      tap_action: { action: "more-info" },
+      hold_action: { action: "none" },
+    };
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
 
