@@ -3,6 +3,7 @@ import { TemplateResult } from "lit-html";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { HomeAssistant } from "../../../types";
 
 import "../../../layouts/ha-app-layout";

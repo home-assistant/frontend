@@ -3,11 +3,13 @@ import { TemplateResult } from "lit-html";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-card/paper-card";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import "../ha-config-section";
 
 import { HomeAssistant } from "../../../types";
+import "../../../resources/ha-style";
 
 export class ZHANetwork extends LitElement {
   public hass?: HomeAssistant;
