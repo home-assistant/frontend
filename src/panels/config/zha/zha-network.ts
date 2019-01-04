@@ -12,19 +12,20 @@ import { HomeAssistant } from "../../../types";
 export class ZHANetwork extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
-  private _showDescription: boolean;
+  public showDescription: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
 
   constructor() {
     super();
-    this._showDescription = false;
+    this.showDescription = false;
   }
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
+      showDescription: {},
     };
   }
 
@@ -45,17 +46,24 @@ export class ZHANetwork extends LitElement {
             <ha-call-service-button .hass="${
               this.hass
             }" domain="zha" service="permit">Permit</ha-call-service-button>
-            <ha-service-description .hass="${
-              this.hass
-            }" domain="zha" service="permit" hidden="${!this
-      ._showDescription}"></ha-service-description>
+            ${
+              this.showDescription
+                ? html`
+                    <ha-service-description
+                      .hass="${this.hass}"
+                      domain="zha"
+                      service="permit"
+                    />
+                  `
+                : ""
+            }
         </paper-card>
       </ha-config-section>
     `;
   }
 
   private _onHelpTap() {
-    this._showDescription = !this._showDescription;
+    this.showDescription = !this.showDescription;
   }
 
   private renderStyle(): TemplateResult {
@@ -75,7 +83,7 @@ export class ZHANetwork extends LitElement {
     }
     return html`
       ${this._ironFlex} ${this._haStyle}
-      <style include="iron-flex ha-style">
+      <style>
         .content {
           margin-top: 24px;
         }
