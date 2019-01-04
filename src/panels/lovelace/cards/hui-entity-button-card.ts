@@ -148,6 +148,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
           height: 40%;
           color: var(--paper-item-icon-color, #44739e);
         }
+        ha-icon[data-domain="group"][data-state="on"],
         ha-icon[data-domain="light"][data-state="on"],
         ha-icon[data-domain="switch"][data-state="on"],
         ha-icon[data-domain="binary_sensor"][data-state="on"],

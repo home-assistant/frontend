@@ -26,6 +26,7 @@ class StateBadge extends PolymerElement {
         }
 
         /* Color the icon if light or sun is on */
+        ha-icon[data-domain="group"][data-state="on"],
         ha-icon[data-domain="light"][data-state="on"],
         ha-icon[data-domain="switch"][data-state="on"],
         ha-icon[data-domain="binary_sensor"][data-state="on"],
