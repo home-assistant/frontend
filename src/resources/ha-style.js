@@ -188,17 +188,10 @@ documentContainer.innerHTML = `<custom-style>
         color: var(--primary-color);
         font-weight: 500;
       }
-      .card-actions ha-call-ws-api-button:not([disabled]) {
-        color: var(--primary-color);
-        font-weight: 500;
-      }
 
       .card-actions paper-button.warning:not([disabled]),
       .card-actions ha-call-api-button.warning:not([disabled]),
       .card-actions ha-call-service-button.warning:not([disabled]) {
-        color: var(--google-red-500);
-      }
-      .card-actions ha-call-ws-api-button.warning:not([disabled]) {
         color: var(--google-red-500);
       }
 
