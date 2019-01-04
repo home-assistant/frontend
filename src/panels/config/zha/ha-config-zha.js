@@ -10,9 +10,6 @@ import "../../../resources/ha-style";
 import "./zha-network";
 import "./zha-node";
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaConfigZha extends PolymerElement {
   static get template() {
     return html`
@@ -68,7 +65,6 @@ class HaConfigZha extends PolymerElement {
           is-wide="[[isWide]]"
           hass="[[hass]]"
         ></zha-network>
-        <zha-node id="zha-node" is-wide="[[isWide]]" hass="[[hass]]"></zha-node>
       </ha-app-layout>
     `;
   }
