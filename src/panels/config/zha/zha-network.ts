@@ -12,11 +12,13 @@ import { HomeAssistant } from "../../../types";
 export class ZHANetwork extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
-  private showDescription: boolean;
+  private _showDescription: boolean;
+  private _haStyle?: DocumentFragment;
+  private _ironFlex?: DocumentFragment;
 
   constructor() {
     super();
-    this.showDescription = false;
+    this._showDescription = false;
   }
 
   static get properties(): PropertyDeclarations {
@@ -46,18 +48,33 @@ export class ZHANetwork extends LitElement {
             <ha-service-description .hass="${
               this.hass
             }" domain="zha" service="permit" hidden="${!this
-      .showDescription}"></ha-service-description>
+      ._showDescription}"></ha-service-description>
         </paper-card>
       </ha-config-section>
     `;
   }
 
   private _onHelpTap() {
-    this.showDescription = !this.showDescription;
+    this._showDescription = !this._showDescription;
   }
 
   private renderStyle(): TemplateResult {
+    if (!this._haStyle) {
+      this._haStyle = document.importNode(
+        (document.getElementById("ha-style")!
+          .children[0] as HTMLTemplateElement).content,
+        true
+      );
+    }
+    if (!this._ironFlex) {
+      this._ironFlex = document.importNode(
+        (document.getElementById("iron-flex")!
+          .children[0] as HTMLTemplateElement).content,
+        true
+      );
+    }
     return html`
+      ${this._ironFlex} ${this._haStyle}
       <style include="iron-flex ha-style">
         .content {
           margin-top: 24px;
