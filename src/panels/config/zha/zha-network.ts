@@ -64,7 +64,7 @@ export class ZHANetwork extends LitElement {
     `;
   }
 
-  private _onHelpTap() {
+  private _onHelpTap(): void {
     this.showDescription = !this.showDescription;
   }
 

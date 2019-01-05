@@ -66,7 +66,7 @@ export class HaConfigZha extends LitElement {
     `;
   }
 
-  private _onBackTapped() {
+  private _onBackTapped(): void {
     history.back();
   }
 }
