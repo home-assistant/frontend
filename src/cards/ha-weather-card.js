@@ -182,7 +182,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 <div>
                   [[localize('ui.card.weather.attributes.wind_speed')]]:
                   <div class="unit">
-                    [[getWindSpeed(stateObj.attributes.wind_speed, localize)]]
+                    [[getWindSpeed(stateObj.attributes.wind_speed)]]
                   </div>
                   [[getWindBearing(stateObj.attributes.wind_bearing, localize)]]
                 </div>
@@ -335,7 +335,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return degree;
   }
 
-  getWindSpeed(speed, localize) {
+  getWindSpeed(speed) {
     return `${speed} ${this.getUnit("length")}/h`;
   }
 
