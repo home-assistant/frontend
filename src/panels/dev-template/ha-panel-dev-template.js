@@ -24,6 +24,7 @@ class HaPanelDevTemplate extends PolymerElement {
 
         .content {
           padding: 16px;
+          direction: ltr;
         }
 
         .edit-pane {

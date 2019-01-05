@@ -35,6 +35,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       .content {
         padding: 16px 0px 16px 0;
+        direction: ltr;
       }
 
       .about {
