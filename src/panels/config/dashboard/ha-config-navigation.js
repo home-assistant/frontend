@@ -50,7 +50,7 @@ class HaConfigNavigation extends LocalizeMixin(NavigateMixin(PolymerElement)) {
 
       pages: {
         type: Array,
-        value: ["core", "customize", "automation", "script", "zwave"],
+        value: ["core", "customize", "automation", "script", "zha", "zwave"],
       },
     };
   }
