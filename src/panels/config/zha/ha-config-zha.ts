@@ -10,6 +10,7 @@ import "../../../layouts/ha-app-layout";
 import "../../../resources/ha-style";
 
 import "./zha-network";
+import "./zha-node";
 
 export class HaConfigZha extends LitElement {
   public hass?: HomeAssistant;
@@ -42,6 +43,12 @@ export class HaConfigZha extends LitElement {
           .is-wide="${this.isWide}"
           .hass="${this.hass}"
         ></zha-network>
+
+        <zha-node
+          id="zha-network"
+          .is-wide="${this.isWide}"
+          .hass="${this.hass}"
+        ></zha-node>
       </ha-app-layout>
     `;
   }
