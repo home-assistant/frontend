@@ -35,6 +35,7 @@
     "updater": "Updater",
     "vacuum": "Vacuum",
     "weblink": "Weblink",
+    "zha": "ZHA",
     "zwave": "Z-Wave"
   },
   "panel": {
@@ -763,6 +764,10 @@
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user"
           }
+        },
+        "zha": {
+          "caption": "ZHA",
+          "description": "Zigbee Home Automation network management"
         },
         "zwave": {
           "caption": "Z-Wave",
