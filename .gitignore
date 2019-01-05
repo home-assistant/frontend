@@ -28,3 +28,5 @@ dist
 # Secrets
 .lokalise_token
 yarn-error.log
+
+yarn.lock
