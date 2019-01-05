@@ -23,7 +23,9 @@ export class ZhaNode extends LitElement {
   public isWide?: boolean;
   public showDescription: boolean;
   public selectedNode: number;
+  public selectedEntity: number;
   public serviceData?: {};
+  public entities: HassEntity[];
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
   private _nodes: HassEntity[];
@@ -33,6 +35,8 @@ export class ZhaNode extends LitElement {
     this.showDescription = false;
     this.selectedNode = -1;
     this._nodes = [];
+    this.selectedEntity = -1;
+    this.entities = [];
   }
 
   static get properties(): PropertyDeclarations {
@@ -42,6 +46,8 @@ export class ZhaNode extends LitElement {
       showDescription: {},
       selectedNode: {},
       serviceData: {},
+      selectedEntity: {},
+      entities: {},
     };
   }
 
@@ -79,6 +85,8 @@ export class ZhaNode extends LitElement {
               : ""
           }
           ${this.selectedNode !== -1 ? this._renderNodeActions() : ""}
+          ${this.selectedNode !== -1 ? this._renderEntityPicker() : ""}
+          ${this.selectedEntity !== -1 ? this._renderEntityActions() : ""}
         </paper-card>
       </ha-config-section>
     `;
@@ -151,18 +159,62 @@ export class ZhaNode extends LitElement {
     `;
   }
 
+  private _renderEntityPicker(): TemplateResult {
+    return html`
+      <div class="node-picker">
+        <paper-dropdown-menu dynamic-align="" label="Entities" class="flex">
+          <paper-listbox
+            slot="dropdown-content"
+            @iron-select="${this._selectedEntityChanged}"
+          >
+            ${
+              this.entities.map(
+                (entry) => html`
+                  <paper-item>${entry.entity_id}</paper-item>
+                `
+              )
+            }
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
+    `;
+  }
+
+  private _renderEntityActions(): TemplateResult {
+    return html`
+      <div class="card-actions">
+        <paper-button @click="${this._showEntityInformation}"
+          >Entity Information</paper-button
+        >
+      </div>
+    `;
+  }
+
   private _onHelpTap(): void {
     this.showDescription = !this.showDescription;
   }
 
-  private _selectedNodeChanged(event: NodeSelectedEvent) {
+  private async _selectedNodeChanged(event: NodeSelectedEvent) {
     this.selectedNode = event!.target!.selected;
     this.serviceData = this._computeNodeServiceData();
+    const fetchedEntities = await this.hass!.callWS({ type: "zha/entities" });
+    this.entities =
+      fetchedEntities[this._nodes[this.selectedNode].attributes.ieee];
+  }
+
+  private _selectedEntityChanged(event: NodeSelectedEvent): void {
+    this.selectedEntity = event!.target!.selected;
   }
 
   private _showNodeInformation(): void {
     fireEvent(this, "hass-more-info", {
       entityId: this._nodes[this.selectedNode].entity_id,
+    });
+  }
+
+  private _showEntityInformation(): void {
+    fireEvent(this, "hass-more-info", {
+      entityId: this.entities[this.selectedEntity].entity_id,
     });
   }
 

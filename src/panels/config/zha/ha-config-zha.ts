@@ -46,7 +46,7 @@ export class HaConfigZha extends LitElement {
         ></zha-network>
 
         <zha-node
-          id="zha-network"
+          id="zha-node"
           .isWide="${this.isWide}"
           .hass="${this.hass}"
         ></zha-node>
