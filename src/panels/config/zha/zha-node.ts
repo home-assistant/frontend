@@ -18,14 +18,15 @@ import sortByName from "../../../common/entity/states_sort_by_name";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { NodeSelectedEvent } from "./types";
 
+import "./zha-entities";
+
 export class ZhaNode extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public showDescription: boolean;
-  public selectedNode: number;
-  public selectedEntity: number;
+  public selectedNodeIndex: number;
+  public selectedNode?: HassEntity;
   public serviceData?: {};
-  public entities: HassEntity[];
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
   private _nodes: HassEntity[];
@@ -33,10 +34,8 @@ export class ZhaNode extends LitElement {
   constructor() {
     super();
     this.showDescription = false;
-    this.selectedNode = -1;
+    this.selectedNodeIndex = -1;
     this._nodes = [];
-    this.selectedEntity = -1;
-    this.entities = [];
   }
 
   static get properties(): PropertyDeclarations {
@@ -44,10 +43,9 @@ export class ZhaNode extends LitElement {
       hass: {},
       isWide: {},
       showDescription: {},
+      selectedNodeIndex: {},
       selectedNode: {},
       serviceData: {},
-      selectedEntity: {},
-      entities: {},
     };
   }
 
@@ -78,15 +76,14 @@ export class ZhaNode extends LitElement {
           ${
             this.showDescription
               ? html`
-                  <div style="color: grey; padding: 12px">
+                  <div style="color: grey; padding: 16px">
                     Select node to view per-node options
                   </div>
                 `
               : ""
           }
-          ${this.selectedNode !== -1 ? this._renderNodeActions() : ""}
-          ${this.selectedNode !== -1 ? this._renderEntityPicker() : ""}
-          ${this.selectedEntity !== -1 ? this._renderEntityActions() : ""}
+          ${this.selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
+          ${this.selectedNodeIndex !== -1 ? this._renderEntities() : ""}
         </paper-card>
       </ha-config-section>
     `;
@@ -159,34 +156,13 @@ export class ZhaNode extends LitElement {
     `;
   }
 
-  private _renderEntityPicker(): TemplateResult {
+  private _renderEntities(): TemplateResult {
     return html`
-      <div class="node-picker">
-        <paper-dropdown-menu dynamic-align="" label="Entities" class="flex">
-          <paper-listbox
-            slot="dropdown-content"
-            @iron-select="${this._selectedEntityChanged}"
-          >
-            ${
-              this.entities.map(
-                (entry) => html`
-                  <paper-item>${entry.entity_id}</paper-item>
-                `
-              )
-            }
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-    `;
-  }
-
-  private _renderEntityActions(): TemplateResult {
-    return html`
-      <div class="card-actions">
-        <paper-button @click="${this._showEntityInformation}"
-          >Entity Information</paper-button
-        >
-      </div>
+      <zha-entities
+        .hass="${this.hass}"
+        .selectedNode="${this.selectedNode}"
+        .showDescription="${this.showDescription}"
+      ></zha-entities>
     `;
   }
 
@@ -194,32 +170,22 @@ export class ZhaNode extends LitElement {
     this.showDescription = !this.showDescription;
   }
 
-  private async _selectedNodeChanged(event: NodeSelectedEvent) {
-    this.selectedNode = event!.target!.selected;
+  private _selectedNodeChanged(event: NodeSelectedEvent) {
+    this.selectedNodeIndex = event!.target!.selected;
+    this.selectedNode = this._nodes[this.selectedNodeIndex];
     this.serviceData = this._computeNodeServiceData();
-    const fetchedEntities = await this.hass!.callWS({ type: "zha/entities" });
-    this.entities =
-      fetchedEntities[this._nodes[this.selectedNode].attributes.ieee];
-  }
-
-  private _selectedEntityChanged(event: NodeSelectedEvent): void {
-    this.selectedEntity = event!.target!.selected;
   }
 
   private _showNodeInformation(): void {
     fireEvent(this, "hass-more-info", {
-      entityId: this._nodes[this.selectedNode].entity_id,
-    });
-  }
-
-  private _showEntityInformation(): void {
-    fireEvent(this, "hass-more-info", {
-      entityId: this.entities[this.selectedEntity].entity_id,
+      entityId: this.selectedNode!.entity_id,
     });
   }
 
   private _computeNodeServiceData() {
-    return { ieee_address: this._nodes[this.selectedNode].attributes.ieee };
+    return {
+      ieee_address: this.selectedNode!.attributes.ieee,
+    };
   }
 
   private _computeSelectCaption(stateObj: HassEntity): string {
@@ -266,8 +232,8 @@ export class ZhaNode extends LitElement {
         }
 
         .help-text {
-          padding-left: 24px;
-          padding-right: 24px;
+          padding-left: 28px;
+          padding-right: 28px;
         }
 
         paper-card {
@@ -279,9 +245,9 @@ export class ZhaNode extends LitElement {
         .node-picker {
           @apply --layout-horizontal;
           @apply --layout-center-center;
-          padding-left: 24px;
-          padding-right: 24px;
-          padding-bottom: 24px;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 10px;
         }
 
         ha-service-description {
