@@ -34,9 +34,9 @@ export class ZHANetwork extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.renderStyle()}
-      <ha-config-section .is-wide="${this.isWide}">
+      <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
-            <span>Zigbee Home Automation network management</span>
+            <span>Network Management</span>
             <paper-icon-button class="toggle-help-icon" @click="${
               this._onHelpTap
             }" icon="hass:help-circle"></paper-icon-button>

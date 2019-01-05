@@ -35,18 +35,19 @@ export class HaConfigZha extends LitElement {
               icon="hass:arrow-left"
               @click="${this._onBackTapped}"
             ></paper-icon-button>
+            <div main-title="">Zigbee Home Automation</div>
           </app-toolbar>
         </app-header>
 
         <zha-network
           id="zha-network"
-          .is-wide="${this.isWide}"
+          .isWide="${this.isWide}"
           .hass="${this.hass}"
         ></zha-network>
 
         <zha-node
           id="zha-network"
-          .is-wide="${this.isWide}"
+          .isWide="${this.isWide}"
           .hass="${this.hass}"
         ></zha-node>
       </ha-app-layout>

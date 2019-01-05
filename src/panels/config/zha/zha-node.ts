@@ -8,22 +8,22 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
+import "../../../resources/ha-style";
 import "../ha-config-section";
 
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
-import "../../../resources/ha-style";
-
 import computeStateName from "../../../common/entity/compute_state_name";
 import sortByName from "../../../common/entity/states_sort_by_name";
-
 import { fireEvent } from "../../../common/dom/fire_event";
+import { NodeSelectedEvent } from "./types";
 
 export class ZhaNode extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public showDescription: boolean;
   public selectedNode: number;
+  public serviceData?: {};
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
   private _nodes: HassEntity[];
@@ -41,16 +41,17 @@ export class ZhaNode extends LitElement {
       isWide: {},
       showDescription: {},
       selectedNode: {},
+      serviceData: {},
     };
   }
 
   protected render(): TemplateResult {
-    this._computeNodes(this.hass);
+    this._nodes = this._computeNodes(this.hass);
     return html`
       ${this.renderStyle()}
-      <ha-config-section .is-wide="${this.isWide}">
+      <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
-          <span>ZHA Node Management</span>
+          <span>Node Management</span>
           <paper-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
@@ -67,24 +68,7 @@ export class ZhaNode extends LitElement {
           interact with them.
         </span>
         <paper-card class="content">
-          <div class="device-picker">
-            <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
-              <paper-listbox
-                slot="dropdown-content"
-                @iron-select="${this._selectedNodeChanged}"
-              >
-                ${
-                  this._nodes.map(
-                    (entry) => html`
-                      <paper-item
-                        >${this._computeSelectCaption(entry)}</paper-item
-                      >
-                    `
-                  )
-                }
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </div>
+          ${this._renderNodePicker()}
           ${
             this.showDescription
               ? html`
@@ -94,54 +78,76 @@ export class ZhaNode extends LitElement {
                 `
               : ""
           }
-          ${
-            this._isNodeSelected()
-              ? html`
-                    <div class="card-actions">
-                      <paper-button @click="${this._showNodeInformation}"
-                        >Node Information</paper-button
-                        <ha-call-service-button
-                        .hass="${this.hass}"
-                        domain="zha"
-                        service="reconfigure_device"
-                        .service-data="${this._computeNodeServiceData}"
-                        >Reconfigure Node</ha-call-service-button
-                      >
-                ${
-                  this.showDescription
-                    ? html`
-                        <ha-service-description
-                          .hass="${this.hass}"
-                          domain="zha"
-                          service="reconfigure_device"
-                        />
-                      `
-                    : ""
-                }
-                <ha-call-service-button
-                .hass="${this.hass}"
-                domain="zha"
-                service="remove"
-                .service-data="${this._computeNodeServiceData}"
-                >Remove Node</ha-call-service-button
-                >
-                ${
-                  this.showDescription
-                    ? html`
-                        <ha-service-description
-                          .hass="${this.hass}"
-                          domain="zha"
-                          service="remove"
-                        />
-                      `
-                    : ""
-                }
-            </div>
-            `
-              : ""
-          }
+          ${this.selectedNode !== -1 ? this._renderNodeActions() : ""}
         </paper-card>
       </ha-config-section>
+    `;
+  }
+
+  private _renderNodePicker(): TemplateResult {
+    return html`
+      <div class="node-picker">
+        <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
+          <paper-listbox
+            slot="dropdown-content"
+            @iron-select="${this._selectedNodeChanged}"
+          >
+            ${
+              this._nodes.map(
+                (entry) => html`
+                  <paper-item>${this._computeSelectCaption(entry)}</paper-item>
+                `
+              )
+            }
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
+    `;
+  }
+
+  private _renderNodeActions(): TemplateResult {
+    return html`
+      <div class="card-actions">
+        <paper-button @click="${this._showNodeInformation}"
+          >Node Information</paper-button
+        >
+        <ha-call-service-button
+          .hass="${this.hass}"
+          domain="zha"
+          service="reconfigure_device"
+          .serviceData="${this.serviceData}"
+          >Reconfigure Node</ha-call-service-button
+        >
+        ${
+          this.showDescription
+            ? html`
+                <ha-service-description
+                  .hass="${this.hass}"
+                  domain="zha"
+                  service="reconfigure_device"
+                />
+              `
+            : ""
+        }
+        <ha-call-service-button
+          .hass="${this.hass}"
+          domain="zha"
+          service="remove"
+          .serviceData="${this.serviceData}"
+          >Remove Node</ha-call-service-button
+        >
+        ${
+          this.showDescription
+            ? html`
+                <ha-service-description
+                  .hass="${this.hass}"
+                  domain="zha"
+                  service="remove"
+                />
+              `
+            : ""
+        }
+      </div>
     `;
   }
 
@@ -149,11 +155,9 @@ export class ZhaNode extends LitElement {
     this.showDescription = !this.showDescription;
   }
 
-  private _selectedNodeChanged(event: Event) {
-    console.dir(event);
-  }
-  private _isNodeSelected(): boolean {
-    return this.selectedNode !== -1;
+  private _selectedNodeChanged(event: NodeSelectedEvent) {
+    this.selectedNode = event!.target!.selected;
+    this.serviceData = this._computeNodeServiceData();
   }
 
   private _showNodeInformation(): void {
@@ -172,14 +176,14 @@ export class ZhaNode extends LitElement {
     );
   }
 
-  private _computeNodes(hass?: HomeAssistant): void {
+  private _computeNodes(hass?: HomeAssistant): HassEntity[] {
     if (hass) {
-      this._nodes = Object.keys(hass.states)
+      return Object.keys(hass.states)
         .map((key) => hass.states[key])
         .filter((ent) => ent.entity_id.match("zha[.]"))
         .sort(sortByName);
     } else {
-      this._nodes = [];
+      return [];
     }
   }
 
@@ -220,7 +224,7 @@ export class ZhaNode extends LitElement {
           max-width: 600px;
         }
 
-        .device-picker {
+        .node-picker {
           @apply --layout-horizontal;
           @apply --layout-center-center;
           padding-left: 24px;
