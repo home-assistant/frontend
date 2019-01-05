@@ -50,7 +50,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         :host([rtl]) .name {
-                margin-left: 0px;
+          margin-left: 0px;
           margin-right: 16px;
         }
 
@@ -68,7 +68,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         :host([rtl]) .main {
-                margin-right: 0px;
+          margin-right: 0px;
         }
 
         .main ha-icon {
@@ -78,7 +78,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         :host([rtl]) .main ha-icon {
-                margin-right: 0px;
+          margin-right: 0px;
         }
 
         .main .temp {
@@ -88,8 +88,8 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         :host([rtl]) .main .temp {
-                direction: ltr;
-                margin-right: 28px;
+          direction: ltr;
+          margin-right: 28px;
         }
 
         .main .temp span {
@@ -104,7 +104,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         :host([rtl]) .unit {
-                direction: ltr;
+          direction: ltr;
         }
 
         .forecast {
@@ -124,7 +124,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         :host([rtl]) .forecast .temp {
-                direction: ltr;
+          direction: ltr;
         }
 
         .weekday {
