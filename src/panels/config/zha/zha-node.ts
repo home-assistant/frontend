@@ -21,6 +21,15 @@ import { ItemSelectedEvent } from "./types";
 import "./zha-entities";
 import "./zha-clusters";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "zha-node-selected": {
+      node?: HassEntity;
+    };
+  }
+}
+
 export class ZhaNode extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
@@ -188,6 +197,8 @@ export class ZhaNode extends LitElement {
   private _selectedNodeChanged(event: ItemSelectedEvent) {
     this.selectedNodeIndex = event!.target!.selected;
     this.selectedNode = this._nodes[this.selectedNodeIndex];
+    this.selectedEntity = undefined;
+    fireEvent(this, "zha-node-selected", { node: this.selectedNode });
     this.serviceData = this._computeNodeServiceData();
   }
 

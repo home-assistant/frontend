@@ -15,13 +15,22 @@ import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
 import { HassEntity } from "home-assistant-js-websocket";
 import { ItemSelectedEvent, Cluster } from "./types";
+import { fireEvent } from "../../../common/dom/fire_event";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "zha-cluster-selected": {
+      cluster?: Cluster;
+    };
+  }
+}
 
 export class ZHAClusters extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public showHelp: boolean;
   public selectedEntity?: HassEntity;
-  public selectedCluster?: Cluster;
   public selectedClusterIndex: number;
   private _clusters: Cluster[];
   private _haStyle?: DocumentFragment;
@@ -40,13 +49,18 @@ export class ZHAClusters extends LitElement {
       isWide: {},
       showHelp: {},
       selectedEntity: {},
-      selectedCluster: {},
       selectedClusterIndex: {},
+      _clusters: {},
     };
   }
 
   protected update(changedProperties: PropertyValues) {
     if (changedProperties.has("selectedEntity")) {
+      this._clusters = [];
+      this.selectedClusterIndex = -1;
+      fireEvent(this, "zha-cluster-selected", {
+        cluster: undefined,
+      });
       this._fetchClustersForZhaNode();
     }
     super.update(changedProperties);
@@ -64,6 +78,7 @@ export class ZHAClusters extends LitElement {
         <paper-dropdown-menu dynamic-align="" label="Clusters" class="flex">
           <paper-listbox
             slot="dropdown-content"
+            .selected="${this.selectedClusterIndex}"
             @iron-select="${this._selectedClusterChanged}"
           >
             ${
@@ -80,7 +95,7 @@ export class ZHAClusters extends LitElement {
         this.showHelp
           ? html`
               <div style="color: grey; padding: 16px">
-                Select entity to view per-entity options
+                Select cluster to view attributes and commands
               </div>
             `
           : ""
@@ -98,7 +113,9 @@ export class ZHAClusters extends LitElement {
 
   private _selectedClusterChanged(event: ItemSelectedEvent): void {
     this.selectedClusterIndex = event.target!.selected;
-    this.selectedCluster = this._clusters[this.selectedClusterIndex];
+    fireEvent(this, "zha-cluster-selected", {
+      cluster: this._clusters[this.selectedClusterIndex],
+    });
   }
 
   private _computeClusterKey(cluster: Cluster): string {

@@ -11,17 +11,22 @@ import "../../../resources/ha-style";
 
 import "./zha-network";
 import "./zha-node";
+import "./zha-cluster-commands";
+import "./zha-cluster-attributes";
+import { Cluster } from "./types";
 
 export class HaConfigZha extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
+  private _selectedCluster?: Cluster;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
+      _selectedCluster: {},
     };
   }
 
@@ -49,9 +54,38 @@ export class HaConfigZha extends LitElement {
           id="zha-node"
           .isWide="${this.isWide}"
           .hass="${this.hass}"
+          @zha-cluster-selected="${this._onClusterSelected}"
+          @zha-node-selected="${this._onNodeSelected}"
         ></zha-node>
+        ${
+          this._selectedCluster
+            ? html`
+                <zha-cluster-attributes
+                  id="zha-cluster-attributes"
+                  .isWide="${this.isWide}"
+                  .hass="${this.hass}"
+                  .selectedCluster="${this._selectedCluster}"
+                ></zha-cluster-attributes>
+
+                <zha-cluster-commands
+                  id="zha-cluster-commands"
+                  .isWide="${this.isWide}"
+                  .hass="${this.hass}"
+                  .selectedCluster="${this._selectedCluster}"
+                ></zha-cluster-commands>
+              `
+            : ""
+        }
       </ha-app-layout>
     `;
+  }
+
+  private _onClusterSelected(selectedClusterEvent): void {
+    this._selectedCluster = selectedClusterEvent.detail.cluster;
+  }
+
+  private _onNodeSelected(selectedNodeEvent): void {
+    this._selectedCluster = undefined;
   }
 
   private renderStyle(): TemplateResult {

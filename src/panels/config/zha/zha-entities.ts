@@ -14,7 +14,7 @@ import "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { ItemSelectedEvent, EntitySelectedEvent } from "./types";
+import { ItemSelectedEvent } from "./types";
 
 declare global {
   // for fire event
@@ -52,6 +52,11 @@ export class ZhaEntities extends LitElement {
 
   protected update(changedProperties: PropertyValues) {
     if (changedProperties.has("selectedNode")) {
+      this.entities = [];
+      this.selectedEntityIndex = -1;
+      fireEvent(this, "zha-entity-selected", {
+        entity: undefined,
+      });
       this._fetchEntitiesForZhaNode();
     }
     super.update(changedProperties);
@@ -70,6 +75,7 @@ export class ZhaEntities extends LitElement {
         <paper-dropdown-menu dynamic-align="" label="Entities" class="flex">
           <paper-listbox
             slot="dropdown-content"
+            .selected="${this.selectedEntityIndex}"
             @iron-select="${this._selectedEntityChanged}"
           >
             ${
