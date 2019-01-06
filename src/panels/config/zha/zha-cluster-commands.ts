@@ -154,16 +154,23 @@ export class ZHAClusterCommands extends LitElement {
   }
 
   private async _fetchCommandsForCluster() {
-    this._commands = await this.hass!.callWS({
-      type: "zha/entities/clusters/commands",
-      entity_id: this.selectedEntity!.entity_id,
-      ieee: this.selectedEntity!.device_info.identifiers[0][1],
-      cluster_id: this.selectedCluster!.id,
-      cluster_type: this.selectedCluster!.type,
-    });
+    if (this.selectedEntity && this.selectedCluster) {
+      this._commands = await this.hass!.callWS({
+        type: "zha/entities/clusters/commands",
+        entity_id: this.selectedEntity!.entity_id,
+        ieee: this.selectedEntity!.device_info.identifiers[0][1],
+        cluster_id: this.selectedCluster!.id,
+        cluster_type: this.selectedCluster!.type,
+      });
+    }
   }
 
-  private _computeIssueClusterCommandServiceData(): IssueCommandServiceData {
+  private _computeIssueClusterCommandServiceData():
+    | IssueCommandServiceData
+    | undefined {
+    if (!this.selectedEntity || !this.selectedCluster) {
+      return;
+    }
     return {
       entity_id: this.selectedEntity!.entity_id,
       cluster_id: this.selectedCluster!.id,

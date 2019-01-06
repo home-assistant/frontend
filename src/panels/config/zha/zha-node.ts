@@ -85,15 +85,9 @@ export class ZhaNode extends LitElement {
         </span>
         <paper-card class="content">
           ${this._renderNodePicker()}
-          ${
-            this._showHelp
-              ? html`
-                  <div style="color: grey; padding: 16px">
-                    Select node to view per-node options
-                  </div>
-                `
-              : ""
-          }
+          <div ?hidden="${!this._showHelp}" style="color: grey; padding: 16px">
+            Select node to view per-node options
+          </div>
           ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
           ${this._selectedNodeIndex !== -1 ? this._renderEntities() : ""}
           ${this._selectedEntity ? this._renderClusters() : ""}
@@ -136,17 +130,12 @@ export class ZhaNode extends LitElement {
           .serviceData="${this._serviceData}"
           >Reconfigure Node</ha-call-service-button
         >
-        ${
-          this._showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="reconfigure_device"
-                />
-              `
-            : ""
-        }
+        <ha-service-description
+          .hass="${this.hass}"
+          domain="zha"
+          service="reconfigure_device"
+          ?hidden="${!this._showHelp}"
+        />
         <ha-call-service-button
           .hass="${this.hass}"
           domain="zha"
@@ -154,17 +143,12 @@ export class ZhaNode extends LitElement {
           .serviceData="${this._serviceData}"
           >Remove Node</ha-call-service-button
         >
-        ${
-          this._showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="remove"
-                />
-              `
-            : ""
-        }
+        <ha-service-description
+          .hass="${this.hass}"
+          domain="zha"
+          service="remove"
+          ?hidden="${!this._showHelp}"
+        />
       </div>
     `;
   }

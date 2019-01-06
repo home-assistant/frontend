@@ -173,16 +173,21 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private async _fetchAttributesForCluster() {
-    this._attributes = await this.hass!.callWS({
-      type: "zha/entities/clusters/attributes",
-      entity_id: this.selectedEntity!.entity_id,
-      ieee: this.selectedEntity!.device_info.identifiers[0][1],
-      cluster_id: this.selectedCluster!.id,
-      cluster_type: this.selectedCluster!.type,
-    });
+    if (this.selectedEntity && this.selectedCluster) {
+      this._attributes = await this.hass!.callWS({
+        type: "zha/entities/clusters/attributes",
+        entity_id: this.selectedEntity!.entity_id,
+        ieee: this.selectedEntity!.device_info.identifiers[0][1],
+        cluster_id: this.selectedCluster!.id,
+        cluster_type: this.selectedCluster!.type,
+      });
+    }
   }
 
   private _computeReadAttributeServiceData() {
+    if (!this.selectedEntity || !this.selectedCluster || !this.selectedNode) {
+      return;
+    }
     return {
       type: "zha/entities/clusters/attributes/value",
       entity_id: this.selectedEntity!.entity_id,
@@ -195,7 +200,12 @@ export class ZHAClusterAttributes extends LitElement {
     };
   }
 
-  private _computeSetAttributeServiceData(): SetAttributeServiceData {
+  private _computeSetAttributeServiceData():
+    | SetAttributeServiceData
+    | undefined {
+    if (!this.selectedEntity || !this.selectedCluster || !this.selectedNode) {
+      return;
+    }
     return {
       entity_id: this.selectedEntity!.entity_id,
       cluster_id: this.selectedCluster!.id,

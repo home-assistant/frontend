@@ -88,15 +88,9 @@ export class ZhaEntities extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      ${
-        this.showHelp
-          ? html`
-              <div style="color: grey; padding: 16px">
-                Select entity to view per-entity options
-              </div>
-            `
-          : ""
-      }
+      <div ?hidden="${!this.showHelp}" style="color: grey; padding: 16px">
+        Select entity to view per-entity options
+      </div>
     `;
   }
 

@@ -63,29 +63,26 @@ export class HaConfigZha extends LitElement {
           @zha-node-selected="${this._onNodeSelected}"
           @zha-entity-selected="${this._onEntitySelected}"
         ></zha-node>
-        ${
-          this._selectedCluster
-            ? html`
-                <zha-cluster-attributes
-                  id="zha-cluster-attributes"
-                  .isWide="${this.isWide}"
-                  .hass="${this.hass}"
-                  .selectedNode="${this._selectedNode}"
-                  .selectedEntity="${this._selectedEntity}"
-                  .selectedCluster="${this._selectedCluster}"
-                ></zha-cluster-attributes>
 
-                <zha-cluster-commands
-                  id="zha-cluster-commands"
-                  .isWide="${this.isWide}"
-                  .hass="${this.hass}"
-                  .selectedNode="${this._selectedNode}"
-                  .selectedEntity="${this._selectedEntity}"
-                  .selectedCluster="${this._selectedCluster}"
-                ></zha-cluster-commands>
-              `
-            : ""
-        }
+        <zha-cluster-attributes
+          id="zha-cluster-attributes"
+          .isWide="${this.isWide}"
+          .hass="${this.hass}"
+          .selectedNode="${this._selectedNode}"
+          .selectedEntity="${this._selectedEntity}"
+          .selectedCluster="${this._selectedCluster}"
+          ?hidden="${!this._selectedCluster}"
+        ></zha-cluster-attributes>
+
+        <zha-cluster-commands
+          id="zha-cluster-commands"
+          .isWide="${this.isWide}"
+          .hass="${this.hass}"
+          .selectedNode="${this._selectedNode}"
+          .selectedEntity="${this._selectedEntity}"
+          .selectedCluster="${this._selectedCluster}"
+          ?hidden="${!this._selectedCluster}"
+        ></zha-cluster-commands>
       </ha-app-layout>
     `;
   }
