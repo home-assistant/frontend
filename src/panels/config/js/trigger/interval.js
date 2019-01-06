@@ -46,7 +46,7 @@ export default class IntervalTrigger extends Component {
 }
 
 IntervalTrigger.defaultConfig = {
-  hours: "0",
-  minutes: "0",
-  seconds: "0",
+  hours: "",
+  minutes: "",
+  seconds: "",
 };
