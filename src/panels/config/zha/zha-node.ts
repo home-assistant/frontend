@@ -19,6 +19,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { ItemSelectedEvent } from "./types";
 
 import "./zha-entities";
+import "./zha-clusters";
 
 export class ZhaNode extends LitElement {
   public hass?: HomeAssistant;
@@ -26,6 +27,7 @@ export class ZhaNode extends LitElement {
   public showHelp: boolean;
   public selectedNodeIndex: number;
   public selectedNode?: HassEntity;
+  public selectedEntity?: HassEntity;
   public serviceData?: {};
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
@@ -46,6 +48,7 @@ export class ZhaNode extends LitElement {
       selectedNodeIndex: {},
       selectedNode: {},
       serviceData: {},
+      selectedEntity: {},
     };
   }
 
@@ -84,6 +87,7 @@ export class ZhaNode extends LitElement {
           }
           ${this.selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
           ${this.selectedNodeIndex !== -1 ? this._renderEntities() : ""}
+          ${this.selectedEntity ? this._renderClusters() : ""}
         </paper-card>
       </ha-config-section>
     `;
@@ -162,7 +166,18 @@ export class ZhaNode extends LitElement {
         .hass="${this.hass}"
         .selectedNode="${this.selectedNode}"
         .showHelp="${this.showHelp}"
+        @zha-entity-selected="${this._onEntitySelected}"
       ></zha-entities>
+    `;
+  }
+
+  private _renderClusters(): TemplateResult {
+    return html`
+      <zha-clusters
+        .hass="${this.hass}"
+        .selectedEntity="${this.selectedEntity}"
+        .showHelp="${this.showHelp}"
+      ></zha-clusters>
     `;
   }
 
@@ -203,6 +218,10 @@ export class ZhaNode extends LitElement {
     } else {
       return [];
     }
+  }
+
+  private _onEntitySelected(entitySelectedEvent): void {
+    this.selectedEntity = entitySelectedEvent.detail.entity;
   }
 
   private renderStyle(): TemplateResult {

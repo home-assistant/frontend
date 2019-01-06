@@ -14,7 +14,16 @@ import "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { ItemSelectedEvent } from "./types";
+import { ItemSelectedEvent, EntitySelectedEvent } from "./types";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "zha-entity-selected": {
+      entity?: HassEntity;
+    };
+  }
+}
 
 export class ZhaEntities extends LitElement {
   public hass?: HomeAssistant;
@@ -102,6 +111,9 @@ export class ZhaEntities extends LitElement {
 
   private _selectedEntityChanged(event: ItemSelectedEvent): void {
     this.selectedEntityIndex = event.target!.selected;
+    fireEvent(this, "zha-entity-selected", {
+      entity: this.entities[this.selectedEntityIndex],
+    });
   }
 
   private _showEntityInformation(): void {
