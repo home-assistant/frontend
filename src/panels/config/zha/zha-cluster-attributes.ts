@@ -35,7 +35,7 @@ export class ZHAClusterAttributes extends LitElement {
   private _attributes: Attribute[];
   private _selectedAttributeIndex: number;
   private _attributeValue?: any;
-  private _manufacturerCodeOverride?: number;
+  private _manufacturerCodeOverride?: string | number;
   private _setAttributeServiceData?: SetAttributeServiceData;
 
   constructor() {
@@ -190,7 +190,7 @@ export class ZHAClusterAttributes extends LitElement {
       cluster_type: this.selectedCluster!.type,
       attribute: this._attributes[this._selectedAttributeIndex].id,
       manufacturer: this._manufacturerCodeOverride
-        ? parseInt(this._manufacturerCodeOverride)
+        ? parseInt(this._manufacturerCodeOverride as string, 10)
         : this.selectedNode!.attributes.manufacturer_code,
     };
   }
@@ -203,7 +203,7 @@ export class ZHAClusterAttributes extends LitElement {
       attribute: this._attributes[this._selectedAttributeIndex].id,
       value: this._attributeValue,
       manufacturer: this._manufacturerCodeOverride
-        ? parseInt(this._manufacturerCodeOverride)
+        ? parseInt(this._manufacturerCodeOverride as string, 10)
         : this.selectedNode!.attributes.manufacturer_code,
     };
   }
