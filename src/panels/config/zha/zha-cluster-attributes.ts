@@ -21,6 +21,7 @@ import {
   Attribute,
   ItemSelectedEvent,
   SetAttributeServiceData,
+  ZHADeviceEntity,
 } from "./types";
 
 export class ZHAClusterAttributes extends LitElement {
@@ -28,7 +29,7 @@ export class ZHAClusterAttributes extends LitElement {
   public isWide?: boolean;
   public showHelp: boolean;
   public selectedNode?: HassEntity;
-  public selectedEntity?: HassEntity;
+  public selectedEntity?: ZHADeviceEntity;
   public selectedCluster?: Cluster;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
@@ -177,7 +178,7 @@ export class ZHAClusterAttributes extends LitElement {
       this._attributes = await this.hass!.callWS({
         type: "zha/entities/clusters/attributes",
         entity_id: this.selectedEntity!.entity_id,
-        ieee: this.selectedEntity!.device_info.identifiers[0][1],
+        ieee: this.selectedEntity!.device_info!.identifiers[0][1],
         cluster_id: this.selectedCluster!.id,
         cluster_type: this.selectedCluster!.type,
       });

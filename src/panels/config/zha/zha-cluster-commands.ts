@@ -19,12 +19,13 @@ import {
   Command,
   ItemSelectedEvent,
   IssueCommandServiceData,
+  ZHADeviceEntity,
 } from "./types";
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public selectedNode?: HassEntity;
-  public selectedEntity?: HassEntity;
+  public selectedEntity?: ZHADeviceEntity;
   public selectedCluster?: Cluster;
   private _showHelp: boolean;
   private _haStyle?: DocumentFragment;
@@ -158,7 +159,7 @@ export class ZHAClusterCommands extends LitElement {
       this._commands = await this.hass!.callWS({
         type: "zha/entities/clusters/commands",
         entity_id: this.selectedEntity!.entity_id,
-        ieee: this.selectedEntity!.device_info.identifiers[0][1],
+        ieee: this.selectedEntity!.device_info!.identifiers[0][1],
         cluster_id: this.selectedCluster!.id,
         cluster_type: this.selectedCluster!.type,
       });

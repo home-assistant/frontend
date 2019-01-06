@@ -13,8 +13,7 @@ import "../ha-config-section";
 
 import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
-import { HassEntity } from "home-assistant-js-websocket";
-import { ItemSelectedEvent, Cluster } from "./types";
+import { ItemSelectedEvent, Cluster, ZHADeviceEntity } from "./types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 declare global {
@@ -30,7 +29,7 @@ export class ZHAClusters extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public showHelp: boolean;
-  public selectedEntity?: HassEntity;
+  public selectedEntity?: ZHADeviceEntity;
   private _selectedClusterIndex: number;
   private _clusters: Cluster[];
   private _haStyle?: DocumentFragment;
@@ -101,7 +100,7 @@ export class ZHAClusters extends LitElement {
     this._clusters = await this.hass!.callWS({
       type: "zha/entities/clusters",
       entity_id: this.selectedEntity!.entity_id,
-      ieee: this.selectedEntity!.device_info.connections[0][1],
+      ieee: this.selectedEntity!.device_info!.identifiers[0][1],
     });
   }
 

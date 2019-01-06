@@ -1,3 +1,5 @@
+import { HassEntity } from "home-assistant-js-websocket";
+
 export interface PickerTarget extends EventTarget {
   selected: number;
 }
@@ -38,4 +40,10 @@ export interface IssueCommandServiceData {
   cluster_type: string;
   command: number;
   command_type: string;
+}
+
+export interface ZHADeviceEntity extends HassEntity {
+  device_info?: {
+    identifiers: any[];
+  };
 }
