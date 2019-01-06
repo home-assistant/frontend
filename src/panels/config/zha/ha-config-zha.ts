@@ -79,6 +79,8 @@ export class HaConfigZha extends LitElement {
                   id="zha-cluster-commands"
                   .isWide="${this.isWide}"
                   .hass="${this.hass}"
+                  .selectedNode="${this._selectedNode}"
+                  .selectedEntity="${this._selectedEntity}"
                   .selectedCluster="${this._selectedCluster}"
                 ></zha-cluster-commands>
               `

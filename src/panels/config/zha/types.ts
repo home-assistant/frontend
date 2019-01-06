@@ -19,6 +19,12 @@ export interface Attribute {
   id: number;
 }
 
+export interface Command {
+  name: string;
+  id: number;
+  type: string;
+}
+
 export interface SetAttributeServiceData {
   entity_id: string;
   cluster_id: number;
@@ -26,4 +32,12 @@ export interface SetAttributeServiceData {
   attribute: number;
   value: any;
   manufacturer: number;
+}
+
+export interface IssueCommandServiceData {
+  entity_id: string;
+  cluster_id: number;
+  cluster_type: string;
+  command: number;
+  command_type: string;
 }

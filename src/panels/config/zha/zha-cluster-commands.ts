@@ -14,29 +14,55 @@ import "../ha-config-section";
 import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
 import { HassEntity } from "home-assistant-js-websocket";
-
+import {
+  Cluster,
+  Command,
+  ItemSelectedEvent,
+  IssueCommandServiceData,
+} from "./types";
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
+  public selectedNode?: HassEntity;
   public selectedEntity?: HassEntity;
-  public showDescription: boolean;
-  private _selectedCluster?: Cluster;
+  public selectedCluster?: Cluster;
+  public showHelp: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
+  private _commands: Command[];
+  private _selectedCommandIndex: number;
+  private _manufacturerCodeOverride?: number;
+  private _issueClusterCommandServiceData?: IssueCommandServiceData;
 
   constructor() {
     super();
-    this.showDescription = false;
+    this.showHelp = false;
+    this._selectedCommandIndex = -1;
+    this._commands = [];
   }
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
-      showDescription: {},
+      showHelp: {},
+      selectedNode: {},
       selectedEntity: {},
-      _selectedCluster: {},
+      selectedCluster: {},
+      _commands: {},
+      _selectedCommandIndex: {},
+      _manufacturerCodeOverride: {},
+      _issueClusterCommandServiceData: {},
     };
+  }
+
+  protected update(changedProperties: PropertyValues) {
+    if (changedProperties.has("selectedCluster")) {
+      this._commands = [];
+      this._selectedCommandIndex = -1;
+      this._fetchCommandsForCluster();
+    }
+    super.update(changedProperties);
   }
 
   protected render(): TemplateResult {
@@ -44,13 +70,126 @@ export class ZHAClusterCommands extends LitElement {
       ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
-          <span>Cluster Comands</span>
+          <span>Cluster Commands</span>
+          <paper-icon-button
+            class="toggle-help-icon"
+            @click="${this._onHelpTap}"
+            icon="hass:help-circle"
+          >
+          </paper-icon-button>
         </div>
         <span slot="introduction">View and issue cluster commands.</span>
 
-        <paper-card class="content"></paper-card>
+        <paper-card class="content">
+          ${this._renderCommandPicker()}
+          ${
+            this._selectedCommandIndex !== -1
+              ? this._renderCommandInteractions()
+              : ""
+          }
+        </paper-card>
       </ha-config-section>
     `;
+  }
+
+  private _renderCommandPicker(): TemplateResult {
+    return html`
+      <div class="command-picker">
+        <paper-dropdown-menu
+          label="Commands of the selected cluster"
+          dynamic-align=""
+          class="flex"
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            selected="${this._selectedCommandIndex}"
+            @iron-select="${this._selectedCommandChanged}"
+          >
+            ${
+              this._commands.map(
+                (entry) => html`
+                  <paper-item
+                    >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                  >
+                `
+              )
+            }
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
+
+      <div ?hidden="${!this.showHelp}" style="color: grey; padding: 16px">
+        Select a command to interact with
+      </div>
+    `;
+  }
+
+  private _renderCommandInteractions(): TemplateResult {
+    return html`
+      <div class="input-text">
+        <paper-input
+          label="Manufacturer code override"
+          type="number"
+          value="${this._manufacturerCodeOverride}"
+          @value-changed="${this._onManufacturerCodeOverrideChanged}"
+          placeholder="Value"
+        ></paper-input>
+      </div>
+      <div class="card-actions">
+        <ha-call-service-button
+          .hass="${this.hass}"
+          domain="zha"
+          service="issue_zigbee_cluster_command"
+          .serviceData="${this._issueClusterCommandServiceData}"
+          >Issue Zigbee Command</ha-call-service-button
+        >
+        <ha-service-description
+          .hass="${this.hass}"
+          domain="zha"
+          service="issue_zigbee_cluster_command"
+          ?hidden="${!this.showHelp}"
+        ></ha-service-description>
+      </div>
+    `;
+  }
+
+  private async _fetchCommandsForCluster() {
+    this._commands = await this.hass!.callWS({
+      type: "zha/entities/clusters/commands",
+      entity_id: this.selectedEntity!.entity_id,
+      ieee: this.selectedEntity!.device_info.identifiers[0][1],
+      cluster_id: this.selectedCluster!.id,
+      cluster_type: this.selectedCluster!.type,
+    });
+  }
+
+  private _computeIssueClusterCommandServiceData(): IssueCommandServiceData {
+    return {
+      entity_id: this.selectedEntity!.entity_id,
+      cluster_id: this.selectedCluster!.id,
+      cluster_type: this.selectedCluster!.type,
+      command: this._commands[this._selectedCommandIndex].id,
+      command_type: this._commands[this._selectedCommandIndex].type,
+      /*
+      manufacturer: this._manufacturerCodeOverride
+        ? parseInt(this._manufacturerCodeOverride)
+        : this.selectedNode!.attributes.manufacturer_code,
+        */
+    };
+  }
+
+  private _onManufacturerCodeOverrideChanged(value): void {
+    this._manufacturerCodeOverride = value.detail.value;
+    this._issueClusterCommandServiceData = this._computeIssueClusterCommandServiceData();
+  }
+
+  private _onHelpTap(): void {
+    this.showHelp = !this.showHelp;
+  }
+
+  private _selectedCommandChanged(event: ItemSelectedEvent): void {
+    this._selectedCommandIndex = event.target!.selected;
+    this._issueClusterCommandServiceData = this._computeIssueClusterCommandServiceData();
   }
 
   private renderStyle(): TemplateResult {
@@ -83,6 +222,20 @@ export class ZHAClusterCommands extends LitElement {
 
         .card-actions.warning ha-call-service-button {
           color: var(--google-red-500);
+        }
+
+        .command-picker {
+          @apply --layout-horizontal;
+          @apply --layout-center-center;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 10px;
+        }
+
+        .input-text {
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 10px;
         }
 
         .toggle-help-icon {
