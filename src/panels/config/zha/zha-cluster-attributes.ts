@@ -22,6 +22,7 @@ import {
   ItemSelectedEvent,
   SetAttributeServiceData,
   ZHADeviceEntity,
+  ReadAttributeServiceData,
 } from "./types";
 
 export class ZHAClusterAttributes extends LitElement {
@@ -63,7 +64,7 @@ export class ZHAClusterAttributes extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
       this._attributes = [];
       this._selectedAttributeIndex = -1;
@@ -173,7 +174,7 @@ export class ZHAClusterAttributes extends LitElement {
     `;
   }
 
-  private async _fetchAttributesForCluster() {
+  private async _fetchAttributesForCluster(): Promise<any> {
     if (this.selectedEntity && this.selectedCluster) {
       this._attributes = await this.hass!.callWS({
         type: "zha/entities/clusters/attributes",
@@ -185,7 +186,9 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _computeReadAttributeServiceData() {
+  private _computeReadAttributeServiceData():
+    | ReadAttributeServiceData
+    | undefined {
     if (!this.selectedEntity || !this.selectedCluster || !this.selectedNode) {
       return;
     }
@@ -229,7 +232,7 @@ export class ZHAClusterAttributes extends LitElement {
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private async _onGetZigbeeAttributeClick() {
+  private async _onGetZigbeeAttributeClick(): Promise<any> {
     const data = this._computeReadAttributeServiceData();
     if (data) {
       this._attributeValue = await this.hass!.callWS(data);

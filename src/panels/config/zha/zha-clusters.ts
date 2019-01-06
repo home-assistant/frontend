@@ -53,7 +53,7 @@ export class ZHAClusters extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedEntity")) {
       this._clusters = [];
       this._selectedClusterIndex = -1;
@@ -96,7 +96,7 @@ export class ZHAClusters extends LitElement {
     `;
   }
 
-  private async _fetchClustersForZhaNode() {
+  private async _fetchClustersForZhaNode(): Promise<any> {
     this._clusters = await this.hass!.callWS({
       type: "zha/entities/clusters",
       entity_id: this.selectedEntity!.entity_id,

@@ -14,7 +14,13 @@ import "./zha-node";
 import "./zha-cluster-commands";
 import "./zha-cluster-attributes";
 import { HassEntity } from "home-assistant-js-websocket";
-import { Cluster } from "./types";
+import {
+  Cluster,
+  ZHAEntitySelectedParams,
+  ZHANodeSelectedParams,
+  ZHAClusterSelectedParams,
+} from "./types";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 export class HaConfigZha extends LitElement {
   public hass?: HomeAssistant;
@@ -87,17 +93,23 @@ export class HaConfigZha extends LitElement {
     `;
   }
 
-  private _onClusterSelected(selectedClusterEvent): void {
+  private _onClusterSelected(
+    selectedClusterEvent: HASSDomEvent<ZHAClusterSelectedParams>
+  ): void {
     this._selectedCluster = selectedClusterEvent.detail.cluster;
   }
 
-  private _onNodeSelected(selectedNodeEvent): void {
+  private _onNodeSelected(
+    selectedNodeEvent: HASSDomEvent<ZHANodeSelectedParams>
+  ): void {
     this._selectedNode = selectedNodeEvent.detail.node;
     this._selectedCluster = undefined;
     this._selectedEntity = undefined;
   }
 
-  private _onEntitySelected(selectedEntityEvent): void {
+  private _onEntitySelected(
+    selectedEntityEvent: HASSDomEvent<ZHAEntitySelectedParams>
+  ): void {
     this._selectedEntity = selectedEntityEvent.detail.entity;
   }
 

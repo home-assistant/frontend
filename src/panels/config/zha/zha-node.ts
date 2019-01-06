@@ -15,8 +15,12 @@ import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 import sortByName from "../../../common/entity/states_sort_by_name";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { ItemSelectedEvent } from "./types";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import {
+  ItemSelectedEvent,
+  NodeServiceData,
+  ZHAEntitySelectedParams,
+} from "./types";
 
 import "./zha-entities";
 import "./zha-clusters";
@@ -188,7 +192,7 @@ export class ZhaNode extends LitElement {
     this._showHelp = !this._showHelp;
   }
 
-  private _selectedNodeChanged(event: ItemSelectedEvent) {
+  private _selectedNodeChanged(event: ItemSelectedEvent): void {
     this._selectedNodeIndex = event!.target!.selected;
     this._selectedNode = this._nodes[this._selectedNodeIndex];
     this._selectedEntity = undefined;
@@ -202,7 +206,7 @@ export class ZhaNode extends LitElement {
     });
   }
 
-  private _computeNodeServiceData() {
+  private _computeNodeServiceData(): NodeServiceData {
     return {
       ieee_address: this._selectedNode!.attributes.ieee,
     };
@@ -225,7 +229,9 @@ export class ZhaNode extends LitElement {
     }
   }
 
-  private _onEntitySelected(entitySelectedEvent): void {
+  private _onEntitySelected(
+    entitySelectedEvent: HASSDomEvent<ZHAEntitySelectedParams>
+  ): void {
     this._selectedEntity = entitySelectedEvent.detail.entity;
   }
 

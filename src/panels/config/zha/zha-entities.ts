@@ -50,7 +50,7 @@ export class ZhaEntities extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedNode")) {
       this._entities = [];
       this._selectedEntityIndex = -1;
@@ -104,7 +104,7 @@ export class ZhaEntities extends LitElement {
     `;
   }
 
-  private async _fetchEntitiesForZhaNode() {
+  private async _fetchEntitiesForZhaNode(): Promise<any> {
     const fetchedEntities = await this.hass!.callWS({ type: "zha/entities" });
     this._entities = fetchedEntities[this.selectedNode!.attributes.ieee];
   }

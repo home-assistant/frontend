@@ -57,7 +57,7 @@ export class ZHAClusterCommands extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
       this._commands = [];
       this._selectedCommandIndex = -1;
@@ -154,7 +154,7 @@ export class ZHAClusterCommands extends LitElement {
     `;
   }
 
-  private async _fetchCommandsForCluster() {
+  private async _fetchCommandsForCluster(): Promise<any> {
     if (this.selectedEntity && this.selectedCluster) {
       this._commands = await this.hass!.callWS({
         type: "zha/entities/clusters/commands",
