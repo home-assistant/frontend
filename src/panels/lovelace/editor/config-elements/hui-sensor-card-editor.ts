@@ -63,7 +63,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.unit || "";
   }
 
-  get _detail(): any {
+  get _detail(): number | string {
     return this._config!.number || "1";
   }
 
@@ -71,7 +71,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.theme || "default";
   }
 
-  get _hours_to_show(): any {
+  get _hours_to_show(): number | string {
     return this._config!.hours_to_show || "24";
   }
 
