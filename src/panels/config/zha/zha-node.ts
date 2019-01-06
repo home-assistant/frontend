@@ -130,12 +130,17 @@ export class ZhaNode extends LitElement {
           .serviceData="${this._serviceData}"
           >Reconfigure Node</ha-call-service-button
         >
-        <ha-service-description
-          .hass="${this.hass}"
-          domain="zha"
-          service="reconfigure_device"
-          ?hidden="${!this._showHelp}"
-        />
+        ${
+          this._showHelp
+            ? html`
+                <ha-service-description
+                  .hass="${this.hass}"
+                  domain="zha"
+                  service="reconfigure_device"
+                />
+              `
+            : ""
+        }
         <ha-call-service-button
           .hass="${this.hass}"
           domain="zha"
@@ -143,12 +148,17 @@ export class ZhaNode extends LitElement {
           .serviceData="${this._serviceData}"
           >Remove Node</ha-call-service-button
         >
-        <ha-service-description
-          .hass="${this.hass}"
-          domain="zha"
-          service="remove"
-          ?hidden="${!this._showHelp}"
-        />
+        ${
+          this._showHelp
+            ? html`
+                <ha-service-description
+                  .hass="${this.hass}"
+                  domain="zha"
+                  service="remove"
+                />
+              `
+            : ""
+        }
       </div>
     `;
   }
