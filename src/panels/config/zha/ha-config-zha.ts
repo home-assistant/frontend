@@ -13,6 +13,7 @@ import "./zha-network";
 import "./zha-node";
 import "./zha-cluster-commands";
 import "./zha-cluster-attributes";
+import { HassEntity } from "home-assistant-js-websocket";
 import { Cluster } from "./types";
 
 export class HaConfigZha extends LitElement {
@@ -21,12 +22,14 @@ export class HaConfigZha extends LitElement {
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
   private _selectedCluster?: Cluster;
+  private _selectedEntity?: HassEntity;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
       _selectedCluster: {},
+      _selectedEntity: {},
     };
   }
 
@@ -56,6 +59,7 @@ export class HaConfigZha extends LitElement {
           .hass="${this.hass}"
           @zha-cluster-selected="${this._onClusterSelected}"
           @zha-node-selected="${this._onNodeSelected}"
+          @zha-entity-selected="${this._onEntitySelected}"
         ></zha-node>
         ${
           this._selectedCluster
@@ -65,6 +69,7 @@ export class HaConfigZha extends LitElement {
                   .isWide="${this.isWide}"
                   .hass="${this.hass}"
                   .selectedCluster="${this._selectedCluster}"
+                  .selectedEntity="${this._selectedEntity}"
                 ></zha-cluster-attributes>
 
                 <zha-cluster-commands
@@ -86,6 +91,11 @@ export class HaConfigZha extends LitElement {
 
   private _onNodeSelected(selectedNodeEvent): void {
     this._selectedCluster = undefined;
+    this._selectedEntity = undefined;
+  }
+
+  private _onEntitySelected(selectedEntityEvent): void {
+    this._selectedEntity = selectedEntityEvent.detail.entity;
   }
 
   private renderStyle(): TemplateResult {

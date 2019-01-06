@@ -13,3 +13,8 @@ export interface Cluster {
   id: string;
   type: string;
 }
+
+export interface Attribute {
+  name: string;
+  id: string;
+}
