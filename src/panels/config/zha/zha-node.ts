@@ -16,14 +16,14 @@ import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 import sortByName from "../../../common/entity/states_sort_by_name";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { NodeSelectedEvent } from "./types";
+import { ItemSelectedEvent } from "./types";
 
 import "./zha-entities";
 
 export class ZhaNode extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
-  public showDescription: boolean;
+  public showHelp: boolean;
   public selectedNodeIndex: number;
   public selectedNode?: HassEntity;
   public serviceData?: {};
@@ -33,7 +33,7 @@ export class ZhaNode extends LitElement {
 
   constructor() {
     super();
-    this.showDescription = false;
+    this.showHelp = false;
     this.selectedNodeIndex = -1;
     this._nodes = [];
   }
@@ -42,7 +42,7 @@ export class ZhaNode extends LitElement {
     return {
       hass: {},
       isWide: {},
-      showDescription: {},
+      showHelp: {},
       selectedNodeIndex: {},
       selectedNode: {},
       serviceData: {},
@@ -74,7 +74,7 @@ export class ZhaNode extends LitElement {
         <paper-card class="content">
           ${this._renderNodePicker()}
           ${
-            this.showDescription
+            this.showHelp
               ? html`
                   <div style="color: grey; padding: 16px">
                     Select node to view per-node options
@@ -124,7 +124,7 @@ export class ZhaNode extends LitElement {
           >Reconfigure Node</ha-call-service-button
         >
         ${
-          this.showDescription
+          this.showHelp
             ? html`
                 <ha-service-description
                   .hass="${this.hass}"
@@ -142,7 +142,7 @@ export class ZhaNode extends LitElement {
           >Remove Node</ha-call-service-button
         >
         ${
-          this.showDescription
+          this.showHelp
             ? html`
                 <ha-service-description
                   .hass="${this.hass}"
@@ -161,16 +161,16 @@ export class ZhaNode extends LitElement {
       <zha-entities
         .hass="${this.hass}"
         .selectedNode="${this.selectedNode}"
-        .showDescription="${this.showDescription}"
+        .showHelp="${this.showHelp}"
       ></zha-entities>
     `;
   }
 
   private _onHelpTap(): void {
-    this.showDescription = !this.showDescription;
+    this.showHelp = !this.showHelp;
   }
 
-  private _selectedNodeChanged(event: NodeSelectedEvent) {
+  private _selectedNodeChanged(event: ItemSelectedEvent) {
     this.selectedNodeIndex = event!.target!.selected;
     this.selectedNode = this._nodes[this.selectedNodeIndex];
     this.serviceData = this._computeNodeServiceData();

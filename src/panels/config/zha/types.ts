@@ -1,7 +1,7 @@
-export interface EditorTarget extends EventTarget {
+export interface PickerTarget extends EventTarget {
   selected: number;
 }
 
-export interface NodeSelectedEvent {
-  target?: EditorTarget;
+export interface ItemSelectedEvent {
+  target?: PickerTarget;
 }

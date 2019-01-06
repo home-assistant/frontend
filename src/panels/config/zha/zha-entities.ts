@@ -14,11 +14,11 @@ import "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { NodeSelectedEvent } from "./types";
+import { ItemSelectedEvent } from "./types";
 
 export class ZhaEntities extends LitElement {
   public hass?: HomeAssistant;
-  public showDescription?: boolean;
+  public showHelp?: boolean;
   public selectedNode?: HassEntity;
   public selectedEntityIndex: number;
   public entities: HassEntity[];
@@ -34,7 +34,7 @@ export class ZhaEntities extends LitElement {
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      showDescription: {},
+      showHelp: {},
       selectedNode: {},
       selectedEntityIndex: {},
       entities: {},
@@ -74,7 +74,7 @@ export class ZhaEntities extends LitElement {
         </paper-dropdown-menu>
       </div>
       ${
-        this.showDescription
+        this.showHelp
           ? html`
               <div style="color: grey; padding: 16px">
                 Select entity to view per-entity options
@@ -100,7 +100,7 @@ export class ZhaEntities extends LitElement {
     this.entities = fetchedEntities[this!.selectedNode!.attributes.ieee];
   }
 
-  private _selectedEntityChanged(event: NodeSelectedEvent): void {
+  private _selectedEntityChanged(event: ItemSelectedEvent): void {
     this.selectedEntityIndex = event.target!.selected;
   }
 
