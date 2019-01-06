@@ -602,6 +602,12 @@
                   "start": "Start",
                   "shutdown": "Shutdown"
                 },
+                "interval": {
+                  "label": "Interval",
+                  "hours": "Hours",
+                  "minutes": "Minutes",
+                  "seconds": "Seconds"
+                },
                 "mqtt": {
                   "label": "MQTT",
                   "topic": "Topic",

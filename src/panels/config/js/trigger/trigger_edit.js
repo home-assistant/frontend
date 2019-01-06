@@ -6,6 +6,7 @@ import "@polymer/paper-listbox/paper-listbox";
 
 import EventTrigger from "./event";
 import HassTrigger from "./homeassistant";
+import IntervalTrigger from "./interval";
 import MQTTTrigger from "./mqtt";
 import NumericStateTrigger from "./numeric_state";
 import StateTrigger from "./state";
@@ -19,6 +20,7 @@ const TYPES = {
   event: EventTrigger,
   state: StateTrigger,
   homeassistant: HassTrigger,
+  interval: IntervalTrigger,
   mqtt: MQTTTrigger,
   numeric_state: NumericStateTrigger,
   sun: SunTrigger,
