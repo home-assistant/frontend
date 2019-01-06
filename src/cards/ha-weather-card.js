@@ -102,7 +102,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .attributes,
         .templow,
-        .precipitation {      {
+        .precipitation {
           color: var(--secondary-text-color);
         }
       </style>
