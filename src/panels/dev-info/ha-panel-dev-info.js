@@ -165,15 +165,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </template>
           </p>
           <p>
-            ${
-              localStorage.defaultPage === OPT_IN_PANEL
-                ? html`
-                    <a href="/lovelace">Go to the new Lovelace UI</a>
-                  `
-                : html`
-                    <a href="/states">Go to the old states UI</a>
-                  `
-            }
+            <a href="[[_nonDefaultLink()]]">[[_nonDefaultLinkText()]]</a>
             <div id="love" style="cursor:pointer;" on-click="_toggleDefaultPage">[[_defaultPageText()]]</div
           </p>
         </div>
@@ -370,6 +362,20 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.items = items;
       this.updating = false;
     });
+  }
+
+  _nonDefaultLink() {
+    if (localStorage.defaultPage === OPT_IN_PANEL) {
+      return "/lovelace";
+    }
+    return "/states";
+  }
+
+  _nonDefaultLinkText() {
+    if (localStorage.defaultPage === OPT_IN_PANEL) {
+      return "Go to the new Lovelace UI";
+    }
+    return "Go to the old states UI";
   }
 
   _defaultPageText() {
