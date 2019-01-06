@@ -365,17 +365,23 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _nonDefaultLink() {
-    if (localStorage.defaultPage === OPT_IN_PANEL) {
+    if (
+      localStorage.defaultPage === OPT_IN_PANEL &&
+      OPT_IN_PANEL === "states"
+    ) {
       return "/lovelace";
     }
     return "/states";
   }
 
   _nonDefaultLinkText() {
-    if (localStorage.defaultPage === OPT_IN_PANEL) {
-      return "Go to the new Lovelace UI";
+    if (
+      localStorage.defaultPage === OPT_IN_PANEL &&
+      OPT_IN_PANEL === "states"
+    ) {
+      return "Go to the Lovelace UI";
     }
-    return "Go to the old states UI";
+    return "Go to the states UI";
   }
 
   _defaultPageText() {
