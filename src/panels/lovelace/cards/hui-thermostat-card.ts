@@ -117,9 +117,9 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           large: this._broadCard!,
           small: !this._broadCard,
         })}">
-        <div id="root">
-          <div id="thermostat" style="min-height: ${(this.clientWidth / 3) *
-            2}px;"></div>
+        <div id="root" style="min-height: ${(this.clientWidth / 3) * 2 +
+          (this._broadCard ? 50 : 30)}px">
+          <div id="thermostat"></div>
           <div id="tooltip">
             <div class="title">${this._config.name ||
               computeStateName(stateObj)}</div>
