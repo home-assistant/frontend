@@ -21,6 +21,7 @@ export class HaConfigZha extends LitElement {
   public isWide?: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
+  private _selectedNode?: HassEntity;
   private _selectedCluster?: Cluster;
   private _selectedEntity?: HassEntity;
 
@@ -30,6 +31,7 @@ export class HaConfigZha extends LitElement {
       isWide: {},
       _selectedCluster: {},
       _selectedEntity: {},
+      _selectedNode: {},
     };
   }
 
@@ -68,8 +70,9 @@ export class HaConfigZha extends LitElement {
                   id="zha-cluster-attributes"
                   .isWide="${this.isWide}"
                   .hass="${this.hass}"
-                  .selectedCluster="${this._selectedCluster}"
+                  .selectedNode="${this._selectedNode}"
                   .selectedEntity="${this._selectedEntity}"
+                  .selectedCluster="${this._selectedCluster}"
                 ></zha-cluster-attributes>
 
                 <zha-cluster-commands
@@ -90,6 +93,7 @@ export class HaConfigZha extends LitElement {
   }
 
   private _onNodeSelected(selectedNodeEvent): void {
+    this._selectedNode = selectedNodeEvent.detail.node;
     this._selectedCluster = undefined;
     this._selectedEntity = undefined;
   }

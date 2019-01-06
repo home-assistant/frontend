@@ -10,11 +10,20 @@ export interface ItemSelectedEvent {
 
 export interface Cluster {
   name: string;
-  id: string;
+  id: number;
   type: string;
 }
 
 export interface Attribute {
   name: string;
-  id: string;
+  id: number;
+}
+
+export interface SetAttributeServiceData {
+  entity_id: string;
+  cluster_id: number;
+  cluster_type: string;
+  attribute: number;
+  value: any;
+  manufacturer: number;
 }

@@ -16,24 +16,34 @@ import "../ha-config-section";
 import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
 import { HassEntity } from "home-assistant-js-websocket";
-import { Cluster, Attribute, ItemSelectedEvent } from "./types";
+import {
+  Cluster,
+  Attribute,
+  ItemSelectedEvent,
+  SetAttributeServiceData,
+} from "./types";
 
 export class ZHAClusterAttributes extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public showHelp: boolean;
+  public selectedNode?: HassEntity;
+  public selectedEntity?: HassEntity;
   public selectedCluster?: Cluster;
-  private selectedEntity?: HassEntity;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
   private _attributes: Attribute[];
   private _selectedAttributeIndex: number;
+  private _attributeValue?: any;
+  private _manufacturerCodeOverride?: number;
+  private _setAttributeServiceData?: SetAttributeServiceData;
 
   constructor() {
     super();
     this.showHelp = false;
     this._selectedAttributeIndex = -1;
     this._attributes = [];
+    this._attributeValue = "";
   }
 
   static get properties(): PropertyDeclarations {
@@ -41,10 +51,14 @@ export class ZHAClusterAttributes extends LitElement {
       hass: {},
       isWide: {},
       showHelp: {},
+      selectedNode: {},
+      selectedEntity: {},
       selectedCluster: {},
       _attributes: {},
       _selectedAttributeIndex: {},
-      selectedEntity: {},
+      _attributeValue: {},
+      _manufacturerCodeOverride: {},
+      _setAttributeServiceData: {},
     };
   }
 
@@ -52,6 +66,7 @@ export class ZHAClusterAttributes extends LitElement {
     if (changedProperties.has("selectedCluster")) {
       this._attributes = [];
       this._selectedAttributeIndex = -1;
+      this._attributeValue = "";
       this._fetchAttributesForCluster();
     }
     super.update(changedProperties);
@@ -122,7 +137,8 @@ export class ZHAClusterAttributes extends LitElement {
         <paper-input
           label="Value"
           type="string"
-          value="{{ attributeValue }}"
+          value="${this._attributeValue}"
+          @value-changed="${this._onAttributeValueChanged}"
           placeholder="Value"
         ></paper-input>
       </div>
@@ -130,17 +146,20 @@ export class ZHAClusterAttributes extends LitElement {
         <paper-input
           label="Manufacturer code override"
           type="number"
-          value="{{ manufacturerCodeOverride }}"
+          value="${this._manufacturerCodeOverride}"
+          @value-changed="${this._onManufacturerCodeOverrideChanged}"
           placeholder="Value"
         ></paper-input>
       </div>
       <div class="card-actions">
-        <paper-button>Get Zigbee Attribute</paper-button>
+        <paper-button @click="${this._onGetZigbeeAttributeClick}"
+          >Get Zigbee Attribute</paper-button
+        >
         <ha-call-service-button
           .hass="${this.hass}"
           domain="zha"
           service="set_zigbee_cluster_attribute"
-          service-data="[[computeSetAttributeServiceData(attributeValue)]]"
+          .serviceData="${this._setAttributeServiceData}"
           >Set Zigbee Attribute</ha-call-service-button
         >
         <ha-service-description
@@ -163,12 +182,55 @@ export class ZHAClusterAttributes extends LitElement {
     });
   }
 
+  private _computeReadAttributeServiceData() {
+    return {
+      type: "zha/entities/clusters/attributes/value",
+      entity_id: this.selectedEntity!.entity_id,
+      cluster_id: this.selectedCluster!.id,
+      cluster_type: this.selectedCluster!.type,
+      attribute: this._attributes[this._selectedAttributeIndex].id,
+      manufacturer: this._manufacturerCodeOverride
+        ? parseInt(this._manufacturerCodeOverride)
+        : this.selectedNode!.attributes.manufacturer_code,
+    };
+  }
+
+  private _computeSetAttributeServiceData(): SetAttributeServiceData {
+    return {
+      entity_id: this.selectedEntity!.entity_id,
+      cluster_id: this.selectedCluster!.id,
+      cluster_type: this.selectedCluster!.type,
+      attribute: this._attributes[this._selectedAttributeIndex].id,
+      value: this._attributeValue,
+      manufacturer: this._manufacturerCodeOverride
+        ? parseInt(this._manufacturerCodeOverride)
+        : this.selectedNode!.attributes.manufacturer_code,
+    };
+  }
+
+  private _onAttributeValueChanged(value): void {
+    this._attributeValue = value.detail.value;
+    this._setAttributeServiceData = this._computeSetAttributeServiceData();
+  }
+
+  private _onManufacturerCodeOverrideChanged(value): void {
+    this._manufacturerCodeOverride = value.detail.value;
+    this._setAttributeServiceData = this._computeSetAttributeServiceData();
+  }
+
+  private async _onGetZigbeeAttributeClick() {
+    this._attributeValue = await this.hass!.callWS(
+      this._computeReadAttributeServiceData()
+    );
+  }
+
   private _onHelpTap(): void {
     this.showHelp = !this.showHelp;
   }
 
   private _selectedAttributeChanged(event: ItemSelectedEvent): void {
     this._selectedAttributeIndex = event.target!.selected;
+    this._attributeValue = "";
   }
 
   private renderStyle(): TemplateResult {
