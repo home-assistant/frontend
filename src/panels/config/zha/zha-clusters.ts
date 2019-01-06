@@ -31,7 +31,7 @@ export class ZHAClusters extends LitElement {
   public isWide?: boolean;
   public showHelp: boolean;
   public selectedEntity?: HassEntity;
-  public selectedClusterIndex: number;
+  private _selectedClusterIndex: number;
   private _clusters: Cluster[];
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
@@ -39,7 +39,7 @@ export class ZHAClusters extends LitElement {
   constructor() {
     super();
     this.showHelp = false;
-    this.selectedClusterIndex = -1;
+    this._selectedClusterIndex = -1;
     this._clusters = [];
   }
 
@@ -49,7 +49,7 @@ export class ZHAClusters extends LitElement {
       isWide: {},
       showHelp: {},
       selectedEntity: {},
-      selectedClusterIndex: {},
+      _selectedClusterIndex: {},
       _clusters: {},
     };
   }
@@ -57,7 +57,7 @@ export class ZHAClusters extends LitElement {
   protected update(changedProperties: PropertyValues) {
     if (changedProperties.has("selectedEntity")) {
       this._clusters = [];
-      this.selectedClusterIndex = -1;
+      this._selectedClusterIndex = -1;
       fireEvent(this, "zha-cluster-selected", {
         cluster: undefined,
       });
@@ -78,7 +78,7 @@ export class ZHAClusters extends LitElement {
         <paper-dropdown-menu dynamic-align="" label="Clusters" class="flex">
           <paper-listbox
             slot="dropdown-content"
-            .selected="${this.selectedClusterIndex}"
+            .selected="${this._selectedClusterIndex}"
             @iron-select="${this._selectedClusterChanged}"
           >
             ${
@@ -112,9 +112,9 @@ export class ZHAClusters extends LitElement {
   }
 
   private _selectedClusterChanged(event: ItemSelectedEvent): void {
-    this.selectedClusterIndex = event.target!.selected;
+    this._selectedClusterIndex = event.target!.selected;
     fireEvent(this, "zha-cluster-selected", {
-      cluster: this._clusters[this.selectedClusterIndex],
+      cluster: this._clusters[this._selectedClusterIndex],
     });
   }
 

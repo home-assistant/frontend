@@ -29,15 +29,15 @@ export class ZhaEntities extends LitElement {
   public hass?: HomeAssistant;
   public showHelp?: boolean;
   public selectedNode?: HassEntity;
-  public selectedEntityIndex: number;
-  public entities: HassEntity[];
+  private _selectedEntityIndex: number;
+  private _entities: HassEntity[];
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
 
   constructor() {
     super();
-    this.entities = [];
-    this.selectedEntityIndex = -1;
+    this._entities = [];
+    this._selectedEntityIndex = -1;
   }
 
   static get properties(): PropertyDeclarations {
@@ -45,15 +45,15 @@ export class ZhaEntities extends LitElement {
       hass: {},
       showHelp: {},
       selectedNode: {},
-      selectedEntityIndex: {},
-      entities: {},
+      _selectedEntityIndex: {},
+      _entities: {},
     };
   }
 
   protected update(changedProperties: PropertyValues) {
     if (changedProperties.has("selectedNode")) {
-      this.entities = [];
-      this.selectedEntityIndex = -1;
+      this._entities = [];
+      this._selectedEntityIndex = -1;
       fireEvent(this, "zha-entity-selected", {
         entity: undefined,
       });
@@ -65,7 +65,7 @@ export class ZhaEntities extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this._renderStyle()} ${this._renderEntityPicker()}
-      ${this.selectedEntityIndex !== -1 ? this._renderEntityActions() : ""}
+      ${this._selectedEntityIndex !== -1 ? this._renderEntityActions() : ""}
     `;
   }
 
@@ -75,11 +75,11 @@ export class ZhaEntities extends LitElement {
         <paper-dropdown-menu dynamic-align="" label="Entities" class="flex">
           <paper-listbox
             slot="dropdown-content"
-            .selected="${this.selectedEntityIndex}"
+            .selected="${this._selectedEntityIndex}"
             @iron-select="${this._selectedEntityChanged}"
           >
             ${
-              this.entities.map(
+              this._entities.map(
                 (entry) => html`
                   <paper-item>${entry.entity_id}</paper-item>
                 `
@@ -112,19 +112,19 @@ export class ZhaEntities extends LitElement {
 
   private async _fetchEntitiesForZhaNode() {
     const fetchedEntities = await this.hass!.callWS({ type: "zha/entities" });
-    this.entities = fetchedEntities[this!.selectedNode!.attributes.ieee];
+    this._entities = fetchedEntities[this.selectedNode!.attributes.ieee];
   }
 
   private _selectedEntityChanged(event: ItemSelectedEvent): void {
-    this.selectedEntityIndex = event.target!.selected;
+    this._selectedEntityIndex = event.target!.selected;
     fireEvent(this, "zha-entity-selected", {
-      entity: this.entities[this.selectedEntityIndex],
+      entity: this._entities[this._selectedEntityIndex],
     });
   }
 
   private _showEntityInformation(): void {
     fireEvent(this, "hass-more-info", {
-      entityId: this.entities[this.selectedEntityIndex].entity_id,
+      entityId: this._entities[this._selectedEntityIndex].entity_id,
     });
   }
 

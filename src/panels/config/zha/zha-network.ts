@@ -14,20 +14,20 @@ import "../../../resources/ha-style";
 export class ZHANetwork extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
-  public showHelp: boolean;
+  private _showHelp: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
 
   constructor() {
     super();
-    this.showHelp = false;
+    this._showHelp = false;
   }
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
-      showHelp: {},
+      _showHelp: {},
     };
   }
 
@@ -49,7 +49,7 @@ export class ZHANetwork extends LitElement {
               this.hass
             }" domain="zha" service="permit">Permit</ha-call-service-button>
             ${
-              this.showHelp
+              this._showHelp
                 ? html`
                     <ha-service-description
                       .hass="${this.hass}"
@@ -65,7 +65,7 @@ export class ZHANetwork extends LitElement {
   }
 
   private _onHelpTap(): void {
-    this.showHelp = !this.showHelp;
+    this._showHelp = !this._showHelp;
   }
 
   private renderStyle(): TemplateResult {

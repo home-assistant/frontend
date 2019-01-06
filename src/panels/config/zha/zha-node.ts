@@ -33,19 +33,19 @@ declare global {
 export class ZhaNode extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
-  public showHelp: boolean;
-  public selectedNodeIndex: number;
-  public selectedNode?: HassEntity;
-  public selectedEntity?: HassEntity;
-  public serviceData?: {};
+  private _showHelp: boolean;
+  private _selectedNodeIndex: number;
+  private _selectedNode?: HassEntity;
+  private _selectedEntity?: HassEntity;
+  private _serviceData?: {};
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
   private _nodes: HassEntity[];
 
   constructor() {
     super();
-    this.showHelp = false;
-    this.selectedNodeIndex = -1;
+    this._showHelp = false;
+    this._selectedNodeIndex = -1;
     this._nodes = [];
   }
 
@@ -53,11 +53,11 @@ export class ZhaNode extends LitElement {
     return {
       hass: {},
       isWide: {},
-      showHelp: {},
-      selectedNodeIndex: {},
-      selectedNode: {},
-      serviceData: {},
-      selectedEntity: {},
+      _showHelp: {},
+      _selectedNodeIndex: {},
+      _selectedNode: {},
+      _serviceData: {},
+      _selectedEntity: {},
     };
   }
 
@@ -86,7 +86,7 @@ export class ZhaNode extends LitElement {
         <paper-card class="content">
           ${this._renderNodePicker()}
           ${
-            this.showHelp
+            this._showHelp
               ? html`
                   <div style="color: grey; padding: 16px">
                     Select node to view per-node options
@@ -94,9 +94,9 @@ export class ZhaNode extends LitElement {
                 `
               : ""
           }
-          ${this.selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
-          ${this.selectedNodeIndex !== -1 ? this._renderEntities() : ""}
-          ${this.selectedEntity ? this._renderClusters() : ""}
+          ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
+          ${this._selectedNodeIndex !== -1 ? this._renderEntities() : ""}
+          ${this._selectedEntity ? this._renderClusters() : ""}
         </paper-card>
       </ha-config-section>
     `;
@@ -133,11 +133,11 @@ export class ZhaNode extends LitElement {
           .hass="${this.hass}"
           domain="zha"
           service="reconfigure_device"
-          .serviceData="${this.serviceData}"
+          .serviceData="${this._serviceData}"
           >Reconfigure Node</ha-call-service-button
         >
         ${
-          this.showHelp
+          this._showHelp
             ? html`
                 <ha-service-description
                   .hass="${this.hass}"
@@ -151,11 +151,11 @@ export class ZhaNode extends LitElement {
           .hass="${this.hass}"
           domain="zha"
           service="remove"
-          .serviceData="${this.serviceData}"
+          .serviceData="${this._serviceData}"
           >Remove Node</ha-call-service-button
         >
         ${
-          this.showHelp
+          this._showHelp
             ? html`
                 <ha-service-description
                   .hass="${this.hass}"
@@ -173,8 +173,8 @@ export class ZhaNode extends LitElement {
     return html`
       <zha-entities
         .hass="${this.hass}"
-        .selectedNode="${this.selectedNode}"
-        .showHelp="${this.showHelp}"
+        .selectedNode="${this._selectedNode}"
+        .showHelp="${this._showHelp}"
         @zha-entity-selected="${this._onEntitySelected}"
       ></zha-entities>
     `;
@@ -184,33 +184,33 @@ export class ZhaNode extends LitElement {
     return html`
       <zha-clusters
         .hass="${this.hass}"
-        .selectedEntity="${this.selectedEntity}"
-        .showHelp="${this.showHelp}"
+        .selectedEntity="${this._selectedEntity}"
+        .showHelp="${this._showHelp}"
       ></zha-clusters>
     `;
   }
 
   private _onHelpTap(): void {
-    this.showHelp = !this.showHelp;
+    this._showHelp = !this._showHelp;
   }
 
   private _selectedNodeChanged(event: ItemSelectedEvent) {
-    this.selectedNodeIndex = event!.target!.selected;
-    this.selectedNode = this._nodes[this.selectedNodeIndex];
-    this.selectedEntity = undefined;
-    fireEvent(this, "zha-node-selected", { node: this.selectedNode });
-    this.serviceData = this._computeNodeServiceData();
+    this._selectedNodeIndex = event!.target!.selected;
+    this._selectedNode = this._nodes[this._selectedNodeIndex];
+    this._selectedEntity = undefined;
+    fireEvent(this, "zha-node-selected", { node: this._selectedNode });
+    this._serviceData = this._computeNodeServiceData();
   }
 
   private _showNodeInformation(): void {
     fireEvent(this, "hass-more-info", {
-      entityId: this.selectedNode!.entity_id,
+      entityId: this._selectedNode!.entity_id,
     });
   }
 
   private _computeNodeServiceData() {
     return {
-      ieee_address: this.selectedNode!.attributes.ieee,
+      ieee_address: this._selectedNode!.attributes.ieee,
     };
   }
 
@@ -232,7 +232,7 @@ export class ZhaNode extends LitElement {
   }
 
   private _onEntitySelected(entitySelectedEvent): void {
-    this.selectedEntity = entitySelectedEvent.detail.entity;
+    this._selectedEntity = entitySelectedEvent.detail.entity;
   }
 
   private renderStyle(): TemplateResult {

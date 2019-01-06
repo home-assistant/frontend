@@ -26,7 +26,7 @@ export class ZHAClusterCommands extends LitElement {
   public selectedNode?: HassEntity;
   public selectedEntity?: HassEntity;
   public selectedCluster?: Cluster;
-  public showHelp: boolean;
+  private _showHelp: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
   private _commands: Command[];
@@ -36,7 +36,7 @@ export class ZHAClusterCommands extends LitElement {
 
   constructor() {
     super();
-    this.showHelp = false;
+    this._showHelp = false;
     this._selectedCommandIndex = -1;
     this._commands = [];
   }
@@ -45,10 +45,10 @@ export class ZHAClusterCommands extends LitElement {
     return {
       hass: {},
       isWide: {},
-      showHelp: {},
       selectedNode: {},
       selectedEntity: {},
       selectedCluster: {},
+      _showHelp: {},
       _commands: {},
       _selectedCommandIndex: {},
       _manufacturerCodeOverride: {},
@@ -118,7 +118,7 @@ export class ZHAClusterCommands extends LitElement {
         </paper-dropdown-menu>
       </div>
 
-      <div ?hidden="${!this.showHelp}" style="color: grey; padding: 16px">
+      <div ?hidden="${!this._showHelp}" style="color: grey; padding: 16px">
         Select a command to interact with
       </div>
     `;
@@ -147,7 +147,7 @@ export class ZHAClusterCommands extends LitElement {
           .hass="${this.hass}"
           domain="zha"
           service="issue_zigbee_cluster_command"
-          ?hidden="${!this.showHelp}"
+          ?hidden="${!this._showHelp}"
         ></ha-service-description>
       </div>
     `;
@@ -184,7 +184,7 @@ export class ZHAClusterCommands extends LitElement {
   }
 
   private _onHelpTap(): void {
-    this.showHelp = !this.showHelp;
+    this._showHelp = !this._showHelp;
   }
 
   private _selectedCommandChanged(event: ItemSelectedEvent): void {
