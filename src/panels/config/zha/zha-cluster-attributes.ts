@@ -229,9 +229,10 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private async _onGetZigbeeAttributeClick() {
-    this._attributeValue = await this.hass!.callWS(
-      this._computeReadAttributeServiceData()
-    );
+    const data = this._computeReadAttributeServiceData();
+    if (data) {
+      this._attributeValue = await this.hass!.callWS(data);
+    }
   }
 
   private _onHelpTap(): void {

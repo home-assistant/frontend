@@ -1,5 +1,3 @@
-import { HassEntity } from "home-assistant-js-websocket";
-
 export interface PickerTarget extends EventTarget {
   selected: number;
 }
