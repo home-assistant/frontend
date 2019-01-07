@@ -34,7 +34,7 @@ declare global {
   }
 }
 
-export class ZhaNode extends LitElement {
+export class ZHANode extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   private _showHelp: boolean;
@@ -302,8 +302,8 @@ export class ZhaNode extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zha-node": ZhaNode;
+    "zha-node": ZHANode;
   }
 }
 
-customElements.define("zha-node", ZhaNode);
+customElements.define("zha-node", ZHANode);

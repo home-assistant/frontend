@@ -25,7 +25,7 @@ declare global {
   }
 }
 
-export class ZhaEntities extends LitElement {
+export class ZHAEntities extends LitElement {
   public hass?: HomeAssistant;
   public showHelp?: boolean;
   public selectedNode?: HassEntity;
@@ -163,8 +163,8 @@ export class ZhaEntities extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zha-entities": ZhaEntities;
+    "zha-entities": ZHAEntities;
   }
 }
 
-customElements.define("zha-entities", ZhaEntities);
+customElements.define("zha-entities", ZHAEntities);
