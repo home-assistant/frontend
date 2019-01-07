@@ -56,23 +56,23 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _graph(): string {
-    return this._config!.graph || "line";
+    return this._config!.graph || "none";
   }
 
   get _unit(): string {
     return this._config!.unit || "";
   }
 
-  get _detail(): number {
-    return this._config!.number || 1;
+  get _detail(): number | string {
+    return this._config!.number || "1";
   }
 
   get _theme(): string {
     return this._config!.theme || "default";
   }
 
-  get _hours_to_show(): number {
-    return this._config!.hours_to_show || 24;
+  get _hours_to_show(): number | string {
+    return this._config!.hours_to_show || "24";
   }
 
   protected render(): TemplateResult {
@@ -109,7 +109,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-dropdown-menu
-            .label="Graph Type"
+            label="Graph Type"
             .configValue="${"graph"}"
             @value-changed="${this._valueChanged}"
           >
