@@ -16,7 +16,11 @@ import "../../../resources/ha-style";
 import { ItemSelectedEvent } from "./types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
-import { Cluster, ZHADeviceEntity } from "../../../data/zha";
+import {
+  Cluster,
+  ZHADeviceEntity,
+  fetchClustersForZhaNode,
+} from "../../../data/zha";
 
 declare global {
   // for fire event
@@ -99,11 +103,13 @@ export class ZHAClusters extends LitElement {
   }
 
   private async _fetchClustersForZhaNode(): Promise<void> {
-    this._clusters = await this.hass!.callWS({
-      type: "zha/entities/clusters",
-      entity_id: this.selectedEntity!.entity_id,
-      ieee: this.selectedEntity!.device_info!.identifiers[0][1],
-    });
+    if (this.hass) {
+      this._clusters = await fetchClustersForZhaNode(
+        this.hass,
+        this.selectedEntity!.entity_id,
+        this.selectedEntity!.device_info!.identifiers[0][1]
+      );
+    }
   }
 
   private _selectedClusterChanged(event: ItemSelectedEvent): void {

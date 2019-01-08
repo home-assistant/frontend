@@ -93,3 +93,14 @@ export const fetchCommandsForCluster = (
     cluster_id: clusterId,
     cluster_type: clusterType,
   });
+
+export const fetchClustersForZhaNode = (
+  hass: HomeAssistant,
+  entityId: string,
+  ieeeAddress: string
+): Promise<Cluster[]> =>
+  hass.callWS({
+    type: "zha/entities/clusters",
+    entity_id: entityId,
+    ieee: ieeeAddress,
+  });
