@@ -73,3 +73,8 @@ export const computeReadAttributeServiceData = (
     };
   }
 };
+
+export const readAttributeValue = (
+  hass: HomeAssistant,
+  data: ReadAttributeServiceData
+): any => hass.callWS(data);

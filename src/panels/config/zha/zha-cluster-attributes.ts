@@ -29,6 +29,7 @@ import {
   ReadAttributeServiceData,
   computeReadAttributeServiceData,
   ZHADeviceEntity,
+  readAttributeValue,
 } from "../../../data/zha";
 
 export class ZHAClusterAttributes extends LitElement {
@@ -237,8 +238,8 @@ export class ZHAClusterAttributes extends LitElement {
 
   private async _onGetZigbeeAttributeClick(): Promise<void> {
     const data = this._computeReadAttributeServiceData();
-    if (data) {
-      this._attributeValue = await this.hass!.callWS(data);
+    if (data && this.hass) {
+      this._attributeValue = await readAttributeValue(this.hass, data);
     }
   }
 
