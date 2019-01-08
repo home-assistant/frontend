@@ -70,7 +70,7 @@ export class ZHANode extends LitElement {
     return html`
       ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">
-        <div style="position: relative" slot="header">
+        <div class="sectionHeader" slot="header">
           <span>Node Management</span>
           <paper-icon-button
             class="toggle-help-icon"
@@ -89,7 +89,7 @@ export class ZHANode extends LitElement {
         </span>
         <paper-card class="content">
           ${this._renderNodePicker()}
-          <div ?hidden="${!this._showHelp}" style="color: grey; padding: 16px">
+          <div ?hidden="${!this._showHelp}" class="helpText">
             Select node to view per-node options
           </div>
           ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
@@ -261,9 +261,18 @@ export class ZHANode extends LitElement {
           margin-left: 16px;
         }
 
+        .sectionHeader {
+          position: relative;
+        }
+
         .help-text {
           padding-left: 28px;
           padding-right: 28px;
+        }
+
+        .helpText {
+          color: grey;
+          padding: 16px;
         }
 
         paper-card {

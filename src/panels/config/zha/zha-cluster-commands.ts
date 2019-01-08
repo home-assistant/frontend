@@ -76,7 +76,7 @@ export class ZHAClusterCommands extends LitElement {
     return html`
       ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">
-        <div style="position: relative" slot="header">
+        <div class="sectionHeader" slot="header">
           <span>Cluster Commands</span>
           <paper-icon-button
             class="toggle-help-icon"
@@ -125,7 +125,7 @@ export class ZHAClusterCommands extends LitElement {
         </paper-dropdown-menu>
       </div>
 
-      <div ?hidden="${!this._showHelp}" style="color: grey; padding: 16px">
+      <div ?hidden="${!this._showHelp}" class="helpText">
         Select a command to interact with
       </div>
     `;
@@ -184,11 +184,6 @@ export class ZHAClusterCommands extends LitElement {
       cluster_type: this.selectedCluster!.type,
       command: this._commands[this._selectedCommandIndex].id,
       command_type: this._commands[this._selectedCommandIndex].type,
-      /*
-      manufacturer: this._manufacturerCodeOverride
-        ? parseInt(this._manufacturerCodeOverride)
-        : this.selectedNode!.attributes.manufacturer_code,
-        */
     };
   }
 
@@ -250,6 +245,15 @@ export class ZHAClusterCommands extends LitElement {
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
+        }
+
+        .sectionHeader {
+          position: relative;
+        }
+
+        .helpText {
+          color: grey;
+          padding: 16px;
         }
 
         .toggle-help-icon {

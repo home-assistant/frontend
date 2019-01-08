@@ -89,7 +89,7 @@ export class ZHAEntities extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      <div ?hidden="${!this.showHelp}" style="color: grey; padding: 16px">
+      <div ?hidden="${!this.showHelp}" class="helpText">
         Select entity to view per-entity options
       </div>
     `;
@@ -158,6 +158,10 @@ export class ZHAEntities extends LitElement {
         .actions paper-button:not([disabled]) {
           color: var(--primary-color);
           font-weight: 500;
+        }
+        .helpText {
+          color: grey;
+          padding: 16px;
         }
       </style>
     `;

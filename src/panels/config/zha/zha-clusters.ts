@@ -96,7 +96,7 @@ export class ZHAClusters extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      <div ?hidden="${!this.showHelp}" style="color: grey; padding: 16px">
+      <div ?hidden="${!this.showHelp}" class="helpText">
         Select cluster to view attributes and commands
       </div>
     `;
@@ -149,6 +149,10 @@ export class ZHAClusters extends LitElement {
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
+        }
+        .helpText {
+          color: grey;
+          padding: 16px;
         }
       </style>
     `;
