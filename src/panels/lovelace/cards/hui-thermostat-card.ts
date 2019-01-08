@@ -192,8 +192,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   private async _initialLoad(): Promise<void> {
     const radius = this.clientWidth / 3;
     this._broadCard = this.clientWidth > 390;
-    (this.shadowRoot!.querySelector("#root")! as HTMLElement).style.minHeight =
-      radius * 2 + (this._broadCard ? 50 : 30) + "px";
+
+    (this.shadowRoot!.querySelector(
+      "#thermostat"
+    )! as HTMLElement).style.minHeight = radius * 2 + "px";
 
     const loaded = await loadRoundslider();
     await new Promise((resolve) => afterNextRender(resolve));
@@ -248,6 +250,68 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
 
     return [sliderValue, uiValue];
+  }
+
+  private _loaded(): void {
+    (this.shadowRoot!.querySelector(
+      "#thermostat"
+    )! as HTMLElement).style.minHeight = null;
+  }
+
+  private _updateSetTemp(value: string): void {
+    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
+  }
+
+  private _dragEvent(e): void {
+    this._updateSetTemp(formatTemp(String(e.value).split(",")));
+  }
+
+  private _setTemperature(e): void {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
+    if (
+      stateObj.attributes.target_temp_low &&
+      stateObj.attributes.target_temp_high
+    ) {
+      if (e.handle.index === 1) {
+        this.hass!.callService("climate", "set_temperature", {
+          entity_id: this._config!.entity,
+          target_temp_low: e.handle.value,
+          target_temp_high: stateObj.attributes.target_temp_high,
+        });
+      } else {
+        this.hass!.callService("climate", "set_temperature", {
+          entity_id: this._config!.entity,
+          target_temp_low: stateObj.attributes.target_temp_low,
+          target_temp_high: e.handle.value,
+        });
+      }
+    } else {
+      this.hass!.callService("climate", "set_temperature", {
+        entity_id: this._config!.entity,
+        temperature: e.value,
+      });
+    }
+  }
+
+  private _renderIcon(mode: string, currentMode: string): TemplateResult {
+    if (!modeIcons[mode]) {
+      return html``;
+    }
+    return html`
+      <ha-icon
+        class="${classMap({ "selected-icon": currentMode === mode })}"
+        .mode="${mode}"
+        .icon="${modeIcons[mode]}"
+        @click="${this._handleModeClick}"
+      ></ha-icon>
+    `;
+  }
+
+  private _handleModeClick(e: MouseEvent): void {
+    this.hass!.callService("climate", "set_operation_mode", {
+      entity_id: this._config!.entity,
+      operation_mode: (e.currentTarget as any).mode,
+    });
   }
 
   private renderStyle(): TemplateResult {
@@ -424,68 +488,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         }
       </style>
     `;
-  }
-
-  private _updateSetTemp(value: string): void {
-    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
-  }
-
-  private _loaded(): void {
-    (this.shadowRoot!.querySelector(
-      "#root"
-    )! as HTMLElement).style.minHeight = null;
-  }
-
-  private _dragEvent(e): void {
-    this._updateSetTemp(formatTemp(String(e.value).split(",")));
-  }
-
-  private _setTemperature(e): void {
-    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
-    if (
-      stateObj.attributes.target_temp_low &&
-      stateObj.attributes.target_temp_high
-    ) {
-      if (e.handle.index === 1) {
-        this.hass!.callService("climate", "set_temperature", {
-          entity_id: this._config!.entity,
-          target_temp_low: e.handle.value,
-          target_temp_high: stateObj.attributes.target_temp_high,
-        });
-      } else {
-        this.hass!.callService("climate", "set_temperature", {
-          entity_id: this._config!.entity,
-          target_temp_low: stateObj.attributes.target_temp_low,
-          target_temp_high: e.handle.value,
-        });
-      }
-    } else {
-      this.hass!.callService("climate", "set_temperature", {
-        entity_id: this._config!.entity,
-        temperature: e.value,
-      });
-    }
-  }
-
-  private _renderIcon(mode: string, currentMode: string): TemplateResult {
-    if (!modeIcons[mode]) {
-      return html``;
-    }
-    return html`
-      <ha-icon
-        class="${classMap({ "selected-icon": currentMode === mode })}"
-        .mode="${mode}"
-        .icon="${modeIcons[mode]}"
-        @click="${this._handleModeClick}"
-      ></ha-icon>
-    `;
-  }
-
-  private _handleModeClick(e: MouseEvent): void {
-    this.hass!.callService("climate", "set_operation_mode", {
-      entity_id: this._config!.entity,
-      operation_mode: (e.currentTarget as any).mode,
-    });
   }
 }
 
