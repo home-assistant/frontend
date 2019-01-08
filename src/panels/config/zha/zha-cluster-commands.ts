@@ -20,7 +20,12 @@ import {
   ChangeEvent,
 } from "./types";
 
-import { Cluster, Command, ZHADeviceEntity } from "../../../data/zha";
+import {
+  Cluster,
+  Command,
+  ZHADeviceEntity,
+  fetchCommandsForCluster,
+} from "../../../data/zha";
 
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
@@ -156,14 +161,14 @@ export class ZHAClusterCommands extends LitElement {
   }
 
   private async _fetchCommandsForCluster(): Promise<void> {
-    if (this.selectedEntity && this.selectedCluster) {
-      this._commands = await this.hass!.callWS({
-        type: "zha/entities/clusters/commands",
-        entity_id: this.selectedEntity!.entity_id,
-        ieee: this.selectedEntity!.device_info!.identifiers[0][1],
-        cluster_id: this.selectedCluster!.id,
-        cluster_type: this.selectedCluster!.type,
-      });
+    if (this.selectedEntity && this.selectedCluster && this.hass) {
+      this._commands = await fetchCommandsForCluster(
+        this.hass,
+        this.selectedEntity!.entity_id,
+        this.selectedEntity!.device_info!.identifiers[0][1],
+        this.selectedCluster!.id,
+        this.selectedCluster!.type
+      );
     }
   }
 

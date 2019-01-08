@@ -78,3 +78,18 @@ export const readAttributeValue = (
   hass: HomeAssistant,
   data: ReadAttributeServiceData
 ): any => hass.callWS(data);
+
+export const fetchCommandsForCluster = (
+  hass: HomeAssistant,
+  entityId: string,
+  ieeeAddress: string,
+  clusterId: number,
+  clusterType: string
+): Promise<Command[]> =>
+  hass!.callWS({
+    type: "zha/entities/clusters/commands",
+    entity_id: entityId,
+    ieee: ieeeAddress,
+    cluster_id: clusterId,
+    cluster_type: clusterType,
+  });
