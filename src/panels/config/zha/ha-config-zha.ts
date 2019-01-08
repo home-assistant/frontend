@@ -15,12 +15,12 @@ import "./zha-cluster-commands";
 import "./zha-cluster-attributes";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  Cluster,
   ZHAEntitySelectedParams,
   ZHANodeSelectedParams,
   ZHAClusterSelectedParams,
 } from "./types";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { Cluster } from "../../../data/zha";
 
 export class HaConfigZha extends LitElement {
   public hass?: HomeAssistant;

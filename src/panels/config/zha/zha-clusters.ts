@@ -13,8 +13,10 @@ import "../ha-config-section";
 
 import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
-import { ItemSelectedEvent, Cluster, ZHADeviceEntity } from "./types";
+import { ItemSelectedEvent } from "./types";
 import { fireEvent } from "../../../common/dom/fire_event";
+
+import { Cluster, ZHADeviceEntity } from "../../../data/zha";
 
 declare global {
   // for fire event

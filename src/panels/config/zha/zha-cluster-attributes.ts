@@ -17,15 +17,19 @@ import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  Cluster,
   ItemSelectedEvent,
   SetAttributeServiceData,
-  ZHADeviceEntity,
-  ReadAttributeServiceData,
   ChangeEvent,
 } from "./types";
 
-import { fetchAttributesForCluster, Attribute } from "../../../data/zha";
+import {
+  fetchAttributesForCluster,
+  Attribute,
+  Cluster,
+  ReadAttributeServiceData,
+  computeReadAttributeServiceData,
+  ZHADeviceEntity,
+} from "../../../data/zha";
 
 export class ZHAClusterAttributes extends LitElement {
   public hass?: HomeAssistant;
@@ -191,19 +195,16 @@ export class ZHAClusterAttributes extends LitElement {
   private _computeReadAttributeServiceData():
     | ReadAttributeServiceData
     | undefined {
-    if (!this.selectedEntity || !this.selectedCluster || !this.selectedNode) {
-      return;
-    }
-    return {
-      type: "zha/entities/clusters/attributes/value",
-      entity_id: this.selectedEntity!.entity_id,
-      cluster_id: this.selectedCluster!.id,
-      cluster_type: this.selectedCluster!.type,
-      attribute: this._attributes[this._selectedAttributeIndex].id,
-      manufacturer: this._manufacturerCodeOverride
-        ? parseInt(this._manufacturerCodeOverride as string, 10)
-        : this.selectedNode!.attributes.manufacturer_code,
-    };
+    return computeReadAttributeServiceData(
+      this.selectedEntity!.entity_id,
+      this.selectedCluster!.id,
+      this.selectedCluster!.type,
+      this._attributes[this._selectedAttributeIndex].id,
+      this._manufacturerCodeOverride,
+      this.selectedEntity,
+      this.selectedCluster,
+      this.selectedNode
+    );
   }
 
   private _computeSetAttributeServiceData():

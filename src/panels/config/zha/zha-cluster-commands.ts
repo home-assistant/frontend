@@ -15,13 +15,13 @@ import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  Cluster,
-  Command,
   ItemSelectedEvent,
   IssueCommandServiceData,
-  ZHADeviceEntity,
   ChangeEvent,
 } from "./types";
+
+import { Cluster, Command, ZHADeviceEntity } from "../../../data/zha";
+
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
