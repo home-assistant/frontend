@@ -15,6 +15,7 @@ import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { ItemSelectedEvent } from "./types";
+import { fetchEntitiesForZhaNode } from "../../../data/zha";
 
 declare global {
   // for fire event
@@ -105,8 +106,10 @@ export class ZHAEntities extends LitElement {
   }
 
   private async _fetchEntitiesForZhaNode(): Promise<void> {
-    const fetchedEntities = await this.hass!.callWS({ type: "zha/entities" });
-    this._entities = fetchedEntities[this.selectedNode!.attributes.ieee];
+    if (this.hass) {
+      const fetchedEntities = await fetchEntitiesForZhaNode(this.hass);
+      this._entities = fetchedEntities[this.selectedNode!.attributes.ieee];
+    }
   }
 
   private _selectedEntityChanged(event: ItemSelectedEvent): void {

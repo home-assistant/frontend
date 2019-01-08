@@ -7,6 +7,10 @@ export interface ZHADeviceEntity extends HassEntity {
   };
 }
 
+export interface ZHAEntities {
+  [key: string]: HassEntity[];
+}
+
 export interface Attribute {
   name: string;
   id: number;
@@ -103,4 +107,11 @@ export const fetchClustersForZhaNode = (
     type: "zha/entities/clusters",
     entity_id: entityId,
     ieee: ieeeAddress,
+  });
+
+export const fetchEntitiesForZhaNode = (
+  hass: HomeAssistant
+): Promise<ZHAEntities> =>
+  hass.callWS({
+    type: "zha/entities",
   });
