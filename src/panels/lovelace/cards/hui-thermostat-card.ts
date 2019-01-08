@@ -117,8 +117,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           large: this._broadCard!,
           small: !this._broadCard,
         })}">
-        <div id="root" style="min-height: ${(this.clientWidth / 3) * 2 +
-          (this._broadCard ? 50 : 30)}px">
+        <div id="root">
           <div id="thermostat"></div>
           <div id="tooltip">
             <div class="title">${this._config.name ||
@@ -191,6 +190,11 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private async _initialLoad(): Promise<void> {
+    const radius = this.clientWidth / 3;
+    this._broadCard = this.clientWidth > 390;
+    (this.shadowRoot!.querySelector("#root")! as HTMLElement).style.minHeight =
+      radius * 2 + (this._broadCard ? 50 : 30) + "px";
+
     const loaded = await loadRoundslider();
     await new Promise((resolve) => afterNextRender(resolve));
 
@@ -207,13 +211,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
     const [sliderValue, uiValue] = this._genSliderValue(stateObj);
     const step = computeTemperatureStepSize(this.hass!, this._config!);
-    this._broadCard = this.clientWidth > 390;
+
     this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
-      radius: this.clientWidth / 3,
+      radius,
       min: stateObj.attributes.min_temp,
       max: stateObj.attributes.max_temp,
       sliderType: _sliderType,
+      create: () => this._loaded(),
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
       value: sliderValue,
@@ -423,6 +428,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
   private _updateSetTemp(value: string): void {
     this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
+  }
+
+  private _loaded(): void {
+    (this.shadowRoot!.querySelector(
+      "#root"
+    )! as HTMLElement).style.minHeight = null;
   }
 
   private _dragEvent(e): void {
