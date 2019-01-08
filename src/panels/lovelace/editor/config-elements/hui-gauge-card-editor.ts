@@ -17,7 +17,7 @@ import "../../components/hui-entity-editor";
 
 const cardConfigStruct = struct({
   type: "string",
-  title: "string?",
+  name: "string?",
   entity: "string?",
   unit: "string?",
   min: "number?",
@@ -42,8 +42,8 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
     return { hass: {}, _config: {} };
   }
 
-  get _title(): string {
-    return this._config!.title || "";
+  get _name(): string {
+    return this._config!.name || "";
   }
 
   get _entity(): string {
@@ -80,9 +80,9 @@ export class HuiGaugeCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
-            label="Title"
-            .value="${this._title}"
-            .configValue=${"title"}
+            label="Name"
+            .value="${this._name}"
+            .configValue=${"name"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <ha-entity-picker
