@@ -96,7 +96,7 @@ export class ZHAClusters extends LitElement {
     `;
   }
 
-  private async _fetchClustersForZhaNode(): Promise<any> {
+  private async _fetchClustersForZhaNode(): Promise<void> {
     this._clusters = await this.hass!.callWS({
       type: "zha/entities/clusters",
       entity_id: this.selectedEntity!.entity_id,

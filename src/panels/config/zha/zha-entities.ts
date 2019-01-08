@@ -104,7 +104,7 @@ export class ZHAEntities extends LitElement {
     `;
   }
 
-  private async _fetchEntitiesForZhaNode(): Promise<any> {
+  private async _fetchEntitiesForZhaNode(): Promise<void> {
     const fetchedEntities = await this.hass!.callWS({ type: "zha/entities" });
     this._entities = fetchedEntities[this.selectedNode!.attributes.ieee];
   }

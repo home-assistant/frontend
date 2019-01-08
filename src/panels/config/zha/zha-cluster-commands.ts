@@ -20,6 +20,7 @@ import {
   ItemSelectedEvent,
   IssueCommandServiceData,
   ZHADeviceEntity,
+  ChangeEvent,
 } from "./types";
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
@@ -103,7 +104,7 @@ export class ZHAClusterCommands extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            selected="${this._selectedCommandIndex}"
+            .selected="${this._selectedCommandIndex}"
             @iron-select="${this._selectedCommandChanged}"
           >
             ${
@@ -131,7 +132,7 @@ export class ZHAClusterCommands extends LitElement {
         <paper-input
           label="Manufacturer code override"
           type="number"
-          value="${this._manufacturerCodeOverride}"
+          .value="${this._manufacturerCodeOverride}"
           @value-changed="${this._onManufacturerCodeOverrideChanged}"
           placeholder="Value"
         ></paper-input>
@@ -154,7 +155,7 @@ export class ZHAClusterCommands extends LitElement {
     `;
   }
 
-  private async _fetchCommandsForCluster(): Promise<any> {
+  private async _fetchCommandsForCluster(): Promise<void> {
     if (this.selectedEntity && this.selectedCluster) {
       this._commands = await this.hass!.callWS({
         type: "zha/entities/clusters/commands",
@@ -186,8 +187,8 @@ export class ZHAClusterCommands extends LitElement {
     };
   }
 
-  private _onManufacturerCodeOverrideChanged(value): void {
-    this._manufacturerCodeOverride = value.detail.value;
+  private _onManufacturerCodeOverrideChanged(value: ChangeEvent): void {
+    this._manufacturerCodeOverride = value.detail!.value;
     this._issueClusterCommandServiceData = this._computeIssueClusterCommandServiceData();
   }
 

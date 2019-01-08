@@ -23,6 +23,7 @@ import {
   SetAttributeServiceData,
   ZHADeviceEntity,
   ReadAttributeServiceData,
+  ChangeEvent,
 } from "./types";
 
 export class ZHAClusterAttributes extends LitElement {
@@ -111,7 +112,7 @@ export class ZHAClusterAttributes extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            selected="${this._selectedAttributeIndex}"
+            .selected="${this._selectedAttributeIndex}"
             @iron-select="${this._selectedAttributeChanged}"
           >
             ${
@@ -139,7 +140,7 @@ export class ZHAClusterAttributes extends LitElement {
         <paper-input
           label="Value"
           type="string"
-          value="${this._attributeValue}"
+          .value="${this._attributeValue}"
           @value-changed="${this._onAttributeValueChanged}"
           placeholder="Value"
         ></paper-input>
@@ -148,7 +149,7 @@ export class ZHAClusterAttributes extends LitElement {
         <paper-input
           label="Manufacturer code override"
           type="number"
-          value="${this._manufacturerCodeOverride}"
+          .value="${this._manufacturerCodeOverride}"
           @value-changed="${this._onManufacturerCodeOverrideChanged}"
           placeholder="Value"
         ></paper-input>
@@ -174,7 +175,7 @@ export class ZHAClusterAttributes extends LitElement {
     `;
   }
 
-  private async _fetchAttributesForCluster(): Promise<any> {
+  private async _fetchAttributesForCluster(): Promise<void> {
     if (this.selectedEntity && this.selectedCluster) {
       this._attributes = await this.hass!.callWS({
         type: "zha/entities/clusters/attributes",
@@ -222,17 +223,17 @@ export class ZHAClusterAttributes extends LitElement {
     };
   }
 
-  private _onAttributeValueChanged(value): void {
-    this._attributeValue = value.detail.value;
+  private _onAttributeValueChanged(value: ChangeEvent): void {
+    this._attributeValue = value.detail!.value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private _onManufacturerCodeOverrideChanged(value): void {
-    this._manufacturerCodeOverride = value.detail.value;
+  private _onManufacturerCodeOverrideChanged(value: ChangeEvent): void {
+    this._manufacturerCodeOverride = value.detail!.value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private async _onGetZigbeeAttributeClick(): Promise<any> {
+  private async _onGetZigbeeAttributeClick(): Promise<void> {
     const data = this._computeReadAttributeServiceData();
     if (data) {
       this._attributeValue = await this.hass!.callWS(data);

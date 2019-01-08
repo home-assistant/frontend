@@ -8,6 +8,13 @@ export interface ItemSelectedEvent {
   target?: PickerTarget;
 }
 
+export interface ChangeEvent {
+  detail?: {
+    value?: any;
+  };
+  target?: EventTarget;
+}
+
 export interface Cluster {
   name: string;
   id: number;
