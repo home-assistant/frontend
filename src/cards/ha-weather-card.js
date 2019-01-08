@@ -103,11 +103,11 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           top: 4px;
         }
 
-        .unit {
+        .measurand {
           display: inline-block;
         }
 
-        :host([rtl]) .unit {
+        :host([rtl]) .measurand {
           direction: ltr;
         }
 
@@ -165,9 +165,9 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <div>
                   [[localize('ui.card.weather.attributes.air_pressure')]]:
-                  <div class="unit">
+                  <span class="measurand">
                     [[stateObj.attributes.pressure]] [[getUnit('air_pressure')]]
-                  </div>
+                  </span>
                 </div>
               </template>
               <template
@@ -176,7 +176,9 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <div>
                   [[localize('ui.card.weather.attributes.humidity')]]:
-                  <div class="unit">[[stateObj.attributes.humidity]] %</div>
+                  <span class="measurand"
+                    >[[stateObj.attributes.humidity]] %</span
+                  >
                 </div>
               </template>
               <template
@@ -185,9 +187,9 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <div>
                   [[localize('ui.card.weather.attributes.wind_speed')]]:
-                  <div class="unit">
+                  <span class="measurand">
                     [[getWindSpeed(stateObj.attributes.wind_speed)]]
-                  </div>
+                  </span>
                   [[getWindBearing(stateObj.attributes.wind_bearing, localize)]]
                 </div>
               </template>
