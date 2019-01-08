@@ -18,13 +18,14 @@ import "../../../resources/ha-style";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   Cluster,
-  Attribute,
   ItemSelectedEvent,
   SetAttributeServiceData,
   ZHADeviceEntity,
   ReadAttributeServiceData,
   ChangeEvent,
 } from "./types";
+
+import { fetchAttributesForCluster, Attribute } from "../../../data/zha";
 
 export class ZHAClusterAttributes extends LitElement {
   public hass?: HomeAssistant;
@@ -176,14 +177,14 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private async _fetchAttributesForCluster(): Promise<void> {
-    if (this.selectedEntity && this.selectedCluster) {
-      this._attributes = await this.hass!.callWS({
-        type: "zha/entities/clusters/attributes",
-        entity_id: this.selectedEntity!.entity_id,
-        ieee: this.selectedEntity!.device_info!.identifiers[0][1],
-        cluster_id: this.selectedCluster!.id,
-        cluster_type: this.selectedCluster!.type,
-      });
+    if (this.selectedEntity && this.selectedCluster && this.hass) {
+      this._attributes = await fetchAttributesForCluster(
+        this.hass,
+        this.selectedEntity!.entity_id,
+        this.selectedEntity!.device_info!.identifiers[0][1],
+        this.selectedCluster!.id,
+        this.selectedCluster!.type
+      );
     }
   }
 

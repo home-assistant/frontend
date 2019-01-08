@@ -21,11 +21,6 @@ export interface Cluster {
   type: string;
 }
 
-export interface Attribute {
-  name: string;
-  id: number;
-}
-
 export interface Command {
   name: string;
   id: number;
