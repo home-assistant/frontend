@@ -1,5 +1,6 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import { HassEntity } from "home-assistant-js-websocket";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-card/paper-card";
@@ -12,7 +13,6 @@ import "../../../resources/ha-style";
 import "../ha-config-section";
 
 import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 import sortByName from "../../../common/entity/states_sort_by_name";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
@@ -88,36 +88,38 @@ export class ZHANode extends LitElement {
           interact with them.
         </span>
         <paper-card class="content">
-          ${this._renderNodePicker()}
-          <div ?hidden="${!this._showHelp}" class="helpText">
-            Select node to view per-node options
+          <div class="node-picker">
+            <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
+              <paper-listbox
+                slot="dropdown-content"
+                @iron-select="${this._selectedNodeChanged}"
+              >
+                ${
+                  this._nodes.map(
+                    (entry) => html`
+                      <paper-item
+                        >${this._computeSelectCaption(entry)}</paper-item
+                      >
+                    `
+                  )
+                }
+              </paper-listbox>
+            </paper-dropdown-menu>
           </div>
+          ${
+            this._showHelp
+              ? html`
+                  <div class="helpText">
+                    Select node to view per-node options
+                  </div>
+                `
+              : ""
+          }
           ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
           ${this._selectedNodeIndex !== -1 ? this._renderEntities() : ""}
           ${this._selectedEntity ? this._renderClusters() : ""}
         </paper-card>
       </ha-config-section>
-    `;
-  }
-
-  private _renderNodePicker(): TemplateResult {
-    return html`
-      <div class="node-picker">
-        <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
-          <paper-listbox
-            slot="dropdown-content"
-            @iron-select="${this._selectedNodeChanged}"
-          >
-            ${
-              this._nodes.map(
-                (entry) => html`
-                  <paper-item>${this._computeSelectCaption(entry)}</paper-item>
-                `
-              )
-            }
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
     `;
   }
 

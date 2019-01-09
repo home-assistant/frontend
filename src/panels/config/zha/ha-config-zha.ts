@@ -1,4 +1,5 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import { HassEntity } from "home-assistant-js-websocket";
 import { TemplateResult } from "lit-html";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -13,7 +14,6 @@ import "./zha-network";
 import "./zha-node";
 import "./zha-cluster-commands";
 import "./zha-cluster-attributes";
-import { HassEntity } from "home-assistant-js-websocket";
 import {
   ZHAEntitySelectedParams,
   ZHANodeSelectedParams,
@@ -69,26 +69,29 @@ export class HaConfigZha extends LitElement {
           @zha-node-selected="${this._onNodeSelected}"
           @zha-entity-selected="${this._onEntitySelected}"
         ></zha-node>
+        ${
+          this._selectedCluster
+            ? html`
+                <zha-cluster-attributes
+                  id="zha-cluster-attributes"
+                  .isWide="${this.isWide}"
+                  .hass="${this.hass}"
+                  .selectedNode="${this._selectedNode}"
+                  .selectedEntity="${this._selectedEntity}"
+                  .selectedCluster="${this._selectedCluster}"
+                ></zha-cluster-attributes>
 
-        <zha-cluster-attributes
-          id="zha-cluster-attributes"
-          .isWide="${this.isWide}"
-          .hass="${this.hass}"
-          .selectedNode="${this._selectedNode}"
-          .selectedEntity="${this._selectedEntity}"
-          .selectedCluster="${this._selectedCluster}"
-          ?hidden="${!this._selectedCluster}"
-        ></zha-cluster-attributes>
-
-        <zha-cluster-commands
-          id="zha-cluster-commands"
-          .isWide="${this.isWide}"
-          .hass="${this.hass}"
-          .selectedNode="${this._selectedNode}"
-          .selectedEntity="${this._selectedEntity}"
-          .selectedCluster="${this._selectedCluster}"
-          ?hidden="${!this._selectedCluster}"
-        ></zha-cluster-commands>
+                <zha-cluster-commands
+                  id="zha-cluster-commands"
+                  .isWide="${this.isWide}"
+                  .hass="${this.hass}"
+                  .selectedNode="${this._selectedNode}"
+                  .selectedEntity="${this._selectedEntity}"
+                  .selectedCluster="${this._selectedCluster}"
+                ></zha-cluster-commands>
+              `
+            : ""
+        }
       </ha-app-layout>
     `;
   }

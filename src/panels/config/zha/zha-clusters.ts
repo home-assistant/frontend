@@ -31,6 +31,10 @@ declare global {
   }
 }
 
+const computeClusterKey = (cluster: Cluster): string => {
+  return `${cluster.name} (id: ${cluster.id}, type: ${cluster.type})`;
+};
+
 export class ZHAClusters extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
@@ -73,12 +77,7 @@ export class ZHAClusters extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._renderStyle()} ${this._renderClusterPicker()}
-    `;
-  }
-
-  private _renderClusterPicker(): TemplateResult {
-    return html`
+      ${this._renderStyle()}
       <div class="node-picker">
         <paper-dropdown-menu dynamic-align="" label="Clusters" class="flex">
           <paper-listbox
@@ -89,16 +88,22 @@ export class ZHAClusters extends LitElement {
             ${
               this._clusters.map(
                 (entry) => html`
-                  <paper-item>${this._computeClusterKey(entry)}</paper-item>
+                  <paper-item>${computeClusterKey(entry)}</paper-item>
                 `
               )
             }
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      <div ?hidden="${!this.showHelp}" class="helpText">
-        Select cluster to view attributes and commands
-      </div>
+      ${
+        this.showHelp
+          ? html`
+              <div class="helpText">
+                Select cluster to view attributes and commands
+              </div>
+            `
+          : ""
+      }
     `;
   }
 
@@ -117,12 +122,6 @@ export class ZHAClusters extends LitElement {
     fireEvent(this, "zha-cluster-selected", {
       cluster: this._clusters[this._selectedClusterIndex],
     });
-  }
-
-  private _computeClusterKey(cluster: Cluster): string {
-    return (
-      cluster.name + " (id: " + cluster.id + ", type: " + cluster.type + ")"
-    );
   }
 
   private _renderStyle(): TemplateResult {

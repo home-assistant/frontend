@@ -5,6 +5,7 @@ import {
   PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import { HassEntity } from "home-assistant-js-websocket";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-card/paper-card";
@@ -15,7 +16,6 @@ import "../ha-config-section";
 
 import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
-import { HassEntity } from "home-assistant-js-websocket";
 import {
   ItemSelectedEvent,
   SetAttributeServiceData,
@@ -97,7 +97,38 @@ export class ZHAClusterAttributes extends LitElement {
         <span slot="introduction">View and edit cluster attributes.</span>
 
         <paper-card class="content">
-          ${this._renderAttributePicker()}
+          <div class="attribute-picker">
+            <paper-dropdown-menu
+              label="Attributes of the selected cluster"
+              dynamic-align=""
+              class="flex"
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                .selected="${this._selectedAttributeIndex}"
+                @iron-select="${this._selectedAttributeChanged}"
+              >
+                ${
+                  this._attributes.map(
+                    (entry) => html`
+                      <paper-item
+                        >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                      >
+                    `
+                  )
+                }
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+          ${
+            this.showHelp
+              ? html`
+                  <div style="color: grey; padding: 16px">
+                    Select an attribute to view or set its value
+                  </div>
+                `
+              : ""
+          }
           ${
             this._selectedAttributeIndex !== -1
               ? this._renderAttributeInteractions()
@@ -105,38 +136,6 @@ export class ZHAClusterAttributes extends LitElement {
           }
         </paper-card>
       </ha-config-section>
-    `;
-  }
-
-  private _renderAttributePicker(): TemplateResult {
-    return html`
-      <div class="attribute-picker">
-        <paper-dropdown-menu
-          label="Attributes of the selected cluster"
-          dynamic-align=""
-          class="flex"
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${this._selectedAttributeIndex}"
-            @iron-select="${this._selectedAttributeChanged}"
-          >
-            ${
-              this._attributes.map(
-                (entry) => html`
-                  <paper-item
-                    >${entry.name + " (id: " + entry.id + ")"}</paper-item
-                  >
-                `
-              )
-            }
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-
-      <div ?hidden="${!this.showHelp}" style="color: grey; padding: 16px">
-        Select an attribute to view or set its value
-      </div>
     `;
   }
 
@@ -171,12 +170,17 @@ export class ZHAClusterAttributes extends LitElement {
           .serviceData="${this._setAttributeServiceData}"
           >Set Zigbee Attribute</ha-call-service-button
         >
-        <ha-service-description
-          .hass="${this.hass}"
-          domain="zha"
-          service="set_zigbee_cluster_attribute"
-          ?hidden="${!this.showHelp}"
-        ></ha-service-description>
+        ${
+          this.showHelp
+            ? html`
+                <ha-service-description
+                  .hass="${this.hass}"
+                  domain="zha"
+                  service="set_zigbee_cluster_attribute"
+                ></ha-service-description>
+              `
+            : ""
+        }
       </div>
     `;
   }

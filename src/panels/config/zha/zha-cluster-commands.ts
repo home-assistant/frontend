@@ -5,6 +5,7 @@ import {
   PropertyValues,
 } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
+import { HassEntity } from "home-assistant-js-websocket";
 import "@polymer/paper-card/paper-card";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "../../../components/buttons/ha-call-service-button";
@@ -13,7 +14,6 @@ import "../ha-config-section";
 
 import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
-import { HassEntity } from "home-assistant-js-websocket";
 import {
   ItemSelectedEvent,
   IssueCommandServiceData,
@@ -88,75 +88,75 @@ export class ZHAClusterCommands extends LitElement {
         <span slot="introduction">View and issue cluster commands.</span>
 
         <paper-card class="content">
-          ${this._renderCommandPicker()}
+          <div class="command-picker">
+            <paper-dropdown-menu
+              label="Commands of the selected cluster"
+              dynamic-align=""
+              class="flex"
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                .selected="${this._selectedCommandIndex}"
+                @iron-select="${this._selectedCommandChanged}"
+              >
+                ${
+                  this._commands.map(
+                    (entry) => html`
+                      <paper-item
+                        >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                      >
+                    `
+                  )
+                }
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+          ${
+            this._showHelp
+              ? html`
+                  <div class="helpText">Select a command to interact with</div>
+                `
+              : ""
+          }
           ${
             this._selectedCommandIndex !== -1
-              ? this._renderCommandInteractions()
+              ? html`
+                  <div class="input-text">
+                    <paper-input
+                      label="Manufacturer code override"
+                      type="number"
+                      .value="${this._manufacturerCodeOverride}"
+                      @value-changed="${
+                        this._onManufacturerCodeOverrideChanged
+                      }"
+                      placeholder="Value"
+                    ></paper-input>
+                  </div>
+                  <div class="card-actions">
+                    <ha-call-service-button
+                      .hass="${this.hass}"
+                      domain="zha"
+                      service="issue_zigbee_cluster_command"
+                      .serviceData="${this._issueClusterCommandServiceData}"
+                      >Issue Zigbee Command</ha-call-service-button
+                    >
+                    ${
+                      this._showHelp
+                        ? html`
+                            <ha-service-description
+                              .hass="${this.hass}"
+                              domain="zha"
+                              service="issue_zigbee_cluster_command"
+                            ></ha-service-description>
+                          `
+                        : ""
+                    }
+                  </div>
+                `
               : ""
           }
         </paper-card>
       </ha-config-section>
-    `;
-  }
-
-  private _renderCommandPicker(): TemplateResult {
-    return html`
-      <div class="command-picker">
-        <paper-dropdown-menu
-          label="Commands of the selected cluster"
-          dynamic-align=""
-          class="flex"
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${this._selectedCommandIndex}"
-            @iron-select="${this._selectedCommandChanged}"
-          >
-            ${
-              this._commands.map(
-                (entry) => html`
-                  <paper-item
-                    >${entry.name + " (id: " + entry.id + ")"}</paper-item
-                  >
-                `
-              )
-            }
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-
-      <div ?hidden="${!this._showHelp}" class="helpText">
-        Select a command to interact with
-      </div>
-    `;
-  }
-
-  private _renderCommandInteractions(): TemplateResult {
-    return html`
-      <div class="input-text">
-        <paper-input
-          label="Manufacturer code override"
-          type="number"
-          .value="${this._manufacturerCodeOverride}"
-          @value-changed="${this._onManufacturerCodeOverrideChanged}"
-          placeholder="Value"
-        ></paper-input>
-      </div>
-      <div class="card-actions">
-        <ha-call-service-button
-          .hass="${this.hass}"
-          domain="zha"
-          service="issue_zigbee_cluster_command"
-          .serviceData="${this._issueClusterCommandServiceData}"
-          >Issue Zigbee Command</ha-call-service-button
-        >
-        <ha-service-description
-          .hass="${this.hass}"
-          domain="zha"
-          service="issue_zigbee_cluster_command"
-          ?hidden="${!this._showHelp}"
-        ></ha-service-description>
-      </div>
     `;
   }
 

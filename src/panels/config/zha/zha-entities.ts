@@ -9,10 +9,10 @@ import "@polymer/paper-button/paper-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { HassEntity } from "home-assistant-js-websocket";
 import "../../../resources/ha-style";
 
 import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { ItemSelectedEvent } from "./types";
 import { fetchEntitiesForZhaNode } from "../../../data/zha";
@@ -65,13 +65,7 @@ export class ZHAEntities extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._renderStyle()} ${this._renderEntityPicker()}
-      ${this._selectedEntityIndex !== -1 ? this._renderEntityActions() : ""}
-    `;
-  }
-
-  private _renderEntityPicker(): TemplateResult {
-    return html`
+      ${this._renderStyle()}
       <div class="node-picker">
         <paper-dropdown-menu dynamic-align="" label="Entities" class="flex">
           <paper-listbox
@@ -89,19 +83,26 @@ export class ZHAEntities extends LitElement {
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      <div ?hidden="${!this.showHelp}" class="helpText">
-        Select entity to view per-entity options
-      </div>
-    `;
-  }
-
-  private _renderEntityActions(): TemplateResult {
-    return html`
-      <div class="actions">
-        <paper-button @click="${this._showEntityInformation}"
-          >Entity Information</paper-button
-        >
-      </div>
+      ${
+        this.showHelp
+          ? html`
+              <div class="helpText">
+                Select entity to view per-entity options
+              </div>
+            `
+          : ""
+      }
+      ${
+        this._selectedEntityIndex !== -1
+          ? html`
+              <div class="actions">
+                <paper-button @click="${this._showEntityInformation}"
+                  >Entity Information</paper-button
+                >
+              </div>
+            `
+          : ""
+      }
     `;
   }
 

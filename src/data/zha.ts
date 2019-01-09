@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
 import { HassEntity } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../types";
 
 export interface ZHADeviceEntity extends HassEntity {
   device_info?: {
