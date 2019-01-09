@@ -1,36 +1,34 @@
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import { HassEntity } from "home-assistant-js-websocket";
 import "@polymer/paper-button/paper-button";
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-card/paper-card";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { HassEntity } from "home-assistant-js-websocket";
+import { TemplateResult } from "lit-html";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import "../ha-config-section";
-
-import { HomeAssistant } from "../../../types";
-import "../../../resources/ha-style";
 import {
-  ItemSelectedEvent,
-  SetAttributeServiceData,
-  ChangeEvent,
-} from "./types";
-
-import {
-  fetchAttributesForCluster,
   Attribute,
   Cluster,
-  ReadAttributeServiceData,
   computeReadAttributeServiceData,
-  ZHADeviceEntity,
+  fetchAttributesForCluster,
+  ReadAttributeServiceData,
   readAttributeValue,
+  ZHADeviceEntity,
 } from "../../../data/zha";
+import "../../../resources/ha-style";
+import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
+import {
+  ChangeEvent,
+  ItemSelectedEvent,
+  SetAttributeServiceData,
+} from "./types";
 
 export class ZHAClusterAttributes extends LitElement {
   public hass?: HomeAssistant;

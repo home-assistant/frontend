@@ -1,26 +1,24 @@
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
 import "@polymer/paper-card/paper-card";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { TemplateResult } from "lit-html";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import "../ha-config-section";
-
-import { HomeAssistant } from "../../../types";
-import "../../../resources/ha-style";
-import { ItemSelectedEvent } from "./types";
-import { fireEvent } from "../../../common/dom/fire_event";
-
 import {
   Cluster,
-  ZHADeviceEntity,
   fetchClustersForZhaNode,
+  ZHADeviceEntity,
 } from "../../../data/zha";
+import "../../../resources/ha-style";
+import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
+import { ItemSelectedEvent } from "./types";
 
 declare global {
   // for fire event

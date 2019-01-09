@@ -1,26 +1,24 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult } from "lit-html";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { HomeAssistant } from "../../../types";
-
-import "../../../layouts/ha-app-layout";
-import "../../../resources/ha-style";
-
-import "./zha-network";
-import "./zha-node";
-import "./zha-cluster-commands";
-import "./zha-cluster-attributes";
-import {
-  ZHAEntitySelectedParams,
-  ZHANodeSelectedParams,
-  ZHAClusterSelectedParams,
-} from "./types";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { HassEntity } from "home-assistant-js-websocket";
+import { TemplateResult } from "lit-html";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { Cluster } from "../../../data/zha";
+import "../../../layouts/ha-app-layout";
+import "../../../resources/ha-style";
+import { HomeAssistant } from "../../../types";
+import {
+  ZHAClusterSelectedParams,
+  ZHAEntitySelectedParams,
+  ZHANodeSelectedParams,
+} from "./types";
+import "./zha-cluster-attributes";
+import "./zha-cluster-commands";
+import "./zha-network";
+import "./zha-node";
 
 export class HaConfigZha extends LitElement {
   public hass?: HomeAssistant;

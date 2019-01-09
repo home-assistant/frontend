@@ -1,21 +1,20 @@
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
 } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { HassEntity } from "home-assistant-js-websocket";
-import "../../../resources/ha-style";
-
-import { HomeAssistant } from "../../../types";
+import { TemplateResult } from "lit-html";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { ItemSelectedEvent } from "./types";
 import { fetchEntitiesForZhaNode } from "../../../data/zha";
+import "../../../resources/ha-style";
+import { HomeAssistant } from "../../../types";
+import { ItemSelectedEvent } from "./types";
 
 declare global {
   // for fire event
