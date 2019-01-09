@@ -423,6 +423,10 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Salir"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "ID de webhook"
                                 }
                             }
                         },
@@ -726,13 +730,32 @@
                     "edit_card": {
                         "header": "Configuración de la tarjeta",
                         "save": "Guardar",
-                        "toggle_editor": "Alternar editor"
+                        "toggle_editor": "Alternar editor",
+                        "pick_card": "Escoge la tarjeta que desea agregar.",
+                        "add": "Añadir tarjeta",
+                        "edit": "Editar",
+                        "delete": "Eliminar"
                     },
                     "migrate": {
                         "header": "Configuración incompatible",
                         "para_no_id": "Este elemento no tiene un ID. Por favor agregue uno  este elemento en 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant puede agregar ID a todas sus tarjetas y vistas automáticamente por usted presionando el botón 'Migrar configuración'.",
                         "migrate": "Migrar configuración"
+                    },
+                    "header": "Editar la interfaz de usuario",
+                    "configure_ui": "Configurar la interfaz de usuario",
+                    "edit_view": {
+                        "header": "Ver configuración",
+                        "add": "Añadir vista",
+                        "edit": "Editar vista",
+                        "delete": "Borrar vista"
+                    },
+                    "save_config": {
+                        "header": "Tomar el control de la interfaz de usuario de Lovelace",
+                        "para": "Por defecto, Home Assistant mantendrá su interfaz de usuario y la actualizará cuando haya nuevas entidades o componentes de Lovelace disponibles. Si usted toma el control, ya no haremos cambios automáticamente para usted.",
+                        "para_sure": "¿Está seguro de que desea tomar el control de su interfaz de usuario?",
+                        "cancel": "No importa",
+                        "save": "Tomar el control"
                     }
                 }
             }
@@ -743,7 +766,8 @@
         },
         "common": {
             "loading": "Cargando",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "save": "Guardar"
         },
         "duration": {
             "day": "{count} {count, plural,\none {día}\nother {días}\n}",

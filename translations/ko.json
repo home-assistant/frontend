@@ -423,6 +423,10 @@
                                     "event": "이벤트:",
                                     "enter": "입장",
                                     "leave": "퇴장"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -751,7 +755,7 @@
                         "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "cancel": "아닙니다",
-                        "save": "직접 관리할께요"
+                        "save": "직접 관리할게요"
                     }
                 }
             }

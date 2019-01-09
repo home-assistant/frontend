@@ -423,6 +423,10 @@
                                     "event": "Event:",
                                     "enter": "Enter",
                                     "leave": "Leave"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },

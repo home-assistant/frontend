@@ -1,9 +1,83 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+} from "@polymer/lit-element";
+import { TemplateResult, html } from "lit-html";
+import { classMap } from "lit-html/directives/classMap";
 import "./ha-icon";
 
-class HaLabelBadge extends PolymerElement {
-  static get template() {
+class HaLabelBadge extends LitElement {
+  public value?: string;
+  public icon?: string;
+  public label?: string;
+  public description?: string;
+  public image?: string;
+
+  static get properties(): PropertyDeclarations {
+    return {
+      value: {},
+      icon: {},
+      label: {},
+      description: {},
+      image: {},
+    };
+  }
+
+  protected render(): TemplateResult {
+    return html`
+      ${this.renderStyle()}
+      <div class="badge-container">
+        <div class="label-badge" id="badge">
+          <div
+            class="${
+              classMap({
+                value: true,
+                big: Boolean(this.value && this.value.length > 4),
+              })
+            }"
+          >
+            ${
+              this.icon && !this.value && !this.image
+                ? html`
+                    <ha-icon .icon="${this.icon}"></ha-icon>
+                  `
+                : ""
+            }
+            ${
+              this.value && !this.image
+                ? html`
+                    <span>${this.value}</span>
+                  `
+                : ""
+            }
+          </div>
+          ${
+            this.label
+              ? html`
+                  <div
+                    class="${
+                      classMap({ label: true, big: this.label.length > 5 })
+                    }"
+                  >
+                    <span>${this.label}</span>
+                  </div>
+                `
+              : ""
+          }
+        </div>
+        ${
+          this.description
+            ? html`
+                <div class="title">${this.description}</div>
+              `
+            : ""
+        }
+      </div>
+    `;
+  }
+
+  protected renderStyle(): TemplateResult {
     return html`
       <style>
         .badge-container {
@@ -74,69 +148,25 @@ class HaLabelBadge extends PolymerElement {
           text-overflow: ellipsis;
           line-height: normal;
         }
-
-        [hidden] {
-          display: none !important;
-        }
       </style>
-
-      <div class="badge-container">
-        <div class="label-badge" id="badge">
-          <div class$="[[computeValueClasses(value)]]">
-            <ha-icon
-              icon="[[icon]]"
-              hidden$="[[computeHideIcon(icon, value, image)]]"
-            ></ha-icon>
-            <span hidden$="[[computeHideValue(value, image)]]">[[value]]</span>
-          </div>
-          <div
-            hidden$="[[computeHideLabel(label)]]"
-            class$="[[computeLabelClasses(label)]]"
-          >
-            <span>[[label]]</span>
-          </div>
-        </div>
-        <div class="title" hidden$="[[!description]]">[[description]]</div>
-      </div>
     `;
   }
 
-  static get properties() {
-    return {
-      value: String,
-      icon: String,
-      label: String,
-      description: String,
-
-      image: {
-        type: String,
-        observer: "imageChanged",
-      },
-    };
-  }
-
-  computeValueClasses(value) {
-    return value && value.length > 4 ? "value big" : "value";
-  }
-
-  computeLabelClasses(label) {
-    return label && label.length > 5 ? "label big" : "label";
-  }
-
-  computeHideLabel(label) {
-    return !label || !label.trim();
-  }
-
-  computeHideIcon(icon, value, image) {
-    return !icon || value || image;
-  }
-
-  computeHideValue(value, image) {
-    return !value || image;
-  }
-
-  imageChanged(newVal) {
-    this.$.badge.style.backgroundImage = newVal ? "url(" + newVal + ")" : "";
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (changedProperties.has("image")) {
+      this.shadowRoot!.getElementById("badge")!.style.backgroundImage = this
+        .image
+        ? `url(${this.image})`
+        : "";
+    }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-label-badge": HaLabelBadge;
+  }
+}
+
 customElements.define("ha-label-badge", HaLabelBadge);

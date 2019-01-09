@@ -8,7 +8,7 @@ import {
 import { TemplateResult } from "lit-html";
 import "@polymer/paper-spinner/paper-spinner";
 
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -133,7 +133,7 @@ const coordinates = (
   return calcPoints(history, hours, width, detail, min, max);
 };
 
-interface Config extends LovelaceCardConfig {
+export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
   icon?: string;
@@ -145,6 +145,15 @@ interface Config extends LovelaceCardConfig {
 }
 
 class HuiSensorCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(/* webpackChunkName: "hui-sensor-card-editor" */ "../editor/config-elements/hui-sensor-card-editor");
+    return document.createElement("hui-sensor-card-editor");
+  }
+
+  public static getStubConfig(): object {
+    return {};
+  }
+
   public hass?: HomeAssistant;
   private _config?: Config;
   private _history?: any;

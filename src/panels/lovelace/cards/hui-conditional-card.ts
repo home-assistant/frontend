@@ -1,4 +1,4 @@
-import createCardElement from "../common/create-card-element";
+import { createCardElement } from "../common/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";

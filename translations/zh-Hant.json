@@ -423,6 +423,10 @@
                                     "event": "事件：",
                                     "enter": "進入區域",
                                     "leave": "離開區域"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -750,8 +754,8 @@
                         "header": "自行編輯 Lovelace UI",
                         "para": "Home Assistant 於預設下，將維護您的使用者介面、於新物件或 Lovelace 元件可使用時進行更新。假如選擇自行編輯，系統將不再為您自動進行變更。",
                         "para_sure": "確定要自行編輯使用者介面？",
-                        "cancel": "取消",
-                        "save": "儲存"
+                        "cancel": "我再想想",
+                        "save": "自行編輯"
                     }
                 }
             }

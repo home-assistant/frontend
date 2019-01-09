@@ -275,9 +275,9 @@
         "alarm_control_panel": {
             "armed": "Aktivéiert",
             "disarmed": "Desaktivéieren",
-            "armed_home": "Aktivéiert",
-            "armed_away": "Aktivéiert",
-            "armed_night": "Aktivéiert",
+            "armed_home": "Uzbrojony",
+            "armed_away": "Uzbrojony",
+            "armed_night": "Uzbrojony",
             "pending": "Ustoend",
             "arming": "Aktivéieren",
             "disarming": "Desaktivéieren",
@@ -317,7 +317,7 @@
                     "description": "Konfiguratioun validéieren an de Server kontrolléieren",
                     "section": {
                         "core": {
-                            "header": "Konfiguratioun an Server Kontroll",
+                            "header": "Konfiguracja i konktrola serwera",
                             "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
                             "validation": {
                                 "heading": "Validatioun vun der Konfiguratioun",
@@ -419,10 +419,14 @@
                                 "zone": {
                                     "label": "Zone",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Zon",
+                                    "zone": "Strefa",
                                     "event": "Evenement:",
                                     "enter": "Eran",
                                     "leave": "Verloossen"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -441,7 +445,7 @@
                                     "state": "Zoustand"
                                 },
                                 "numeric_state": {
-                                    "label": "Numereschen Zoustand",
+                                    "label": "Stan (numeryczny)",
                                     "above": "Iwwert",
                                     "below": "Ënnert",
                                     "value_template": "Wäerte Modell (optional)"
@@ -465,15 +469,15 @@
                                     "before": "Virdrun"
                                 },
                                 "zone": {
-                                    "label": "Zon",
+                                    "label": "Strefa",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Zon"
+                                    "zone": "Strefa"
                                 }
                             }
                         },
                         "actions": {
                             "header": "Aktiounen",
-                            "introduction": "Aktioune déi den HomeAssistant ausféiert wann den Automatisme ausgeléist gouf.\n[Léier méi iwwert Aktioune.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Aktioune déi den Home Assistant ausféiert wann den Automatisme ausgeléist gouf.\n[Léier méi iwwert Aktioune.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Aktioun dobäisetzen",
                             "duplicate": "Replikéiere",
                             "delete": "Läschen",
@@ -487,7 +491,7 @@
                                 },
                                 "delay": {
                                     "label": "Delai",
-                                    "delay": "Delai"
+                                    "delay": "Opóźnienie"
                                 },
                                 "wait_template": {
                                     "label": "Waart",
@@ -581,7 +585,7 @@
                     "created_at": "Erstallt um {date}",
                     "confirm_delete": "Sécher fir den Erneierungs Token fir {name} ze läsche?",
                     "delete_failed": "Fehler beim läschen vum Erneierungs Token",
-                    "last_used": "Läscht benotz um {date} vun {location}",
+                    "last_used": "Fir d'Läscht benotzt um {date} vun {location}",
                     "not_used": "Nach nie benotzt ginn",
                     "current_token_tooltip": "Fehler beim läschen vum aktuellen Erneierungs Token"
                 },
@@ -748,6 +752,7 @@
                     },
                     "save_config": {
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
+                        "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
                         "cancel": "Vergiess et",
                         "save": "Kontroll iwwerhuelen"
@@ -870,7 +875,7 @@
                 "actions": {
                     "resume_cleaning": "Fuer mam botzen weider",
                     "return_to_base": "Zeréck zur Statioun kommen",
-                    "start_cleaning": "Fänkt mam botzen un",
+                    "start_cleaning": "Fänk mam botzen un",
                     "turn_on": "Uschalten",
                     "turn_off": "Ausschalten"
                 }
@@ -910,8 +915,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "{entity} gouf ausgeschalt",
-            "entity_turned_off": "{entity} gouf ugeschalt",
+            "entity_turned_on": "{entity} gouf ugeschalt",
+            "entity_turned_off": "{entity} gouf ausgeschalt",
             "service_called": "Service {service} operuff",
             "service_call_failed": "Fehler beim opruffen vun {service}",
             "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut..."

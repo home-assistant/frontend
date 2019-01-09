@@ -28,6 +28,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
         .content {
           padding: 16px;
+          direction: ltr;
         }
 
         ha-entity-picker,

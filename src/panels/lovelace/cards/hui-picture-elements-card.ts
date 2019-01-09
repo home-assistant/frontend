@@ -1,7 +1,7 @@
 import { html, LitElement } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
 
-import createHuiElement from "../common/create-hui-element";
+import { createHuiElement } from "../common/create-hui-element";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";

@@ -1,5 +1,10 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 
+import {
+  createErrorCardElement,
+  createErrorCardConfig,
+  HuiErrorCard,
+} from "../cards/hui-error-card";
 import "../entity-rows/hui-climate-entity-row";
 import "../entity-rows/hui-cover-entity-row";
 import "../entity-rows/hui-group-entity-row";
@@ -18,8 +23,7 @@ import "../special-rows/hui-call-service-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
-
-import createErrorCardConfig from "./create-error-card-config";
+import { EntityConfig, EntityRow } from "../entity-rows/types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const SPECIAL_TYPES = new Set([
@@ -51,32 +55,37 @@ const DOMAIN_TO_ELEMENT_TYPE = {
 };
 const TIMEOUT = 2000;
 
-function _createElement(tag, config) {
-  const element = document.createElement(tag);
+const _createElement = (
+  tag: string,
+  config: EntityConfig
+): EntityRow | HuiErrorCard => {
+  const element = document.createElement(tag) as EntityRow;
   try {
-    if ("setConfig" in element) element.setConfig(config);
+    element.setConfig(config);
   } catch (err) {
-    // eslint-disable-next-line
+    // tslint:disable-next-line
     console.error(tag, err);
-    // eslint-disable-next-line
     return _createErrorElement(err.message, config);
   }
 
   return element;
-}
+};
 
-function _createErrorElement(error, config) {
-  return _createElement("hui-error-card", createErrorCardConfig(error, config));
-}
+const _createErrorElement = (
+  error: string,
+  config: EntityConfig
+): HuiErrorCard => createErrorCardElement(createErrorCardConfig(error, config));
 
-function _hideErrorElement(element) {
+const _hideErrorElement = (element) => {
   element.style.display = "None";
   return window.setTimeout(() => {
     element.style.display = "";
   }, TIMEOUT);
-}
+};
 
-export default function createRowElement(config) {
+export const createRowElement = (
+  config: EntityConfig
+): EntityRow | HuiErrorCard => {
   let tag;
 
   if (
@@ -116,4 +125,4 @@ export default function createRowElement(config) {
   tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || "text"}-entity-row`;
 
   return _createElement(tag, config);
-}
+};

@@ -1,13 +1,12 @@
 import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
 import { TemplateResult } from "lit-html";
-import { struct } from "../../common/structs/struct";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { processEditorEntities } from "../process-editor-entities";
-
+import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -59,8 +58,7 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "entities", ...config };
+    this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
 
@@ -74,7 +72,7 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       <div class="card-config">
         <paper-input
           label="Title"
-          value="${this._title}"
+          .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
@@ -117,11 +115,15 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue]:
-          target.checked !== undefined ? target.checked : target.value,
-      };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [target.configValue]:
+            target.checked !== undefined ? target.checked : target.value,
+        };
+      }
     }
 
     fireEvent(this, "config-changed", { config: this._config });
