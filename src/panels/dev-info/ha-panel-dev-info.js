@@ -312,7 +312,8 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-loaded-components",
         dialogTag: "ha-loaded-components",
-        dialogImport: () => import("./ha-loaded-components"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "ha-loaded-components" */ "./ha-loaded-components"),
       });
     }
 

@@ -7,7 +7,7 @@ import { demoConfig } from "../data/demo_config";
 import { demoServices } from "../data/demo_services";
 import demoResources from "../data/demo_resources";
 import demoStates from "../data/demo_states";
-import createCardElement from "../../../src/panels/lovelace/common/create-card-element";
+import { createCardElement } from "../../../src/panels/lovelace/common/create-card-element";
 
 class DemoCard extends PolymerElement {
   static get template() {
@@ -78,6 +78,10 @@ class DemoCard extends PolymerElement {
       hass.resources = demoResources;
       hass.language = "en";
       hass.states = demoStates;
+      hass.themes = {
+        default_theme: "default",
+        themes: {},
+      };
       el.hass = hass;
     }
 

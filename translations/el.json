@@ -222,8 +222,67 @@
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "state": {
+                                    "for": "Για"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "edit_card": {
+                        "save": "Αποθήκευση",
+                        "edit": "Επεξεργασία",
+                        "delete": "Διαγραφή"
+                    },
+                    "header": "Επεξεργασία UI",
+                    "configure_ui": "Ρύθμιση UI",
+                    "edit_view": {
+                        "header": "Ρυθμίσεις",
+                        "add": "Προσθήκη προβολής",
+                        "edit": "Επεξεργασία προβολής",
+                        "delete": "Διαγραφή προβολής"
+                    }
                 }
             }
+        },
+        "card": {
+            "cover": {
+                "position": "Θέση",
+                "tilt_position": "Θέση ανάκλισης"
+            },
+            "fan": {
+                "speed": "Ταχύτητα",
+                "oscillate": "Περιστροφή",
+                "direction": "Κατεύθυνση"
+            },
+            "light": {
+                "brightness": "Φωτεινότητα",
+                "color_temperature": "Θερμοκρασία χρώματος",
+                "white_value": "Τιμή λευκού",
+                "effect": "Εφέ"
+            },
+            "media_player": {
+                "text_to_speak": "Κείμενο για εκφώνηση"
+            },
+            "climate": {
+                "currently": "Αυτή τη στιγμή",
+                "target_temperature": "Επιθυμητή θερμοκρασία",
+                "target_humidity": "Επιθυμητή υγρασία",
+                "operation": "Λειτουργία",
+                "fan_mode": "Λειτουργία ανεμιστήρα",
+                "away_mode": "Λειτουργία εκτός σπιτιού"
+            }
+        },
+        "common": {
+            "save": "Αποθήκευση"
         }
     },
     "domain": {

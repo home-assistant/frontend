@@ -18,8 +18,8 @@ interface RefreshTokenResponse {
 declare global {
   interface Window {
     externalApp?: {
-      getExternalAuth(payload: BasePayload);
-      revokeExternalAuth(payload: BasePayload);
+      getExternalAuth(payload: string);
+      revokeExternalAuth(payload: string);
     };
     webkit?: {
       messageHandlers: {
@@ -67,7 +67,7 @@ export default class ExternalAuth extends Auth {
     const callbackPayload = { callback: CALLBACK_SET_TOKEN };
 
     if (window.externalApp) {
-      window.externalApp.getExternalAuth(callbackPayload);
+      window.externalApp.getExternalAuth(JSON.stringify(callbackPayload));
     } else {
       window.webkit!.messageHandlers.getExternalAuth.postMessage(
         callbackPayload
@@ -92,7 +92,7 @@ export default class ExternalAuth extends Auth {
     const callbackPayload = { callback: CALLBACK_REVOKE_TOKEN };
 
     if (window.externalApp) {
-      window.externalApp.revokeExternalAuth(callbackPayload);
+      window.externalApp.revokeExternalAuth(JSON.stringify(callbackPayload));
     } else {
       window.webkit!.messageHandlers.revokeExternalAuth.postMessage(
         callbackPayload

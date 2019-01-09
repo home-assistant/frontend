@@ -30,7 +30,7 @@ import { deleteView, addView, replaceView } from "../config-util";
 export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   public lovelace?: Lovelace;
   public viewIndex?: number;
-  protected hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   private _config?: LovelaceViewConfig;
   private _badges?: EntityConfig[];
   private _cards?: LovelaceCardConfig[];

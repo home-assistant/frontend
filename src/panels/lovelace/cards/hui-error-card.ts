@@ -3,13 +3,27 @@ import { html, LitElement } from "@polymer/lit-element";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { TemplateResult } from "lit-html";
+import { HomeAssistant } from "../../../types";
 
 interface Config extends LovelaceCardConfig {
   error: string;
   origConfig: LovelaceCardConfig;
 }
 
-class HuiErrorCard extends LitElement implements LovelaceCard {
+export const createErrorCardElement = (config) => {
+  const el = document.createElement("hui-error-card");
+  el.setConfig(config);
+  return el;
+};
+
+export const createErrorCardConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
+export class HuiErrorCard extends LitElement implements LovelaceCard {
+  public hass?: HomeAssistant;
   private _config?: Config;
 
   static get properties() {

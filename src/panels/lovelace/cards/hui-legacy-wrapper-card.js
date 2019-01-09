@@ -1,4 +1,4 @@
-import createErrorCardConfig from "../common/create-error-card-config";
+import { createErrorCardConfig } from "./hui-error-card";
 import computeDomain from "../../../common/entity/compute_domain";
 
 export default class LegacyWrapperCard extends HTMLElement {
