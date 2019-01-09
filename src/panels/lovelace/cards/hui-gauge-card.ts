@@ -104,10 +104,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this.renderStyle()}
-      <ha-card
-        @click="${this._handleClick}"
-        style="${styleMap({ "--base-unit": this._computeBaseUnit() })}"
-      >
+      <ha-card @click="${this._handleClick}">
         ${
           error
             ? html`
@@ -148,6 +145,15 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected firstUpdated(): void {
+    (this.shadowRoot!.querySelector(
+      "ha-card"
+    )! as HTMLElement).style.setProperty(
+      "--base-unit",
+      this._computeBaseUnit()
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
