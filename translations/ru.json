@@ -388,11 +388,11 @@
                                     "label": "Home Assistant",
                                     "event": "Событие:",
                                     "start": "Запуск",
-                                    "shutdown": "Выключение"
+                                    "shutdown": "Завершение работы"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "topic": "Топик",
+                                    "topic": "Тема",
                                     "payload": "Значение (опционально)"
                                 },
                                 "numeric_state": {

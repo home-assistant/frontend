@@ -70,7 +70,7 @@
             },
             "vibration": {
                 "off": "RAS",
-                "on": "Détecté"
+                "on": "Détectée"
             },
             "opening": {
                 "off": "Fermé",
@@ -275,8 +275,8 @@
         "alarm_control_panel": {
             "armed": "Activé",
             "disarmed": "Désactivé",
-            "armed_home": "Activée (présent)",
-            "armed_away": "Armée (absent)",
+            "armed_home": "Armé",
+            "armed_away": "Armé",
             "armed_night": "Activé",
             "pending": "En cours",
             "arming": "Activer",
@@ -301,7 +301,7 @@
                 "period": "Période"
             },
             "logbook": {
-                "showing_entries": "Afficher les entrées pour"
+                "showing_entries": "Afficher les entrées pour le"
             },
             "mailbox": {
                 "empty": "Vous n'avez aucun message",
@@ -436,7 +436,7 @@
                             "add": "Ajouter une condition",
                             "duplicate": "Dupliquer",
                             "delete": "Effacement",
-                            "delete_confirm": "Voulez-vous effacer ?",
+                            "delete_confirm": "Voulez-vous vraiment effacer ?",
                             "unsupported_condition": "Condition non supportée : {condition}",
                             "type_select": "Type de condition",
                             "type": {
@@ -480,7 +480,7 @@
                             "introduction": "Les actions sont ce que Home Assistant fera quand une automatisation est déclenchée.\n\n[En apprendre plus sur les actions.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Ajouter une action",
                             "duplicate": "Dupliquer",
-                            "delete": "Effacer",
+                            "delete": "Supprimer",
                             "delete_confirm": "Voulez-vous vraiment effacer ?",
                             "unsupported_action": "Action non supportée : {action}",
                             "type_select": "Type d'action",
@@ -533,7 +533,7 @@
                     }
                 },
                 "cloud": {
-                    "caption": "Home Assistant Cloud",
+                    "caption": "Nuage Home Assistant",
                     "description_login": "Connecté en tant que {email}",
                     "description_not_login": "Pas connecté"
                 },
@@ -752,7 +752,7 @@
                     },
                     "save_config": {
                         "header": "Prenez le controle de Lovelace UI",
-                        "para": "Par défaut Home Assistant va maintenir l'interface utilisateur, met à jour quand y'a de nouveaux entités ou composants de Lovelace sont disponibles. Si vous prenez le contrôle on ne fera plus de changements automatiques pour vous.",
+                        "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le controle de l'interface utilisateur?",
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "save": "Prenez le contrôle"
@@ -828,7 +828,8 @@
                 "disarm": "Désarmer",
                 "arm_home": "Armer (domicile)",
                 "arm_away": "Armer (absent)",
-                "arm_night": "Armer nuit"
+                "arm_night": "Armer nuit",
+                "armed_custom_bypass": "Bypass personnalisé"
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",

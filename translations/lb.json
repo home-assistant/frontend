@@ -275,9 +275,9 @@
         "alarm_control_panel": {
             "armed": "Aktivéiert",
             "disarmed": "Desaktivéieren",
-            "armed_home": "Aktivéiert",
-            "armed_away": "Aktivéiert",
-            "armed_night": "Aktivéiert",
+            "armed_home": "Uzbrojony",
+            "armed_away": "Uzbrojony",
+            "armed_night": "Uzbrojony",
             "pending": "Ustoend",
             "arming": "Aktivéieren",
             "disarming": "Desaktivéieren",
@@ -317,7 +317,7 @@
                     "description": "Konfiguratioun validéieren an de Server kontrolléieren",
                     "section": {
                         "core": {
-                            "header": "Konfiguratioun an Server Kontroll",
+                            "header": "Konfiguracja i konktrola serwera",
                             "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
                             "validation": {
                                 "heading": "Validatioun vun der Konfiguratioun",
@@ -419,7 +419,7 @@
                                 "zone": {
                                     "label": "Zone",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Zon",
+                                    "zone": "Strefa",
                                     "event": "Evenement:",
                                     "enter": "Eran",
                                     "leave": "Verloossen"
@@ -445,7 +445,7 @@
                                     "state": "Zoustand"
                                 },
                                 "numeric_state": {
-                                    "label": "Numereschen Zoustand",
+                                    "label": "Stan (numeryczny)",
                                     "above": "Iwwert",
                                     "below": "Ënnert",
                                     "value_template": "Wäerte Modell (optional)"
@@ -469,9 +469,9 @@
                                     "before": "Virdrun"
                                 },
                                 "zone": {
-                                    "label": "Zon",
+                                    "label": "Strefa",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Zon"
+                                    "zone": "Strefa"
                                 }
                             }
                         },
@@ -491,7 +491,7 @@
                                 },
                                 "delay": {
                                     "label": "Delai",
-                                    "delay": "Delai"
+                                    "delay": "Opóźnienie"
                                 },
                                 "wait_template": {
                                     "label": "Waart",
@@ -875,7 +875,7 @@
                 "actions": {
                     "resume_cleaning": "Fuer mam botzen weider",
                     "return_to_base": "Zeréck zur Statioun kommen",
-                    "start_cleaning": "Fänkt mam botzen un",
+                    "start_cleaning": "Fänk mam botzen un",
                     "turn_on": "Uschalten",
                     "turn_off": "Ausschalten"
                 }
