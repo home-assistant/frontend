@@ -31,12 +31,22 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
       return html``;
     }
 
+    const stateObj = this.hass.states[this._config.entity];
+
+    if (!stateObj) {
+      return html`
+        <hui-error-entity-row
+          .entity="${this._config.entity}"
+        ></hui-error-entity-row>
+      `;
+    }
+
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <ha-climate-state
           .hass="${this.hass}"
-          .stateObj="${this.hass.states[this._config.entity]}"
+          .stateObj="${stateObj}"
         ></ha-climate-state>
       </hui-generic-entity-row>
     `;

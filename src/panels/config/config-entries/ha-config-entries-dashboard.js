@@ -172,7 +172,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
       this.fire("register-dialog", {
         dialogShowEvent: "show-config-flow",
         dialogTag: "ha-config-flow",
-        dialogImport: () => import("./ha-config-flow"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "ha-config-flow" */ "./ha-config-flow"),
       });
     }
   }

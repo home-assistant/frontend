@@ -17,6 +17,7 @@ import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-c
 import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard");
 import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script");
 import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users");
+import(/* webpackChunkName: "panel-config-zha" */ "./zha/ha-config-zha");
 import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave");
 
 /*
@@ -104,6 +105,18 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
           hass="[[hass]]"
           is-wide="[[isWide]]"
         ></ha-config-script>
+      </template>
+
+      <template
+        is="dom-if"
+        if="[[_equals(_routeData.page, &quot;zha&quot;)]]"
+        restamp
+      >
+        <ha-config-zha
+          page-name="zha"
+          hass="[[hass]]"
+          is-wide="[[isWide]]"
+        ></ha-config-zha>
       </template>
 
       <template

@@ -423,6 +423,10 @@
                                     "event": "אירוע:",
                                     "enter": "כניסה",
                                     "leave": "יציאה"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -557,7 +561,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "הודעות דחיפה",
-                    "description": "שלח התראות למכשיר זה",
+                    "description": "שלח התראות למכשיר זה.",
                     "error_load_platform": "הגדר את notify.html5.",
                     "error_use_https": "נדרש SSL מופעל עבור הממשק.",
                     "push_notifications": "הודעות דחיפה",
