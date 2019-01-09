@@ -274,7 +274,7 @@
         },
         "alarm_control_panel": {
             "armed": "Attivo",
-            "disarmed": "Disattivo",
+            "disarmed": "Disattiva",
             "armed_home": "Attivo",
             "armed_away": "Attivo",
             "armed_night": "Attivo",
@@ -368,7 +368,7 @@
                             "introduction": "I trigger sono ciò che avvia l'elaborazione di una regola di automazione. È possibile specificare più trigger per la stessa regola. Una volta avviato il trigger, Home Assistant convaliderà le condizioni, se presenti, e chiamerà l'azione. \n\n [Ulteriori informazioni sui trigger.](Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Aggiungi trigger",
                             "duplicate": "Duplica",
-                            "delete": "Cancella",
+                            "delete": "Elimina",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "unsupported_platform": "Piattaforma non supportata: {platform}",
                             "type_select": "Tipo di trigger",
@@ -426,7 +426,7 @@
                                 },
                                 "webhook": {
                                     "label": "Webhook",
-                                    "webhook_id": "Webhook ID"
+                                    "webhook_id": "ID Webhook"
                                 }
                             }
                         },
@@ -435,7 +435,7 @@
                             "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \n\n [Ulteriori informazioni sulle condizioni.](Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Aggiungi condizione",
                             "duplicate": "Duplica",
-                            "delete": "Cancella",
+                            "delete": "Elimina",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "unsupported_condition": "Condizione non supportata: {condition}",
                             "type_select": "Tipo di condizione",
@@ -480,7 +480,7 @@
                             "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.](Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Aggiungi azione",
                             "duplicate": "Duplica",
-                            "delete": "Cancella",
+                            "delete": "Elimina",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "unsupported_action": "Azione non supportata: {action}",
                             "type_select": "Tipo di azione",
@@ -504,7 +504,7 @@
                                 "event": {
                                     "label": "Scatena Evento",
                                     "event": "Evento:",
-                                    "service_data": "Dato servizio"
+                                    "service_data": "Dati servizio"
                                 }
                             }
                         }
@@ -535,7 +535,7 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Connesso come {email}",
-                    "description_not_login": "Non loggato"
+                    "description_not_login": "Accesso non effettuato"
                 },
                 "integrations": {
                     "caption": "integrazioni",
@@ -551,7 +551,7 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
                         "restart_confirm": "Riavvia Home Assistant per terminare la rimozione di questa integrazione",
                         "manuf": "da {manufacturer}",
-                        "hub": "Connesso via",
+                        "hub": "Connesso tramite",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo non disponibile",
                         "entity_unavailable": "entità non disponibile"
@@ -600,7 +600,7 @@
                     "create_failed": "Impossibile creare il token di accesso.",
                     "prompt_name": "Nome?",
                     "prompt_copy_token": "Copia il tuo token di accesso. Non verrà più mostrato.",
-                    "empty_state": "Non hai ancora token di accesso di lunga durata.",
+                    "empty_state": "Non hai ancora un token di accesso di lunga durata.",
                     "last_used": "Utilizzato l'ultima volta il {date} da {location}",
                     "not_used": "Non è mai stato usato"
                 },
@@ -754,7 +754,7 @@
                         "header": "Prendi il controllo della tua interfaccia utente di Lovelace",
                         "para": "Per impostazione predefinita, Home Assistant manterrà l'interfaccia utente, aggiornandola quando nuove entità o componenti Lovelace diventano disponibili. Se prendi il controllo non effettueremo più automaticamente le modifiche per te.",
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
-                        "cancel": "Non importa",
+                        "cancel": "Rinuncia",
                         "save": "Prendere il controllo"
                     }
                 }
@@ -825,7 +825,7 @@
             "alarm_control_panel": {
                 "code": "Codice",
                 "clear_code": "Canc",
-                "disarm": "Disattivato",
+                "disarm": "Disattiva",
                 "arm_home": "Attiva In casa",
                 "arm_away": "Attiva Fuori Casa",
                 "arm_night": "Attiva Notte",

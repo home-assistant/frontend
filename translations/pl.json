@@ -486,7 +486,7 @@
                             "type_select": "Typ akcji",
                             "type": {
                                 "service": {
-                                    "label": "Wykonanie usługi",
+                                    "label": "Wywołanie usługi",
                                     "service_data": "Dane usługi"
                                 },
                                 "delay": {
@@ -494,7 +494,7 @@
                                     "delay": "Opóźnienie"
                                 },
                                 "wait_template": {
-                                    "label": "Czekaj",
+                                    "label": "Oczekiwanie",
                                     "wait_template": "Szablon czekania",
                                     "timeout": "Limit czasu (opcjonalnie)"
                                 },
@@ -502,7 +502,7 @@
                                     "label": "Warunek"
                                 },
                                 "event": {
-                                    "label": "Uruchom zdarzenie",
+                                    "label": "Wywołanie zdarzenia",
                                     "event": "Zdarzenie:",
                                     "service_data": "Dane usługi"
                                 }
@@ -825,11 +825,11 @@
             "alarm_control_panel": {
                 "code": "Kod",
                 "clear_code": "Wyczyść",
-                "disarm": "Rozbrojony",
-                "arm_home": "uzbrojony (w domu)",
-                "arm_away": "uzbrojony (nieobecny)",
-                "arm_night": "uzbrojony (noc)",
-                "armed_custom_bypass": "uzbrojony (częściowo)"
+                "disarm": "Rozbrojenie",
+                "arm_home": "Uzbrojenie (w domu)",
+                "arm_away": "Uzbrojenie (nieobecny)",
+                "arm_night": "Uzbrojenie (noc)",
+                "armed_custom_bypass": "Uzbrój (częściowo)"
             },
             "automation": {
                 "last_triggered": "Ostatnie uruchomienie",

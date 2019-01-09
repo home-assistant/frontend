@@ -292,7 +292,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Kijelöltek törlése",
+                "clear_completed": "Bejelöltek törlése",
                 "add_item": "Tétel hozzáadása",
                 "microphone_tip": "Koppints a jobb felső sarokban található mikrofonra, és mondd ki: \"Add candy to my shopping list\""
             },
@@ -721,8 +721,8 @@
             "lovelace": {
                 "cards": {
                     "shopping-list": {
-                        "checked_items": "Kijelölt tételek",
-                        "clear_items": "Kijelölt tételek törlése",
+                        "checked_items": "Bejelölt tételek",
+                        "clear_items": "Bejelölt tételek törlése",
                         "add_item": "Tétel hozzáadása"
                     }
                 },
