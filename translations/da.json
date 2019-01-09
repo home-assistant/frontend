@@ -618,7 +618,8 @@
                 "mfa": {
                     "header": "Multifaktor godkendelsesmoduler",
                     "disable": "Deaktiver",
-                    "enable": "Aktiver"
+                    "enable": "Aktiver",
+                    "confirm_disable": "Er du sikker på du vil deaktivere {name}?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Afbrudt",
@@ -726,18 +727,35 @@
                     }
                 },
                 "editor": {
+                    "edit_card": {
+                        "header": "Kortkonfiguration",
+                        "save": "Gem",
+                        "toggle_editor": "Skifte Editor",
+                        "pick_card": "Vælg det kort, du vil tilføje.",
+                        "add": "Tilføj kort",
+                        "edit": "Rediger",
+                        "delete": "Slet"
+                    },
                     "migrate": {
                         "header": "Konfiguration ikke færdiggjort",
+                        "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i \"ui-lovelace.yaml\".",
+                        "para_migrate": "Hjem assistent kan tilføje id'er til alle dine kort og oversigter automatisk for dig ved at trykke på knappen 'Overfør configuration'.",
                         "migrate": "Migrer opsætning"
                     },
                     "header": "Rediger UI",
                     "configure_ui": "Konfigurer UI",
                     "edit_view": {
-                        "header": "Vis konfiguration"
+                        "header": "Vis konfiguration",
+                        "add": "Tilføje visning",
+                        "edit": "Redigere visning",
+                        "delete": "Slette visning"
                     },
-                    "edit_card": {
-                        "edit": "Rediger",
-                        "delete": "Slet"
+                    "save_config": {
+                        "header": "Tage kontrol over din 2Lovelace\" UI",
+                        "para": "Som standard vil hjem assistenten fastholde din brugergrænseflade, opdaterer den når nye enheder eller \"Lovelace\" komponenter bliver tilgængelige. Hvis du tager kontrol så vil vi ikke længere foretage ændringer automatisk for dig.",
+                        "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugergrænseflade?",
+                        "cancel": "Glem det",
+                        "save": "tag kontrol"
                     }
                 }
             }

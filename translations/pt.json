@@ -273,16 +273,16 @@
             "unavailable": "Indisp"
         },
         "alarm_control_panel": {
-            "armed": "Armad",
+            "armed": "Armado",
             "disarmed": "Desarm",
-            "armed_home": "Armad",
-            "armed_away": "Armad",
-            "armed_night": "Armad",
+            "armed_home": "Armado",
+            "armed_away": "Armado",
+            "armed_night": "Armado",
             "pending": "Pend",
             "arming": "A armar",
             "disarming": "Desarmar",
             "triggered": "Disp",
-            "armed_custom_bypass": "Armad"
+            "armed_custom_bypass": "Armado"
         },
         "device_tracker": {
             "home": "Casa",
@@ -423,6 +423,10 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Sair"
+                                },
+                                "webhook": {
+                                    "label": "",
+                                    "webhook_id": ""
                                 }
                             }
                         },
@@ -601,7 +605,7 @@
                     "not_used": "Nunca foi utilizado"
                 },
                 "current_user": "Esta actualmente ligado como {fullName}",
-                "is_owner": "Você é o proprietário.",
+                "is_owner": "Você é um proprietário.",
                 "logout": "Sair",
                 "change_password": {
                     "header": "Alterar palavra-passe",
@@ -726,13 +730,32 @@
                     "edit_card": {
                         "header": "Configuração do cartão",
                         "save": "Guardar",
-                        "toggle_editor": "Alterar para editor"
+                        "toggle_editor": "Alterar para editor",
+                        "pick_card": "Escolha o cartão que deseja adicionar.",
+                        "add": "Adicionar Cartão",
+                        "edit": "Editar",
+                        "delete": "Apagar"
                     },
                     "migrate": {
                         "header": "Configuração Incompatível",
                         "para_no_id": "Este elemento não possui um ID. Por favor adicione um ID a este elemento em 'ui-lovelace.yaml'.",
                         "para_migrate": "O Home Assistant pode adicionar IDs a todos os seus cartões e vistas automaticamente clicando no botão 'Migrar configuração'.",
                         "migrate": "Migrar configuração"
+                    },
+                    "header": "Editar UI",
+                    "configure_ui": "Configurar UI",
+                    "edit_view": {
+                        "header": "Ver configuração",
+                        "add": "Acrescentar vista",
+                        "edit": "Editar vista",
+                        "delete": "Apagar a vista"
+                    },
+                    "save_config": {
+                        "header": "Assumir controle sobre a interface do Lovelace",
+                        "para": "Por omissão o Home Assistant irá manter a sua interface de utilizador, actualizando sempre que uma entidade nova ou componentes Lovelace fiquem disponíveis. Se assumir o controle não será possivel fazer alterações automáticas por si.",
+                        "para_sure": "Tem certeza que deseja assumir o controle sobre a interface de utilizador?",
+                        "cancel": "Cancelar",
+                        "save": "Assumir o controle"
                     }
                 }
             }
@@ -743,7 +766,8 @@
         },
         "common": {
             "loading": "A carregar",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "save": "Guardar"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
