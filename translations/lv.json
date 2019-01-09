@@ -317,7 +317,7 @@
                     "description": "Veiciet konfigurācijas failu pārbaudi un pārvaldiet serveri",
                     "section": {
                         "core": {
-                            "header": "Konfigurācijas un servera pārvaldība",
+                            "header": "Konfigurācijas un Servera pārvaldība",
                             "introduction": "Izmaiņas konfigurācijā var būt nogurdinošs process. Mēs zinām. Šai sadaļai vajadzētu padarīt dzīvi mazliet vieglāku.",
                             "validation": {
                                 "heading": "Konfigurācijas pārbaude",
@@ -351,7 +351,7 @@
                     "caption": "Automatizācija",
                     "description": "Veidojiet un rediģējiet automatizācijas",
                     "picker": {
-                        "header": "Automatizāciju redaktors",
+                        "header": "Automatizāciju Redaktors",
                         "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, izlasiet [norādījumus] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
                         "pick_automation": "Izvēlieties automatizāciju kuru rediģēt",
                         "no_automations": "Mēs nevarējām atrast rediģējamas automatizācijas",
@@ -423,6 +423,10 @@
                                     "event": "Notikums:",
                                     "enter": "Ieiet",
                                     "leave": "Iziet"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -713,6 +717,47 @@
                         "required_fields": "Aizpildiet visus obligātos laukus"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Atzīmētie vienumi",
+                        "clear_items": "Notīrīt atzīmētos vienumus",
+                        "add_item": "Pievienot vienumu"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kartes Konfigurācija",
+                        "save": "Saglabāt",
+                        "toggle_editor": "Pārslēgt Redaktoru",
+                        "pick_card": "Izvēlieties karti, kuru vēlaties pievienot.",
+                        "add": "Pievienot karti",
+                        "edit": "Rediģēt",
+                        "delete": "Dzēst"
+                    },
+                    "migrate": {
+                        "header": "Konfigurācija Nesaderīga",
+                        "para_no_id": "Šim elementam nav ID. Lūdzu, pievienojiet ID šim elementam 'ui-lovelace.yaml' failā.",
+                        "para_migrate": "Home Assistant var automātiski pievienot ID visām kartēm un skatiem, nospiežot pogu \"Pārvietot konfigurāciju\".",
+                        "migrate": "Pārvietot konfigurāciju"
+                    },
+                    "header": "Rediģēt lietotāja interfeisu",
+                    "configure_ui": "Konfigurēt lietotāja interfeisu",
+                    "edit_view": {
+                        "header": "Skatīt konfigurāciju",
+                        "add": "Pievienot skatu",
+                        "edit": "Rediģēt skatu",
+                        "delete": "Dzēst skatu"
+                    },
+                    "save_config": {
+                        "header": "Pārņemt kontroli pār savu Lovelace UI",
+                        "para": "Pēc noklusējuma Home Assistant uzturēs jūsu lietotāja interfeisu, atjauninot to, kad būs pieejami jauni objekti vai Lovelace komponenti. Ja jūs uzņematies kontroli, mēs jums vairs neveiksim izmaiņas automātiski jūsu vietā.",
+                        "para_sure": "Vai tiešām vēlaties kontrolēt savu lietotāja interfeisu?",
+                        "cancel": "Nekas",
+                        "save": "Pārņemt kontroli"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -721,7 +766,8 @@
         },
         "common": {
             "loading": "Ielāde",
-            "cancel": "Atcelt"
+            "cancel": "Atcelt",
+            "save": "Saglabāt"
         },
         "duration": {
             "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}",
@@ -778,10 +824,12 @@
             },
             "alarm_control_panel": {
                 "code": "Kods",
-                "clear_code": "Dzēst",
+                "clear_code": "Notīrīt",
                 "disarm": "Atslēgt",
                 "arm_home": "Pieslēgt mājas",
-                "arm_away": "Pieslēgt prombūtni"
+                "arm_away": "Pieslēgt prombūtni",
+                "arm_night": "Pieslēgts uz nakti",
+                "armed_custom_bypass": "Pielāgots apvedceļš"
             },
             "automation": {
                 "last_triggered": "Pēdējais izsaukums",

@@ -29,7 +29,7 @@ export type EntityRowConfig =
   | WeblinkConfig
   | CallServiceConfig;
 
-export interface EntityRow {
+export interface EntityRow extends HTMLElement {
   hass?: HomeAssistant;
   setConfig(config: EntityRowConfig);
 }

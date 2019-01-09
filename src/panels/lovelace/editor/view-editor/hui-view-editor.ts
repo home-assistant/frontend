@@ -69,19 +69,19 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
       <div class="card-config">
         <paper-input
           label="Title"
-          value="${this._title}"
+          .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input
           label="Icon"
-          value="${this._icon}"
+          .value="${this._icon}"
           .configValue="${"icon"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input
           label="URL Path"
-          value="${this._path}"
+          .value="${this._path}"
           .configValue="${"path"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>

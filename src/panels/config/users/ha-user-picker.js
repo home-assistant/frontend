@@ -90,7 +90,8 @@ class HaUserPicker extends EventsMixin(
       this.fire("register-dialog", {
         dialogShowEvent: "show-add-user",
         dialogTag: "ha-dialog-add-user",
-        dialogImport: () => import("./ha-dialog-add-user"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "ha-dialog-add-user" */ "./ha-dialog-add-user"),
       });
     }
   }

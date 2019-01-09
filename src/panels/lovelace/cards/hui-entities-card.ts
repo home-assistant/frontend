@@ -17,7 +17,7 @@ import { EntityConfig, EntityRow } from "../entity-rows/types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { processConfigEntities } from "../common/process-config-entities";
-import createRowElement from "../common/create-row-element";
+import { createRowElement } from "../common/create-row-element";
 import computeDomain from "../../../common/entity/compute_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
@@ -40,7 +40,7 @@ export interface Config extends LovelaceCardConfig {
 class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-entities-card-editor");
+    await import(/* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor");
     return document.createElement("hui-entities-card-editor");
   }
 

@@ -11,7 +11,24 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
+// should be interface when converted to TS
+export const Config = {
+  title: "",
+  aspect_ratio: "",
+  default_zoom: 14,
+  entities: [],
+};
+
 class HuiMapCard extends PolymerElement {
+  static async getConfigElement() {
+    await import(/* webpackChunkName: "hui-map-card-editor" */ "../editor/config-elements/hui-map-card-editor");
+    return document.createElement("hui-map-card-editor");
+  }
+
+  static getStubConfig() {
+    return { entities: [] };
+  }
+
   static get template() {
     return html`
       <style>
@@ -111,8 +128,24 @@ class HuiMapCard extends PolymerElement {
       throw new Error("Error in card configuration.");
     }
 
-    this._configEntities = processConfigEntities(config.entities);
+    if (!config.entities && !config.geo_location_sources) {
+      throw new Error(
+        "Either entities or geo_location_sources must be defined"
+      );
+    }
+    if (config.entities && !Array.isArray(config.entities)) {
+      throw new Error("Entities need to be an array");
+    }
+    if (
+      config.geo_location_sources &&
+      !Array.isArray(config.geo_location_sources)
+    ) {
+      throw new Error("Geo_location_sources needs to be an array");
+    }
+
     this._config = config;
+    this._configGeoLocationSources = config.geo_location_sources;
+    this._configEntities = config.entities;
   }
 
   getCardSize() {
@@ -205,7 +238,24 @@ class HuiMapCard extends PolymerElement {
     }
     const mapItems = (this._mapItems = []);
 
-    this._configEntities.forEach((entity) => {
+    let allEntities = [];
+    if (this._configEntities) {
+      allEntities = allEntities.concat(this._configEntities);
+    }
+    if (this._configGeoLocationSources) {
+      Object.keys(this.hass.states).forEach((entityId) => {
+        const stateObj = this.hass.states[entityId];
+        if (
+          computeStateDomain(stateObj) === "geo_location" &&
+          this._configGeoLocationSources.includes(stateObj.attributes.source)
+        ) {
+          allEntities.push(entityId);
+        }
+      });
+    }
+    allEntities = processConfigEntities(allEntities);
+
+    allEntities.forEach((entity) => {
       const entityId = entity.entity;
       if (!(entityId in hass.states)) {
         return;

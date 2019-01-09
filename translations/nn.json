@@ -145,7 +145,7 @@
             "high_demand": "Høg etterspurnad",
             "heat_pump": "Varmepumpe",
             "gas": "Gass",
-            "manual": "Håndbok"
+            "manual": "Handbok"
         },
         "configurator": {
             "configure": "Konfigurerer",
@@ -423,6 +423,10 @@
                                     "event": "Hending:",
                                     "enter": "Kjem",
                                     "leave": "Forlet"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -545,12 +549,12 @@
                         "no_devices": "Essa integração não possui dispositivos.",
                         "no_device": "Entidades sem dispositivos.",
                         "delete_confirm": "Voc^tem certeza que deseja apagar essa integração?",
-                        "restart_confirm": "Reinicie Home Assistant para finalizar essa integração",
-                        "manuf": "por {fabricante}",
-                        "hub": "Conectado via",
-                        "firmware": "Firmware: {versão}",
-                        "device_unavailable": "Dispositivo indisponível",
-                        "entity_unavailable": "Entidade indisponível"
+                        "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen",
+                        "manuf": "av {manufacturer}",
+                        "hub": "Tilkopla via",
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "Eininga utilgjengelig",
+                        "entity_unavailable": "Oppføringa utilgjengelig"
                     }
                 }
             },
@@ -600,11 +604,11 @@
                     "last_used": "Sist brukt den {date} frå {location}",
                     "not_used": "Har aldri vore brukt"
                 },
-                "current_user": "Você está atualmente conectado como {NomeCompleto}.",
+                "current_user": "Du er for augeblinken logga inn som {fullName}.",
                 "is_owner": "Du er ein eigar",
-                "logout": "Sair",
+                "logout": "Logg ut",
                 "change_password": {
-                    "header": "Mudar Senha",
+                    "header": "Bytt passord",
                     "current_password": "Senha Atual",
                     "new_password": "Nova Senha",
                     "confirm_new_password": "Confirme Nova Senha",
@@ -713,6 +717,47 @@
                         "required_fields": "Fyll ut dei nødvendige felta"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Markerte element",
+                        "clear_items": "Fjern dei markerrte elementa",
+                        "add_item": "Legg til element"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kortkonfigurasjon",
+                        "save": "Lagre",
+                        "toggle_editor": "Bytt redigeringsverktøy",
+                        "pick_card": "Vel kortet du vil legge til.",
+                        "add": "Legg til kort",
+                        "edit": "Redigere",
+                        "delete": "Slett"
+                    },
+                    "migrate": {
+                        "header": "Konfigurasjonen er ikkje kompatibel",
+                        "para_no_id": "Dette elementet har ikkje ein ID. Ver vennleg og legg til ein ID til dette elementet i \"ui-lovelace.yaml\"-fila di.",
+                        "para_migrate": "Home assistant kan legge til ID-ar til alle korta og sidene dine automatisk for deg ved å trykke \"Overfør konfigurasjon\"-knappen.",
+                        "migrate": "Overfør konfigurasjon"
+                    },
+                    "header": "Rediger brukargrensesnitt",
+                    "configure_ui": "Konfigurer brukargrensesnitt",
+                    "edit_view": {
+                        "header": "Vis konfigurasjon",
+                        "add": "Legg til side",
+                        "edit": "Rediger sida",
+                        "delete": "Slett sida"
+                    },
+                    "save_config": {
+                        "header": "Ta kontroll over Lovelace-brukargrensesnittet",
+                        "para": "Som standard kjem Home Assistant til å vedlikehalde brukargrensesnittet, og oppdatere det når nye oppføringar eller Lovelace-komponentar vert tilgjengelege. Dersom du tek kontroll, vil vi ikkje lenger kunne lage dette til automatisk for deg.",
+                        "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
+                        "cancel": "Gløym det",
+                        "save": "Ta kontroll"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -721,7 +766,8 @@
         },
         "common": {
             "loading": "Lastar",
-            "cancel": "Avbryt\n"
+            "cancel": "Avbryt\n",
+            "save": "Lagre"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
@@ -782,8 +828,8 @@
                 "disarm": "Skru av",
                 "arm_home": "Heimemodus",
                 "arm_away": "Bortemodus",
-                "arm_night": "Acionamento noturno",
-                "armed_custom_bypass": "Atalho configurado"
+                "arm_night": "Aktiver natt",
+                "armed_custom_bypass": "Tilpassa bypass"
             },
             "automation": {
                 "last_triggered": "Sist utløyst",
@@ -835,11 +881,11 @@
                 }
             },
             "water_heater": {
-                "currently": "Atualmente",
-                "on_off": "Liga \/ desliga",
-                "target_temperature": "Temperatura desejada",
-                "operation": "Operação",
-                "away_mode": "Modo distante"
+                "currently": "For augeblinken",
+                "on_off": "På \/ av",
+                "target_temperature": "Temperaturmål",
+                "operation": "Operasjon",
+                "away_mode": "Bortemodus"
             }
         },
         "components": {

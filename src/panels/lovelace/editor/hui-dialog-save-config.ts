@@ -14,7 +14,7 @@ import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { SaveDialogParams } from "./show-save-config-dialog";
 
 export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
-  protected hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   private _params?: SaveDialogParams;
   private _saving: boolean;
 

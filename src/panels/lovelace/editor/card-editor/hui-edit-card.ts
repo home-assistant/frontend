@@ -160,6 +160,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
             ? html`
                 <div class="paper-dialog-buttons">
                   <paper-button
+                    class="toggle-button"
                     ?hidden="${!this._configValue || !this._configValue.value}"
                     ?disabled="${
                       this._configElement === null || this._configState !== "OK"
@@ -235,6 +236,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           padding-top: 8px;
           margin-bottom: 4px;
           display: block;
+        }
+        .toggle-button {
+          margin-right: auto;
         }
       </style>
     `;

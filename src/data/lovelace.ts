@@ -3,6 +3,9 @@ import { HomeAssistant } from "../types";
 export interface LovelaceConfig {
   title?: string;
   views: LovelaceViewConfig[];
+  background?: string;
+  resources?: Array<{ type: "css" | "js" | "module" | "html"; url: string }>;
+  excluded_entities?: string[];
 }
 
 export interface LovelaceViewConfig {
@@ -13,6 +16,8 @@ export interface LovelaceViewConfig {
   path?: string;
   icon?: string;
   theme?: string;
+  panel?: boolean;
+  background?: string;
 }
 
 export interface LovelaceCardConfig {

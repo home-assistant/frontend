@@ -8,6 +8,7 @@ import "../components/ha-icon";
 
 import EventsMixin from "../mixins/events-mixin";
 import LocalizeMixin from "../mixins/localize-mixin";
+import { computeRTL } from "../common/util/compute_rtl";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -30,12 +31,16 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .header {
           font-family: var(--paper-font-headline_-_font-family);
-          -webkit-font-smoothing: var(--paper-font-headline_-_-webkit-font-smoothing);
+          -webkit-font-smoothing: var(
+            --paper-font-headline_-_-webkit-font-smoothing
+          );
           font-size: var(--paper-font-headline_-_font-size);
           font-weight: var(--paper-font-headline_-_font-weight);
           letter-spacing: var(--paper-font-headline_-_letter-spacing);
           line-height: var(--paper-font-headline_-_line-height);
-          text-rendering: var(--paper-font-common-expensive-kerning_-_text-rendering);
+          text-rendering: var(
+            --paper-font-common-expensive-kerning_-_text-rendering
+          );
           opacity: var(--dark-primary-opacity);
           padding: 24px 16px 16px;
           display: flex;
@@ -46,6 +51,11 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin-left: 16px;
           font-size: 16px;
           color: var(--secondary-text-color);
+        }
+
+        :host([rtl]) .name {
+          margin-left: 0px;
+          margin-right: 16px;
         }
 
         .now {
@@ -61,10 +71,18 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin-right: 32px;
         }
 
+        :host([rtl]) .main {
+          margin-right: 0px;
+        }
+
         .main ha-icon {
           --iron-icon-height: 72px;
           --iron-icon-width: 72px;
           margin-right: 8px;
+        }
+
+        :host([rtl]) .main ha-icon {
+          margin-right: 0px;
         }
 
         .main .temp {
@@ -73,11 +91,24 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           position: relative;
         }
 
+        :host([rtl]) .main .temp {
+          direction: ltr;
+          margin-right: 28px;
+        }
+
         .main .temp span {
           font-size: 24px;
           line-height: 1em;
           position: absolute;
           top: 4px;
+        }
+
+        .measurand {
+          display: inline-block;
+        }
+
+        :host([rtl]) .measurand {
+          direction: ltr;
         }
 
         .forecast {
@@ -96,13 +127,17 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           text-align: center;
         }
 
+        :host([rtl]) .forecast .temp {
+          direction: ltr;
+        }
+
         .weekday {
           font-weight: bold;
         }
 
         .attributes,
         .templow,
-        .precipitation {      {
+        .precipitation {
           color: var(--secondary-text-color);
         }
       </style>
@@ -130,7 +165,9 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <div>
                   [[localize('ui.card.weather.attributes.air_pressure')]]:
-                  [[stateObj.attributes.pressure]] [[getUnit('air_pressure')]]
+                  <span class="measurand">
+                    [[stateObj.attributes.pressure]] [[getUnit('air_pressure')]]
+                  </span>
                 </div>
               </template>
               <template
@@ -139,7 +176,9 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <div>
                   [[localize('ui.card.weather.attributes.humidity')]]:
-                  [[stateObj.attributes.humidity]] %
+                  <span class="measurand"
+                    >[[stateObj.attributes.humidity]] %</span
+                  >
                 </div>
               </template>
               <template
@@ -148,8 +187,10 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <div>
                   [[localize('ui.card.weather.attributes.wind_speed')]]:
-                  [[getWind(stateObj.attributes.wind_speed,
-                  stateObj.attributes.wind_bearing, localize)]]
+                  <span class="measurand">
+                    [[getWindSpeed(stateObj.attributes.wind_speed)]]
+                  </span>
+                  [[getWindBearing(stateObj.attributes.wind_bearing, localize)]]
                 </div>
               </template>
             </div>
@@ -201,6 +242,11 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       forecast: {
         type: Array,
         computed: "computeForecast(stateObj.attributes.forecast)",
+      },
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -295,14 +341,18 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return degree;
   }
 
-  getWind(speed, bearing, localize) {
+  getWindSpeed(speed) {
+    return `${speed} ${this.getUnit("length")}/h`;
+  }
+
+  getWindBearing(bearing, localize) {
     if (bearing != null) {
       const cardinalDirection = this.windBearingToText(bearing);
-      return `${speed} ${this.getUnit("length")}/h (${localize(
+      return `(${localize(
         `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
       ) || cardinalDirection})`;
     }
-    return `${speed} ${this.getUnit("length")}/h`;
+    return ``;
   }
 
   _showValue(item) {
@@ -323,6 +373,10 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       this.hass.selectedLanguage || this.hass.language,
       { hour: "numeric" }
     );
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 customElements.define("ha-weather-card", HaWeatherCard);
