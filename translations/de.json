@@ -721,9 +721,9 @@
             "lovelace": {
                 "cards": {
                     "shopping-list": {
-                        "checked_items": "Markierte Items",
+                        "checked_items": "Markierte Artikel",
                         "clear_items": "Markierte Elemente löschen",
-                        "add_item": "Item hinzufügen"
+                        "add_item": "Artikel hinzufügen"
                     }
                 },
                 "editor": {

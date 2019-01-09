@@ -514,13 +514,6 @@
                     "caption": "Script",
                     "description": "Create and edit scripts"
                 },
-                "zha": {
-                    "caption": "ZHA",
-                    "description": "Manage your Zigbee Home Automation network",
-                    "network": {
-                        "introduction": "Zigbee Home Automation network management"
-                  }
-                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Manage your Z-Wave network"
@@ -981,7 +974,6 @@
         "switch": "Switch",
         "updater": "Updater",
         "weblink": "Weblink",
-        "zha": "ZHA",
         "zwave": "Z-Wave",
         "vacuum": "Vacuum"
     },

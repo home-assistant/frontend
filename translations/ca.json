@@ -133,8 +133,8 @@
         "climate": {
             "off": "Apagat",
             "on": "Encès",
-            "heat": "Calent",
-            "cool": "Fred",
+            "heat": "Escalfar",
+            "cool": "Refredar",
             "idle": "Inactiu",
             "auto": "Automàtic",
             "dry": "Assecar",
@@ -824,7 +824,7 @@
             },
             "alarm_control_panel": {
                 "code": "Codi",
-                "clear_code": "Esborrar",
+                "clear_code": "Supr.",
                 "disarm": "Desactivar",
                 "arm_home": "Activar, a casa",
                 "arm_away": "Activar, fora",

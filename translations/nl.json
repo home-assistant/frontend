@@ -236,7 +236,7 @@
                 "ready": "Gereed"
             },
             "query_stage": {
-                "initializing": "Initialiseren ({query_stage})",
+                "initializing": "Voorbereiden ({query_stage})",
                 "dead": "Onbereikbaar ({query_stage})"
             }
         },
@@ -248,7 +248,7 @@
             "lightning": "Bliksem",
             "lightning-rainy": "Bliksem, regenachtig",
             "partlycloudy": "Gedeeltelijk bewolkt",
-            "pouring": "Gieten",
+            "pouring": "Regen",
             "rainy": "Regenachtig",
             "snowy": "Sneeuwachtig",
             "snowy-rainy": "Sneeuw-, regenachtig",
@@ -276,8 +276,8 @@
             "armed": "Actief",
             "disarmed": "Uit",
             "armed_home": "Actief",
-            "armed_away": "Ingeschakeld",
-            "armed_night": "Ingeschakeld",
+            "armed_away": "Actief",
+            "armed_night": "Actief",
             "pending": "Wacht",
             "arming": "Activeren",
             "disarming": "Uitschakelen",
@@ -301,7 +301,7 @@
                 "period": "Periode"
             },
             "logbook": {
-                "showing_entries": "Toon items voor"
+                "showing_entries": "Toont gegevens van"
             },
             "mailbox": {
                 "empty": "Je hebt geen berichten",
@@ -445,7 +445,7 @@
                                     "state": "Staat"
                                 },
                                 "numeric_state": {
-                                    "label": "Numerieke status",
+                                    "label": "Numerieke staat",
                                     "above": "Boven",
                                     "below": "Onder",
                                     "value_template": "Waardetemplate (optioneel)"
@@ -731,6 +731,9 @@
                         "header": "Kaart configuratie",
                         "save": "Opslaan",
                         "toggle_editor": "Toggle Editor",
+                        "pick_card": "Kies de kaart die je wilt toevoegen.",
+                        "add": "Kaart toevoegen",
+                        "edit": "Bewerken",
                         "delete": "Verwijder"
                     },
                     "migrate": {
@@ -739,10 +742,18 @@
                         "para_migrate": "Home Assistant kan ID's voor al je kaarten en weergaven automatisch voor je toevoegen door op de knop 'Migrate config' te klikken.",
                         "migrate": "Configuratie migreren"
                     },
+                    "header": "Bewerk UI",
+                    "configure_ui": "Configureer UI",
                     "edit_view": {
-                        "header": "Bekijk de configuratie"
+                        "header": "Bekijk de configuratie",
+                        "add": "Weergave toevoegen",
+                        "edit": "Weergave bewerken",
+                        "delete": "Weergave verwijderen"
                     },
                     "save_config": {
+                        "header": "Neem de controle over uw Lovelace UI",
+                        "para": "Normaal gesproken onderhoudt Home Assistant je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
+                        "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "cancel": "Laat maar",
                         "save": "Neem over"
                     }
@@ -756,7 +767,7 @@
         "common": {
             "loading": "Bezig met laden",
             "cancel": "Annuleren",
-            "save": "Bewaar"
+            "save": "Opslaan"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
