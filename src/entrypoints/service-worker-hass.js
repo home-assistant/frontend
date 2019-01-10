@@ -77,7 +77,7 @@ function initPushNotifications() {
           self.registration
             .getNotifications({ tag: data.tag })
             .then(function(notifications) {
-              for (let n of notifications) {
+              for (const n of notifications) {
                 n.close();
               }
             })
