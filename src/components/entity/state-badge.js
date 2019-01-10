@@ -96,7 +96,7 @@ class StateBadge extends PolymerElement {
         if (typeof brightness !== "number") {
           errorMessage = `Type error: state-badge expected number, but type of ${
             newVal.entity_id
-            }.attributes.brightness is ${typeof brightness} (${brightness})`;
+          }.attributes.brightness is ${typeof brightness} (${brightness})`;
           // eslint-disable-next-line
           console.warn(errorMessage);
         }
