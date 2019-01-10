@@ -18,9 +18,10 @@ import "../../components/ha-icon";
 
 const TAB_INSERT = "  ";
 
-const lovelaceStruct = struct.partial({
+const lovelaceStruct = struct.interface({
   title: "string?",
   views: ["object"],
+  resources: struct.optional(["object"]),
 });
 
 class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
