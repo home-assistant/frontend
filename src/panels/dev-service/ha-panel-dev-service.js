@@ -25,6 +25,7 @@ class HaPanelDevService extends PolymerElement {
 
         .content {
           padding: 16px;
+          direction: ltr;
         }
 
         .ha-form {

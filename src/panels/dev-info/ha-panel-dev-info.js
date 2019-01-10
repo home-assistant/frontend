@@ -35,6 +35,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       .content {
         padding: 16px 0px 16px 0;
+        direction: ltr;
       }
 
       .about {
@@ -90,6 +91,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       paper-dialog {
         border-radius: 2px;
+        direction: ltr;
       }
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
