@@ -96,13 +96,13 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
         .longPress="${longPress()}"
       >
         ${
-          !stateObj
-            ? html`
+      !stateObj
+        ? html`
                 <div class="not-found">
                   Entity not available: ${this._config.entity}
                 </div>
               `
-            : html`
+        : html`
                 <paper-button>
                   <div>
                     <ha-icon
@@ -110,11 +110,11 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
                       data-state="${stateObj.state}"
                       .icon="${this._config.icon || stateIcon(stateObj)}"
                       style="${
-                        styleMap({
-                          filter: this._computeBrightness(stateObj),
-                          color: this._computeColor(stateObj),
-                        })
-                      }"
+          styleMap({
+            filter: this._computeBrightness(stateObj),
+            color: this._computeColor(stateObj),
+          })
+          }"
                     ></ha-icon>
                     <span>
                       ${this._config.name || computeStateName(stateObj)}
@@ -122,7 +122,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
                   </div>
                 </paper-button>
               `
-        }
+      }
       </ha-card>
     `;
   }
@@ -151,7 +151,9 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
         ha-icon[data-domain="light"][data-state="on"],
         ha-icon[data-domain="switch"][data-state="on"],
         ha-icon[data-domain="binary_sensor"][data-state="on"],
+        ha-icon[data-domain="input_boolean"][data-state="on"],
         ha-icon[data-domain="fan"][data-state="on"],
+        ha-icon[data-domain="cover"][data-state="open"],
         ha-icon[data-domain="sun"][data-state="above_horizon"] {
           color: var(--paper-item-icon-active-color, #fdd835);
         }
