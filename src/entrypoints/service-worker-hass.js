@@ -72,6 +72,18 @@ function initPushNotifications() {
     var data;
     if (event.data) {
       data = event.data.json();
+      if (data.dismiss) {
+        event.waitUntil(
+          self.registration
+            .getNotifications({ tag: data.tag })
+            .then(function(notifications) {
+              for (const n of notifications) {
+                n.close();
+              }
+            })
+        );
+        return;
+      }
       event.waitUntil(
         self.registration
           .showNotification(data.title, data)
