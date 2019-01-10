@@ -21,6 +21,7 @@ const TAB_INSERT = "  ";
 const lovelaceStruct = struct.partial({
   title: "string?",
   views: ["object"],
+  resources: ["object"],
 });
 
 class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
