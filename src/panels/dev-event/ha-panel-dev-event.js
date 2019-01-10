@@ -30,6 +30,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
         .content {
           @apply --paper-font-body1;
           padding: 16px;
+          direction: ltr;
         }
 
         .ha-form {
