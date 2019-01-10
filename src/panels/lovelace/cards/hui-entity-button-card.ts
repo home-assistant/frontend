@@ -148,15 +148,15 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
           height: 40%;
           color: var(--paper-item-icon-color, #44739e);
         }
-        ha-icon[data-domain="light"][data-state="on"],
-        ha-icon[data-domain="switch"][data-state="on"],
         ha-icon[data-domain="binary_sensor"][data-state="on"],
-        ha-icon[data-domain="input_boolean"][data-state="on"],
-        ha-icon[data-domain="fan"][data-state="on"],
         ha-icon[data-domain="cover"][data-state="open"],
         ha-icon[data-domain="device_tracker"][data-state="home"],
+        ha-icon[data-domain="fan"][data-state="on"],
         ha-icon[data-domain="group"][data-state="on"],
-        ha-icon[data-domain="sun"][data-state="above_horizon"] {
+        ha-icon[data-domain="input_boolean"][data-state="on"],
+        ha-icon[data-domain="light"][data-state="on"],
+        ha-icon[data-domain="sun"][data-state="above_horizon"],
+        ha-icon[data-domain="switch"][data-state="on"] {
           color: var(--paper-item-icon-active-color, #fdd835);
         }
         ha-icon[data-state="unavailable"] {
