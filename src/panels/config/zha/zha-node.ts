@@ -22,6 +22,7 @@ import {
 } from "./types";
 import "./zha-clusters";
 import "./zha-entities";
+import { reconfigureNode } from "../../../data/zha";
 
 declare global {
   // for fire event
@@ -127,12 +128,8 @@ export class ZHANode extends LitElement {
         <paper-button @click="${this._showNodeInformation}"
           >Node Information</paper-button
         >
-        <ha-call-service-button
-          .hass="${this.hass}"
-          domain="zha"
-          service="reconfigure_device"
-          .serviceData="${this._serviceData}"
-          >Reconfigure Node</ha-call-service-button
+        <paper-button @click="${this._onReconfigureNodeClick}"
+          >Reconfigure Node</paper-button
         >
         ${
           this._showHelp
@@ -198,6 +195,12 @@ export class ZHANode extends LitElement {
     this._selectedEntity = undefined;
     fireEvent(this, "zha-node-selected", { node: this._selectedNode });
     this._serviceData = this._computeNodeServiceData();
+  }
+
+  private async _onReconfigureNodeClick(): Promise<void> {
+    if (this.hass) {
+      await reconfigureNode(this.hass, this._selectedNode!.attributes.ieee);
+    }
   }
 
   private _showNodeInformation(): void {

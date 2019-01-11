@@ -36,6 +36,15 @@ export interface ReadAttributeServiceData {
   manufacturer: number;
 }
 
+export const reconfigureNode = (
+  hass: HomeAssistant,
+  ieeeAddress: string
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/nodes/reconfigure",
+    ieee: ieeeAddress,
+  });
+
 export const fetchAttributesForCluster = (
   hass: HomeAssistant,
   entityId: string,
