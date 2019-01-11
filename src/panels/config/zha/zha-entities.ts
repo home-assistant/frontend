@@ -50,7 +50,7 @@ export class ZHAEntities extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedNode")) {
       this._entities = [];
       this._selectedEntityIndex = -1;

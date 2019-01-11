@@ -61,7 +61,7 @@ export class ZHAClusterCommands extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
       this._commands = [];
       this._selectedCommandIndex = -1;

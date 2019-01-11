@@ -69,7 +69,7 @@ export class ZHAClusterAttributes extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {
       this._attributes = [];
       this._selectedAttributeIndex = -1;

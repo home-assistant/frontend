@@ -61,7 +61,7 @@ export class ZHAClusters extends LitElement {
     };
   }
 
-  protected update(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedEntity")) {
       this._clusters = [];
       this._selectedClusterIndex = -1;
