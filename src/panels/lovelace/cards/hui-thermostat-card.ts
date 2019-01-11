@@ -81,7 +81,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   private _broadCard?: boolean;
   private _loaded?: boolean;
   private _updated?: boolean;
-  private _attached?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -106,7 +105,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._attached = true;
     if (this._updated && !this._loaded) {
       this._initialLoad();
     }
@@ -169,7 +167,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
 
   protected firstUpdated(): void {
     this._updated = true;
-    if (this._attached && !this._loaded) {
+    if (this.isConnected && !this._loaded) {
       this._initialLoad();
     }
   }
@@ -204,6 +202,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private async _initialLoad(): Promise<void> {
+    this._loaded = true;
+
     const radius = this.clientWidth / 3;
     this._broadCard = this.clientWidth > 390;
 
