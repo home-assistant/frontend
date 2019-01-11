@@ -54,13 +54,11 @@ export class HaConfigZha extends LitElement {
         </app-header>
 
         <zha-network
-          id="zha-network"
           .isWide="${this.isWide}"
           .hass="${this.hass}"
         ></zha-network>
 
         <zha-node
-          id="zha-node"
           .isWide="${this.isWide}"
           .hass="${this.hass}"
           @zha-cluster-selected="${this._onClusterSelected}"
@@ -71,7 +69,6 @@ export class HaConfigZha extends LitElement {
           this._selectedCluster
             ? html`
                 <zha-cluster-attributes
-                  id="zha-cluster-attributes"
                   .isWide="${this.isWide}"
                   .hass="${this.hass}"
                   .selectedNode="${this._selectedNode}"
@@ -80,7 +77,6 @@ export class HaConfigZha extends LitElement {
                 ></zha-cluster-attributes>
 
                 <zha-cluster-commands
-                  id="zha-cluster-commands"
                   .isWide="${this.isWide}"
                   .hass="${this.hass}"
                   .selectedNode="${this._selectedNode}"
