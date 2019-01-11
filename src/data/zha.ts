@@ -29,7 +29,6 @@ export interface Command {
 }
 
 export interface ReadAttributeServiceData {
-  type: string;
   entity_id: string;
   cluster_id: number;
   cluster_type: string;
@@ -52,36 +51,16 @@ export const fetchAttributesForCluster = (
     cluster_type: clusterType,
   });
 
-export const computeReadAttributeServiceData = (
-  entityId: string,
-  clusterId: number,
-  clusterType: string,
-  attributeId: number,
-  manufacturerCodeOverride: any,
-  selectedEntity?: ZHADeviceEntity,
-  selectedCluster?: Cluster,
-  selectedNode?: HassEntity
-): ReadAttributeServiceData | undefined => {
-  if (!selectedEntity || !selectedCluster || !selectedNode) {
-    return;
-  } else {
-    return {
-      type: "zha/entities/clusters/attributes/value",
-      entity_id: entityId,
-      cluster_id: clusterId,
-      cluster_type: clusterType,
-      attribute: attributeId,
-      manufacturer: manufacturerCodeOverride
-        ? parseInt(manufacturerCodeOverride as string, 10)
-        : selectedNode!.attributes.manufacturer_code,
-    };
-  }
-};
-
 export const readAttributeValue = (
   hass: HomeAssistant,
   data: ReadAttributeServiceData
-): any => hass.callWS(data);
+): Promise<string> => {
+  const serviceData = {
+    type: "zha/entities/clusters/attributes/value",
+  };
+  Object.assign(serviceData, data);
+  return hass.callWS(serviceData);
+};
 
 export const fetchCommandsForCluster = (
   hass: HomeAssistant,
