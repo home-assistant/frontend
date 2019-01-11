@@ -1,42 +1,41 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import "@polymer/paper-button/paper-button";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import "@polymer/paper-button/paper-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { TemplateResult } from "lit-html";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import "../ha-config-section";
-
-import { HomeAssistant } from "../../../types";
 import "../../../resources/ha-style";
+import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 
 export class ZHANetwork extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
-  public showDescription: boolean;
+  private _showHelp: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
 
   constructor() {
     super();
-    this.showDescription = false;
+    this._showHelp = false;
   }
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
-      showDescription: {},
+      _showHelp: {},
     };
   }
 
   protected render(): TemplateResult {
     return html`
       ${this.renderStyle()}
-      <ha-config-section .is-wide="${this.isWide}">
+      <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
-            <span>Zigbee Home Automation network management</span>
+            <span>Network Management</span>
             <paper-icon-button class="toggle-help-icon" @click="${
               this._onHelpTap
             }" icon="hass:help-circle"></paper-icon-button>
@@ -49,7 +48,7 @@ export class ZHANetwork extends LitElement {
               this.hass
             }" domain="zha" service="permit">Permit</ha-call-service-button>
             ${
-              this.showDescription
+              this._showHelp
                 ? html`
                     <ha-service-description
                       .hass="${this.hass}"
@@ -65,7 +64,7 @@ export class ZHANetwork extends LitElement {
   }
 
   private _onHelpTap(): void {
-    this.showDescription = !this.showDescription;
+    this._showHelp = !this._showHelp;
   }
 
   private renderStyle(): TemplateResult {
