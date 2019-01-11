@@ -7,12 +7,15 @@ export interface EntityConfig {
   icon?: string;
 }
 export interface DividerConfig {
+  type: string;
   style: string;
 }
 export interface SectionConfig {
+  type: string;
   label: string;
 }
 export interface WeblinkConfig {
+  type: string;
   name?: string;
   icon?: string;
   url: string;
