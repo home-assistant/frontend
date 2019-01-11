@@ -106,7 +106,7 @@ export const createCardElement = (
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);
-      fireEvent(element, "rebuild-view");
+      fireEvent(element, "rebuild-card", config);
     });
 
     return element;

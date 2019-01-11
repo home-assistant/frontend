@@ -22,6 +22,13 @@ import { createCardElement } from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 
+declare global {
+  // tslint:disable-next-line
+  interface HASSDomEvents {
+    "rebuild-card": {};
+  }
+}
+
 let editCodeLoaded = false;
 
 // Find column with < 5 entities, else column with lowest count
@@ -71,7 +78,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     return html`
       ${this.renderStyles()}
       <div id="badges"></div>
-      <div id="columns"></div>
+      <div id="columns" @rebuild-card="${this._rebuildCard}"></div>
       ${
         this.lovelace!.editMode
           ? html`
@@ -222,6 +229,13 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     }
     this._badges = elements;
     root.style.display = elements.length > 0 ? "block" : "none";
+  }
+
+  private _rebuildCard(event: CustomEvent): void {
+    const element = createCardElement(event.detail) as LovelaceCard;
+    element.hass = this.hass;
+    this._cards.push(element);
+    (event.composedPath()[0] as HTMLElement).replaceWith(element);
   }
 
   private _createCards(config: LovelaceViewConfig): void {
