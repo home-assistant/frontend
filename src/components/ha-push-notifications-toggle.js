@@ -87,7 +87,7 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         browserName = "chrome";
       }
 
-      let name = prompt("What should this device be called ?");
+      const name = prompt("What should this device be called ?");
       if (name == null) {
         this.pushChecked = false;
         return;
