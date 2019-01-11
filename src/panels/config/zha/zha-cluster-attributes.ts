@@ -98,7 +98,6 @@ export class ZHAClusterAttributes extends LitElement {
           <div class="attribute-picker">
             <paper-dropdown-menu
               label="Attributes of the selected cluster"
-              dynamic-align=""
               class="flex"
             >
               <paper-listbox

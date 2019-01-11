@@ -66,7 +66,7 @@ export class ZHAEntities extends LitElement {
     return html`
       ${this._renderStyle()}
       <div class="node-picker">
-        <paper-dropdown-menu dynamic-align="" label="Entities" class="flex">
+        <paper-dropdown-menu label="Entities" class="flex">
           <paper-listbox
             slot="dropdown-content"
             .selected="${this._selectedEntityIndex}"

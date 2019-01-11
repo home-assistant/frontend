@@ -87,7 +87,7 @@ export class ZHANode extends LitElement {
         </span>
         <paper-card class="content">
           <div class="node-picker">
-            <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
+            <paper-dropdown-menu label="Nodes" class="flex">
               <paper-listbox
                 slot="dropdown-content"
                 @iron-select="${this._selectedNodeChanged}"

@@ -89,7 +89,6 @@ export class ZHAClusterCommands extends LitElement {
           <div class="command-picker">
             <paper-dropdown-menu
               label="Commands of the selected cluster"
-              dynamic-align=""
               class="flex"
             >
               <paper-listbox

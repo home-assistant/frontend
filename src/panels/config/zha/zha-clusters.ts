@@ -77,7 +77,7 @@ export class ZHAClusters extends LitElement {
     return html`
       ${this._renderStyle()}
       <div class="node-picker">
-        <paper-dropdown-menu dynamic-align="" label="Clusters" class="flex">
+        <paper-dropdown-menu label="Clusters" class="flex">
           <paper-listbox
             slot="dropdown-content"
             .selected="${this._selectedClusterIndex}"

@@ -42,8 +42,8 @@ export class HaConfigZha extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.renderStyle()}
-      <ha-app-layout has-scrolling-region="">
-        <app-header slot="header" fixed="">
+      <ha-app-layout>
+        <app-header slot="header">
           <app-toolbar>
             <paper-icon-button
               icon="hass:arrow-left"
