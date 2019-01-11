@@ -79,6 +79,8 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   private _roundSliderStyle?: TemplateResult;
   private _jQuery?: any;
   private _broadCard?: boolean;
+  private _loaded?: boolean;
+  private _updated?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -99,6 +101,13 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
 
     this._config = { theme: "default", ...config };
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._updated && !this._loaded) {
+      this._initialLoad();
+    }
   }
 
   protected render(): TemplateResult {
@@ -157,7 +166,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected firstUpdated(): void {
-    this._initialLoad();
+    this._updated = true;
+    if (this.isConnected && !this._loaded) {
+      this._initialLoad();
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -190,12 +202,14 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private async _initialLoad(): Promise<void> {
+    this._loaded = true;
+
     const radius = this.clientWidth / 3;
     this._broadCard = this.clientWidth > 390;
 
     (this.shadowRoot!.querySelector(
       "#thermostat"
-    )! as HTMLElement).style.minHeight = radius * 2 + "px";
+    )! as HTMLElement).style.height = radius * 2 + "px";
 
     const loaded = await loadRoundslider();
     await new Promise((resolve) => afterNextRender(resolve));
@@ -220,7 +234,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       min: stateObj.attributes.min_temp,
       max: stateObj.attributes.max_temp,
       sliderType: _sliderType,
-      create: () => this._loaded(),
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
       value: sliderValue,
@@ -250,12 +263,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
 
     return [sliderValue, uiValue];
-  }
-
-  private _loaded(): void {
-    (this.shadowRoot!.querySelector(
-      "#thermostat"
-    )! as HTMLElement).style.minHeight = null;
   }
 
   private _updateSetTemp(value: string): void {
