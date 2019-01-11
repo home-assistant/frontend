@@ -20,6 +20,10 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
         :host([rendered]) {
           opacity: 1;
         }
+
+        ha-chart-base {
+          direction: ltr;
+        }
       </style>
       <ha-chart-base
         data="[[chartData]]"
@@ -162,6 +166,9 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       return [state, start, end];
     };
 
+    const isRTL = this.hass.translationMetadata.translations[
+      this.hass.selectedLanguage || this.hass.language
+    ].isRTL;
     const chartOptions = {
       type: "timeline",
       options: {
@@ -185,9 +192,11 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
               afterSetDimensions: (yaxe) => {
                 yaxe.maxWidth = yaxe.chart.width * 0.18;
               },
+              position: isRTL ? "right" : "left",
             },
           ],
         },
+        isRTL: isRTL,
       },
       data: {
         labels: labels,
