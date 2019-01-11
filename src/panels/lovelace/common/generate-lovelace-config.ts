@@ -13,6 +13,7 @@ import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import { LocalizeFunc } from "../../../mixins/localize-base-mixin";
 import computeDomain from "../../../common/entity/compute_domain";
+import { EntityRowConfig, WeblinkConfig } from "../entity-rows/types";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -32,9 +33,9 @@ const computeCards = (
   const cards: LovelaceCardConfig[] = [];
 
   // For entity card
-  const entities: string[] = [];
+  const entities: Array<string | EntityRowConfig> = [];
 
-  for (const [entityId /*, stateObj */] of states) {
+  for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);
 
     if (domain === "alarm_control_panel") {
@@ -67,6 +68,16 @@ const computeCards = (
         type: "weather-forecast",
         entity: entityId,
       });
+    } else if (domain === "weblink") {
+      const conf: WeblinkConfig = {
+        type: "weblink",
+        url: stateObj.state,
+        name: computeStateName(stateObj),
+      };
+      if ("icon" in stateObj.attributes) {
+        conf.icon = stateObj.attributes.icon;
+      }
+      entities.push(conf);
     } else {
       entities.push(entityId);
     }

@@ -35,7 +35,7 @@ class HuiWeblinkRow extends LitElement implements EntityRow {
 
     return html`
       ${this.renderStyle()}
-      <a href="${this._config.url}">
+      <a href="${this._config.url}" target="_blank">
         <ha-icon .icon="${this._config.icon}"></ha-icon>
         <div>${this._config.name}</div>
       </a>
