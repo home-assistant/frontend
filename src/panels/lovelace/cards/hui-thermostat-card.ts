@@ -190,15 +190,16 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private async _initialLoad(): Promise<void> {
+    const loaded = await loadRoundslider();
+    // Width can't be calculated before the card is loaded, so let's wait for that
+    await new Promise((resolve) => afterNextRender(resolve));
+
     const radius = this.clientWidth / 3;
     this._broadCard = this.clientWidth > 390;
 
     (this.shadowRoot!.querySelector(
       "#thermostat"
     )! as HTMLElement).style.minHeight = radius * 2 + "px";
-
-    const loaded = await loadRoundslider();
-    await new Promise((resolve) => afterNextRender(resolve));
 
     this._roundSliderStyle = loaded.roundSliderStyle;
     this._jQuery = loaded.jQuery;
