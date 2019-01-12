@@ -3,8 +3,8 @@ import {
   LitElement,
   PropertyValues,
   PropertyDeclarations,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 
 import "../../components/entity/ha-state-label-badge";
 // This one is for types
@@ -67,7 +67,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     this._badges = [];
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyles()}
       <div id="badges"></div>

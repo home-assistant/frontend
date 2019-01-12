@@ -1,4 +1,4 @@
-import { html } from "@polymer/lit-element";
+import { html, TemplateResult } from "lit-element";
 // jQuery import should come before plugin import
 import { jQuery as jQuery_ } from "./jquery";
 import "round-slider";

@@ -1,10 +1,11 @@
 import {
+  html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult, html } from "lit-html";
-import { classMap } from "lit-html/directives/classMap";
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {
@@ -24,7 +25,7 @@ class HaLabelBadge extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <div class="badge-container">

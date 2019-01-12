@@ -1,4 +1,4 @@
-import { LitElement, html } from "@polymer/lit-element";
+import { LitElement, html, TemplateResult } from "lit-element";
 
 import "./ha-progress-button";
 import { fireEvent } from "../../common/dom/fire_event";

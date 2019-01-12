@@ -1,10 +1,14 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult } from "lit-html";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { Cluster } from "../../../data/zha";
 import "../../../layouts/ha-app-layout";
@@ -39,7 +43,7 @@ export class HaConfigZha extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <ha-app-layout>

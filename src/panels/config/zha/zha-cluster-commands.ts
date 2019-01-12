@@ -4,10 +4,10 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-card/paper-card";
 import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult } from "lit-html";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import {
@@ -70,7 +70,7 @@ export class ZHAClusterCommands extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">

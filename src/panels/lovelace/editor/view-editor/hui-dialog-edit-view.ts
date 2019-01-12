@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -34,7 +38,7 @@ export class HuiDialogEditView extends LitElement {
     (this.shadowRoot!.children[0] as any).showDialog();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }

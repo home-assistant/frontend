@@ -1,10 +1,8 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, TemplateResult } from "lit-element";
 import { EntityRow, WeblinkConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
-
-import { TemplateResult } from "lit-html";
 
 class HuiWeblinkRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
@@ -28,7 +26,7 @@ class HuiWeblinkRow extends LitElement implements EntityRow {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config) {
       return html``;
     }

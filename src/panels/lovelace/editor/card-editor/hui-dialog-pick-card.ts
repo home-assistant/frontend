@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
@@ -17,7 +21,7 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
     return {};
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       <paper-dialog
         with-backdrop
