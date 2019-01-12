@@ -1,4 +1,6 @@
 import { directive, PropertyPart } from "lit-html";
+// See https://github.com/home-assistant/home-assistant-polymer/pull/2457
+// on how to undo mwc -> paper migration
 // import "@material/mwc-ripple";
 import "@polymer/paper-ripple";
 
