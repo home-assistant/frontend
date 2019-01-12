@@ -56,6 +56,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   public hass?: HomeAssistant;
   private _config?: Config;
+  private _updated?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -76,6 +77,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Entity");
     }
     this._config = { min: 0, max: 100, theme: "default", ...config };
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._setBaseUnit();
   }
 
   protected render(): TemplateResult {
@@ -148,12 +154,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    (this.shadowRoot!.querySelector(
-      "ha-card"
-    )! as HTMLElement).style.setProperty(
-      "--base-unit",
-      this._computeBaseUnit()
-    );
+    this._updated = true;
+    this._setBaseUnit();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -167,6 +169,19 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (!oldHass || oldHass.themes !== this.hass.themes) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+  }
+
+  private _setBaseUnit(): void {
+    if (!this.isConnected || !this._updated) {
+      return;
+    }
+    const baseUnit = this._computeBaseUnit();
+    if (baseUnit === "0px") {
+      return;
+    }
+    (this.shadowRoot!.querySelector(
+      "ha-card"
+    )! as HTMLElement).style.setProperty("--base-unit", baseUnit);
   }
 
   private _computeSeverity(numberValue: number): string {
