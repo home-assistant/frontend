@@ -64,11 +64,10 @@ export const readAttributeValue = (
   hass: HomeAssistant,
   data: ReadAttributeServiceData
 ): Promise<string> => {
-  const serviceData = {
+  return hass.callWS({
+    ...data,
     type: "zha/entities/clusters/attributes/value",
-  };
-  Object.assign(serviceData, data);
-  return hass.callWS(serviceData);
+  });
 };
 
 export const fetchCommandsForCluster = (
@@ -78,7 +77,7 @@ export const fetchCommandsForCluster = (
   clusterId: number,
   clusterType: string
 ): Promise<Command[]> =>
-  hass!.callWS({
+  hass.callWS({
     type: "zha/entities/clusters/commands",
     entity_id: entityId,
     ieee: ieeeAddress,
