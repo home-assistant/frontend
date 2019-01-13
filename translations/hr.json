@@ -334,7 +334,7 @@
                     "caption": "Automatizacija",
                     "description": "Stvaranje i uređivanje automatizacija",
                     "picker": {
-                        "header": "Urednik Automatizacije ",
+                        "header": "Urednik Automatizacije",
                         "introduction": "Automatizacijski urednik omogućuje stvaranje i uređivanje automatizacije. Molimo pročitajte [upute] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) kako biste bili sigurni da ste ispravno konfigurirali Home Assistant.",
                         "pick_automation": "Odaberite automatizaciju za uređivanje",
                         "no_automations": "Nismo mogli pronaći nikakve automatizirane uređaje",
@@ -606,7 +606,7 @@
                 "mfa_setup": {
                     "title_aborted": "Prekinut",
                     "title_success": "Uspješno!",
-                    "step_done": "Postavka gotova za",
+                    "step_done": "Postavka gotova za {step}",
                     "close": "Zatvoriti",
                     "submit": "podnijeti"
                 }
@@ -638,7 +638,7 @@
                             },
                             "error": {
                                 "invalid_auth": "Neispravno korisničko ime ili lozinka",
-                                "invalid_code": "Pogrešan kod za provjeru autentičnosti "
+                                "invalid_code": "Pogrešan kod za provjeru autentičnosti"
                             },
                             "abort": {
                                 "login_expired": "Sesija istekla, prijavite se ponovo."
@@ -710,7 +710,7 @@
                 },
                 "editor": {
                     "edit_card": {
-                        "header": "Konfiguracija Kartice ",
+                        "header": "Konfiguracija Kartice",
                         "save": "Spremi",
                         "toggle_editor": "Uključi uređivač",
                         "pick_card": "Odaberite karticu koju želite dodati.",
@@ -870,7 +870,7 @@
                 "service": "Usluga"
             },
             "relative_time": {
-                "past": "{vrijeme} prije",
+                "past": "{time} prije",
                 "duration": {
                     "week": "{count} {count, plural,\n  jedan {week}\n  ostali {weeks}\n}"
                 }

@@ -624,7 +624,7 @@
                 "mfa_setup": {
                     "title_aborted": "Abortado",
                     "title_success": "Sucesso!",
-                    "step_done": "Configuraçãofeita por {passo}",
+                    "step_done": "Configuraçãofeita por {step}",
                     "close": "Fechar",
                     "submit": "Submeter"
                 }
@@ -766,7 +766,7 @@
         },
         "common": {
             "loading": "Lastar",
-            "cancel": "Avbryt\n",
+            "cancel": "Avbryt",
             "save": "Lagre"
         },
         "duration": {

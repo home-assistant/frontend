@@ -369,7 +369,7 @@
                             "add": "Pridať spúšťač",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
-                            "delete_confirm": "Ste si istý odstránením ? ",
+                            "delete_confirm": "Ste si istý odstránením ?",
                             "unsupported_platform": "Nepodporovaná platforma: {platform}",
                             "type_select": "Typ spúšťača",
                             "type": {
@@ -624,7 +624,7 @@
                 "mfa_setup": {
                     "title_aborted": "Prerušené",
                     "title_success": "Úspech!",
-                    "step_done": "Nastavenie dokončené krok {step} ",
+                    "step_done": "Nastavenie dokončené krok {step}",
                     "close": "Zavrieť",
                     "submit": "Odoslať"
                 }

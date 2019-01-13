@@ -20,7 +20,7 @@
         "default": {
             "off": "إيقاف",
             "on": "تشغيل",
-            "unknown": "غير معروف ",
+            "unknown": "غير معروف",
             "unavailable": "غير متوفر"
         },
         "alarm_control_panel": {
@@ -195,7 +195,7 @@
         "media_player": {
             "off": "إيقاف",
             "on": "قيد التشغيل",
-            "playing": "جاري التشغيل ",
+            "playing": "جاري التشغيل",
             "paused": "موقّف مؤقتا",
             "idle": "خامل",
             "standby": "وضع الإنتظار"
@@ -249,16 +249,16 @@
             "off": "مطفئ",
             "on": "مشغل",
             "paused": "موقّف مؤقتا",
-            "returning": "العودة "
+            "returning": "العودة"
         }
     },
     "state_badge": {
         "default": {
-            "unknown": "غير معروف ",
+            "unknown": "غير معروف",
             "unavailable": "غير متوفر"
         },
         "alarm_control_panel": {
-            "armed": "مفعل ",
+            "armed": "مفعل",
             "disarmed": "غير مفعّل",
             "armed_home": "مفعّل",
             "armed_away": "مفعّل",
@@ -653,7 +653,7 @@
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "استئناف التنظيف",
-                    "return_to_base": "العودة ",
+                    "return_to_base": "العودة",
                     "start_cleaning": "بدء تنظيف",
                     "turn_on": "تشغيل",
                     "turn_off": "إيقاف"

@@ -556,6 +556,9 @@
                         "device_unavailable": "dispositivo non disponibile",
                         "entity_unavailable": "entità non disponibile"
                     }
+                },
+                "zha": {
+                    "description": "Gestione rete Zigbee Home Automation"
                 }
             },
             "profile": {
@@ -926,6 +929,18 @@
                 "save": "Salva",
                 "name": "Nome",
                 "entity_id": "ID Entità"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Ultima azione"
+                },
+                "sun": {
+                    "elevation": "Alba",
+                    "rising": "Tramonto"
+                },
+                "updater": {
+                    "title": "Aggiorna istruzioni"
+                }
             }
         },
         "auth_store": {
