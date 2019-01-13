@@ -95,7 +95,11 @@ class HomeAssistant extends ext(PolymerElement, [
   }
 
   computePanelUrl(routeData) {
-    return (routeData && routeData.panel) || DEFAULT_PANEL;
+    return (
+      (routeData && routeData.panel) ||
+      localStorage.defaultPage ||
+      DEFAULT_PANEL
+    );
   }
 
   panelUrlChanged(newPanelUrl) {
