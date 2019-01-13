@@ -33,7 +33,7 @@
             "arming": "Armando",
             "disarming": "Desarmando",
             "triggered": "Activado",
-            "armed_custom_bypass": "Armada zona específica "
+            "armed_custom_bypass": "Armada zona específica"
         },
         "automation": {
             "off": "Apagado",

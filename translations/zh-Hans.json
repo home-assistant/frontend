@@ -913,7 +913,7 @@
         "notification_toast": {
             "entity_turned_on": "已打开 {entity}。",
             "entity_turned_off": "已关闭 {entity}。",
-            "service_called": "服务 {service} 已调用。 ",
+            "service_called": "服务 {service} 已调用。",
             "service_call_failed": "调用服务 {service} 失败。",
             "connection_lost": "连接中断。正在重新连接..."
         },

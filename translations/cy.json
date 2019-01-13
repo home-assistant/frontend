@@ -298,7 +298,7 @@
                 "delete_button": "Dileu"
             },
             "config": {
-                "header": "Ffurfweddu Home Assistant ",
+                "header": "Ffurfweddu Home Assistant",
                 "introduction": "Yma mae'n bosib ffurfweddu'ch cydrannau ac Home Assistant. Nid yw popeth yn bosib i'w ffurfweddu o'r UI eto, ond rydym yn gweithio arno.",
                 "core": {
                     "caption": "Cyffredinol",
@@ -372,7 +372,7 @@
                                     "to": "I"
                                 },
                                 "homeassistant": {
-                                    "label": "Home Assistant ",
+                                    "label": "Home Assistant",
                                     "event": "Digwyddiad:",
                                     "start": "Dechrau",
                                     "shutdown": "Darfod"

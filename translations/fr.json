@@ -746,7 +746,7 @@
                     "configure_ui": "Configurer l'interface utilisateur",
                     "edit_view": {
                         "header": "Voir la configuration",
-                        "add": "Ajouter la vue\n",
+                        "add": "Ajouter la vue",
                         "edit": "Modifier la vue",
                         "delete": "Supprimer la vue"
                     },
