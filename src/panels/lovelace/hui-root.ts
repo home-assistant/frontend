@@ -50,13 +50,6 @@ import { afterNextRender } from "../../common/util/render-status";
 const CSS_CACHE = {};
 const JS_CACHE = {};
 
-declare global {
-  // tslint:disable-next-line
-  interface HASSDomEvents {
-    "rebuild-view": {};
-  }
-}
-
 let loadedUnusedEntities = false;
 
 class HUIRoot extends hassLocalizeLitMixin(LitElement) {
@@ -298,7 +291,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       </app-header>
       <div id='view' class="${classMap({
         "tabs-hidden": this.lovelace!.config.views.length < 2,
-      })}" @rebuild-view='${this._debouncedConfigChanged}'></div>
+      })}" @ll-rebuild='${this._debouncedConfigChanged}'></div>
     </app-header-layout>
     `;
   }

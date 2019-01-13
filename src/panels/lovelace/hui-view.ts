@@ -14,13 +14,14 @@ import { HaStateLabelBadge } from "../../components/entity/ha-state-label-badge"
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
-import { LovelaceViewConfig } from "../../data/lovelace";
+import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
 
 import { Lovelace, LovelaceCard } from "./types";
 import { createCardElement } from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
+import { HuiErrorCard } from "./cards/hui-error-card";
 
 let editCodeLoaded = false;
 
@@ -47,7 +48,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
   public lovelace?: Lovelace;
   public columns?: number;
   public index?: number;
-  private _cards: LovelaceCard[];
+  private _cards: Array<LovelaceCard | HuiErrorCard>;
   private _badges: Array<{ element: HaStateLabelBadge; entityId: string }>;
 
   static get properties(): PropertyDeclarations {
@@ -239,8 +240,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     const elements: LovelaceCard[] = [];
     const elementsToAppend: HTMLElement[] = [];
     config.cards.forEach((cardConfig, cardIndex) => {
-      const element = createCardElement(cardConfig) as LovelaceCard;
-      element.hass = this.hass;
+      const element = this._createCardElement(cardConfig);
       elements.push(element);
 
       if (!this.lovelace!.editMode) {
@@ -286,6 +286,32 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     if ("theme" in config) {
       applyThemesOnElement(root, this.hass!.themes, config.theme);
     }
+  }
+
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = createCardElement(cardConfig) as LovelaceCard;
+    element.hass = this.hass;
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        // In edit mode let it go to hui-root and rebuild whole view.
+        if (!this.lovelace!.editMode) {
+          ev.stopPropagation();
+          this._rebuildCard(element, cardConfig);
+        }
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  private _rebuildCard(
+    element: LovelaceCard,
+    config: LovelaceCardConfig
+  ): void {
+    const newCard = this._createCardElement(config);
+    element.parentElement!.replaceChild(newCard, element);
+    this._cards = this._cards.splice(this._cards.indexOf(element), 1, newCard);
   }
 }
 
