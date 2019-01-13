@@ -898,7 +898,7 @@
                 "service": "Servicio"
             },
             "relative_time": {
-                "past": "hace {time} ",
+                "past": "hace {time}",
                 "future": "En {time}",
                 "never": "Nunca",
                 "duration": {

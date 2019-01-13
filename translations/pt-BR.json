@@ -847,7 +847,7 @@
             "light": {
                 "brightness": "Brilho",
                 "color_temperature": "Temperatura de cor",
-                "white_value": " Balanço de branco",
+                "white_value": "Balanço de branco",
                 "effect": "Efeito"
             },
             "media_player": {

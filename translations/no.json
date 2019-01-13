@@ -556,6 +556,10 @@
                         "device_unavailable": "enheten er utilgjengelig",
                         "entity_unavailable": "oppføringen er utilgjengelig"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "ZigBee Home Automation nettverksadministrasjon"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Lagre",
                 "name": "Navn",
                 "entity_id": "Oppføring ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Siste handling"
+                },
+                "sun": {
+                    "elevation": "Elevasjon",
+                    "rising": "Stiger",
+                    "setting": "Innstilling"
+                },
+                "updater": {
+                    "title": "Oppdateringsanvisning"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Oppdateringer",
         "weblink": "Lenke",
         "zwave": "Z-Wave",
-        "vacuum": "Støvsuger"
+        "vacuum": "Støvsuger",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
