@@ -11,10 +11,6 @@ interface Config extends LovelaceCardConfig {
 }
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {
-  protected _cards?: LovelaceCard[];
-  private _config?: Config;
-  private _hass?: HomeAssistant;
-
   static get properties() {
     return {
       _config: {},
@@ -32,6 +28,9 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
   }
+  protected _cards?: LovelaceCard[];
+  private _config?: Config;
+  private _hass?: HomeAssistant;
 
   public abstract getCardSize(): number;
 
@@ -41,10 +40,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     }
     this._config = config;
     this._cards = config.cards.map((card) => {
-      const element = createCardElement(card) as LovelaceCard;
-      if (this._hass) {
-        element.hass = this._hass;
-      }
+      const element = this._createCardElement(card) as LovelaceCard;
       return element;
     });
   }
@@ -61,4 +57,33 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
   }
 
   protected abstract renderStyle(): TemplateResult;
+
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = createCardElement(cardConfig) as LovelaceCard;
+    if (this._hass) {
+      element.hass = this._hass;
+    }
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        ev.stopPropagation();
+        this._rebuildCard(element, cardConfig);
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  private _rebuildCard(
+    element: LovelaceCard,
+    config: LovelaceCardConfig
+  ): void {
+    const newCard = this._createCardElement(config);
+    element.replaceWith(newCard);
+    this._cards = this._cards!.splice(
+      this._cards!.indexOf(element),
+      1,
+      newCard
+    );
+  }
 }
