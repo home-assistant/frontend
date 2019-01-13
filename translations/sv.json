@@ -601,7 +601,7 @@
                     "prompt_name": "Namn?",
                     "prompt_copy_token": "Kopiera din åtkomsttoken. Den kommer inte att visas igen.",
                     "empty_state": "Du har än så länge inga långlivade åtkomsttokens.",
-                    "last_used": "Användes senast den {date} från {location} ",
+                    "last_used": "Användes senast den {date} från {location}",
                     "not_used": "Har aldrig använts"
                 },
                 "current_user": "Du är inloggad som {fullName}.",

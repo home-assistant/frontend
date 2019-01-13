@@ -556,6 +556,10 @@
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee 홈 자동화 네트워크 관리"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "저장",
                 "name": "이름",
                 "entity_id": "구성요소 ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "최근 동작"
+                },
+                "sun": {
+                    "elevation": "고도",
+                    "rising": "해돋이",
+                    "setting": "해넘이"
+                },
+                "updater": {
+                    "title": "업데이트 방법"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "업데이터",
         "weblink": "웹링크",
         "zwave": "Z-Wave",
-        "vacuum": "청소기"
+        "vacuum": "청소기",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
