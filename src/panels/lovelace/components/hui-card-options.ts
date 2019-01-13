@@ -46,8 +46,6 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          font-size: 16px;
-          margin: 0;
         }
         paper-icon-button {
           color: var(--primary-text-color);
