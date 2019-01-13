@@ -4,7 +4,7 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { afterNextRender } from "@polymer/polymer/lib/utils/render-status";
-import { html as litHtml, LitElement, TemplateResult } from "lit-element";
+import { html as litHtml, LitElement } from "lit-element";
 
 import "../home-assistant-main";
 import "../ha-init-page";
