@@ -3,9 +3,9 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import { classMap } from "lit-html/directives/classMap";
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
@@ -119,7 +119,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
     ${this.renderStyle()}
     <app-route .route="${this.route}" pattern="/:view" data="${

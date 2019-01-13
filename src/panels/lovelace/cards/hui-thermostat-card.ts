@@ -3,9 +3,9 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -110,7 +110,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass || !this._config) {
       return html``;
     }

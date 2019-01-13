@@ -1,12 +1,16 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 
 import "../../../components/ha-card";
 
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import { TemplateResult } from "lit-html";
-import { classMap } from "lit-html/directives/classMap";
+import { classMap } from "lit-html/directives/class-map";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 
@@ -49,7 +53,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

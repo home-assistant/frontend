@@ -3,9 +3,9 @@ import {
   LitElement,
   PropertyValues,
   PropertyDeclarations,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import { classMap } from "lit-html/directives/classMap";
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
@@ -97,7 +97,7 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
     return true;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

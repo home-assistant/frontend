@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";

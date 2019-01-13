@@ -3,8 +3,8 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 
 import "../../../components/ha-card";
 import "../components/hui-entities-toggle";
@@ -95,7 +95,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this._hass) {
       return html``;
     }

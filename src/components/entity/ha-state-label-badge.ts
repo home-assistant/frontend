@@ -3,10 +3,10 @@ import {
   html,
   PropertyValues,
   PropertyDeclarations,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
-import { classMap } from "lit-html/directives/classMap";
+import { classMap } from "lit-html/directives/class-map";
 
 import computeStateDomain from "../../common/entity/compute_state_domain";
 import computeStateName from "../../common/entity/compute_state_name";
@@ -41,7 +41,7 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
     this.clearInterval();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     const state = this.state;
 
     if (!state) {

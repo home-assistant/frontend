@@ -1,9 +1,13 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { TemplateResult } from "lit-html";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import "../../../resources/ha-style";
@@ -30,7 +34,7 @@ export class ZHANetwork extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">

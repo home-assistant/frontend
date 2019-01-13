@@ -1,6 +1,5 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, TemplateResult } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
-import { TemplateResult } from "lit-html";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-checkbox/paper-checkbox";
 
@@ -79,7 +78,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

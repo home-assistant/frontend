@@ -1,12 +1,16 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult } from "lit-html";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import computeStateName from "../../../common/entity/compute_state_name";
 import sortByName from "../../../common/entity/states_sort_by_name";
@@ -64,7 +68,7 @@ export class ZHANode extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     this._nodes = this._computeNodes(this.hass);
     return html`
       ${this.renderStyle()}
