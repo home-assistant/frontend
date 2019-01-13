@@ -1,4 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, TemplateResult } from "lit-element";
 
 import "../../../components/ha-icon";
 
@@ -8,7 +8,6 @@ import { longPress } from "../common/directives/long-press-directive";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { TemplateResult } from "lit-html";
 
 interface Config extends LovelaceElementConfig {
   icon: string;
@@ -31,7 +30,7 @@ export class HuiIconElement extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config) {
       return html``;
     }

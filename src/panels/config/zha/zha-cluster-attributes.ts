@@ -4,12 +4,12 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult } from "lit-html";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import {
@@ -78,7 +78,7 @@ export class ZHAClusterAttributes extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">

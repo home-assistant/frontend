@@ -1,5 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import { html, LitElement, TemplateResult } from "lit-element";
 
 import { createCardElement } from "../common/create-card-element";
 
@@ -50,7 +49,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     });
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config) {
       return html``;
     }

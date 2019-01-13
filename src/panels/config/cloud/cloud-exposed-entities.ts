@@ -3,8 +3,8 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntityBase } from "home-assistant-js-websocket";
@@ -34,7 +34,7 @@ export class CloudExposedEntities extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._filterFunc) {
       return html``;
     }

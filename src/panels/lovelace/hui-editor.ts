@@ -1,6 +1,5 @@
-import { LitElement, html } from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap";
-import { TemplateResult } from "lit-html";
+import { LitElement, html, TemplateResult } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import yaml from "js-yaml";
 
 import "@polymer/app-layout/app-header-layout/app-header-layout";
@@ -43,7 +42,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
     };
   }
 
-  public render(): TemplateResult {
+  public render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <app-header-layout>

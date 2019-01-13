@@ -3,11 +3,11 @@ import {
   LitElement,
   PropertyValues,
   PropertyDeclarations,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 
 import { fireEvent } from "../../../common/dom/fire_event";
-import { styleMap } from "lit-html/directives/styleMap";
+import { styleMap } from "lit-html/directives/style-map";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -82,7 +82,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     this._config = { theme: "default", ...config };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass || !this._config) {
       return html``;
     }

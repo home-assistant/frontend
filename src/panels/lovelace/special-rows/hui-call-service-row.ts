@@ -1,4 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, TemplateResult } from "lit-element";
 import "@polymer/paper-button/paper-button";
 
 import "../../../components/ha-icon";
@@ -6,7 +6,6 @@ import "../../../components/ha-icon";
 import { callService } from "../common/call-service";
 import { EntityRow, CallServiceConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
-import { TemplateResult } from "lit-html";
 
 class HuiCallServiceRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
@@ -27,7 +26,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
     this._config = { icon: "hass:remote", action_name: "Run", ...config };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config) {
       return html``;
     }
