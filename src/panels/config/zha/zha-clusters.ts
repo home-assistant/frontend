@@ -4,9 +4,9 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-card/paper-card";
-import { TemplateResult } from "lit-html";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
@@ -73,7 +73,7 @@ export class ZHAClusters extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this._renderStyle()}
       <div class="node-picker">

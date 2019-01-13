@@ -1,6 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
-import { TemplateResult } from "lit-html";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -32,7 +36,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass || !this._config) {
       return html``;
     }

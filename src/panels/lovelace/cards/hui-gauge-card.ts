@@ -3,9 +3,9 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import { styleMap } from "lit-html/directives/styleMap";
+  TemplateResult,
+} from "lit-element";
+import { styleMap } from "lit-html/directives/style-map";
 
 import "../../../components/ha-card";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -84,7 +84,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._setBaseUnit();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

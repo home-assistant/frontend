@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
@@ -41,7 +45,7 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <paper-dialog with-backdrop>

@@ -4,12 +4,12 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult } from "lit-html";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchEntitiesForZhaNode } from "../../../data/zha";
 import "../../../resources/ha-style";
@@ -62,7 +62,7 @@ export class ZHAEntities extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this._renderStyle()}
       <div class="node-picker">
