@@ -8,7 +8,7 @@
 export const DEFAULT_DOMAIN_ICON = "hass:bookmark";
 
 /** Panel to show when no panel is picked. */
-export const DEFAULT_PANEL = "states";
+export const DEFAULT_PANEL = "lovelace";
 
 /** Domains that have a state card. */
 export const DOMAINS_WITH_CARD = [
