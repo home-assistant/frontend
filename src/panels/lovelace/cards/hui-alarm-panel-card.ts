@@ -10,7 +10,10 @@ import { classMap } from "lit-html/directives/class-map";
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { callAlarmAction } from "../../../data/alarm_control_panel";
+import {
+  callAlarmAction,
+  FORMAT_NUMBER,
+} from "../../../data/alarm_control_panel";
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 import "../../../components/ha-card";
@@ -150,7 +153,7 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
               `
         }
         ${
-          stateObj.attributes.code_format !== "Number"
+          stateObj.attributes.code_format !== FORMAT_NUMBER
             ? html``
             : html`
                 <div id="keypad">

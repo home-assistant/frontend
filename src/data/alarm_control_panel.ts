@@ -1,5 +1,8 @@
 import { HomeAssistant } from "../types";
 
+export const FORMAT_TEXT = "text";
+export const FORMAT_NUMBER = "number";
+
 export const callAlarmAction = (
   hass: HomeAssistant,
   entity: string,
