@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-input/paper-textarea";
 
 import { HomeAssistant } from "../../../../types";
@@ -21,7 +25,7 @@ export class HuiYAMLEditor extends LitElement {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <paper-textarea

@@ -1,5 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import { html, LitElement, TemplateResult } from "lit-element";
 import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../../types";
@@ -39,7 +38,7 @@ export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
   public hass?: HomeAssistant;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       <h3>${this.localize("ui.panel.lovelace.editor.edit_card.pick_card")}</h3>

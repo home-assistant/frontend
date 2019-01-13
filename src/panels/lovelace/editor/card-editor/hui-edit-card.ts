@@ -3,9 +3,9 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import yaml from "js-yaml";
 
 import "@polymer/paper-spinner/paper-spinner";
@@ -107,7 +107,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     this._loadConfigElement(this.cardConfig!);
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     let content;
     let preview;
     if (this._configElement !== undefined) {

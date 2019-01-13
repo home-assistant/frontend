@@ -1,5 +1,4 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import { html, LitElement, TemplateResult } from "lit-element";
 
 import "../../../components/ha-climate-state";
 import "../components/hui-generic-entity-row";
@@ -26,7 +25,7 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass || !this._config) {
       return html``;
     }

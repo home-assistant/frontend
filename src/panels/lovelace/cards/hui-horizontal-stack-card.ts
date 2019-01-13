@@ -1,5 +1,4 @@
-import { html } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import { html, TemplateResult } from "lit-element";
 
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
