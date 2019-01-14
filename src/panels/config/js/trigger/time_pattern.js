@@ -4,7 +4,7 @@ import "@polymer/paper-input/paper-input";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
-export default class ScheduleTrigger extends Component {
+export default class TimePatternTrigger extends Component {
   constructor() {
     super();
 
@@ -18,7 +18,7 @@ export default class ScheduleTrigger extends Component {
       <div>
         <paper-input
           label={localize(
-            "ui.panel.config.automation.editor.triggers.type.schedule.hours"
+            "ui.panel.config.automation.editor.triggers.type.time_pattern.hours"
           )}
           name="hours"
           value={hours}
@@ -26,7 +26,7 @@ export default class ScheduleTrigger extends Component {
         />
         <paper-input
           label={localize(
-            "ui.panel.config.automation.editor.triggers.type.schedule.minutes"
+            "ui.panel.config.automation.editor.triggers.type.time_pattern.minutes"
           )}
           name="minutes"
           value={minutes}
@@ -34,7 +34,7 @@ export default class ScheduleTrigger extends Component {
         />
         <paper-input
           label={localize(
-            "ui.panel.config.automation.editor.triggers.type.schedule.seconds"
+            "ui.panel.config.automation.editor.triggers.type.time_pattern.seconds"
           )}
           name="seconds"
           value={seconds}
@@ -45,7 +45,7 @@ export default class ScheduleTrigger extends Component {
   }
 }
 
-ScheduleTrigger.defaultConfig = {
+TimePatternTrigger.defaultConfig = {
   hours: "",
   minutes: "",
   seconds: "",

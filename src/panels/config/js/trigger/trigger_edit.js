@@ -8,7 +8,7 @@ import EventTrigger from "./event";
 import HassTrigger from "./homeassistant";
 import MQTTTrigger from "./mqtt";
 import NumericStateTrigger from "./numeric_state";
-import ScheduleTrigger from "./schedule";
+import TimePatternTrigger from "./time_pattern";
 import StateTrigger from "./state";
 import SunTrigger from "./sun";
 import TemplateTrigger from "./template";
@@ -22,10 +22,10 @@ const TYPES = {
   homeassistant: HassTrigger,
   mqtt: MQTTTrigger,
   numeric_state: NumericStateTrigger,
-  schedule: ScheduleTrigger,
   sun: SunTrigger,
   template: TemplateTrigger,
   time: TimeTrigger,
+  time_pattern: TimePatternTrigger,
   webhook: WebhookTrigger,
   zone: ZoneTrigger,
 };

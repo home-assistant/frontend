@@ -613,12 +613,6 @@
                   "below": "Below",
                   "value_template": "Value template (optional)"
                 },
-                "schedule": {
-                  "label": "Schedule",
-                  "hours": "Hours",
-                  "minutes": "Minutes",
-                  "seconds": "Seconds"
-                },
                 "sun": {
                   "label": "Sun",
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
@@ -633,6 +627,12 @@
                 "time": {
                   "label": "Time",
                   "at": "At"
+                },
+                "time_pattern": {
+                  "label": "Time Pattern",
+                  "hours": "Hours",
+                  "minutes": "Minutes",
+                  "seconds": "Seconds"
                 },
                 "webhook": {
                   "label": "Webhook",
