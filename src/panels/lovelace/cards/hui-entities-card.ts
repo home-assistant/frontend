@@ -21,7 +21,7 @@ import { createRowElement } from "../common/create-row-element";
 import computeDomain from "../../../common/entity/compute_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
-export interface ConfigEntity extends EntityConfig {
+export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
   secondary_info?: "entity-id" | "last-changed";
   action_name?: string;
@@ -30,10 +30,10 @@ export interface ConfigEntity extends EntityConfig {
   url?: string;
 }
 
-export interface Config extends LovelaceCardConfig {
+export interface EntitiesCardConfig extends LovelaceCardConfig {
   show_header_toggle?: boolean;
   title?: string;
-  entities: ConfigEntity[];
+  entities: EntitiesCardEntityConfig[];
   theme?: string;
 }
 
@@ -49,8 +49,8 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
   }
 
   protected _hass?: HomeAssistant;
-  protected _config?: Config;
-  protected _configEntities?: ConfigEntity[];
+  protected _config?: EntitiesCardConfig;
+  protected _configEntities?: EntitiesCardEntityConfig[];
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -81,7 +81,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     return (this._config.title ? 1 : 0) + this._config.entities.length;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: EntitiesCardConfig): void {
     const entities = processConfigEntities(config.entities);
 
     this._config = { theme: "default", ...config };
@@ -171,7 +171,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderEntity(entityConf: ConfigEntity): TemplateResult {
+  private renderEntity(entityConf: EntitiesCardEntityConfig): TemplateResult {
     const element = createRowElement(entityConf);
     if (this._hass) {
       element.hass = this._hass;
@@ -189,7 +189,7 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private _handleClick(entityConf: ConfigEntity): void {
+  private _handleClick(entityConf: EntitiesCardEntityConfig): void {
     const entityId = entityConf.entity;
     fireEvent(this, "hass-more-info", { entityId });
   }
