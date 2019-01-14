@@ -206,7 +206,7 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
   private _handleActionClick(e: MouseEvent): void {
     callAlarmAction(
       this.hass!,
-      this._config!.entity_id,
+      this._config!.entity,
       (e.currentTarget! as any).action,
       this._code!
     );
