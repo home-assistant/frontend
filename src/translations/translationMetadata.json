@@ -87,11 +87,11 @@
   "nl": {
     "nativeName": "Nederlands"
   },
-  "nn": {
-    "nativeName": "Norsk Nynorsk"
-  },
   "nb": {
     "nativeName": "Norsk Bokmål"
+  },
+  "nn": {
+    "nativeName": "Norsk Nynorsk"
   },
   "pl": {
     "nativeName": "Polski"
