@@ -556,6 +556,10 @@
                         "device_unavailable": "urządzenie niedostępne",
                         "entity_unavailable": "encja niedostępna"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zarządzanie siecią ZigBee Home Automation"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Zapisz",
                 "name": "Nazwa",
                 "entity_id": "Identyfikator encji"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Ostatnia akcja"
+                },
+                "sun": {
+                    "elevation": "Wysokość",
+                    "rising": "Wschód",
+                    "setting": "Zachód"
+                },
+                "updater": {
+                    "title": "Instrukcje aktualizacji"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Aktualizator",
         "weblink": "Link",
         "zwave": "Z-Wave",
-        "vacuum": "Odkurzacz"
+        "vacuum": "Odkurzacz",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
