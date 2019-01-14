@@ -108,7 +108,11 @@ function initPushNotifications() {
 
     event.notification.close();
 
-    if (!event.notification.data || !event.notification.data.url) {
+    if (
+      event.action ||
+      !event.notification.data ||
+      !event.notification.data.url
+    ) {
       return;
     }
 
