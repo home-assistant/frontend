@@ -6,6 +6,7 @@ import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 
 import "../components/hui-generic-entity-row";
 import "../../../components/ha-slider";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HuiInputNumberEntityRow extends mixinBehaviors(
   [IronResizableBehavior],
@@ -51,6 +52,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors(
         >
           <div class="flex">
             <ha-slider
+              dir="[[_rtl]]"
               min="[[_min]]"
               max="[[_max]]"
               value="{{_value}}"
@@ -103,6 +105,11 @@ class HuiInputNumberEntityRow extends mixinBehaviors(
       },
       _step: Number,
       _value: Number,
+      _rtl: {
+        type: String,
+        reflectToAttribute: true,
+        computed: "_computeRTLDirection(hass)",
+      },
     };
   }
 
@@ -173,6 +180,10 @@ class HuiInputNumberEntityRow extends mixinBehaviors(
       value: this._value,
       entity_id: this._stateObj.entity_id,
     });
+  }
+
+  _computeRTLDirection(hass) {
+    return computeRTL(hass) ? "rtl" : "ltr";
   }
 }
 customElements.define("hui-input-number-entity-row", HuiInputNumberEntityRow);
