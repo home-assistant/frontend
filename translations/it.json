@@ -558,6 +558,7 @@
                     }
                 },
                 "zha": {
+                    "caption": "ZHA",
                     "description": "Gestione rete Zigbee Home Automation"
                 }
             },
@@ -936,7 +937,8 @@
                 },
                 "sun": {
                     "elevation": "Alba",
-                    "rising": "Tramonto"
+                    "rising": "Tramonto",
+                    "setting": "Impostazione"
                 },
                 "updater": {
                     "title": "Aggiorna istruzioni"
@@ -990,7 +992,8 @@
         "updater": "Updater",
         "weblink": "Link Web",
         "zwave": "Z-Wave",
-        "vacuum": "Aspirapolvere"
+        "vacuum": "Aspirapolvere",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
