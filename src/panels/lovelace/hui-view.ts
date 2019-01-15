@@ -311,7 +311,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
   ): void {
     const newCard = this._createCardElement(config);
     element.parentElement!.replaceChild(newCard, element);
-    this._cards = this._cards.splice(this._cards.indexOf(element), 1, newCard);
+    this._cards.splice(this._cards.indexOf(element), 1, newCard);
   }
 }
 
