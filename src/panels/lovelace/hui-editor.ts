@@ -1,4 +1,4 @@
-import { LitElement, html, TemplateResult } from "lit-element";
+import { LitElement, html, TemplateResult, CSSResult, css } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import yaml from "js-yaml";
 
@@ -14,6 +14,7 @@ import { Lovelace } from "./types";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 
 import "../../components/ha-icon";
+import { haStyle } from "../../resources/ha-style";
 
 const TAB_INSERT = "  ";
 
@@ -26,7 +27,6 @@ const lovelaceStruct = struct.interface({
 class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
-  private _haStyle?: DocumentFragment;
   private _saving?: boolean;
   private _changed?: boolean;
   private _hashAdded?: boolean;
@@ -44,7 +44,6 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
 
   public render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <app-header-layout>
         <app-header>
           <app-toolbar>
@@ -115,18 +114,10 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
     });
   }
 
-  protected renderStyle() {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-
-    return html`
-      ${this._haStyle}
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
         app-header-layout {
           height: 100vh;
         }
@@ -168,8 +159,8 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
         .saved {
           opacity: 1;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 
   private _closeEditor() {
