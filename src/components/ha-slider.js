@@ -13,7 +13,7 @@ class HaSlider extends PaperSliderClass {
       // append style to add mirroring of pin in RTL
       superStyle.appendChild(
         document.createTextNode(`
-          #sliderContainer.pin.expand > .slider-knob > .slider-knob-inner::after {
+          :host([dir="rtl"]) #sliderContainer.pin.expand > .slider-knob > .slider-knob-inner::after {
             -webkit-transform: scale(1) translate(0, -17px) scaleX(-1) !important;
             transform: scale(1) translate(0, -17px) scaleX(-1) !important;
             }

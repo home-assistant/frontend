@@ -107,7 +107,6 @@ class HuiInputNumberEntityRow extends mixinBehaviors(
       _value: Number,
       _rtl: {
         type: String,
-        reflectToAttribute: true,
         computed: "_computeRTLDirection(hass)",
       },
     };
