@@ -27,7 +27,6 @@ const lovelaceStruct = struct.interface({
 class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
-  private _haStyle?: DocumentFragment;
   private _saving?: boolean;
   private _changed?: boolean;
   private _hashAdded?: boolean;
@@ -45,7 +44,6 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
 
   public render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <app-header-layout>
         <app-header>
           <app-toolbar>
