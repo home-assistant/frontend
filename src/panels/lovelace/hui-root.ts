@@ -4,6 +4,8 @@ import {
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
@@ -45,6 +47,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
+import { haStyle } from "../../resources/ha-style";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -63,7 +66,6 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   private _curView?: number | "hass-unused-entities";
   private _notificationsOpen: boolean;
   private _persistentNotifications?: Notification[];
-  private _haStyle?: DocumentFragment;
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
@@ -114,7 +116,6 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
 
   protected render(): TemplateResult | void {
     return html`
-    ${this.renderStyle()}
     <app-route .route="${this.route}" pattern="/:view" data="${
       this._routeData
     }" @data-changed="${this._routeDataChanged}"></app-route>
@@ -296,18 +297,10 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     `;
   }
 
-  protected renderStyle(): TemplateResult {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-
-    return html`
-      ${this._haStyle}
-      <style include="ha-style">
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
         :host {
           -ms-user-select: none;
           -webkit-user-select: none;
@@ -373,8 +366,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         paper-item {
           cursor: pointer;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 
   protected updated(changedProperties: PropertyValues): void {

@@ -1,7 +1,33 @@
 import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/polymer-legacy";
+import { css } from "lit-element";
 
-export const buttonLink = `
+export const haStyle = css`
+  :host {
+    @apply --paper-font-body1;
+  }
+
+  app-header-layout,
+  ha-app-layout {
+    background-color: var(--primary-background-color);
+  }
+
+  app-header,
+  app-toolbar {
+    background-color: var(--primary-color);
+    font-weight: 400;
+    color: var(--text-primary-color, white);
+  }
+
+  app-toolbar ha-menu-button + [main-title],
+  app-toolbar paper-icon-button + [main-title] {
+    margin-left: 24px;
+  }
+
+  h1 {
+    @apply --paper-font-title;
+  }
+
   button.link {
     background: none;
     color: inherit;
@@ -11,6 +37,74 @@ export const buttonLink = `
     text-align: left;
     text-decoration: underline;
     cursor: pointer;
+  }
+
+  .card-actions a {
+    text-decoration: none;
+  }
+
+  .card-actions paper-button:not([disabled]),
+  .card-actions ha-progress-button:not([disabled]),
+  .card-actions ha-call-api-button:not([disabled]),
+  .card-actions ha-call-service-button:not([disabled]) {
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+
+  .card-actions paper-button.warning:not([disabled]),
+  .card-actions ha-call-api-button.warning:not([disabled]),
+  .card-actions ha-call-service-button.warning:not([disabled]) {
+    color: var(--google-red-500);
+  }
+
+  .card-actions paper-button[primary] {
+    background-color: var(--primary-color);
+    color: var(--text-primary-color);
+  }
+`;
+
+export const haStyleDialog = css`
+  :host {
+    --ha-dialog-narrow: {
+      margin: 0;
+      width: 100% !important;
+      max-height: calc(100% - 64px);
+
+      position: fixed !important;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      overflow: scroll;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+
+    --ha-dialog-fullscreen: {
+      width: 100% !important;
+      border-radius: 0px;
+      position: fixed !important;
+      margin: 0;
+    }
+  }
+
+  /* prevent clipping of positioned elements */
+  paper-dialog-scrollable {
+    --paper-dialog-scrollable: {
+      -webkit-overflow-scrolling: auto;
+    }
+  }
+
+  /* force smooth scrolling for iOS 10 */
+  paper-dialog-scrollable.can-scroll {
+    --paper-dialog-scrollable: {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  @media all and (max-width: 450px), all and (max-height: 500px) {
+    paper-dialog {
+      @apply (--ha-dialog-narrow);
+    }
   }
 `;
 
@@ -152,101 +246,13 @@ documentContainer.innerHTML = `<custom-style>
 </custom-style><dom-module id="ha-style">
   <template>
     <style>
-      :host {
-        @apply --paper-font-body1;
-      }
-
-      app-header-layout, ha-app-layout {
-        background-color: var(--primary-background-color);
-      }
-
-      app-header, app-toolbar {
-        background-color: var(--primary-color);
-        font-weight: 400;
-        color: var(--text-primary-color, white);
-      }
-
-      app-toolbar ha-menu-button + [main-title],
-      app-toolbar paper-icon-button + [main-title] {
-        margin-left: 24px;
-      }
-
-      h1 {
-        @apply --paper-font-title;
-      }
-
-      ${buttonLink}
-
-      .card-actions a {
-        text-decoration: none;
-      }
-
-      .card-actions paper-button:not([disabled]),
-      .card-actions ha-progress-button:not([disabled]),
-      .card-actions ha-call-api-button:not([disabled]),
-      .card-actions ha-call-service-button:not([disabled]) {
-        color: var(--primary-color);
-        font-weight: 500;
-      }
-
-      .card-actions paper-button.warning:not([disabled]),
-      .card-actions ha-call-api-button.warning:not([disabled]),
-      .card-actions ha-call-service-button.warning:not([disabled]) {
-        color: var(--google-red-500);
-      }
-
-      .card-actions paper-button[primary] {
-        background-color: var(--primary-color);
-        color: var(--text-primary-color);
-      }
-
+    ${haStyle.cssText}
     </style>
   </template>
 </dom-module><dom-module id="ha-style-dialog">
   <template>
     <style>
-      :host {
-        --ha-dialog-narrow: {
-          margin: 0;
-          width: 100% !important;
-          max-height: calc(100% - 64px);
-
-          position: fixed !important;
-          bottom: 0px;
-          left: 0px;
-          right: 0px;
-          overflow: scroll;
-          border-bottom-left-radius: 0px;
-          border-bottom-right-radius: 0px;
-        }
-
-        --ha-dialog-fullscreen: {
-          width: 100% !important;
-          border-radius: 0px;
-          position: fixed !important;
-          margin: 0;
-        }
-      }
-
-      /* prevent clipping of positioned elements */
-      paper-dialog-scrollable {
-        --paper-dialog-scrollable: {
-          -webkit-overflow-scrolling: auto;
-        }
-      }
-
-      /* force smooth scrolling for iOS 10 */
-      paper-dialog-scrollable.can-scroll {
-        --paper-dialog-scrollable: {
-          -webkit-overflow-scrolling: touch;
-        }
-      }
-
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        paper-dialog {
-          @apply(--ha-dialog-narrow);
-        }
-      }
+      ${haStyleDialog.cssText}
     </style>
   </template>
 </dom-module>`;
