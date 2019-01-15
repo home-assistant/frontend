@@ -52,6 +52,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   timer: "timer",
   switch: "toggle",
   vacuum: "toggle",
+  water_heater: "climate",
 };
 const TIMEOUT = 2000;
 
