@@ -16,7 +16,10 @@ import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config, ConfigEntity } from "../../cards/hui-entities-card";
+import {
+  EntitiesCardConfig,
+  EntitiesCardEntityConfig,
+} from "../../cards/hui-entities-card";
 import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/state-badge";
@@ -57,10 +60,10 @@ export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   public hass?: HomeAssistant;
-  private _config?: Config;
-  private _configEntities?: ConfigEntity[];
+  private _config?: EntitiesCardConfig;
+  private _configEntities?: EntitiesCardEntityConfig[];
 
-  public setConfig(config: Config): void {
+  public setConfig(config: EntitiesCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
