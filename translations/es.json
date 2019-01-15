@@ -556,6 +556,9 @@
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA"
                 }
             },
             "profile": {
@@ -926,6 +929,19 @@
                 "save": "Guardar",
                 "name": "Nombre",
                 "entity_id": "Identificación de la entidad"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Última acción"
+                },
+                "sun": {
+                    "elevation": "Elevación",
+                    "rising": "Subiendo",
+                    "setting": "Ajuste"
+                },
+                "updater": {
+                    "title": "Instrucciones de actualización"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +991,8 @@
         "updater": "Actualizador",
         "weblink": "Enlace web",
         "zwave": "Z-Wave",
-        "vacuum": "Aspiradora"
+        "vacuum": "Aspiradora",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

@@ -556,6 +556,10 @@
                         "device_unavailable": "eszköz nem érhető el",
                         "entity_unavailable": "entitás nem érhető el"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation hálózat menedzsment"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Mentés",
                 "name": "Név",
                 "entity_id": "Entitás ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Utolsó Művelet"
+                },
+                "sun": {
+                    "elevation": "Magasság",
+                    "rising": "Napkelte",
+                    "setting": "Napnyugta"
+                },
+                "updater": {
+                    "title": "Frissítési Instrukciók"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Frissítések",
         "weblink": "Hivatkozás",
         "zwave": "Z-Wave",
-        "vacuum": "Porszívó"
+        "vacuum": "Porszívó",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
