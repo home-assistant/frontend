@@ -52,6 +52,9 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   timer: "timer",
   switch: "toggle",
   vacuum: "toggle",
+  // Temporary. Once climate is rewritten,
+  // water heater should get it's own row.
+  water_heater: "climate",
 };
 const TIMEOUT = 2000;
 
