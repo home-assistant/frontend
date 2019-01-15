@@ -35,7 +35,13 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 1 + this.offsetHeight / 50;
+    if (!this._config) {
+      return 3;
+    }
+    const aspectRatio = this._config.aspect_ratio
+      ? Number(this._config.aspect_ratio.replace("%", ""))
+      : 50;
+    return 1 + aspectRatio / 25;
   }
 
   public setConfig(config: Config): void {
@@ -79,7 +85,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
         #root {
           width: 100%;
           position: relative;
-          padding-top: ${this._config!.aspect_ratio || "50%"};
         }
         iframe {
           position: absolute;
