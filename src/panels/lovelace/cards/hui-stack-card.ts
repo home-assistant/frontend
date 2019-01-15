@@ -80,6 +80,9 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
   ): void {
     const newCard = this._createCardElement(config);
     element.replaceWith(newCard);
-    this._cards!.splice(this._cards!.indexOf(element), 1, newCard);
+
+    const newCardList = this._cards!.slice(0);
+    newCardList[this._cards.indexOf(element)] = newCard;
+    this._cards = newCardList;
   }
 }
