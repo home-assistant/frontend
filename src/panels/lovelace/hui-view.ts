@@ -306,12 +306,14 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _rebuildCard(
-    element: LovelaceCard,
+    cardElToReplace: LovelaceCard,
     config: LovelaceCardConfig
   ): void {
-    const newCard = this._createCardElement(config);
-    element.parentElement!.replaceChild(newCard, element);
-    this._cards = this._cards.splice(this._cards.indexOf(element), 1, newCard);
+    const newCardEl = this._createCardElement(config);
+    cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
+    this._cards = this._cards!.map((curCardEl) =>
+      curCardEl === cardElToReplace ? newCardEl : curCardEl
+    );
   }
 }
 
