@@ -25,7 +25,11 @@ const DOMAINS_BADGES = [
   "sun",
   "timer",
 ];
-const HIDE_DOMAIN = new Set(["persistent_notification", "configurator"]);
+const HIDE_DOMAIN = new Set([
+  "persistent_notification",
+  "configurator",
+  "geo_location",
+]);
 
 const computeCards = (
   states: Array<[string, HassEntity]>,
@@ -242,6 +246,16 @@ export const generateLovelaceConfig = (
         groupOrders
       )
     );
+
+    // Add map of geo locations to default view if loaded
+    if (hass.config.components.includes("geo_location")) {
+      if (views[0] && views[0].cards) {
+        views[0].cards.push({
+          type: "map",
+          geo_location_sources: ["all"],
+        });
+      }
+    }
 
     // Make sure we don't have Home as title and first tab.
     if (views.length > 1 && title === "Home") {
