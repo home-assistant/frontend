@@ -184,13 +184,19 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
         const { config, mode } = this.lovelace!;
         try {
           // Optimistic update
-          this._updateLovelace({ config: newConfig, mode: "storage" });
+          this._updateLovelace({
+            config: newConfig,
+            mode: "storage",
+          });
           await saveConfig(this.hass!, newConfig);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);
           // Rollback the optimistic update
-          this._updateLovelace({ config, mode });
+          this._updateLovelace({
+            config,
+            mode,
+          });
           throw err;
         }
       },
