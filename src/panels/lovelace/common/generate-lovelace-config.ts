@@ -69,7 +69,7 @@ const computeCards = (
         type: "weather-forecast",
         entity: entityId,
       });
-    } else if (domain === "weblink") {
+    } else if (domain === "weblink" && stateObj) {
       const conf: WeblinkConfig = {
         type: "weblink",
         url: stateObj.state,
