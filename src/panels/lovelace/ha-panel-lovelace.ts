@@ -187,7 +187,6 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
           this._updateLovelace({
             config: newConfig,
             mode: "storage",
-            editMode: true,
           });
           await saveConfig(this.hass!, newConfig);
         } catch (err) {
@@ -197,7 +196,6 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
           this._updateLovelace({
             config,
             mode,
-            editMode: false,
           });
           throw err;
         }
