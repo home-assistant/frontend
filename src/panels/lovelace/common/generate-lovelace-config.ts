@@ -69,18 +69,16 @@ const computeCards = (
         type: "weather-forecast",
         entity: entityId,
       });
-    } else if (domain === "weblink") {
-      if (stateObj) {
-        const conf: WeblinkConfig = {
-          type: "weblink",
-          url: stateObj.state,
-          name: computeStateName(stateObj),
-        };
-        if ("icon" in stateObj.attributes) {
-          conf.icon = stateObj.attributes.icon;
-        }
-        entities.push(conf);
+    } else if (domain === "weblink" && stateObj) {
+      const conf: WeblinkConfig = {
+        type: "weblink",
+        url: stateObj.state,
+        name: computeStateName(stateObj),
+      };
+      if ("icon" in stateObj.attributes) {
+        conf.icon = stateObj.attributes.icon;
       }
+      entities.push(conf);
     } else {
       entities.push(entityId);
     }
