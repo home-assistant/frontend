@@ -112,6 +112,7 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
     try {
       const lovelace = this._params!.lovelace;
       await lovelace.saveConfig(lovelace.config);
+      lovelace.setEditMode(true);
       this._saving = false;
       this._closeDialog();
     } catch (err) {
