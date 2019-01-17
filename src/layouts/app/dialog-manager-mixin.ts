@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer";
-import { Constructor } from "@polymer/lit-element";
+import { Constructor } from "lit-element";
 import { HASSDomEvent, ValidHassDomEvent } from "../../common/dom/fire_event";
 
 interface RegisterDialogParams {

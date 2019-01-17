@@ -1,6 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { DOMAINS_TOGGLE } from "../../../common/const";
@@ -83,7 +87,7 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

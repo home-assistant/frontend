@@ -898,7 +898,7 @@
                 "service": "Storitev"
             },
             "relative_time": {
-                "past": "pred {time} ",
+                "past": "pred {time}",
                 "future": "Čez {time}",
                 "never": "Nikoli",
                 "duration": {

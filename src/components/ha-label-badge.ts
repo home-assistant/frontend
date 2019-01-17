@@ -1,10 +1,13 @@
 import {
+  html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult, html } from "lit-html";
-import { classMap } from "lit-html/directives/classMap";
+  TemplateResult,
+  CSSResult,
+  css,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {
@@ -24,9 +27,8 @@ class HaLabelBadge extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <div class="badge-container">
         <div class="label-badge" id="badge">
           <div
@@ -77,9 +79,9 @@ class HaLabelBadge extends LitElement {
     `;
   }
 
-  protected renderStyle(): TemplateResult {
-    return html`
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      css`
         .badge-container {
           display: inline-block;
           text-align: center;
@@ -148,8 +150,8 @@ class HaLabelBadge extends LitElement {
           text-overflow: ellipsis;
           line-height: normal;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 
   protected updated(changedProperties: PropertyValues): void {

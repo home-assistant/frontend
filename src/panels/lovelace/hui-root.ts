@@ -3,9 +3,11 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import { classMap } from "lit-html/directives/classMap";
+  TemplateResult,
+  CSSResult,
+  css,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
@@ -45,17 +47,11 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
+import { haStyle } from "../../resources/ha-style";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
 const JS_CACHE = {};
-
-declare global {
-  // tslint:disable-next-line
-  interface HASSDomEvents {
-    "rebuild-view": {};
-  }
-}
 
 let loadedUnusedEntities = false;
 
@@ -70,7 +66,6 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
   private _curView?: number | "hass-unused-entities";
   private _notificationsOpen: boolean;
   private _persistentNotifications?: Notification[];
-  private _haStyle?: DocumentFragment;
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
@@ -119,9 +114,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
-    ${this.renderStyle()}
     <app-route .route="${this.route}" pattern="/:view" data="${
       this._routeData
     }" @data-changed="${this._routeDataChanged}"></app-route>
@@ -298,23 +292,15 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       </app-header>
       <div id='view' class="${classMap({
         "tabs-hidden": this.lovelace!.config.views.length < 2,
-      })}" @rebuild-view='${this._debouncedConfigChanged}'></div>
+      })}" @ll-rebuild='${this._debouncedConfigChanged}'></div>
     </app-header-layout>
     `;
   }
 
-  protected renderStyle(): TemplateResult {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-
-    return html`
-      ${this._haStyle}
-      <style include="ha-style">
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
         :host {
           -ms-user-select: none;
           -webkit-user-select: none;
@@ -380,8 +366,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         paper-item {
           cursor: pointer;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 
   protected updated(changedProperties: PropertyValues): void {

@@ -6,9 +6,8 @@ import "../../layouts/hass-error-screen";
 import "./hui-root";
 import { HomeAssistant, PanelInfo } from "../../types";
 import { Lovelace } from "./types";
-import { LitElement, html, PropertyValues } from "@polymer/lit-element";
+import { LitElement, html, PropertyValues, TemplateResult } from "lit-element";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
-import { TemplateResult } from "lit-html";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfig } from "./common/generate-lovelace-config";
 
@@ -49,7 +48,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
     this._closeEditor = this._closeEditor.bind(this);
   }
 
-  public render(): TemplateResult {
+  public render(): TemplateResult | void {
     const state = this._state!;
 
     if (state === "loaded") {
@@ -185,13 +184,19 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
         const { config, mode } = this.lovelace!;
         try {
           // Optimistic update
-          this._updateLovelace({ config: newConfig, mode: "storage" });
+          this._updateLovelace({
+            config: newConfig,
+            mode: "storage",
+          });
           await saveConfig(this.hass!, newConfig);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);
           // Rollback the optimistic update
-          this._updateLovelace({ config, mode });
+          this._updateLovelace({
+            config,
+            mode,
+          });
           throw err;
         }
       },

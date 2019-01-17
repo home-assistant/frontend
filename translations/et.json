@@ -321,7 +321,7 @@
                             "introduction": "Seadete muutmine võib olla väsitav tegevus. Me teame. See osa püüab su elu natuke hõlpsamaks teha.",
                             "validation": {
                                 "heading": "Seadete kontrollimine",
-                                "introduction": "Kontrolli oma seadeid kui oled neis hiljuti muutusi teinud ja taha veenduda, et kõik on korrektne",
+                                "introduction": "Kontrolli oma seadeid kui oled neis hiljuti muutusi teinud ja tahad veenduda, et kõik on korrektne",
                                 "check_config": "Kontrolli seadeid",
                                 "valid": "Seaded on korrektsed!",
                                 "invalid": "Seaded on vigased"
@@ -423,6 +423,10 @@
                                     "event": "Sündmus:",
                                     "enter": "Sisenemine",
                                     "leave": "Lahkumine"
+                                },
+                                "webhook": {
+                                    "label": "",
+                                    "webhook_id": ""
                                 }
                             }
                         },
@@ -552,6 +556,9 @@
                         "device_unavailable": "seade pole saadaval",
                         "entity_unavailable": "üksus pole saadaval"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA"
                 }
             },
             "profile": {
@@ -713,6 +720,20 @@
                         "required_fields": "Täida kõik nõutud väljad"
                     }
                 }
+            },
+            "lovelace": {
+                "editor": {
+                    "edit_card": {
+                        "save": "Salvesta",
+                        "pick_card": "Vali kaart, mida soovid lisada.",
+                        "add": "Lisada Kaart",
+                        "edit": "Muuda",
+                        "delete": "Kustuta"
+                    },
+                    "edit_view": {
+                        "delete": "Kustuta vaade"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -721,7 +742,8 @@
         },
         "common": {
             "loading": "Laadimine",
-            "cancel": "Loobu"
+            "cancel": "Loobu",
+            "save": "Salvesta"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
@@ -880,6 +902,11 @@
                 "save": "Salvesta",
                 "name": "Nimi",
                 "entity_id": "Üksuse ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Viimane Tegevus"
+                }
             }
         },
         "auth_store": {
@@ -929,7 +956,8 @@
         "updater": "Uuendaja",
         "weblink": "Veebilink",
         "zwave": "Z-Wave",
-        "vacuum": "Tühjenda"
+        "vacuum": "Tühjenda",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

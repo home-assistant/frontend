@@ -1,12 +1,11 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import { html, LitElement, TemplateResult } from "lit-element";
 import "@polymer/paper-button/paper-button";
 
 import "../../../src/components/ha-card";
 import { longPress } from "../../../src/panels/lovelace/common/directives/long-press-directive";
 
 export class DemoUtilLongPress extends LitElement {
-  public render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
       ${

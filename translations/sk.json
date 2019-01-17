@@ -369,7 +369,7 @@
                             "add": "Pridať spúšťač",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
-                            "delete_confirm": "Ste si istý odstránením ? ",
+                            "delete_confirm": "Ste si istý odstránením ?",
                             "unsupported_platform": "Nepodporovaná platforma: {platform}",
                             "type_select": "Typ spúšťača",
                             "type": {
@@ -556,6 +556,10 @@
                         "device_unavailable": "zariadenie nie je dostupné",
                         "entity_unavailable": "Entita nie je dostupná"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Riadenie siete ZigBee Home Automation"
                 }
             },
             "profile": {
@@ -624,7 +628,7 @@
                 "mfa_setup": {
                     "title_aborted": "Prerušené",
                     "title_success": "Úspech!",
-                    "step_done": "Nastavenie dokončené krok {step} ",
+                    "step_done": "Nastavenie dokončené krok {step}",
                     "close": "Zavrieť",
                     "submit": "Odoslať"
                 }
@@ -926,6 +930,19 @@
                 "save": "Uložiť",
                 "name": "Názov",
                 "entity_id": "Entity ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Posledná akcia"
+                },
+                "sun": {
+                    "elevation": "Nadmorská výška",
+                    "rising": "Vychádzajúce",
+                    "setting": "Zapadajúce"
+                },
+                "updater": {
+                    "title": "Pokyny na aktualizáciu"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Aktualizátor",
         "weblink": "Webový odkaz",
         "zwave": "Z-Wave",
-        "vacuum": "Vysávač"
+        "vacuum": "Vysávač",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

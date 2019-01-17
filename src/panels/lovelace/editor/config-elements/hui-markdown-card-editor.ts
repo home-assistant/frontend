@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 
@@ -40,7 +44,7 @@ export class HuiMarkdownCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.content || "";
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }

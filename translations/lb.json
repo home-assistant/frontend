@@ -556,6 +556,10 @@
                         "device_unavailable": "Apparat net erreechbar",
                         "entity_unavailable": "Entitéit net erreechbar"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Gestioun vum Zigbee Home Automation Reseau"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Späicheren",
                 "name": "Numm",
                 "entity_id": "Entitéit ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Läscht Aktioun"
+                },
+                "sun": {
+                    "elevation": "Héicht",
+                    "rising": "Sonnenopgank",
+                    "setting": "Sonnenënnergang"
+                },
+                "updater": {
+                    "title": "Instruktioune fir d'Mise à jour"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Aktualiséierung",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Staubsauger"
+        "vacuum": "Staubsauger",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

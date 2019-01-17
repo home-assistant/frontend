@@ -1,11 +1,15 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 
 import "./cards/hui-entities-card";
 
 import { computeUnusedEntities } from "./common/compute-unused-entities";
 import { createCardElement } from "./common/create-card-element";
 import { HomeAssistant } from "../../types";
-import { TemplateResult } from "lit-html";
 import { LovelaceCard } from "./types";
 import { LovelaceConfig } from "../../data/lovelace";
 
@@ -35,7 +39,7 @@ export class HuiUnusedEntities extends LitElement {
     this._createElement();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this._hass) {
       return html``;
     }
