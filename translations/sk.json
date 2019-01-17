@@ -556,6 +556,10 @@
                         "device_unavailable": "zariadenie nie je dostupné",
                         "entity_unavailable": "Entita nie je dostupná"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Riadenie siete ZigBee Home Automation"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Uložiť",
                 "name": "Názov",
                 "entity_id": "Entity ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Posledná akcia"
+                },
+                "sun": {
+                    "elevation": "Nadmorská výška",
+                    "rising": "Vychádzajúce",
+                    "setting": "Zapadajúce"
+                },
+                "updater": {
+                    "title": "Pokyny na aktualizáciu"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Aktualizátor",
         "weblink": "Webový odkaz",
         "zwave": "Z-Wave",
-        "vacuum": "Vysávač"
+        "vacuum": "Vysávač",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
