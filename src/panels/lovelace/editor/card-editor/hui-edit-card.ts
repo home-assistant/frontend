@@ -104,9 +104,16 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           }
         }
 
+        @media all and (min-width: 660px) {
+          paper-dialog {
+            width: 650px;
+          }
+        }
+
         paper-dialog {
           max-width: 650px;
         }
+
         .center {
           margin-left: auto;
           margin-right: auto;
