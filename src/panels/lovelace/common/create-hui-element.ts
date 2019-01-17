@@ -1,3 +1,5 @@
+import deepClone from "deep-clone-simple";
+
 import "../elements/hui-icon-element";
 import "../elements/hui-image-element";
 import "../elements/hui-service-button-element";
@@ -30,7 +32,7 @@ const _createElement = (
 ): LovelaceElement | HuiErrorCard => {
   const element = document.createElement(tag) as LovelaceElement;
   try {
-    element.setConfig(config);
+    element.setConfig(deepClone(config));
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
