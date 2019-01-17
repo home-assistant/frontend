@@ -3,10 +3,10 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
+  TemplateResult,
+} from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult } from "lit-html";
-import { styleMap } from "lit-html/directives/styleMap";
+import { styleMap } from "lit-html/directives/style-map";
 
 import "../../../components/ha-card";
 
@@ -82,7 +82,7 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
     return true;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

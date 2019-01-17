@@ -975,7 +975,8 @@
         "updater": "Aktualizátor",
         "weblink": "Webový odkaz",
         "zwave": "Z-Wave",
-        "vacuum": "Vysavač"
+        "vacuum": "Vysavač",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

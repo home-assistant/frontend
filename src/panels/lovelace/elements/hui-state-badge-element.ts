@@ -1,11 +1,10 @@
-import { html, LitElement } from "@polymer/lit-element";
+import { html, LitElement, TemplateResult } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { TemplateResult } from "lit-html";
 
 export class HuiStateBadgeElement extends LitElement
   implements LovelaceElement {
@@ -24,7 +23,7 @@ export class HuiStateBadgeElement extends LitElement
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (
       !this._config ||
       !this.hass ||

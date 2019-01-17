@@ -556,6 +556,10 @@
                         "device_unavailable": "dispositiu no disponible",
                         "entity_unavailable": "entitat no disponible"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Gestiona la xarxa domòtica ZIgbee"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Desar",
                 "name": "Nom",
                 "entity_id": "ID de l'entitat"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Última acció"
+                },
+                "sun": {
+                    "elevation": "Elevació",
+                    "rising": "Sortint",
+                    "setting": "Configuració"
+                },
+                "updater": {
+                    "title": "Instruccions d'actualització"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Actualitzador",
         "weblink": "Enllaços web",
         "zwave": "Z-Wave",
-        "vacuum": "Aspiradora"
+        "vacuum": "Aspiradora",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

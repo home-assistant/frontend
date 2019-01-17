@@ -4,7 +4,7 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { afterNextRender } from "@polymer/polymer/lib/utils/render-status";
-import { html as litHtml, LitElement } from "@polymer/lit-element";
+import { html as litHtml, LitElement } from "lit-element";
 
 import "../home-assistant-main";
 import "../ha-init-page";
@@ -95,7 +95,11 @@ class HomeAssistant extends ext(PolymerElement, [
   }
 
   computePanelUrl(routeData) {
-    return (routeData && routeData.panel) || DEFAULT_PANEL;
+    return (
+      (routeData && routeData.panel) ||
+      localStorage.defaultPage ||
+      DEFAULT_PANEL
+    );
   }
 
   panelUrlChanged(newPanelUrl) {

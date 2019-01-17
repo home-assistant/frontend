@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
 
 import { EditorTarget } from "../types";
@@ -59,7 +63,7 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }

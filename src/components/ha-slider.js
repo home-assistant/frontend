@@ -1,8 +1,28 @@
 import "@polymer/paper-slider";
 
 const PaperSliderClass = customElements.get("paper-slider");
+let subTemplate;
 
 class HaSlider extends PaperSliderClass {
+  static get template() {
+    if (!subTemplate) {
+      subTemplate = PaperSliderClass.template.cloneNode(true);
+
+      const superStyle = subTemplate.content.querySelector("style");
+
+      // append style to add mirroring of pin in RTL
+      superStyle.appendChild(
+        document.createTextNode(`
+          :host([dir="rtl"]) #sliderContainer.pin.expand > .slider-knob > .slider-knob-inner::after {
+            -webkit-transform: scale(1) translate(0, -17px) scaleX(-1) !important;
+            transform: scale(1) translate(0, -17px) scaleX(-1) !important;
+            }
+        `)
+      );
+    }
+    return subTemplate;
+  }
+
   _calcStep(value) {
     if (!this.step) {
       return parseFloat(value);

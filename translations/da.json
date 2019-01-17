@@ -320,7 +320,7 @@
                             "header": "Konfiguration og server kontrol",
                             "introduction": "Ændring af din konfiguration kan det være en trættende proces. Vi ved det. Dette afsnit vil forsøge at gøre dit liv en smule nemmere.",
                             "validation": {
-                                "heading": "Konfigurations validering ",
+                                "heading": "Konfigurations validering",
                                 "introduction": "Validér din konfiguration, hvis du for nylig lavede nogle ændringer i din konfiguration og vil sikre dig, at alt er validt",
                                 "check_config": "Tjek konfiguration",
                                 "valid": "Konfiguration gyldig!",
@@ -829,7 +829,7 @@
                 "arm_home": "Tilkoble hjemme",
                 "arm_away": "Tilkoble ude",
                 "arm_night": "Tilkoblet nat",
-                "armed_custom_bypass": "Brugerdefineret "
+                "armed_custom_bypass": "Brugerdefineret"
             },
             "automation": {
                 "last_triggered": "Senest udløst",

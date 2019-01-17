@@ -247,7 +247,10 @@ class HuiMapCard extends PolymerElement {
         const stateObj = this.hass.states[entityId];
         if (
           computeStateDomain(stateObj) === "geo_location" &&
-          this._configGeoLocationSources.includes(stateObj.attributes.source)
+          (this._configGeoLocationSources.includes(
+            stateObj.attributes.source
+          ) ||
+            this._configGeoLocationSources.includes("all"))
         ) {
           allEntities.push(entityId);
         }

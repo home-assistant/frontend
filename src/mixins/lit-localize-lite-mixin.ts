@@ -3,7 +3,7 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
+} from "lit-element";
 import { HomeAssistant } from "../types";
 import { getActiveTranslation } from "../util/hass-translation";
 import { LocalizeFunc, LocalizeMixin } from "./localize-base-mixin";

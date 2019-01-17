@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tabs/paper-tab";
@@ -83,7 +87,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     let content;
     switch (this._curTab) {
       case "tab-settings":
