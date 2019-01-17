@@ -4,8 +4,8 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -192,7 +192,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return 3;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

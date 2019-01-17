@@ -556,6 +556,10 @@
                         "device_unavailable": "裝置不可用",
                         "entity_unavailable": "物件不可用"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee 家庭自動化網路管理"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "儲存",
                 "name": "名稱",
                 "entity_id": "物件 ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "上次觸發"
+                },
+                "sun": {
+                    "elevation": "海拔",
+                    "rising": "日升",
+                    "setting": "設定"
+                },
+                "updater": {
+                    "title": "更新說明"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "更新器",
         "weblink": "網站鏈接",
         "zwave": "Z-Wave",
-        "vacuum": "吸塵器"
+        "vacuum": "吸塵器",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

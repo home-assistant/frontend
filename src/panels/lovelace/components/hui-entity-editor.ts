@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -19,7 +23,7 @@ export class HuiEntityEditor extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.entities) {
       return html``;
     }

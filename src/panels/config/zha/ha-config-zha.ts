@@ -1,49 +1,117 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { HomeAssistant } from "../../../types";
-
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { HassEntity } from "home-assistant-js-websocket";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { Cluster } from "../../../data/zha";
 import "../../../layouts/ha-app-layout";
 import "../../../resources/ha-style";
-
+import { HomeAssistant } from "../../../types";
+import {
+  ZHAClusterSelectedParams,
+  ZHAEntitySelectedParams,
+  ZHANodeSelectedParams,
+} from "./types";
+import "./zha-cluster-attributes";
+import "./zha-cluster-commands";
 import "./zha-network";
+import "./zha-node";
 
 export class HaConfigZha extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   private _haStyle?: DocumentFragment;
   private _ironFlex?: DocumentFragment;
+  private _selectedNode?: HassEntity;
+  private _selectedCluster?: Cluster;
+  private _selectedEntity?: HassEntity;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
+      _selectedCluster: {},
+      _selectedEntity: {},
+      _selectedNode: {},
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
-      <ha-app-layout has-scrolling-region="">
-        <app-header slot="header" fixed="">
+      <ha-app-layout>
+        <app-header slot="header">
           <app-toolbar>
             <paper-icon-button
               icon="hass:arrow-left"
               @click="${this._onBackTapped}"
             ></paper-icon-button>
+            <div main-title>Zigbee Home Automation</div>
           </app-toolbar>
         </app-header>
 
         <zha-network
-          id="zha-network"
-          .is-wide="${this.isWide}"
+          .isWide="${this.isWide}"
           .hass="${this.hass}"
         ></zha-network>
+
+        <zha-node
+          .isWide="${this.isWide}"
+          .hass="${this.hass}"
+          @zha-cluster-selected="${this._onClusterSelected}"
+          @zha-node-selected="${this._onNodeSelected}"
+          @zha-entity-selected="${this._onEntitySelected}"
+        ></zha-node>
+        ${
+          this._selectedCluster
+            ? html`
+                <zha-cluster-attributes
+                  .isWide="${this.isWide}"
+                  .hass="${this.hass}"
+                  .selectedNode="${this._selectedNode}"
+                  .selectedEntity="${this._selectedEntity}"
+                  .selectedCluster="${this._selectedCluster}"
+                ></zha-cluster-attributes>
+
+                <zha-cluster-commands
+                  .isWide="${this.isWide}"
+                  .hass="${this.hass}"
+                  .selectedNode="${this._selectedNode}"
+                  .selectedEntity="${this._selectedEntity}"
+                  .selectedCluster="${this._selectedCluster}"
+                ></zha-cluster-commands>
+              `
+            : ""
+        }
       </ha-app-layout>
     `;
+  }
+
+  private _onClusterSelected(
+    selectedClusterEvent: HASSDomEvent<ZHAClusterSelectedParams>
+  ): void {
+    this._selectedCluster = selectedClusterEvent.detail.cluster;
+  }
+
+  private _onNodeSelected(
+    selectedNodeEvent: HASSDomEvent<ZHANodeSelectedParams>
+  ): void {
+    this._selectedNode = selectedNodeEvent.detail.node;
+    this._selectedCluster = undefined;
+    this._selectedEntity = undefined;
+  }
+
+  private _onEntitySelected(
+    selectedEntityEvent: HASSDomEvent<ZHAEntitySelectedParams>
+  ): void {
+    this._selectedEntity = selectedEntityEvent.detail.entity;
   }
 
   private renderStyle(): TemplateResult {

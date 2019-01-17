@@ -1,6 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-button/paper-button";
-import { TemplateResult } from "lit-html";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
@@ -28,7 +32,7 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     const themes = ["Backend-selected", "default"].concat(
       Object.keys(this.hass!.themes.themes).sort()
     );

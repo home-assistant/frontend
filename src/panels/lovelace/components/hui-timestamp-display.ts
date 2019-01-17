@@ -3,8 +3,8 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 
 import { HomeAssistant } from "../../../types";
 import format_date from "../../../common/datetime/format_date";
@@ -49,7 +49,7 @@ class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
     this._clearInterval();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.ts || !this.hass) {
       return html``;
     }

@@ -1,5 +1,8 @@
 import { directive, PropertyPart } from "lit-html";
-import "@material/mwc-ripple";
+// See https://github.com/home-assistant/home-assistant-polymer/pull/2457
+// on how to undo mwc -> paper migration
+// import "@material/mwc-ripple";
+import "@polymer/paper-ripple";
 
 const isTouch =
   "ontouchstart" in window ||
@@ -25,7 +28,7 @@ class LongPress extends HTMLElement implements LongPress {
   constructor() {
     super();
     this.holdTime = 500;
-    this.ripple = document.createElement("mwc-ripple");
+    this.ripple = document.createElement("paper-ripple");
     this.timer = undefined;
     this.held = false;
     this.cooldownStart = false;
@@ -34,6 +37,7 @@ class LongPress extends HTMLElement implements LongPress {
 
   public connectedCallback() {
     Object.assign(this.style, {
+      borderRadius: "50%", // paper-ripple
       position: "absolute",
       width: isTouch ? "100px" : "50px",
       height: isTouch ? "100px" : "50px",
@@ -42,7 +46,9 @@ class LongPress extends HTMLElement implements LongPress {
     });
 
     this.appendChild(this.ripple);
-    this.ripple.primary = true;
+    this.ripple.style.color = "#03a9f4"; // paper-ripple
+    this.ripple.style.color = "var(--primary-color)"; // paper-ripple
+    // this.ripple.primary = true;
 
     [
       "touchcancel",
@@ -140,14 +146,17 @@ class LongPress extends HTMLElement implements LongPress {
       top: `${y}px`,
       display: null,
     });
-    this.ripple.disabled = false;
-    this.ripple.active = true;
-    this.ripple.unbounded = true;
+    this.ripple.holdDown = true; // paper-ripple
+    this.ripple.simulatedRipple(); // paper-ripple
+    // this.ripple.disabled = false;
+    // this.ripple.active = true;
+    // this.ripple.unbounded = true;
   }
 
   private stopAnimation() {
-    this.ripple.active = false;
-    this.ripple.disabled = true;
+    this.ripple.holdDown = false; // paper-ripple
+    // this.ripple.active = false;
+    // this.ripple.disabled = true;
     this.style.display = "none";
   }
 }
@@ -174,7 +183,6 @@ export const longPressBind = (element: LongPressElement) => {
   longpress.bind(element);
 };
 
-export const longPress = () =>
-  directive((part: PropertyPart) => {
-    longPressBind(part.committer.element);
-  });
+export const longPress = directive(() => (part: PropertyPart) => {
+  longPressBind(part.committer.element);
+});

@@ -1,5 +1,5 @@
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import { LitElement, html, PropertyDeclarations } from "@polymer/lit-element";
+import { LitElement, html, PropertyDeclarations } from "lit-element";
 import "./ha-auth-flow";
 import { AuthProvider } from "../data/auth";
 
@@ -50,7 +50,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     };
   }
 
-  public render() {
+  protected render() {
     if (!this._authProviders) {
       return html`
         <p>[[localize('ui.panel.page-authorize.initializing')]]</p>
