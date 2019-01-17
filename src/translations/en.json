@@ -628,6 +628,12 @@
                   "label": "Time",
                   "at": "At"
                 },
+                "time_pattern": {
+                  "label": "Time Pattern",
+                  "hours": "Hours",
+                  "minutes": "Minutes",
+                  "seconds": "Seconds"
+                },
                 "webhook": {
                   "label": "Webhook",
                   "webhook_id": "Webhook ID"

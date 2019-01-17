@@ -46,7 +46,7 @@
             },
             "moisture": {
                 "off": "Kuru",
-                "on": "Islak "
+                "on": "Islak"
             },
             "gas": {
                 "off": "Temiz",
@@ -115,6 +115,10 @@
             "window": {
                 "off": "[%key:state::cover::kapalı%]",
                 "on": "[%key:state::cover::açık%]"
+            },
+            "lock": {
+                "off": "Kilit kapalı",
+                "on": "Kilit açık"
             }
         },
         "calendar": {
@@ -141,7 +145,7 @@
             "high_demand": "Yüksek talep",
             "heat_pump": "Isı pompası",
             "gas": "Gaz",
-            "manual": "Manuel"
+            "manual": "Kılavuz"
         },
         "configurator": {
             "configure": "Ayarla",
@@ -348,6 +352,7 @@
                         "alias": "İsim",
                         "triggers": {
                             "delete": "Sil",
+                            "unsupported_platform": "Desteklenmeyen platform: {platform}",
                             "type": {
                                 "sun": {
                                     "event": "Olay:"
@@ -359,7 +364,11 @@
                                     "leave": "Çıkınca"
                                 },
                                 "state": {
-                                    "for": "İçin"
+                                    "for": "Süre"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook Kimliği"
                                 }
                             }
                         },
@@ -406,6 +415,7 @@
                             "duplicate": "Kopya",
                             "delete": "Sil",
                             "delete_confirm": "Silmek istediğinize emin misiniz?",
+                            "unsupported_action": "Desteklenmeyen eylem: {action}",
                             "type": {
                                 "delay": {
                                     "delay": "Gecikme"
@@ -448,23 +458,27 @@
                 },
                 "integrations": {
                     "caption": "Entegrasyonlar",
-                    "description": "Bağlı cihazları ve hizmetleri yönetin",
+                    "description": "Bağlı aygıtları ve hizmetleri yönetin",
                     "discovered": "Bulundu",
-                    "configured": "Yapılandırılmış",
+                    "configured": "Yapılandırıldı",
                     "new": "Yeni bir entegrasyon kur",
                     "configure": "Yapılandır",
                     "none": "Henüz hiçbir şey yapılandırılmamış",
                     "config_entry": {
-                        "no_devices": "Bu entegrasyona ait hiçbir cihaz yok",
-                        "no_device": "Cihaza ait olmayan cisimler",
+                        "no_devices": "Bu entegrasyona ait hiçbir aygıt yok",
+                        "no_device": "Aygıtsız varlıklar",
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
                         "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
                         "manuf": "üretici: {manufacturer}",
                         "hub": "Şununla bağlı:",
                         "firmware": "Aygıt yazılımı: {version}",
-                        "device_unavailable": "cihaz kullanılamıyor",
-                        "entity_unavailable": "cisim kullanılamıyor"
+                        "device_unavailable": "aygıt kullanılamıyor",
+                        "entity_unavailable": "varlık kullanılamıyor"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Ev Otomasyonu ağ yönetimi"
                 }
             },
             "profile": {
@@ -476,20 +490,29 @@
                     "description": "Her yenileme jetonu bir oturum açma oturumunu temsil eder. Yenileme jetonları, çıkış yapmak istediğinizde otomatik olarak kaldırılacaktır. Aşağıdaki yenileme jetonları hesabınız için şu anda aktif.",
                     "created_at": "{date} tarihinde oluşturuldu",
                     "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
-                    "not_used": "Hiç kullanılmadı"
+                    "not_used": "Hiç kullanılmadı",
+                    "current_token_tooltip": "Geçerli yenileme anahtarı silinemedi"
                 },
                 "long_lived_access_tokens": {
+                    "learn_auth_requests": "Yetkilendirilmiş istekleri nasıl yapacağınızı öğrenin.",
                     "created_at": "{date} tarihinde oluşturuldu",
+                    "confirm_delete": "{name} için erişim anahtarını silmek istediğinizden emin misiniz?",
+                    "delete_failed": "Erişim anahtarı silinemedi.",
+                    "create": "Anahtar oluştur.",
+                    "create_failed": "Erişim anahtarı oluşturulamadı.",
                     "prompt_name": "Ad?",
+                    "prompt_copy_token": "Erişim anahtarınızı kopyalayın. Bu anahtar bir daha görüntülenmeyecektir.",
+                    "empty_state": "Henüz uzun ömürlü erişim anahtarınız yok.",
                     "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
                     "not_used": "Hiç kullanılmamış"
                 },
                 "current_user": "{fullName} olarak giriş yaptınız.",
+                "is_owner": "Sahipsiniz.",
                 "logout": "Çıkış yap",
                 "change_password": {
                     "header": "Parolayı Değiştir",
                     "current_password": "Güncel Parola",
-                    "new_password": "Yeni Parolayı",
+                    "new_password": "Yeni Parola",
                     "confirm_new_password": "Yeni Parolayı Onaylayın",
                     "error_required": "Gerekli",
                     "submit": "Gönder"
@@ -569,13 +592,41 @@
             "lovelace": {
                 "cards": {
                     "shopping-list": {
+                        "checked_items": "Seçili öğeler",
                         "clear_items": "Seçili ögeleri temizle",
                         "add_item": "Öge Ekle"
                     }
                 },
                 "editor": {
                     "edit_card": {
-                        "save": "Kaydet"
+                        "header": "Kart Ayarları",
+                        "save": "Kaydet",
+                        "toggle_editor": "Düzenleyiciye Geçiş",
+                        "pick_card": "Eklemek istediğiniz kartı seçin.",
+                        "add": "Kart Ekle",
+                        "edit": "Düzenle",
+                        "delete": "Sil"
+                    },
+                    "migrate": {
+                        "header": "Yapılandırma Geçersiz",
+                        "para_no_id": "Bu öğenin bir kimliği yok. Lütfen 'ui-lovelace.yaml' dosyasında bu elemente bir kimlik ekleyin.",
+                        "para_migrate": "'Ayarları aktar' düğmesine bastığınız zaman Home Assistant tüm kartlarınıza ve görünümlerinize otomatik olarak kimlik atayabilir.",
+                        "migrate": "Ayarları aktar"
+                    },
+                    "header": "Kullanıcı arayüzünü düzenle",
+                    "configure_ui": "Kullanıcı arayüzünü ayarla",
+                    "edit_view": {
+                        "header": "Ayarları görüntüle",
+                        "add": "Görünüm ekle",
+                        "edit": "Görünümü düzenle",
+                        "delete": "Görünümü sil"
+                    },
+                    "save_config": {
+                        "header": "Lovelace kullanıcı arayüzünü kontrolünüz altına alın",
+                        "para": "Home Assistant varsayılan olarak kullanıcı arayüzünüzü yönetecek, yeni Lovelace bileşenleri ya da varlıklar kullanıma sunulduğunda onu güncelleyecektir. Eğer bunu kontrolünüz altına almak istiyorsanız daha sonra biz sizin için bu değişiklikleri otomatik olarak gerçekleştiremeyeceğiz.",
+                        "para_sure": "Kullanıcı arayüzünüzü kontrol altına almak istediğinize emin misiniz?",
+                        "cancel": "Boşver",
+                        "save": "Kontrol altına al"
                     }
                 }
             }
@@ -586,7 +637,8 @@
         },
         "common": {
             "loading": "Yükleniyor",
-            "cancel": "İptal"
+            "cancel": "İptal",
+            "save": "Kaydet"
         },
         "duration": {
             "day": "{count}{count, plural,\n  one { gün }\n  other { gün }\n}",
@@ -646,17 +698,34 @@
                 }
             },
             "water_heater": {
-                "currently": "Güncel olarak",
+                "currently": "Şu an",
                 "on_off": "Açık \/ kapalı",
-                "target_temperature": "hedef sıcaklık",
+                "target_temperature": "Hedef sıcaklık",
                 "operation": "İşlem",
                 "away_mode": "Dışarıda modu"
+            },
+            "alarm_control_panel": {
+                "arm_night": "Geceyi etkinleştir",
+                "armed_custom_bypass": "Özel atlatma"
             }
         },
         "dialogs": {
             "more_info_settings": {
                 "save": "Kaydet",
                 "name": "Ad"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Son Eylem"
+                },
+                "sun": {
+                    "elevation": "Yükseklik",
+                    "rising": "Yükseliyor",
+                    "setting": "Ayar"
+                },
+                "updater": {
+                    "title": "Talimatları Güncelle"
+                }
             }
         },
         "auth_store": {
@@ -704,7 +773,8 @@
         "switch": "Anahtar",
         "updater": "Güncelleyici",
         "weblink": "Web bağlantısı",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

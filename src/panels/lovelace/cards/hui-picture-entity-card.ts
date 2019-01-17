@@ -1,6 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html/lib/shady-render";
-import { classMap } from "lit-html/directives/classMap";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import "../../../components/ha-card";
 import "../components/hui-image";
@@ -65,7 +69,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
     this._config = { show_name: true, show_state: true, ...config };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }

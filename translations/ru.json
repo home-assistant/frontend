@@ -556,6 +556,10 @@
                         "device_unavailable": "устройство недоступно",
                         "entity_unavailable": "объект недоступен"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Управление сетью Zigbee Home Automation"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Сохранить",
                 "name": "Название",
                 "entity_id": "ID объекта"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Последнее действие"
+                },
+                "sun": {
+                    "elevation": "Высота над горизонтом",
+                    "rising": "Восход",
+                    "setting": "Заход"
+                },
+                "updater": {
+                    "title": "Инструкция по обновлению"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Обновление",
         "weblink": "Интернет-ссылка",
         "zwave": "Z-Wave",
-        "vacuum": "Пылесос"
+        "vacuum": "Пылесос",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

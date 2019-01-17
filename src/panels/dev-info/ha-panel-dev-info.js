@@ -20,7 +20,7 @@ import formatTime from "../../common/datetime/format_time";
 import EventsMixin from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
-const OPT_IN_PANEL = "lovelace";
+const OPT_IN_PANEL = "states";
 let registeredDialog = false;
 
 class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
@@ -167,7 +167,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </template>
           </p>
           <p>
-            <a href='/lovelace'>Try out the new Lovelace UI</a>
+            <a href="[[_nonDefaultLink()]]">[[_nonDefaultLinkText()]]</a>
             <div id="love" style="cursor:pointer;" on-click="_toggleDefaultPage">[[_defaultPageText()]]</div
           </p>
         </div>
@@ -364,6 +364,26 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.items = items;
       this.updating = false;
     });
+  }
+
+  _nonDefaultLink() {
+    if (
+      localStorage.defaultPage === OPT_IN_PANEL &&
+      OPT_IN_PANEL === "states"
+    ) {
+      return "/lovelace";
+    }
+    return "/states";
+  }
+
+  _nonDefaultLinkText() {
+    if (
+      localStorage.defaultPage === OPT_IN_PANEL &&
+      OPT_IN_PANEL === "states"
+    ) {
+      return "Go to the Lovelace UI";
+    }
+    return "Go to the states UI";
   }
 
   _defaultPageText() {

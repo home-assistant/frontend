@@ -1,4 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  css,
+  CSSResult,
+} from "lit-element";
 
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-input/paper-input";
@@ -10,10 +16,9 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 // tslint:disable-next-line
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
-import { buttonLink } from "../../../resources/ha-style";
-
 import { HomeAssistant } from "../../../types";
 import { WebhookDialogParams } from "./types";
+import { haStyle } from "../../../resources/ha-style";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
@@ -44,7 +49,6 @@ export class CloudWebhookManageDialog extends LitElement {
         ? "https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger"
         : `https://www.home-assistant.io/components/${webhook.domain}/`;
     return html`
-      ${this._renderStyle()}
       <paper-dialog with-backdrop>
         <h2>Webhook for ${webhook.name}</h2>
         <div>
@@ -112,24 +116,25 @@ export class CloudWebhookManageDialog extends LitElement {
     this._paperInput.label = inputLabel;
   }
 
-  private _renderStyle() {
-    return html`
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
         paper-dialog {
           width: 650px;
         }
         paper-input {
           margin-top: -8px;
         }
-        ${buttonLink} button.link {
+        button.link {
           color: var(--primary-color);
         }
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 }
 

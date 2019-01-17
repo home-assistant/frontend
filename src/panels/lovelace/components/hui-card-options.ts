@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import { html, LitElement, PropertyDeclarations } from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -46,10 +46,6 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          letter-spacing: 0.05em;
-          font-size: 16px;
-          padding: 0;
-          margin: 0;
         }
         paper-icon-button {
           color: var(--primary-text-color);

@@ -1,12 +1,16 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { classMap } from "lit-html/directives/classMap";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { TemplateResult } from "lit-html";
 
 export interface Config extends LovelaceCardConfig {
   content: string;
@@ -42,7 +46,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._config) {
       return html``;
     }

@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -24,7 +28,7 @@ export class CloudGooglePref extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.cloudStatus) {
       return html``;
     }

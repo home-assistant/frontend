@@ -1,5 +1,9 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+} from "lit-element";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -34,7 +38,7 @@ export class HuiMediaControlCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.entity || "";
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }

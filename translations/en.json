@@ -556,6 +556,10 @@
                         "device_unavailable": "device unavailable",
                         "entity_unavailable": "entity unavailable"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation network management"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Save",
                 "name": "Name",
                 "entity_id": "Entity ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Last Action"
+                },
+                "sun": {
+                    "elevation": "Elevation",
+                    "rising": "Rising",
+                    "setting": "Setting"
+                },
+                "updater": {
+                    "title": "Update Instructions"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Updater",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Vacuum"
+        "vacuum": "Vacuum",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

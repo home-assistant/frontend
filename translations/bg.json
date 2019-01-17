@@ -516,7 +516,7 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Управлявайте своята Z-Wave мрежа "
+                    "description": "Управлявайте своята Z-Wave мрежа"
                 },
                 "users": {
                     "caption": "Потребители",
@@ -526,7 +526,7 @@
                     },
                     "editor": {
                         "rename_user": "Преименуване на потребител",
-                        "change_password": "Смяна на парола ",
+                        "change_password": "Смяна на парола",
                         "activate_user": "Активиране на потребител",
                         "deactivate_user": "Деактивиране на потребителя",
                         "delete_user": "Изтриване на потребител"
@@ -608,7 +608,7 @@
                 "is_owner": "Вие сте собственик.",
                 "logout": "Изход",
                 "change_password": {
-                    "header": "Смяна на парола ",
+                    "header": "Смяна на парола",
                     "current_password": "Настояща парола",
                     "new_password": "Нова парола",
                     "confirm_new_password": "Потвърждение на новата парола",

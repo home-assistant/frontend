@@ -314,7 +314,7 @@
                                 "invalid": "Cấu hình không hợp lệ"
                             },
                             "reloading": {
-                                "heading": "Nạp lại Cấu hình ",
+                                "heading": "Nạp lại Cấu hình",
                                 "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
                                 "core": "Tải lại lõi",
                                 "group": "Tải lại nhóm",
