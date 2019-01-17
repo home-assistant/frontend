@@ -556,6 +556,10 @@
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation netwerkbeheer"
                 }
             },
             "profile": {
@@ -926,6 +930,19 @@
                 "save": "Opslaan",
                 "name": "Naam",
                 "entity_id": "Entiteits-ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Laatste actie"
+                },
+                "sun": {
+                    "elevation": "Hoogtehoek",
+                    "rising": "Opkomst",
+                    "setting": "Instelling"
+                },
+                "updater": {
+                    "title": "Instructies bijwerken"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +992,8 @@
         "updater": "Updater",
         "weblink": "Web link",
         "zwave": "Z-Wave",
-        "vacuum": "Stofzuigen"
+        "vacuum": "Stofzuigen",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
