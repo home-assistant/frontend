@@ -1,3 +1,5 @@
+import deepClone from "deep-clone-simple";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 
 import {
@@ -64,7 +66,7 @@ const _createElement = (
 ): EntityRow | HuiErrorCard => {
   const element = document.createElement(tag) as EntityRow;
   try {
-    element.setConfig(config);
+    element.setConfig(deepClone(config));
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
