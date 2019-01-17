@@ -51,18 +51,6 @@ export interface Config extends LovelaceCardConfig {
   name?: string;
 }
 
-function formatTemp(temps: string[]): string {
-  return temps.filter(Boolean).join("-");
-}
-
-function computeTemperatureStepSize(hass: HomeAssistant, config: Config) {
-  const stateObj = hass.states[config.entity];
-  if (stateObj.attributes.target_temp_step) {
-    return stateObj.attributes.target_temp_step;
-  }
-  return hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5;
-}
-
 export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -201,10 +189,18 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
   }
 
+  private get _stepSize(): number {
+    const stateObj = this.hass!.states[this._config!.entity];
+    if (stateObj.attributes.target_temp_step) {
+      return stateObj.attributes.target_temp_step;
+    }
+    return this.hass!.config.unit_system.temperature === UNIT_F ? 1 : 0.5;
+  }
+
   private async _initialLoad(): Promise<void> {
     this._loaded = true;
 
-    const radius = this.clientWidth / 3;
+    const radius = this.clientWidth / 3.2;
     this._broadCard = this.clientWidth > 390;
 
     (this.shadowRoot!.querySelector(
@@ -226,7 +222,6 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         : "min-range";
 
     const [sliderValue, uiValue] = this._genSliderValue(stateObj);
-    const step = computeTemperatureStepSize(this.hass!, this._config!);
 
     this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
@@ -237,7 +232,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
       value: sliderValue,
-      step,
+      step: this._stepSize,
     });
     this._updateSetTemp(uiValue);
   }
@@ -253,10 +248,13 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       sliderValue = `${stateObj.attributes.target_temp_low}, ${
         stateObj.attributes.target_temp_high
       }`;
-      uiValue = formatTemp([
-        String(stateObj.attributes.target_temp_low),
-        String(stateObj.attributes.target_temp_high),
-      ]);
+      uiValue = this.formatTemp(
+        [
+          String(stateObj.attributes.target_temp_low),
+          String(stateObj.attributes.target_temp_high),
+        ],
+        false
+      );
     } else {
       sliderValue = stateObj.attributes.temperature;
       uiValue = "" + stateObj.attributes.temperature;
@@ -270,7 +268,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
   }
 
   private _dragEvent(e): void {
-    this._updateSetTemp(formatTemp(String(e.value).split(",")));
+    this._updateSetTemp(this.formatTemp(String(e.value).split(","), true));
   }
 
   private _setTemperature(e): void {
@@ -319,6 +317,21 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       entity_id: this._config!.entity,
       operation_mode: (e.currentTarget as any).mode,
     });
+  }
+
+  private formatTemp(temps: string[], spaceStepSize: boolean): string {
+    temps = temps.filter(Boolean);
+
+    // If we are sliding the slider, append 0 to the temperatures if we're
+    // having a 0.5 step size, so that the text doesn't jump while sliding
+    if (spaceStepSize) {
+      const stepSize = this._stepSize;
+      temps = temps.map((val) =>
+        val.includes(".") || stepSize === 1 ? val : `${val}.0`
+      );
+    }
+
+    return temps.join("-");
   }
 
   private renderStyle(): TemplateResult {
@@ -377,39 +390,37 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           --mode-color: var(--unknown-color);
         }
         .no-title {
-          --title-margin-top: 33% !important;
+          --title-position-top: 33% !important;
         }
         .large {
           --thermostat-padding-top: 25px;
           --thermostat-margin-bottom: 25px;
           --title-font-size: 28px;
-          --title-margin-top: 20%;
-          --climate-info-margin-top: 17%;
-          --modes-margin-top: 2%;
+          --title-position-top: 27%;
+          --climate-info-position-top: 81%;
           --set-temperature-font-size: 25px;
           --current-temperature-font-size: 71px;
-          --current-temperature-margin-top: 10%;
+          --current-temperature-position-top: 10%;
           --current-temperature-text-padding-left: 15px;
           --uom-font-size: 20px;
           --uom-margin-left: -18px;
           --current-mode-font-size: 18px;
-          --set-temperature-padding-bottom: 5px;
+          --set-temperature-margin-bottom: -5px;
         }
         .small {
           --thermostat-padding-top: 15px;
           --thermostat-margin-bottom: 15px;
           --title-font-size: 18px;
-          --title-margin-top: 20%;
-          --climate-info-margin-top: 7.5%;
-          --modes-margin-top: 1%;
+          --title-position-top: 28%;
+          --climate-info-position-top: 79%;
           --set-temperature-font-size: 16px;
           --current-temperature-font-size: 25px;
-          --current-temperature-margin-top: 5%;
+          --current-temperature-position-top: 5%;
           --current-temperature-text-padding-left: 7px;
           --uom-font-size: 12px;
           --uom-margin-left: -5px;
           --current-mode-font-size: 14px;
-          --set-temperature-padding-bottom: 0px;
+          --set-temperature-margin-bottom: 0px;
         }
         #thermostat {
           margin: 0 auto var(--thermostat-margin-bottom);
@@ -456,21 +467,28 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         }
         #set-temperature {
           font-size: var(--set-temperature-font-size);
-          padding-bottom: var(--set-temperature-padding-bottom);
+          margin-bottom: var(--set-temperature-margin-bottom);
         }
         .title {
           font-size: var(--title-font-size);
-          margin-top: var(--title-margin-top);
+          position: absolute;
+          top: var(--title-position-top);
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
         .climate-info {
-          margin-top: var(--climate-info-margin-top);
+          position: absolute;
+          top: var(--climate-info-position-top);
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
         }
         .current-mode {
           font-size: var(--current-mode-font-size);
           color: var(--secondary-text-color);
         }
         .modes {
-          margin-top: var(--modes-margin-top);
+          margin-top: 16px;
         }
         .modes ha-icon {
           color: var(--disabled-text-color);
@@ -482,7 +500,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           color: var(--mode-color);
         }
         .current-temperature {
-          margin-top: var(--current-temperature-margin-top);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           font-size: var(--current-temperature-font-size);
         }
         .current-temperature-text {
