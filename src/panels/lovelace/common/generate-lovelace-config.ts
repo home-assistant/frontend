@@ -183,13 +183,18 @@ const generateViewConfig = (
       );
     });
 
-  return {
+  const view: LovelaceViewConfig = {
     path,
     title,
-    icon,
     badges,
     cards,
   };
+
+  if (icon) {
+    view.icon = icon;
+  }
+
+  return view;
 };
 
 export const generateLovelaceConfig = (
