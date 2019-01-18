@@ -2,6 +2,7 @@ import { LovelaceConfig } from "../../src/data/lovelace";
 import { entities } from "./entities";
 
 import "./ha-demo-card";
+import { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 
 // @ts-ignore
 const demoLovelaceConfig: LovelaceConfig = {
@@ -13,7 +14,7 @@ const demoLovelaceConfig: LovelaceConfig = {
   ],
 };
 
-export const mockLovelace = (hass) => {
+export const mockLovelace = (hass: MockHomeAssistant) => {
   hass.addEntities(entities);
 
   hass.mockWS("lovelace/config", () =>

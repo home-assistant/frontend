@@ -2,11 +2,15 @@ import { HomeAssistant } from "../../src/layouts/app/home-assistant";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { navigate } from "../../src/common/navigate";
 import { mockLovelace } from "./lovelace";
+import { mockAuth } from "./auth";
 
 class HaDemo extends HomeAssistant {
   protected async _handleConnProm() {
-    const hass = provideHass(this);
+    const hass = provideHass(this, {
+      panelUrl: (this as any).panelUrl,
+    });
     mockLovelace(hass);
+    mockAuth(hass);
 
     // Taken from polymer/pwa-helpers. BSD-3 licensed
     document.body.addEventListener(

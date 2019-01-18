@@ -11,7 +11,7 @@ import { HassEntities } from "home-assistant-js-websocket";
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
 
-interface MockHomeAssistant extends HomeAssistant {
+export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
@@ -29,7 +29,7 @@ interface MockHomeAssistant extends HomeAssistant {
 
 export const provideHass = (
   elements,
-  { initialStates = {} } = {}
+  { initialStates = {}, panelUrl = "" } = {}
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
 
@@ -87,7 +87,7 @@ export const provideHass = (
       default_theme: "default",
       themes: {},
     },
-    panelUrl: "lovelace",
+    panelUrl: panelUrl || "lovelace",
     panels: demoPanels,
     connection: {
       addEventListener: () => undefined,
@@ -114,6 +114,18 @@ export const provideHass = (
       fragments: [],
       translations: {},
     },
+    auth: {} as any,
+    connected: true,
+    dockedSidebar: false,
+    moreInfoEntityId: "",
+    user: {
+      credentials: [],
+      id: "abcd",
+      is_owner: true,
+      mfa_modules: [],
+      name: "Demo User",
+    },
+    fetchWithAuth: () => Promise.reject("Not implemented"),
 
     // Mock properties
     mockEntities: entities,
@@ -141,7 +153,9 @@ export const provideHass = (
         ? callback(msg)
         : Promise.reject({
             code: "command_not_mocked",
-            message: `Command ${msg.type} is not implemented in provide_hass.`,
+            message: `WS Command ${
+              msg.type
+            } is not implemented in provide_hass.`,
           });
     },
 
@@ -152,7 +166,7 @@ export const provideHass = (
         callback(msg);
       } else {
         // tslint:disable-next-line
-        console.error(`Unknown command: ${msg.type}`);
+        console.error(`Unknown WS command: ${msg.type}`);
       }
       // tslint:disable-next-line
       console.log("sendWS", msg);
@@ -166,7 +180,7 @@ export const provideHass = (
 
       return callback
         ? callback(method, path, parameters)
-        : Promise.reject(`Mock for ${path} is not implemented`);
+        : Promise.reject(`API Mock for ${path} is not implemented`);
     },
 
     // Mock functions
@@ -179,7 +193,7 @@ export const provideHass = (
     mockAPI(path, callback) {
       restResponses[path] = callback;
     },
-  });
+  } as MockHomeAssistant);
 
   // @ts-ignore
   return hass;
