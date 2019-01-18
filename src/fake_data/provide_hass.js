@@ -1,4 +1,4 @@
-import { fireEvent } from "../../../src/common/dom/fire_event";
+import { fireEvent } from "../common/dom/fire_event";
 
 import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";
@@ -6,7 +6,7 @@ import demoResources from "./demo_resources";
 
 const ensureArray = (val) => (Array.isArray(val) ? val : [val]);
 
-export default (elements, { initialStates = {} } = {}) => {
+export const provideHass = (elements, { initialStates = {} } = {}) => {
   elements = ensureArray(elements);
 
   const wsCommands = {};
@@ -28,12 +28,36 @@ export default (elements, { initialStates = {} } = {}) => {
     language: "en",
     resources: demoResources,
     states: initialStates,
-    themes: {},
+    themes: {
+      default_theme: "default",
+      themes: {},
+    },
+    panelUrl: "lovelace",
+    panels: {
+      lovelace: {
+        component_name: "lovelace",
+        config: {
+          mode: "storage",
+        },
+      },
+    },
     connection: {
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      sendMessagePromise: () =>
+        new Promise(() => {
+          /* we never resolve */
+        }),
       subscribeEvents: async (callback, event) => {
         console.log("subscribeEvents", event);
         return () => console.log("unsubscribeEvents", event);
       },
+      socket: {
+        readyState: WebSocket.OPEN,
+      },
+    },
+    translationMetadata: {
+      translations: {},
     },
 
     // Mock properties
@@ -61,7 +85,7 @@ export default (elements, { initialStates = {} } = {}) => {
         ? callback(msg)
         : Promise.reject({
             code: "command_not_mocked",
-            message: "This command is not implemented in the gallery.",
+            message: "This command is not implemented in provide_hass.",
           });
     },
 

@@ -35,7 +35,7 @@ const generateJSPage = (entrypoint, latestBuild) => {
 };
 
 function createConfig(isProdBuild, latestBuild) {
-  let buildPath = latestBuild ? "hass_frontend/" : "hass_frontend_es5/";
+  const buildPath = latestBuild ? "hass_frontend/" : "hass_frontend_es5/";
   const publicPath = latestBuild ? "/frontend_latest/" : "/frontend_es5/";
 
   const entry = {

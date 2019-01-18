@@ -8,4 +8,5 @@ export const demoConfig = {
     temperature: "°C",
     volume: "L",
   },
+  components: [],
 };

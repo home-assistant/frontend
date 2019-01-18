@@ -11,6 +11,7 @@ import {
 
 declare global {
   var __DEV__: boolean;
+  var __DEMO__: boolean;
   var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
 }

@@ -139,5 +139,5 @@ const TYPES = {
   group: GroupEntity,
 };
 
-export default (domain, objectId, state, baseAttributes = {}) =>
+export const getEntity = (domain, objectId, state, baseAttributes = {}) =>
   new (TYPES[domain] || Entity)(domain, objectId, state, baseAttributes);
