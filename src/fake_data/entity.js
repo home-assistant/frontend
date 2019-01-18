@@ -11,7 +11,7 @@ export class Entity {
     this.entityId = `${domain}.${objectId}`;
     this.lastChanged = randomTime();
     this.lastUpdated = randomTime();
-    this.state = state;
+    this.state = String(state);
     // These are the attributes that we always write to the state machine
     this.baseAttributes = baseAttributes;
     this.attributes = baseAttributes;

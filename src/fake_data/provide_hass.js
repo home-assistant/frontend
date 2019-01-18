@@ -2,7 +2,9 @@ import { fireEvent } from "../common/dom/fire_event";
 
 import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";
-import demoResources from "./demo_resources";
+import { demoResources } from "./demo_resources";
+import { demoPanels } from "./demo_panels";
+import { getEntity } from "./entity";
 
 const ensureArray = (val) => (Array.isArray(val) ? val : [val]);
 
@@ -21,6 +23,32 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
     });
   }
 
+  function updateStates(newStates) {
+    updateHass({
+      states: Object.assign({}, hass.states, newStates),
+    });
+  }
+
+  function addEntities(newEntities) {
+    const states = {};
+    ensureArray(newEntities).forEach((ent) => {
+      ent.hass = hass;
+      entities[ent.entityId] = ent;
+      states[ent.entityId] = ent.toState();
+    });
+    updateStates(states);
+  }
+
+  function mockUpdateStateAPI(method, path, parameters) {
+    const [domain, objectId] = path.substr(7).split(".", 2);
+    if (!domain || !objectId) {
+      return;
+    }
+    addEntities(
+      getEntity(domain, objectId, parameters.state, parameters.attributes)
+    );
+  }
+
   updateHass({
     // Home Assistant properties
     config: demoConfig,
@@ -32,15 +60,8 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
       default_theme: "default",
       themes: {},
     },
-    panelUrl: "lovelace",
-    panels: {
-      lovelace: {
-        component_name: "lovelace",
-        config: {
-          mode: "storage",
-        },
-      },
-    },
+    panelUrl: document.location.hash.substr(2) || "lovelace",
+    panels: demoPanels,
     connection: {
       addEventListener: () => {},
       removeEventListener: () => {},
@@ -85,7 +106,7 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
         ? callback(msg)
         : Promise.reject({
             code: "command_not_mocked",
-            message: "This command is not implemented in provide_hass.",
+            message: `Command ${msg.type} is not implemented in provide_hass.`,
           });
     },
 
@@ -101,29 +122,20 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
     },
 
     async callApi(method, path, parameters) {
-      const callback = restResponses[path];
+      const callback =
+        path.substr(0, 7) === "states/"
+          ? mockUpdateStateAPI
+          : restResponses[path];
 
       return callback
         ? callback(method, path, parameters)
-        : Promise.reject(`Mock for {path} is not implemented`);
+        : Promise.reject(`Mock for ${path} is not implemented`);
     },
 
     // Mock functions
     updateHass,
-    updateStates(newStates) {
-      updateHass({
-        states: Object.assign({}, hass.states, newStates),
-      });
-    },
-    addEntities(newEntities) {
-      const states = {};
-      ensureArray(newEntities).forEach((ent) => {
-        ent.hass = hass;
-        entities[ent.entityId] = ent;
-        states[ent.entityId] = ent.toState();
-      });
-      this.updateStates(states);
-    },
+    updateStates,
+    addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;
     },

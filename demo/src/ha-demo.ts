@@ -1,18 +1,12 @@
 import { HomeAssistant } from "../../src/layouts/app/home-assistant";
 import { provideHass } from "../../src/fake_data/provide_hass";
-import { entities } from "./entities";
 import { navigate } from "../../src/common/navigate";
+import { mockLovelace } from "./lovelace";
 
 class HaDemo extends HomeAssistant {
   protected async _handleConnProm() {
     const hass = provideHass(this);
-    hass.addEntities(entities);
-
-    hass.mockWS("lovelace/config", () =>
-      Promise.reject({
-        code: "config_not_found",
-      })
-    );
+    mockLovelace(hass);
 
     // Taken from polymer/pwa-helpers. BSD-3 licensed
     document.body.addEventListener(
@@ -42,7 +36,7 @@ class HaDemo extends HomeAssistant {
           return;
         }
 
-        const href = anchor.href;
+        let href = anchor.href;
         if (!href || href.indexOf("mailto:") !== -1) {
           return;
         }
@@ -53,18 +47,19 @@ class HaDemo extends HomeAssistant {
         if (href.indexOf(origin) !== 0) {
           return;
         }
+        href = href.substr(origin.length);
+
+        if (href === "#") {
+          return;
+        }
 
         e.preventDefault();
-        navigate(this as any, href.substr(origin.length + 1));
+        navigate(this as any, href);
       },
       { capture: true }
     );
 
     (this as any).hassConnected();
-  }
-
-  get _useHashAsPath() {
-    return true;
   }
 }
 

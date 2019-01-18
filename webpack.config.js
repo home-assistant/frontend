@@ -104,6 +104,7 @@ function createConfig(isProdBuild, latestBuild) {
     plugins: [
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(!isProdBuild),
+        __DEMO__: false,
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
         __VERSION__: JSON.stringify(VERSION),
         __STATIC_PATH__: "/static/",
