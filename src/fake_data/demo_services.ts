@@ -69,7 +69,7 @@ export const demoServices: HassServices = {
         notification_id: {
           description:
             "Target ID of the notification, will replace a notification with the same Id. [Optional]",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -79,7 +79,7 @@ export const demoServices: HassServices = {
         notification_id: {
           description:
             "Target ID of the notification, which should be removed. [Required]",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -106,12 +106,12 @@ export const demoServices: HassServices = {
         keep_days: {
           description:
             "Number of history days to keep in database after purge. Value >= 0.",
-          example: 2,
+          example: "2",
         },
         repack: {
           description:
             "Attempt to save disk space by rewriting the entire database file.",
-          example: true,
+          example: "true",
         },
       },
     },
@@ -191,7 +191,7 @@ export const demoServices: HassServices = {
         },
         value: {
           description: "The target value the entity should be set to.",
-          example: 42,
+          example: "42",
         },
       },
     },
@@ -397,7 +397,7 @@ export const demoServices: HassServices = {
         },
         volume_level: {
           description: "Volume level to set as float.",
-          example: 0.6,
+          example: "0.6",
         },
       },
     },
@@ -410,7 +410,7 @@ export const demoServices: HassServices = {
         },
         is_volume_muted: {
           description: "True/false for mute/unmute.",
-          example: true,
+          example: "true",
         },
       },
     },
@@ -424,7 +424,7 @@ export const demoServices: HassServices = {
         },
         seek_position: {
           description: "Position to seek to. The format is platform dependent.",
-          example: 100,
+          example: "100",
         },
       },
     },
@@ -481,7 +481,7 @@ export const demoServices: HassServices = {
         },
         shuffle: {
           description: "True/false for enabling/disabling shuffle.",
-          example: true,
+          example: "true",
         },
       },
     },
@@ -564,7 +564,7 @@ export const demoServices: HassServices = {
         name: { description: "Name of group", example: "My test group" },
         view: {
           description: "Boolean for if the group is a view.",
-          example: true,
+          example: "true",
         },
         icon: {
           description: "Name of icon for the group.",
@@ -576,7 +576,7 @@ export const demoServices: HassServices = {
         },
         visible: {
           description: "If the group is visible on UI.",
-          example: true,
+          example: "true",
         },
         entities: {
           description:
@@ -590,7 +590,7 @@ export const demoServices: HassServices = {
         all: {
           description:
             "Enable this option if the group should only turn on when all entities are on.",
-          example: true,
+          example: "true",
         },
       },
     },
@@ -613,7 +613,7 @@ export const demoServices: HassServices = {
         visible: {
           description:
             "True if group should be shown or False if it should be hidden.",
-          example: true,
+          example: "true",
         },
       },
     },
@@ -626,7 +626,7 @@ export const demoServices: HassServices = {
           description: "Name(s) of entities to change.",
           example: "climate.kitchen",
         },
-        away_mode: { description: "New value of away mode.", example: true },
+        away_mode: { description: "New value of away mode.", example: "true" },
       },
     },
     set_hold_mode: {
@@ -648,7 +648,7 @@ export const demoServices: HassServices = {
         },
         aux_heat: {
           description: "New value of axillary heater.",
-          example: true,
+          example: "true",
         },
       },
     },
@@ -661,15 +661,15 @@ export const demoServices: HassServices = {
         },
         temperature: {
           description: "New target temperature for HVAC.",
-          example: 25,
+          example: "25",
         },
         target_temp_high: {
           description: "New target high tempereature for HVAC.",
-          example: 26,
+          example: "26",
         },
         target_temp_low: {
           description: "New target low temperature for HVAC.",
-          example: 20,
+          example: "20",
         },
         operation_mode: {
           description:
@@ -687,7 +687,7 @@ export const demoServices: HassServices = {
         },
         humidity: {
           description: "New target humidity for climate device.",
-          example: 60,
+          example: "60",
         },
       },
     },
@@ -843,7 +843,7 @@ export const demoServices: HassServices = {
         code: {
           description:
             "An optional code to disarm the alarm control panel with.",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -857,7 +857,7 @@ export const demoServices: HassServices = {
         code: {
           description:
             "An optional code to arm home the alarm control panel with.",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -871,7 +871,7 @@ export const demoServices: HassServices = {
         code: {
           description:
             "An optional code to arm away the alarm control panel with.",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -885,7 +885,7 @@ export const demoServices: HassServices = {
         code: {
           description:
             "An optional code to arm night the alarm control panel with.",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -900,7 +900,7 @@ export const demoServices: HassServices = {
         code: {
           description:
             "An optional code to trigger the alarm control panel with.",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -953,7 +953,7 @@ export const demoServices: HassServices = {
         },
         oscillating: {
           description: "Flag to turn on/off oscillation",
-          example: true,
+          example: "true",
         },
       },
     },
@@ -981,7 +981,7 @@ export const demoServices: HassServices = {
         },
         code: {
           description: "An optional code to unlock the lock with.",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -994,7 +994,7 @@ export const demoServices: HassServices = {
         },
         code: {
           description: "An optional code to lock the lock with.",
-          example: 1234,
+          example: "1234",
         },
       },
     },
@@ -1028,7 +1028,7 @@ export const demoServices: HassServices = {
         },
         position: {
           description: "Position of the cover (0 to 100).",
-          example: 30,
+          example: "30",
         },
       },
     },
@@ -1077,7 +1077,7 @@ export const demoServices: HassServices = {
         },
         tilt_position: {
           description: "Tilt position of the cover (0 to 100).",
-          example: 30,
+          example: "30",
         },
       },
     },
@@ -1121,7 +1121,7 @@ export const demoServices: HassServices = {
         },
         transition: {
           description: "Duration in seconds it takes to get to next state",
-          example: 60,
+          example: "60",
         },
         rgb_color: {
           description: "Color for the light in RGB-format.",
@@ -1142,11 +1142,11 @@ export const demoServices: HassServices = {
         },
         color_temp: {
           description: "Color temperature for the light in mireds.",
-          example: 250,
+          example: "250",
         },
         kelvin: {
           description: "Color temperature for the light in Kelvin.",
-          example: 4000,
+          example: "4000",
         },
         white_value: {
           description: "Number between 0..255 indicating level of white.",
@@ -1154,12 +1154,12 @@ export const demoServices: HassServices = {
         },
         brightness: {
           description: "Number between 0..255 indicating brightness.",
-          example: 120,
+          example: "120",
         },
         brightness_pct: {
           description:
             "Number between 0..100 indicating percentage of full brightness.",
-          example: 47,
+          example: "47",
         },
         profile: {
           description: "Name of a light profile to use.",
@@ -1184,7 +1184,7 @@ export const demoServices: HassServices = {
         },
         transition: {
           description: "Duration in seconds it takes to get to next state.",
-          example: 60,
+          example: "60",
         },
         flash: {
           description: "If the light should flash.",
@@ -1201,7 +1201,7 @@ export const demoServices: HassServices = {
         },
         transition: {
           description: "Duration in seconds it takes to get to next state.",
-          example: 60,
+          example: "60",
         },
       },
     },

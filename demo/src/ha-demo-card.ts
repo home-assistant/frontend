@@ -75,7 +75,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         </ul>
         <div class="content">
           The community has prepared a couple of configurations for you to try
-          out.
+          out. Click the arrows to try them out.
         </div>
         <div class="picker">
           <paper-icon-button
