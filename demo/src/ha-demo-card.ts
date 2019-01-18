@@ -8,7 +8,7 @@ import {
 import "@polymer/paper-icon-button";
 import "../../src/components/ha-card";
 import { LovelaceCard, Lovelace } from "../../src/panels/lovelace/types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../src/data/lovelace";
+import { LovelaceCardConfig } from "../../src/data/lovelace";
 import { placeholder1Config } from "./lovelace_configs/placeholder1";
 import { placeholder2Config } from "./lovelace_configs/placeholder2";
 import { DemoLovelaceConfig } from "./lovelace_configs/types";
