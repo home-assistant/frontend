@@ -48,7 +48,8 @@ const CONFIGS = [
     config: `
 - type: entity-button
   entity: light.bed_light
-  tap_action: toggle
+  tap_action: 
+    action: toggle
     `,
   },
   {
