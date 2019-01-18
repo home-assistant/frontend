@@ -4,28 +4,50 @@ import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";
 import { demoResources } from "./demo_resources";
 import { demoPanels } from "./demo_panels";
-import { getEntity } from "./entity";
+import { getEntity, Entity } from "./entity";
+import { HomeAssistant } from "../types";
+import { HassEntities } from "home-assistant-js-websocket";
 
-const ensureArray = (val) => (Array.isArray(val) ? val : [val]);
+const ensureArray = <T>(val: T | T[]): T[] =>
+  Array.isArray(val) ? val : [val];
 
-export const provideHass = (elements, { initialStates = {} } = {}) => {
+interface MockHomeAssistant extends HomeAssistant {
+  mockEntities: any;
+  updateHass(obj: Partial<MockHomeAssistant>);
+  updateStates(newStates: HassEntities);
+  addEntities(entites: Entity | Entity[]);
+  mockWS(type: string, callback: (msg: any) => any);
+  mockAPI(
+    path: string,
+    callback: (
+      method: string,
+      path: string,
+      parameters: { [key: string]: any }
+    ) => any
+  );
+}
+
+export const provideHass = (
+  elements,
+  { initialStates = {} } = {}
+): MockHomeAssistant => {
   elements = ensureArray(elements);
 
   const wsCommands = {};
   const restResponses = {};
-  let hass;
+  let hass: MockHomeAssistant;
   const entities = {};
 
-  function updateHass(obj) {
-    hass = Object.assign({}, hass, obj);
+  function updateHass(obj: Partial<MockHomeAssistant>) {
+    hass = { ...hass, ...obj };
     elements.forEach((el) => {
       el.hass = hass;
     });
   }
 
-  function updateStates(newStates) {
+  function updateStates(newStates: HassEntities) {
     updateHass({
-      states: Object.assign({}, hass.states, newStates),
+      states: { ...hass.states, ...newStates },
     });
   }
 
@@ -39,7 +61,12 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
     updateStates(states);
   }
 
-  function mockUpdateStateAPI(method, path, parameters) {
+  function mockUpdateStateAPI(
+    // @ts-ignore
+    method,
+    path,
+    parameters
+  ) {
     const [domain, objectId] = path.substr(7).split(".", 2);
     if (!domain || !objectId) {
       return;
@@ -60,24 +87,31 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
       default_theme: "default",
       themes: {},
     },
-    panelUrl: document.location.hash.substr(2) || "lovelace",
+    panelUrl: "lovelace",
     panels: demoPanels,
     connection: {
-      addEventListener: () => {},
-      removeEventListener: () => {},
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
       sendMessagePromise: () =>
         new Promise(() => {
           /* we never resolve */
         }),
-      subscribeEvents: async (callback, event) => {
+      subscribeEvents: async (
+        // @ts-ignore
+        callback,
+        event
+      ) => {
+        // tslint:disable-next-line
         console.log("subscribeEvents", event);
+        // tslint:disable-next-line
         return () => console.log("unsubscribeEvents", event);
       },
       socket: {
         readyState: WebSocket.OPEN,
       },
-    },
+    } as any,
     translationMetadata: {
+      fragments: [],
       translations: {},
     },
 
@@ -86,16 +120,17 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
 
     // Home Assistant functions
     async callService(domain, service, data) {
-      fireEvent(elements[0], "show-notification", {
+      fireEvent(elements[0], "hass-notification", {
         message: `Called service ${domain}/${service}`,
       });
-      if (data.entity_id) {
+      if (data && "entity_id" in data) {
         await Promise.all(
           ensureArray(data.entity_id).map((ent) =>
             entities[ent].handleService(domain, service, data)
           )
         );
       } else {
+        // tslint:disable-next-line
         console.log("unmocked callService", domain, service, data);
       }
     },
@@ -116,8 +151,10 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
       if (callback) {
         callback(msg);
       } else {
+        // tslint:disable-next-line
         console.error(`Unknown command: ${msg.type}`);
       }
+      // tslint:disable-next-line
       console.log("sendWS", msg);
     },
 
@@ -144,5 +181,6 @@ export const provideHass = (elements, { initialStates = {} } = {}) => {
     },
   });
 
+  // @ts-ignore
   return hass;
 };

@@ -1,4 +1,6 @@
-export const demoPanels = {
+import { Panels } from "../types";
+
+export const demoPanels: Panels = {
   lovelace: {
     component_name: "lovelace",
     icon: null,

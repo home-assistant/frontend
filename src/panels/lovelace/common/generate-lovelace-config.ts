@@ -263,6 +263,12 @@ export const generateLovelaceConfig = (
     }
   }
 
+  if (__DEMO__) {
+    views[0].cards!.unshift({
+      type: "custom:ha-demo-card",
+    });
+  }
+
   return {
     title,
     views,

@@ -1,6 +1,8 @@
 import { LovelaceConfig } from "../../src/data/lovelace";
 import { entities } from "./entities";
 
+import "./ha-demo-card";
+
 // @ts-ignore
 const demoLovelaceConfig: LovelaceConfig = {
   views: [
