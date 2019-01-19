@@ -2184,14 +2184,19 @@
     "@xtuc/long" "4.2.1"
 
 "@webcomponents/shadycss@^1.5.2", "@webcomponents/shadycss@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.6.0.tgz#2aeb0703983137a733bdb5c06fff125aa1f8c5c1"
-  integrity sha512-iURGZZU6BaiRJtGgjMn208QxPkY11QwT/VmuHNa4Yb+kJxU/WODe4C8b0LDOtnk4KJzJg50hCfwvPRAjePEzbA==
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.8.0.tgz#10340b87626f876841033b21b5221c3701252e10"
+  integrity sha512-bx0TzeZ11VqYDGLuXfznen8+4u0hADk2dD5RNMFxWL9MM4c5NXCDCgNXgssb4i2zQOos/GGe4tl5AuE0LzJkLA==
 
-"@webcomponents/webcomponentsjs@2.2.1", "@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0", "@webcomponents/webcomponentsjs@^2.2.0":
+"@webcomponents/webcomponentsjs@2.2.1", "@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.1.tgz#bf28cdad466aaf85d88ee56aebed32c83f4c1328"
   integrity sha512-lZZ+Lkke6JhsJcQQqSVk1Pny6/8y4qhJ98LO7a/MwBSRO8WqHqK1X2vscfeL8vOnYGFnmBUyVG95lwYv/AXyLQ==
+
+"@webcomponents/webcomponentsjs@^2.2.0":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.4.tgz#b520d586e46517914d9708c2220b263116d5f86a"
+  integrity sha512-YkLxK9Mbw6QK5bNZ67Rarb/yj0gN+Ziy5+2sLjM0lDb3XafM36gXKZXaIBz4zvLA/cYYTdg+l1LlqXeHEcmeiA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
