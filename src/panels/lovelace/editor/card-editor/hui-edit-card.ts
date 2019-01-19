@@ -83,11 +83,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
 
   static get styles(): CSSResult[] {
     return [
+      haStyleDialog,
       css`
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          :host {
-            @apply --ha-dialog-fullscreen;
-          }
           :host::before {
             content: "";
             position: fixed;
@@ -98,6 +96,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
             bottom: 0px;
             background-color: inherit;
           }
+          /* overrule the ha-style-dialog max-height on small screens */
           paper-dialog {
             max-height: 100%;
             height: 100%;
@@ -212,9 +211,6 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     }
 
     return html`
-      <style>
-        ${haStyleDialog.cssText}
-      </style>
       <paper-dialog
         with-backdrop
         opened
