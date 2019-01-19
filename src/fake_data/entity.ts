@@ -1,4 +1,7 @@
-import { HassEntityAttributeBase } from "home-assistant-js-websocket";
+import {
+  HassEntityAttributeBase,
+  HassEntities,
+} from "home-assistant-js-websocket";
 
 /* tslint:disable:max-classes-per-file */
 
@@ -86,6 +89,26 @@ export class LightEntity extends Entity {
   }
 }
 
+export class SwitchEntity extends Entity {
+  public async handleService(domain, service, data) {
+    if (!["homeassistant", this.domain].includes(domain)) {
+      return;
+    }
+
+    if (service === "turn_on") {
+      this.update("on", this.attributes);
+    } else if (service === "turn_off") {
+      this.update("off", this.attributes);
+    } else if (service === "toggle") {
+      if (this.state === "on") {
+        this.handleService(domain, "turn_off", data);
+      } else {
+        this.handleService(domain, "turn_on", data);
+      }
+    }
+  }
+}
+
 export class LockEntity extends Entity {
   public async handleService(
     domain,
@@ -158,11 +181,24 @@ export class GroupEntity extends Entity {
 
 const TYPES = {
   climate: ClimateEntity,
-  light: LightEntity,
-  lock: LockEntity,
   cover: CoverEntity,
   group: GroupEntity,
+  light: LightEntity,
+  lock: LockEntity,
+  switch: SwitchEntity,
 };
 
-export const getEntity = (domain, objectId, state, baseAttributes = {}) =>
+export const getEntity = (
+  domain,
+  objectId,
+  state,
+  baseAttributes = {}
+): Entity =>
   new (TYPES[domain] || Entity)(domain, objectId, state, baseAttributes);
+
+export const convertEntities = (states: HassEntities): Entity[] =>
+  Object.keys(states).map((entId) => {
+    const stateObj = states[entId];
+    const [domain, objectId] = entId.split(".", 2);
+    return getEntity(domain, objectId, stateObj.state, stateObj.attributes);
+  });

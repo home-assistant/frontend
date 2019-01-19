@@ -3,6 +3,7 @@ import { provideHass } from "../../src/fake_data/provide_hass";
 import { navigate } from "../../src/common/navigate";
 import { mockLovelace } from "./lovelace";
 import { mockAuth } from "./auth";
+import { selectedDemoConfig } from "./configs/demo-configs";
 
 class HaDemo extends HomeAssistant {
   protected async _handleConnProm() {
@@ -11,6 +12,7 @@ class HaDemo extends HomeAssistant {
     });
     mockLovelace(hass);
     mockAuth(hass);
+    selectedDemoConfig.then((conf) => hass.addEntities(conf.entities()));
 
     // Taken from polymer/pwa-helpers. BSD-3 licensed
     document.body.addEventListener(

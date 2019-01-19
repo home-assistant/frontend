@@ -15,7 +15,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
-  addEntities(entites: Entity | Entity[]);
+  addEntities(entites: Entity | Entity[], replace?: boolean);
   mockWS(type: string, callback: (msg: any) => any);
   mockAPI(
     path: string,
@@ -51,14 +51,20 @@ export const provideHass = (
     });
   }
 
-  function addEntities(newEntities) {
+  function addEntities(newEntities, replace: boolean = false) {
     const states = {};
     ensureArray(newEntities).forEach((ent) => {
       ent.hass = hass;
       entities[ent.entityId] = ent;
       states[ent.entityId] = ent.toState();
     });
-    updateStates(states);
+    if (replace) {
+      updateHass({
+        states,
+      });
+    } else {
+      updateStates(states);
+    }
   }
 
   function mockUpdateStateAPI(

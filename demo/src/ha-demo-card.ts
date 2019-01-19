@@ -1,39 +1,20 @@
-import {
-  LitElement,
-  html,
-  CSSResult,
-  css,
-  PropertyDeclarations,
-} from "lit-element";
+import { LitElement, html, CSSResult, css } from "lit-element";
+import { until } from "lit-html/directives/until";
 import "@polymer/paper-icon-button";
 import "../../src/components/ha-card";
 import { LovelaceCard, Lovelace } from "../../src/panels/lovelace/types";
 import { LovelaceCardConfig } from "../../src/data/lovelace";
-import { placeholder1Config } from "./lovelace_configs/placeholder1";
-import { placeholder2Config } from "./lovelace_configs/placeholder2";
-import { DemoLovelaceConfig } from "./lovelace_configs/types";
-
-const configs: DemoLovelaceConfig[] = [placeholder1Config, placeholder2Config];
-
-configs.forEach((conf, idx) => {
-  conf.demoIndex = idx;
-});
+import { MockHomeAssistant } from "../../src/fake_data/provide_hass";
+import {
+  demoConfigs,
+  selectedDemoConfig,
+  setDemoConfig,
+  selectedDemoConfigIndex,
+} from "./configs/demo-configs";
 
 export class HADemoCard extends LitElement implements LovelaceCard {
   public lovelace?: Lovelace;
-
-  private _selectedConfig: number;
-
-  constructor() {
-    super();
-    this._selectedConfig = 0;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _selectedConfig: {},
-    };
-  }
+  public hass?: MockHomeAssistant;
 
   public getCardSize() {
     return 2;
@@ -45,38 +26,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     // tslint:disable-next-line:no-empty
   ) {}
 
-  protected firstUpdated() {
-    this._selectedConfig = (this.lovelace!
-      .config as DemoLovelaceConfig).demoIndex!;
-  }
-
   protected render() {
-    const config = configs[this._selectedConfig];
     return html`
-      <ha-card header="Welcome Home!">
-        <div class="content">
-          Welcome to the Home Assistant Demo. Explore how to configure the UI or
-          try out one of our pre-made configurations.
-        </div>
-        <ul>
-          <li>
-            <a href="https://www.home-assistant.io/" target="_blank">
-              About Home Assistant
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.home-assistant.io/getting-started/"
-              target="_blank"
-            >
-              Installation instructions
-            </a>
-          </li>
-        </ul>
-        <div class="content">
-          The community has prepared a couple of configurations for you to try
-          out. Click the arrows to try them out.
-        </div>
+      <ha-card header="Home Assistant Demo Switcher">
         <div class="picker">
           <paper-icon-button
             @click=${this._prevConfig}
@@ -84,13 +36,22 @@ export class HADemoCard extends LitElement implements LovelaceCard {
             style="transform: rotate(180deg)"
           ></paper-icon-button>
           <div>
-            ${config.demoConfigName}
-            <small>
-              by
-              <a target="_blank" href="${config.demoAuthorUrl}">
-                ${config.demoAuthorName}
-              </a>
-            </small>
+            ${
+              until(
+                selectedDemoConfig.then(
+                  (conf) => html`
+                    ${conf.name}
+                    <small>
+                      by
+                      <a target="_blank" href="${conf.authorUrl}">
+                        ${conf.authorName}
+                      </a>
+                    </small>
+                  `
+                ),
+                ""
+              )
+            }
           </div>
           <paper-icon-button
             @click=${this._nextConfig}
@@ -102,15 +63,23 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   }
 
   private _prevConfig() {
-    this._selectedConfig =
-      this._selectedConfig > 0 ? this._selectedConfig - 1 : configs.length - 1;
-    this.lovelace!.saveConfig(configs[this._selectedConfig]);
+    this._updateConfig(
+      selectedDemoConfigIndex > 0
+        ? selectedDemoConfigIndex - 1
+        : demoConfigs.length - 1
+    );
   }
 
   private _nextConfig() {
-    this._selectedConfig =
-      this._selectedConfig < configs.length - 1 ? this._selectedConfig + 1 : 0;
-    this.lovelace!.saveConfig(configs[this._selectedConfig]);
+    this._updateConfig(
+      selectedDemoConfigIndex < demoConfigs.length - 1
+        ? selectedDemoConfigIndex + 1
+        : 0
+    );
+  }
+
+  private _updateConfig(index: number) {
+    setDemoConfig(this.hass!, this.lovelace!, index);
   }
 
   static get styles(): CSSResult[] {

@@ -7356,9 +7356,9 @@ hoek@4.x.x:
   integrity sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==
 
 home-assistant-js-websocket@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.2.4.tgz#0c4212e6ac57b60ed939aa420253994e4f9f0bef"
-  integrity sha512-DaHpWIjJFLwTWNbHeGSCEUsbeyLUWAyWUgsYkiVWxzbfm+vqC5YaLNRu+Ma64SQYh5yGSYr7h25p2hip1GvyhQ==
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.2.5.tgz#ac4fa6a7cb5cb48efe2a49390cf24acb5439f51f"
+  integrity sha512-CRlq9WA1WGw9lVzouK4BxEGEP5JqWV2MBBZyiUPVgBLHPR9p3bJL/y+jNhnjqEyb8QNPVboGuAJ+Rylrl7o2dg==
 
 home-or-tmp@^2.0.0:
   version "2.0.0"

@@ -240,7 +240,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     const elements: LovelaceCard[] = [];
     const elementsToAppend: HTMLElement[] = [];
     config.cards.forEach((cardConfig, cardIndex) => {
-      const element = this._createCardElement(cardConfig);
+      const element = this.createCardElement(cardConfig);
       elements.push(element);
 
       if (!this.lovelace!.editMode) {
@@ -288,7 +288,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _createCardElement(cardConfig: LovelaceCardConfig) {
+  public createCardElement(cardConfig: LovelaceCardConfig) {
     const element = createCardElement(cardConfig) as LovelaceCard;
     element.hass = this.hass;
     element.addEventListener(
@@ -309,7 +309,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     cardElToReplace: LovelaceCard,
     config: LovelaceCardConfig
   ): void {
-    const newCardEl = this._createCardElement(config);
+    const newCardEl = this.createCardElement(config);
     cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     this._cards = this._cards!.map((curCardEl) =>
       curCardEl === cardElToReplace ? newCardEl : curCardEl
