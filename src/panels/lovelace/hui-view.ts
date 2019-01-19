@@ -68,6 +68,24 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     this._badges = [];
   }
 
+  // Public to make demo happy
+  public createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = createCardElement(cardConfig) as LovelaceCard;
+    element.hass = this.hass;
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        // In edit mode let it go to hui-root and rebuild whole view.
+        if (!this.lovelace!.editMode) {
+          ev.stopPropagation();
+          this._rebuildCard(element, cardConfig);
+        }
+      },
+      { once: true }
+    );
+    return element;
+  }
+
   protected render(): TemplateResult | void {
     return html`
       ${this.renderStyles()}
@@ -286,23 +304,6 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     if ("theme" in config) {
       applyThemesOnElement(root, this.hass!.themes, config.theme);
     }
-  }
-
-  public createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
-    element.hass = this.hass;
-    element.addEventListener(
-      "ll-rebuild",
-      (ev) => {
-        // In edit mode let it go to hui-root and rebuild whole view.
-        if (!this.lovelace!.editMode) {
-          ev.stopPropagation();
-          this._rebuildCard(element, cardConfig);
-        }
-      },
-      { once: true }
-    );
-    return element;
   }
 
   private _rebuildCard(
