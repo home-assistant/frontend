@@ -1,7 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import provideHass from "../data/provide_hass";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 
 const CONFIGS = [

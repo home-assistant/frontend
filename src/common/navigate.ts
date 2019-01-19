@@ -5,10 +5,18 @@ export const navigate = (
   path: string,
   replace: boolean = false
 ) => {
-  if (replace) {
-    history.replaceState(null, "", path);
+  if (__DEMO__) {
+    if (replace) {
+      history.replaceState(null, "", `${location.pathname}#${path}`);
+    } else {
+      window.location.hash = path;
+    }
   } else {
-    history.pushState(null, "", path);
+    if (replace) {
+      history.replaceState(null, "", path);
+    } else {
+      history.pushState(null, "", path);
+    }
   }
   fireEvent(node, "location-changed");
 };

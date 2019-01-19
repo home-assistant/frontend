@@ -71,4 +71,6 @@ class HaUrlSync extends EventsMixin(PolymerElement) {
     window.removeEventListener("popstate", this.popstateChangeListener);
   }
 }
-customElements.define("ha-url-sync", HaUrlSync);
+if (!__DEMO__) {
+  customElements.define("ha-url-sync", HaUrlSync);
+}
