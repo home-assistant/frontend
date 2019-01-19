@@ -458,7 +458,7 @@ export const demoEntitiesJimpower: () => Entity[] = () =>
     "timer.tv_delay": {
       entity_id: "timer.tv_delay",
       state: "idle",
-      attributes: { duration: "0:00:09", remaining: "0:00:00" },
+      attributes: { duration: "0:00:09", remaining: "0:00:00", hidden: false },
       last_changed: "2019-01-17T10:51:57.008557+00:00",
       last_updated: "2019-01-17T10:51:57.008557+00:00",
       context: { id: "2bf895ef0b7c4910985ade836c1d94c1", user_id: null },
@@ -8854,7 +8854,6 @@ export const demoEntitiesJimpower: () => Entity[] = () =>
       last_changed: "2019-01-18T06:45:17.550061+00:00",
       last_updated: "2019-01-18T09:25:45.773941+00:00",
       context: { id: "6bdaf9c494f24a049d0cbe7e985b23fc", user_id: null },
-      location: { lat: -28.1081439, long: 153.4402859 },
     },
     "sensor.season": {
       entity_id: "sensor.season",
