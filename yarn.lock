@@ -8641,10 +8641,10 @@ listr@^0.14.2:
     p-map "^2.0.0"
     rxjs "^6.3.3"
 
-lit-element@2.0.0-rc.2:
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.0-rc.2.tgz#5975c3b282ce47937de861b48456036df71f422b"
-  integrity sha512-yP6mX23n8WUYXpS2RJUL87DSZYQY327YrnqFiSyPe9aSzjgJ5Jy3In3itzjeiFOT8Od4VKLM7u6bLG9tGFO1pw==
+lit-element@2.0.0-rc.3:
+  version "2.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.0-rc.3.tgz#03470c8f4f5616221c2a99378c8cfb0452b8d35f"
+  integrity sha512-A+lvXxq2xd4jkbbaNDkC4oXZXFHMSWhdAK2wrBTeMiTTcISEGm2F/zCcuxSYJEy2941fwWmEnPE9BPWqU/07Kg==
   dependencies:
     lit-html "^1.0.0-rc.2"
 
