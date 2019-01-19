@@ -18,6 +18,7 @@
   },
   "globals": {
     "__DEV__": false,
+    "__DEMO__": false,
     "__BUILD__": false,
     "__VERSION__": false,
     "__STATIC_PATH__": false,

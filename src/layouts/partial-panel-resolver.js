@@ -217,7 +217,9 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
         );
         this._state = "loaded";
       },
-      () => {
+      (err) => {
+        // eslint-disable-next-line
+        console.error("Error loading panel", err);
         this._state = "error";
       }
     );

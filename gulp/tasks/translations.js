@@ -2,11 +2,12 @@ const path = require("path");
 const gulp = require("gulp");
 const foreach = require("gulp-foreach");
 const hash = require("gulp-hash");
-const insert = require("gulp-insert");
 const merge = require("gulp-merge-json");
 const minify = require("gulp-jsonminify");
 const rename = require("gulp-rename");
 const transform = require("gulp-json-transform");
+
+const isDemo = process.env.DEMO === "1";
 
 const inDir = "translations";
 const workDir = "build-translations";
@@ -230,7 +231,7 @@ gulp.task(taskName, ["build-flattened-translations"], function() {
       hash({
         algorithm: "md5",
         hashLength: 32,
-        template: "<%= name %>-<%= hash %>.json",
+        template: isDemo ? "<%= name %>.json" : "<%= name %>-<%= hash %>.json",
       })
     )
     .pipe(hash.manifest("translationFingerprints.json"))
