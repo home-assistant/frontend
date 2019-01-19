@@ -63,20 +63,6 @@ export const haStyle = css`
   }
 `;
 
-const haDialogNarrow = css`
-  margin: 0;
-  width: 100% !important;
-  max-height: calc(100% - 64px);
-
-  position: fixed !important;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  overflow: scroll;
-  border-bottom-left-radius: 0px;
-  border-bottom-right-radius: 0px;
-`;
-
 export const haStyleDialog = css`
   /* prevent clipping of positioned elements */
   paper-dialog-scrollable {
@@ -94,7 +80,17 @@ export const haStyleDialog = css`
 
   @media all and (max-width: 450px), all and (max-height: 500px) {
     paper-dialog {
-      ${haDialogNarrow}
+      margin: 0;
+      width: 100% !important;
+      max-height: calc(100% - 64px);
+
+      position: fixed !important;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      overflow: scroll;
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
     }
   }
 `;
