@@ -35,7 +35,7 @@ const generateJSPage = (entrypoint, latestBuild) => {
 };
 
 function createConfig(isProdBuild, latestBuild) {
-  let buildPath = latestBuild ? "hass_frontend/" : "hass_frontend_es5/";
+  const buildPath = latestBuild ? "hass_frontend/" : "hass_frontend_es5/";
   const publicPath = latestBuild ? "/frontend_latest/" : "/frontend_es5/";
 
   const entry = {
@@ -104,6 +104,7 @@ function createConfig(isProdBuild, latestBuild) {
     plugins: [
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(!isProdBuild),
+        __DEMO__: false,
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
         __VERSION__: JSON.stringify(VERSION),
         __STATIC_PATH__: "/static/",
