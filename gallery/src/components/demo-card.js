@@ -3,9 +3,9 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import JsYaml from "js-yaml";
 
 import HomeAssistant from "../data/hass";
-import { demoConfig } from "../data/demo_config";
-import { demoServices } from "../data/demo_services";
-import demoResources from "../data/demo_resources";
+import { demoConfig } from "../../../src/fake_data/demo_config";
+import { demoServices } from "../../../src/fake_data/demo_services";
+import demoResources from "../../../src/fake_data/demo_resources";
 import demoStates from "../data/demo_states";
 import { createCardElement } from "../../../src/panels/lovelace/common/create-card-element";
 

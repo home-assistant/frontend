@@ -1,36 +1,53 @@
+import {
+  HassEntityAttributeBase,
+  HassEntities,
+} from "home-assistant-js-websocket";
+
+/* tslint:disable:max-classes-per-file */
+
 const now = () => new Date().toISOString();
 const randomTime = () =>
   new Date(new Date().getTime() - Math.random() * 80 * 60 * 1000).toISOString();
 
-/* eslint-disable no-unused-vars */
-
 export class Entity {
+  public domain: string;
+  public objectId: string;
+  public entityId: string;
+  public lastChanged: string;
+  public lastUpdated: string;
+  public state: string;
+  public baseAttributes: HassEntityAttributeBase & { [key: string]: any };
+  public attributes: HassEntityAttributeBase & { [key: string]: any };
+  public hass?: any;
+
   constructor(domain, objectId, state, baseAttributes) {
     this.domain = domain;
     this.objectId = objectId;
     this.entityId = `${domain}.${objectId}`;
     this.lastChanged = randomTime();
     this.lastUpdated = randomTime();
-    this.state = state;
+    this.state = String(state);
     // These are the attributes that we always write to the state machine
     this.baseAttributes = baseAttributes;
     this.attributes = baseAttributes;
   }
 
-  async handleService(domain, service, data) {
+  public async handleService(domain, service, data: { [key: string]: any }) {
+    // tslint:disable-next-line
     console.log(
       `Unmocked service for ${this.entityId}: ${domain}/${service}`,
       data
     );
   }
 
-  update(state, attributes = {}) {
+  public update(state, attributes = {}) {
     this.state = state;
     this.lastUpdated = now();
     this.lastChanged =
       state === this.state ? this.lastChanged : this.lastUpdated;
-    this.attributes = Object.assign({}, this.baseAttributes, attributes);
+    this.attributes = { ...this.baseAttributes, ...attributes };
 
+    // tslint:disable-next-line
     console.log("update", this.entityId, this);
 
     this.hass.updateStates({
@@ -38,7 +55,7 @@ export class Entity {
     });
   }
 
-  toState() {
+  public toState() {
     return {
       entity_id: this.entityId,
       state: this.state,
@@ -50,21 +67,16 @@ export class Entity {
 }
 
 export class LightEntity extends Entity {
-  async handleService(domain, service, data) {
-    if (!["homeassistant", this.domain].includes(domain)) return;
+  public async handleService(domain, service, data) {
+    if (!["homeassistant", this.domain].includes(domain)) {
+      return;
+    }
 
     if (service === "turn_on") {
-      // eslint-disable-next-line
+      // tslint:disable-next-line
       let { brightness, hs_color, brightness_pct } = data;
-      // eslint-disable-next-line
       brightness = (255 * brightness_pct) / 100;
-      this.update(
-        "on",
-        Object.assign(this.attributes, {
-          brightness,
-          hs_color,
-        })
-      );
+      this.update("on", { ...this.attributes, brightness, hs_color });
     } else if (service === "turn_off") {
       this.update("off");
     } else if (service === "toggle") {
@@ -77,9 +89,36 @@ export class LightEntity extends Entity {
   }
 }
 
+export class SwitchEntity extends Entity {
+  public async handleService(domain, service, data) {
+    if (!["homeassistant", this.domain].includes(domain)) {
+      return;
+    }
+
+    if (service === "turn_on") {
+      this.update("on", this.attributes);
+    } else if (service === "turn_off") {
+      this.update("off", this.attributes);
+    } else if (service === "toggle") {
+      if (this.state === "on") {
+        this.handleService(domain, "turn_off", data);
+      } else {
+        this.handleService(domain, "turn_on", data);
+      }
+    }
+  }
+}
+
 export class LockEntity extends Entity {
-  async handleService(domain, service, data) {
-    if (domain !== this.domain) return;
+  public async handleService(
+    domain,
+    service,
+    // @ts-ignore
+    data
+  ) {
+    if (domain !== this.domain) {
+      return;
+    }
 
     if (service === "lock") {
       this.update("locked");
@@ -90,8 +129,15 @@ export class LockEntity extends Entity {
 }
 
 export class CoverEntity extends Entity {
-  async handleService(domain, service, data) {
-    if (domain !== this.domain) return;
+  public async handleService(
+    domain,
+    service,
+    // @ts-ignore
+    data
+  ) {
+    if (domain !== this.domain) {
+      return;
+    }
 
     if (service === "open_cover") {
       this.update("open");
@@ -102,23 +148,25 @@ export class CoverEntity extends Entity {
 }
 
 export class ClimateEntity extends Entity {
-  async handleService(domain, service, data) {
-    if (domain !== this.domain) return;
+  public async handleService(domain, service, data) {
+    if (domain !== this.domain) {
+      return;
+    }
 
     if (service === "set_operation_mode") {
       this.update(
         data.operation_mode === "heat" ? "heat" : data.operation_mode,
-        Object.assign(this.attributes, {
-          operation_mode: data.operation_mode,
-        })
+        { ...this.attributes, operation_mode: data.operation_mode }
       );
     }
   }
 }
 
 export class GroupEntity extends Entity {
-  async handleService(domain, service, data) {
-    if (!["homeassistant", this.domain].includes(domain)) return;
+  public async handleService(domain, service, data) {
+    if (!["homeassistant", this.domain].includes(domain)) {
+      return;
+    }
 
     await Promise.all(
       this.attributes.entity_id.map((ent) => {
@@ -133,11 +181,24 @@ export class GroupEntity extends Entity {
 
 const TYPES = {
   climate: ClimateEntity,
-  light: LightEntity,
-  lock: LockEntity,
   cover: CoverEntity,
   group: GroupEntity,
+  light: LightEntity,
+  lock: LockEntity,
+  switch: SwitchEntity,
 };
 
-export default (domain, objectId, state, baseAttributes = {}) =>
+export const getEntity = (
+  domain,
+  objectId,
+  state,
+  baseAttributes = {}
+): Entity =>
   new (TYPES[domain] || Entity)(domain, objectId, state, baseAttributes);
+
+export const convertEntities = (states: HassEntities): Entity[] =>
+  Object.keys(states).map((entId) => {
+    const stateObj = states[entId];
+    const [domain, objectId] = entId.split(".", 2);
+    return getEntity(domain, objectId, stateObj.state, stateObj.attributes);
+  });

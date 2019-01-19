@@ -1,4 +1,4 @@
-export default {
+export const demoResources = {
   en: {
     "state.default.off": "Off",
     "state.default.on": "On",
