@@ -424,7 +424,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
     },
     "sensor.oskar_bluetooth": {
       entity_id: "sensor.oskar_bluetooth",
-      state: "Eves rum",
+      state: "Eve's room",
       attributes: {
         friendly_name: "Oskar",
         entity_picture: "/assets/kernehed/oscar.jpg",
