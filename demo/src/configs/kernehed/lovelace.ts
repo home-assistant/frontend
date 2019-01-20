@@ -131,7 +131,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           show_header_toggle: false,
           type: "entities",
           id: "37279816181f442eac853b03c0473101",
-          title: "L\u00e5set",
+          title: "Lock",
         },
         // {
         //   filter: {
@@ -218,7 +218,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
               ],
               image: "/assets/kernehed/camera.entre.jpg",
               type: "picture-glance",
-              title: "Entr\u00e9 kamera",
+              title: "Entrance camera",
             },
             {
               entities: [
@@ -239,31 +239,31 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         {
           entities: [
             {
-              name: "Tv\u00e4ttstugan",
+              name: "Laundry sensor",
               entity: "binary_sensor.tvattstugan_motion_sensor",
             },
             {
-              name: "Skafferiet",
+              name: "Pantry sensor",
               entity: "binary_sensor.skafferiet_motion_sensor",
             },
             {
-              name: "K\u00e4llaren",
+              name: "Basement sensor",
               entity: "binary_sensor.kallaren_motion_sensor",
             },
             {
-              name: "Trappen",
+              name: "Stair sensor",
               entity: "binary_sensor.trapp_motion_sensor",
             },
             {
-              name: "B\u00e4nksensor",
+              name: "Bench sensor",
               entity: "binary_sensor.banksensor",
             },
             {
-              name: "Altansensor",
+              name: "Porch sensor",
               entity: "binary_sensor.altan_motion_sensor",
             },
             {
-              name: "Badrum",
+              name: "Bathroom sensor",
               entity: "binary_sensor.badrumssensor",
             },
           ],
@@ -276,7 +276,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           show_header_toggle: false,
           type: "entities",
           id: "37279816181f442eac853b132142141",
-          title: "Rum lokalisering",
+          title: "Occupancy",
         },
         // {
         //   filter: {
@@ -342,7 +342,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         //   arrow_opacity: 0.7,
         // },
       ],
-      title: "Hem",
+      title: "Home",
       id: "hem",
       icon: "mdi:home",
     },
@@ -418,7 +418,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           show_header_toggle: false,
           type: "entities",
           id: "3e18f63e2c6640d185bf0486a9c4c03f",
-          title: "N\u00e4tverk",
+          title: "Network",
         },
         {
           entities: [
@@ -484,7 +484,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         //   ],
         // },
       ],
-      title: "System & N\u00e4tverk",
+      title: "System & Network",
       id: "system_natverk",
       icon: "mdi:server-network",
     },
