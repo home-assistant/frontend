@@ -1,11 +1,15 @@
 import {
   html,
+  css,
   LitElement,
   PropertyDeclarations,
   TemplateResult,
+  CSSResult,
 } from "lit-element";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+
+import { haStyleDialog } from "../../../../resources/ha-style";
 
 import "./hui-card-picker";
 import { HomeAssistant } from "../../../../types";
@@ -50,6 +54,31 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
 
   private _skipPick() {
     this.cardPicked!({ type: "" });
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          paper-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+        }
+
+        @media all and (min-width: 660px) {
+          paper-dialog {
+            width: 650px;
+          }
+        }
+
+        paper-dialog {
+          max-width: 650px;
+        }
+      `,
+    ];
   }
 }
 
