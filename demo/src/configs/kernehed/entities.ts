@@ -402,7 +402,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
     },
     "sensor.oskar_devices": {
       entity_id: "sensor.oskar_devices",
-      state: "Hemma",
+      state: "Home",
       attributes: {
         friendly_name: "Oskar",
         entity_picture: "/assets/kernehed/oscar.jpg",
@@ -413,7 +413,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
     },
     "sensor.bella_devices": {
       entity_id: "sensor.bella_devices",
-      state: "Hemma",
+      state: "Home",
       attributes: {
         friendly_name: "Bella",
         entity_picture: "/assets/kernehed/bella.jpg",
