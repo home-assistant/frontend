@@ -395,14 +395,14 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
     "sensor.zwave_battery_front_door": {
       entity_id: "sensor.zwave_battery_front_door",
       state: "63",
-      attributes: { friendly_name: "Batteri", icon: "mdi:battery-60" },
+      attributes: { friendly_name: "Battery", icon: "mdi:battery-60" },
       last_changed: "2019-01-18T15:55:28.392149+00:00",
       last_updated: "2019-01-18T15:55:28.392149+00:00",
       context: { id: "eb2f5a4c8d534e83b2bcc7f87e8a9851", user_id: null },
     },
     "sensor.oskar_devices": {
       entity_id: "sensor.oskar_devices",
-      state: "Hemma",
+      state: "Home",
       attributes: {
         friendly_name: "Oskar",
         entity_picture: "/assets/kernehed/oscar.jpg",
@@ -413,7 +413,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
     },
     "sensor.bella_devices": {
       entity_id: "sensor.bella_devices",
-      state: "Hemma",
+      state: "Home",
       attributes: {
         friendly_name: "Bella",
         entity_picture: "/assets/kernehed/bella.jpg",
@@ -424,7 +424,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
     },
     "sensor.oskar_bluetooth": {
       entity_id: "sensor.oskar_bluetooth",
-      state: "Evenice rum",
+      state: "Eves rum",
       attributes: {
         friendly_name: "Oskar",
         entity_picture: "/assets/kernehed/oscar.jpg",
@@ -995,7 +995,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
           "BPM",
           "Solid",
         ],
-        friendly_name: "Välj pattern:",
+        friendly_name: "Choose pattern:",
         icon: "mdi:snowflake",
       },
       last_changed: "2019-01-18T15:51:27.137496+00:00",
@@ -1017,7 +1017,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
           "Party",
           "Heat",
         ],
-        friendly_name: "Välj palette:",
+        friendly_name: "Choose palette:",
         icon: "mdi:vanish",
       },
       last_changed: "2019-01-18T15:51:27.138686+00:00",
@@ -1708,7 +1708,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
           "binary_sensor.unifi_camera",
         ],
         order: 37,
-        friendly_name: "Rörelsesensor",
+        friendly_name: "Motion sensors",
       },
       last_changed: "2019-01-18T16:02:10.300699+00:00",
       last_updated: "2019-01-18T16:02:10.300699+00:00",
@@ -2760,7 +2760,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
       attributes: {
         last_triggered: null,
         id: "kamera_motion",
-        friendly_name: "Kamera motion",
+        friendly_name: "camera motion",
       },
       last_changed: "2019-01-18T15:53:16.833111+00:00",
       last_updated: "2019-01-18T15:53:16.833111+00:00",
@@ -3819,7 +3819,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
           },
           {
             id: "559b6d8184d2461cb326a5da9e235222",
-            name: "Kernehed Manison",
+            name: "Our Manison",
             enabled: true,
             code: "****",
             picture: "/local/images/ha.png",
@@ -3912,7 +3912,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
             trigger_time: 600,
           },
         },
-        friendly_name: "Kernehed Manison",
+        friendly_name: "Our Manison",
       },
       last_changed: "2019-01-18T15:52:08.647500+00:00",
       last_updated: "2019-01-18T15:52:08.647500+00:00",
@@ -6845,7 +6845,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
         value_index: 0,
         value_instance: 1,
         value_id: "72057594513489920",
-        friendly_name: "Ytterdörren",
+        friendly_name: "Frontdoor",
       },
       last_changed: "2019-01-18T15:53:36.058341+00:00",
       last_updated: "2019-01-18T15:53:36.058341+00:00",
@@ -8065,7 +8065,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
       attributes: {
         battery_level: 100,
         on: true,
-        friendly_name: "Ytterdörren sensor",
+        friendly_name: "Frontdoor sensor",
         device_class: "opening",
         icon: "mdi:door",
       },
@@ -8149,7 +8149,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
       attributes: {
         battery_level: 100,
         on: true,
-        friendly_name: "Dörrklockan",
+        friendly_name: "Doorbell",
         device_class: "opening",
         icon: "mdi:bell",
       },
