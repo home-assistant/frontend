@@ -1,16 +1,16 @@
 import { LitElement, html, CSSResult, css } from "lit-element";
 import { until } from "lit-html/directives/until";
 import "@polymer/paper-icon-button";
-import "../../src/components/ha-card";
-import { LovelaceCard, Lovelace } from "../../src/panels/lovelace/types";
-import { LovelaceCardConfig } from "../../src/data/lovelace";
-import { MockHomeAssistant } from "../../src/fake_data/provide_hass";
+import "../../../src/components/ha-card";
+import { LovelaceCard, Lovelace } from "../../../src/panels/lovelace/types";
+import { LovelaceCardConfig } from "../../../src/data/lovelace";
+import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import {
   demoConfigs,
   selectedDemoConfig,
   setDemoConfig,
   selectedDemoConfigIndex,
-} from "./configs/demo-configs";
+} from "../configs/demo-configs";
 
 export class HADemoCard extends LitElement implements LovelaceCard {
   public lovelace?: Lovelace;
