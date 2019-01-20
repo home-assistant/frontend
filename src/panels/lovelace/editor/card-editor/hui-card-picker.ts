@@ -1,11 +1,4 @@
-import {
-  html,
-  css,
-  LitElement,
-  PropertyDeclarations,
-  TemplateResult,
-  CSSResult,
-} from "lit-element";
+import { html, css, LitElement, TemplateResult, CSSResult } from "lit-element";
 import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../../types";
