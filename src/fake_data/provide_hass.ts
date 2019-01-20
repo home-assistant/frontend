@@ -2,11 +2,12 @@ import { fireEvent } from "../common/dom/fire_event";
 
 import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";
-import { demoResources } from "./demo_resources";
 import { demoPanels } from "./demo_panels";
 import { getEntity, Entity } from "./entity";
 import { HomeAssistant } from "../types";
 import { HassEntities } from "home-assistant-js-websocket";
+import { getActiveTranslation } from "../util/hass-translation";
+import { translationMetadata } from "../resources/translations-metadata";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -29,17 +30,16 @@ export interface MockHomeAssistant extends HomeAssistant {
 
 export const provideHass = (
   elements,
-  { initialStates = {}, panelUrl = "" } = {}
+  overrideData: Partial<HomeAssistant> = {}
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
 
   const wsCommands = {};
   const restResponses = {};
-  let hass: MockHomeAssistant;
   const entities = {};
 
   function updateHass(obj: Partial<MockHomeAssistant>) {
-    hass = { ...hass, ...obj };
+    const hass = { ...elements[0].hass, ...obj };
     elements.forEach((el) => {
       el.hass = hass;
     });
@@ -47,14 +47,14 @@ export const provideHass = (
 
   function updateStates(newStates: HassEntities) {
     updateHass({
-      states: { ...hass.states, ...newStates },
+      states: { ...elements[0].hass.states, ...newStates },
     });
   }
 
   function addEntities(newEntities, replace: boolean = false) {
     const states = {};
     ensureArray(newEntities).forEach((ent) => {
-      ent.hass = hass;
+      ent.hass = elements[0].hass;
       entities[ent.entityId] = ent;
       states[ent.entityId] = ent.toState();
     });
@@ -84,17 +84,7 @@ export const provideHass = (
 
   updateHass({
     // Home Assistant properties
-    config: demoConfig,
-    services: demoServices,
-    language: "en",
-    resources: demoResources,
-    states: initialStates,
-    themes: {
-      default_theme: "default",
-      themes: {},
-    },
-    panelUrl: panelUrl || "lovelace",
-    panels: demoPanels,
+    auth: {} as any,
     connection: {
       addEventListener: () => undefined,
       removeEventListener: () => undefined,
@@ -116,14 +106,15 @@ export const provideHass = (
         readyState: WebSocket.OPEN,
       },
     } as any,
-    translationMetadata: {
-      fragments: [],
-      translations: {},
-    },
-    auth: {} as any,
     connected: true,
-    dockedSidebar: false,
-    moreInfoEntityId: "",
+    states: {},
+    config: demoConfig,
+    themes: {
+      default_theme: "default",
+      themes: {},
+    },
+    panels: demoPanels,
+    services: demoServices,
     user: {
       credentials: [],
       id: "abcd",
@@ -131,12 +122,14 @@ export const provideHass = (
       mfa_modules: [],
       name: "Demo User",
     },
-    fetchWithAuth: () => Promise.reject("Not implemented"),
+    panelUrl: "lovelace",
 
-    // Mock properties
-    mockEntities: entities,
+    language: getActiveTranslation(),
+    resources: null,
 
-    // Home Assistant functions
+    translationMetadata,
+    dockedSidebar: false,
+    moreInfoEntityId: null,
     async callService(domain, service, data) {
       fireEvent(elements[0], "hass-notification", {
         message: `Called service ${domain}/${service}`,
@@ -152,19 +145,17 @@ export const provideHass = (
         console.log("unmocked callService", domain, service, data);
       }
     },
+    async callApi(method, path, parameters) {
+      const callback =
+        path.substr(0, 7) === "states/"
+          ? mockUpdateStateAPI
+          : restResponses[path];
 
-    async callWS(msg) {
-      const callback = wsCommands[msg.type];
       return callback
-        ? callback(msg)
-        : Promise.reject({
-            code: "command_not_mocked",
-            message: `WS Command ${
-              msg.type
-            } is not implemented in provide_hass.`,
-          });
+        ? callback(method, path, parameters)
+        : Promise.reject(`API Mock for ${path} is not implemented`);
     },
-
+    fetchWithAuth: () => Promise.reject("Not implemented"),
     async sendWS(msg) {
       const callback = wsCommands[msg.type];
 
@@ -177,19 +168,20 @@ export const provideHass = (
       // tslint:disable-next-line
       console.log("sendWS", msg);
     },
-
-    async callApi(method, path, parameters) {
-      const callback =
-        path.substr(0, 7) === "states/"
-          ? mockUpdateStateAPI
-          : restResponses[path];
-
+    async callWS(msg) {
+      const callback = wsCommands[msg.type];
       return callback
-        ? callback(method, path, parameters)
-        : Promise.reject(`API Mock for ${path} is not implemented`);
+        ? callback(msg)
+        : Promise.reject({
+            code: "command_not_mocked",
+            message: `WS Command ${
+              msg.type
+            } is not implemented in provide_hass.`,
+          });
     },
 
-    // Mock functions
+    // Mock stuff
+    mockEntities: entities,
     updateHass,
     updateStates,
     addEntities,
@@ -199,8 +191,9 @@ export const provideHass = (
     mockAPI(path, callback) {
       restResponses[path] = callback;
     },
+    ...overrideData,
   } as MockHomeAssistant);
 
   // @ts-ignore
-  return hass;
+  return elements[0].hass;
 };

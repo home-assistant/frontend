@@ -6,7 +6,7 @@ import {
   callService,
 } from "home-assistant-js-websocket";
 
-import translationMetadata from "../../../build-translations/translationMetadata.json";
+import { translationMetadata } from "../../resources/translations-metadata";
 
 import LocalizeMixin from "../../mixins/localize-mixin";
 import EventsMixin from "../../mixins/events-mixin";
@@ -46,6 +46,8 @@ export default (superClass) =>
           config: null,
           themes: null,
           panels: null,
+          services: null,
+          user: null,
           panelUrl: this.panelUrl,
 
           language: getActiveTranslation(),

@@ -1,4 +1,4 @@
-import translationMetadata from "../../build-translations/translationMetadata.json";
+import { translationMetadata } from "../resources/translations-metadata";
 
 export function getActiveTranslation() {
   // Perform case-insenstive comparison since browser isn't required to
@@ -64,7 +64,7 @@ export function getActiveTranslation() {
 // when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
 const translations = {};
 
-export function getTranslation(fragment, translationInput) {
+export function getTranslation(fragment?, translationInput?) {
   const translation = translationInput || getActiveTranslation();
   const metadata = translationMetadata.translations[translation];
   if (!metadata) {
@@ -87,7 +87,7 @@ export function getTranslation(fragment, translationInput) {
       .then((response) => response.json())
       .then((data) => ({
         language: translation,
-        data: data,
+        data,
       }))
       .catch((error) => {
         delete translations[translationFingerprint];
