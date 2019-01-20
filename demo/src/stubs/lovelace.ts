@@ -1,21 +1,18 @@
-import { entities } from "./entities";
-
-import "./ha-demo-card";
+import "../custom-cards/ha-demo-card";
 // Not duplicate, one is for typing.
 // tslint:disable-next-line
-import { HADemoCard } from "./ha-demo-card";
-import { MockHomeAssistant } from "../../src/fake_data/provide_hass";
-import { HUIView } from "../../src/panels/lovelace/hui-view";
-import { selectedDemoConfig } from "./configs/demo-configs";
+import { HADemoCard } from "../custom-cards/ha-demo-card";
+import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { HUIView } from "../../../src/panels/lovelace/hui-view";
+import { selectedDemoConfig } from "../configs/demo-configs";
 
 export const mockLovelace = (hass: MockHomeAssistant) => {
-  hass.addEntities(entities);
+  selectedDemoConfig.then((config) => hass.addEntities(config.entities()));
 
   hass.mockWS("lovelace/config", () =>
     selectedDemoConfig.then((config) => config.lovelace())
   );
 
-  hass.mockWS("frontend/get_translations", () => Promise.resolve({}));
   hass.mockWS("lovelace/config/save", () => Promise.resolve());
 };
 
