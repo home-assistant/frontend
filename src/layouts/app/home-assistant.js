@@ -28,7 +28,7 @@ LitElement.prototype.html = litHtml;
 const ext = (baseClass, mixins) =>
   mixins.reduceRight((base, mixin) => mixin(base), baseClass);
 
-class HomeAssistant extends ext(PolymerElement, [
+export class HomeAssistant extends ext(PolymerElement, [
   AuthMixin,
   ThemesMixin,
   TranslationsMixin,
@@ -42,7 +42,10 @@ class HomeAssistant extends ext(PolymerElement, [
 ]) {
   static get template() {
     return html`
-      <app-location route="{{route}}"></app-location>
+      <app-location
+        route="{{route}}"
+        use-hash-as-path="[[_useHashAsPath]]"
+      ></app-location>
       <app-route
         route="{{route}}"
         pattern="/:panel"
@@ -100,6 +103,10 @@ class HomeAssistant extends ext(PolymerElement, [
       localStorage.defaultPage ||
       DEFAULT_PANEL
     );
+  }
+
+  get _useHashAsPath() {
+    return __DEMO__;
   }
 
   panelUrlChanged(newPanelUrl) {

@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Zäit Muster",
+                                    "hours": "Stonnen",
+                                    "minutes": "Minutten",
+                                    "seconds": "Sekonnen"
                                 }
                             }
                         },

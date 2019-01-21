@@ -11,5 +11,8 @@ declare global {
       entityId: string;
     };
     "location-changed": undefined;
+    "hass-notification": {
+      message: string;
+    };
   }
 }

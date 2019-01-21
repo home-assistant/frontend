@@ -11,6 +11,7 @@ import {
 
 declare global {
   var __DEV__: boolean;
+  var __DEMO__: boolean;
   var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
 }
@@ -53,9 +54,9 @@ export interface Themes {
 
 export interface Panel {
   component_name: string;
-  config?: { [key: string]: any };
-  icon: string;
-  title: string;
+  config: { [key: string]: any } | null;
+  icon: string | null;
+  title: string | null;
   url_path: string;
 }
 

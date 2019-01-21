@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "ID Webhook"
+                                },
+                                "time_pattern": {
+                                    "label": "Modèle de temps",
+                                    "hours": "Heures",
+                                    "minutes": "Minutes",
+                                    "seconds": "Secondes"
                                 }
                             }
                         },
@@ -533,7 +539,7 @@
                     }
                 },
                 "cloud": {
-                    "caption": "Nuage Home Assistant",
+                    "caption": "Cloud Home Assistant",
                     "description_login": "Connecté en tant que {email}",
                     "description_not_login": "Pas connecté"
                 },
@@ -926,6 +932,18 @@
                 "save": "Sauvegarder",
                 "name": "Nom",
                 "entity_id": "ID de l'entité"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Dernière action"
+                },
+                "sun": {
+                    "elevation": "Élévation",
+                    "rising": "Lever"
+                },
+                "updater": {
+                    "title": "Instructions de mise à jour"
+                }
             }
         },
         "auth_store": {
