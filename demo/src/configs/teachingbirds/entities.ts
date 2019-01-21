@@ -1239,7 +1239,7 @@ export const demoEntitiesTeachingbirds: () => Entity[] = () =>
     },
     "sensor.herbs_moisture": {
       entity_id: "sensor.herbs_moisture",
-      state: "unknown",
+      state: "39",
       attributes: {
         unit_of_measurement: "%",
         friendly_name: "Herbs moisture",
@@ -1448,7 +1448,7 @@ export const demoEntitiesTeachingbirds: () => Entity[] = () =>
     },
     "sensor.big_chili_moisture": {
       entity_id: "sensor.big_chili_moisture",
-      state: "0",
+      state: "36",
       attributes: {
         unit_of_measurement: "%",
         friendly_name: "Big chili moisture",
@@ -1497,7 +1497,7 @@ export const demoEntitiesTeachingbirds: () => Entity[] = () =>
     },
     "sensor.small_chili_moisture": {
       entity_id: "sensor.small_chili_moisture",
-      state: "unknown",
+      state: "34",
       attributes: {
         unit_of_measurement: "%",
         friendly_name: "Small chili moisture",
