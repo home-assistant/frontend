@@ -86,7 +86,7 @@ export interface HomeAssistant {
   services: HassServices;
   config: HassConfig;
   themes: Themes;
-  selectedTheme: string | null;
+  selectedTheme?: string | null;
   panels: Panels;
   panelUrl: string;
   language: string;
@@ -168,4 +168,17 @@ export interface PanelInfo<T = unknown> {
   title?: string;
   url_path: string;
   config: T;
+}
+
+export interface Route {
+  prefix: string;
+  path: string;
+}
+
+export interface PanelElement extends HTMLElement {
+  hass?: HomeAssistant;
+  narrow?: boolean;
+  showMenu?: boolean;
+  route?: Route | null;
+  panel?: Panel;
 }

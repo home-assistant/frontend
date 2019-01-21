@@ -352,9 +352,18 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         },
         {
           entities: [
-            "sensor.pi_hole_dns_queries_today",
-            "sensor.pi_hole_ads_blocked_today",
-            "sensor.pi_hole_dns_unique_clients",
+            {
+              entity: "sensor.pi_hole_dns_queries_today",
+              name: "DNS Queries Today",
+            },
+            {
+              entity: "sensor.pi_hole_ads_blocked_today",
+              name: "Ads Blocked Today",
+            },
+            {
+              entity: "sensor.pi_hole_dns_unique_clients",
+              name: "DNS Unique Clients",
+            },
           ],
           show_header_toggle: false,
           type: "entities",
@@ -369,16 +378,16 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
             "binary_sensor.windows_server",
             "binary_sensor.teamspeak",
             "binary_sensor.harmony_hub",
-            {
-              style: {
-                height: "1px",
-                width: "85%",
-                "margin-left": "auto",
-                background: "#62717b",
-                "margin-right": "auto",
-              },
-              type: "divider",
-            },
+            // {
+            //   style: {
+            //     height: "1px",
+            //     width: "85%",
+            //     "margin-left": "auto",
+            //     background: "#62717b",
+            //     "margin-right": "auto",
+            //   },
+            //   type: "divider",
+            // },
             // {
             //   items: ["sensor.uptime_router", "sensor.installerad_routeros"],
             //   head: {
