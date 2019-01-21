@@ -1,6 +1,14 @@
-import { LitElement, html, CSSResult, css } from "lit-element";
+import {
+  LitElement,
+  html,
+  CSSResult,
+  css,
+  PropertyDeclarations,
+} from "lit-element";
 import { until } from "lit-html/directives/until";
 import "@polymer/paper-icon-button";
+import "@polymer/paper-button";
+import "@polymer/paper-spinner/paper-spinner-lite";
 import "../../../src/components/ha-card";
 import { LovelaceCard, Lovelace } from "../../../src/panels/lovelace/types";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";
@@ -15,6 +23,15 @@ import {
 export class HADemoCard extends LitElement implements LovelaceCard {
   public lovelace?: Lovelace;
   public hass?: MockHomeAssistant;
+  private _switching?: boolean;
+
+  static get properties(): PropertyDeclarations {
+    return {
+      lovelace: {},
+      hass: {},
+      _switching: {},
+    };
+  }
 
   public getCardSize() {
     return 2;
@@ -28,35 +45,50 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   protected render() {
     return html`
-      <ha-card header="Home Assistant Demo Switcher">
+      <ha-card>
         <div class="picker">
           <paper-icon-button
             @click=${this._prevConfig}
             icon="hass:chevron-right"
             style="transform: rotate(180deg)"
+            .disabled=${this._switching}
           ></paper-icon-button>
           <div>
             ${
-              until(
-                selectedDemoConfig.then(
-                  (conf) => html`
-                    ${conf.name}
-                    <small>
-                      by
-                      <a target="_blank" href="${conf.authorUrl}">
-                        ${conf.authorName}
-                      </a>
-                    </small>
+              this._switching
+                ? html`
+                    <paper-spinner-lite active></paper-spinner-lite>
                   `
-                ),
-                ""
-              )
+                : until(
+                    selectedDemoConfig.then(
+                      (conf) => html`
+                        ${conf.name}
+                        <small>
+                          by
+                          <a target="_blank" href="${conf.authorUrl}">
+                            ${conf.authorName}
+                          </a>
+                        </small>
+                      `
+                    ),
+                    ""
+                  )
             }
           </div>
           <paper-icon-button
             @click=${this._nextConfig}
             icon="hass:chevron-right"
+            .disabled=${this._switching}
           ></paper-icon-button>
+        </div>
+        <div class="content">
+          Welcome home! You've reached the Home Assistant demo where we showcase
+          the best UIs created by our community.
+        </div>
+        <div class="actions">
+          <a href="https://www.home-assistant.io" target="_blank">
+            <paper-button>Learn more about Home Assistant</paper-button>
+          </a>
         </div>
       </ha-card>
     `;
@@ -78,37 +110,26 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _updateConfig(index: number) {
-    setDemoConfig(this.hass!, this.lovelace!, index);
+  private async _updateConfig(index: number) {
+    this._switching = true;
+    try {
+      await setDemoConfig(this.hass!, this.lovelace!, index);
+    } catch (err) {
+      alert("Failed to switch config :-(");
+    } finally {
+      this._switching = false;
+    }
   }
 
   static get styles(): CSSResult[] {
     return [
       css`
-        .content {
-          padding: 0 16px;
-        }
-
-        ul {
-          margin-top: 0;
-          margin-bottom: 0;
-          padding: 16px 16px 16px 38px;
-        }
-
-        li {
-          padding: 8px 0;
-        }
-
-        li:first-child {
-          margin-top: -8px;
-        }
-
-        li:last-child {
-          margin-bottom: -8px;
-        }
-
         a {
           color: var(--primary-color);
+        }
+
+        .content {
+          padding: 16px;
         }
 
         .picker {
@@ -124,6 +145,15 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
         .picker small {
           display: block;
+        }
+
+        .actions {
+          padding-left: 5px;
+        }
+
+        .actions paper-button {
+          color: var(--primary-color);
+          font-weight: 500;
         }
       `,
     ];
