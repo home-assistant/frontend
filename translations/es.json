@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "ID de webhook"
+                                },
+                                "time_pattern": {
+                                    "label": "Patrón de tiempo",
+                                    "hours": "Horas",
+                                    "minutes": "Minutos",
+                                    "seconds": "Segundos"
                                 }
                             }
                         },
@@ -558,7 +564,8 @@
                     }
                 },
                 "zha": {
-                    "caption": "ZHA"
+                    "caption": "ZHA",
+                    "description": "Gestión de red de Zigbee Home Automation"
                 }
             },
             "profile": {
