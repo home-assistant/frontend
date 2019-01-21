@@ -311,7 +311,7 @@
             },
             "config": {
                 "header": "Konfiguriraj Home Assistant",
-                "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistenta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
+                "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistanta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
                 "core": {
                     "caption": "Splošno",
                     "description": "Preverite vašo konfiguracijo in nadzorujte strežnik",
@@ -328,7 +328,7 @@
                             },
                             "reloading": {
                                 "heading": "Ponovno nalaganje konfiguracije",
-                                "introduction": "Nekateri deli Home Assistenta se lahko znova naložijo brez potrebe po ponovnem zagonu. S pritiskom na \"ponovno naloži\" se bo naložila nova konfiguracija",
+                                "introduction": "Nekateri deli Home Assistanta se lahko znova naložijo brez potrebe po ponovnem zagonu. S pritiskom na \"ponovno naloži\" se bo naložila nova konfiguracija",
                                 "core": "Ponovno naloži jedro",
                                 "group": "Ponovno naloži skupine",
                                 "automation": "Ponovno naloži avtomizacije",
@@ -336,7 +336,7 @@
                             },
                             "server_management": {
                                 "heading": "Upravljanje strežnika",
-                                "introduction": "Nadzirajte strežnik Home Assistant ... iz Home Assistenta",
+                                "introduction": "Nadzirajte strežnik Home Assistant ... iz Home Assistanta",
                                 "restart": "Ponovni zagon",
                                 "stop": "Ustavi"
                             }
@@ -351,8 +351,8 @@
                     "caption": "Avtomatizacija",
                     "description": "Ustvarite in uredite avtomatizacije",
                     "picker": {
-                        "header": "Urejevalnik za avtomatizacijo",
-                        "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), da preverite, ali ste pravilno nastavili Home Assistent-a.",
+                        "header": "Urejevalnik avtomatizacije",
+                        "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), da preverite, ali ste pravilno nastavili Home Assistant-a.",
                         "pick_automation": "Izberite avtomatizacijo za urejanje",
                         "no_automations": "Ne moremo najti nobene avtomatizacije za urejanje",
                         "add_automation": "Dodaj avtomatizacijo"
@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Časovni vzorec",
+                                    "hours": "Ur",
+                                    "minutes": "Minut",
+                                    "seconds": "Sekund"
                                 }
                             }
                         },
@@ -477,7 +483,7 @@
                         },
                         "actions": {
                             "header": "Akcije",
-                            "introduction": "Akcije so, kaj bo storil Home Assistent, ko se sproži avtomatizacija. \n\n [Več o dejavnostih.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcije so, kaj bo storil Home Assistant, ko se sproži avtomatizacija. \n\n [Več o dejavnostih.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Dodaj akcijo",
                             "duplicate": "Podvoji",
                             "delete": "Izbriši",
@@ -549,13 +555,17 @@
                         "no_devices": "Ta integracija je brez naprav.",
                         "no_device": "Subjekti brez naprav",
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to integracijo?",
-                        "restart_confirm": "Znova zaženite Home Assistent-a, da dokončate odstranitev te integracije",
+                        "restart_confirm": "Znova zaženite Home Assistant-a, da dokončate odstranitev te integracije",
                         "manuf": "po {manufacturer}",
                         "hub": "Povezan prek",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "naprava ni na voljo",
                         "entity_unavailable": "subjekt ni na voljo"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Upravljanje omrežja za avtomatizacijo doma Zigbee"
                 }
             },
             "profile": {
@@ -591,7 +601,7 @@
                 },
                 "long_lived_access_tokens": {
                     "header": "Dolgotrajni dostopni žetoni",
-                    "description": "Ustvarite dolgožive žetone dostopa, s katerimi lahko skripte komunicirajo z vašim primerkom Home Assistenta. Vsak žeton bo veljaven 10 let od nastanka. Trenutno so aktivni naslednji dolgotrajni dostopni žetoni.",
+                    "description": "Ustvarite dolgožive žetone dostopa, s katerimi lahko skripte komunicirajo z vašim primerkom Home Assistanta. Vsak žeton bo veljaven 10 let od nastanka. Trenutno so aktivni naslednji dolgotrajni dostopni žetoni.",
                     "learn_auth_requests": "Naučite se, kako naredite preverjene zahteve.",
                     "created_at": "Ustvarjen na {date}",
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati žeton za dostop za {name} ?",
@@ -631,7 +641,7 @@
             },
             "page-authorize": {
                 "initializing": "Inicializacija",
-                "authorizing_client": "Dali boste {clientId} dostop do vašega Home assistenta.",
+                "authorizing_client": "Dali boste {clientId} dostop do vašega Home assistanta.",
                 "logging_in_with": "Prijava z **{authProviderName}**.",
                 "pick_auth_provider": "Ali se prijavite z",
                 "abort_intro": "Prijava prekinjena",
@@ -926,6 +936,19 @@
                 "save": "Shrani",
                 "name": "Ime",
                 "entity_id": "ID subjekta"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Zadnje Dejanje"
+                },
+                "sun": {
+                    "elevation": "Nadmorska višina",
+                    "rising": "Naraščajoče",
+                    "setting": "Nastavitve"
+                },
+                "updater": {
+                    "title": "Navodila za posodabitev"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +998,8 @@
         "updater": "Posodobitelj",
         "weblink": "Spletna povezava",
         "zwave": "Z-Wave",
-        "vacuum": "Sesam"
+        "vacuum": "Sesam",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
