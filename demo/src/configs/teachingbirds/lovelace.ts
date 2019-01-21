@@ -385,6 +385,48 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
         {
           cards: [
             {
+              image: "/assets/teachingbirds/plants.png",
+              elements: [
+                {
+                  style: {
+                    top: "30%",
+                    "--ha-label-badge-font-size": "1em",
+                    left: "10%",
+                  },
+                  type: "state-badge",
+                  entity: "sensor.small_chili_moisture",
+                },
+                {
+                  style: {
+                    top: "30%",
+                    "--ha-label-badge-font-size": "1em",
+                    left: "25%",
+                  },
+                  type: "state-badge",
+                  entity: "sensor.big_chili_moisture",
+                },
+                {
+                  style: {
+                    top: "30%",
+                    "--ha-label-badge-font-size": "1em",
+                    left: "40%",
+                  },
+                  type: "state-badge",
+                  entity: "sensor.herbs_moisture",
+                },
+                {
+                  style: {
+                    top: "12%",
+                    "--ha-label-badge-font-size": "1em",
+                    left: "92%",
+                  },
+                  type: "state-label",
+                  entity: "sensor.greenhouse_temperature",
+                },
+              ],
+              type: "picture-elements",
+            },
+            {
               // show_name: false,
               // entity: "camera.stockholm_meteogram",
               // type: "picture-entity",
