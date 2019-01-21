@@ -4,7 +4,7 @@ import { demoEntitiesKernehed } from "./entities";
 
 export const demoKernehed: DemoConfig = {
   authorName: "Kernehed",
-  authorUrl: "",
+  authorUrl: "https://github.com/kernehed",
   name: "Hem",
   lovelace: demoLovelaceKernehed,
   entities: demoEntitiesKernehed,
