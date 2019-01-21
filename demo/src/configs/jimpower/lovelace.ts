@@ -368,7 +368,6 @@ export const demoLovelaceJimpower: () => LovelaceConfig = () => ({
             },
           ],
           type: "vertical-stack",
-          id: "950562a85936431382144510c71945db",
         },
         {
           style: {
@@ -722,7 +721,6 @@ export const demoLovelaceJimpower: () => LovelaceConfig = () => ({
             },
           ],
           type: "vertical-stack",
-          id: "3f7cfc0b210d4e408f5737d92108a358",
         },
         // {
         //   cards: [
@@ -762,14 +760,12 @@ export const demoLovelaceJimpower: () => LovelaceConfig = () => ({
         //     // },
         //   ],
         //   type: "vertical-stack",
-        //   id: "cb489d24f3c64db1a6a96cdc70a4cc26",
         // },
       ],
       icon: "mdi:castle",
       name: "Home",
       background:
         'center / cover no-repeat url("/assets/jimpower/background-15.jpg") fixed',
-      id: 0,
     },
     {
       cards: [
@@ -947,7 +943,6 @@ export const demoLovelaceJimpower: () => LovelaceConfig = () => ({
             },
           ],
           type: "vertical-stack",
-          id: "45f2fa1745ff4a9ea0539c698836c4c4",
         },
         {
           cards: [
@@ -1162,7 +1157,6 @@ export const demoLovelaceJimpower: () => LovelaceConfig = () => ({
             },
           ],
           type: "vertical-stack",
-          id: "ad5dc57a687f470b98788a358279a7a3",
         },
         {
           cards: [
@@ -1415,14 +1409,12 @@ export const demoLovelaceJimpower: () => LovelaceConfig = () => ({
             },
           ],
           type: "vertical-stack",
-          id: "c66b0f53f9e748ebbbeaae6e32d049a1",
         },
       ],
       icon: "mdi:security-home",
       name: "Security",
       background:
         'center / cover no-repeat url("/assets/jimpower/background-15.jpg") fixed',
-      id: 1,
     },
   ],
 });
