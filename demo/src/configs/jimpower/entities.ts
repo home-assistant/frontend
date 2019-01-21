@@ -3774,7 +3774,7 @@ export const demoEntitiesJimpower: () => Entity[] = () =>
     "binary_sensor.recycle": {
       entity_id: "binary_sensor.recycle",
       state: "off",
-      attributes: { friendly_name: "Recycle", icon: "fas:recycle" },
+      attributes: { friendly_name: "Recycle", icon: "mdi:recycle" },
       last_changed: "2019-01-14T08:57:00.348349+00:00",
       last_updated: "2019-01-14T08:58:04.463267+00:00",
       context: { id: "76ef24942b0b4822bde851fc9e5e1b37", user_id: null },
@@ -3782,7 +3782,7 @@ export const demoEntitiesJimpower: () => Entity[] = () =>
     "binary_sensor.trash": {
       entity_id: "binary_sensor.trash",
       state: "off",
-      attributes: { friendly_name: "Trash", icon: "fas:trash-alt" },
+      attributes: { friendly_name: "Trash", icon: "mdi:delete" },
       last_changed: "2019-01-15T14:00:01.040666+00:00",
       last_updated: "2019-01-15T14:00:01.040666+00:00",
       context: { id: "7bb9aaeb1b6b41e3be746e200a452318", user_id: null },
@@ -3812,7 +3812,7 @@ export const demoEntitiesJimpower: () => Entity[] = () =>
       state: "off",
       attributes: {
         friendly_name: "Doors",
-        icon: "fas:door-closed",
+        icon: "mdi:door-closed",
         device_class: "door",
       },
       last_changed: "2019-01-18T19:17:16.499271+00:00",
@@ -3824,7 +3824,7 @@ export const demoEntitiesJimpower: () => Entity[] = () =>
       state: "on",
       attributes: {
         friendly_name: "Lights",
-        icon: "fas:lightbulb",
+        icon: "mdi:lightbulb",
         device_class: "light",
       },
       last_changed: "2019-01-18T18:59:16.225881+00:00",
