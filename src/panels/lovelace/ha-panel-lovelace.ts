@@ -4,7 +4,7 @@ import { fetchConfig, LovelaceConfig, saveConfig } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
-import { HomeAssistant, PanelInfo } from "../../types";
+import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { Lovelace } from "./types";
 import { LitElement, html, PropertyValues, TemplateResult } from "lit-element";
 import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
@@ -22,7 +22,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
   public hass?: HomeAssistant;
   public narrow?: boolean;
   public showMenu?: boolean;
-  public route?: object;
+  public route?: Route;
   private _columns?: number;
   private _state?: "loading" | "loaded" | "error" | "yaml-editor";
   private _errorMsg?: string;
