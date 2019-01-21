@@ -12,6 +12,10 @@ class HaDemo extends HomeAssistant {
   protected async _handleConnProm() {
     const initial: Partial<HomeAssistant> = {
       panelUrl: (this as any).panelUrl,
+      // Override updateHass so that the correct hass lifecycle methods are called
+      updateHass: (hassUpdate) =>
+        // @ts-ignore
+        this._updateHass(hassUpdate),
     };
 
     const hass = provideHass(this, initial);
