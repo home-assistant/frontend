@@ -81,82 +81,6 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     };
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyleDialog,
-      css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          :host::before {
-            content: "";
-            position: fixed;
-            z-index: -1;
-            top: 0px;
-            left: 0px;
-            right: 0px;
-            bottom: 0px;
-            background-color: inherit;
-          }
-          /* overrule the ha-style-dialog max-height on small screens */
-          paper-dialog {
-            max-height: 100%;
-            height: 100%;
-          }
-        }
-
-        @media all and (min-width: 660px) {
-          paper-dialog {
-            width: 650px;
-          }
-        }
-
-        paper-dialog {
-          max-width: 650px;
-        }
-
-        .center {
-          margin-left: auto;
-          margin-right: auto;
-        }
-        .margin-bot {
-          margin-bottom: 24px;
-        }
-        paper-button paper-spinner {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-        paper-spinner {
-          display: none;
-        }
-        paper-spinner[active] {
-          display: block;
-        }
-        .hidden {
-          display: none;
-        }
-        .element-editor {
-          margin-bottom: 8px;
-        }
-        .error {
-          color: #ef5350;
-          border-bottom: 1px solid #ef5350;
-        }
-        hr {
-          color: #000;
-          opacity: 0.12;
-        }
-        hui-card-preview {
-          padding-top: 8px;
-          margin-bottom: 4px;
-          display: block;
-        }
-        .toggle-button {
-          margin-right: auto;
-        }
-      `,
-    ];
-  }
-
   private get _dialog(): PaperDialogElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
@@ -478,6 +402,72 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     if (!ev.detail.value) {
       this.closeDialog!();
     }
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          paper-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+        }
+
+        @media all and (min-width: 660px) {
+          paper-dialog {
+            width: 650px;
+          }
+        }
+
+        paper-dialog {
+          max-width: 650px;
+        }
+
+        .center {
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .margin-bot {
+          margin-bottom: 24px;
+        }
+        paper-button paper-spinner {
+          width: 14px;
+          height: 14px;
+          margin-right: 20px;
+        }
+        paper-spinner {
+          display: none;
+        }
+        paper-spinner[active] {
+          display: block;
+        }
+        .hidden {
+          display: none;
+        }
+        .element-editor {
+          margin-bottom: 8px;
+        }
+        .error {
+          color: #ef5350;
+          border-bottom: 1px solid #ef5350;
+        }
+        hr {
+          color: #000;
+          opacity: 0.12;
+        }
+        hui-card-preview {
+          padding-top: 8px;
+          margin-bottom: 4px;
+          display: block;
+        }
+        .toggle-button {
+          margin-right: auto;
+        }
+      `,
+    ];
   }
 }
 
