@@ -1,6 +1,7 @@
 import { DemoConfig } from "../types";
 import { demoLovelaceJimpower } from "./lovelace";
 import { demoEntitiesJimpower } from "./entities";
+import { demoThemeJimpower } from "./theme";
 
 export const demoJimpower: DemoConfig = {
   authorName: "Jimpower",
@@ -8,4 +9,5 @@ export const demoJimpower: DemoConfig = {
   name: "Kingia Castle",
   lovelace: demoLovelaceJimpower,
   entities: demoEntitiesJimpower,
+  theme: demoThemeJimpower,
 };
