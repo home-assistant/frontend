@@ -45,15 +45,8 @@ export const provideHass = (
   } = {};
   const entities = {};
 
-  function updateHass(obj: Partial<MockHomeAssistant>) {
-    const newHass = { ...hass(), ...obj };
-    elements.forEach((el) => {
-      el.hass = newHass;
-    });
-  }
-
   function updateStates(newStates: HassEntities) {
-    updateHass({
+    hass().updateHass({
       states: { ...hass().states, ...newStates },
     });
   }
@@ -66,7 +59,7 @@ export const provideHass = (
       states[ent.entityId] = ent.toState();
     });
     if (replace) {
-      updateHass({
+      hass().updateHass({
         states,
       });
     } else {
@@ -93,7 +86,7 @@ export const provideHass = (
     );
   });
 
-  updateHass({
+  const hassObj: MockHomeAssistant = {
     // Home Assistant properties
     auth: {} as any,
     connection: {
@@ -141,11 +134,11 @@ export const provideHass = (
     panelUrl: "lovelace",
 
     language: getActiveTranslation(),
-    resources: null,
+    resources: null as any,
 
-    translationMetadata,
+    translationMetadata: translationMetadata as any,
     dockedSidebar: false,
-    moreInfoEntityId: null,
+    moreInfoEntityId: null as any,
     async callService(domain, service, data) {
       fireEvent(elements[0], "hass-notification", {
         message: `Called service ${domain}/${service}`,
@@ -197,7 +190,12 @@ export const provideHass = (
 
     // Mock stuff
     mockEntities: entities,
-    updateHass,
+    updateHass(obj: Partial<MockHomeAssistant>) {
+      const newHass = { ...hass(), ...obj };
+      elements.forEach((el) => {
+        el.hass = newHass;
+      });
+    },
     updateStates,
     addEntities,
     mockWS(type, callback) {
@@ -208,7 +206,7 @@ export const provideHass = (
       (eventListeners[event] || []).forEach((fn) => fn(event));
     },
     mockTheme(theme) {
-      updateHass({
+      hass().updateHass({
         selectedTheme: theme ? "mock" : "default",
         themes: {
           ...hass().themes,
@@ -217,15 +215,22 @@ export const provideHass = (
           },
         },
       });
-      const hassObj = hass();
-      elements.forEach((el) => {
-        applyThemesOnElement(el, hassObj.themes, hassObj.selectedTheme, true);
-      });
+      const { themes, selectedTheme } = hass();
+      applyThemesOnElement(
+        document.documentElement,
+        themes,
+        selectedTheme,
+        true
+      );
     },
 
     ...overrideData,
-  } as MockHomeAssistant);
+  };
+
+  // Update the elements. Note, we call it on hassObj so that if it was
+  // overridden (like in the demo), it will still work.
+  hassObj.updateHass(hassObj);
 
   // @ts-ignore
-  return hass();
+  return hassObj;
 };

@@ -6,6 +6,7 @@ export const demoThemeTeachingbirds = () => ({
   "paper-item-icon-color": "#d3d3d3",
   "divider-color": "rgba(255, 255, 255, 0.12)",
   "primary-color": "#389638",
+  "light-primary-color": "#6f956f",
   "label-badge-red": "var(--primary-color)",
   "paper-slider-secondary-color": "var(--light-primary-color)",
   "paper-slider-knob-color": "var(--primary-color)",

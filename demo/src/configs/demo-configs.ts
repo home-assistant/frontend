@@ -18,9 +18,12 @@ export const setDemoConfig = async (
   lovelace: Lovelace,
   index: number
 ) => {
+  const confProm = demoConfigs[index]();
+  const config = await confProm;
+
   selectedDemoConfigIndex = index;
-  selectedDemoConfig = demoConfigs[index]();
-  const config = await selectedDemoConfig;
+  selectedDemoConfig = confProm;
+
   hass.addEntities(config.entities(), true);
   lovelace.saveConfig(config.lovelace());
   hass.mockTheme(config.theme());

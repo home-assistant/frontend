@@ -117,7 +117,7 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
         }
       </style>
       <app-route
-        route="{{route}}"
+        route="[[route]]"
         pattern="/:panel"
         data="{{routeData}}"
         tail="{{routeTail}}"
