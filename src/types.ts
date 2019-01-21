@@ -86,6 +86,7 @@ export interface HomeAssistant {
   services: HassServices;
   config: HassConfig;
   themes: Themes;
+  selectedTheme: string | null;
   panels: Panels;
   panelUrl: string;
   language: string;
