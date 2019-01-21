@@ -12,20 +12,20 @@ import { translationMetadata } from "../resources/translations-metadata";
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
 
+type RestCallback = (
+  method: string,
+  path: string,
+  parameters: { [key: string]: any } | undefined
+) => any;
+
 export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
   addEntities(entites: Entity | Entity[], replace?: boolean);
   mockWS(type: string, callback: (msg: any) => any);
-  mockAPI(
-    path: string,
-    callback: (
-      method: string,
-      path: string,
-      parameters: { [key: string]: any }
-    ) => any
-  );
+  mockAPI(path: string | RegExp, callback: RestCallback);
+  mockEvent(event);
 }
 
 export const provideHass = (
@@ -35,7 +35,10 @@ export const provideHass = (
   elements = ensureArray(elements);
 
   const wsCommands = {};
-  const restResponses = {};
+  const restResponses: Array<[string | RegExp, RestCallback]> = [];
+  const eventListeners: {
+    [event: string]: Array<(event) => void>;
+  } = {};
   const entities = {};
 
   function updateHass(obj: Partial<MockHomeAssistant>) {
@@ -67,12 +70,16 @@ export const provideHass = (
     }
   }
 
-  function mockUpdateStateAPI(
+  function mockAPI(path, callback) {
+    restResponses.push([path, callback]);
+  }
+
+  mockAPI(new RegExp("states/.+"), (
     // @ts-ignore
     method,
     path,
     parameters
-  ) {
+  ) => {
     const [domain, objectId] = path.substr(7).split(".", 2);
     if (!domain || !objectId) {
       return;
@@ -80,7 +87,7 @@ export const provideHass = (
     addEntities(
       getEntity(domain, objectId, parameters.state, parameters.attributes)
     );
-  }
+  });
 
   updateHass({
     // Home Assistant properties
@@ -97,10 +104,15 @@ export const provideHass = (
         callback,
         event
       ) => {
-        // tslint:disable-next-line
-        console.log("subscribeEvents", event);
-        // tslint:disable-next-line
-        return () => console.log("unsubscribeEvents", event);
+        if (!(event in eventListeners)) {
+          eventListeners[event] = [];
+        }
+        eventListeners[event].push(callback);
+        return () => {
+          eventListeners[event] = eventListeners[event].filter(
+            (cb) => cb !== callback
+          );
+        };
       },
       socket: {
         readyState: WebSocket.OPEN,
@@ -146,13 +158,12 @@ export const provideHass = (
       }
     },
     async callApi(method, path, parameters) {
-      const callback =
-        path.substr(0, 7) === "states/"
-          ? mockUpdateStateAPI
-          : restResponses[path];
+      const response = restResponses.find(([resPath, resCallback]) =>
+        typeof resPath === "string" ? path === resPath : resPath.test(path)
+      );
 
-      return callback
-        ? callback(method, path, parameters)
+      return response
+        ? response[1](method, path, parameters)
         : Promise.reject(`API Mock for ${path} is not implemented`);
     },
     fetchWithAuth: () => Promise.reject("Not implemented"),
@@ -188,9 +199,11 @@ export const provideHass = (
     mockWS(type, callback) {
       wsCommands[type] = callback;
     },
-    mockAPI(path, callback) {
-      restResponses[path] = callback;
+    mockAPI,
+    mockEvent(event) {
+      (eventListeners[event] || []).forEach((fn) => fn(event));
     },
+
     ...overrideData,
   } as MockHomeAssistant);
 
