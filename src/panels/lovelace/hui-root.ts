@@ -526,10 +526,11 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       alert("Copy the content of the RAW editor and save it in a safe place.");
       return;
     }
-    const response = prompt(
-      "Are you sure you want to delete your entire Lovelace configuration permanently? Enter 'DELETE' to confirm."
-    );
-    if (response === "DELETE") {
+    if (
+      prompt(
+        "Are you sure you want to delete your entire Lovelace configuration permanently? Enter 'DELETE' to confirm."
+      ) === "DELETE"
+    ) {
       this.lovelace!.deleteConfig();
     }
   }
