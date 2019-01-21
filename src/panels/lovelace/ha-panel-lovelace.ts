@@ -1,6 +1,11 @@
 import "@polymer/paper-button/paper-button";
 
-import { fetchConfig, LovelaceConfig, saveConfig } from "../../data/lovelace";
+import {
+  fetchConfig,
+  LovelaceConfig,
+  saveConfig,
+  deleteConfig,
+} from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
@@ -189,6 +194,26 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
             mode: "storage",
           });
           await saveConfig(this.hass!, newConfig);
+        } catch (err) {
+          // tslint:disable-next-line
+          console.error(err);
+          // Rollback the optimistic update
+          this._updateLovelace({
+            config,
+            mode,
+          });
+          throw err;
+        }
+      },
+      deleteConfig: async (): Promise<void> => {
+        const { config, mode } = this.lovelace!;
+        try {
+          // Optimistic update
+          this._updateLovelace({
+            config: generateLovelaceConfig(this.hass!, this.localize),
+            mode: "generated",
+          });
+          await deleteConfig(this.hass!);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);

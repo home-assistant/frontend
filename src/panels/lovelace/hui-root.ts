@@ -170,6 +170,9 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                       <paper-item @click="${this.lovelace!.enableFullEditMode}"
                         >Raw config editor</paper-item
                       >
+                      <paper-item @click="${this._handleDelete}"
+                        >Delete config</paper-item
+                      >
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
@@ -510,6 +513,25 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     this.lovelace!.setEditMode(false);
     if (this.config.views.length < 2) {
       fireEvent(this, "iron-resize");
+    }
+  }
+
+  private _handleDelete(): void {
+    if (
+      confirm(
+        "This will delete your entire Lovelace configuration permanently. Would you like to make a backup of your config first in the RAW editor?"
+      )
+    ) {
+      this.lovelace!.enableFullEditMode();
+      alert("Copy the content of the RAW editor and save it in a safe place.");
+      return;
+    }
+    if (
+      confirm(
+        "Are you sure you want to delete your entire Lovelace configuration permanently?"
+      )
+    ) {
+      this.lovelace!.deleteConfig();
     }
   }
 
