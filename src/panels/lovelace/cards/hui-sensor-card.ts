@@ -201,7 +201,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
     let graph;
 
-    if (this._config.graph === "line") {
+    if (stateObj && this._config.graph === "line") {
       if (!stateObj.attributes.unit_of_measurement) {
         graph = html`
           <div class="not-found">
@@ -308,7 +308,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       endTime
     );
 
-    if (stateHistory[0].length < 1) {
+    if (stateHistory.length < 1 || stateHistory[0].length < 1) {
       return;
     }
 

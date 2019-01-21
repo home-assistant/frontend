@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "ID de Webhook"
+                                },
+                                "time_pattern": {
+                                    "label": "Patró temporal",
+                                    "hours": "Hores",
+                                    "minutes": "Minuts",
+                                    "seconds": "Segons"
                                 }
                             }
                         },

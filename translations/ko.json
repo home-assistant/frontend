@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "시간 패턴",
+                                    "hours": "시간",
+                                    "minutes": "분",
+                                    "seconds": "초"
                                 }
                             }
                         },

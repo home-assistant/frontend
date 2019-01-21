@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "時間模式",
+                                    "hours": "小時",
+                                    "minutes": "分鐘",
+                                    "seconds": "秒鐘"
                                 }
                             }
                         },

@@ -1,5 +1,7 @@
 import "@polymer/paper-input/paper-textarea";
 
+import deepClone from "deep-clone-simple";
+
 import { createCardElement } from "../../common/create-card-element";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
@@ -42,7 +44,7 @@ export class HuiCardPreview extends HTMLElement {
 
     if (tag.toUpperCase() === this._element.tagName) {
       try {
-        this._element.setConfig(configValue);
+        this._element.setConfig(deepClone(configValue));
       } catch (err) {
         this._createCard(createErrorCardConfig(err.message, configValue));
       }

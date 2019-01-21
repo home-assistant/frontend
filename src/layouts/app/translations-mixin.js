@@ -1,6 +1,5 @@
-import translationMetadata from "../../../build-translations/translationMetadata.json";
+import { translationMetadata } from "../../resources/translations-metadata";
 import { getTranslation } from "../../util/hass-translation";
-
 import { storeState } from "../../util/ha-pref-storage";
 
 /*
