@@ -423,6 +423,10 @@
                                     "event": "事件：",
                                     "enter": "进入",
                                     "leave": "离开"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
                                 }
                             }
                         },
@@ -552,6 +556,9 @@
                         "device_unavailable": "设备不可用",
                         "entity_unavailable": "实体不可用"
                     }
+                },
+                "zha": {
+                    "description": "Zigbee 智能家居(ZHA) 网络管理"
                 }
             },
             "profile": {
@@ -922,6 +929,19 @@
                 "save": "保存",
                 "name": "名称",
                 "entity_id": "实体 ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "上次执行"
+                },
+                "sun": {
+                    "elevation": "太阳高度角",
+                    "rising": "日出",
+                    "setting": "日落"
+                },
+                "updater": {
+                    "title": "更新说明"
+                }
             }
         },
         "auth_store": {

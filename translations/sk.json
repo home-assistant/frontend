@@ -348,8 +348,8 @@
                     "description": "Prispôsobte svoje entity"
                 },
                 "automation": {
-                    "caption": "Automatizácia",
-                    "description": "Vytvárajte a upravujte skripty",
+                    "caption": "Automatizácie",
+                    "description": "Vytvárajte a upravujte automatizácie",
                     "picker": {
                         "header": "Editor automatizácií",
                         "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",

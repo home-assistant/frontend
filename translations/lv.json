@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Laika Modelis",
+                                    "hours": "Stundas",
+                                    "minutes": "Minūtes",
+                                    "seconds": "Sekundes"
                                 }
                             }
                         },
@@ -556,6 +562,10 @@
                         "device_unavailable": "ierīce nav pieejama",
                         "entity_unavailable": "vienība nav pieejama"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation tīkla pārvaldība"
                 }
             },
             "profile": {
@@ -926,6 +936,19 @@
                 "save": "Saglabāt",
                 "name": "Vārds",
                 "entity_id": "Vienības ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Pēdējā Darbība"
+                },
+                "sun": {
+                    "elevation": "Augstums",
+                    "rising": "Aust",
+                    "setting": "Riet"
+                },
+                "updater": {
+                    "title": "Atjaunināt Instrukcijas"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +998,8 @@
         "updater": "Atjauninātājs",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Putekļsūcējs"
+        "vacuum": "Putekļsūcējs",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Zeitraster",
+                                    "hours": "Stunden",
+                                    "minutes": "Minuten",
+                                    "seconds": "Sekunden"
                                 }
                             }
                         },
@@ -556,6 +562,10 @@
                         "device_unavailable": "Gerät nicht verfügbar",
                         "entity_unavailable": "Entität nicht verfügbar"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation Netzwerkmanagement"
                 }
             },
             "profile": {
@@ -926,6 +936,19 @@
                 "save": "Speichern",
                 "name": "Name",
                 "entity_id": "Entitäts-ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Letzte Aktion"
+                },
+                "sun": {
+                    "elevation": "Höhe",
+                    "rising": "Aufgehend",
+                    "setting": "Einstellung"
+                },
+                "updater": {
+                    "title": "Update-Anweisungen"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +998,8 @@
         "updater": "Updater",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Staubsauger"
+        "vacuum": "Staubsauger",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
