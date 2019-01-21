@@ -156,6 +156,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   protected firstUpdated(): void {
     this._updated = true;
     this._setBaseUnit();
+    this.classList.add("init");
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -283,6 +284,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           border-radius: 0px 0px calc(var(--base-unit) * 2)
             calc(var(--base-unit) * 2);
           transform-origin: center top;
+        }
+        .init .gauge-c {
           transition: all 1.3s ease-in-out;
         }
         .gauge-data {
@@ -295,6 +298,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           top: calc(var(--base-unit) * 1.2);
           margin-left: auto;
           margin-right: auto;
+        }
+        .init .gauge-data {
           transition: all 1s ease-out;
         }
         .gauge-data #percent {
