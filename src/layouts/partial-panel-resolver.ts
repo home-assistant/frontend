@@ -9,7 +9,8 @@ import "./hass-loading-screen";
 import "./hass-error-screen";
 import { HomeAssistant, Panel, PanelElement, Route } from "../types";
 
-const loaded = {};
+// Cache of panel loading promises.
+const LOADED: { [panel: string]: Promise<void> } = {};
 
 // Which panel elements we will cache.
 // Maybe we can cache them all eventually, but not sure yet about
@@ -17,8 +18,8 @@ const loaded = {};
 const CACHED_EL = ["lovelace", "states"];
 
 function ensureLoaded(panel): Promise<void> | null {
-  if (panel in loaded) {
-    return loaded[panel];
+  if (panel in LOADED) {
+    return LOADED[panel];
   }
 
   let imported;
@@ -105,15 +106,12 @@ function ensureLoaded(panel): Promise<void> | null {
   }
 
   if (imported != null) {
-    loaded[panel] = imported;
+    LOADED[panel] = imported;
   }
 
   return imported;
 }
 
-/*
- * @appliesMixin NavigateMixin
- */
 class PartialPanelResolver extends LitElement {
   public hass?: HomeAssistant;
   public narrow?: boolean;
@@ -125,6 +123,19 @@ class PartialPanelResolver extends LitElement {
   private _panelEl?: PanelElement;
   private _error?: boolean;
   private _cache: { [name: string]: PanelElement };
+
+  static get properties(): PropertyDeclarations {
+    return {
+      hass: {},
+      narrow: {},
+      showMenu: {},
+      route: {},
+
+      _routeTail: {},
+      _error: {},
+      _panelEl: {},
+    };
+  }
 
   constructor() {
     super();
@@ -157,17 +168,6 @@ class PartialPanelResolver extends LitElement {
     `;
   }
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      route: {},
-      showMenu: {},
-      narrow: {},
-      _error: {},
-      _panelEl: {},
-    };
-  }
-
   protected updated(changedProps: PropertyValues) {
     if (!this.hass) {
       return;
@@ -181,6 +181,11 @@ class PartialPanelResolver extends LitElement {
         prefix: route.path.substr(0, dividerPos),
         path: route.path.substr(dividerPos),
       };
+
+      // If just route changed, no need to process further.
+      if (changedProps.size === 1) {
+        return;
+      }
     }
 
     if (changedProps.has("hass")) {
