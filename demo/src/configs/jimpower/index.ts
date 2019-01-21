@@ -4,7 +4,7 @@ import { demoEntitiesJimpower } from "./entities";
 
 export const demoJimpower: DemoConfig = {
   authorName: "Jimpower",
-  authorUrl: " https://github.com/JamesMcCarthy79/Home-Assistant-Config",
+  authorUrl: "https://github.com/JamesMcCarthy79/Home-Assistant-Config",
   name: "Kingia Castle",
   lovelace: demoLovelaceJimpower,
   entities: demoEntitiesJimpower,
