@@ -81,6 +81,9 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       narrow: Boolean,
+      tail: {
+        type: Object,
+      },
       route: {
         type: Object,
         observer: "_routeChanged",
@@ -135,7 +138,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   connectedCallback() {
     super.connectedCallback();
-    if (this.route.prefix === "") {
+    if (this.tail.prefix === "") {
       this.navigate(`/${localStorage.defaultPage || DEFAULT_PANEL}`, true);
     }
   }
