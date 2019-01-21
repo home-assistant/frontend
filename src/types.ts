@@ -169,3 +169,16 @@ export interface PanelInfo<T = unknown> {
   url_path: string;
   config: T;
 }
+
+export interface Route {
+  prefix: string;
+  path: string;
+}
+
+export interface PanelElement extends HTMLElement {
+  hass?: HomeAssistant;
+  narrow?: boolean;
+  showMenu?: boolean;
+  route?: Route | null;
+  panel?: Panel;
+}
