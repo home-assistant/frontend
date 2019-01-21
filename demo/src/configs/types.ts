@@ -8,4 +8,5 @@ export interface DemoConfig {
   authorUrl: string;
   lovelace: () => LovelaceConfig;
   entities: () => Entity[];
+  theme: () => { [key: string]: string } | null;
 }

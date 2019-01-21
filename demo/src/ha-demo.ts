@@ -20,7 +20,12 @@ class HaDemo extends HomeAssistant {
     mockTranslations(hass);
     mockHistory(hass);
     mockShoppingList(hass);
-    selectedDemoConfig.then((conf) => hass.addEntities(conf.entities()));
+    selectedDemoConfig.then((conf) => {
+      hass.addEntities(conf.entities());
+      if (conf.theme) {
+        hass.mockTheme(conf.theme());
+      }
+    });
 
     // Taken from polymer/pwa-helpers. BSD-3 licensed
     document.body.addEventListener(

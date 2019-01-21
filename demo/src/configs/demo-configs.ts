@@ -23,4 +23,5 @@ export const setDemoConfig = async (
   const config = await selectedDemoConfig;
   hass.addEntities(config.entities(), true);
   lovelace.saveConfig(config.lovelace());
+  hass.mockTheme(config.theme());
 };
