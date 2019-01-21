@@ -119,7 +119,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
             },
           ],
           type: "vertical-stack",
-          id: "4db5c4664f0a4458949aec3651e4d7a6",
         },
         {
           entities: [
@@ -130,7 +129,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          id: "37279816181f442eac853b03c0473101",
           title: "Lock",
         },
         // {
@@ -150,7 +148,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         //     ],
         //   },
         //   type: "custom:monster-card",
-        //   id: "6d4744d14a7c42668633cedbe655ba08",
         //   card: {
         //     show_header_toggle: false,
         //     type: "entities",
@@ -199,7 +196,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         //     ],
         //   },
         //   type: "custom:monster-card",
-        //   id: "7ecee83212d340b0901f63ac9ec24328",
         //   card: {
         //     show_header_toggle: false,
         //     type: "entities",
@@ -229,12 +225,10 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
             },
           ],
           type: "vertical-stack",
-          id: "fc8abcaade0e4087a10a5602f3bdb4d4",
         },
         // {
         //   url: "https://embed.windy.com/embed2.html",
         //   type: "iframe",
-        //   id: "3870fdc794274f17b84dd6ced631b737",
         // },
         {
           entities: [
@@ -268,14 +262,12 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
             },
           ],
           type: "glance",
-          id: "fac4c51ac1914e3a897da643077e15f3",
           show_state: false,
         },
         {
           entities: ["sensor.oskar_bluetooth"],
           show_header_toggle: false,
           type: "entities",
-          id: "37279816181f442eac853b132142141",
           title: "Occupancy",
         },
         // {
@@ -297,7 +289,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         //     ],
         //   },
         //   type: "custom:monster-card",
-        //   id: "2a440c2701824fdb9d5ebc9827c0917b",
         //   card: {
         //     show_header_toggle: false,
         //     type: "entities",
@@ -307,7 +298,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         // },
         {
           type: "weather-forecast",
-          id: "2bf8ccbc1f664c23b10b6533ae82f7e2",
           entity: "weather.smhi_vader",
         },
         // {
@@ -343,7 +333,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         // },
       ],
       title: "Home",
-      id: "hem",
+      path: "home",
       icon: "mdi:home",
     },
     {
@@ -358,7 +348,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          id: "7c92cd52219548b6a6a6d5ee6088e071",
           title: "System",
         },
         {
@@ -369,7 +358,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          id: 123123123123213123,
           title: "Pi-Hole",
         },
         {
@@ -417,7 +405,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          id: "3e18f63e2c6640d185bf0486a9c4c03f",
           title: "Network",
         },
         {
@@ -450,7 +437,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          id: "b8e18e8750224f58b404d0f2e644529a",
           title: "Ubiquiti",
         },
         {
@@ -461,7 +447,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          id: "af8fb9251ce7453ca90c710722b4625b",
           title: "Bittorrent",
         },
         {
@@ -472,7 +457,6 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
           ],
           show_header_toggle: false,
           type: "entities",
-          id: 12312412,
           title: "Bandbredd",
         },
         // {
@@ -485,7 +469,7 @@ export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
         // },
       ],
       title: "System & Network",
-      id: "system_natverk",
+      path: "system_network",
       icon: "mdi:server-network",
     },
   ],
