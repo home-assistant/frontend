@@ -2184,14 +2184,19 @@
     "@xtuc/long" "4.2.1"
 
 "@webcomponents/shadycss@^1.5.2", "@webcomponents/shadycss@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.6.0.tgz#2aeb0703983137a733bdb5c06fff125aa1f8c5c1"
-  integrity sha512-iURGZZU6BaiRJtGgjMn208QxPkY11QwT/VmuHNa4Yb+kJxU/WODe4C8b0LDOtnk4KJzJg50hCfwvPRAjePEzbA==
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.8.0.tgz#10340b87626f876841033b21b5221c3701252e10"
+  integrity sha512-bx0TzeZ11VqYDGLuXfznen8+4u0hADk2dD5RNMFxWL9MM4c5NXCDCgNXgssb4i2zQOos/GGe4tl5AuE0LzJkLA==
 
-"@webcomponents/webcomponentsjs@2.2.1", "@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0", "@webcomponents/webcomponentsjs@^2.2.0":
+"@webcomponents/webcomponentsjs@2.2.1", "@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.1.tgz#bf28cdad466aaf85d88ee56aebed32c83f4c1328"
   integrity sha512-lZZ+Lkke6JhsJcQQqSVk1Pny6/8y4qhJ98LO7a/MwBSRO8WqHqK1X2vscfeL8vOnYGFnmBUyVG95lwYv/AXyLQ==
+
+"@webcomponents/webcomponentsjs@^2.2.0":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.4.tgz#b520d586e46517914d9708c2220b263116d5f86a"
+  integrity sha512-YkLxK9Mbw6QK5bNZ67Rarb/yj0gN+Ziy5+2sLjM0lDb3XafM36gXKZXaIBz4zvLA/cYYTdg+l1LlqXeHEcmeiA==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -4866,6 +4871,11 @@ dedent@^0.7.0:
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-0.7.0.tgz#2495ddbaf6eb874abb0e1be9df22d2e5a544326c"
   integrity sha1-JJXduvbrh0q7Dhvp3yLS5aVEMmw=
 
+deep-clone-simple@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/deep-clone-simple/-/deep-clone-simple-1.1.1.tgz#0ec358dfcce062928dbf58f0dfa484b4b5425d59"
+  integrity sha1-DsNY38zgYpKNv1jw36SEtLVCXVk=
+
 deep-eql@^0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-eql/-/deep-eql-0.1.3.tgz#ef558acab8de25206cd713906d74e56930eb69f2"
@@ -7351,9 +7361,9 @@ hoek@4.x.x:
   integrity sha512-QLg82fGkfnJ/4iy1xZ81/9SIJiq1NGFUMGs6ParyjBZr6jW2Ufj/snDqTHixNlHdPNwN2RLVD0Pi3igeK9+JfA==
 
 home-assistant-js-websocket@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.2.4.tgz#0c4212e6ac57b60ed939aa420253994e4f9f0bef"
-  integrity sha512-DaHpWIjJFLwTWNbHeGSCEUsbeyLUWAyWUgsYkiVWxzbfm+vqC5YaLNRu+Ma64SQYh5yGSYr7h25p2hip1GvyhQ==
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.2.5.tgz#ac4fa6a7cb5cb48efe2a49390cf24acb5439f51f"
+  integrity sha512-CRlq9WA1WGw9lVzouK4BxEGEP5JqWV2MBBZyiUPVgBLHPR9p3bJL/y+jNhnjqEyb8QNPVboGuAJ+Rylrl7o2dg==
 
 home-or-tmp@^2.0.0:
   version "2.0.0"
@@ -8636,10 +8646,10 @@ listr@^0.14.2:
     p-map "^2.0.0"
     rxjs "^6.3.3"
 
-lit-element@2.0.0-rc.2:
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.0-rc.2.tgz#5975c3b282ce47937de861b48456036df71f422b"
-  integrity sha512-yP6mX23n8WUYXpS2RJUL87DSZYQY327YrnqFiSyPe9aSzjgJ5Jy3In3itzjeiFOT8Od4VKLM7u6bLG9tGFO1pw==
+lit-element@2.0.0-rc.3:
+  version "2.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.0-rc.3.tgz#03470c8f4f5616221c2a99378c8cfb0452b8d35f"
+  integrity sha512-A+lvXxq2xd4jkbbaNDkC4oXZXFHMSWhdAK2wrBTeMiTTcISEGm2F/zCcuxSYJEy2941fwWmEnPE9BPWqU/07Kg==
   dependencies:
     lit-html "^1.0.0-rc.2"
 

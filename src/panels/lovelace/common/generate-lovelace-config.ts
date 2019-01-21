@@ -183,13 +183,18 @@ const generateViewConfig = (
       );
     });
 
-  return {
+  const view: LovelaceViewConfig = {
     path,
     title,
-    icon,
     badges,
     cards,
   };
+
+  if (icon) {
+    view.icon = icon;
+  }
+
+  return view;
 };
 
 export const generateLovelaceConfig = (
@@ -261,6 +266,12 @@ export const generateLovelaceConfig = (
     if (views.length > 1 && title === "Home") {
       title = "Home Assistant";
     }
+  }
+
+  if (__DEMO__) {
+    views[0].cards!.unshift({
+      type: "custom:ha-demo-card",
+    });
   }
 
   return {

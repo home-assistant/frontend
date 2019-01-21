@@ -1,0 +1,13 @@
+#!/bin/sh
+# Develop the demo
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+cd ..
+DEMO=1 ./node_modules/.bin/gulp build-translations gen-icons
+cd demo
+
+../node_modules/.bin/webpack-dev-server
