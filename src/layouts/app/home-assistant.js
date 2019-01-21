@@ -50,11 +50,13 @@ export class HomeAssistant extends ext(PolymerElement, [
         route="[[route]]"
         pattern="/:panel"
         data="{{routeData}}"
+        tail="{{subroute}}"
       ></app-route>
       <template is="dom-if" if="[[showMain]]" restamp>
         <home-assistant-main
           hass="[[hass]]"
           route="[[route]]"
+          tail="[[subroute]]"
         ></home-assistant-main>
       </template>
 
