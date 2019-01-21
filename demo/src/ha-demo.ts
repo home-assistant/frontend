@@ -5,6 +5,8 @@ import { mockLovelace } from "./stubs/lovelace";
 import { mockAuth } from "./stubs/auth";
 import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockTranslations } from "./stubs/translations";
+import { mockHistory } from "./stubs/history";
+import { mockShoppingList } from "./stubs/shopping_list";
 
 class HaDemo extends HomeAssistant {
   protected async _handleConnProm() {
@@ -16,6 +18,8 @@ class HaDemo extends HomeAssistant {
     mockLovelace(hass);
     mockAuth(hass);
     mockTranslations(hass);
+    mockHistory(hass);
+    mockShoppingList(hass);
     selectedDemoConfig.then((conf) => hass.addEntities(conf.entities()));
 
     // Taken from polymer/pwa-helpers. BSD-3 licensed
