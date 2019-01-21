@@ -1674,32 +1674,32 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
           ],
           type: "vertical-stack",
         },
-        {
-          cards: [
-            {
-              type: "custom:home-setter",
-              pages: [
-                {
-                  path: "lovelace/home",
-                  name: "Default",
-                },
-                {
-                  path: "lovelace/dashboard",
-                  name: "Dashboard",
-                },
-              ],
-            },
-            {
-              title: null,
-              type: "custom:tracker-card",
-              trackers: [
-                "sensor.custom_card_tracker",
-                "sensor.custom_component_tracker",
-              ],
-            },
-          ],
-          type: "vertical-stack",
-        },
+        // {
+        //   cards: [
+        //     {
+        //       type: "custom:home-setter",
+        //       pages: [
+        //         {
+        //           path: "lovelace/home",
+        //           name: "Default",
+        //         },
+        //         {
+        //           path: "lovelace/dashboard",
+        //           name: "Dashboard",
+        //         },
+        //       ],
+        //     },
+        //     {
+        //       title: null,
+        //       type: "custom:tracker-card",
+        //       trackers: [
+        //         "sensor.custom_card_tracker",
+        //         "sensor.custom_component_tracker",
+        //       ],
+        //     },
+        //   ],
+        //   type: "vertical-stack",
+        // },
       ],
       path: "settings",
       title: "Settings",
