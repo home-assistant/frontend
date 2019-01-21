@@ -9,7 +9,7 @@ const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
 const buildPath = path.resolve(__dirname, "dist");
 const publicPath = isProd ? "./" : "http://localhost:8080/";
 
-const latestBuild = false;
+const latestBuild = true;
 
 module.exports = {
   mode: isProd ? "production" : "development",
