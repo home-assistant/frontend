@@ -158,7 +158,7 @@ export const provideHass = (
       }
     },
     async callApi(method, path, parameters) {
-      const response = restResponses.find(([resPath, resCallback]) =>
+      const response = restResponses.find(([resPath]) =>
         typeof resPath === "string" ? path === resPath : resPath.test(path)
       );
 

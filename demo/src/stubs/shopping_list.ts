@@ -37,7 +37,7 @@ export const mockShoppingList = (hass: MockHomeAssistant) => {
     );
     hass.mockEvent("shopping_list_updated");
   });
-  hass.mockWS("shopping_list/items/clear", (msg) => {
+  hass.mockWS("shopping_list/items/clear", () => {
     items = items.filter((item) => !item.complete);
     hass.mockEvent("shopping_list_updated");
   });
