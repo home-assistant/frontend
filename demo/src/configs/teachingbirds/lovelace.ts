@@ -231,62 +231,62 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
           cards: [
             {
               cards: [
-                {
-                  entities: [
-                    {
-                      name: "Front door lock",
-                      entity: "sensor.front_door_lock",
-                    },
-                    {
-                      name: "Yard door lock",
-                      entity: "sensor.yard_door_lock",
-                    },
-                    "sensor.front_door",
-                    "sensor.back_door",
-                    "sensor.backyard_door",
-                    "sensor.balcony_door",
-                    "sensor.yard_door",
-                    {
-                      name: "Dining area",
-                      entity: "sensor.dining_area_window",
-                    },
-                    {
-                      name: "Bedroom",
-                      entity: "sensor.bedroom_window",
-                    },
-                    {
-                      name: "Ring motion",
-                      entity: "sensor.front_door_outdoor_movement",
-                    },
-                    "sensor.hallway_movement",
-                    "sensor.passage_movement",
-                    "sensor.upstairs_hallway_movement",
-                    "sensor.living_room_movement",
-                    "sensor.back_door_camera_movement",
-                    {
-                      name: "Storage door",
-                      entity: "sensor.yard_storage_door",
-                    },
-                    "sensor.water_heater",
-                    "sensor.kitchen_sink",
-                    "binary_sensor.smoke_sensor_158d0001d37bdd",
-                    "binary_sensor.smoke_sensor_158d0001d37be5",
-                    "binary_sensor.smoke_sensor_158d0001d37c82",
-                  ],
-                  show_empty: false,
-                  type: "entity-filter",
-                  card: {
-                    type: "glance",
-                    show_state: false,
-                  },
-                  state_filter: [
-                    "Open",
-                    "Movement detected",
-                    "Leaking",
-                    "Unlocked",
-                    "on",
-                  ],
-                },
+                // {
+                //   entities: [
+                //     {
+                //       name: "Front door lock",
+                //       entity: "sensor.front_door_lock",
+                //     },
+                //     {
+                //       name: "Yard door lock",
+                //       entity: "sensor.yard_door_lock",
+                //     },
+                //     "sensor.front_door",
+                //     "sensor.back_door",
+                //     "sensor.backyard_door",
+                //     "sensor.balcony_door",
+                //     "sensor.yard_door",
+                //     {
+                //       name: "Dining area",
+                //       entity: "sensor.dining_area_window",
+                //     },
+                //     {
+                //       name: "Bedroom",
+                //       entity: "sensor.bedroom_window",
+                //     },
+                //     {
+                //       name: "Ring motion",
+                //       entity: "sensor.front_door_outdoor_movement",
+                //     },
+                //     "sensor.hallway_movement",
+                //     "sensor.passage_movement",
+                //     "sensor.upstairs_hallway_movement",
+                //     "sensor.living_room_movement",
+                //     "sensor.back_door_camera_movement",
+                //     {
+                //       name: "Storage door",
+                //       entity: "sensor.yard_storage_door",
+                //     },
+                //     "sensor.water_heater",
+                //     "sensor.kitchen_sink",
+                //     "binary_sensor.smoke_sensor_158d0001d37bdd",
+                //     "binary_sensor.smoke_sensor_158d0001d37be5",
+                //     "binary_sensor.smoke_sensor_158d0001d37c82",
+                //   ],
+                //   show_empty: false,
+                //   type: "entity-filter",
+                //   card: {
+                //     type: "glance",
+                //     show_state: false,
+                //   },
+                //   state_filter: [
+                //     "Open",
+                //     "Movement detected",
+                //     "Leaking",
+                //     "Unlocked",
+                //     "on",
+                //   ],
+                // },
                 {
                   entities: [
                     "light.outdoor_lights",
@@ -676,6 +676,7 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
         },
       ],
       title: "Home info",
+      path: "home_info",
       icon: "mdi:home-heart",
     },
     {
