@@ -516,7 +516,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _handleDelete(): void {
+  private async _handleDelete(): Promise<void> {
     if (
       confirm(
         "This will delete your entire Lovelace configuration permanently. Would you like to make a backup of your config first in the RAW editor?"
@@ -531,7 +531,11 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         "Are you sure you want to delete your entire Lovelace configuration permanently? Enter 'DELETE' to confirm."
       ) === "DELETE"
     ) {
-      this.lovelace!.deleteConfig();
+      try {
+        await this.lovelace!.deleteConfig();
+      } catch (err) {
+        alert(`Deleting failed: ${err.message}`);
+      }
     }
   }
 
