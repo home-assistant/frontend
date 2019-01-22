@@ -192,6 +192,12 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
               ],
               type: "horizontal-stack",
             },
+          ],
+          type: "vertical-stack",
+        },
+        {
+          type: "vertical-stack",
+          cards: [
             {
               cards: [
                 {
@@ -225,248 +231,180 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
               type: "horizontal-stack",
             },
           ],
-          type: "vertical-stack",
+        },
+        {
+          entities: [
+            "light.outdoor_lights",
+            {
+              name: "Yard net",
+              entity: "light.outdoor_yard_light_net",
+            },
+            "light.bedroom_ceiling_light",
+            "light.bedside_lamp",
+            "light.dining_area_ceiling_light_level",
+            "light.kitchen_ceiling_spotlights_level",
+            "light.floorlamp_reading_light",
+            "light.floorlamp_uplight",
+            "light.hallway_window_light",
+            "light.isa_ceiling_light",
+            "light.living_room_ceiling_light_level",
+            "light.living_room_spotlights_level",
+            "light.passage_ceiling_spotlights_level",
+            "light.stairs_lights_lights",
+            "light.walk_in_closet_lights",
+            "light.upstairs_hallway_ceiling_light_level",
+            "light.gateway_light_34ce008bfc4b",
+          ],
+          show_empty: false,
+          type: "entity-filter",
+          card: {
+            type: "glance",
+            show_state: false,
+          },
+          state_filter: ["on"],
+        },
+        {
+          type: "shopping-list",
+        },
+        {
+          entities: [
+            {
+              entity: "switch.livingroom_tv",
+              name: "Tv",
+              icon: "mdi:television-classic",
+            },
+            // {
+            //   hide_power: true,
+            //   group: true,
+            //   icon: "mdi:television-classic",
+            //   artwork_border: true,
+            //   type: "custom:mini-media-player",
+            //   entity: "media_player.livingroom_tv",
+            // },
+            {
+              entity: "switch.livingroom_movie_system",
+              name: "Movie system",
+              icon: "mdi:movie",
+            },
+            // {
+            //   hide_power: true,
+            //   group: true,
+            //   name: "Movie system",
+            //   icon: "mdi:movie",
+            //   artwork_border: true,
+            //   type: "custom:mini-media-player",
+            //   entity: "media_player.livingroom_movie_system",
+            // },
+            // {
+            //   hide_power: true,
+            //   type: "custom:mini-media-player",
+            //   entity: "media_player.shield",
+            //   group: true,
+            //   icon: "mdi:cast",
+            // },
+            // {
+            //   group: true,
+            //   icon: "mdi:speaker-wireless",
+            //   power_color: true,
+            //   artwork_border: true,
+            //   type: "custom:mini-media-player",
+            //   entity: "media_player.sonos",
+            // },
+            // {
+            //   group: true,
+            //   name: "Chromecast Bedroom",
+            //   icon: "mdi:cast",
+            //   artwork_border: true,
+            //   type: "custom:mini-media-player",
+            //   entity: "media_player.sovrum",
+            // },
+          ],
+          type: "entities",
+        },
+
+        {
+          image: "/assets/teachingbirds/plants.png",
+          elements: [
+            {
+              style: {
+                top: "7%",
+                "--ha-label-badge-font-size": "1em",
+                left: "2%",
+                transform: "none",
+              },
+              type: "state-badge",
+              entity: "sensor.small_chili_moisture",
+            },
+            {
+              style: {
+                top: "7%",
+                "--ha-label-badge-font-size": "1em",
+                left: "17%",
+                transform: "none",
+              },
+              type: "state-badge",
+              entity: "sensor.big_chili_moisture",
+            },
+            {
+              style: {
+                top: "7%",
+                "--ha-label-badge-font-size": "1em",
+                left: "32%",
+                transform: "none",
+              },
+              type: "state-badge",
+              entity: "sensor.herbs_moisture",
+            },
+            {
+              style: {
+                top: "12%",
+                "--ha-label-badge-font-size": "1em",
+                left: "92%",
+              },
+              type: "state-label",
+              entity: "sensor.greenhouse_temperature",
+            },
+          ],
+          type: "picture-elements",
+        },
+        {
+          // show_name: false,
+          // entity: "camera.stockholm_meteogram",
+          // type: "picture-entity",
+          // show_state: false,
+          type: "picture",
+          image: "/assets/teachingbirds/meteogram.png",
         },
         {
           cards: [
             {
-              cards: [
-                // {
-                //   entities: [
-                //     {
-                //       name: "Front door lock",
-                //       entity: "sensor.front_door_lock",
-                //     },
-                //     {
-                //       name: "Yard door lock",
-                //       entity: "sensor.yard_door_lock",
-                //     },
-                //     "sensor.front_door",
-                //     "sensor.back_door",
-                //     "sensor.backyard_door",
-                //     "sensor.balcony_door",
-                //     "sensor.yard_door",
-                //     {
-                //       name: "Dining area",
-                //       entity: "sensor.dining_area_window",
-                //     },
-                //     {
-                //       name: "Bedroom",
-                //       entity: "sensor.bedroom_window",
-                //     },
-                //     {
-                //       name: "Ring motion",
-                //       entity: "sensor.front_door_outdoor_movement",
-                //     },
-                //     "sensor.hallway_movement",
-                //     "sensor.passage_movement",
-                //     "sensor.upstairs_hallway_movement",
-                //     "sensor.living_room_movement",
-                //     "sensor.back_door_camera_movement",
-                //     {
-                //       name: "Storage door",
-                //       entity: "sensor.yard_storage_door",
-                //     },
-                //     "sensor.water_heater",
-                //     "sensor.kitchen_sink",
-                //     "binary_sensor.smoke_sensor_158d0001d37bdd",
-                //     "binary_sensor.smoke_sensor_158d0001d37be5",
-                //     "binary_sensor.smoke_sensor_158d0001d37c82",
-                //   ],
-                //   show_empty: false,
-                //   type: "entity-filter",
-                //   card: {
-                //     type: "glance",
-                //     show_state: false,
-                //   },
-                //   state_filter: [
-                //     "Open",
-                //     "Movement detected",
-                //     "Leaking",
-                //     "Unlocked",
-                //     "on",
-                //   ],
-                // },
-                {
-                  entities: [
-                    "light.outdoor_lights",
-                    {
-                      name: "Yard net",
-                      entity: "light.outdoor_yard_light_net",
-                    },
-                    "light.bedroom_ceiling_light",
-                    "light.bedside_lamp",
-                    "light.dining_area_ceiling_light_level",
-                    "light.kitchen_ceiling_spotlights_level",
-                    "light.floorlamp_reading_light",
-                    "light.floorlamp_uplight",
-                    "light.hallway_window_light",
-                    "light.isa_ceiling_light",
-                    "light.living_room_ceiling_light_level",
-                    "light.living_room_spotlights_level",
-                    "light.passage_ceiling_spotlights_level",
-                    "light.stairs_lights_lights",
-                    "light.walk_in_closet_lights",
-                    "light.upstairs_hallway_ceiling_light_level",
-                    "light.gateway_light_34ce008bfc4b",
-                  ],
-                  show_empty: false,
-                  type: "entity-filter",
-                  card: {
-                    type: "glance",
-                    show_state: false,
-                  },
-                  state_filter: ["on"],
-                },
-              ],
-              type: "vertical-stack",
+              type: "gauge",
+              severity: {
+                green: 0,
+                yellow: 2,
+                red: 3,
+              },
+              min: 0,
+              max: 6,
+              title: "Downstairs",
+              measurement: "visits",
+              entity: "counter.litterbox_downstairs_visits",
             },
             {
-              type: "shopping-list",
-            },
-            {
-              entities: [
-                {
-                  entity: "switch.livingroom_tv",
-                  name: "Tv",
-                  icon: "mdi:television-classic",
-                },
-                // {
-                //   hide_power: true,
-                //   group: true,
-                //   icon: "mdi:television-classic",
-                //   artwork_border: true,
-                //   type: "custom:mini-media-player",
-                //   entity: "media_player.livingroom_tv",
-                // },
-                {
-                  entity: "switch.livingroom_movie_system",
-                  name: "Movie system",
-                  icon: "mdi:movie",
-                },
-                // {
-                //   hide_power: true,
-                //   group: true,
-                //   name: "Movie system",
-                //   icon: "mdi:movie",
-                //   artwork_border: true,
-                //   type: "custom:mini-media-player",
-                //   entity: "media_player.livingroom_movie_system",
-                // },
-                // {
-                //   hide_power: true,
-                //   type: "custom:mini-media-player",
-                //   entity: "media_player.shield",
-                //   group: true,
-                //   icon: "mdi:cast",
-                // },
-                // {
-                //   group: true,
-                //   icon: "mdi:speaker-wireless",
-                //   power_color: true,
-                //   artwork_border: true,
-                //   type: "custom:mini-media-player",
-                //   entity: "media_player.sonos",
-                // },
-                // {
-                //   group: true,
-                //   name: "Chromecast Bedroom",
-                //   icon: "mdi:cast",
-                //   artwork_border: true,
-                //   type: "custom:mini-media-player",
-                //   entity: "media_player.sovrum",
-                // },
-              ],
-              type: "entities",
+              type: "gauge",
+              severity: {
+                green: 0,
+                yellow: 2,
+                red: 3,
+              },
+              min: 0,
+              max: 6,
+              title: "Upstairs",
+              measurement: "visits",
+              entity: "counter.litterbox_upstairs_visits",
             },
           ],
-          type: "vertical-stack",
-        },
-        {
-          cards: [
-            {
-              image: "/assets/teachingbirds/plants.png",
-              elements: [
-                {
-                  style: {
-                    top: "30%",
-                    "--ha-label-badge-font-size": "1em",
-                    left: "10%",
-                  },
-                  type: "state-badge",
-                  entity: "sensor.small_chili_moisture",
-                },
-                {
-                  style: {
-                    top: "30%",
-                    "--ha-label-badge-font-size": "1em",
-                    left: "25%",
-                  },
-                  type: "state-badge",
-                  entity: "sensor.big_chili_moisture",
-                },
-                {
-                  style: {
-                    top: "30%",
-                    "--ha-label-badge-font-size": "1em",
-                    left: "40%",
-                  },
-                  type: "state-badge",
-                  entity: "sensor.herbs_moisture",
-                },
-                {
-                  style: {
-                    top: "12%",
-                    "--ha-label-badge-font-size": "1em",
-                    left: "92%",
-                  },
-                  type: "state-label",
-                  entity: "sensor.greenhouse_temperature",
-                },
-              ],
-              type: "picture-elements",
-            },
-            {
-              // show_name: false,
-              // entity: "camera.stockholm_meteogram",
-              // type: "picture-entity",
-              // show_state: false,
-              type: "picture",
-              image: "/assets/teachingbirds/meteogram.png",
-            },
-            {
-              cards: [
-                {
-                  type: "gauge",
-                  severity: {
-                    green: 0,
-                    yellow: 2,
-                    red: 3,
-                  },
-                  min: 0,
-                  max: 6,
-                  title: "Downstairs",
-                  measurement: "visits",
-                  entity: "counter.litterbox_downstairs_visits",
-                },
-                {
-                  type: "gauge",
-                  severity: {
-                    green: 0,
-                    yellow: 2,
-                    red: 3,
-                  },
-                  min: 0,
-                  max: 6,
-                  title: "Upstairs",
-                  measurement: "visits",
-                  entity: "counter.litterbox_upstairs_visits",
-                },
-              ],
-              type: "horizontal-stack",
-            },
-          ],
-          type: "vertical-stack",
+          type: "horizontal-stack",
         },
       ],
       path: "home",
@@ -478,75 +416,75 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
         {
           cards: [
             {
-              cards: [
-                {
-                  entity: "script.air_cleaner_quiet",
-                  type: "entity-button",
-                  name: "AC bed",
-                  tap_action: {
-                    action: "call-service",
-                    service_data: {
-                      entity_id: "script.air_cleaner_quiet",
-                    },
-                    service: "script.turn_on",
-                  },
-                  icon: "mdi:fan-off",
+              entity: "script.air_cleaner_quiet",
+              type: "entity-button",
+              name: "AC bed",
+              tap_action: {
+                action: "call-service",
+                service_data: {
+                  entity_id: "script.air_cleaner_quiet",
                 },
-                {
-                  entity: "script.air_cleaner_auto",
-                  type: "entity-button",
-                  name: "AC bed",
-                  tap_action: {
-                    action: "call-service",
-                    service_data: {
-                      entity_id: "script.air_cleaner_auto",
-                    },
-                    service: "script.turn_on",
-                  },
-                  icon: "mdi:fan",
-                },
-                {
-                  entity: "script.air_cleaner_turbo",
-                  type: "entity-button",
-                  name: "AC bed",
-                  tap_action: {
-                    action: "call-service",
-                    service_data: {
-                      entity_id: "script.air_cleaner_turbo",
-                    },
-                    service: "script.turn_on",
-                  },
-                  icon: "mdi:run-fast",
-                },
-                {
-                  entity: "script.ac_off",
-                  type: "entity-button",
-                  name: "AC",
-                  tap_action: {
-                    action: "call-service",
-                    service_data: {
-                      entity_id: "script.ac_off",
-                    },
-                    service: "script.turn_on",
-                  },
-                  icon: "mdi:fan-off",
-                },
-                {
-                  entity: "script.ac_on",
-                  type: "entity-button",
-                  name: "AC",
-                  tap_action: {
-                    action: "call-service",
-                    service_data: {
-                      entity_id: "script.ac_on",
-                    },
-                    service: "script.turn_on",
-                  },
-                  icon: "mdi:fan",
-                },
-              ],
-              type: "horizontal-stack",
+                service: "script.turn_on",
+              },
+              icon: "mdi:fan-off",
             },
+            {
+              entity: "script.air_cleaner_auto",
+              type: "entity-button",
+              name: "AC bed",
+              tap_action: {
+                action: "call-service",
+                service_data: {
+                  entity_id: "script.air_cleaner_auto",
+                },
+                service: "script.turn_on",
+              },
+              icon: "mdi:fan",
+            },
+            {
+              entity: "script.air_cleaner_turbo",
+              type: "entity-button",
+              name: "AC bed",
+              tap_action: {
+                action: "call-service",
+                service_data: {
+                  entity_id: "script.air_cleaner_turbo",
+                },
+                service: "script.turn_on",
+              },
+              icon: "mdi:run-fast",
+            },
+            {
+              entity: "script.ac_off",
+              type: "entity-button",
+              name: "AC",
+              tap_action: {
+                action: "call-service",
+                service_data: {
+                  entity_id: "script.ac_off",
+                },
+                service: "script.turn_on",
+              },
+              icon: "mdi:fan-off",
+            },
+            {
+              entity: "script.ac_on",
+              type: "entity-button",
+              name: "AC",
+              tap_action: {
+                action: "call-service",
+                service_data: {
+                  entity_id: "script.ac_on",
+                },
+                service: "script.turn_on",
+              },
+              icon: "mdi:fan",
+            },
+          ],
+          type: "horizontal-stack",
+        },
+        {
+          cards: [
             {
               cards: [
                 {
@@ -595,91 +533,87 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
               ],
               type: "horizontal-stack",
             },
-            {
-              entities: [
-                {
-                  name: "Vacation",
-                  entity: "input_boolean.vacation_mode",
-                },
-                "input_boolean.cleaning_day",
-                "input_boolean.guest_mode",
-                {
-                  name: "Isa Mode",
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "input_boolean.isa_mode",
-                },
-              ],
-              show_header_toggle: false,
-              type: "glance",
-            },
-            {
-              entities: [
-                "sensor.pollen_bjork",
-                "sensor.pollen_gras",
-                "sensor.pollen_grabo",
-              ],
-              type: "glance",
-            },
           ],
           type: "vertical-stack",
         },
         {
-          cards: [
+          entities: [
             {
-              states: ["arm_home", "arm_away", "arm_night"],
-              type: "alarm-panel",
-              entity: "alarm_control_panel.house",
+              name: "Vacation",
+              entity: "input_boolean.vacation_mode",
             },
+            "input_boolean.cleaning_day",
+            "input_boolean.guest_mode",
             {
-              entities: [
-                {
-                  entity: "sensor.front_door",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.back_door",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.yard_door",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.balcony_door",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.dining_area_window",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.bedroom_window",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.passage_movement",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.upstairs_hallway_movement",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "binary_sensor.stefans_room_motion",
-                  secondary_info: "last-changed",
-                },
-                {
-                  entity: "sensor.ring_front_door_last_motion",
-                  secondary_info: "last-changed",
-                },
-              ],
-              type: "entities",
+              name: "Isa Mode",
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "input_boolean.isa_mode",
             },
           ],
-          type: "vertical-stack",
+          show_header_toggle: false,
+          type: "glance",
         },
+        {
+          entities: [
+            "sensor.pollen_bjork",
+            "sensor.pollen_gras",
+            "sensor.pollen_grabo",
+          ],
+          type: "glance",
+        },
+        {
+          states: ["arm_home", "arm_away", "arm_night"],
+          type: "alarm-panel",
+          entity: "alarm_control_panel.house",
+        },
+        {
+          entities: [
+            {
+              entity: "sensor.front_door",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.back_door",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.yard_door",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.balcony_door",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.dining_area_window",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.bedroom_window",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.passage_movement",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.upstairs_hallway_movement",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "binary_sensor.stefans_room_motion",
+              secondary_info: "last-changed",
+            },
+            {
+              entity: "sensor.ring_front_door_last_motion",
+              secondary_info: "last-changed",
+            },
+          ],
+          type: "entities",
+        },
+
         {
           cards: [
             {

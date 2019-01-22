@@ -62,6 +62,8 @@ const generateHistory = (state, deltas) => {
   });
 };
 
+const incrementalUnits = ["clients", "queries", "ads"];
+
 export const mockHistory = (mockHass: MockHomeAssistant) => {
   mockHass.mockAPI(new RegExp("history/period/.+"), (
     hass,
@@ -100,7 +102,26 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
         continue;
       }
 
-      const diff = Math.floor(numberState * (numberState > 80 ? 0.05 : 0.5));
+      const statesToGenerate = 15;
+      let genFunc;
+
+      if (incrementalUnits.includes(state.attributes.unit_of_measurement)) {
+        let initial = Math.floor(
+          numberState * 0.4 + numberState * Math.random() * 0.2
+        );
+        const diff = Math.max(
+          1,
+          Math.floor((numberState - initial) / statesToGenerate)
+        );
+        genFunc = () => {
+          initial += diff;
+          return Math.min(numberState, initial);
+        };
+      } else {
+        const diff = Math.floor(numberState * (numberState > 80 ? 0.05 : 0.5));
+        genFunc = () =>
+          numberState - diff + Math.floor(Math.random() * 2 * diff);
+      }
 
       results.push(
         generateHistory(
@@ -108,10 +129,7 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
             entity_id: state.entity_id,
             attributes: state.attributes,
           },
-          Array.from(
-            { length: 15 },
-            () => numberState - diff + Math.floor(Math.random() * 2 * diff)
-          )
+          Array.from({ length: statesToGenerate }, genFunc)
         )
       );
     }
