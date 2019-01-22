@@ -511,7 +511,7 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
                 {
                   graph: "line",
                   type: "sensor",
-                  name: "S's room",
+                  name: "Bathroom",
                   entity: "sensor.temperature_downstairs_bathroom",
                 },
               ],
@@ -527,7 +527,7 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
                 {
                   graph: "line",
                   type: "sensor",
-                  name: "S's room",
+                  name: "Refrigerator",
                   entity: "sensor.refrigerator",
                 },
               ],

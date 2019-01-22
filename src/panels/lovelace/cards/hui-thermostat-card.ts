@@ -103,6 +103,15 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
       return html``;
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
+    if (!stateObj) {
+      return html`
+        <ha-card>
+          <div class="not-found">
+            Entity not available: ${this._config.entity}
+          </div>
+        </ha-card>
+      `;
+    }
     const mode = modeIcons[stateObj.attributes.operation_mode || ""]
       ? stateObj.attributes.operation_mode!
       : "unknown-mode";
@@ -173,6 +182,10 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     }
 
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
+
+    if (!stateObj) {
+      return;
+    }
 
     if (
       this._jQuery &&
@@ -354,6 +367,11 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           --dry-color: #efbd07;
           --idle-color: #8a8a8a;
           --unknown-color: #bac;
+        }
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
         }
         #root {
           position: relative;
