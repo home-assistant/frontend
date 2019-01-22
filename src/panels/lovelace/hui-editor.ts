@@ -135,6 +135,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
 
         .content {
           height: calc(100vh - 68px);
+          direction: ltr;
         }
 
         textarea {
