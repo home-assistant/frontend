@@ -93,7 +93,7 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
                       type: "icon",
                       tap_action: {
                         action: "navigate",
-                        navigation_path: "/lovelace/traffic",
+                        navigation_path: "/lovelace/home_info",
                       },
                       icon: "mdi:car",
                     },
@@ -541,9 +541,22 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
             {
               name: "Vacation",
               entity: "input_boolean.vacation_mode",
+              tap_action: {
+                action: "toggle",
+              },
             },
-            "input_boolean.cleaning_day",
-            "input_boolean.guest_mode",
+            {
+              entity: "input_boolean.cleaning_day",
+              tap_action: {
+                action: "toggle",
+              },
+            },
+            {
+              entity: "input_boolean.guest_mode",
+              tap_action: {
+                action: "toggle",
+              },
+            },
             {
               name: "Isa Mode",
               tap_action: {
@@ -663,19 +676,16 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
               cards: [
                 {
                   entity: "scene.morning_lights",
-                  hold_action: {
+                  tap_action: {
                     action: "call-service",
                     service: "script.goodnight",
                   },
                   type: "entity-button",
-                  tap_action: {
-                    action: "none",
-                  },
                   icon: "mdi:weather-night",
                 },
                 {
                   entity: "scene.morning_lights",
-                  hold_action: {
+                  tap_action: {
                     action: "call-service",
                     service_data: {
                       entity_id: "scene.morning_lights",
@@ -683,14 +693,11 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
                     service: "scene.turn_on",
                   },
                   type: "entity-button",
-                  tap_action: {
-                    action: "none",
-                  },
                   icon: "mdi:coffee-outline",
                 },
                 {
                   entity: "scene.movie_time",
-                  hold_action: {
+                  tap_action: {
                     action: "call-service",
                     service_data: {
                       entity_id: "scene.movie_time",
@@ -698,9 +705,6 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
                     service: "scene.turn_on",
                   },
                   type: "entity-button",
-                  tap_action: {
-                    action: "none",
-                  },
                   icon: "mdi:television-classic",
                 },
               ],
@@ -754,32 +758,26 @@ export const demoLovelaceTeachingbirds: () => LovelaceConfig = () => ({
               cards: [
                 {
                   entity: "light.downstairs_lights",
-                  hold_action: {
+                  tap_action: {
                     action: "call-service",
                     service_data: {
                       entity_id: "light.downstairs_lights",
                     },
-                    service: "light.turn_off",
+                    service: "light.toggle",
                   },
                   type: "entity-button",
-                  tap_action: {
-                    action: "none",
-                  },
                   icon: "mdi:page-layout-footer",
                 },
                 {
                   entity: "light.upstairs_lights",
-                  hold_action: {
+                  tap_action: {
                     action: "call-service",
                     service_data: {
                       entity_id: "light.upstairs_lights",
                     },
-                    service: "light.turn_off",
+                    service: "light.toggle",
                   },
                   type: "entity-button",
-                  tap_action: {
-                    action: "none",
-                  },
                   icon: "mdi:page-layout-header",
                 },
               ],
