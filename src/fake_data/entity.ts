@@ -85,6 +85,8 @@ class LightEntity extends Entity {
       } else {
         this.handleService(domain, "turn_on", data);
       }
+    } else {
+      super.handleService(domain, service, data);
     }
   }
 }
@@ -105,6 +107,8 @@ class ToggleEntity extends Entity {
       } else {
         this.handleService(domain, "turn_on", data);
       }
+    } else {
+      super.handleService(domain, service, data);
     }
   }
 }
@@ -124,6 +128,8 @@ class LockEntity extends Entity {
       this.update("locked");
     } else if (service === "unlock") {
       this.update("unlocked");
+    } else {
+      super.handleService(domain, service, data);
     }
   }
 }
@@ -148,6 +154,30 @@ class AlarmControlPanelEntity extends Entity {
 
     if (serviceStateMap[service]) {
       this.update(serviceStateMap[service], this.baseAttributes);
+    } else {
+      super.handleService(domain, service, data);
+    }
+  }
+}
+
+class MediaPlayerEntity extends Entity {
+  public async handleService(
+    domain,
+    service,
+    // @ts-ignore
+    data
+  ) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    if (service === "media_play_pause") {
+      this.update(
+        this.state === "playing" ? "paused" : "playing",
+        this.attributes
+      );
+    } else {
+      super.handleService(domain, service, data);
     }
   }
 }
@@ -167,6 +197,8 @@ class CoverEntity extends Entity {
       this.update("open");
     } else if (service === "close_cover") {
       this.update("closing");
+    } else {
+      super.handleService(domain, service, data);
     }
   }
 }
@@ -182,6 +214,8 @@ class ClimateEntity extends Entity {
         data.operation_mode === "heat" ? "heat" : data.operation_mode,
         { ...this.attributes, operation_mode: data.operation_mode }
       );
+    } else {
+      super.handleService(domain, service, data);
     }
   }
 }
@@ -211,6 +245,7 @@ const TYPES = {
   input_boolean: ToggleEntity,
   light: LightEntity,
   lock: LockEntity,
+  media_player: MediaPlayerEntity,
   switch: ToggleEntity,
 };
 
