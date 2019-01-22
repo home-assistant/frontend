@@ -420,11 +420,15 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         this._loadResources(this.lovelace!.config.resources || []);
         // On config change, recreate the current view from scratch.
         force = true;
+        // Recalculate to see if we need to adjust content area for tab bar
+        fireEvent(this, "iron-resize");
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
         // On edit mode change, recreate the current view from scratch
         force = true;
+        // Recalculate to see if we need to adjust content area for tab bar
+        fireEvent(this, "iron-resize");
       }
     }
 

@@ -10,6 +10,7 @@ import { mockShoppingList } from "./stubs/shopping_list";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockEvents } from "./stubs/events";
+import { mockMediaPlayer } from "./stubs/media_player";
 
 class HaDemo extends HomeAssistant {
   protected async _handleConnProm() {
@@ -30,6 +31,7 @@ class HaDemo extends HomeAssistant {
     mockSystemLog(hass);
     mockTemplate(hass);
     mockEvents(hass);
+    mockMediaPlayer(hass);
     selectedDemoConfig.then((conf) => {
       hass.addEntities(conf.entities());
       if (conf.theme) {
