@@ -7,6 +7,9 @@ import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockTranslations } from "./stubs/translations";
 import { mockHistory } from "./stubs/history";
 import { mockShoppingList } from "./stubs/shopping_list";
+import { mockSystemLog } from "./stubs/system_log";
+import { mockTemplate } from "./stubs/template";
+import { mockEvents } from "./stubs/events";
 
 class HaDemo extends HomeAssistant {
   protected async _handleConnProm() {
@@ -24,6 +27,9 @@ class HaDemo extends HomeAssistant {
     mockTranslations(hass);
     mockHistory(hass);
     mockShoppingList(hass);
+    mockSystemLog(hass);
+    mockTemplate(hass);
+    mockEvents(hass);
     selectedDemoConfig.then((conf) => {
       hass.addEntities(conf.entities());
       if (conf.theme) {

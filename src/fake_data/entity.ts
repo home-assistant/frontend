@@ -66,7 +66,7 @@ export class Entity {
   }
 }
 
-export class LightEntity extends Entity {
+class LightEntity extends Entity {
   public async handleService(domain, service, data) {
     if (!["homeassistant", this.domain].includes(domain)) {
       return;
@@ -89,7 +89,7 @@ export class LightEntity extends Entity {
   }
 }
 
-export class SwitchEntity extends Entity {
+class ToggleEntity extends Entity {
   public async handleService(domain, service, data) {
     if (!["homeassistant", this.domain].includes(domain)) {
       return;
@@ -109,7 +109,7 @@ export class SwitchEntity extends Entity {
   }
 }
 
-export class LockEntity extends Entity {
+class LockEntity extends Entity {
   public async handleService(
     domain,
     service,
@@ -128,7 +128,31 @@ export class LockEntity extends Entity {
   }
 }
 
-export class CoverEntity extends Entity {
+class AlarmControlPanelEntity extends Entity {
+  public async handleService(
+    domain,
+    service,
+    // @ts-ignore
+    data
+  ) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    const serviceStateMap = {
+      alarm_arm_night: "armed_night",
+      alarm_arm_home: "armed_home",
+      alarm_arm_away: "armed_away",
+      alarm_disarm: "disarmed",
+    };
+
+    if (serviceStateMap[service]) {
+      this.update(serviceStateMap[service], this.baseAttributes);
+    }
+  }
+}
+
+class CoverEntity extends Entity {
   public async handleService(
     domain,
     service,
@@ -147,7 +171,7 @@ export class CoverEntity extends Entity {
   }
 }
 
-export class ClimateEntity extends Entity {
+class ClimateEntity extends Entity {
   public async handleService(domain, service, data) {
     if (domain !== this.domain) {
       return;
@@ -162,7 +186,7 @@ export class ClimateEntity extends Entity {
   }
 }
 
-export class GroupEntity extends Entity {
+class GroupEntity extends Entity {
   public async handleService(domain, service, data) {
     if (!["homeassistant", this.domain].includes(domain)) {
       return;
@@ -180,12 +204,14 @@ export class GroupEntity extends Entity {
 }
 
 const TYPES = {
+  alarm_control_panel: AlarmControlPanelEntity,
   climate: ClimateEntity,
   cover: CoverEntity,
   group: GroupEntity,
+  input_boolean: ToggleEntity,
   light: LightEntity,
   lock: LockEntity,
-  switch: SwitchEntity,
+  switch: ToggleEntity,
 };
 
 export const getEntity = (
