@@ -36,7 +36,9 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    if (this._hass && computeRTL(this._hass)) this.style.direction = "rtl";
+    if (this._hass && computeRTL(this._hass)) {
+      this.style.direction = "rtl";
+    }
 
     if (!this._element) {
       this._createCard(configValue);
