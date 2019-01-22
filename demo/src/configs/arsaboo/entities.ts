@@ -5919,7 +5919,7 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
         media_content_type: "music",
         media_duration: 155,
         media_position: 0,
-        media_position_updated_at: new Date(Date.now()).toISOString(),
+        media_position_updated_at: new Date().toISOString(),
         media_title: "Ek Ladki Ko Dekha Toh Aisa Laga - Title Track",
         media_artist: "Rochak Kohli",
         media_album_name: "Ek Ladki Ko Dekha Toh Aisa Laga",
