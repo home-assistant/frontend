@@ -2,6 +2,7 @@
     "recommendations": [
         "dbaeumer.vscode-eslint",
         "eg2.tslint",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "bierner.lit-html"
     ]
 }
