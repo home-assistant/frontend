@@ -65,7 +65,9 @@ export class HuiCardPreview extends HTMLElement {
 
     this._element = createCardElement(configValue);
 
-    if (this._hass) this._element!.hass = this._hass;
+    if (this._hass) {
+      this._element!.hass = this._hass;
+    }
 
     this.appendChild(this._element!);
   }
