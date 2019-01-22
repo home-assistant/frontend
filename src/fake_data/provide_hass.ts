@@ -13,7 +13,8 @@ import { translationMetadata } from "../resources/translations-metadata";
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
 
-type RestCallback = (
+type MockRestCallback = (
+  hass: MockHomeAssistant,
   method: string,
   path: string,
   parameters: { [key: string]: any } | undefined
@@ -25,7 +26,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   updateStates(newStates: HassEntities);
   addEntities(entites: Entity | Entity[], replace?: boolean);
   mockWS(type: string, callback: (msg: any) => any);
-  mockAPI(path: string | RegExp, callback: RestCallback);
+  mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);
   mockTheme(theme: { [key: string]: string } | null);
 }
@@ -39,7 +40,7 @@ export const provideHass = (
   const hass = (): MockHomeAssistant => elements[0].hass;
 
   const wsCommands = {};
-  const restResponses: Array<[string | RegExp, RestCallback]> = [];
+  const restResponses: Array<[string | RegExp, MockRestCallback]> = [];
   const eventListeners: {
     [event: string]: Array<(event) => void>;
   } = {};
@@ -160,7 +161,7 @@ export const provideHass = (
       );
 
       return response
-        ? response[1](method, path, parameters)
+        ? response[1](hass(), method, path, parameters)
         : Promise.reject(`API Mock for ${path} is not implemented`);
     },
     fetchWithAuth: () => Promise.reject("Not implemented"),
