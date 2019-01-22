@@ -210,7 +210,9 @@ For loop example:
         this.rendering = false;
       }.bind(this),
       function(error) {
-        this.processed = error.body.message;
+        this.processed =
+          (error && error.body && error.body.message) ||
+          "Unknown error rendering template";
         this.error = true;
         this.rendering = false;
       }.bind(this)

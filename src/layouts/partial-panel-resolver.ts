@@ -177,10 +177,16 @@ class PartialPanelResolver extends LitElement {
       // Manual splitting
       const route = this.route!;
       const dividerPos = route.path.indexOf("/", 1);
-      this._routeTail = {
-        prefix: route.path.substr(0, dividerPos),
-        path: route.path.substr(dividerPos),
-      };
+      this._routeTail =
+        dividerPos === -1
+          ? {
+              prefix: route.path,
+              path: "",
+            }
+          : {
+              prefix: route.path.substr(0, dividerPos),
+              path: route.path.substr(dividerPos),
+            };
 
       // If just route changed, no need to process further.
       if (changedProps.size === 1) {
