@@ -105,6 +105,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
     if (!stateObj) {
       return html`
+        ${this.renderStyle()}
         <ha-card>
           <div class="not-found">
             Entity not available: ${this._config.entity}
