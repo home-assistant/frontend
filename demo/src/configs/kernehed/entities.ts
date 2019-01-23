@@ -735,7 +735,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
         volume_level: 0.20000000298023224,
         is_volume_muted: false,
         media_content_id:
-          "https://kernehed.duckdns.org:8123/api/tts_proxy/611eb2c473bdbbd00914879aef86ea9cd54924be_sv_-_google.mp3",
+          "https://mydomain.duckdns.org:8123/api/tts_proxy/611eb2c473bdbbd00914879aef86ea9cd54924be_sv_-_google.mp3",
         media_duration: 1.848,
         media_position: 0,
         media_position_updated_at: "2019-01-18T16:03:15.929413+00:00",
@@ -755,7 +755,7 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
         volume_level: 0.20000000298023224,
         is_volume_muted: false,
         media_content_id:
-          "https://kernehed.duckdns.org:8123/api/tts_proxy/611eb2c473bdbbd00914879aef86ea9cd54924be_sv_-_google.mp3",
+          "https://mydomain.duckdns.org:8123/api/tts_proxy/611eb2c473bdbbd00914879aef86ea9cd54924be_sv_-_google.mp3",
         media_duration: 1.848,
         media_position: 0,
         media_position_updated_at: "2019-01-18T16:03:18.617336+00:00",
@@ -3804,8 +3804,6 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
           "standby",
         ],
         updateUI: false,
-        admin_password:
-          "db8f9bc96a2ab281c7c1cb1d14bb13b1982c0bdcb09b39e1357846667229b215",
         bwalarm_version: "1.1.3",
         py_version: [3, 6, 6, "final", 0],
         users: [
