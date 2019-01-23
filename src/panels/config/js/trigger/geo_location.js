@@ -12,11 +12,6 @@ const SOURCES = {
   nsw_rural_fire_service_feed: "NSW Rural Fire Service Incidents",
   usgs_earthquakes_feed: "U.S. Geological Survey Earthquake Hazards Program",
 };
-//const SOURCES = [
-//  { key: "geo_json_events", label: "GeoJSON Events" },
-//  { key: "nsw_rural_fire_service_feed", label: "NSW Rural Fire Service Incidents" },
-//  { key: "usgs_earthquakes_feed", label: "U.S. Geological Survey Earthquake Hazards Program" },
-//];
 
 const OPTIONS = Object.keys(SOURCES).sort();
 
