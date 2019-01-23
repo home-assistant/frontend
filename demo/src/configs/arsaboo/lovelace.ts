@@ -628,6 +628,55 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
         },
       ],
     },
+    {
+      icon: "mdi:information-outline",
+      id: "home-assistant",
+      title: "Home Assistant",
+      cards: [
+        {
+          type: "markdown",
+          content:
+            "## What is Home Assistant?\nHome Assistant is open source home automation software, that puts local control and privacy first. Powered by a worldwide community of tinkerers and DIY enthusiasts. Perfect to run on a Raspberry Pi or a local server.",
+        },
+        {
+          entities: [
+            {
+              url: "https://www.home-assistant.io/",
+              type: "weblink",
+              name: "Home Assistant",
+              icon: "mdi:home-assistant",
+            },
+            {
+              url: "https://www.home-assistant.io/getting-started/",
+              type: "weblink",
+              name: "Getting Started",
+              icon: "mdi:download",
+            },
+            {
+              url: "https://www.home-assistant.io/cookbook/",
+              type: "weblink",
+              name: "Configuration Examples",
+              icon: "mdi:home-heart",
+            },
+            {
+              url: "https://community.home-assistant.io/",
+              type: "weblink",
+              name: "Forum",
+              icon: "mdi:forum",
+            },
+            {
+              url: "https://discord.gg/c5DvZ4e",
+              type: "weblink",
+              name: "Chat",
+              icon: "mdi:chat",
+            },
+          ],
+          show_header_toggle: false,
+          type: "entities",
+          title: "Useful Links",
+        },
+      ],
+    },
     // {
     //   icon: "mdi:weather-cloudy",
     //   id: "weather",
