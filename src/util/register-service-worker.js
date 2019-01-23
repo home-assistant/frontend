@@ -1,8 +1,8 @@
 const serviceWorkerUrl =
-  __BUILD__ === "latest" ? "/service_worker.js" : "/service_worker_es5";
+  __BUILD__ === "latest" ? "/service_worker.js" : "/service_worker_es5.js";
 
 export default () => {
-  if (!("serviceWorker" in navigator) || __DEMO__) return;
+  if (!("serviceWorker" in navigator)) return;
 
   navigator.serviceWorker.register(serviceWorkerUrl).then((reg) => {
     reg.addEventListener("updatefound", () => {
