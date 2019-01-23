@@ -25,8 +25,8 @@ import "../../components/hui-action-editor";
 const cardConfigStruct = struct({
   type: "string",
   image: "string?",
-  tap_action: actionConfigStruct,
-  hold_action: actionConfigStruct,
+  tap_action: struct.optional(actionConfigStruct),
+  hold_action: struct.optional(actionConfigStruct),
 });
 
 export class HuiPictureCardEditor extends hassLocalizeLitMixin(LitElement)
