@@ -3804,8 +3804,6 @@ export const demoEntitiesKernehed: () => Entity[] = () =>
           "standby",
         ],
         updateUI: false,
-        admin_password:
-          "db8f9bc96a2ab281c7c1cb1d14bb13b1982c0bdcb09b39e1357846667229b215",
         bwalarm_version: "1.1.3",
         py_version: [3, 6, 6, "final", 0],
         users: [
