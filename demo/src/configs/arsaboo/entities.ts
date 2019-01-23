@@ -6170,7 +6170,7 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
     },
     "light.lifx5": {
       entity_id: "light.lifx5",
-      state: "off",
+      state: "on",
       attributes: {
         min_mireds: 111,
         max_mireds: 400,
