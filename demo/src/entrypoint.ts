@@ -15,5 +15,3 @@ setTimeout(
     import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"),
   1000
 );
-
-document.body.appendChild(document.createElement("ha-demo"));

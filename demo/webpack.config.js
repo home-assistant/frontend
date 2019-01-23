@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const WorkboxPlugin = require("workbox-webpack-plugin");
 const { babelLoaderConfig } = require("../config/babel.js");
 
 const isProd = process.env.NODE_ENV === "production";
@@ -76,6 +77,11 @@ module.exports = {
           mangle: false,
         },
       }),
+    // isProd &&
+    new WorkboxPlugin.GenerateSW({
+      swDest: "service_worker_es5.js",
+      importWorkboxFrom: "local",
+    }),
   ].filter(Boolean),
   resolve: {
     extensions: [".ts", ".js", ".json"],
