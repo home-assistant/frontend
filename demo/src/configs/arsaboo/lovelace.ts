@@ -135,10 +135,10 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
-                top: "48%",
+                top: "40%",
                 left: "11%",
                 width: "7%",
-                padding: "50px 50px 100px 50px",
+                padding: "10px",
               },
             },
             {
@@ -218,10 +218,10 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
-                top: "38%",
+                top: "34%",
                 left: "50%",
                 width: "7%",
-                padding: "50px 50px 100px 50px",
+                padding: "10px",
               },
             },
             {
@@ -299,10 +299,10 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
-                top: "98%",
+                top: "92%",
                 left: "20%",
                 width: "7%",
-                padding: "50px 50px 100px 50px",
+                padding: "10px",
               },
             },
             {
@@ -337,10 +337,10 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
-                top: "68%",
+                top: "60%",
                 left: "78%",
                 width: "7%",
-                padding: "50px 50px 100px 50px",
+                padding: "10px",
               },
             },
             {
@@ -358,11 +358,10 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
                 off: "brightness(80%) saturate(0.8)",
               },
               style: {
-                top: "81%",
-                left: "63%",
+                top: "84%",
+                left: "82%",
                 width: "7%",
-                padding: "0 50px 100px 50px",
-                transform: "none",
+                padding: "10px",
               },
             },
             {
@@ -491,7 +490,7 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
                 top: "70%",
                 left: "80%",
                 width: "7%",
-                padding: "50px 50px 100px 50px",
+                padding: "10px",
               },
             },
             {
