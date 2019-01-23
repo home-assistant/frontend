@@ -596,7 +596,7 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
         {
           type: "alarm-panel",
           entity: "alarm_control_panel.abode_alarm",
-          title: "Abode",
+          name: "Abode",
           states: ["arm_home", "arm_away"],
         },
         {

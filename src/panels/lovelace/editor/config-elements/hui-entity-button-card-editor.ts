@@ -29,8 +29,8 @@ const cardConfigStruct = struct({
   entity: "string?",
   name: "string?",
   icon: "string?",
-  tap_action: actionConfigStruct,
-  hold_action: actionConfigStruct,
+  tap_action: struct.optional(actionConfigStruct),
+  hold_action: struct.optional(actionConfigStruct),
   theme: "string?",
 });
 
