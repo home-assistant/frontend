@@ -11,7 +11,8 @@ export default () => {
         if (
           installingWorker.state === "installed" &&
           navigator.serviceWorker.controller &&
-          !__DEV__
+          !__DEV__ &&
+          !__DEMO__
         ) {
           // Notify users here of a new frontend being available.
           import(/* webpackChunkName: "show-new-frontend-toast" */ "./show-new-frontend-toast").then(
