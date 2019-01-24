@@ -27,7 +27,7 @@
   ],
   "lang": "en-US",
   "name": "Home Assistant Demo",
-  "short_name": "Assistant Demo",
+  "short_name": "Demo",
   "start_url": "/?homescreen=1",
   "theme_color": "#03A9F4"
 }
