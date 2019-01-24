@@ -158,7 +158,9 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
       </style>
 
-      <div class$="[[computeBannerClasses(playerObj, _coverLoadError)]]">
+      <div
+        class$="[[computeBannerClasses(playerObj, _coverShowing, _coverLoadError)]]"
+      >
         <div class="cover" id="cover"></div>
 
         <div class="caption">
@@ -228,6 +230,10 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         computed: "computePlaybackControlIcon(playerObj)",
       },
       playbackPosition: Number,
+      _coverShowing: {
+        type: Boolean,
+        value: false,
+      },
       _coverLoadError: {
         type: Boolean,
         value: false,
@@ -269,11 +275,13 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         type: "media_player_thumbnail",
         entity_id: playerObj.stateObj.entity_id,
       });
+      this._coverShowing = true;
       this._coverLoadError = false;
       this.$.cover.style.backgroundImage = `url(data:${contentType};base64,${content})`;
     } catch (err) {
-      this.$.cover.style.backgroundImage = "";
+      this._coverShowing = false;
       this._coverLoadError = true;
+      this.$.cover.style.backgroundImage = "";
     }
   }
 
@@ -281,20 +289,20 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playbackPosition = this.playerObj.currentProgress;
   }
 
-  computeBannerClasses(playerObj, coverLoadError) {
+  computeBannerClasses(playerObj, coverShowing, coverLoadError) {
     var cls = "banner";
 
     if (playerObj.isOff || playerObj.isIdle) {
       cls += " is-off no-cover";
     } else if (
       !playerObj.stateObj.attributes.entity_picture ||
-      coverLoadError
+      coverLoadError ||
+      !coverShowing
     ) {
       cls += " no-cover";
     } else if (playerObj.stateObj.attributes.media_content_type === "music") {
       cls += " content-type-music";
     }
-
     return cls;
   }
 
