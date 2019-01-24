@@ -11,7 +11,7 @@ export const turnOnOffEntities = (
   entityIds.forEach((entityId) => {
     if (STATES_OFF.includes(hass.states[entityId].state) === turnOn) {
       const stateDomain = computeDomain(entityId);
-      const serviceDomain = ["cover", "lock"].includes(stateDomain)
+      const serviceDomain = ["cover", "lock", "group"].includes(stateDomain)
         ? stateDomain
         : "homeassistant";
 
