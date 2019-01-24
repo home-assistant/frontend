@@ -5,13 +5,11 @@ import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
-const SOURCES = {
-  geo_json_events: "GeoJSON Events",
-  nsw_rural_fire_service_feed: "NSW Rural Fire Service Incidents",
-  usgs_earthquakes_feed: "U.S. Geological Survey Earthquake Hazards Program",
-};
-
-const OPTIONS = Object.keys(SOURCES).sort();
+const SOURCES = [
+  "geo_json_events",
+  "nsw_rural_fire_service_feed",
+  "usgs_earthquakes_feed",
+];
 
 export default class GeolocationTrigger extends Component {
   constructor() {
@@ -49,7 +47,7 @@ export default class GeolocationTrigger extends Component {
   /* eslint-disable camelcase */
   render({ index, trigger, onChange, hass, localize }) {
     const { source, zone, event } = trigger;
-    const selected = OPTIONS.indexOf(trigger.source);
+    const selected = SOURCES.indexOf(trigger.source);
 
     return (
       <div>
@@ -64,8 +62,12 @@ export default class GeolocationTrigger extends Component {
             selected={selected}
             oniron-select={this.sourcePicked}
           >
-            {OPTIONS.map((opt) => (
-              <paper-item source={opt}>{SOURCES[opt]}</paper-item>
+            {SOURCES.map((opt) => (
+              <paper-item source={opt}>
+                {localize(
+                  `ui.panel.config.automation.editor.triggers.type.geo_location.sources.${opt}`
+                )}
+              </paper-item>
             ))}
           </paper-listbox>
         </paper-dropdown-menu>
