@@ -115,21 +115,23 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     let content;
     let preview;
     if (this._configElement !== undefined) {
-      if (this._uiEditor) {
-        content = html`
-          <div class="element-editor">${this._configElement}</div>
-        `;
-      } else {
-        content = html`
-          <hui-yaml-editor
-            .hass="${this.hass}"
-            .yaml="${this._configValue!.value}"
-            @yaml-changed="${this._handleYamlChanged}"
-          ></hui-yaml-editor>
-        `;
-      }
+      content = html`
+        <div class="element-editor">
+          ${
+            this._uiEditor
+              ? this._configElement
+              : html`
+                  <hui-yaml-editor
+                    .hass="${this.hass}"
+                    .yaml="${this._configValue!.value}"
+                    @yaml-changed="${this._handleYamlChanged}"
+                  ></hui-yaml-editor>
+                `
+          }
+        </div>
+      `;
+
       preview = html`
-        <hr />
         <hui-card-preview .hass="${this.hass}"> </hui-card-preview>
       `;
     }
@@ -156,7 +158,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                 `
               : ""
           }
-          ${content} ${preview}
+          <div class="content">${content}${preview}</div>
         </paper-dialog-scrollable>
         ${
           !this._loading
@@ -430,6 +432,35 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
           margin-left: auto;
           margin-right: auto;
         }
+
+        .content {
+          display: flex;
+          flex-direction: column;
+        }
+        .content hui-card-preview {
+          margin-top: 16px;
+        }
+
+        @media (min-width: 1200px) {
+          paper-dialog {
+            max-width: none;
+            width: 1000px;
+          }
+
+          .content {
+            flex-direction: row;
+          }
+          .content .element-editor {
+            flex: auto;
+          }
+          .content hui-card-preview {
+            margin-top: 0;
+            margin-left: 24px;
+            flex: 490px;
+            max-width: 490px;
+          }
+        }
+
         .margin-bot {
           margin-bottom: 24px;
         }
@@ -453,10 +484,6 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         .error {
           color: #ef5350;
           border-bottom: 1px solid #ef5350;
-        }
-        hr {
-          color: #000;
-          opacity: 0.12;
         }
         hui-card-preview {
           padding-top: 8px;
