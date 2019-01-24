@@ -166,7 +166,7 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
   private _closeEditor() {
     if (this._changed) {
       if (
-        !confirm("You have unsafed changes, are you sure you want to exit?")
+        !confirm("You have unsaved changes, are you sure you want to exit?")
       ) {
         return;
       }
