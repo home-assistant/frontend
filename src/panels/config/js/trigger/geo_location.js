@@ -4,8 +4,6 @@ import "@polymer/paper-radio-group/paper-radio-group";
 import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
-import hasLocation from "../../../../common/entity/has_location";
-import computeStateDomain from "../../../../common/entity/compute_state_domain";
 
 const SOURCES = {
   geo_json_events: "GeoJSON Events",
@@ -14,10 +12,6 @@ const SOURCES = {
 };
 
 const OPTIONS = Object.keys(SOURCES).sort();
-
-function zoneAndLocationFilter(stateObj) {
-  return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
-}
 
 export default class GeolocationTrigger extends Component {
   constructor() {
