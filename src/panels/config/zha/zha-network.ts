@@ -1,16 +1,17 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import "../../../resources/ha-style";
+import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 
@@ -18,8 +19,6 @@ export class ZHANetwork extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   private _showHelp: boolean;
-  private _haStyle?: DocumentFragment;
-  private _ironFlex?: DocumentFragment;
 
   constructor() {
     super();
@@ -36,7 +35,6 @@ export class ZHANetwork extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
             <span>Network Management</span>
@@ -71,24 +69,10 @@ export class ZHANetwork extends LitElement {
     this._showHelp = !this._showHelp;
   }
 
-  private renderStyle(): TemplateResult {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    if (!this._ironFlex) {
-      this._ironFlex = document.importNode(
-        (document.getElementById("iron-flex")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    return html`
-      ${this._ironFlex} ${this._haStyle}
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
         .content {
           margin-top: 24px;
         }
@@ -119,7 +103,8 @@ export class ZHANetwork extends LitElement {
           display: none;
         }
       </style>
-    `;
+    `,
+    ];
   }
 }
 
