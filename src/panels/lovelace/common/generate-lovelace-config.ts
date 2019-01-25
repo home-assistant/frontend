@@ -58,6 +58,14 @@ const computeCards = (
         type: "thermostat",
         entity: entityId,
       });
+    } else if (domain === "history_graph" && stateObj) {
+      cards.push({
+        type: "history-graph",
+        entities: stateObj.attributes.entity_id,
+        hours_to_show: stateObj.attributes.hours_to_show,
+        title: stateObj.attributes.friendly_name,
+        refresh_interval: stateObj.attributes.refresh,
+      });
     } else if (domain === "media_player") {
       cards.push({
         type: "media-control",
