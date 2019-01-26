@@ -46,6 +46,7 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
 
         .validate-log {
           white-space: pre-wrap;
+          direction: ltr;
         }
       </style>
       <ha-config-section is-wide="[[isWide]]">
