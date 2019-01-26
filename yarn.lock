@@ -8646,10 +8646,10 @@ listr@^0.14.2:
     p-map "^2.0.0"
     rxjs "^6.3.3"
 
-lit-element@2.0.0-rc.3:
-  version "2.0.0-rc.3"
-  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.0-rc.3.tgz#03470c8f4f5616221c2a99378c8cfb0452b8d35f"
-  integrity sha512-A+lvXxq2xd4jkbbaNDkC4oXZXFHMSWhdAK2wrBTeMiTTcISEGm2F/zCcuxSYJEy2941fwWmEnPE9BPWqU/07Kg==
+lit-element@2.0.0-rc.5:
+  version "2.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.0-rc.5.tgz#3e4323c9ace59d49c3a0950551a3f923e0ccf86b"
+  integrity sha512-cMmWNWSFyYfXAd09bnqFhqDr5kuR/5guImD5ZRTk223EiBJaoo7naZnQngSYAMjgDn1CSbTE1LRtzviMS+g0RA==
   dependencies:
     lit-html "^1.0.0-rc.2"
 
