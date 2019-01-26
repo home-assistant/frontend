@@ -1,3 +1,10 @@
+import {
+  LitElement,
+  PropertyDeclarations,
+  TemplateResult,
+  html,
+} from "lit-element";
+
 import "@polymer/paper-input/paper-textarea";
 
 import deepClone from "deep-clone-simple";
@@ -11,14 +18,32 @@ import { getCardElementTag } from "../../common/get-card-element-tag";
 import { createErrorCardConfig } from "../../cards/hui-error-card";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
-export class HuiCardPreview extends HTMLElement {
+export class HuiCardPreview extends LitElement {
   private _hass?: HomeAssistant;
   private _element?: LovelaceCard;
 
-  set hass(value: HomeAssistant) {
-    this._hass = value;
+  static get properties(): PropertyDeclarations {
+    return {
+      _hass: {},
+      _element: {},
+    };
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (
+      this._hass &&
+      computeRTL(this._hass) &&
+      (!this.style.direction || this.style.direction == "ltr")
+    ) {
+      this.style.direction = "rtl";
+    }
+  }
+
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
     if (this._element) {
-      this._element.hass = value;
+      this._element.hass = this._hass;
     }
   }
 
@@ -34,10 +59,6 @@ export class HuiCardPreview extends HTMLElement {
   set config(configValue: LovelaceCardConfig) {
     if (!configValue) {
       return;
-    }
-
-    if (this._hass && computeRTL(this._hass)) {
-      this.style.direction = "rtl";
     }
 
     if (!this._element) {
@@ -58,18 +79,22 @@ export class HuiCardPreview extends HTMLElement {
     }
   }
 
-  private _createCard(configValue: LovelaceCardConfig): void {
-    if (this._element) {
-      this.removeChild(this._element);
+  protected render(): TemplateResult | void {
+    if (!this._element) {
+      return html``;
     }
 
+    return html`
+      ${this._element}
+    `;
+  }
+
+  private _createCard(configValue: LovelaceCardConfig): void {
     this._element = createCardElement(configValue);
 
     if (this._hass) {
       this._element!.hass = this._hass;
     }
-
-    this.appendChild(this._element!);
   }
 }
 
