@@ -135,7 +135,7 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
           return "hass:weather-night";
         }
         if (state.state === "armed_custom_bypass") {
-          return "hass:security-home";
+          return "hass:shield-home";
         }
         if (state.state === "triggered") {
           return "hass:alert-circle";
