@@ -131,8 +131,6 @@
     "merge-stream": "^1.0.1",
     "mocha": "^5.2.0",
     "parse5": "^5.1.0",
-    "polymer-analyzer": "^3.1.2",
-    "polymer-bundler": "^4.0.2",
     "polymer-cli": "^1.8.0",
     "prettier": "^1.14.3",
     "raw-loader": "^0.5.1",
