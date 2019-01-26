@@ -705,9 +705,9 @@
     strip-ansi "^3.0.1"
 
 "@mdi/svg@^3.0.39":
-  version "3.0.39"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-3.0.39.tgz#6a2d50e5650f758a3a8f6ab294cd272c9408fcda"
-  integrity sha512-kX1CeG+6r9t0ickn+RwxAtIcO6WVZ7v3ashWJ4WRKd68O7WyUTJuqfzdMjHtVtKn5k4ItrZDo9sf1NflWrX+tQ==
+  version "3.3.92"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-3.3.92.tgz#40a12670c46ed7673943b219e8410f90d0996e64"
+  integrity sha512-281S4dn6evXoT8b2yhTooYLiX53PBr7Z+A5snuoz6HspGrL6JSvedX2o7WhO6Cjt8aOi869HKNNZ/O7nUXrSsA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
