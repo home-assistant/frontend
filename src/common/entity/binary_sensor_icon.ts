@@ -20,7 +20,7 @@ export default function binarySensorIcon(state: HassEntity) {
     case "problem":
     case "safety":
     case "smoke":
-      return activated ? "hass:verified" : "hass:alert";
+      return activated ? "hass:shield-check" : "hass:alert";
     case "heat":
       return activated ? "hass:thermometer" : "hass:fire";
     case "light":
