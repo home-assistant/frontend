@@ -24,11 +24,11 @@ import {
 } from "./hui-error-card";
 
 const ICONS = {
-  armed_away: "hass:security-lock",
+  armed_away: "hass:shield-lock",
   armed_custom_bypass: "hass:security",
-  armed_home: "hass:security-home",
-  armed_night: "hass:security-home",
-  disarmed: "hass:verified",
+  armed_home: "hass:shield-home",
+  armed_night: "hass:shield-home",
+  disarmed: "hass:shield-check",
   pending: "hass:shield-outline",
   triggered: "hass:bell-ring",
 };
