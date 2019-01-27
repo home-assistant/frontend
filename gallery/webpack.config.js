@@ -1,7 +1,7 @@
 const path = require("path");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { babelLoaderConfig } = require("../config/babel.js");
+const { minimizer } = require("../config/babel.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
@@ -31,6 +31,9 @@ module.exports = {
         },
       },
     ],
+  },
+  optimization: {
+    minimizer,
   },
   plugins: [
     new CopyWebpackPlugin([
