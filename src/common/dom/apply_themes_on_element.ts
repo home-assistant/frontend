@@ -19,11 +19,11 @@ export default function applyThemesOnElement(
   if (localTheme === "default" || (localTheme && themes.themes[localTheme])) {
     themeName = localTheme;
   }
-  const styles = Object.assign({}, element._themes);
+  const styles = { ...element._themes };
   if (themeName !== "default") {
-    var theme = themes.themes[themeName];
+    const theme = themes.themes[themeName];
     Object.keys(theme).forEach((key) => {
-      var prefixedKey = "--" + key;
+      const prefixedKey = "--" + key;
       element._themes[prefixedKey] = "";
       styles[prefixedKey] = theme[key];
     });
@@ -35,12 +35,14 @@ export default function applyThemesOnElement(
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ (element), styles);
   }
 
-  if (!updateMeta) return;
+  if (!updateMeta) {
+    return;
+  }
 
   const meta = document.querySelector("meta[name=theme-color]");
   if (meta) {
     if (!meta.hasAttribute("default-content")) {
-      meta.setAttribute("default-content", meta.getAttribute("content"));
+      meta.setAttribute("default-content", meta.getAttribute("content")!);
     }
     const themeColor =
       styles["--primary-color"] || meta.getAttribute("default-content");
