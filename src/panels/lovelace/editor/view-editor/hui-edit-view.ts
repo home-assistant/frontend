@@ -133,18 +133,16 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
         </paper-tabs>
         <paper-dialog-scrollable> ${content} </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          ${
-            this.viewIndex !== undefined
-              ? html`
-                  <paper-icon-button
-                    class="delete"
-                    title="Delete"
-                    icon="hass:delete"
-                    @click="${this._delete}"
-                  ></paper-icon-button>
-                `
-              : ""
-          }
+          ${this.viewIndex !== undefined
+            ? html`
+                <paper-icon-button
+                  class="delete"
+                  title="Delete"
+                  icon="hass:delete"
+                  @click="${this._delete}"
+                ></paper-icon-button>
+              `
+            : ""}
           <paper-button @click="${this._closeDialog}"
             >${this.localize("ui.common.cancel")}</paper-button
           >

@@ -50,11 +50,9 @@ class HuiLockEntityRow extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <paper-button @click="${this._callService}">
-          ${
-            stateObj.state === "locked"
-              ? this.localize("ui.card.lock.unlock")
-              : this.localize("ui.card.lock.lock")
-          }
+          ${stateObj.state === "locked"
+            ? this.localize("ui.card.lock.unlock")
+            : this.localize("ui.card.lock.lock")}
         </paper-button>
       </hui-generic-entity-row>
     `;

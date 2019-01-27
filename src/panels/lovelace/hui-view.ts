@@ -91,20 +91,16 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
       ${this.renderStyles()}
       <div id="badges"></div>
       <div id="columns"></div>
-      ${
-        this.lovelace!.editMode
-          ? html`
-              <paper-fab
-                elevated="2"
-                icon="hass:plus"
-                title="${
-                  this.localize("ui.panel.lovelace.editor.edit_card.add")
-                }"
-                @click="${this._addCard}"
-              ></paper-fab>
-            `
-          : ""
-      }
+      ${this.lovelace!.editMode
+        ? html`
+            <paper-fab
+              elevated="2"
+              icon="hass:plus"
+              title="${this.localize("ui.panel.lovelace.editor.edit_card.add")}"
+              @click="${this._addCard}"
+            ></paper-fab>
+          `
+        : ""}
     `;
   }
 

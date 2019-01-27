@@ -81,25 +81,21 @@ export class ZHAClusters extends LitElement {
             .selected="${this._selectedClusterIndex}"
             @iron-select="${this._selectedClusterChanged}"
           >
-            ${
-              this._clusters.map(
-                (entry) => html`
-                  <paper-item>${computeClusterKey(entry)}</paper-item>
-                `
-              )
-            }
+            ${this._clusters.map(
+              (entry) => html`
+                <paper-item>${computeClusterKey(entry)}</paper-item>
+              `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      ${
-        this.showHelp
-          ? html`
-              <div class="helpText">
-                Select cluster to view attributes and commands
-              </div>
-            `
-          : ""
-      }
+      ${this.showHelp
+        ? html`
+            <div class="helpText">
+              Select cluster to view attributes and commands
+            </div>
+          `
+        : ""}
     `;
   }
 

@@ -52,21 +52,17 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
               @click="${this._closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
-            ${
-              this._hash
-                ? html`
-                    <span class="comments">Comments will be not be saved!</span>
-                  `
-                : ""
-            }
+            ${this._hash
+              ? html`
+                  <span class="comments">Comments will be not be saved!</span>
+                `
+              : ""}
             <paper-button @click="${this._handleSave}">Save</paper-button>
             <ha-icon
               class="save-button
-            ${
-                classMap({
-                  saved: this._saving! === false || this._changed === true,
-                })
-              }"
+            ${classMap({
+                saved: this._saving! === false || this._changed === true,
+              })}"
               icon="${this._changed ? "hass:circle-medium" : "hass:check"}"
             ></ha-icon>
           </app-toolbar>

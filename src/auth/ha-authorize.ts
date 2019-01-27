@@ -78,13 +78,11 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     return html`
       ${this.renderStyle()}
       <p>
-        ${
-          this.localize(
-            "ui.panel.page-authorize.authorizing_client",
-            "clientId",
-            this.clientId
-          )
-        }
+        ${this.localize(
+          "ui.panel.page-authorize.authorizing_client",
+          "clientId",
+          this.clientId
+        )}
       </p>
       ${loggingInWith}
 
@@ -97,18 +95,16 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         .step="{{step}}"
       ></ha-auth-flow>
 
-      ${
-        inactiveProviders.length > 0
-          ? html`
-              <ha-pick-auth-provider
-                .resources="${this.resources}"
-                .clientId="${this.clientId}"
-                .authProviders="${inactiveProviders}"
-                @pick="${this._handleAuthProviderPick}"
-              ></ha-pick-auth-provider>
-            `
-          : ""
-      }
+      ${inactiveProviders.length > 0
+        ? html`
+            <ha-pick-auth-provider
+              .resources="${this.resources}"
+              .clientId="${this.clientId}"
+              .authProviders="${inactiveProviders}"
+              @pick="${this._handleAuthProviderPick}"
+            ></ha-pick-auth-provider>
+          `
+        : ""}
     `;
   }
 

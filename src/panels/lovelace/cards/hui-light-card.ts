@@ -92,43 +92,39 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card>
-        ${
-          !stateObj
-            ? html`
-                <div class="not-found">
-                  Entity not available: ${this._config.entity}
-                </div>
-              `
-            : html`
-                <div id="light"></div>
-                <div id="tooltip">
-                  <div class="icon-state">
-                    <ha-icon
-                      data-state="${stateObj.state}"
-                      .icon="${stateIcon(stateObj)}"
-                      style="${
-                        styleMap({
-                          filter: this._computeBrightness(stateObj),
-                          color: this._computeColor(stateObj),
-                        })
-                      }"
-                      @ha-click="${this._handleTap}"
-                      @ha-hold="${this._handleHold}"
-                      .longPress="${longPress()}"
-                    ></ha-icon>
-                    <div
-                      class="brightness"
-                      @ha-click="${this._handleTap}"
-                      @ha-hold="${this._handleHold}"
-                      .longPress="${longPress()}"
-                    ></div>
-                    <div class="name">
-                      ${this._config.name || computeStateName(stateObj)}
-                    </div>
+        ${!stateObj
+          ? html`
+              <div class="not-found">
+                Entity not available: ${this._config.entity}
+              </div>
+            `
+          : html`
+              <div id="light"></div>
+              <div id="tooltip">
+                <div class="icon-state">
+                  <ha-icon
+                    data-state="${stateObj.state}"
+                    .icon="${stateIcon(stateObj)}"
+                    style="${styleMap({
+                      filter: this._computeBrightness(stateObj),
+                      color: this._computeColor(stateObj),
+                    })}"
+                    @ha-click="${this._handleTap}"
+                    @ha-hold="${this._handleHold}"
+                    .longPress="${longPress()}"
+                  ></ha-icon>
+                  <div
+                    class="brightness"
+                    @ha-click="${this._handleTap}"
+                    @ha-hold="${this._handleHold}"
+                    .longPress="${longPress()}"
+                  ></div>
+                  <div class="name">
+                    ${this._config.name || computeStateName(stateObj)}
                   </div>
                 </div>
-              `
-        }
+              </div>
+            `}
       </ha-card>
     `;
   }

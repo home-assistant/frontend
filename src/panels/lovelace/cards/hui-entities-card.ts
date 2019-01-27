@@ -104,33 +104,27 @@ class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <ha-card>
-        ${
-          !title && !show_header_toggle
-            ? html``
-            : html`
-                <div class="header">
-                  <div class="name">${title}</div>
-                  ${
-                    show_header_toggle === false
-                      ? html``
-                      : html`
-                          <hui-entities-toggle
-                            .hass="${this._hass}"
-                            .entities="${
-                              this._configEntities!.map((conf) => conf.entity)
-                            }"
-                          ></hui-entities-toggle>
-                        `
-                  }
-                </div>
-              `
-        }
+        ${!title && !show_header_toggle
+          ? html``
+          : html`
+              <div class="header">
+                <div class="name">${title}</div>
+                ${show_header_toggle === false
+                  ? html``
+                  : html`
+                      <hui-entities-toggle
+                        .hass="${this._hass}"
+                        .entities="${this._configEntities!.map(
+                          (conf) => conf.entity
+                        )}"
+                      ></hui-entities-toggle>
+                    `}
+              </div>
+            `}
         <div id="states">
-          ${
-            this._configEntities!.map((entityConf) =>
-              this.renderEntity(entityConf)
-            )
-          }
+          ${this._configEntities!.map((entityConf) =>
+            this.renderEntity(entityConf)
+          )}
         </div>
       </ha-card>
     `;
