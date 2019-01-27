@@ -1,7 +1,7 @@
 const serviceWorkerUrl =
   __BUILD__ === "latest" ? "/service_worker.js" : "/service_worker_es5.js";
 
-export default () => {
+export const registerServiceWorker = () => {
   if (!("serviceWorker" in navigator)) return;
 
   navigator.serviceWorker.register(serviceWorkerUrl).then((reg) => {

@@ -8,8 +8,8 @@ import { storeState } from "../../util/ha-pref-storage";
 
 export default (superClass) =>
   class extends superClass {
-    ready() {
-      super.ready();
+    firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) =>
         this._selectLanguage(e)
       );
@@ -81,6 +81,6 @@ export default (superClass) =>
       storeState(this.hass);
       this._loadResources();
       this._loadBackendTranslations();
-      this._loadTranslationFragment(this.panelUrl);
+      this._loadTranslationFragment(this.hass.panelUrl);
     }
   };

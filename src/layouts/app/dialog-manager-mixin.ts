@@ -1,5 +1,4 @@
-import { PolymerElement } from "@polymer/polymer";
-import { Constructor } from "lit-element";
+import { Constructor, LitElement } from "lit-element";
 import { HASSDomEvent, ValidHassDomEvent } from "../../common/dom/fire_event";
 
 interface RegisterDialogParams {
@@ -23,10 +22,10 @@ declare global {
   }
 }
 
-export const dialogManagerMixin = (superClass: Constructor<PolymerElement>) =>
+export const dialogManagerMixin = (superClass: Constructor<LitElement>) =>
   class extends superClass {
-    public ready() {
-      super.ready();
+    protected firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this.addEventListener("register-dialog", (e) =>
         this.registerDialog(e.detail)
       );
