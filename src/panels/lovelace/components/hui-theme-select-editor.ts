@@ -49,13 +49,11 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
           .selected="${this.value}"
           attr-for-selected="theme"
         >
-          ${
-            themes.map((theme) => {
-              return html`
-                <paper-item theme="${theme}">${theme}</paper-item>
-              `;
-            })
-          }
+          ${themes.map((theme) => {
+            return html`
+              <paper-item theme="${theme}">${theme}</paper-item>
+            `;
+          })}
         </paper-listbox>
       </paper-dropdown-menu>
     `;

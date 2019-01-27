@@ -70,36 +70,30 @@ export class ZHAEntities extends LitElement {
             .selected="${this._selectedEntityIndex}"
             @iron-select="${this._selectedEntityChanged}"
           >
-            ${
-              this._entities.map(
-                (entry) => html`
-                  <paper-item>${entry.entity_id}</paper-item>
-                `
-              )
-            }
+            ${this._entities.map(
+              (entry) => html`
+                <paper-item>${entry.entity_id}</paper-item>
+              `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      ${
-        this.showHelp
-          ? html`
-              <div class="helpText">
-                Select entity to view per-entity options
-              </div>
-            `
-          : ""
-      }
-      ${
-        this._selectedEntityIndex !== -1
-          ? html`
-              <div class="actions">
-                <paper-button @click="${this._showEntityInformation}"
-                  >Entity Information</paper-button
-                >
-              </div>
-            `
-          : ""
-      }
+      ${this.showHelp
+        ? html`
+            <div class="helpText">
+              Select entity to view per-entity options
+            </div>
+          `
+        : ""}
+      ${this._selectedEntityIndex !== -1
+        ? html`
+            <div class="actions">
+              <paper-button @click="${this._showEntityInformation}"
+                >Entity Information</paper-button
+              >
+            </div>
+          `
+        : ""}
     `;
   }
 

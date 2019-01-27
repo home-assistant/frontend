@@ -57,17 +57,15 @@ class HuiSensorEntityRow extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
-          ${
-            stateObj.attributes.device_class === "timestamp"
-              ? html`
-                  <hui-timestamp-display
-                    .hass="${this.hass}"
-                    .ts="${new Date(stateObj.state)}"
-                    .format="${this._config.format}"
-                  ></hui-timestamp-display>
-                `
-              : computeStateDisplay(this.localize, stateObj, this.hass.language)
-          }
+          ${stateObj.attributes.device_class === "timestamp"
+            ? html`
+                <hui-timestamp-display
+                  .hass="${this.hass}"
+                  .ts="${new Date(stateObj.state)}"
+                  .format="${this._config.format}"
+                ></hui-timestamp-display>
+              `
+            : computeStateDisplay(this.localize, stateObj, this.hass.language)}
         </div>
       </hui-generic-entity-row>
     `;

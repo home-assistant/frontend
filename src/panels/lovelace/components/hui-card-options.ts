@@ -71,9 +71,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
       <div class="options">
         <div class="primary-actions">
           <paper-button @click="${this._editCard}"
-            >${
-              this.localize("ui.panel.lovelace.editor.edit_card.edit")
-            }</paper-button
+            >${this.localize(
+              "ui.panel.lovelace.editor.edit_card.edit"
+            )}</paper-button
           >
         </div>
         <div class="secondary-actions">
@@ -82,10 +82,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             class="move-arrow"
             icon="hass:arrow-down"
             @click="${this._cardDown}"
-            ?disabled="${
-              this.lovelace!.config.views[this.path![0]].cards!.length ===
-                this.path![1] + 1
-            }"
+            ?disabled="${this.lovelace!.config.views[this.path![0]].cards!
+              .length ===
+              this.path![1] + 1}"
           ></paper-icon-button>
           <paper-icon-button
             title="Move card up"
@@ -102,9 +101,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             <paper-listbox slot="dropdown-content">
               <paper-item @click="${this._moveCard}">Move Card</paper-item>
               <paper-item @click="${this._deleteCard}"
-                >${
-                  this.localize("ui.panel.lovelace.editor.edit_card.delete")
-                }</paper-item
+                >${this.localize(
+                  "ui.panel.lovelace.editor.edit_card.delete"
+                )}</paper-item
               >
             </paper-listbox>
           </paper-menu-button>

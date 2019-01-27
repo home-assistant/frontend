@@ -43,12 +43,10 @@ class HuiEntitiesToggle extends LitElement {
     return html`
       ${this.renderStyle()}
       <paper-toggle-button
-        ?checked="${
-          this._toggleEntities!.some((entityId) => {
-            const stateObj = this.hass!.states[entityId];
-            return stateObj && stateObj.state === "on";
-          })
-        }"
+        ?checked="${this._toggleEntities!.some((entityId) => {
+          const stateObj = this.hass!.states[entityId];
+          return stateObj && stateObj.state === "on";
+        })}"
         @change="${this._callService}"
       ></paper-toggle-button>
     `;

@@ -139,10 +139,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                     @click="${this._editModeDisable}"
                   ></paper-icon-button>
                   <div main-title>
-                    ${
-                      this.config.title ||
-                        this.localize("ui.panel.lovelace.editor.header")
-                    }
+                    ${this.config.title ||
+                      this.localize("ui.panel.lovelace.editor.header")}
                     <paper-icon-button
                       icon="hass:pencil"
                       class="edit-icon"
@@ -203,22 +201,20 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
                     >
-                      ${
-                        this._yamlMode
-                          ? html`
-                              <paper-item @click="${this._handleRefresh}"
-                                >Refresh</paper-item
-                              >
-                            `
-                          : ""
-                      }
+                      ${this._yamlMode
+                        ? html`
+                            <paper-item @click="${this._handleRefresh}"
+                              >Refresh</paper-item
+                            >
+                          `
+                        : ""}
                       <paper-item @click="${this._handleUnusedEntities}"
                         >Unused entities</paper-item
                       >
                       <paper-item @click="${this._editModeEnable}"
-                        >${
-                          this.localize("ui.panel.lovelace.editor.configure_ui")
-                        }</paper-item
+                        >${this.localize(
+                          "ui.panel.lovelace.editor.configure_ui"
+                        )}</paper-item
                       >
                       <paper-item @click="${this._handleHelp}">Help</paper-item>
                     </paper-listbox>
@@ -236,54 +232,41 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
                   >
-                    ${
-                      this.lovelace!.config.views.map(
-                        (view) => html`
-                          <paper-tab>
-                            ${
-                              view.icon
-                                ? html`
-                                    <ha-icon
-                                      title="${view.title}"
-                                      .icon="${view.icon}"
-                                    ></ha-icon>
-                                  `
-                                : view.title || "Unnamed view"
-                            }
-                            ${
-                              this._editMode
-                                ? html`
-                                    <ha-icon
-                                      class="edit-icon view"
-                                      @click="${this._editView}"
-                                      icon="hass:pencil"
-                                    ></ha-icon>
-                                  `
-                                : ""
-                            }
-                          </paper-tab>
+                    ${this.lovelace!.config.views.map(
+                      (view) => html`
+                        <paper-tab>
+                          ${view.icon
+                            ? html`
+                                <ha-icon
+                                  title="${view.title}"
+                                  .icon="${view.icon}"
+                                ></ha-icon>
+                              `
+                            : view.title || "Unnamed view"}
+                          ${this._editMode
+                            ? html`
+                                <ha-icon
+                                  class="edit-icon view"
+                                  @click="${this._editView}"
+                                  icon="hass:pencil"
+                                ></ha-icon>
+                              `
+                            : ""}
+                        </paper-tab>
+                      `
+                    )}
+                    ${this._editMode
+                      ? html`
+                          <paper-button id="add-view" @click="${this._addView}">
+                            <ha-icon
+                              title="${this.localize(
+                                "ui.panel.lovelace.editor.edit_view.add"
+                              )}"
+                              icon="hass:plus"
+                            ></ha-icon>
+                          </paper-button>
                         `
-                      )
-                    }
-                    ${
-                      this._editMode
-                        ? html`
-                            <paper-button
-                              id="add-view"
-                              @click="${this._addView}"
-                            >
-                              <ha-icon
-                                title="${
-                                  this.localize(
-                                    "ui.panel.lovelace.editor.edit_view.add"
-                                  )
-                                }"
-                                icon="hass:plus"
-                              ></ha-icon>
-                            </paper-button>
-                          `
-                        : ""
-                    }
+                      : ""}
                   </paper-tabs>
                 </div>
               `

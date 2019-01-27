@@ -79,33 +79,29 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
             allow-custom-entity
           ></ha-entity-picker>
         </div>
-        <span>Used States</span> ${
-          this._states.map((state, index) => {
-            return html`
-              <div class="states">
-                <paper-item>${state}</paper-item>
-                <ha-icon
-                  class="deleteState"
-                  .value="${index}"
-                  icon="hass:close"
-                  @click=${this._stateRemoved}
-                ></ha-icon>
-              </div>
-            `;
-          })
-        }
+        <span>Used States</span> ${this._states.map((state, index) => {
+          return html`
+            <div class="states">
+              <paper-item>${state}</paper-item>
+              <ha-icon
+                class="deleteState"
+                .value="${index}"
+                icon="hass:close"
+                @click=${this._stateRemoved}
+              ></ha-icon>
+            </div>
+          `;
+        })}
         <paper-dropdown-menu
           label="Available States"
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
-            ${
-              states.map((state) => {
-                return html`
-                  <paper-item>${state}</paper-item>
-                `;
-              })
-            }
+            ${states.map((state) => {
+              return html`
+                <paper-item>${state}</paper-item>
+              `;
+            })}
           </paper-listbox>
         </paper-dropdown-menu>
       </div>

@@ -124,63 +124,53 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
           .label="${this._stateIconLabel(stateObj.state)}"
         ></ha-label-badge>
         <div id="armActions" class="actions">
-          ${
-            (stateObj.state === "disarmed"
-              ? this._config.states!
-              : ["disarm"]
-            ).map((state) => {
-              return html`
-                <paper-button
-                  noink
-                  raised
-                  .action="${state}"
-                  @click="${this._handleActionClick}"
-                  >${this._label(state)}</paper-button
-                >
-              `;
-            })
-          }
+          ${(stateObj.state === "disarmed"
+            ? this._config.states!
+            : ["disarm"]
+          ).map((state) => {
+            return html`
+              <paper-button
+                noink
+                raised
+                .action="${state}"
+                @click="${this._handleActionClick}"
+                >${this._label(state)}</paper-button
+              >
+            `;
+          })}
         </div>
-        ${
-          !stateObj.attributes.code_format
-            ? html``
-            : html`
-                <paper-input
-                  label="Alarm Code"
-                  type="password"
-                  .value="${this._code}"
-                ></paper-input>
-              `
-        }
-        ${
-          stateObj.attributes.code_format !== FORMAT_NUMBER
-            ? html``
-            : html`
-                <div id="keypad">
-                  ${
-                    BUTTONS.map((value) => {
-                      return value === ""
-                        ? html`
-                            <paper-button disabled></paper-button>
-                          `
-                        : html`
-                            <paper-button
-                              noink
-                              raised
-                              .value="${value}"
-                              @click="${this._handlePadClick}"
-                              >${
-                                value === "clear"
-                                  ? this._label("clear_code")
-                                  : value
-                              }</paper-button
-                            >
-                          `;
-                    })
-                  }
-                </div>
-              `
-        }
+        ${!stateObj.attributes.code_format
+          ? html``
+          : html`
+              <paper-input
+                label="Alarm Code"
+                type="password"
+                .value="${this._code}"
+              ></paper-input>
+            `}
+        ${stateObj.attributes.code_format !== FORMAT_NUMBER
+          ? html``
+          : html`
+              <div id="keypad">
+                ${BUTTONS.map((value) => {
+                  return value === ""
+                    ? html`
+                        <paper-button disabled></paper-button>
+                      `
+                    : html`
+                        <paper-button
+                          noink
+                          raised
+                          .value="${value}"
+                          @click="${this._handlePadClick}"
+                          >${value === "clear"
+                            ? this._label("clear_code")
+                            : value}</paper-button
+                        >
+                      `;
+                })}
+              </div>
+            `}
       </ha-card>
     `;
   }

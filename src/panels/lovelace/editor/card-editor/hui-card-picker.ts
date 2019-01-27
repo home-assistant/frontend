@@ -42,18 +42,16 @@ export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
     return html`
       <h3>${this.localize("ui.panel.lovelace.editor.edit_card.pick_card")}</h3>
       <div class="cards-container">
-        ${
-          cards.map((card) => {
-            return html`
-              <paper-button
-                raised
-                @click="${this._cardPicked}"
-                .type="${card.type}"
-                >${card.name}</paper-button
-              >
-            `;
-          })
-        }
+        ${cards.map((card) => {
+          return html`
+            <paper-button
+              raised
+              @click="${this._cardPicked}"
+              .type="${card.type}"
+              >${card.name}</paper-button
+            >
+          `;
+        })}
       </div>
     `;
   }

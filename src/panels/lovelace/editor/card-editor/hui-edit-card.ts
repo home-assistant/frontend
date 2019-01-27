@@ -117,17 +117,15 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
     if (this._configElement !== undefined) {
       content = html`
         <div class="element-editor">
-          ${
-            this._uiEditor
-              ? this._configElement
-              : html`
-                  <hui-yaml-editor
-                    .hass="${this.hass}"
-                    .yaml="${this._configValue!.value}"
-                    @yaml-changed="${this._handleYamlChanged}"
-                  ></hui-yaml-editor>
-                `
-          }
+          ${this._uiEditor
+            ? this._configElement
+            : html`
+                <hui-yaml-editor
+                  .hass="${this.hass}"
+                  .yaml="${this._configValue!.value}"
+                  @yaml-changed="${this._handleYamlChanged}"
+                ></hui-yaml-editor>
+              `}
         </div>
       `;
 
@@ -151,50 +149,43 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         <paper-dialog-scrollable
           class="${classMap({ hidden: this._loading! })}"
         >
-          ${
-            this._errorMsg
-              ? html`
-                  <div class="error">${this._errorMsg}</div>
-                `
-              : ""
-          }
+          ${this._errorMsg
+            ? html`
+                <div class="error">${this._errorMsg}</div>
+              `
+            : ""}
           <div class="content">${content}${preview}</div>
         </paper-dialog-scrollable>
-        ${
-          !this._loading
-            ? html`
-                <div class="paper-dialog-buttons">
-                  <paper-button
-                    class="toggle-button"
-                    ?hidden="${!this._configValue || !this._configValue.value}"
-                    ?disabled="${
-                      this._configElement === null || this._configState !== "OK"
-                    }"
-                    @click="${this._toggleEditor}"
-                    >${
-                      this.localize(
-                        "ui.panel.lovelace.editor.edit_card.toggle_editor"
-                      )
-                    }</paper-button
-                  >
-                  <paper-button @click="${this.closeDialog}"
-                    >${this.localize("ui.common.cancel")}</paper-button
-                  >
-                  <paper-button
-                    ?hidden="${!this._configValue || !this._configValue.value}"
-                    ?disabled="${this._saving || this._configState !== "OK"}"
-                    @click="${this._save}"
-                  >
-                    <paper-spinner
-                      ?active="${this._saving}"
-                      alt="Saving"
-                    ></paper-spinner>
-                    ${this.localize("ui.common.save")}</paper-button
-                  >
-                </div>
-              `
-            : ""
-        }
+        ${!this._loading
+          ? html`
+              <div class="paper-dialog-buttons">
+                <paper-button
+                  class="toggle-button"
+                  ?hidden="${!this._configValue || !this._configValue.value}"
+                  ?disabled="${this._configElement === null ||
+                    this._configState !== "OK"}"
+                  @click="${this._toggleEditor}"
+                  >${this.localize(
+                    "ui.panel.lovelace.editor.edit_card.toggle_editor"
+                  )}</paper-button
+                >
+                <paper-button @click="${this.closeDialog}"
+                  >${this.localize("ui.common.cancel")}</paper-button
+                >
+                <paper-button
+                  ?hidden="${!this._configValue || !this._configValue.value}"
+                  ?disabled="${this._saving || this._configState !== "OK"}"
+                  @click="${this._save}"
+                >
+                  <paper-spinner
+                    ?active="${this._saving}"
+                    alt="Saving"
+                  ></paper-spinner>
+                  ${this.localize("ui.common.save")}</paper-button
+                >
+              </div>
+            `
+          : ""}
       </paper-dialog>
     `;
   }

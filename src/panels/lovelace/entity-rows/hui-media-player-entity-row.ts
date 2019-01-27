@@ -57,44 +57,36 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
         .config="${this._config}"
         .showSecondary="false"
       >
-        ${
-          OFF_STATES.includes(stateObj.state)
-            ? html`
-                <div>
-                  ${
-                    this.localize(`state.media_player.${stateObj.state}`) ||
-                      this.localize(`state.default.${stateObj.state}`) ||
-                      stateObj.state
-                  }
-                </div>
-              `
-            : html`
-                <div class="controls">
-                  ${
-                    stateObj.state !== "playing" &&
-                    !supportsFeature(stateObj, SUPPORTS_PLAY)
-                      ? ""
-                      : html`
-                          <paper-icon-button
-                            icon="${this._computeControlIcon(stateObj)}"
-                            @click="${this._playPause}"
-                          ></paper-icon-button>
-                        `
-                  }
-                  ${
-                    supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
-                      ? html`
-                          <paper-icon-button
-                            icon="hass:skip-next"
-                            @click="${this._nextTrack}"
-                          ></paper-icon-button>
-                        `
-                      : ""
-                  }
-                </div>
-                <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
-              `
-        }
+        ${OFF_STATES.includes(stateObj.state)
+          ? html`
+              <div>
+                ${this.localize(`state.media_player.${stateObj.state}`) ||
+                  this.localize(`state.default.${stateObj.state}`) ||
+                  stateObj.state}
+              </div>
+            `
+          : html`
+              <div class="controls">
+                ${stateObj.state !== "playing" &&
+                !supportsFeature(stateObj, SUPPORTS_PLAY)
+                  ? ""
+                  : html`
+                      <paper-icon-button
+                        icon="${this._computeControlIcon(stateObj)}"
+                        @click="${this._playPause}"
+                      ></paper-icon-button>
+                    `}
+                ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+                  ? html`
+                      <paper-icon-button
+                        icon="hass:skip-next"
+                        @click="${this._nextTrack}"
+                      ></paper-icon-button>
+                    `
+                  : ""}
+              </div>
+              <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
+            `}
       </hui-generic-entity-row>
     `;
   }
