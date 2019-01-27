@@ -20,8 +20,8 @@ import { subscribePanels } from "../../data/ws-panels";
 
 export default (superClass) =>
   class extends EventsMixin(LocalizeMixin(superClass)) {
-    ready() {
-      super.ready();
+    firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this._handleConnProm();
     }
 
@@ -48,7 +48,7 @@ export default (superClass) =>
           panels: null,
           services: null,
           user: null,
-          panelUrl: this.panelUrl,
+          panelUrl: this._panelUrl,
 
           language: getActiveTranslation(),
           // If resources are already loaded, don't discard them

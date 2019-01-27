@@ -4,9 +4,8 @@ import { subscribeThemes } from "../../data/ws-themes";
 
 export default (superClass) =>
   class extends superClass {
-    ready() {
-      super.ready();
-
+    firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
         this._updateHass({ selectedTheme: ev.detail });
         this._applyTheme();
