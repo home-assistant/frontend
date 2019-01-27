@@ -1,14 +1,17 @@
 import { translationMetadata } from "../../resources/translations-metadata";
 import { getTranslation } from "../../util/hass-translation";
 import { storeState } from "../../util/ha-pref-storage";
+import { Constructor, LitElement } from "lit-element";
+import { HassBaseEl } from "./hass-base-mixin";
+import { computeLocalize } from "../../common/translations/localize";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
  */
 
-export default (superClass) =>
+export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
-    firstUpdated(changedProps) {
+    protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) =>
         this._selectLanguage(e)
@@ -16,71 +19,78 @@ export default (superClass) =>
       this._loadResources();
     }
 
-    hassConnected() {
+    protected hassConnected() {
       super.hassConnected();
       this._loadBackendTranslations();
     }
 
-    hassReconnected() {
+    protected hassReconnected() {
       super.hassReconnected();
       this._loadBackendTranslations();
     }
 
-    panelUrlChanged(newPanelUrl) {
+    protected panelUrlChanged(newPanelUrl) {
       super.panelUrlChanged(newPanelUrl);
       this._loadTranslationFragment(newPanelUrl);
     }
 
-    async _loadBackendTranslations() {
-      if (!this.hass.language) return;
+    private async _loadBackendTranslations() {
+      const hass = this.hass;
+      if (!hass || !hass.language) {
+        return;
+      }
 
-      const language = this.hass.selectedLanguage || this.hass.language;
+      const language = hass.selectedLanguage || hass.language;
 
-      const { resources } = await this.hass.callWS({
+      const { resources } = await hass.callWS({
         type: "frontend/get_translations",
         language,
       });
 
       // If we've switched selected languages just ignore this response
-      if ((this.hass.selectedLanguage || this.hass.language) !== language)
+      if ((hass.selectedLanguage || hass.language) !== language) {
         return;
+      }
 
       this._updateResources(language, resources);
     }
 
-    _loadTranslationFragment(panelUrl) {
+    private _loadTranslationFragment(panelUrl) {
       if (translationMetadata.fragments.includes(panelUrl)) {
         this._loadResources(panelUrl);
       }
     }
 
-    async _loadResources(fragment) {
+    private async _loadResources(fragment?) {
       const result = await getTranslation(fragment);
       this._updateResources(result.language, result.data);
     }
 
-    _updateResources(language, data) {
+    private _updateResources(language, data) {
       // Update the language in hass, and update the resources with the newly
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
       // multiple fragments.
-      this._updateHass({
-        language: language,
-        resources: {
-          [language]: Object.assign(
-            {},
-            this.hass && this.hass.resources && this.hass.resources[language],
-            data
-          ),
+      const resources = {
+        [language]: {
+          ...(this.hass &&
+            this.hass.resources &&
+            this.hass.resources[language]),
+          ...data,
         },
+      };
+      this._updateHass({
+        language,
+        resources,
+        localize: computeLocalize(this, language, resources),
       });
     }
 
-    _selectLanguage(event) {
+    private _selectLanguage(event) {
       this._updateHass({ selectedLanguage: event.detail.language });
       storeState(this.hass);
       this._loadResources();
       this._loadBackendTranslations();
-      this._loadTranslationFragment(this.hass.panelUrl);
+      this._loadTranslationFragment(this.hass!.panelUrl);
     }
   };
