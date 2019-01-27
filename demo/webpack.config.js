@@ -1,9 +1,9 @@
 const path = require("path");
 const webpack = require("webpack");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const { babelLoaderConfig } = require("../config/babel.js");
+const { minimizer } = require("../config/babel.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
@@ -39,6 +39,9 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    minimizer,
+  },
   plugins: [
     new webpack.DefinePlugin({
       __DEV__: false,
@@ -69,19 +72,10 @@ module.exports = {
       },
     ]),
     isProd &&
-      new UglifyJsPlugin({
-        extractComments: true,
-        sourceMap: true,
-        uglifyOptions: {
-          // Disabling because it broke output
-          mangle: false,
-        },
+      new WorkboxPlugin.GenerateSW({
+        swDest: "service_worker_es5.js",
+        importWorkboxFrom: "local",
       }),
-    // isProd &&
-    new WorkboxPlugin.GenerateSW({
-      swDest: "service_worker_es5.js",
-      importWorkboxFrom: "local",
-    }),
   ].filter(Boolean),
   resolve: {
     extensions: [".ts", ".js", ".json"],
