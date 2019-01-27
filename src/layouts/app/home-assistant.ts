@@ -1,6 +1,5 @@
 import "@polymer/app-route/app-location";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { afterNextRender } from "@polymer/polymer/lib/utils/render-status";
 import {
   html,
   LitElement,
