@@ -1,7 +1,7 @@
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const config = require("./config.js");
 const { babelLoaderConfig } = require("../config/babel.js");
+const { minimizer } = require("../config/babel.js");
 
 const isProdBuild = process.env.NODE_ENV === "production";
 const isCI = process.env.CI === "true";
@@ -27,16 +27,10 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    minimizer,
+  },
   plugins: [
-    isProdBuild &&
-      new UglifyJsPlugin({
-        extractComments: true,
-        sourceMap: true,
-        uglifyOptions: {
-          // Disabling because it broke output
-          mangle: false,
-        },
-      }),
     isProdBuild &&
       !isCI &&
       new CompressionPlugin({
