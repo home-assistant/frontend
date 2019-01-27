@@ -56,6 +56,7 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
       }
 
       .error-log-intro {
+        text-align: center;
         margin: 16px;
       }
 
@@ -210,8 +211,12 @@ class HaPanelDevInfo extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </paper-card>
         </div>
         <p class='error-log-intro'>
-          Press the button to load the full Home Assistant log.
-          <paper-icon-button icon='hass:refresh' on-click='refreshErrorLog'></paper-icon-button>
+          <template is='dom-if' if='[[!errorLog]]'>
+            <paper-button raised on-click='refreshErrorLog'>Load Full Home Assistant Log</paper-button>
+          </template>
+          <template is='dom-if' if='[[errorLog]]'>
+            <paper-icon-button icon='hass:refresh' on-click='refreshErrorLog'></paper-icon-button>
+          </template>
         </p>
         <div class='error-log'>[[errorLog]]</div>
       </div>
