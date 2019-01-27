@@ -56,13 +56,10 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
     return html`
       ${this.renderStyle()}
       <ha-label-badge
-        class="${
-          classMap({
-            [domain]: true,
-            "has-unit_of_measurement":
-              "unit_of_measurement" in state.attributes,
-          })
-        }"
+        class="${classMap({
+          [domain]: true,
+          "has-unit_of_measurement": "unit_of_measurement" in state.attributes,
+        })}"
         .value="${this._computeValue(domain, state)}"
         .icon="${this._computeIcon(domain, state)}"
         .image="${state.attributes.entity_picture}"

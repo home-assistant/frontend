@@ -102,32 +102,26 @@ export class ZHAClusterAttributes extends LitElement {
                 .selected="${this._selectedAttributeIndex}"
                 @iron-select="${this._selectedAttributeChanged}"
               >
-                ${
-                  this._attributes.map(
-                    (entry) => html`
-                      <paper-item
-                        >${entry.name + " (id: " + entry.id + ")"}</paper-item
-                      >
-                    `
-                  )
-                }
+                ${this._attributes.map(
+                  (entry) => html`
+                    <paper-item
+                      >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                    >
+                  `
+                )}
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
-          ${
-            this.showHelp
-              ? html`
-                  <div style="color: grey; padding: 16px">
-                    Select an attribute to view or set its value
-                  </div>
-                `
-              : ""
-          }
-          ${
-            this._selectedAttributeIndex !== -1
-              ? this._renderAttributeInteractions()
-              : ""
-          }
+          ${this.showHelp
+            ? html`
+                <div style="color: grey; padding: 16px">
+                  Select an attribute to view or set its value
+                </div>
+              `
+            : ""}
+          ${this._selectedAttributeIndex !== -1
+            ? this._renderAttributeInteractions()
+            : ""}
         </paper-card>
       </ha-config-section>
     `;
@@ -164,17 +158,15 @@ export class ZHAClusterAttributes extends LitElement {
           .serviceData="${this._setAttributeServiceData}"
           >Set Zigbee Attribute</ha-call-service-button
         >
-        ${
-          this.showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="set_zigbee_cluster_attribute"
-                ></ha-service-description>
-              `
-            : ""
-        }
+        ${this.showHelp
+          ? html`
+              <ha-service-description
+                .hass="${this.hass}"
+                domain="zha"
+                service="set_zigbee_cluster_attribute"
+              ></ha-service-description>
+            `
+          : ""}
       </div>
     `;
   }

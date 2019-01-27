@@ -50,10 +50,7 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
                 <td>Latest version</td>
                 <td>[[data.last_version]]</td>
               </tr>
-              <template
-                is="dom-if"
-                if="[[!_equals(data.channel, &quot;stable&quot;)]]"
-              >
+              <template is="dom-if" if='[[!_equals(data.channel, "stable")]]'>
                 <tr>
                   <td>Channel</td>
                   <td>[[data.channel]]</td>
@@ -74,10 +71,7 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
               >Update</ha-call-api-button
             >
           </template>
-          <template
-            is="dom-if"
-            if="[[_equals(data.channel, &quot;beta&quot;)]]"
-          >
+          <template is="dom-if" if='[[_equals(data.channel, "beta")]]'>
             <ha-call-api-button
               hass="[[hass]]"
               path="hassio/supervisor/options"
@@ -85,10 +79,7 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
               >Leave beta channel</ha-call-api-button
             >
           </template>
-          <template
-            is="dom-if"
-            if="[[_equals(data.channel, &quot;stable&quot;)]]"
-          >
+          <template is="dom-if" if='[[_equals(data.channel, "stable")]]'>
             <paper-button
               on-click="_joinBeta"
               class="warning"

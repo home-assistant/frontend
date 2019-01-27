@@ -33,7 +33,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;account&quot;)]]"
+        if='[[_equals(_routeData.page, "account")]]'
         restamp=""
       >
         <ha-config-cloud-account
@@ -45,7 +45,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;login&quot;)]]"
+        if='[[_equals(_routeData.page, "login")]]'
         restamp=""
       >
         <ha-config-cloud-login
@@ -59,7 +59,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;register&quot;)]]"
+        if='[[_equals(_routeData.page, "register")]]'
         restamp=""
       >
         <ha-config-cloud-register
@@ -72,7 +72,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;forgot-password&quot;)]]"
+        if='[[_equals(_routeData.page, "forgot-password")]]'
         restamp=""
       >
         <ha-config-cloud-forgot-password
