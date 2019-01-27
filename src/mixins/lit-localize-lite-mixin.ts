@@ -4,10 +4,10 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "lit-element";
-import { HomeAssistant } from "../types";
 import { getActiveTranslation } from "../util/hass-translation";
-import { LocalizeFunc, LocalizeMixin } from "./localize-base-mixin";
 import { localizeLiteBaseMixin } from "./localize-lite-base-mixin";
+import { computeLocalize } from "../common/translations/localize";
+import { LocalizeMixin } from "../types";
 
 const empty = () => "";
 
@@ -22,12 +22,8 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
 ): Constructor<T & LocalizeMixin & LitLocalizeLiteMixin> =>
   // @ts-ignore
   class extends localizeLiteBaseMixin(superClass) {
-    protected hass?: HomeAssistant;
-    protected localize!: LocalizeFunc;
-
     static get properties(): PropertyDeclarations {
       return {
-        hass: {},
         localize: {},
         language: {},
         resources: {},
@@ -45,7 +41,11 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
     public connectedCallback(): void {
       super.connectedCallback();
       this._initializeLocalizeLite();
-      this.localize = this.__computeLocalize(this.language, this.resources);
+      this.localize = computeLocalize(
+        this.constructor.prototype,
+        this.language,
+        this.resources
+      );
     }
 
     public updated(changedProperties: PropertyValues) {
@@ -54,7 +54,11 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
         changedProperties.has("language") ||
         changedProperties.has("resources")
       ) {
-        this.localize = this.__computeLocalize(this.language, this.resources);
+        this.localize = computeLocalize(
+          this.constructor.prototype,
+          this.language,
+          this.resources
+        );
       }
     }
   };
