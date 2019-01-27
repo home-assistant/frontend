@@ -93,7 +93,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
       () => this._selectView(this._curView, true),
-      100
+      100,
+      false
     );
   }
 
