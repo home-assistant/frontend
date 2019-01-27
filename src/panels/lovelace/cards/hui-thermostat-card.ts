@@ -21,6 +21,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { afterNextRender } from "../../../common/util/render-status";
 import { UNIT_F } from "../../../common/const";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 const thermostatConfig = {
   radius: 150,
@@ -125,6 +126,11 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           small: !this._broadCard,
         })}">
         <div id="root">
+          <ha-icon
+            icon="hass:dots-vertical"
+            class="more-info"
+            @click="${this._handleMoreInfo}"
+          ></ha-icon>
           <div id="thermostat"></div>
           <div id="tooltip">
             <div class="title">${this._config.name ||
@@ -324,6 +330,12 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
         @click="${this._handleModeClick}"
       ></ha-icon>
     `;
+  }
+
+  private _handleMoreInfo() {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config!.entity,
+    });
   }
 
   private _handleModeClick(e: MouseEvent): void {
@@ -532,6 +544,13 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
           font-size: var(--uom-font-size);
           vertical-align: top;
           margin-left: var(--uom-margin-left);
+        }
+        .more-info {
+          float: right;
+          cursor: pointer;
+          padding-top: 16px;
+          padding-right: 16px;
+          z-index: 25;
         }
       </style>
     `;
