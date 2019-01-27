@@ -1,5 +1,6 @@
 // Sets up a Leaflet map on the provided DOM element
 export const setupLeafletMap = async (mapElement) => {
+  // tslint:disable-next-line
   const Leaflet = (await import(/* webpackChunkName: "leaflet" */ "leaflet"))
     .default;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
