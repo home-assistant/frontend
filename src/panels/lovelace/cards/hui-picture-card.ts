@@ -64,13 +64,11 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
         @ha-click="${this._handleTap}"
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
-        class="${
-          classMap({
-            clickable: Boolean(
-              this._config.tap_action || this._config.hold_action
-            ),
-          })
-        }"
+        class="${classMap({
+          clickable: Boolean(
+            this._config.tap_action || this._config.hold_action
+          ),
+        })}"
       >
         <img src="${this._config.image}" />
       </ha-card>

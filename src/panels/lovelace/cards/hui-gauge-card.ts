@@ -111,40 +111,34 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
-        ${
-          error
-            ? html`
-                <div class="not-found">${error}</div>
-              `
-            : html`
-                <div class="container">
-                  <div class="gauge-a"></div>
-                  <div class="gauge-b"></div>
-                  <div
-                    class="gauge-c"
-                    style="${
-                      styleMap({
-                        transform: `rotate(${this._translateTurn(state)}turn)`,
-                        "background-color": this._computeSeverity(state),
-                      })
-                    }"
-                  ></div>
-                  <div class="gauge-data">
-                    <div id="percent">
-                      ${stateObj.state}
-                      ${
-                        this._config.unit ||
-                          stateObj.attributes.unit_of_measurement ||
-                          ""
-                      }
-                    </div>
-                    <div id="name">
-                      ${this._config.name || computeStateName(stateObj)}
-                    </div>
+        ${error
+          ? html`
+              <div class="not-found">${error}</div>
+            `
+          : html`
+              <div class="container">
+                <div class="gauge-a"></div>
+                <div class="gauge-b"></div>
+                <div
+                  class="gauge-c"
+                  style="${styleMap({
+                    transform: `rotate(${this._translateTurn(state)}turn)`,
+                    "background-color": this._computeSeverity(state),
+                  })}"
+                ></div>
+                <div class="gauge-data">
+                  <div id="percent">
+                    ${stateObj.state}
+                    ${this._config.unit ||
+                      stateObj.attributes.unit_of_measurement ||
+                      ""}
+                  </div>
+                  <div id="name">
+                    ${this._config.name || computeStateName(stateObj)}
                   </div>
                 </div>
-              `
-        }
+              </div>
+            `}
       </ha-card>
     `;
   }

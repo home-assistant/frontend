@@ -121,13 +121,11 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
               slot="dropdown-content"
               .selected="${graphs.indexOf(this._graph)}"
             >
-              ${
-                graphs.map((graph) => {
-                  return html`
-                    <paper-item>${graph}</paper-item>
-                  `;
-                })
-              }
+              ${graphs.map((graph) => {
+                return html`
+                  <paper-item>${graph}</paper-item>
+                `;
+              })}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>

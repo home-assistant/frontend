@@ -54,26 +54,24 @@ export class HADemoCard extends LitElement implements LovelaceCard {
             .disabled=${this._switching}
           ></paper-icon-button>
           <div>
-            ${
-              this._switching
-                ? html`
-                    <paper-spinner-lite active></paper-spinner-lite>
-                  `
-                : until(
-                    selectedDemoConfig.then(
-                      (conf) => html`
-                        ${conf.name}
-                        <small>
-                          by
-                          <a target="_blank" href="${conf.authorUrl}">
-                            ${conf.authorName}
-                          </a>
-                        </small>
-                      `
-                    ),
-                    ""
-                  )
-            }
+            ${this._switching
+              ? html`
+                  <paper-spinner-lite active></paper-spinner-lite>
+                `
+              : until(
+                  selectedDemoConfig.then(
+                    (conf) => html`
+                      ${conf.name}
+                      <small>
+                        by
+                        <a target="_blank" href="${conf.authorUrl}">
+                          ${conf.authorName}
+                        </a>
+                      </small>
+                    `
+                  ),
+                  ""
+                )}
           </div>
           <paper-icon-button
             @click=${this._nextConfig}

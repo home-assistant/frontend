@@ -61,18 +61,16 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
         @opened-changed="${this._openedChanged}"
       >
         <h2>Choose view to move card</h2>
-        ${
-          this._params!.lovelace!.config.views.map((view, index) => {
-            return html`
-              <paper-item
-                ?active="${this._params!.path![0] === index}"
-                @click="${this._moveCard}"
-                .index="${index}"
-                >${view.title}</paper-item
-              >
-            `;
-          })
-        }
+        ${this._params!.lovelace!.config.views.map((view, index) => {
+          return html`
+            <paper-item
+              ?active="${this._params!.path![0] === index}"
+              @click="${this._moveCard}"
+              .index="${index}"
+              >${view.title}</paper-item
+            >
+          `;
+        })}
       </paper-dialog>
     `;
   }

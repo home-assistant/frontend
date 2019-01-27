@@ -78,14 +78,12 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
 
     if (!stateObj) {
       return html`
-        ${
-          createErrorCardElement(
-            createErrorCardConfig(
-              `Entity not found: ${this._config.entity}`,
-              this._config
-            )
+        ${createErrorCardElement(
+          createErrorCardConfig(
+            `Entity not found: ${this._config.entity}`,
+            this._config
           )
-        }
+        )}
       `;
     }
 
@@ -121,21 +119,17 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
           .hass="${this.hass}"
           .image="${this._config.image}"
           .stateImage="${this._config.state_image}"
-          .cameraImage="${
-            computeDomain(this._config.entity) === "camera"
-              ? this._config.entity
-              : this._config.camera_image
-          }"
+          .cameraImage="${computeDomain(this._config.entity) === "camera"
+            ? this._config.entity
+            : this._config.camera_image}"
           .entity="${this._config.entity}"
           .aspectRatio="${this._config.aspect_ratio}"
           @ha-click="${this._handleTap}"
           @ha-hold="${this._handleHold}"
           .longPress="${longPress()}"
-          class="${
-            classMap({
-              clickable: stateObj.state !== UNAVAILABLE,
-            })
-          }"
+          class="${classMap({
+            clickable: stateObj.state !== UNAVAILABLE,
+          })}"
         ></hui-image>
         ${footer}
       </ha-card>

@@ -61,9 +61,9 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._closeDialog}"
-            >${
-              this.localize("ui.panel.lovelace.editor.save_config.cancel")
-            }</paper-button
+            >${this.localize(
+              "ui.panel.lovelace.editor.save_config.cancel"
+            )}</paper-button
           >
           <paper-button
             ?disabled="${this._saving}"
@@ -73,9 +73,9 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${
-              this.localize("ui.panel.lovelace.editor.save_config.save")
-            }</paper-button
+            ${this.localize(
+              "ui.panel.lovelace.editor.save_config.save"
+            )}</paper-button
           >
         </div>
       </paper-dialog>

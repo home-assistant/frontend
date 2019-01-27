@@ -30,13 +30,11 @@ class HuiSectionRow extends LitElement implements EntityRow {
     return html`
       ${this.renderStyle()}
       <div class="divider"></div>
-      ${
-        this._config.label
-          ? html`
-              <div class="label">${this._config.label}</div>
-            `
-          : html``
-      }
+      ${this._config.label
+        ? html`
+            <div class="label">${this._config.label}</div>
+          `
+        : html``}
     `;
   }
 

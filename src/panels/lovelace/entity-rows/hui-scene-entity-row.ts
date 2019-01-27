@@ -50,20 +50,18 @@ class HuiSceneEntityRow extends hassLocalizeLitMixin(LitElement)
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        ${
-          stateObj.attributes.can_cancel
-            ? html`
-                <ha-entity-toggle
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-entity-toggle>
-              `
-            : html`
-                <paper-button @click="${this._callService}">
-                  ${this.localize("ui.card.scene.activate")}
-                </paper-button>
-              `
-        }
+        ${stateObj.attributes.can_cancel
+          ? html`
+              <ha-entity-toggle
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-entity-toggle>
+            `
+          : html`
+              <paper-button @click="${this._callService}">
+                ${this.localize("ui.card.scene.activate")}
+              </paper-button>
+            `}
       </hui-generic-entity-row>
     `;
   }

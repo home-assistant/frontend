@@ -96,15 +96,13 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card>
         <hui-image
-          class="${
-            classMap({
-              clickable: Boolean(
-                this._config.tap_action ||
-                  this._config.hold_action ||
-                  this._config.camera_image
-              ),
-            })
-          }"
+          class="${classMap({
+            clickable: Boolean(
+              this._config.tap_action ||
+                this._config.hold_action ||
+                this._config.camera_image
+            ),
+          })}"
           @ha-click="${this._handleTap}"
           @ha-hold="${this._handleHold}"
           .longPress="${longPress()}"
@@ -116,26 +114,20 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
           .aspectRatio="${this._config.aspect_ratio}"
         ></hui-image>
         <div class="box">
-          ${
-            this._config.title
-              ? html`
-                  <div class="title">${this._config.title}</div>
-                `
-              : ""
-          }
+          ${this._config.title
+            ? html`
+                <div class="title">${this._config.title}</div>
+              `
+            : ""}
           <div>
-            ${
-              this._entitiesDialog!.map((entityConf) =>
-                this.renderEntity(entityConf, true)
-              )
-            }
+            ${this._entitiesDialog!.map((entityConf) =>
+              this.renderEntity(entityConf, true)
+            )}
           </div>
           <div>
-            ${
-              this._entitiesToggle!.map((entityConf) =>
-                this.renderEntity(entityConf, false)
-              )
-            }
+            ${this._entitiesToggle!.map((entityConf) =>
+              this.renderEntity(entityConf, false)
+            )}
           </div>
         </div>
       </ha-card>
@@ -156,21 +148,17 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
       <ha-icon
         .entity="${stateObj.entity_id}"
         @click="${dialog ? this._openDialog : this._callService}"
-        class="${
-          classMap({
-            "state-on": !STATES_OFF.has(stateObj.state),
-          })
-        }"
+        class="${classMap({
+          "state-on": !STATES_OFF.has(stateObj.state),
+        })}"
         .icon="${entityConf.icon || stateIcon(stateObj)}"
-        title="${
-          `
+        title="${`
             ${computeStateName(stateObj)} : ${computeStateDisplay(
-            this.localize,
-            stateObj,
-            this.hass!.language
-          )}
-          `
-        }"
+          this.localize,
+          stateObj,
+          this.hass!.language
+        )}
+          `}"
       ></ha-icon>
     `;
   }
