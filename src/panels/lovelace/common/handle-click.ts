@@ -31,9 +31,12 @@ export const handleClick = (
 
   switch (actionConfig.action) {
     case "more-info":
-      if (config.entity || config.camera_image) {
+      if (config.entity || config.camera_image || actionConfig.entity) {
+        const entityId = (actionConfig.entity ||
+          config.entity ||
+          config.camera_image) as string;
         fireEvent(node, "hass-more-info", {
-          entityId: config.entity ? config.entity : config.camera_image!,
+          entityId,
         });
       }
       break;

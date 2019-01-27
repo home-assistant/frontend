@@ -19,6 +19,7 @@ import {
   ActionConfig,
   NavigateActionConfig,
   CallServiceActionConfig,
+  MoreInfoActionConfig,
 } from "../../../data/lovelace";
 
 declare global {
@@ -46,14 +47,19 @@ export class HuiActionEditor extends LitElement {
     return this.config!.action || "";
   }
 
+  get _entity(): string {
+    const _config = this.config! as MoreInfoActionConfig;
+    return _config.entity || "";
+  }
+
   get _navigation_path(): string {
-    const config = this.config! as NavigateActionConfig;
-    return config.navigation_path || "";
+    const _config = this.config! as NavigateActionConfig;
+    return _config.navigation_path || "";
   }
 
   get _service(): string {
-    const config = this.config! as CallServiceActionConfig;
-    return config.service || "";
+    const _config = this.config! as CallServiceActionConfig;
+    return _config.service || "";
   }
 
   protected render(): TemplateResult | void {
@@ -77,6 +83,17 @@ export class HuiActionEditor extends LitElement {
           })}
         </paper-listbox>
       </paper-dropdown-menu>
+      ${this._action === "more-info"
+        ? html`
+            <ha-entity-picker
+              .hass="${this.hass}"
+              .value="${this._entity}"
+              .configValue=${"entity"}
+              @change="${this._valueChanged}"
+              allow-custom-entity
+            ></ha-entity-picker>
+          `
+        : ""}
       ${this._action === "navigate"
         ? html`
             <paper-input
