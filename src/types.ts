@@ -16,6 +16,20 @@ declare global {
   var __VERSION__: string;
 }
 
+declare global {
+  interface Window {
+    ShadyCSS: {
+      nativeCss: boolean;
+      nativeShadow: boolean;
+      prepareTemplate(templateElement, elementName, elementExtension);
+      styleElement(element);
+      styleSubtree(element, overrideProperties);
+      styleDocument(overrideProperties);
+      getComputedStyleValue(element, propertyName);
+    };
+  }
+}
+
 export interface WebhookError {
   code: number;
   message: string;
