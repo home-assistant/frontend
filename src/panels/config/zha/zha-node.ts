@@ -95,27 +95,23 @@ export class ZHANode extends LitElement {
                 slot="dropdown-content"
                 @iron-select="${this._selectedNodeChanged}"
               >
-                ${
-                  this._nodes.map(
-                    (entry) => html`
-                      <paper-item
-                        >${this._computeSelectCaption(entry)}</paper-item
-                      >
-                    `
-                  )
-                }
+                ${this._nodes.map(
+                  (entry) => html`
+                    <paper-item
+                      >${this._computeSelectCaption(entry)}</paper-item
+                    >
+                  `
+                )}
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
-          ${
-            this._showHelp
-              ? html`
-                  <div class="helpText">
-                    Select node to view per-node options
-                  </div>
-                `
-              : ""
-          }
+          ${this._showHelp
+            ? html`
+                <div class="helpText">
+                  Select node to view per-node options
+                </div>
+              `
+            : ""}
           ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
           ${this._selectedNodeIndex !== -1 ? this._renderEntities() : ""}
           ${this._selectedEntity ? this._renderClusters() : ""}
@@ -133,17 +129,15 @@ export class ZHANode extends LitElement {
         <paper-button @click="${this._onReconfigureNodeClick}"
           >Reconfigure Node</paper-button
         >
-        ${
-          this._showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="reconfigure_device"
-                />
-              `
-            : ""
-        }
+        ${this._showHelp
+          ? html`
+              <ha-service-description
+                .hass="${this.hass}"
+                domain="zha"
+                service="reconfigure_device"
+              />
+            `
+          : ""}
         <ha-call-service-button
           .hass="${this.hass}"
           domain="zha"
@@ -151,17 +145,15 @@ export class ZHANode extends LitElement {
           .serviceData="${this._serviceData}"
           >Remove Node</ha-call-service-button
         >
-        ${
-          this._showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="remove"
-                />
-              `
-            : ""
-        }
+        ${this._showHelp
+          ? html`
+              <ha-service-description
+                .hass="${this.hass}"
+                domain="zha"
+                service="remove"
+              />
+            `
+          : ""}
       </div>
     `;
   }

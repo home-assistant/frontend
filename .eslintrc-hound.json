@@ -8,7 +8,8 @@
   },
   "settings": {
     "react": {
-      "pragma": "h"
+      "pragma": "h",
+      "version": "15.0"
     },
     "import/resolver": {
       "webpack": {

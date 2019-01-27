@@ -95,34 +95,30 @@ class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       >
-        ${
-          !stateObj
-            ? html`
-                <div class="not-found">
-                  Entity not available: ${this._config.entity}
+        ${!stateObj
+          ? html`
+              <div class="not-found">
+                Entity not available: ${this._config.entity}
+              </div>
+            `
+          : html`
+              <paper-button>
+                <div>
+                  <ha-icon
+                    data-domain="${computeStateDomain(stateObj)}"
+                    data-state="${stateObj.state}"
+                    .icon="${this._config.icon || stateIcon(stateObj)}"
+                    style="${styleMap({
+                      filter: this._computeBrightness(stateObj),
+                      color: this._computeColor(stateObj),
+                    })}"
+                  ></ha-icon>
+                  <span>
+                    ${this._config.name || computeStateName(stateObj)}
+                  </span>
                 </div>
-              `
-            : html`
-                <paper-button>
-                  <div>
-                    <ha-icon
-                      data-domain="${computeStateDomain(stateObj)}"
-                      data-state="${stateObj.state}"
-                      .icon="${this._config.icon || stateIcon(stateObj)}"
-                      style="${
-                        styleMap({
-                          filter: this._computeBrightness(stateObj),
-                          color: this._computeColor(stateObj),
-                        })
-                      }"
-                    ></ha-icon>
-                    <span>
-                      ${this._config.name || computeStateName(stateObj)}
-                    </span>
-                  </div>
-                </paper-button>
-              `
-        }
+              </paper-button>
+            `}
       </ha-card>
     `;
   }

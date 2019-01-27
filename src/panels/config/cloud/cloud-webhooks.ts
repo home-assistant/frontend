@@ -108,33 +108,29 @@ export class CloudWebhooks extends LitElement {
           <paper-item-body two-line>
             <div>
               ${entry.name}
-              ${
-                entry.domain === entry.name.toLowerCase()
-                  ? ""
-                  : ` (${entry.domain})`
-              }
+              ${entry.domain === entry.name.toLowerCase()
+                ? ""
+                : ` (${entry.domain})`}
             </div>
             <div secondary>${entry.webhook_id}</div>
           </paper-item-body>
-          ${
-            this._progress.includes(entry.webhook_id)
-              ? html`
-                  <div class="progress">
-                    <paper-spinner active></paper-spinner>
-                  </div>
-                `
-              : this._cloudHooks![entry.webhook_id]
-              ? html`
-                  <paper-button @click="${this._handleManageButton}"
-                    >Manage</paper-button
-                  >
-                `
-              : html`
-                  <paper-toggle-button
-                    @click="${this._enableWebhook}"
-                  ></paper-toggle-button>
-                `
-          }
+          ${this._progress.includes(entry.webhook_id)
+            ? html`
+                <div class="progress">
+                  <paper-spinner active></paper-spinner>
+                </div>
+              `
+            : this._cloudHooks![entry.webhook_id]
+            ? html`
+                <paper-button @click="${this._handleManageButton}"
+                  >Manage</paper-button
+                >
+              `
+            : html`
+                <paper-toggle-button
+                  @click="${this._enableWebhook}"
+                ></paper-toggle-button>
+              `}
         </div>
       `
     );

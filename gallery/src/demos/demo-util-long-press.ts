@@ -8,25 +8,23 @@ export class DemoUtilLongPress extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
-      ${
-        [1, 2, 3].map(
-          () => html`
-            <ha-card>
-              <paper-button
-                @ha-click="${this._handleTap}"
-                @ha-hold="${this._handleHold}"
-                .longPress="${longPress()}"
-              >
-                (long) press me!
-              </paper-button>
+      ${[1, 2, 3].map(
+        () => html`
+          <ha-card>
+            <paper-button
+              @ha-click="${this._handleTap}"
+              @ha-hold="${this._handleHold}"
+              .longPress="${longPress()}"
+            >
+              (long) press me!
+            </paper-button>
 
-              <textarea></textarea>
+            <textarea></textarea>
 
-              <div>(try pressing and scrolling too!)</div>
-            </ha-card>
-          `
-        )
-      }
+            <div>(try pressing and scrolling too!)</div>
+          </ha-card>
+        `
+      )}
     `;
   }
 

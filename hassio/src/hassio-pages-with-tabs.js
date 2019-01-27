@@ -62,14 +62,14 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
             <paper-tab page-name="system">System</paper-tab>
           </paper-tabs>
         </app-header>
-        <template is="dom-if" if="[[equals(page, &quot;dashboard&quot;)]]">
+        <template is="dom-if" if='[[equals(page, "dashboard")]]'>
           <hassio-dashboard
             hass="[[hass]]"
             supervisor-info="[[supervisorInfo]]"
             hass-info="[[hassInfo]]"
           ></hassio-dashboard>
         </template>
-        <template is="dom-if" if="[[equals(page, &quot;snapshots&quot;)]]">
+        <template is="dom-if" if='[[equals(page, "snapshots")]]'>
           <hassio-snapshots
             hass="[[hass]]"
             installed-addons="[[supervisorInfo.addons]]"
@@ -77,10 +77,10 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
             snapshot-deleted="{{snapshotDeleted}}"
           ></hassio-snapshots>
         </template>
-        <template is="dom-if" if="[[equals(page, &quot;store&quot;)]]">
+        <template is="dom-if" if='[[equals(page, "store")]]'>
           <hassio-addon-store hass="[[hass]]"></hassio-addon-store>
         </template>
-        <template is="dom-if" if="[[equals(page, &quot;system&quot;)]]">
+        <template is="dom-if" if='[[equals(page, "system")]]'>
           <hassio-system
             hass="[[hass]]"
             supervisor-info="[[supervisorInfo]]"
@@ -94,7 +94,7 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
         content="[[markdownContent]]"
       ></hassio-markdown-dialog>
 
-      <template is="dom-if" if="[[equals(page, &quot;snapshots&quot;)]]">
+      <template is="dom-if" if='[[equals(page, "snapshots")]]'>
         <hassio-snapshot
           hass="[[hass]]"
           snapshot-slug="{{snapshotSlug}}"

@@ -63,15 +63,13 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
           slot="dropdown-content"
           selected="${stateObj.attributes.options.indexOf(stateObj.state)}"
         >
-          ${
-            repeat(
-              stateObj.attributes.options,
-              (option) =>
-                html`
-                  <paper-item>${option}</paper-item>
-                `
-            )
-          }
+          ${repeat(
+            stateObj.attributes.options,
+            (option) =>
+              html`
+                <paper-item>${option}</paper-item>
+              `
+          )}
         </paper-listbox>
       </paper-dropdown-menu>
     `;
