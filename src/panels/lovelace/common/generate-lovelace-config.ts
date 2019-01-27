@@ -11,10 +11,10 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import splitByGroups from "../../../common/entity/split_by_groups";
 import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
-import { LocalizeFunc } from "../../../mixins/localize-base-mixin";
 import computeDomain from "../../../common/entity/compute_domain";
 import { EntityRowConfig, WeblinkConfig } from "../entity-rows/types";
 import { EntitiesCardConfig } from "../cards/hui-entities-card";
+import { LocalizeFunc } from "../../../common/translations/localize";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [

@@ -8,6 +8,7 @@ import {
   HassEntityAttributeBase,
   HassServices,
 } from "home-assistant-js-websocket";
+import { LocalizeFunc } from "./common/translations/localize";
 
 declare global {
   var __DEV__: boolean;
@@ -92,6 +93,10 @@ export interface Notification {
   created_at: string;
 }
 
+export interface Resources {
+  [language: string]: { [key: string]: string };
+}
+
 export interface HomeAssistant {
   auth: Auth;
   connection: Connection;
@@ -103,14 +108,19 @@ export interface HomeAssistant {
   selectedTheme?: string | null;
   panels: Panels;
   panelUrl: string;
+
+  // i18n
   language: string;
-  resources: { [key: string]: any };
+  selectedLanguage?: string;
+  resources: Resources;
+  localize: LocalizeFunc;
   translationMetadata: {
     fragments: string[];
     translations: {
       [lang: string]: Translation;
     };
   };
+
   dockedSidebar: boolean;
   moreInfoEntityId: string;
   user: User;
@@ -195,4 +205,9 @@ export interface PanelElement extends HTMLElement {
   showMenu?: boolean;
   route?: Route | null;
   panel?: Panel;
+}
+
+export interface LocalizeMixin {
+  hass?: HomeAssistant;
+  localize: LocalizeFunc;
 }

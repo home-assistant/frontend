@@ -15,7 +15,7 @@ import stateIcon from "../../common/entity/state_icon";
 import timerTimeRemaining from "../../common/entity/timer_time_remaining";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { fireEvent } from "../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
+import { HomeAssistant } from "../../types";
 
 import "../ha-label-badge";
 
@@ -23,7 +23,8 @@ import "../ha-label-badge";
  * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
-export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
+export class HaStateLabelBadge extends LitElement {
+  public hass?: HomeAssistant;
   public state?: HassEntity;
   private _connected?: boolean;
   private _updateRemaining?: number;
@@ -108,7 +109,7 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
       default:
         return state.state === "unknown"
           ? "-"
-          : this.localize(`component.${domain}.state.${state.state}`) ||
+          : this.hass!.localize(`component.${domain}.state.${state.state}`) ||
               state.state;
     }
   }
@@ -163,8 +164,8 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
       // the state translations that are truncated to fit within the badge label. Translations
       // are only added for device_tracker and alarm_control_panel.
       return (
-        this.localize(`state_badge.${domain}.${state.state}`) ||
-        this.localize(`state_badge.default.${state.state}`) ||
+        this.hass!.localize(`state_badge.${domain}.${state.state}`) ||
+        this.hass!.localize(`state_badge.default.${state.state}`) ||
         state.state
       );
     }

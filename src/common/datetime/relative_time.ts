@@ -1,4 +1,4 @@
-import { LocalizeFunc } from "../../mixins/localize-base-mixin";
+import { LocalizeFunc } from "../translations/localize";
 
 /**
  * Calculate a string representing a date object as relative time from now.
