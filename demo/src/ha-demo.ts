@@ -1,5 +1,8 @@
-import { HomeAssistant } from "../../src/layouts/app/home-assistant";
-import { provideHass } from "../../src/fake_data/provide_hass";
+import { HomeAssistantAppEl } from "../../src/layouts/app/home-assistant";
+import {
+  provideHass,
+  MockHomeAssistant,
+} from "../../src/fake_data/provide_hass";
 import { navigate } from "../../src/common/navigate";
 import { mockLovelace } from "./stubs/lovelace";
 import { mockAuth } from "./stubs/auth";
@@ -11,14 +14,14 @@ import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockEvents } from "./stubs/events";
 import { mockMediaPlayer } from "./stubs/media_player";
+import { HomeAssistant } from "../../src/types";
 
-class HaDemo extends HomeAssistant {
+class HaDemo extends HomeAssistantAppEl {
   protected async _handleConnProm() {
-    const initial: Partial<HomeAssistant> = {
+    const initial: Partial<MockHomeAssistant> = {
       panelUrl: (this as any).panelUrl,
       // Override updateHass so that the correct hass lifecycle methods are called
-      updateHass: (hassUpdate) =>
-        // @ts-ignore
+      updateHass: (hassUpdate: Partial<HomeAssistant>) =>
         this._updateHass(hassUpdate),
     };
 
