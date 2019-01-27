@@ -1,10 +1,9 @@
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 import { HaToast } from "../../components/ha-toast";
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
-  class extends hassLocalizeLitMixin(superClass) {
+  class extends superClass {
     private _discToast?: HaToast;
 
     protected hassConnected() {
