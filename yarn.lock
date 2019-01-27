@@ -6156,9 +6156,15 @@ fd-slicer@~1.1.0:
   dependencies:
     pend "~1.2.0"
 
-fecha@^2.3.3, "fecha@https://github.com/taylorhakes/fecha/archive/5e8fe08d982647fdb19fb403459838b02647813c.tar.gz":
-  version "3.0.0"
-  resolved "https://github.com/taylorhakes/fecha/archive/5e8fe08d982647fdb19fb403459838b02647813c.tar.gz#aec1831322f371389326199010df524ccfa9ab73"
+fecha@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/fecha/-/fecha-2.3.3.tgz#948e74157df1a32fd1b12c3a3c3cdcb6ec9d96cd"
+  integrity sha512-lUGBnIamTAwk4znq5BcqsDaxSmZ9nDVJaij6NvRt/Tg4R69gERA+otPKbS86ROw9nxVMw2/mp1fnaiWqbs6Sdg==
+
+fecha@^3.0.0:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/fecha/-/fecha-3.0.2.tgz#fb3adb02762ab6dd27f7d5419f2f6c21a4229cd7"
+  integrity sha512-oJK6YbKtmz1uvuDsUHOmo9X2HKmYAcRWtzW2yrCzOJRUfyGUEu/8cDymBdedgEnkdJiTpNyPogWqfTuYffU4yA==
 
 figgy-pudding@^3.1.0, figgy-pudding@^3.5.1:
   version "3.5.1"
