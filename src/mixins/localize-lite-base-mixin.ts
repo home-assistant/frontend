@@ -1,14 +1,13 @@
 /**
  * Lite base mixin to add localization without depending on the Hass object.
  */
-import { localizeBaseMixin } from "./localize-base-mixin";
 import { getTranslation } from "../util/hass-translation";
 
 /**
  * @polymerMixin
  */
 export const localizeLiteBaseMixin = (superClass) =>
-  class extends localizeBaseMixin(superClass) {
+  class extends superClass {
     protected _initializeLocalizeLite() {
       if (this.resources) {
         return;

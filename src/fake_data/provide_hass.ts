@@ -136,6 +136,7 @@ export const provideHass = (
 
     language: getActiveTranslation(),
     resources: null as any,
+    localize: () => "",
 
     translationMetadata: translationMetadata as any,
     dockedSidebar: false,
