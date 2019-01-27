@@ -53,6 +53,7 @@ export default (superClass) =>
           language: getActiveTranslation(),
           // If resources are already loaded, don't discard them
           resources: (this.hass && this.hass.resources) || null,
+          localize: () => "",
 
           translationMetadata: translationMetadata,
           dockedSidebar: false,

@@ -1,5 +1,4 @@
 import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin";
-import { localizeBaseMixin } from "./localize-base-mixin";
 /**
  * Polymer Mixin to enable a localize function powered by language/resources from hass object.
  *
@@ -7,7 +6,7 @@ import { localizeBaseMixin } from "./localize-base-mixin";
  */
 export default dedupingMixin(
   (superClass) =>
-    class extends localizeBaseMixin(superClass) {
+    class extends superClass {
       static get properties() {
         return {
           hass: Object,
@@ -19,10 +18,13 @@ export default dedupingMixin(
            */
           localize: {
             type: Function,
-            computed:
-              "__computeLocalize(hass.language, hass.resources, formats)",
+            computed: "__computeLocalize(hass.localize)",
           },
         };
+      }
+
+      __computeLocalize(localize) {
+        return localize;
       }
     }
 );

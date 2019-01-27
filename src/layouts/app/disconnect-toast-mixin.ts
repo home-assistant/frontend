@@ -25,13 +25,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       if (!this._discToast) {
         const el = document.createElement("ha-toast");
         el.duration = 0;
-        // Temp. Somehow the localize func is not getting recalculated for
-        // this class. Manually generating one. Will be fixed when we move
-        // the localize function to the hass object.
-        const { language, resources } = this.hass!;
-        el.text = (this as any).__computeLocalize(language, resources)(
-          "ui.notification_toast.connection_lost"
-        );
+        el.text = this.hass!.localize("ui.notification_toast.connection_lost");
         this._discToast = el;
         this.shadowRoot!.appendChild(el as any);
       }
