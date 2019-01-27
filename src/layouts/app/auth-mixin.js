@@ -6,8 +6,8 @@ import { subscribeUser } from "../../data/ws-user";
 
 export default (superClass) =>
   class extends superClass {
-    ready() {
-      super.ready();
+    firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this.addEventListener("hass-logout", () => this._handleLogout());
       // HACK :( We don't have a way yet to trigger an update of `subscribeUser`
       this.addEventListener("hass-refresh-current-user", () =>

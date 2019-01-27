@@ -1,9 +1,10 @@
 import "@polymer/paper-toast/paper-toast";
 
+// tslint:disable-next-line
 const PaperToast = customElements.get("paper-toast");
 
-class HaToast extends PaperToast {
-  connectedCallback() {
+export class HaToast extends PaperToast {
+  public connectedCallback() {
     super.connectedCallback();
 
     if (!this._resizeListener) {
@@ -15,9 +16,15 @@ class HaToast extends PaperToast {
     this._resizeListener(this._mediaq);
   }
 
-  disconnectedCallback() {
+  public disconnectedCallback() {
     super.disconnectedCallback();
     this._mediaq.removeListener(this._resizeListener);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-toast": HaToast;
   }
 }
 
