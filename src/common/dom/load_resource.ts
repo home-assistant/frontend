@@ -1,9 +1,13 @@
 // Load a resource and get a promise when loading done.
 // From: https://davidwalsh.name/javascript-loader
 
-function _load(tag, url, type) {
+const _load = (
+  tag: "link" | "script" | "img",
+  url: string,
+  type?: "module"
+) => {
   // This promise will be used by Promise.all to determine success or failure
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     const element = document.createElement(tag);
     let attr = "src";
     let parent = "body";
@@ -15,14 +19,14 @@ function _load(tag, url, type) {
     // Need to set different attributes depending on tag type
     switch (tag) {
       case "script":
-        element.async = true;
+        (element as HTMLScriptElement).async = true;
         if (type) {
-          element.type = type;
+          (element as HTMLScriptElement).type = type;
         }
         break;
       case "link":
-        element.type = "text/css";
-        element.rel = "stylesheet";
+        (element as HTMLLinkElement).type = "text/css";
+        (element as HTMLLinkElement).rel = "stylesheet";
         attr = "href";
         parent = "head";
     }
@@ -31,9 +35,9 @@ function _load(tag, url, type) {
     element[attr] = url;
     document[parent].appendChild(element);
   });
-}
+};
 
-export const loadCSS = (url) => _load("link", url);
-export const loadJS = (url) => _load("script", url);
-export const loadImg = (url) => _load("img", url);
-export const loadModule = (url) => _load("script", url, "module");
+export const loadCSS = (url: string) => _load("link", url);
+export const loadJS = (url: string) => _load("script", url);
+export const loadImg = (url: string) => _load("img", url);
+export const loadModule = (url: string) => _load("script", url, "module");
