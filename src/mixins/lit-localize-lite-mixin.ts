@@ -34,14 +34,14 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
     constructor() {
       super();
       // This will prevent undefined errors if called before connected to DOM.
-      this.localize = empty;
+      this.hass!.localize = empty;
       this.language = getActiveTranslation();
     }
 
     public connectedCallback(): void {
       super.connectedCallback();
       this._initializeLocalizeLite();
-      this.localize = computeLocalize(
+      this.hass!.localize = computeLocalize(
         this.constructor.prototype,
         this.language,
         this.resources
@@ -54,7 +54,7 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
         changedProperties.has("language") ||
         changedProperties.has("resources")
       ) {
-        this.localize = computeLocalize(
+        this.hass!.localize = computeLocalize(
           this.constructor.prototype,
           this.language,
           this.resources

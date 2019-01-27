@@ -9,12 +9,10 @@ import "../components/hui-generic-entity-row";
 import "./hui-error-entity-row";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
-class HuiTextEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
+class HuiTextEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
 
@@ -51,7 +49,11 @@ class HuiTextEntityRow extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
-          ${computeStateDisplay(this.localize, stateObj, this.hass.language)}
+          ${computeStateDisplay(
+            this.hass!.localize,
+            stateObj,
+            this.hass.language
+          )}
         </div>
       </hui-generic-entity-row>
     `;

@@ -11,7 +11,6 @@ import "../components/hui-entities-toggle";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig, EntityRow } from "../entity-rows/types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -37,8 +36,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
-class HuiEntitiesCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor");
     return document.createElement("hui-entities-card-editor");

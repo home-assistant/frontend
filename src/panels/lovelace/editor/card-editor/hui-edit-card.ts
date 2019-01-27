@@ -22,7 +22,6 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 
 import "./hui-yaml-editor";
 import "./hui-card-preview";
@@ -50,7 +49,7 @@ declare global {
   }
 }
 
-export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
+export class HuiEditCard extends LitElement {
   public hass?: HomeAssistant;
   public lovelace?: Lovelace;
   public path?: [number] | [number, number];
@@ -140,7 +139,9 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${this.localize("ui.panel.lovelace.editor.edit_card.header")}</h2>
+        <h2>
+          ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}
+        </h2>
         <paper-spinner
           ?active="${this._loading}"
           alt="Loading"
@@ -165,12 +166,12 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                   ?disabled="${this._configElement === null ||
                     this._configState !== "OK"}"
                   @click="${this._toggleEditor}"
-                  >${this.localize(
+                  >${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.toggle_editor"
                   )}</paper-button
                 >
                 <paper-button @click="${this.closeDialog}"
-                  >${this.localize("ui.common.cancel")}</paper-button
+                  >${this.hass!.localize("ui.common.cancel")}</paper-button
                 >
                 <paper-button
                   ?hidden="${!this._configValue || !this._configValue.value}"
@@ -181,7 +182,7 @@ export class HuiEditCard extends hassLocalizeLitMixin(LitElement) {
                     ?active="${this._saving}"
                     alt="Saving"
                   ></paper-spinner>
-                  ${this.localize("ui.common.save")}</paper-button
+                  ${this.hass!.localize("ui.common.save")}</paper-button
                 >
               </div>
             `
