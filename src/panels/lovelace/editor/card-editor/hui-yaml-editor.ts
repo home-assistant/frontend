@@ -9,6 +9,8 @@ import "@polymer/paper-input/paper-textarea";
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
+import "../../components/hui-code-editor";
+
 export class HuiYAMLEditor extends LitElement {
   protected hass?: HomeAssistant;
   private _yaml?: string;
@@ -28,11 +30,11 @@ export class HuiYAMLEditor extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
-      <paper-textarea
-        max-rows="10"
+      <hui-code-editor
         .value="${this._yaml}"
-        @value-changed="${this._valueChanged}"
-      ></paper-textarea>
+        @code-changed="${this._valueChanged}"
+      >
+      </hui-code-editor>
     `;
   }
 
@@ -46,11 +48,9 @@ export class HuiYAMLEditor extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: Event): void {
-    const target = ev.target! as any;
-    this._yaml = target.value;
+  private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "yaml-changed", {
-      yaml: target.value,
+      yaml: ev.detail.value,
     });
   }
 }

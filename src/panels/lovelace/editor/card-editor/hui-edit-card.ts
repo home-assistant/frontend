@@ -30,7 +30,6 @@ import "./hui-card-preview";
 import { HuiCardPreview } from "./hui-card-preview";
 import { LovelaceCardEditor, Lovelace } from "../../types";
 import { YamlChangedEvent, ConfigValue, ConfigError } from "../types";
-import { extYamlSchema } from "../yaml-ext-schema";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { addCard, replaceCard } from "../config-util";
@@ -217,9 +216,7 @@ export class HuiEditCard extends LitElement {
 
     const cardConf: LovelaceCardConfig =
       this._configValue!.format === "yaml"
-        ? yaml.safeLoad(this._configValue!.value!, {
-            schema: extYamlSchema,
-          })
+        ? yaml.safeLoad(this._configValue!.value!)
         : this._configValue!.value!;
 
     try {
@@ -244,9 +241,9 @@ export class HuiEditCard extends LitElement {
   private _handleYamlChanged(ev: YamlChangedEvent): void {
     this._configValue = { format: "yaml", value: ev.detail.yaml };
     try {
-      const config = yaml.safeLoad(this._configValue.value, {
-        schema: extYamlSchema,
-      }) as LovelaceCardConfig;
+      const config = yaml.safeLoad(
+        this._configValue.value
+      ) as LovelaceCardConfig;
       this._updatePreview(config);
       this._configState = "OK";
     } catch (err) {
@@ -295,9 +292,7 @@ export class HuiEditCard extends LitElement {
       this._uiEditor = !this._uiEditor;
     } else if (this._configElement && this._configValue!.format === "yaml") {
       const yamlConfig = this._configValue!.value;
-      const cardConfig = yaml.safeLoad(yamlConfig, {
-        schema: extYamlSchema,
-      }) as LovelaceCardConfig;
+      const cardConfig = yaml.safeLoad(yamlConfig) as LovelaceCardConfig;
       this._uiEditor = !this._uiEditor;
       if (cardConfig.type !== this._cardType) {
         const succes = await this._loadConfigElement(cardConfig);
