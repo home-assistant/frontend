@@ -16,7 +16,7 @@ import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { createErrorCardConfig } from "../../cards/hui-error-card";
-import { computeRTL } from "../../../../common/util/compute_rtl";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 export class HuiCardPreview extends LitElement {
   private _hass?: HomeAssistant;
@@ -33,10 +33,10 @@ export class HuiCardPreview extends LitElement {
     super.updated(changedProperties);
     if (
       this._hass &&
-      computeRTL(this._hass) &&
-      (!this.style.direction || this.style.direction == "ltr")
+      (!this.style.direction ||
+        this.style.direction !== computeRTLDirection(this._hass))
     ) {
-      this.style.direction = "rtl";
+      this.style.direction = computeRTLDirection(this._hass);
     }
   }
 
