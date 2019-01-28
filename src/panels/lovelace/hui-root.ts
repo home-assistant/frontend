@@ -35,6 +35,8 @@ import { LovelaceConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeNotifications } from "./common/compute-notifications";
+import { swapView } from "./editor/config-util";
+
 import "./components/notifications/hui-notification-drawer";
 import "./components/notifications/hui-notifications-button";
 import "./hui-view";
@@ -235,6 +237,17 @@ class HUIRoot extends LitElement {
                     ${this.lovelace!.config.views.map(
                       (view) => html`
                         <paper-tab>
+                          ${this._editMode
+                            ? html`
+                                <paper-icon-button
+                                  title="Move view left"
+                                  class="edit-icon view"
+                                  icon="hass:arrow-left"
+                                  @click="${this._moveViewLeft}"
+                                  ?disabled="${this._curView === 0}"
+                                ></paper-icon-button>
+                              `
+                            : ""}
                           ${view.icon
                             ? html`
                                 <ha-icon
@@ -246,10 +259,20 @@ class HUIRoot extends LitElement {
                           ${this._editMode
                             ? html`
                                 <ha-icon
+                                  title="Edit view"
                                   class="edit-icon view"
-                                  @click="${this._editView}"
                                   icon="hass:pencil"
+                                  @click="${this._editView}"
                                 ></ha-icon>
+                                <paper-icon-button
+                                  title="Move view right"
+                                  class="edit-icon view"
+                                  icon="hass:arrow-right"
+                                  @click="${this._moveViewRight}"
+                                  ?disabled="${(this._curView! as number) +
+                                    1 ===
+                                    this.lovelace!.config.views.length}"
+                                ></paper-icon-button>
                               `
                             : ""}
                         </paper-tab>
@@ -313,6 +336,9 @@ class HUIRoot extends LitElement {
         .edit-icon {
           color: var(--accent-color);
           padding-left: 8px;
+        }
+        .edit-icon[disabled] {
+          color: var(--disabled-text-color);
         }
         .edit-icon.view {
           display: none;
@@ -509,6 +535,28 @@ class HUIRoot extends LitElement {
       lovelace: this.lovelace!,
       viewIndex: this._curView as number,
     });
+  }
+
+  private _moveViewLeft() {
+    const lovelace = this.lovelace!;
+    lovelace.saveConfig(
+      swapView(
+        lovelace.config,
+        this._curView as number,
+        (this._curView as number) - 1
+      )
+    );
+  }
+
+  private _moveViewRight() {
+    const lovelace = this.lovelace!;
+    lovelace.saveConfig(
+      swapView(
+        lovelace.config,
+        this._curView as number,
+        (this._curView as number) + 1
+      )
+    );
   }
 
   private _addView() {
