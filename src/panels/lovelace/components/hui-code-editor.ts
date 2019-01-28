@@ -26,16 +26,26 @@ export class HuiCodeEditor extends HTMLElement {
     shadowRoot.innerHTML = `
             <style>
                ${codeMirrorCSS}
+               .CodeMirror {
+                    height: var(--code-mirror-height, 300px);
+                    color: var(--code-mirror-color, black);
+                    direction: var(--code-mirror-direction, ltr);
+                }
             </style>`;
   }
 
   set value(value: string) {
+    console.log(value);
     if (this.cm) {
       if (value !== this.cm.getValue()) {
         this.cm.setValue(value);
       }
     }
     this._value = value;
+  }
+
+  get value() {
+    return this.cm.getValue();
   }
 
   public connectedCallback() {
