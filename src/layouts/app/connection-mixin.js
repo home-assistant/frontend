@@ -66,28 +66,34 @@ export default (superClass) =>
             try {
               await callService(conn, domain, service, serviceData);
 
-              let message;
-              let name;
-              if (
-                serviceData.entity_id &&
-                this.hass.states &&
-                this.hass.states[serviceData.entity_id]
-              ) {
-                name = computeStateName(
-                  this.hass.states[serviceData.entity_id]
-                );
+              const entityIds = Array.isArray(serviceData.entity_id)
+                ? serviceData.entity_id
+                : [serviceData.entity_id];
+
+              const names = [];
+              for (const entityId of entityIds) {
+                const stateObj = this.hass.states[entityId];
+                if (stateObj) {
+                  names.push(computeStateName(stateObj));
+                }
               }
+              if (names.length === 0) {
+                names.push(entityIds[0]);
+              }
+
+              let message;
+              const name = names.join(", ");
               if (service === "turn_on" && serviceData.entity_id) {
                 message = this.hass.localize(
                   "ui.notification_toast.entity_turned_on",
                   "entity",
-                  name || serviceData.entity_id
+                  name
                 );
               } else if (service === "turn_off" && serviceData.entity_id) {
                 message = this.hass.localize(
                   "ui.notification_toast.entity_turned_off",
                   "entity",
-                  name || serviceData.entity_id
+                  name
                 );
               } else {
                 message = this.hass.localize(
