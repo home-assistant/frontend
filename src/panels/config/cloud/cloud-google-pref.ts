@@ -50,7 +50,7 @@ export class CloudGooglePref extends LitElement {
           <ul>
             <li>
               <a
-                href="https://assistant.google.com/services/a/uid/00000091fd5fb875"
+                href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
                 target="_blank"
               >
                 Activate the Home Assistant skill for Google Assistant
