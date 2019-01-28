@@ -78,19 +78,19 @@ export default (superClass) =>
                 );
               }
               if (service === "turn_on" && serviceData.entity_id) {
-                message = this.localize(
+                message = this.hass.localize(
                   "ui.notification_toast.entity_turned_on",
                   "entity",
                   name || serviceData.entity_id
                 );
               } else if (service === "turn_off" && serviceData.entity_id) {
-                message = this.localize(
+                message = this.hass.localize(
                   "ui.notification_toast.entity_turned_off",
                   "entity",
                   name || serviceData.entity_id
                 );
               } else {
-                message = this.localize(
+                message = this.hass.localize(
                   "ui.notification_toast.service_called",
                   "service",
                   `${domain}/${service}`
@@ -107,7 +107,7 @@ export default (superClass) =>
                   serviceData
                 );
               }
-              const message = this.localize(
+              const message = this.hass.localize(
                 "ui.notification_toast.service_call_failed",
                 "service",
                 `${domain}/${service}`
