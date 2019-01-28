@@ -6,8 +6,7 @@ import {
 } from "lit-element";
 import { getActiveTranslation } from "../util/hass-translation";
 import { localizeLiteBaseMixin } from "./localize-lite-base-mixin";
-import { computeLocalize } from "../common/translations/localize";
-import { LocalizeMixin } from "../types";
+import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 
 const empty = () => "";
 
@@ -15,11 +14,12 @@ interface LitLocalizeLiteMixin {
   language: string;
   resources: {};
   translationFragment: string;
+  localize: LocalizeFunc;
 }
 
 export const litLocalizeLiteMixin = <T extends LitElement>(
   superClass: Constructor<T>
-): Constructor<T & LocalizeMixin & LitLocalizeLiteMixin> =>
+): Constructor<T & LitLocalizeLiteMixin> =>
   // @ts-ignore
   class extends localizeLiteBaseMixin(superClass) {
     static get properties(): PropertyDeclarations {
