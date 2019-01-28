@@ -61,7 +61,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     // So we sanitize the translation with innerText and then inject
     // the name with a bold tag.
     const loggingInWith = document.createElement("div");
-    loggingInWith.innerText = this.hass!.localize(
+    loggingInWith.innerText = this.localize(
       "ui.panel.page-authorize.logging_in_with",
       "authProviderName",
       "NAME"
@@ -78,7 +78,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     return html`
       ${this.renderStyle()}
       <p>
-        ${this.hass!.localize(
+        ${this.localize(
           "ui.panel.page-authorize.authorizing_client",
           "clientId",
           this.clientId
