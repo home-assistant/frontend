@@ -23,13 +23,16 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
-import "../../components/hui-code-editor";
+import "../../components/hui-yaml-editor";
+// This is not a duplicate import, one is for types, one is for element.
+// tslint:disable-next-line
+import { HuiYamlEditor } from "../../components/hui-yaml-editor";
 import "./hui-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiCardPreview } from "./hui-card-preview";
 import { LovelaceCardEditor, Lovelace } from "../../types";
-import { YamlChangedEvent, ConfigValue, ConfigError } from "../types";
+import { ConfigValue, ConfigError } from "../types";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { addCard, replaceCard } from "../config-util";
@@ -115,10 +118,10 @@ export class HuiEditCard extends LitElement {
           ${this._uiEditor
             ? this._configElement
             : html`
-                <hui-code-editor
+                <hui-yaml-editor
                   .value="${this._configValue!.value}"
-                  @code-changed="${this._handleYamlChanged}"
-                ></hui-code-editor>
+                  @yaml-changed="${this._handleYamlChanged}"
+                ></hui-yaml-editor>
               `}
         </div>
       `;
@@ -190,6 +193,9 @@ export class HuiEditCard extends LitElement {
     await this.updateComplete;
     this._loading = false;
     this._resizeDialog();
+    if (!this._uiEditor) {
+      this.yamlEditor.codemirror.refresh();
+    }
   }
 
   private async _resizeDialog(): Promise<void> {
@@ -256,7 +262,9 @@ export class HuiEditCard extends LitElement {
     this._updatePreview(value);
   }
 
-  private _updatePreview(config: LovelaceCardConfig) {
+  private async _updatePreview(config: LovelaceCardConfig) {
+    await this.updateComplete;
+
     if (!this._previewEl) {
       return;
     }
@@ -387,6 +395,10 @@ export class HuiEditCard extends LitElement {
     if (!ev.detail.value) {
       this.closeDialog!();
     }
+  }
+
+  private get yamlEditor(): HuiYamlEditor {
+    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
   }
 
   static get styles(): CSSResult[] {
