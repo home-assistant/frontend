@@ -8,7 +8,7 @@ const { minimizer } = require("../config/babel.js");
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
 const buildPath = path.resolve(__dirname, "dist");
-const publicPath = "./";
+const publicPath = "/";
 
 const latestBuild = false;
 

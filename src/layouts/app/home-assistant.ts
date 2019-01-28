@@ -98,10 +98,12 @@ export class HomeAssistantAppEl extends ext(HassBaseMixin(LitElement), [
 
   private _routeChanged(ev) {
     const route = ev.detail.value as Route;
-
     // If it's the first route that we process,
     // check if we should navigate away from /
-    if (this._route === undefined && route.path === "/") {
+    if (
+      this._route === undefined &&
+      (route.path === "" || route.path === "/")
+    ) {
       navigate(window, `/${localStorage.defaultPage || DEFAULT_PANEL}`, true);
       return;
     }
