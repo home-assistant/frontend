@@ -61,7 +61,6 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
           persistent="[[dockedSidebar]]"
         >
           <ha-sidebar
-            narrow="[[narrow]]"
             hass="[[hass]]"
             default-page="[[_defaultPage]]"
           ></ha-sidebar>
