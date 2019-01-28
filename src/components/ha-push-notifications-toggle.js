@@ -113,7 +113,9 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
           "notify.html5/applicationServerKey"
         );
         applicationServerKey = res.message;
-      } catch (ex) {}
+      } catch (ex) {
+        applicationServerKey = null;
+      }
 
       if (applicationServerKey) {
         sub = await reg.pushManager.subscribe({
