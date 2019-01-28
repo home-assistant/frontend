@@ -14,8 +14,10 @@ import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/ha-style";
-
-const TAB_INSERT = "  ";
+import "./components/hui-code-editor";
+// This is not a duplicate import, one is for types, one is for element.
+// tslint:disable-next-line
+import { HuiCodeEditor } from "./components/hui-code-editor";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -67,45 +69,31 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <textarea
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            @input="${this._yamlChanged}"
-          ></textarea>
+          <hui-code-editor @code-changed="${this._yamlChanged}">
+          </hui-code-editor>
         </div>
       </app-header-layout>
     `;
   }
 
   protected firstUpdated() {
-    const textArea = this.textArea;
-    textArea.value = yaml.safeDump(this.lovelace!.config);
-    textArea.addEventListener("keydown", (e) => {
+    const codeEditor = this.codeEditor;
+    codeEditor.value = yaml.safeDump(this.lovelace!.config);
+    codeEditor.addEventListener("keydown", (e) => {
       if (e.keyCode === 51) {
         this._hashAdded = true;
         return;
       }
-
-      if (e.keyCode !== 9) {
+    });
+    codeEditor.addEventListener("code-changed", (e) => {
+      this._hash = this._hashAdded || this.codeEditor.value.includes("#");
+      if (this._changed) {
         return;
       }
-
-      e.preventDefault();
-
-      // tab was pressed, get caret position/selection
-      const val = textArea.value;
-      const start = textArea.selectionStart;
-      const end = textArea.selectionEnd;
-
-      // set textarea value to: text before caret + tab + text after caret
-      textArea.value =
-        val.substring(0, start) + TAB_INSERT + val.substring(end);
-
-      // put caret at right position again
-      textArea.selectionStart = textArea.selectionEnd =
-        start + TAB_INSERT.length;
+      window.onbeforeunload = () => {
+        return true;
+      };
+      this._changed = true;
     });
   }
 
@@ -113,6 +101,10 @@ class LovelaceFullConfigEditor extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          --code-mirror-height: 100%;
+        }
+
         app-header-layout {
           height: 100vh;
         }
@@ -132,16 +124,8 @@ class LovelaceFullConfigEditor extends LitElement {
           height: calc(100vh - 68px);
         }
 
-        textarea {
-          box-sizing: border-box;
+        hui-code-editor {
           height: 100%;
-          width: 100%;
-          resize: none;
-          border: 0;
-          outline: 0;
-          font-size: 12pt;
-          font-family: "Courier New", Courier, monospace;
-          padding: 8px;
         }
 
         .save-button {
@@ -185,7 +169,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
     let value;
     try {
-      value = yaml.safeLoad(this.textArea.value);
+      value = yaml.safeLoad(this.codeEditor.value);
     } catch (err) {
       alert(`Unable to parse YAML: ${err}`);
       this._saving = false;
@@ -208,19 +192,8 @@ class LovelaceFullConfigEditor extends LitElement {
     this._hashAdded = false;
   }
 
-  private _yamlChanged() {
-    this._hash = this._hashAdded || this.textArea.value.includes("#");
-    if (this._changed) {
-      return;
-    }
-    window.onbeforeunload = () => {
-      return true;
-    };
-    this._changed = true;
-  }
-
-  private get textArea(): HTMLTextAreaElement {
-    return this.shadowRoot!.querySelector("textarea")!;
+  private get codeEditor(): HuiCodeEditor {
+    return this.shadowRoot!.querySelector("hui-code-editor")! as HuiCodeEditor;
   }
 }
 
