@@ -773,7 +773,10 @@
         },
         "zha": {
           "caption": "ZHA",
-          "description": "Zigbee Home Automation network management"
+          "description": "Zigbee Home Automation network management",
+          "services": {
+            "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service."
+          }
         },
         "zwave": {
           "caption": "Z-Wave",

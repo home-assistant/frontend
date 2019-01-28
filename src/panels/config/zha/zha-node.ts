@@ -131,11 +131,11 @@ export class ZHANode extends LitElement {
         >
         ${this._showHelp
           ? html`
-              <ha-service-description
-                .hass="${this.hass}"
-                domain="zha"
-                service="reconfigure_device"
-              />
+              <div class="helpText">
+                ${this.hass!.localize(
+                  "ui.panel.config.zha.services.reconfigure"
+                )}
+              </div>
             `
           : ""}
         <ha-call-service-button
