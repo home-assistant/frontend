@@ -68,6 +68,7 @@
     "@webcomponents/webcomponentsjs": "^2.2.0",
     "chart.js": "~2.7.2",
     "chartjs-chart-timeline": "^0.2.1",
+    "codemirror": "^5.43.0",
     "deep-clone-simple": "^1.1.1",
     "es6-object-assign": "^1.1.0",
     "eslint-import-resolver-webpack": "^0.10.1",
