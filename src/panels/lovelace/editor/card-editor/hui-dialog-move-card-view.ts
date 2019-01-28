@@ -9,11 +9,10 @@ import "@polymer/paper-item/paper-item";
 // tslint:disable-next-line:no-duplicate-imports
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { moveCard } from "../config-util";
 import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
 
-export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
+export class HuiDialogMoveCardView extends LitElement {
   private _params?: MoveCardViewDialogParams;
 
   static get properties(): PropertyDeclarations {

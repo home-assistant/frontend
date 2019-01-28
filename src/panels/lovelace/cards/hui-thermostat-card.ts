@@ -15,7 +15,6 @@ import computeStateName from "../../../common/entity/compute_state_name";
 
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, ClimateEntity } from "../../../types";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
@@ -51,8 +50,7 @@ export interface Config extends LovelaceCardConfig {
   name?: string;
 }
 
-export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+export class HuiThermostatCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-thermostat-card-editor" */ "../editor/config-elements/hui-thermostat-card-editor");
     return document.createElement("hui-thermostat-card-editor");
@@ -145,7 +143,7 @@ export class HuiThermostatCard extends hassLocalizeLitMixin(LitElement)
             </div>
             <div class="climate-info">
             <div id="set-temperature"></div>
-            <div class="current-mode">${this.localize(
+            <div class="current-mode">${this.hass!.localize(
               `state.climate.${stateObj.state}`
             )}</div>
             <div class="modes">

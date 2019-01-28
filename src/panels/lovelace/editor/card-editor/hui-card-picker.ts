@@ -5,7 +5,6 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { CardPickTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
@@ -34,13 +33,15 @@ const cards = [
   { name: "Weather Forecast", type: "weather-forecast" },
 ];
 
-export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
+export class HuiCardPicker extends LitElement {
   public hass?: HomeAssistant;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
   protected render(): TemplateResult | void {
     return html`
-      <h3>${this.localize("ui.panel.lovelace.editor.edit_card.pick_card")}</h3>
+      <h3>
+        ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card")}
+      </h3>
       <div class="cards-container">
         ${cards.map((card) => {
           return html`

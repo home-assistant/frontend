@@ -14,7 +14,6 @@ import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
@@ -38,8 +37,7 @@ interface Config extends LovelaceCardConfig {
   show_state?: boolean;
 }
 
-class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
 
@@ -89,7 +87,7 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
 
     const name = this._config.name || computeStateName(stateObj);
     const state = computeStateDisplay(
-      this.localize,
+      this.hass!.localize,
       stateObj,
       this.hass.language
     );

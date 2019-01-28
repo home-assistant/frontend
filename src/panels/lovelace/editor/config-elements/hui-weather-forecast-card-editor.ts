@@ -7,7 +7,6 @@ import {
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -22,8 +21,7 @@ const cardConfigStruct = struct({
   name: "string?",
 });
 
-export class HuiWeatherForecastCardEditor
-  extends hassLocalizeLitMixin(LitElement)
+export class HuiWeatherForecastCardEditor extends LitElement
   implements LovelaceCardEditor {
   public hass?: HomeAssistant;
   private _config?: Config;

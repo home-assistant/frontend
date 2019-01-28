@@ -16,7 +16,6 @@ import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import { HomeAssistant, LightEntity } from "../../../types";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
@@ -31,8 +30,7 @@ export interface Config extends LovelaceCardConfig {
   hold_action?: ActionConfig;
 }
 
-class HuiEntityButtonCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiEntityButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-entity-button-card-editor" */ "../editor/config-elements/hui-entity-button-card-editor");
     return document.createElement("hui-entity-button-card-editor");

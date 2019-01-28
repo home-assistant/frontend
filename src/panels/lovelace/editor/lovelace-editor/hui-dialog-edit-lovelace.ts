@@ -19,10 +19,9 @@ import { haStyleDialog } from "../../../../resources/ha-style";
 import "./hui-lovelace-editor";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { Lovelace } from "../../types";
 
-export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
+export class HuiDialogEditLovelace extends LitElement {
   public hass?: HomeAssistant;
   private _lovelace?: Lovelace;
   private _config?: LovelaceConfig;
@@ -69,7 +68,7 @@ export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
         ></paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._closeDialog}"
-            >${this.localize("ui.common.cancel")}</paper-button
+            >${this.hass!.localize("ui.common.cancel")}</paper-button
           >
           <paper-button
             ?disabled="${!this._config || this._saving}"
@@ -79,7 +78,7 @@ export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${this.localize("ui.common.save")}</paper-button
+            ${this.hass!.localize("ui.common.save")}</paper-button
           >
         </div>
       </paper-dialog>
