@@ -3,24 +3,20 @@ import "codemirror/mode/yaml/yaml";
 // tslint:disable-next-line
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
 import { fireEvent } from "../../../common/dom/fire_event";
-
-let _this;
-
 declare global {
   interface HASSDomEvents {
-    "code-changed": {
+    "yaml-changed": {
       value: string;
     };
   }
 }
 
-export class HuiCodeEditor extends HTMLElement {
-  public codemirror;
-  private _value;
+export class HuiYamlEditor extends HTMLElement {
+  public codemirror: CodeMirror;
+  private _value: string;
 
-  constructor() {
+  public constructor() {
     super();
-    _this = this;
     this._value = "";
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = `
@@ -43,27 +39,35 @@ export class HuiCodeEditor extends HTMLElement {
     this._value = value;
   }
 
-  get value() {
+  get value(): string {
     return this.codemirror.getValue();
   }
 
-  public connectedCallback() {
+  public connectedCallback(): void {
     if (!this.codemirror) {
       this.codemirror = CodeMirror(this.shadowRoot, {
         value: this._value,
         lineNumbers: true,
         mode: "yaml",
         tabSize: 2,
+        autofocus: true,
       });
+      fireEvent(this, "yaml-changed", { value: this._value });
       this.codemirror.on("changes", () => this._onChange());
     } else {
       this.codemirror.refresh();
     }
   }
 
-  private _onChange() {
-    fireEvent(this, "code-changed", { value: this.codemirror.getValue() });
+  private _onChange(): void {
+    fireEvent(this, "yaml-changed", { value: this.codemirror.getValue() });
   }
 }
 
-window.customElements.define("hui-code-editor", HuiCodeEditor);
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-yaml-editor": HuiYamlEditor;
+  }
+}
+
+window.customElements.define("hui-yaml-editor", HuiYamlEditor);
