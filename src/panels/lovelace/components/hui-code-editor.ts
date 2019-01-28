@@ -62,7 +62,7 @@ export class HuiCodeEditor extends HTMLElement {
   }
 
   private _onChange() {
-    fireEvent(_this, "code-changed", { value: _this.codemirror.getValue() });
+    fireEvent(this, "code-changed", { value: this.codemirror.getValue() });
   }
 }
 
