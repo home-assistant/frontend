@@ -23,7 +23,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
-import "./hui-yaml-editor";
+import "../../components/hui-code-editor";
 import "./hui-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
@@ -36,9 +36,6 @@ import { addCard, replaceCard } from "../config-util";
 
 declare global {
   interface HASSDomEvents {
-    "yaml-changed": {
-      yaml: string;
-    };
     "entities-changed": {
       entities: EntityConfig[];
     };
@@ -118,11 +115,10 @@ export class HuiEditCard extends LitElement {
           ${this._uiEditor
             ? this._configElement
             : html`
-                <hui-yaml-editor
-                  .hass="${this.hass}"
-                  .yaml="${this._configValue!.value}"
-                  @yaml-changed="${this._handleYamlChanged}"
-                ></hui-yaml-editor>
+                <hui-code-editor
+                  .value="${this._configValue!.value}"
+                  @code-changed="${this._handleYamlChanged}"
+                ></hui-code-editor>
               `}
         </div>
       `;
@@ -238,8 +234,8 @@ export class HuiEditCard extends LitElement {
     }
   }
 
-  private _handleYamlChanged(ev: YamlChangedEvent): void {
-    this._configValue = { format: "yaml", value: ev.detail.yaml };
+  private _handleYamlChanged(ev: CustomEvent): void {
+    this._configValue = { format: "yaml", value: ev.detail.value };
     try {
       const config = yaml.safeLoad(
         this._configValue.value
