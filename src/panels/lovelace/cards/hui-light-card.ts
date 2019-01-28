@@ -9,7 +9,6 @@ import {
 import { fireEvent } from "../../../common/dom/fire_event";
 import { styleMap } from "lit-html/directives/style-map";
 import { HomeAssistant, LightEntity } from "../../../types";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
@@ -45,8 +44,7 @@ export interface Config extends LovelaceCardConfig {
   theme?: string;
 }
 
-export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+export class HuiLightCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-light-card-editor" */ "../editor/config-elements/hui-light-card-editor");
     return document.createElement("hui-light-card-editor");

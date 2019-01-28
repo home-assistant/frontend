@@ -7,7 +7,6 @@ import {
 import "@polymer/paper-input/paper-input";
 
 import { EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "../config-elements/config-elements-style";
@@ -22,7 +21,7 @@ declare global {
   }
 }
 
-export class HuiLovelaceEditor extends hassLocalizeLitMixin(LitElement) {
+export class HuiLovelaceEditor extends LitElement {
   static get properties(): PropertyDeclarations {
     return { hass: {}, config: {} };
   }

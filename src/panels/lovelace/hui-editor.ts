@@ -11,7 +11,6 @@ import "@polymer/paper-spinner/paper-spinner";
 
 import { struct } from "./common/structs/struct";
 import { Lovelace } from "./types";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/ha-style";
@@ -24,7 +23,7 @@ const lovelaceStruct = struct.interface({
   resources: struct.optional(["object"]),
 });
 
-class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
+class LovelaceFullConfigEditor extends LitElement {
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
   private _saving?: boolean;

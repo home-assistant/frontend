@@ -10,12 +10,10 @@ import "../../../components/entity/ha-entity-toggle";
 import "./hui-error-entity-row";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
-class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
+class HuiToggleEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
 
@@ -60,7 +58,7 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
           : html`
               <div>
                 ${computeStateDisplay(
-                  this.localize,
+                  this.hass!.localize,
                   stateObj,
                   this.hass!.language
                 )}

@@ -5,7 +5,6 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-listbox/paper-listbox";
 
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -13,7 +12,7 @@ import { Lovelace } from "../types";
 import { swapCard } from "../editor/config-util";
 import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
 
-export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
+export class HuiCardOptions extends LitElement {
   public cardConfig?: LovelaceCardConfig;
   public hass?: HomeAssistant;
   public lovelace?: Lovelace;
@@ -71,7 +70,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
       <div class="options">
         <div class="primary-actions">
           <paper-button @click="${this._editCard}"
-            >${this.localize(
+            >${this.hass!.localize(
               "ui.panel.lovelace.editor.edit_card.edit"
             )}</paper-button
           >
@@ -101,7 +100,7 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             <paper-listbox slot="dropdown-content">
               <paper-item @click="${this._moveCard}">Move Card</paper-item>
               <paper-item @click="${this._deleteCard}"
-                >${this.localize(
+                >${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
                 )}</paper-item
               >
