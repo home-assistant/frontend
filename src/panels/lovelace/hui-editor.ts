@@ -14,10 +14,10 @@ import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/ha-style";
-import "./components/hui-code-editor";
+import "./components/hui-yaml-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HuiCodeEditor } from "./components/hui-code-editor";
+import { HuiYamlEditor } from "./components/hui-yaml-editor";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -69,24 +69,23 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <hui-code-editor @code-changed="${this._yamlChanged}">
-          </hui-code-editor>
+          <hui-yaml-editor> </hui-yaml-editor>
         </div>
       </app-header-layout>
     `;
   }
 
   protected firstUpdated() {
-    const codeEditor = this.codeEditor;
-    codeEditor.value = yaml.safeDump(this.lovelace!.config);
-    codeEditor.addEventListener("keydown", (e) => {
+    const yamlEditor = this.yamlEditor;
+    yamlEditor.value = yaml.safeDump(this.lovelace!.config);
+    yamlEditor.addEventListener("keydown", (e) => {
       if (e.keyCode === 51) {
         this._hashAdded = true;
         return;
       }
     });
-    codeEditor.addEventListener("code-changed", (e) => {
-      this._hash = this._hashAdded || this.codeEditor.value.includes("#");
+    yamlEditor.addEventListener("yaml-changed", (e) => {
+      this._hash = this._hashAdded || this.yamlEditor.value.includes("#");
       if (this._changed) {
         return;
       }
@@ -169,7 +168,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
     let value;
     try {
-      value = yaml.safeLoad(this.codeEditor.value);
+      value = yaml.safeLoad(this.yamlEditor.value);
     } catch (err) {
       alert(`Unable to parse YAML: ${err}`);
       this._saving = false;
@@ -192,8 +191,8 @@ class LovelaceFullConfigEditor extends LitElement {
     this._hashAdded = false;
   }
 
-  private get codeEditor(): HuiCodeEditor {
-    return this.shadowRoot!.querySelector("hui-code-editor")! as HuiCodeEditor;
+  private get yamlEditor(): HuiYamlEditor {
+    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
   }
 }
 
