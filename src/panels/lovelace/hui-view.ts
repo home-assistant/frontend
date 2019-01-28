@@ -13,7 +13,6 @@ import { HaStateLabelBadge } from "../../components/entity/ha-state-label-badge"
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
 
@@ -43,7 +42,7 @@ const getColumnIndex = (columnEntityCount: number[], size: number) => {
   return minIndex;
 };
 
-export class HUIView extends hassLocalizeLitMixin(LitElement) {
+export class HUIView extends LitElement {
   public hass?: HomeAssistant;
   public lovelace?: Lovelace;
   public columns?: number;
@@ -96,7 +95,9 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
             <paper-fab
               elevated="2"
               icon="hass:plus"
-              title="${this.localize("ui.panel.lovelace.editor.edit_card.add")}"
+              title="${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.add"
+              )}"
               @click="${this._addCard}"
             ></paper-fab>
           `

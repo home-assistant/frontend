@@ -14,7 +14,6 @@ import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
@@ -41,8 +40,7 @@ export interface Config extends LovelaceCardConfig {
   states?: string[];
 }
 
-class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import(/* webpackChunkName: "hui-alarm-panel-card-editor" */ "../editor/config-elements/hui-alarm-panel-card-editor");
     return document.createElement("hui-alarm-panel-card-editor");
@@ -186,8 +184,8 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
 
   private _label(state: string): string {
     return (
-      this.localize(`state.alarm_control_panel.${state}`) ||
-      this.localize(`ui.card.alarm_control_panel.${state}`)
+      this.hass!.localize(`state.alarm_control_panel.${state}`) ||
+      this.hass!.localize(`ui.card.alarm_control_panel.${state}`)
     );
   }
 

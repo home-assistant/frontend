@@ -8,12 +8,10 @@ import {
 import "../components/hui-generic-entity-row";
 import "./hui-error-entity-row";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
-class HuiLockEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
+class HuiLockEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
 
@@ -51,8 +49,8 @@ class HuiLockEntityRow extends hassLocalizeLitMixin(LitElement)
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <paper-button @click="${this._callService}">
           ${stateObj.state === "locked"
-            ? this.localize("ui.card.lock.unlock")
-            : this.localize("ui.card.lock.lock")}
+            ? this.hass!.localize("ui.card.lock.unlock")
+            : this.hass!.localize("ui.card.lock.lock")}
         </paper-button>
       </hui-generic-entity-row>
     `;

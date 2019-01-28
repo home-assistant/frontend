@@ -5,7 +5,6 @@ import "../components/hui-image";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 
@@ -18,8 +17,7 @@ interface Config extends LovelaceElementConfig {
   aspect_ratio?: string;
 }
 
-export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceElement {
+export class HuiImageElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
   private _config?: Config;
 

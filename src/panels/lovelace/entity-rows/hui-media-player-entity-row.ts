@@ -3,7 +3,6 @@ import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../components/hui-generic-entity-row";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -15,8 +14,7 @@ import {
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
 
-class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
+class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
 
@@ -60,8 +58,8 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
         ${OFF_STATES.includes(stateObj.state)
           ? html`
               <div>
-                ${this.localize(`state.media_player.${stateObj.state}`) ||
-                  this.localize(`state.default.${stateObj.state}`) ||
+                ${this.hass!.localize(`state.media_player.${stateObj.state}`) ||
+                  this.hass!.localize(`state.default.${stateObj.state}`) ||
                   stateObj.state}
               </div>
             `

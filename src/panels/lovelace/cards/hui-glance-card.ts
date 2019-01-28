@@ -7,7 +7,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
@@ -38,8 +37,7 @@ export interface Config extends LovelaceCardConfig {
   columns?: number;
 }
 
-export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-glance-card-editor" */ "../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
@@ -223,7 +221,7 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
           ? html`
               <div>
                 ${computeStateDisplay(
-                  this.localize,
+                  this.hass!.localize,
                   stateObj,
                   this.hass!.language
                 )}
