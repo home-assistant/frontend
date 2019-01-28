@@ -55,7 +55,7 @@ export class HuiCodeEditor extends HTMLElement {
         mode: "yaml",
         tabSize: 2,
       });
-      this.codemirror.on("changes", this._onChange);
+      this.codemirror.on("changes", () => this._onChange());
     } else {
       this.codemirror.refresh();
     }
