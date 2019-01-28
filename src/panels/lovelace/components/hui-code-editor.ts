@@ -15,7 +15,7 @@ declare global {
 }
 
 export class HuiCodeEditor extends HTMLElement {
-  public cm;
+  public codemirror;
   private _value;
 
   constructor() {
@@ -35,35 +35,34 @@ export class HuiCodeEditor extends HTMLElement {
   }
 
   set value(value: string) {
-    console.log(value);
-    if (this.cm) {
-      if (value !== this.cm.getValue()) {
-        this.cm.setValue(value);
+    if (this.codemirror) {
+      if (value !== this.codemirror.getValue()) {
+        this.codemirror.setValue(value);
       }
     }
     this._value = value;
   }
 
   get value() {
-    return this.cm.getValue();
+    return this.codemirror.getValue();
   }
 
   public connectedCallback() {
-    if (!this.cm) {
-      this.cm = CodeMirror(this.shadowRoot, {
+    if (!this.codemirror) {
+      this.codemirror = CodeMirror(this.shadowRoot, {
         value: this._value,
         lineNumbers: true,
         mode: "yaml",
         tabSize: 2,
       });
-      this.cm.on("changes", this._onChange);
+      this.codemirror.on("changes", this._onChange);
     } else {
-      this.cm.refresh();
+      this.codemirror.refresh();
     }
   }
 
   private _onChange() {
-    fireEvent(_this, "code-changed", { value: _this.cm.getValue() });
+    fireEvent(_this, "code-changed", { value: _this.codemirror.getValue() });
   }
 }
 
