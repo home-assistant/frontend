@@ -9,12 +9,10 @@ import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
 import "./hui-error-entity-row";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
-class HuiSceneEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
+class HuiSceneEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
 
@@ -59,7 +57,7 @@ class HuiSceneEntityRow extends hassLocalizeLitMixin(LitElement)
             `
           : html`
               <paper-button @click="${this._callService}">
-                ${this.localize("ui.card.scene.activate")}
+                ${this.hass!.localize("ui.card.scene.activate")}
               </paper-button>
             `}
       </hui-generic-entity-row>

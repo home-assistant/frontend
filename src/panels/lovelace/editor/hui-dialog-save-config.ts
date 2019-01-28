@@ -18,10 +18,9 @@ import { haStyleDialog } from "../../../resources/ha-style";
 
 import { HomeAssistant } from "../../../types";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { SaveDialogParams } from "./show-save-config-dialog";
 
-export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
+export class HuiSaveConfig extends LitElement {
   public hass?: HomeAssistant;
   private _params?: SaveDialogParams;
   private _saving: boolean;
@@ -52,16 +51,22 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
   protected render(): TemplateResult | void {
     return html`
       <paper-dialog with-backdrop>
-        <h2>${this.localize("ui.panel.lovelace.editor.save_config.header")}</h2>
+        <h2>
+          ${this.hass!.localize("ui.panel.lovelace.editor.save_config.header")}
+        </h2>
         <paper-dialog-scrollable>
-          <p>${this.localize("ui.panel.lovelace.editor.save_config.para")}</p>
           <p>
-            ${this.localize("ui.panel.lovelace.editor.save_config.para_sure")}
+            ${this.hass!.localize("ui.panel.lovelace.editor.save_config.para")}
+          </p>
+          <p>
+            ${this.hass!.localize(
+              "ui.panel.lovelace.editor.save_config.para_sure"
+            )}
           </p>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <paper-button @click="${this._closeDialog}"
-            >${this.localize(
+            >${this.hass!.localize(
               "ui.panel.lovelace.editor.save_config.cancel"
             )}</paper-button
           >
@@ -73,7 +78,7 @@ export class HuiSaveConfig extends hassLocalizeLitMixin(LitElement) {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${this.localize(
+            ${this.hass!.localize(
               "ui.panel.lovelace.editor.save_config.save"
             )}</paper-button
           >

@@ -6,7 +6,6 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -22,8 +21,7 @@ export interface Config extends LovelaceCardConfig {
   title?: string;
 }
 
-class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiShoppingListCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-shopping-list-editor" */ "../editor/config-elements/hui-shopping-list-editor");
     return document.createElement("hui-shopping-list-card-editor");
@@ -91,7 +89,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
             class="addButton"
             @click="${this._addItem}"
             icon="hass:plus"
-            .title="${this.localize(
+            .title="${this.hass!.localize(
               "ui.panel.lovelace.cards.shopping-list.add_item"
             )}"
           >
@@ -100,7 +98,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
             <paper-input
               no-label-float
               class="addBox"
-              placeholder="${this.localize(
+              placeholder="${this.hass!.localize(
                 "ui.panel.lovelace.cards.shopping-list.add_item"
               )}"
               @keydown="${this._addKeyPress}"
@@ -137,7 +135,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
               <div class="divider"></div>
               <div class="checked">
                 <span class="label">
-                  ${this.localize(
+                  ${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.checked_items"
                   )}
                 </span>
@@ -145,7 +143,7 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
                   class="clearall"
                   @click="${this._clearItems}"
                   icon="hass:notification-clear-all"
-                  .title="${this.localize(
+                  .title="${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.clear_items"
                   )}"
                 >

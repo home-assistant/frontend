@@ -30,7 +30,6 @@ import "../../components/ha-icon";
 import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
 import debounce from "../../common/util/debounce";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../types";
 import { LovelaceConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
@@ -55,7 +54,7 @@ const JS_CACHE = {};
 
 let loadedUnusedEntities = false;
 
-class HUIRoot extends hassLocalizeLitMixin(LitElement) {
+class HUIRoot extends LitElement {
   public narrow?: boolean;
   public showMenu?: boolean;
   public hass?: HomeAssistant;
@@ -141,7 +140,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                   ></paper-icon-button>
                   <div main-title>
                     ${this.config.title ||
-                      this.localize("ui.panel.lovelace.editor.header")}
+                      this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <paper-icon-button
                       icon="hass:pencil"
                       class="edit-icon"
@@ -213,7 +212,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                         >Unused entities</paper-item
                       >
                       <paper-item @click="${this._editModeEnable}"
-                        >${this.localize(
+                        >${this.hass!.localize(
                           "ui.panel.lovelace.editor.configure_ui"
                         )}</paper-item
                       >
@@ -260,7 +259,7 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                       ? html`
                           <paper-button id="add-view" @click="${this._addView}">
                             <ha-icon
-                              title="${this.localize(
+                              title="${this.hass!.localize(
                                 "ui.panel.lovelace.editor.edit_view.add"
                               )}"
                               icon="hass:plus"

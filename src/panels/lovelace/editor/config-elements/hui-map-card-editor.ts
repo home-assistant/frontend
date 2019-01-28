@@ -8,7 +8,6 @@ import "@polymer/paper-input/paper-input";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -36,8 +35,7 @@ const cardConfigStruct = struct({
   entities: [entitiesConfigStruct],
 });
 
-export class HuiMapCardEditor extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCardEditor {
+export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   public hass?: HomeAssistant;
   private _config?: Config;
   private _configEntities?: EntityConfig[];

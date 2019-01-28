@@ -6,7 +6,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
@@ -40,8 +39,7 @@ interface Config extends LovelaceCardConfig {
   hold_action?: ActionConfig;
 }
 
-class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
   private _entitiesDialog?: EntityConfig[];
@@ -154,7 +152,7 @@ class HuiPictureGlanceCard extends hassLocalizeLitMixin(LitElement)
         .icon="${entityConf.icon || stateIcon(stateObj)}"
         title="${`
             ${computeStateName(stateObj)} : ${computeStateDisplay(
-          this.localize,
+          this.hass!.localize,
           stateObj,
           this.hass!.language
         )}
