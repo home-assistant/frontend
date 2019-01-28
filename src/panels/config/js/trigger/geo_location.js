@@ -22,12 +22,15 @@ export default class GeolocationTrigger extends Component {
   }
 
   sourcePicked(ev) {
-    this.props.onChange(
-      this.props.index,
-      Object.assign({}, this.props.trigger, {
-        source: ev.target.selectedItem.attributes.source.value,
-      })
-    );
+    const newSource = ev.target.selectedItem.attributes.source.value;
+    const oldSource = this.props.trigger.source;
+
+    if (oldSource !== newSource) {
+      this.props.onChange(
+        this.props.index,
+        Object.assign({}, this.props.trigger, { source: newSource })
+      );
+    }
   }
 
   zonePicked(ev) {
