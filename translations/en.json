@@ -381,11 +381,6 @@
                                 "geo_location": {
                                     "label": "Geolocation",
                                     "source": "Source",
-                                    "sources": {
-                                        "geo_json_events": "GeoJSON Events",
-                                        "nsw_rural_fire_service_feed": "NSW Rural Fire Service Incidents",
-                                        "usgs_earthquakes_feed": "U.S. Geological Survey Earthquake Hazards Program"
-                                    },
                                     "zone": "Zone",
                                     "event": "Event:",
                                     "enter": "Enter",

@@ -3,31 +3,15 @@ import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "../../../../components/entity/ha-entity-picker";
 
-const SOURCES = [
-  "geo_json_events",
-  "nsw_rural_fire_service_feed",
-  "usgs_earthquakes_feed",
-];
+import { onChangeEvent } from "../../../../common/preact/event";
 
 export default class GeolocationTrigger extends Component {
   constructor() {
     super();
 
-    this.sourcePicked = this.sourcePicked.bind(this);
+    this.onChange = onChangeEvent.bind(this, "trigger");
     this.zonePicked = this.zonePicked.bind(this);
     this.radioGroupPicked = this.radioGroupPicked.bind(this);
-  }
-
-  sourcePicked(ev) {
-    const newSource = ev.target.selectedItem.attributes.source.value;
-    const oldSource = this.props.trigger.source;
-
-    if (oldSource !== newSource) {
-      this.props.onChange(
-        this.props.index,
-        Object.assign({}, this.props.trigger, { source: newSource })
-      );
-    }
   }
 
   zonePicked(ev) {
@@ -46,31 +30,18 @@ export default class GeolocationTrigger extends Component {
 
   /* eslint-disable camelcase */
   render({ trigger, hass, localize }) {
-    const { zone, event } = trigger;
-    const selected = SOURCES.indexOf(trigger.source);
+    const { source, zone, event } = trigger;
 
     return (
       <div>
-        <paper-dropdown-menu
+        <paper-input
           label={localize(
             "ui.panel.config.automation.editor.triggers.type.geo_location.source"
           )}
-          no-animations
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            selected={selected}
-            oniron-select={this.sourcePicked}
-          >
-            {SOURCES.map((opt) => (
-              <paper-item source={opt}>
-                {localize(
-                  `ui.panel.config.automation.editor.triggers.type.geo_location.sources.${opt}`
-                )}
-              </paper-item>
-            ))}
-          </paper-listbox>
-        </paper-dropdown-menu>
+          name="source"
+          value={source}
+          onvalue-changed={this.onChange}
+        />
         <ha-entity-picker
           label={localize(
             "ui.panel.config.automation.editor.triggers.type.geo_location.zone"
