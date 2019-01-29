@@ -11,6 +11,7 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 
 import { moveCard } from "../config-util";
 import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
+import { PolymerChangedEvent } from "../../../../polymer-types";
 
 export class HuiDialogMoveCardView extends LitElement {
   private _params?: MoveCardViewDialogParams;
@@ -91,7 +92,7 @@ export class HuiDialogMoveCardView extends LitElement {
     this._dialog.close();
   }
 
-  private _openedChanged(ev: MouseEvent) {
+  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
       this._params = undefined;
     }
