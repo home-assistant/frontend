@@ -50,52 +50,74 @@ class HaPanelDevInfo extends LitElement {
         ? "Go to the Lovelace UI"
         : "Go to the states UI";
 
-    const defaultPageText = `>> ${
+    const defaultPageText = `${
       localStorage.defaultPage === OPT_IN_PANEL ? "Remove" : "Set"
-    } ${OPT_IN_PANEL} as default page on this device <<`;
+    } ${OPT_IN_PANEL} as default page on this device`;
 
     return html`
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button .narrow='${this.narrow}' showMenu='${
-      this.showMenu
-    }'></ha-menu-button>
-          <div main-title>About</div>
-        </app-toolbar>
-      </app-header>
+      <app-header-layout has-scrolling-region>
+        <app-header slot="header" fixed>
+          <app-toolbar>
+            <ha-menu-button
+              .narrow="${this.narrow}"
+              showMenu="${this.showMenu}"
+            ></ha-menu-button>
+            <div main-title>About</div>
+          </app-toolbar>
+        </app-header>
 
-      <div class='content'>
-        <div class='about'>
-          <p class='version'>
-            <a href='https://www.home-assistant.io'><img src="/static/icons/favicon-192x192.png" height="192" /></a><br />
-            Home Assistant<br />
-            ${hass.config.version}
-          </p>
-          <p>
-            Path to configuration.yaml: ${hass.config.config_dir}
-          </p>
-          <p class='develop'>
-            <a href='https://www.home-assistant.io/developers/credits/' target='_blank'>
-              Developed by a bunch of awesome people.
-            </a>
-          </p>
-          <p>
-            Published under the Apache 2.0 license<br />
-            Source:
-            <a href='https://github.com/home-assistant/home-assistant' target='_blank'>server</a> &mdash;
-            <a href='https://github.com/home-assistant/home-assistant-polymer' target='_blank'>frontend-ui</a>
-          </p>
-          <p>
-            Built using
-            <a href='https://www.python.org'>Python 3</a>,
-            <a href='https://www.polymer-project.org' target='_blank'>Polymer</a>,
-            Icons by <a href='https://www.google.com/design/icons/' target='_blank'>Google</a> and <a href='https://MaterialDesignIcons.com' target='_blank'>MaterialDesignIcons.com</a>.
-          </p>
-          <p>
-            Frontend JavaScript version: ${JS_VERSION}
-            ${
-              customUiList.length > 0
+        <div class="content">
+          <div class="about">
+            <p class="version">
+              <a href="https://www.home-assistant.io"
+                ><img src="/static/icons/favicon-192x192.png" height="192"/></a
+              ><br />
+              Home Assistant<br />
+              ${hass.config.version}
+            </p>
+            <p>
+              Path to configuration.yaml: ${hass.config.config_dir}
+            </p>
+            <p class="develop">
+              <a
+                href="https://www.home-assistant.io/developers/credits/"
+                target="_blank"
+              >
+                Developed by a bunch of awesome people.
+              </a>
+            </p>
+            <p>
+              Published under the Apache 2.0 license<br />
+              Source:
+              <a
+                href="https://github.com/home-assistant/home-assistant"
+                target="_blank"
+                >server</a
+              >
+              &mdash;
+              <a
+                href="https://github.com/home-assistant/home-assistant-polymer"
+                target="_blank"
+                >frontend-ui</a
+              >
+            </p>
+            <p>
+              Built using
+              <a href="https://www.python.org">Python 3</a>,
+              <a href="https://www.polymer-project.org" target="_blank"
+                >Polymer</a
+              >, Icons by
+              <a href="https://www.google.com/design/icons/" target="_blank"
+                >Google</a
+              >
+              and
+              <a href="https://MaterialDesignIcons.com" target="_blank"
+                >MaterialDesignIcons.com</a
+              >.
+            </p>
+            <p>
+              Frontend JavaScript version: ${JS_VERSION}
+              ${customUiList.length > 0
                 ? html`
                     <div>
                       Custom UIs:
@@ -110,20 +132,19 @@ class HaPanelDevInfo extends LitElement {
                       )}
                     </div>
                   `
-                : ""
-            }
-          </p>
-          <p>
-            <a href="${nonDefaultLink}">${nonDefaultLinkText}</a>
-            <div id="love" style="cursor:pointer;" @click="${
-              this._toggleDefaultPage
-            }">${defaultPageText}</div>
-          </p>
+                : ""}
+            </p>
+            <p>
+              <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />
+              <paper-button @click="${this._toggleDefaultPage}" raised>
+                ${defaultPageText}
+              </paper-button>
+            </p>
+          </div>
+          <system-log-card .hass=${this.hass}></system-log-card>
+          <error-log-card .hass=${this.hass}></error-log-card>
         </div>
-        <system-log-card .hass=${this.hass}></system-log-card>
-        <error-log-card .hass=${this.hass}></error-log-card>
-      </div>
-    </app-header-layout>
+      </app-header-layout>
     `;
   }
 
