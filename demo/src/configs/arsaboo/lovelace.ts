@@ -46,7 +46,6 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
   title: "ARS Home",
   views: [
     {
-      icon: "mdi:home-assistant",
       id: "home",
       title: "Home",
       cards: [
@@ -628,7 +627,6 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
       ],
     },
     {
-      icon: "mdi:information-outline",
       id: "home-assistant",
       title: "Home Assistant",
       cards: [
@@ -643,31 +641,26 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
               url: "https://www.home-assistant.io/",
               type: "weblink",
               name: "Home Assistant",
-              icon: "mdi:home-assistant",
             },
             {
               url: "https://www.home-assistant.io/getting-started/",
               type: "weblink",
               name: "Getting Started",
-              icon: "mdi:download",
             },
             {
               url: "https://www.home-assistant.io/cookbook/",
               type: "weblink",
               name: "Configuration Examples",
-              icon: "mdi:home-heart",
             },
             {
               url: "https://community.home-assistant.io/",
               type: "weblink",
               name: "Forum",
-              icon: "mdi:forum",
             },
             {
               url: "https://discord.gg/c5DvZ4e",
               type: "weblink",
               name: "Chat",
-              icon: "mdi:chat",
             },
           ],
           show_header_toggle: false,
