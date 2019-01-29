@@ -39,7 +39,7 @@ class SystemLogCard extends LitElement {
     };
   }
 
-  protected render() {
+  protected render(): TemplateResult | void {
     return html`
       <div class="system-log-intro">
         <paper-card>
@@ -90,7 +90,7 @@ class SystemLogCard extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     this._fetchData();
     this.addEventListener("hass-service-called", (ev) =>
@@ -98,7 +98,7 @@ class SystemLogCard extends LitElement {
     );
   }
 
-  protected serviceCalled(ev) {
+  protected serviceCalled(ev): void {
     // Check if this is for us
     if (ev.detail.success && ev.detail.domain === "system_log") {
       // Do the right thing depending on service
@@ -108,12 +108,12 @@ class SystemLogCard extends LitElement {
     }
   }
 
-  private async _fetchData() {
+  private async _fetchData(): Promise<void> {
     this._items = undefined;
     this._items = await fetchSystemLog(this.hass!);
   }
 
-  private _openLog(ev: Event) {
+  private _openLog(ev: Event): void {
     const item = (ev.currentTarget as any).logItem;
     showSystemLogDetailDialog(this, { item });
   }

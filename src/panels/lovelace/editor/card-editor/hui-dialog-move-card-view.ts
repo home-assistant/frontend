@@ -92,7 +92,7 @@ export class HuiDialogMoveCardView extends LitElement {
     this._dialog.close();
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
       this._params = undefined;
     }
