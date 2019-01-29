@@ -2,6 +2,8 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import { getAppKey } from "../data/notify_html5";
+
 import EventsMixin from "../mixins/events-mixin";
 
 export const pushSupported =
@@ -93,7 +95,21 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         return;
       }
 
-      sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
+      let applicationServerKey;
+      try {
+        applicationServerKey = await getAppKey(this.hass);
+      } catch (ex) {
+        applicationServerKey = null;
+      }
+
+      if (applicationServerKey) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey,
+        });
+      } else {
+        sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
+      }
 
       await this.hass.callApi("POST", "notify.html5", {
         subscription: sub,
