@@ -15,7 +15,6 @@ export default class GeolocationTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, "trigger");
     this.sourcePicked = this.sourcePicked.bind(this);
     this.zonePicked = this.zonePicked.bind(this);
     this.radioGroupPicked = this.radioGroupPicked.bind(this);
@@ -48,8 +47,8 @@ export default class GeolocationTrigger extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ index, trigger, onChange, hass, localize }) {
-    const { source, zone, event } = trigger;
+  render({ trigger, hass, localize }) {
+    const { zone, event } = trigger;
     const selected = SOURCES.indexOf(trigger.source);
 
     return (
