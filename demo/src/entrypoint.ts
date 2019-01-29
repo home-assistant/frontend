@@ -9,8 +9,9 @@ import "../../src/components/ha-iconset-svg";
 
 import "./ha-demo";
 
+import(/* webpackChunkName: "hademo-icons" */ "./resources/hademo-icons.js");
+
 /* polyfill for paper-dropdown */
 setTimeout(() => {
-  import(/* webpackChunkName: "hademo-icons" */ "./resources/hademo-icons.js");
   import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min");
 }, 1000);
