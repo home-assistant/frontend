@@ -32,7 +32,7 @@ class HaPanelDevInfo extends LitElement {
     };
   }
 
-  protected render() {
+  protected render(): TemplateResult | void {
     const hass = this.hass;
     if (!hass) {
       return html``;

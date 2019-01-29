@@ -22,7 +22,7 @@ class ErrorLogCard extends LitElement {
     };
   }
 
-  protected render() {
+  protected render(): TemplateResult | void {
     return html`
       <p class="error-log-intro">
         ${this._errorLog
@@ -62,7 +62,7 @@ class ErrorLogCard extends LitElement {
     `;
   }
 
-  private async _refreshErrorLog() {
+  private async _refreshErrorLog(): Promise<void> {
     this._errorLog = "Loading error log…";
     const log = await fetchErrorLog(this.hass!);
     this._errorLog = log || "No errors have been reported.";

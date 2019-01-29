@@ -26,7 +26,7 @@ class DialogSystemLogDetail extends LitElement {
     await this.updateComplete;
   }
 
-  protected render() {
+  protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }
@@ -56,7 +56,7 @@ class DialogSystemLogDetail extends LitElement {
     `;
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
       this._params = undefined;
     }
