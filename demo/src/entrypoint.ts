@@ -10,8 +10,7 @@ import "../../src/components/ha-iconset-svg";
 import "./ha-demo";
 
 /* polyfill for paper-dropdown */
-setTimeout(
-  () =>
-    import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"),
-  1000
-);
+setTimeout(() => {
+  import(/* webpackChunkName: "hademo-icons" */ "./resources/hademo-icons.js");
+  import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min");
+}, 1000);
