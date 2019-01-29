@@ -3,8 +3,6 @@ import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "../../../../components/entity/ha-entity-picker";
 
-import { onChangeEvent } from "../../../../common/preact/event";
-
 const SOURCES = [
   "geo_json_events",
   "nsw_rural_fire_service_feed",
