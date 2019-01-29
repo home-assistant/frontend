@@ -539,24 +539,18 @@ class HUIRoot extends LitElement {
 
   private _moveViewLeft() {
     const lovelace = this.lovelace!;
-    lovelace.saveConfig(
-      swapView(
-        lovelace.config,
-        this._curView as number,
-        (this._curView as number) - 1
-      )
-    );
+    const oldIndex = this._curView;
+    const newIndex = (this._curView as number) - 1;
+    this._curView = newIndex;
+    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
 
   private _moveViewRight() {
     const lovelace = this.lovelace!;
-    lovelace.saveConfig(
-      swapView(
-        lovelace.config,
-        this._curView as number,
-        (this._curView as number) + 1
-      )
-    );
+    const oldIndex = this._curView;
+    const newIndex = (this._curView as number) + 1;
+    this._curView = newIndex;
+    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
 
   private _addView() {
