@@ -2,6 +2,8 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import { getAppKey } from "../data/notify_html5";
+
 import EventsMixin from "../mixins/events-mixin";
 
 export const pushSupported =
@@ -10,19 +12,6 @@ export const pushSupported =
   (document.location.protocol === "https:" ||
     document.location.hostname === "localhost" ||
     document.location.hostname === "127.0.0.1");
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
 
 /*
  * @appliesMixin EventsMixin
@@ -106,13 +95,9 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         return;
       }
 
-      let applicationServerKey = null;
+      let applicationServerKey;
       try {
-        const res = await this.hass.callApi(
-          "GET",
-          "notify.html5/applicationServerKey"
-        );
-        applicationServerKey = res.message;
+        applicationServerKey = await getAppKey(this.hass);
       } catch (ex) {
         applicationServerKey = null;
       }
@@ -120,7 +105,7 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       if (applicationServerKey) {
         sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(applicationServerKey),
+          applicationServerKey,
         });
       } else {
         sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
