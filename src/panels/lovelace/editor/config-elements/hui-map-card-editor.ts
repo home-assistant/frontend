@@ -28,12 +28,19 @@ const entitiesConfigStruct = struct.union([
   "entity-id",
 ]);
 
+const SOURCES = [
+  "geo_json_events",
+  "nsw_rural_fire_service_feed",
+  "usgs_earthquakes_feed",
+];
+
 const cardConfigStruct = struct({
   type: "string",
   title: "string?",
   aspect_ratio: "string?",
   default_zoom: "number?",
   entities: [entitiesConfigStruct],
+  geo_location_sources: [""],
 });
 
 @customElement("hui-map-card-editor")
@@ -43,6 +50,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @property() private _config?: MapCardConfig;
 
   @property() private _configEntities?: EntityConfig[];
+
+  @property() private _geolocationSources?: string[];
 
   public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
@@ -60,6 +69,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   get _default_zoom(): number {
     return this._config!.default_zoom || NaN;
+  }
+
+  get _geo_location_sources(): string[] {
+    return this._config!.geo_location_sources || [];
   }
 
   protected render(): TemplateResult | void {
@@ -96,6 +109,25 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
+        <paper-card heading="Geolocation Sources">
+          <paper-listbox
+            id="geo_location_sources"
+            multi
+            on-selected-items-changed="_fetchData"
+            selected-values="{{selectedSources}}"
+            attr-for-selected="item-name"
+          >
+            <template is="dom-repeat" items="[[geo_location_sources]]">
+              <paper-item item-name="[[item.entity_id]]">
+                <span
+                  class="calendar_color"
+                  style$="background-color: [[item.color]]"
+                ></span>
+                <span class="calendar_color_spacer"></span> [[item.name]]
+              </paper-item>
+            </template>
+          </paper-listbox>
+        </paper-card>
       </div>
     `;
   }
