@@ -4,6 +4,7 @@ import {
   PropertyDeclarations,
   CSSResult,
   css,
+  TemplateResult,
 } from "lit-element";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
