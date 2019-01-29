@@ -1,4 +1,5 @@
-import * as CodeMirror from "codemirror";
+// @ts-ignore
+import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
