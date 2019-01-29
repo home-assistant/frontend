@@ -5,7 +5,7 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import "@polymer/app-layout/app--layout/app-header-layout";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-menu-button";
