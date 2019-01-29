@@ -84,7 +84,7 @@ class LovelaceFullConfigEditor extends LitElement {
         return;
       }
     });
-    yamlEditor.addEventListener("yaml-changed", (e) => {
+    yamlEditor.addEventListener("yaml-changed", () => {
       this._hash = this._hashAdded || this.yamlEditor.value.includes("#");
       if (this._changed) {
         return;

@@ -1,6 +1,6 @@
-import CodeMirror from "codemirror";
+import * as CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
-// tslint:disable-next-line
+// @ts-ignore
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
 import { fireEvent } from "../../../common/dom/fire_event";
 declare global {
@@ -51,6 +51,12 @@ export class HuiYamlEditor extends HTMLElement {
         mode: "yaml",
         tabSize: 2,
         autofocus: true,
+        extraKeys: {
+          Tab: (cm: CodeMirror) => {
+            const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+            cm.replaceSelection(spaces);
+          },
+        },
       });
       fireEvent(this, "yaml-changed", { value: this._value });
       this.codemirror.on("changes", () => this._onChange());
