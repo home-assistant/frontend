@@ -4,6 +4,7 @@ import {
   CSSResult,
   css,
   PropertyDeclarations,
+  TemplateResult,
 } from "lit-element";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
