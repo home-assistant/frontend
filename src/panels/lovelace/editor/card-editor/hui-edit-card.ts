@@ -194,7 +194,9 @@ export class HuiEditCard extends LitElement {
     this._loading = false;
     this._resizeDialog();
     if (!this._uiEditor) {
-      this.yamlEditor.codemirror.refresh();
+      setTimeout(() => {
+        this.yamlEditor.codemirror.refresh();
+      }, 1);
     }
   }
 
