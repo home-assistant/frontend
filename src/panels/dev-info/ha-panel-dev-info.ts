@@ -127,7 +127,7 @@ class HaPanelDevInfo extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
 
     // Legacy custom UI can be slow to register, give them time.
@@ -139,7 +139,7 @@ class HaPanelDevInfo extends LitElement {
     }, 1000);
   }
 
-  protected _toggleDefaultPage() {
+  protected _toggleDefaultPage(): void {
     if (localStorage.defaultPage === OPT_IN_PANEL) {
       delete localStorage.defaultPage;
     } else {

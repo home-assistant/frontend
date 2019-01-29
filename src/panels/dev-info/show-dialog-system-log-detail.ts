@@ -16,7 +16,7 @@ export interface SystemLogDetailDialogParams {
   item: LoggedError;
 }
 
-const registerDialog = (element: HTMLElement) =>
+const registerDialog = (element: HTMLElement): void =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
@@ -27,7 +27,7 @@ const registerDialog = (element: HTMLElement) =>
 export const showSystemLogDetailDialog = (
   element: HTMLElement,
   systemLogDetailParams: SystemLogDetailDialogParams
-) => {
+): void => {
   if (!registeredDialog) {
     registeredDialog = true;
     registerDialog(element);
