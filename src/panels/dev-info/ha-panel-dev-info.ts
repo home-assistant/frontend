@@ -131,9 +131,9 @@ class HaPanelDevInfo extends LitElement {
     super.firstUpdated(changedProps);
 
     // Legacy custom UI can be slow to register, give them time.
-    const customUI = (window as any).CUSTOM_UI_LIST.length;
+    const customUI = ((window as any).CUSTOM_UI_LIST || []).length;
     setTimeout(() => {
-      if ((window as any).CUSTOM_UI_LIST.length !== customUI.length) {
+      if (((window as any).CUSTOM_UI_LIST || []).length !== customUI.length) {
         this.requestUpdate();
       }
     }, 1000);
