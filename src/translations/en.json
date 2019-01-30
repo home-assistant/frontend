@@ -491,7 +491,7 @@
       },
       "more_info_settings": {
         "save": "Save",
-        "name": "Name",
+        "name": "Name Override",
         "entity_id": "Entity ID"
       }
     },
@@ -747,6 +747,10 @@
           "caption": "Home Assistant Cloud",
           "description_login": "Logged in as {email}",
           "description_not_login": "Not logged in"
+        },
+        "entity_registry": {
+          "caption": "Entity Registry",
+          "description": "Overview of all known entities."
         },
         "integrations": {
           "caption": "Integrations",

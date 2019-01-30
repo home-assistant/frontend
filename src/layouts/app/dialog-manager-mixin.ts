@@ -1,10 +1,17 @@
 import { Constructor, LitElement } from "lit-element";
 import { HASSDomEvent, ValidHassDomEvent } from "../../common/dom/fire_event";
+import { HassBaseEl } from "./hass-base-mixin";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
+}
+
+interface ShowDialogParams<T> {
+  dialogTag: keyof HTMLElementTagNameMap;
+  dialogImport: () => Promise<unknown>;
+  dialogParams: T;
 }
 
 interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]> extends HTMLElement {
@@ -15,19 +22,33 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "register-dialog": RegisterDialogParams;
+    "show-dialog": ShowDialogParams<unknown>;
   }
   // for add event listener
   interface HTMLElementEventMap {
     "register-dialog": HASSDomEvent<RegisterDialogParams>;
+    "show-dialog": HASSDomEvent<ShowDialogParams<unknown>>;
   }
 }
 
-export const dialogManagerMixin = (superClass: Constructor<LitElement>) =>
+const LOADED = {};
+
+export const dialogManagerMixin = (
+  superClass: Constructor<LitElement & HassBaseEl>
+) =>
   class extends superClass {
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
+      // deprecated
       this.addEventListener("register-dialog", (e) =>
         this.registerDialog(e.detail)
+      );
+      this.addEventListener(
+        "show-dialog",
+        async (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
+          const { dialogTag, dialogImport, dialogParams } = e.detail;
+          this._showDialog(dialogImport, dialogTag, dialogParams);
+        }
       );
     }
 
@@ -36,20 +57,29 @@ export const dialogManagerMixin = (superClass: Constructor<LitElement>) =>
       dialogTag,
       dialogImport,
     }: RegisterDialogParams) {
-      let loaded: Promise<HassDialog<unknown>>;
-
       this.addEventListener(dialogShowEvent, (showEv) => {
-        if (!loaded) {
-          loaded = dialogImport().then(() => {
-            const dialogEl = document.createElement(dialogTag) as HassDialog;
-            this.shadowRoot!.appendChild(dialogEl);
-            (this as any).provideHass(dialogEl);
-            return dialogEl;
-          });
-        }
-        loaded.then((dialogEl) =>
-          dialogEl.showDialog((showEv as HASSDomEvent<unknown>).detail)
+        this._showDialog(
+          dialogImport,
+          dialogTag,
+          (showEv as HASSDomEvent<unknown>).detail
         );
       });
+    }
+
+    private async _showDialog(
+      dialogImport: () => Promise<unknown>,
+      dialogTag: string,
+      dialogParams: unknown
+    ) {
+      if (!(dialogTag in LOADED)) {
+        LOADED[dialogTag] = dialogImport().then(() => {
+          const dialogEl = document.createElement(dialogTag) as HassDialog;
+          this.shadowRoot!.appendChild(dialogEl);
+          this.provideHass(dialogEl);
+          return dialogEl;
+        });
+      }
+      const element = await LOADED[dialogTag];
+      element.showDialog(dialogParams);
     }
   };
