@@ -61,10 +61,7 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <hui-yaml-editor
-            @yaml-changed="${this._yamlChanged}"
-            @yaml-save="${this._handleSave}"
-          >
+          <hui-yaml-editor @yaml-changed="${this._yamlChanged}">
           </hui-yaml-editor>
         </div>
       </app-header-layout>
