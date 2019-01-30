@@ -212,8 +212,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   private async _initialLoad(): Promise<void> {
     this._loaded = true;
 
-    const radius = this.clientWidth / 3.2;
+    await this.updateComplete;
+
+    let radius = this.clientWidth / 3.2;
     this._broadCard = this.clientWidth > 390;
+
+    if (radius === 0) {
+      radius = 100;
+    }
 
     (this.shadowRoot!.querySelector(
       "#thermostat"
