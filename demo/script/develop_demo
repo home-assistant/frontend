@@ -6,9 +6,6 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-OUTPUT_DIR=build
-rm -rf $OUTPUT_DIR
-mkdir $OUTPUT_DIR
 node script/gen-icons.js
 
 cd ..

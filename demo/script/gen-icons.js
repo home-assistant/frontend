@@ -6,10 +6,8 @@ const {
   genMDIIcons,
 } = require("../../gulp/tasks/gen-icons.js");
 
-const INFO_OUTLINE = "information-outline";
-
 function genHademoIcons() {
-  const iconNames = findIcons("./src", "hademo").concat(INFO_OUTLINE);
+  const iconNames = findIcons("./src", "hademo");
   fs.writeFileSync("./hademo-icons.html", generateIconset("hademo", iconNames));
 }
 
