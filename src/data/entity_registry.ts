@@ -18,7 +18,7 @@ export interface EntityRegistryEntryUpdateParams {
 export const computeEntityRegistryName = (
   hass: HomeAssistant,
   entry: EntityRegistryEntry
-) => {
+): string | null => {
   if (entry.name) {
     return entry.name;
   }
@@ -26,14 +26,14 @@ export const computeEntityRegistryName = (
   return state ? computeStateName(state) : null;
 };
 
-export const fetchEntityRegistry = (hass: HomeAssistant) =>
+export const fetchEntityRegistry = (hass: HomeAssistant): Promise<EntityRegistryEntry[]> =>
   hass.callWS<EntityRegistryEntry[]>({ type: "config/entity_registry/list" });
 
 export const updateEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
-) =>
+): Promise<void> =>
   hass.callWS<EntityRegistryEntry>({
     type: "config/entity_registry/update",
     entity_id: entityId,
@@ -43,7 +43,7 @@ export const updateEntityRegistryEntry = (
 export const removeEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string
-) =>
+): Promise<void> =>
   hass.callWS({
     type: "config/entity_registry/remove",
     entity_id: entityId,

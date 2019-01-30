@@ -112,17 +112,17 @@ class DialogEntityRegistryDetail extends LitElement {
     `;
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>) {
+  private _nameChanged(ev: PolymerChangedEvent<string>): void {
     this._error = undefined;
     this._name = ev.detail.value;
   }
 
-  private _entityIdChanged(ev: PolymerChangedEvent<string>) {
+  private _entityIdChanged(ev: PolymerChangedEvent<string>): void {
     this._error = undefined;
     this._entityId = ev.detail.value;
   }
 
-  private async _updateEntry() {
+  private async _updateEntry(): Promise<void> {
     try {
       this._submitting = true;
       await this._params!.updateEntry({
@@ -136,7 +136,7 @@ class DialogEntityRegistryDetail extends LitElement {
     }
   }
 
-  private async _deleteEntry() {
+  private async _deleteEntry(): Promise<void> {
     this._submitting = true;
 
     if (await this._params!.removeEntry()) {

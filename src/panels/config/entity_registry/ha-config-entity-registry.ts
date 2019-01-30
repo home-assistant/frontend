@@ -76,19 +76,19 @@ class HaConfigEntityRegistry extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     this._fetchData();
     loadEntityRegistryDetailDialog();
   }
 
-  private async _fetchData() {
+  private async _fetchData(): Promise<void> {
     this._items = (await fetchEntityRegistry(this.hass!)).sort((ent1, ent2) =>
       compare(ent1.entity_id, ent2.entity_id)
     );
   }
 
-  private _openEditEntry(ev: MouseEvent) {
+  private _openEditEntry(ev: MouseEvent): void {
     const entry = (ev.currentTarget! as any).entry;
     showEntityRegistryDetailDialog(this, {
       entry,
