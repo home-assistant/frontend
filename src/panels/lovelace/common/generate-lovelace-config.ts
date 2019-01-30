@@ -238,7 +238,7 @@ export const generateLovelaceConfig = (
     viewEntities.length === 0 ||
     viewEntities[0].entity_id !== DEFAULT_VIEW_ENTITY_ID
   ) {
-    const states = computeDefaultViewStates(hass);
+    const states = {}; //computeDefaultViewStates(hass);
 
     // In the case of a default view, we want to use the group order attribute
     const groupOrders = {};
@@ -279,6 +279,14 @@ export const generateLovelaceConfig = (
   if (__DEMO__) {
     views[0].cards!.unshift({
       type: "custom:ha-demo-card",
+    });
+  }
+
+  // User has no entities
+  if (views.length === 1 && views[0].cards!.length === 0) {
+    import("../cards/hui-empty-state-card");
+    views[0].cards!.push({
+      type: "custom:hui-empty-state-card",
     });
   }
 
