@@ -16,6 +16,7 @@ import { haStyle } from "../../resources/ha-style";
 
 import "./system-log-card";
 import "./error-log-card";
+import "./system-health-card";
 
 const JS_VERSION = __BUILD__;
 const OPT_IN_PANEL = "states";
@@ -142,6 +143,7 @@ class HaPanelDevInfo extends LitElement {
               </paper-button>
             </p>
           </div>
+          <system-health-card .hass=${this.hass}></system-health-card>
           <system-log-card .hass=${this.hass}></system-log-card>
           <error-log-card .hass=${this.hass}></error-log-card>
         </div>
@@ -200,6 +202,12 @@ class HaPanelDevInfo extends LitElement {
 
         .about a {
           color: var(--dark-primary-color);
+        }
+
+        system-health-card {
+          display: block;
+          max-width: 600px;
+          margin: 0 auto;
         }
       `,
     ];
