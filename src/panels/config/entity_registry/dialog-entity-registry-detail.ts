@@ -52,7 +52,7 @@ class DialogEntityRegistryDetail extends LitElement {
     const entry = this._params.entry;
     const stateObj: HassEntity | undefined = this.hass.states[entry.entity_id];
     const invalidDomainUpdate =
-      computeDomain(this._entityId) !==
+      computeDomain(this._entityId.trim()) !==
       computeDomain(this._params.entry.entity_id);
 
     return html`
@@ -126,8 +126,8 @@ class DialogEntityRegistryDetail extends LitElement {
     try {
       this._submitting = true;
       await this._params!.updateEntry({
-        name: this._name,
-        new_entity_id: this._entityId,
+        name: this._name.trim(),
+        new_entity_id: this._entityId.trim(),
       });
       this._params = undefined;
     } catch (err) {
