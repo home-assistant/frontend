@@ -18,7 +18,6 @@ import { HomeAssistant, ClimateEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
-import { afterNextRender } from "../../../common/util/render-status";
 import { UNIT_F } from "../../../common/const";
 
 const thermostatConfig = {
@@ -212,15 +211,20 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   private async _initialLoad(): Promise<void> {
     this._loaded = true;
 
-    const radius = this.clientWidth / 3.2;
+    await this.updateComplete;
+
+    let radius = this.clientWidth / 3.2;
     this._broadCard = this.clientWidth > 390;
+
+    if (radius === 0) {
+      radius = 100;
+    }
 
     (this.shadowRoot!.querySelector(
       "#thermostat"
     )! as HTMLElement).style.height = radius * 2 + "px";
 
     const loaded = await loadRoundslider();
-    await new Promise((resolve) => afterNextRender(resolve));
 
     this._roundSliderStyle = loaded.roundSliderStyle;
     this._jQuery = loaded.jQuery;
