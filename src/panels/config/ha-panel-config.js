@@ -9,6 +9,7 @@ import isComponentLoaded from "../../common/config/is_component_loaded";
 import EventsMixin from "../../mixins/events-mixin";
 import NavigateMixin from "../../mixins/navigate-mixin";
 
+import(/* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry");
 import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation");
 import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud");
 import(/* webpackChunkName: "panel-config-config" */ "./config-entries/ha-config-entries");
@@ -41,6 +42,19 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         query-matches="{{wideSidebar}}"
       >
       </iron-media-query>
+
+      <template
+        is="dom-if"
+        if='[[_equals(_routeData.page, "area_registry")]]'
+        restamp
+      >
+        <ha-config-area-registry
+          page-name="area_registry"
+          route="[[route]]"
+          hass="[[hass]]"
+          is-wide="[[isWide]]"
+        ></ha-config-area-registry>
+      </template>
 
       <template is="dom-if" if='[[_equals(_routeData.page, "core")]]' restamp>
         <ha-config-core

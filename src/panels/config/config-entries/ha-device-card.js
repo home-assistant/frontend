@@ -1,6 +1,9 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -11,6 +14,7 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import compare from "../../../common/string/compare";
+import { updateDeviceRegistryEntry } from "../../../data/device_registry";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
@@ -68,6 +72,22 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
               [[localize('ui.panel.config.integrations.config_entry.manuf',
               'manufacturer', device.manufacturer)]]
             </div>
+            <div class="area">
+              <paper-dropdown-menu
+                selected-item-label="{{selectedArea}}"
+                label="Area"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  selected="[[_computeSelectedArea(areas, device)]]"
+                >
+                  <paper-item>No Area</paper-item>
+                  <template is="dom-repeat" items="[[areas]]">
+                    <paper-item area="[[item]]">[[item.name]]</paper-item>
+                  </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
           </div>
           <template is="dom-if" if="[[device.hub_device_id]]">
             <div class="extra-info">
@@ -111,6 +131,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return {
       device: Object,
       devices: Array,
+      areas: Array,
       entities: Array,
       hass: Object,
       narrow: {
@@ -121,7 +142,41 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         type: Array,
         computed: "_computeChildDevices(device, devices)",
       },
+      selectedArea: {
+        type: String,
+        observer: "_selectedAreaChanged",
+      },
     };
+  }
+
+  _computeSelectedArea(areas, device) {
+    if (!areas || !device || !device.area_id) {
+      return 0;
+    }
+    // +1 because of "No Area" entry
+    return areas.findIndex((area) => area.area_id === device.area_id) + 1;
+  }
+
+  async _selectedAreaChanged(option) {
+    // Selected Option will transition to '' before transitioning to new value
+    if (option === "" || !this.device || !this.areas) {
+      return;
+    }
+    const area =
+      option === "No Area"
+        ? undefined
+        : this.areas.find((ar) => ar.name === option);
+
+    if (
+      (!area && !this.device.area_id) ||
+      (area && area.area_id === this.device.area_id)
+    ) {
+      return;
+    }
+
+    await updateDeviceRegistryEntry(this.hass, this.device.id, {
+      area_id: area ? area.area_id : null,
+    });
   }
 
   _computeChildDevices(device, devices) {
