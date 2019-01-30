@@ -79,6 +79,7 @@ class DialogEntityRegistryDetail extends LitElement {
               @value-changed=${this._nameChanged}
               .label=${this.hass.localize("ui.dialogs.more_info_settings.name")}
               .placeholder=${stateObj ? computeStateName(stateObj) : ""}
+              .disabled=${this._submitting}
             ></paper-input>
             <paper-input
               .value=${this._entityId}
@@ -88,6 +89,7 @@ class DialogEntityRegistryDetail extends LitElement {
               )}
               error-message="Domain needs to stay the same"
               .invalid=${invalidDomainUpdate}
+              .disabled=${this._submitting}
             ></paper-input>
           </div>
         </paper-dialog-scrollable>
@@ -122,19 +124,25 @@ class DialogEntityRegistryDetail extends LitElement {
 
   private async _updateEntry() {
     try {
+      this._submitting = true;
       await this._params!.updateEntry({
         name: this._name,
         new_entity_id: this._entityId,
       });
       this._params = undefined;
     } catch (err) {
+      this._submitting = false;
       this._error = err;
     }
   }
 
   private async _deleteEntry() {
+    this._submitting = true;
+
     if (await this._params!.removeEntry()) {
       this._params = undefined;
+    } else {
+      this._submitting = false;
     }
   }
 
