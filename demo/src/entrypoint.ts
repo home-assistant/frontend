@@ -8,8 +8,7 @@ import "../../src/resources/roboto";
 import "../../src/components/ha-iconset-svg";
 
 import "./ha-demo";
-
-import(/* webpackChunkName: "hademo-icons" */ "./resources/hademo-icons.js");
+import "./resources/hademo-icons";
 
 /* polyfill for paper-dropdown */
 setTimeout(() => {
