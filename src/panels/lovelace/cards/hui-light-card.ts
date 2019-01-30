@@ -293,6 +293,7 @@ export class HuiLightCard extends hassLocalizeLitMixin(LitElement)
           padding-top: 16px;
           padding-right: 16px;
           z-index: 25;
+          color: var(--secondary-text-color);
         }
       </style>
     `;
