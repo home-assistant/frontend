@@ -25,6 +25,7 @@ import compare from "../../../common/string/compare";
 import domainIcon from "../../../common/entity/domain_icon";
 import stateIcon from "../../../common/entity/state_icon";
 import computeDomain from "../../../common/entity/compute_domain";
+import "../ha-config-section";
 import {
   showEntityRegistryDetailDialog,
   loadEntityRegistryDetailDialog,
@@ -32,11 +33,13 @@ import {
 
 class HaConfigEntityRegistry extends LitElement {
   public hass?: HomeAssistant;
+  public isWide?: boolean;
   private _items?: EntityRegistryEntry[];
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
+      isWide: {},
       _items: {},
     };
   }
@@ -49,29 +52,45 @@ class HaConfigEntityRegistry extends LitElement {
     }
     return html`
       <hass-subpage header="Entity Registry">
-        <paper-card>
-          ${this._items.map((entry) => {
-            const state = this.hass!.states[entry.entity_id];
-            return html`
-              <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
-                <ha-icon
-                  slot="item-icon"
-                  .icon=${state
-                    ? stateIcon(state)
-                    : domainIcon(computeDomain(entry.entity_id))}
-                ></ha-icon>
-                <paper-item-body two-line>
-                  <div class="name">
-                    ${computeEntityRegistryName(this.hass!, entry)}
-                  </div>
-                  <div class="secondary entity-id">
-                    ${entry.entity_id} (${entry.platform})
-                  </div>
-                </paper-item-body>
-              </paper-icon-item>
-            `;
-          })}
-        </paper-card>
+        <ha-config-section .isWide=${this.isWide}>
+          <span slot="header">Entity Registry</span>
+          <span slot="introduction">
+            Home Assistant keeps a registry of every entity it has ever seen
+            that can be uniquely identified. Each of these entities will have an
+            entity ID assigned which will be reserved for just this entity.
+            <p>
+              Use the entity registry to override the name, change the entity ID
+              or remove the entry from Home Assistant. Note, removing the entity
+              registry entry won't remove the entity. To do that, remove it from
+              <a href="/config/integrations">the integrations page</a>.
+            </p>
+          </span>
+          <paper-card>
+            ${this._items.map((entry) => {
+              const state = this.hass!.states[entry.entity_id];
+              return html`
+                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
+                  <ha-icon
+                    slot="item-icon"
+                    .icon=${state
+                      ? stateIcon(state)
+                      : domainIcon(computeDomain(entry.entity_id))}
+                  ></ha-icon>
+                  <paper-item-body two-line>
+                    <div class="name">
+                      ${computeEntityRegistryName(this.hass!, entry) ||
+                        "(unavailable)"}
+                    </div>
+                    <div class="secondary entity-id">
+                      ${entry.entity_id}
+                    </div>
+                  </paper-item-body>
+                  <div class="platform">${entry.platform}</div>
+                </paper-icon-item>
+              `;
+            })}
+          </paper-card>
+        </ha-config-section>
       </hass-subpage>
     `;
   }
@@ -126,10 +145,11 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
 
   static get styles(): CSSResult {
     return css`
+      a {
+        color: var(--primary-color);
+      }
       paper-card {
         display: block;
-        max-width: 600px;
-        margin: 16px auto;
         background-color: white;
       }
       paper-icon-item {

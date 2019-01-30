@@ -26,14 +26,16 @@ export const computeEntityRegistryName = (
   return state ? computeStateName(state) : null;
 };
 
-export const fetchEntityRegistry = (hass: HomeAssistant): Promise<EntityRegistryEntry[]> =>
+export const fetchEntityRegistry = (
+  hass: HomeAssistant
+): Promise<EntityRegistryEntry[]> =>
   hass.callWS<EntityRegistryEntry[]>({ type: "config/entity_registry/list" });
 
 export const updateEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
-): Promise<void> =>
+): Promise<EntityRegistryEntry> =>
   hass.callWS<EntityRegistryEntry>({
     type: "config/entity_registry/update",
     entity_id: entityId,
