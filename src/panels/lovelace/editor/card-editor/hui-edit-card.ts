@@ -357,6 +357,7 @@ export class HuiEditCard extends LitElement {
       configElement = await elClass.getConfigElement();
     } else {
       this._configValue = { format: "yaml", value: yaml.safeDump(conf) };
+      this._updatePreview(conf);
       this._uiEditor = false;
       this._configElement = null;
       return false;
@@ -373,6 +374,7 @@ export class HuiEditCard extends LitElement {
         format: "yaml",
         value: yaml.safeDump(conf),
       };
+      this._updatePreview(conf);
       this._uiEditor = false;
       this._configElement = null;
       return false;

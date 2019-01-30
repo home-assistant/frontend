@@ -73,7 +73,6 @@ export class HuiYamlEditor extends HTMLElement {
           },
         },
       });
-      fireEvent(this, "yaml-changed", { value: this._value });
       this.codemirror.on("changes", () => this._onChange());
     } else {
       this.codemirror.refresh();
