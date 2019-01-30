@@ -9,7 +9,6 @@ declare global {
     "yaml-changed": {
       value: string;
     };
-    "yaml-save": {};
   }
 }
 
@@ -74,9 +73,6 @@ export class HuiYamlEditor extends HTMLElement {
           },
         },
       });
-      this.codemirror.commands.save = () => {
-        fireEvent(this, "yaml-save");
-      };
       fireEvent(this, "yaml-changed", { value: this._value });
       this.codemirror.on("changes", () => this._onChange());
     } else {
