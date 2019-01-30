@@ -6,6 +6,7 @@ npm-debug.log
 hass_frontend/*
 hass_frontend_es5/*
 .reify-cache
+demo/hademo-icons.html
 
 # Python stuff
 *.py[cod]

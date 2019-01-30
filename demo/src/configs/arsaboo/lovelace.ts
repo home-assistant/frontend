@@ -46,7 +46,7 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
   title: "ARS Home",
   views: [
     {
-      icon: "mdi:home-assistant",
+      icon: "hass:home-assistant",
       id: "home",
       title: "Home",
       cards: [
@@ -628,7 +628,7 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
       ],
     },
     {
-      icon: "mdi:information-outline",
+      icon: "hass:information-outline",
       id: "home-assistant",
       title: "Home Assistant",
       cards: [
