@@ -9,6 +9,7 @@ declare global {
     "yaml-changed": {
       value: string;
     };
+    "yaml-save": {};
   }
 }
 
@@ -18,15 +19,28 @@ export class HuiYamlEditor extends HTMLElement {
 
   public constructor() {
     super();
+    CodeMirror.commands.save = () => {
+      fireEvent(this, "yaml-save");
+    };
     this._value = "";
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = `
             <style>
                ${codeMirrorCSS}
                .CodeMirror {
-                    height: var(--code-mirror-height, 300px);
-                    color: var(--code-mirror-color, black);
-                    direction: var(--code-mirror-direction, ltr);
+                  height: var(--code-mirror-height, 300px);
+                  direction: var(--code-mirror-direction, ltr);
+                }
+                .CodeMirror-gutters {
+                  border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
+                  background-color: var(--paper-dialog-background-color, var(--primary-background-color));
+                  transition: 0.2s ease border-right;
+                }
+                .CodeMirror-focused .CodeMirror-gutters {
+                  border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));;
+                }
+                .CodeMirror-linenumber {
+                  color: var(--paper-dialog-color, var(--primary-text-color));
                 }
             </style>`;
   }
@@ -42,6 +56,10 @@ export class HuiYamlEditor extends HTMLElement {
 
   get value(): string {
     return this.codemirror.getValue();
+  }
+
+  get hasComments(): boolean {
+    return this.shadowRoot!.querySelector("span.cm-comment") ? true : false;
   }
 
   public connectedCallback(): void {
