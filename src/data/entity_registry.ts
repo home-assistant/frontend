@@ -11,7 +11,7 @@ export interface EntityRegistryEntry {
 }
 
 export interface EntityRegistryEntryUpdateParams {
-  name: string;
+  name: string | null;
   new_entity_id: string;
 }
 

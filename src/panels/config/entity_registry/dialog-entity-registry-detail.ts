@@ -40,7 +40,7 @@ class DialogEntityRegistryDetail extends LitElement {
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
-    this._name = this._params.entry.name;
+    this._name = this._params.entry.name || "";
     this._entityId = this._params.entry.entity_id;
     await this.updateComplete;
   }
@@ -126,7 +126,7 @@ class DialogEntityRegistryDetail extends LitElement {
     try {
       this._submitting = true;
       await this._params!.updateEntry({
-        name: this._name.trim(),
+        name: this._name.trim() || null,
         new_entity_id: this._entityId.trim(),
       });
       this._params = undefined;
