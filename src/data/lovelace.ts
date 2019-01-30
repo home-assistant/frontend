@@ -46,7 +46,7 @@ export interface NavigateActionConfig {
 
 export interface MoreInfoActionConfig {
   action: "more-info";
-  entity?: string;
+  entity: string;
 }
 
 export interface NoActionConfig {
