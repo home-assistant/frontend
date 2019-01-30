@@ -23,23 +23,22 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
-import "./hui-yaml-editor";
+import "../../components/hui-yaml-editor";
+// This is not a duplicate import, one is for types, one is for element.
+// tslint:disable-next-line
+import { HuiYamlEditor } from "../../components/hui-yaml-editor";
 import "./hui-card-preview";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiCardPreview } from "./hui-card-preview";
 import { LovelaceCardEditor, Lovelace } from "../../types";
-import { YamlChangedEvent, ConfigValue, ConfigError } from "../types";
-import { extYamlSchema } from "../yaml-ext-schema";
+import { ConfigValue, ConfigError } from "../types";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { addCard, replaceCard } from "../config-util";
 
 declare global {
   interface HASSDomEvents {
-    "yaml-changed": {
-      yaml: string;
-    };
     "entities-changed": {
       entities: EntityConfig[];
     };
@@ -120,8 +119,7 @@ export class HuiEditCard extends LitElement {
             ? this._configElement
             : html`
                 <hui-yaml-editor
-                  .hass="${this.hass}"
-                  .yaml="${this._configValue!.value}"
+                  .value="${this._configValue!.value}"
                   @yaml-changed="${this._handleYamlChanged}"
                 ></hui-yaml-editor>
               `}
@@ -195,6 +193,11 @@ export class HuiEditCard extends LitElement {
     await this.updateComplete;
     this._loading = false;
     this._resizeDialog();
+    if (!this._uiEditor) {
+      setTimeout(() => {
+        this.yamlEditor.codemirror.refresh();
+      }, 1);
+    }
   }
 
   private async _resizeDialog(): Promise<void> {
@@ -217,9 +220,7 @@ export class HuiEditCard extends LitElement {
 
     const cardConf: LovelaceCardConfig =
       this._configValue!.format === "yaml"
-        ? yaml.safeLoad(this._configValue!.value!, {
-            schema: extYamlSchema,
-          })
+        ? yaml.safeLoad(this._configValue!.value!)
         : this._configValue!.value!;
 
     try {
@@ -241,12 +242,12 @@ export class HuiEditCard extends LitElement {
     }
   }
 
-  private _handleYamlChanged(ev: YamlChangedEvent): void {
-    this._configValue = { format: "yaml", value: ev.detail.yaml };
+  private _handleYamlChanged(ev: CustomEvent): void {
+    this._configValue = { format: "yaml", value: ev.detail.value };
     try {
-      const config = yaml.safeLoad(this._configValue.value, {
-        schema: extYamlSchema,
-      }) as LovelaceCardConfig;
+      const config = yaml.safeLoad(
+        this._configValue.value
+      ) as LovelaceCardConfig;
       this._updatePreview(config);
       this._configState = "OK";
     } catch (err) {
@@ -263,7 +264,9 @@ export class HuiEditCard extends LitElement {
     this._updatePreview(value);
   }
 
-  private _updatePreview(config: LovelaceCardConfig) {
+  private async _updatePreview(config: LovelaceCardConfig) {
+    await this.updateComplete;
+
     if (!this._previewEl) {
       return;
     }
@@ -295,9 +298,7 @@ export class HuiEditCard extends LitElement {
       this._uiEditor = !this._uiEditor;
     } else if (this._configElement && this._configValue!.format === "yaml") {
       const yamlConfig = this._configValue!.value;
-      const cardConfig = yaml.safeLoad(yamlConfig, {
-        schema: extYamlSchema,
-      }) as LovelaceCardConfig;
+      const cardConfig = yaml.safeLoad(yamlConfig) as LovelaceCardConfig;
       this._uiEditor = !this._uiEditor;
       if (cardConfig.type !== this._cardType) {
         const succes = await this._loadConfigElement(cardConfig);
@@ -356,6 +357,7 @@ export class HuiEditCard extends LitElement {
       configElement = await elClass.getConfigElement();
     } else {
       this._configValue = { format: "yaml", value: yaml.safeDump(conf) };
+      this._updatePreview(conf);
       this._uiEditor = false;
       this._configElement = null;
       return false;
@@ -372,6 +374,7 @@ export class HuiEditCard extends LitElement {
         format: "yaml",
         value: yaml.safeDump(conf),
       };
+      this._updatePreview(conf);
       this._uiEditor = false;
       this._configElement = null;
       return false;
@@ -396,6 +399,10 @@ export class HuiEditCard extends LitElement {
     if (!ev.detail.value) {
       this.closeDialog!();
     }
+  }
+
+  private get yamlEditor(): HuiYamlEditor {
+    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
   }
 
   static get styles(): CSSResult[] {
