@@ -7,7 +7,7 @@ import {
   css,
 } from "lit-element";
 
-import "../../../components/ha-card";
+import "@polymer/paper-card/paper-card";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
