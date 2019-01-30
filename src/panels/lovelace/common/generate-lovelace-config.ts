@@ -238,7 +238,7 @@ export const generateLovelaceConfig = (
     viewEntities.length === 0 ||
     viewEntities[0].entity_id !== DEFAULT_VIEW_ENTITY_ID
   ) {
-    const states = {}; //computeDefaultViewStates(hass);
+    const states = computeDefaultViewStates(hass);
 
     // In the case of a default view, we want to use the group order attribute
     const groupOrders = {};
