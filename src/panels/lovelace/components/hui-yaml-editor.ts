@@ -19,9 +19,6 @@ export class HuiYamlEditor extends HTMLElement {
 
   public constructor() {
     super();
-    CodeMirror.commands.save = () => {
-      fireEvent(this, "yaml-save");
-    };
     this._value = "";
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = `
@@ -77,6 +74,9 @@ export class HuiYamlEditor extends HTMLElement {
           },
         },
       });
+      this.codemirror.commands.save = () => {
+        fireEvent(this, "yaml-save");
+      };
       fireEvent(this, "yaml-changed", { value: this._value });
       this.codemirror.on("changes", () => this._onChange());
     } else {
