@@ -527,6 +527,10 @@
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "area_registry": {
+          "caption": "Area Registry",
+          "description": "Overview of all areas in your home."
+        },
         "core": {
           "caption": "General",
           "description": "Validate your configuration file and control the server",
