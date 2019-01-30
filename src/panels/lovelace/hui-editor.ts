@@ -14,8 +14,10 @@ import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/ha-style";
-
-const TAB_INSERT = "  ";
+import "./components/hui-yaml-editor";
+// This is not a duplicate import, one is for types, one is for element.
+// tslint:disable-next-line
+import { HuiYamlEditor } from "./components/hui-yaml-editor";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -28,16 +30,13 @@ class LovelaceFullConfigEditor extends LitElement {
   public closeEditor?: () => void;
   private _saving?: boolean;
   private _changed?: boolean;
-  private _hashAdded?: boolean;
-  private _hash?: boolean;
+  private _generation?: number;
 
   static get properties() {
     return {
       lovelace: {},
       _saving: {},
       _changed: {},
-      _hashAdded: {},
-      _hash: {},
     };
   }
 
@@ -51,11 +50,6 @@ class LovelaceFullConfigEditor extends LitElement {
               @click="${this._closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
-            ${this._hash
-              ? html`
-                  <span class="comments">Comments will be not be saved!</span>
-                `
-              : ""}
             <paper-button @click="${this._handleSave}">Save</paper-button>
             <ha-icon
               class="save-button
@@ -67,52 +61,27 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <textarea
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            @input="${this._yamlChanged}"
-          ></textarea>
+          <hui-yaml-editor @yaml-changed="${this._yamlChanged}">
+          </hui-yaml-editor>
         </div>
       </app-header-layout>
     `;
   }
 
   protected firstUpdated() {
-    const textArea = this.textArea;
-    textArea.value = yaml.safeDump(this.lovelace!.config);
-    textArea.addEventListener("keydown", (e) => {
-      if (e.keyCode === 51) {
-        this._hashAdded = true;
-        return;
-      }
-
-      if (e.keyCode !== 9) {
-        return;
-      }
-
-      e.preventDefault();
-
-      // tab was pressed, get caret position/selection
-      const val = textArea.value;
-      const start = textArea.selectionStart;
-      const end = textArea.selectionEnd;
-
-      // set textarea value to: text before caret + tab + text after caret
-      textArea.value =
-        val.substring(0, start) + TAB_INSERT + val.substring(end);
-
-      // put caret at right position again
-      textArea.selectionStart = textArea.selectionEnd =
-        start + TAB_INSERT.length;
-    });
+    this.yamlEditor.value = yaml.safeDump(this.lovelace!.config);
+    this.yamlEditor.codemirror.clearHistory();
+    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
   }
 
   static get styles(): CSSResult[] {
     return [
       haStyle,
       css`
+        :host {
+          --code-mirror-height: 100%;
+        }
+
         app-header-layout {
           height: 100vh;
         }
@@ -132,16 +101,8 @@ class LovelaceFullConfigEditor extends LitElement {
           height: calc(100vh - 68px);
         }
 
-        textarea {
-          box-sizing: border-box;
+        hui-code-editor {
           height: 100%;
-          width: 100%;
-          resize: none;
-          border: 0;
-          outline: 0;
-          font-size: 12pt;
-          font-family: "Courier New", Courier, monospace;
-          padding: 8px;
         }
 
         .save-button {
@@ -156,6 +117,20 @@ class LovelaceFullConfigEditor extends LitElement {
         }
       `,
     ];
+  }
+
+  private _yamlChanged() {
+    if (!this._generation) {
+      return;
+    }
+    this._changed = !this.yamlEditor.codemirror.isClean(this._generation);
+    if (this._changed && !window.onbeforeunload) {
+      window.onbeforeunload = () => {
+        return true;
+      };
+    } else if (!this._changed && window.onbeforeunload) {
+      window.onbeforeunload = null;
+    }
   }
 
   private _closeEditor() {
@@ -173,10 +148,10 @@ class LovelaceFullConfigEditor extends LitElement {
   private async _handleSave() {
     this._saving = true;
 
-    if (this._hashAdded) {
+    if (this.yamlEditor.hasComments) {
       if (
         !confirm(
-          "Your config might contain comments, these will not be saved. Do you want to continue?"
+          "Your config contains comment(s), these will not be saved. Do you want to continue?"
         )
       ) {
         return;
@@ -185,7 +160,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
     let value;
     try {
-      value = yaml.safeLoad(this.textArea.value);
+      value = yaml.safeLoad(this.yamlEditor.value);
     } catch (err) {
       alert(`Unable to parse YAML: ${err}`);
       this._saving = false;
@@ -202,25 +177,14 @@ class LovelaceFullConfigEditor extends LitElement {
     } catch (err) {
       alert(`Unable to save YAML: ${err}`);
     }
+    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
     window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
-    this._hashAdded = false;
   }
 
-  private _yamlChanged() {
-    this._hash = this._hashAdded || this.textArea.value.includes("#");
-    if (this._changed) {
-      return;
-    }
-    window.onbeforeunload = () => {
-      return true;
-    };
-    this._changed = true;
-  }
-
-  private get textArea(): HTMLTextAreaElement {
-    return this.shadowRoot!.querySelector("textarea")!;
+  private get yamlEditor(): HuiYamlEditor {
+    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
   }
 }
 
