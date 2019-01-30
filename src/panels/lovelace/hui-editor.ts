@@ -30,16 +30,13 @@ class LovelaceFullConfigEditor extends LitElement {
   public closeEditor?: () => void;
   private _saving?: boolean;
   private _changed?: boolean;
-  private _hashAdded?: boolean;
-  private _hash?: boolean;
+  private _generation?: number;
 
   static get properties() {
     return {
       lovelace: {},
       _saving: {},
       _changed: {},
-      _hashAdded: {},
-      _hash: {},
     };
   }
 
@@ -53,11 +50,6 @@ class LovelaceFullConfigEditor extends LitElement {
               @click="${this._closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
-            ${this._hash
-              ? html`
-                  <span class="comments">Comments will be not be saved!</span>
-                `
-              : ""}
             <paper-button @click="${this._handleSave}">Save</paper-button>
             <ha-icon
               class="save-button
@@ -69,31 +61,20 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <hui-yaml-editor> </hui-yaml-editor>
+          <hui-yaml-editor
+            @yaml-changed="${this._yamlChanged}"
+            @yaml-save="${this._handleSave}"
+          >
+          </hui-yaml-editor>
         </div>
       </app-header-layout>
     `;
   }
 
   protected firstUpdated() {
-    const yamlEditor = this.yamlEditor;
-    yamlEditor.value = yaml.safeDump(this.lovelace!.config);
-    yamlEditor.addEventListener("keydown", (e) => {
-      if (e.keyCode === 51) {
-        this._hashAdded = true;
-        return;
-      }
-    });
-    yamlEditor.addEventListener("yaml-changed", () => {
-      this._hash = this._hashAdded || this.yamlEditor.value.includes("#");
-      if (this._changed) {
-        return;
-      }
-      window.onbeforeunload = () => {
-        return true;
-      };
-      this._changed = true;
-    });
+    this.yamlEditor.value = yaml.safeDump(this.lovelace!.config);
+    this.yamlEditor.codemirror.clearHistory();
+    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
   }
 
   static get styles(): CSSResult[] {
@@ -141,6 +122,20 @@ class LovelaceFullConfigEditor extends LitElement {
     ];
   }
 
+  private _yamlChanged() {
+    if (!this._generation) {
+      return;
+    }
+    this._changed = !this.yamlEditor.codemirror.isClean(this._generation);
+    if (this._changed && !window.onbeforeunload) {
+      window.onbeforeunload = () => {
+        return true;
+      };
+    } else if (!this._changed && window.onbeforeunload) {
+      window.onbeforeunload = null;
+    }
+  }
+
   private _closeEditor() {
     if (this._changed) {
       if (
@@ -156,10 +151,10 @@ class LovelaceFullConfigEditor extends LitElement {
   private async _handleSave() {
     this._saving = true;
 
-    if (this._hashAdded) {
+    if (this.yamlEditor.hasComments) {
       if (
         !confirm(
-          "Your config might contain comments, these will not be saved. Do you want to continue?"
+          "Your config contains comment(s), these will not be saved. Do you want to continue?"
         )
       ) {
         return;
@@ -185,10 +180,10 @@ class LovelaceFullConfigEditor extends LitElement {
     } catch (err) {
       alert(`Unable to save YAML: ${err}`);
     }
+    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
     window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
-    this._hashAdded = false;
   }
 
   private get yamlEditor(): HuiYamlEditor {
