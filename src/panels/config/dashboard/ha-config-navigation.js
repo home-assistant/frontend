@@ -10,7 +10,7 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 
 import isComponentLoaded from "../../../common/config/is_component_loaded";
 
-const CORE_PAGES = ["core", "customize", "entity_registry"];
+const CORE_PAGES = ["core", "customize", "entity_registry", "area_registry"];
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
@@ -54,6 +54,7 @@ class HaConfigNavigation extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           "core",
           "customize",
           "entity_registry",
+          "area_registry",
           "automation",
           "script",
           "zha",

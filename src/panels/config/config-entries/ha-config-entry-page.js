@@ -53,6 +53,7 @@ class HaConfigEntryPage extends NavigateMixin(
             <ha-device-card
               class="card"
               hass="[[hass]]"
+              areas="[[areas]]"
               devices="[[devices]]"
               device="[[device]]"
               entities="[[entities]]"
@@ -96,6 +97,11 @@ class HaConfigEntryPage extends NavigateMixin(
         type: Array,
         computed: "_computeNoDeviceEntities(configEntry, entities)",
       },
+
+      /**
+       * Area registry entries
+       */
+      areas: Array,
 
       /**
        * Device registry entries
