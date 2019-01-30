@@ -8,14 +8,8 @@ import "../../../layouts/hass-subpage";
 
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixIn from "../../../mixins/localize-mixin";
-import computeStateName from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
-
-function computeEntityName(hass, entity) {
-  if (entity.name) return entity.name;
-  const state = hass.states[entity.entity_id];
-  return state ? computeStateName(state) : null;
-}
+import { computeEntityRegistryName } from "../../../data/entity_registry";
 
 /*
  * @appliesMixin LocalizeMixIn
@@ -66,7 +60,7 @@ class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
 
   _computeEntityName(entity, hass) {
     return (
-      computeEntityName(hass, entity) ||
+      computeEntityRegistryName(hass, entity) ||
       `(${this.localize(
         "ui.panel.config.integrations.config_entry.entity_unavailable"
       )})`
