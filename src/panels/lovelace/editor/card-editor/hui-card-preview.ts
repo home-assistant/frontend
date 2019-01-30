@@ -1,6 +1,7 @@
 import {
   LitElement,
   PropertyDeclarations,
+  PropertyValues,
   TemplateResult,
   html,
 } from "lit-element";
