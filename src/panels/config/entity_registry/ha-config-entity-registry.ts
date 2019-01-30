@@ -60,7 +60,7 @@ class HaConfigEntityRegistry extends LitElement {
                     ? stateIcon(state)
                     : domainIcon(computeDomain(entry.entity_id))}
                 ></ha-icon>
-                <paper-item-body>
+                <paper-item-body two-line>
                   <div class="name">
                     ${computeEntityRegistryName(this.hass!, entry)}
                   </div>
@@ -134,8 +134,6 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
       }
       paper-icon-item {
         cursor: pointer;
-        padding-top: 4px;
-        padding-bottom: 4px;
       }
       ha-icon {
         margin-left: 8px;

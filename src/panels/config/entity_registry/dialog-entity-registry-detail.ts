@@ -18,7 +18,7 @@ import computeDomain from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 
-class DialogSystemLogDetail extends LitElement {
+class DialogEntityRegistryDetail extends LitElement {
   public hass!: HomeAssistant;
   private _name!: string;
   private _entityId!: string;
@@ -173,8 +173,11 @@ class DialogSystemLogDetail extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-entity-registry-detail": DialogSystemLogDetail;
+    "dialog-entity-registry-detail": DialogEntityRegistryDetail;
   }
 }
 
-customElements.define("dialog-entity-registry-detail", DialogSystemLogDetail);
+customElements.define(
+  "dialog-entity-registry-detail",
+  DialogEntityRegistryDetail
+);
