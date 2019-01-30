@@ -4,8 +4,6 @@ import {
   EntityRegistryEntryUpdateParams,
 } from "../../../data/entity_registry";
 
-const dialogTag = "dialog-entity-registry-detail";
-
 export interface EntityRegistryDetailDialogParams {
   entry: EntityRegistryEntry;
   updateEntry: (
@@ -22,7 +20,7 @@ export const showEntityRegistryDetailDialog = (
   systemLogDetailParams: EntityRegistryDetailDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag,
+    dialogTag: "dialog-entity-registry-detail",
     dialogImport: loadEntityRegistryDetailDialog,
     dialogParams: systemLogDetailParams,
   });
