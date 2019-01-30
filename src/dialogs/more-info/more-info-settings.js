@@ -121,7 +121,7 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.fire("more-info-page", { page: null });
   }
 
-  async _save(): Promise<void> {
+  async _save() {
     try {
       const info = await updateEntityRegistryEntry(
         this.hass,
