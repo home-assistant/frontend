@@ -12,7 +12,6 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import { processEditorEntities } from "../process-editor-entities";
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -45,7 +44,7 @@ const cardConfigStruct = struct({
   entities: [entitiesConfigStruct],
 });
 
-export class HuiEntitiesCardEditor extends hassLocalizeLitMixin(LitElement)
+export class HuiEntitiesCardEditor extends LitElement
   implements LovelaceCardEditor {
   static get properties(): PropertyDeclarations {
     return { hass: {}, _config: {}, _configEntities: {} };

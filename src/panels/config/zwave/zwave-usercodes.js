@@ -69,7 +69,7 @@ class ZwaveUsercodes extends PolymerElement {
                 hass="[[hass]]"
                 domain="lock"
                 service="set_usercode"
-                service-data="[[_computeUserCodeServiceData(_selectedUserCodeValue, &quot;Add&quot;)]]"
+                service-data='[[_computeUserCodeServiceData(_selectedUserCodeValue, "Add")]]'
               >
                 Set Usercode
               </ha-call-service-button>
@@ -77,7 +77,7 @@ class ZwaveUsercodes extends PolymerElement {
                 hass="[[hass]]"
                 domain="lock"
                 service="clear_usercode"
-                service-data="[[_computeUserCodeServiceData(_selectedUserCode, &quot;Delete&quot;)]]"
+                service-data='[[_computeUserCodeServiceData(_selectedUserCode, "Delete")]]'
               >
                 Delete Usercode
               </ha-call-service-button>

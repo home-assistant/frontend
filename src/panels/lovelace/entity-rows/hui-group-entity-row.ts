@@ -11,12 +11,10 @@ import "./hui-error-entity-row";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
-class HuiGroupEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
+class HuiGroupEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
 
@@ -51,26 +49,22 @@ class HuiGroupEntityRow extends hassLocalizeLitMixin(LitElement)
 
     return html`
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        ${
-          this._computeCanToggle(stateObj.attributes.entity_id)
-            ? html`
-                <ha-entity-toggle
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-entity-toggle>
-              `
-            : html`
-                <div>
-                  ${
-                    computeStateDisplay(
-                      this.localize,
-                      stateObj,
-                      this.hass.language
-                    )
-                  }
-                </div>
-              `
-        }
+        ${this._computeCanToggle(stateObj.attributes.entity_id)
+          ? html`
+              <ha-entity-toggle
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-entity-toggle>
+            `
+          : html`
+              <div>
+                ${computeStateDisplay(
+                  this.hass!.localize,
+                  stateObj,
+                  this.hass.language
+                )}
+              </div>
+            `}
       </hui-generic-entity-row>
     `;
   }

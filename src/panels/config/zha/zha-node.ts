@@ -1,9 +1,10 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-card/paper-card";
@@ -16,7 +17,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import sortByName from "../../../common/entity/states_sort_by_name";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import "../../../resources/ha-style";
+import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import {
@@ -45,8 +46,6 @@ export class ZHANode extends LitElement {
   private _selectedNode?: HassEntity;
   private _selectedEntity?: HassEntity;
   private _serviceData?: {};
-  private _haStyle?: DocumentFragment;
-  private _ironFlex?: DocumentFragment;
   private _nodes: HassEntity[];
 
   constructor() {
@@ -71,7 +70,6 @@ export class ZHANode extends LitElement {
   protected render(): TemplateResult | void {
     this._nodes = this._computeNodes(this.hass);
     return html`
-      ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">
           <span>Node Management</span>
@@ -97,27 +95,23 @@ export class ZHANode extends LitElement {
                 slot="dropdown-content"
                 @iron-select="${this._selectedNodeChanged}"
               >
-                ${
-                  this._nodes.map(
-                    (entry) => html`
-                      <paper-item
-                        >${this._computeSelectCaption(entry)}</paper-item
-                      >
-                    `
-                  )
-                }
+                ${this._nodes.map(
+                  (entry) => html`
+                    <paper-item
+                      >${this._computeSelectCaption(entry)}</paper-item
+                    >
+                  `
+                )}
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
-          ${
-            this._showHelp
-              ? html`
-                  <div class="helpText">
-                    Select node to view per-node options
-                  </div>
-                `
-              : ""
-          }
+          ${this._showHelp
+            ? html`
+                <div class="helpText">
+                  Select node to view per-node options
+                </div>
+              `
+            : ""}
           ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
           ${this._selectedNodeIndex !== -1 ? this._renderEntities() : ""}
           ${this._selectedEntity ? this._renderClusters() : ""}
@@ -135,17 +129,15 @@ export class ZHANode extends LitElement {
         <paper-button @click="${this._onReconfigureNodeClick}"
           >Reconfigure Node</paper-button
         >
-        ${
-          this._showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="reconfigure_device"
-                />
-              `
-            : ""
-        }
+        ${this._showHelp
+          ? html`
+              <div class="helpText">
+                ${this.hass!.localize(
+                  "ui.panel.config.zha.services.reconfigure"
+                )}
+              </div>
+            `
+          : ""}
         <ha-call-service-button
           .hass="${this.hass}"
           domain="zha"
@@ -153,17 +145,15 @@ export class ZHANode extends LitElement {
           .serviceData="${this._serviceData}"
           >Remove Node</ha-call-service-button
         >
-        ${
-          this._showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="remove"
-                />
-              `
-            : ""
-        }
+        ${this._showHelp
+          ? html`
+              <ha-service-description
+                .hass="${this.hass}"
+                domain="zha"
+                service="remove"
+              />
+            `
+          : ""}
       </div>
     `;
   }
@@ -242,24 +232,18 @@ export class ZHANode extends LitElement {
     this._selectedEntity = entitySelectedEvent.detail.entity;
   }
 
-  private renderStyle(): TemplateResult {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    if (!this._ironFlex) {
-      this._ironFlex = document.importNode(
-        (document.getElementById("iron-flex")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    return html`
-      ${this._ironFlex} ${this._haStyle}
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .flex {
+          -ms-flex: 1 1 0.000000001px;
+          -webkit-flex: 1;
+          flex: 1;
+          -webkit-flex-basis: 0.000000001px;
+          flex-basis: 0.000000001px;
+        }
+
         .content {
           margin-top: 24px;
         }
@@ -289,8 +273,15 @@ export class ZHANode extends LitElement {
         }
 
         .node-picker {
-          @apply --layout-horizontal;
-          @apply --layout-center-center;
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          -ms-flex-direction: row;
+          -webkit-flex-direction: row;
+          flex-direction: row;
+          -ms-flex-align: center;
+          -webkit-align-items: center;
+          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
@@ -311,8 +302,8 @@ export class ZHANode extends LitElement {
           right: 0;
           color: var(--primary-color);
         }
-      </style>
-    `;
+      `,
+    ];
   }
 }
 

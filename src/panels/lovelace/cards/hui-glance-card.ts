@@ -7,7 +7,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
@@ -38,8 +37,7 @@ export interface Config extends LovelaceCardConfig {
   columns?: number;
 }
 
-export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-glance-card-editor" */ "../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
@@ -124,11 +122,9 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
       ${this.renderStyle()}
       <ha-card .header="${title}">
         <div class="entities ${classMap({ "no-header": !title })}">
-          ${
-            this._configEntities!.map((entityConf) =>
-              this.renderEntity(entityConf)
-            )
-          }
+          ${this._configEntities!.map((entityConf) =>
+            this.renderEntity(entityConf)
+          )}
         </div>
       </ha-card>
     `;
@@ -208,38 +204,30 @@ export class HuiGlanceCard extends hassLocalizeLitMixin(LitElement)
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       >
-        ${
-          this._config!.show_name !== false
-            ? html`
-                <div class="name">
-                  ${
-                    "name" in entityConf
-                      ? entityConf.name
-                      : computeStateName(stateObj)
-                  }
-                </div>
-              `
-            : ""
-        }
+        ${this._config!.show_name !== false
+          ? html`
+              <div class="name">
+                ${"name" in entityConf
+                  ? entityConf.name
+                  : computeStateName(stateObj)}
+              </div>
+            `
+          : ""}
         <state-badge
           .stateObj="${stateObj}"
           .overrideIcon="${entityConf.icon}"
         ></state-badge>
-        ${
-          this._config!.show_state !== false
-            ? html`
-                <div>
-                  ${
-                    computeStateDisplay(
-                      this.localize,
-                      stateObj,
-                      this.hass!.language
-                    )
-                  }
-                </div>
-              `
-            : ""
-        }
+        ${this._config!.show_state !== false
+          ? html`
+              <div>
+                ${computeStateDisplay(
+                  this.hass!.localize,
+                  stateObj,
+                  this.hass!.language
+                )}
+              </div>
+            `
+          : ""}
       </div>
     `;
   }

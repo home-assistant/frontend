@@ -370,7 +370,7 @@
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
                             "delete_confirm": "Zeker dat u wilt verwijderen?",
-                            "unsupported_platform": "Niet-ondersteund platform: {platform}",
+                            "unsupported_platform": "Niet ondersteund platform: {platform}",
                             "type_select": "Trigger-type",
                             "type": {
                                 "event": {
@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Tijdspatroon",
+                                    "hours": "Uren",
+                                    "minutes": "Minuten",
+                                    "seconds": "Seconden"
                                 }
                             }
                         },
@@ -437,7 +443,7 @@
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
                             "delete_confirm": "Zeker weten dat je wilt verwijderen?",
-                            "unsupported_condition": "Niet-ondersteunde voorwaarde: {condition}",
+                            "unsupported_condition": "Niet ondersteunde voorwaarde: {condition}",
                             "type_select": "Type voorwaarde",
                             "type": {
                                 "state": {
@@ -938,7 +944,7 @@
                 "sun": {
                     "elevation": "Hoogtehoek",
                     "rising": "Opkomst",
-                    "setting": "Instelling"
+                    "setting": "Ondergang"
                 },
                 "updater": {
                     "title": "Instructies bijwerken"

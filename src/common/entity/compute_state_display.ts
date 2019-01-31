@@ -3,7 +3,7 @@ import computeStateDomain from "./compute_state_domain";
 import formatDateTime from "../datetime/format_date_time";
 import formatDate from "../datetime/format_date";
 import formatTime from "../datetime/format_time";
-import { LocalizeFunc } from "../../mixins/localize-base-mixin";
+import { LocalizeFunc } from "../translations/localize";
 
 export default (
   localize: LocalizeFunc,

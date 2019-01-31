@@ -408,6 +408,11 @@
                                     "event": "الحدث",
                                     "enter": "دخول",
                                     "leave": "مغادرة"
+                                },
+                                "time_pattern": {
+                                    "hours": "ساعات",
+                                    "minutes": "الدقائق",
+                                    "seconds": "ثواني"
                                 }
                             }
                         },
@@ -597,6 +602,17 @@
                         "required_fields": "املأ جميع الحقول المطلوبة"
                     }
                 }
+            },
+            "lovelace": {
+                "editor": {
+                    "edit_card": {
+                        "edit": "تصحيح",
+                        "delete": "حذف"
+                    },
+                    "save_config": {
+                        "cancel": "لا يهم"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -685,6 +701,11 @@
                 "save": "حفظ",
                 "name": "الاسم",
                 "entity_id": "الكيان ID"
+            },
+            "more_info_control": {
+                "sun": {
+                    "setting": "ضبط"
+                }
             }
         },
         "auth_store": {

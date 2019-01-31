@@ -13,10 +13,9 @@ import { haStyleDialog } from "../../../../resources/ha-style";
 
 import "./hui-card-picker";
 import { HomeAssistant } from "../../../../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 
-export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
+export class HuiDialogPickCard extends LitElement {
   public hass?: HomeAssistant;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
   public closeDialog?: () => void;
@@ -32,7 +31,9 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${this.localize("ui.panel.lovelace.editor.edit_card.header")}</h2>
+        <h2>
+          ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}
+        </h2>
         <paper-dialog-scrollable>
           <hui-card-picker
             .hass="${this.hass}"
@@ -40,7 +41,7 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
           ></hui-card-picker>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button @click="${this._skipPick}">SKIP</paper-button>
+          <paper-button @click="${this._skipPick}">MANUAL CARD</paper-button>
         </div>
       </paper-dialog>
     `;

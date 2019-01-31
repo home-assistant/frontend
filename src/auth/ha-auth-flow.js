@@ -21,21 +21,21 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
         }
       </style>
       <form>
-        <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">
+        <template is="dom-if" if='[[_equals(_state, "loading")]]'>
           [[localize('ui.panel.page-authorize.form.working')]]:
         </template>
-        <template is="dom-if" if="[[_equals(_state, &quot;error&quot;)]]">
+        <template is="dom-if" if='[[_equals(_state, "error")]]'>
           <div class="error">Error: [[_errorMsg]]</div>
         </template>
-        <template is="dom-if" if="[[_equals(_state, &quot;step&quot;)]]">
-          <template is="dom-if" if="[[_equals(_step.type, &quot;abort&quot;)]]">
+        <template is="dom-if" if='[[_equals(_state, "step")]]'>
+          <template is="dom-if" if='[[_equals(_step.type, "abort")]]'>
             [[localize('ui.panel.page-authorize.abort_intro')]]:
             <ha-markdown
               content="[[_computeStepAbortedReason(localize, _step)]]"
             ></ha-markdown>
           </template>
 
-          <template is="dom-if" if="[[_equals(_step.type, &quot;form&quot;)]]">
+          <template is="dom-if" if='[[_equals(_step.type, "form")]]'>
             <template
               is="dom-if"
               if="[[_computeStepDescription(localize, _step)]]"

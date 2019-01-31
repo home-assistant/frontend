@@ -6,7 +6,6 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -22,8 +21,7 @@ export interface Config extends LovelaceCardConfig {
   title?: string;
 }
 
-class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiShoppingListCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-shopping-list-editor" */ "../editor/config-elements/hui-shopping-list-editor");
     return document.createElement("hui-shopping-list-card-editor");
@@ -91,103 +89,93 @@ class HuiShoppingListCard extends hassLocalizeLitMixin(LitElement)
             class="addButton"
             @click="${this._addItem}"
             icon="hass:plus"
-            .title="${
-              this.localize("ui.panel.lovelace.cards.shopping-list.add_item")
-            }"
+            .title="${this.hass!.localize(
+              "ui.panel.lovelace.cards.shopping-list.add_item"
+            )}"
           >
           </ha-icon>
           <paper-item-body>
             <paper-input
               no-label-float
               class="addBox"
-              placeholder="${
-                this.localize("ui.panel.lovelace.cards.shopping-list.add_item")
-              }"
+              placeholder="${this.hass!.localize(
+                "ui.panel.lovelace.cards.shopping-list.add_item"
+              )}"
               @keydown="${this._addKeyPress}"
             ></paper-input>
           </paper-item-body>
         </div>
-        ${
-          repeat(
-            this._uncheckedItems!,
-            (item) => item.id,
-            (item, index) =>
-              html`
-                <div class="editRow">
-                  <paper-checkbox
-                    slot="item-icon"
-                    id="${index}"
-                    ?checked="${item.complete}"
+        ${repeat(
+          this._uncheckedItems!,
+          (item) => item.id,
+          (item, index) =>
+            html`
+              <div class="editRow">
+                <paper-checkbox
+                  slot="item-icon"
+                  id="${index}"
+                  ?checked="${item.complete}"
+                  .itemId="${item.id}"
+                  @click="${this._completeItem}"
+                  tabindex="0"
+                ></paper-checkbox>
+                <paper-item-body>
+                  <paper-input
+                    no-label-float
+                    .value="${item.name}"
                     .itemId="${item.id}"
-                    @click="${this._completeItem}"
-                    tabindex="0"
-                  ></paper-checkbox>
-                  <paper-item-body>
-                    <paper-input
-                      no-label-float
-                      .value="${item.name}"
-                      .itemId="${item.id}"
-                      @change="${this._saveEdit}"
-                    ></paper-input>
-                  </paper-item-body>
-                </div>
-              `
-          )
-        }
-        ${
-          this._checkedItems!.length > 0
-            ? html`
-                <div class="divider"></div>
-                <div class="checked">
-                  <span class="label">
-                    ${
-                      this.localize(
-                        "ui.panel.lovelace.cards.shopping-list.checked_items"
-                      )
-                    }
-                  </span>
-                  <ha-icon
-                    class="clearall"
-                    @click="${this._clearItems}"
-                    icon="hass:notification-clear-all"
-                    .title="${
-                      this.localize(
-                        "ui.panel.lovelace.cards.shopping-list.clear_items"
-                      )
-                    }"
-                  >
-                  </ha-icon>
-                </div>
-                ${
-                  repeat(
-                    this._checkedItems!,
-                    (item) => item.id,
-                    (item, index) =>
-                      html`
-                        <div class="editRow">
-                          <paper-checkbox
-                            slot="item-icon"
-                            id="${index}"
-                            ?checked="${item.complete}"
-                            .itemId="${item.id}"
-                            @click="${this._completeItem}"
-                            tabindex="0"
-                          ></paper-checkbox>
-                          <paper-item-body>
-                            <paper-input
-                              no-label-float
-                              .value="${item.name}"
-                              .itemId="${item.id}"
-                              @change="${this._saveEdit}"
-                            ></paper-input>
-                          </paper-item-body>
-                        </div>
-                      `
-                  )
-                }
-              `
-            : ""
-        }
+                    @change="${this._saveEdit}"
+                  ></paper-input>
+                </paper-item-body>
+              </div>
+            `
+        )}
+        ${this._checkedItems!.length > 0
+          ? html`
+              <div class="divider"></div>
+              <div class="checked">
+                <span class="label">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.checked_items"
+                  )}
+                </span>
+                <ha-icon
+                  class="clearall"
+                  @click="${this._clearItems}"
+                  icon="hass:notification-clear-all"
+                  .title="${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.clear_items"
+                  )}"
+                >
+                </ha-icon>
+              </div>
+              ${repeat(
+                this._checkedItems!,
+                (item) => item.id,
+                (item, index) =>
+                  html`
+                    <div class="editRow">
+                      <paper-checkbox
+                        slot="item-icon"
+                        id="${index}"
+                        ?checked="${item.complete}"
+                        .itemId="${item.id}"
+                        @click="${this._completeItem}"
+                        tabindex="0"
+                      ></paper-checkbox>
+                      <paper-item-body>
+                        <paper-input
+                          no-label-float
+                          .value="${item.name}"
+                          .itemId="${item.id}"
+                          @change="${this._saveEdit}"
+                        ></paper-input>
+                      </paper-item-body>
+                    </div>
+                  `
+              )}
+            `
+          : ""}
       </ha-card>
     `;
   }

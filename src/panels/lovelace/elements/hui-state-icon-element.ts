@@ -5,12 +5,10 @@ import "../../../components/entity/state-badge";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 
-export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceElement {
+export class HuiStateIconElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
   private _config?: LovelaceElementConfig;
 

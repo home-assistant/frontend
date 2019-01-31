@@ -9,6 +9,7 @@ import "./hui-notification-item";
 
 import EventsMixin from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 /*
  * @appliesMixin EventsMixin
@@ -47,8 +48,16 @@ export class HuiNotificationDrawer extends EventsMixin(
         z-index: 10;
       }
 
+      :host([rtl]) .container {
+        transition: left .2s ease-in !important;
+      }
+
       :host(:not(narrow)) .container {
         right: -500px;
+      }
+
+      :host([rtl]:not(narrow)) .container {
+        left: -500px;
       }
 
       :host([narrow]) .container {
@@ -56,9 +65,19 @@ export class HuiNotificationDrawer extends EventsMixin(
         width: 100%;
       }
 
+      :host([rtl][narrow]) .container {
+        left: -100%;
+        width: 100%;
+      }
+
       :host(.open) .container,
       :host(.open[narrow]) .container {
         right: 0;
+      }
+
+      :host([rtl].open) .container,
+      :host([rtl].open[narrow]) .container {
+        left: 0;
       }
 
       app-toolbar {
@@ -143,6 +162,11 @@ export class HuiNotificationDrawer extends EventsMixin(
         type: Array,
         value: [],
       },
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -170,6 +194,10 @@ export class HuiNotificationDrawer extends EventsMixin(
         this.hidden = true;
       }, 250);
     }
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 customElements.define("hui-notification-drawer", HuiNotificationDrawer);

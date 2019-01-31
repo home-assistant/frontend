@@ -1,10 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-card/paper-card";
@@ -20,7 +21,7 @@ import {
   readAttributeValue,
   ZHADeviceEntity,
 } from "../../../data/zha";
-import "../../../resources/ha-style";
+import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import {
@@ -36,8 +37,6 @@ export class ZHAClusterAttributes extends LitElement {
   public selectedNode?: HassEntity;
   public selectedEntity?: ZHADeviceEntity;
   public selectedCluster?: Cluster;
-  private _haStyle?: DocumentFragment;
-  private _ironFlex?: DocumentFragment;
   private _attributes: Attribute[];
   private _selectedAttributeIndex: number;
   private _attributeValue?: any;
@@ -80,7 +79,6 @@ export class ZHAClusterAttributes extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
           <span>Cluster Attributes</span>
@@ -104,32 +102,26 @@ export class ZHAClusterAttributes extends LitElement {
                 .selected="${this._selectedAttributeIndex}"
                 @iron-select="${this._selectedAttributeChanged}"
               >
-                ${
-                  this._attributes.map(
-                    (entry) => html`
-                      <paper-item
-                        >${entry.name + " (id: " + entry.id + ")"}</paper-item
-                      >
-                    `
-                  )
-                }
+                ${this._attributes.map(
+                  (entry) => html`
+                    <paper-item
+                      >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                    >
+                  `
+                )}
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
-          ${
-            this.showHelp
-              ? html`
-                  <div style="color: grey; padding: 16px">
-                    Select an attribute to view or set its value
-                  </div>
-                `
-              : ""
-          }
-          ${
-            this._selectedAttributeIndex !== -1
-              ? this._renderAttributeInteractions()
-              : ""
-          }
+          ${this.showHelp
+            ? html`
+                <div style="color: grey; padding: 16px">
+                  Select an attribute to view or set its value
+                </div>
+              `
+            : ""}
+          ${this._selectedAttributeIndex !== -1
+            ? this._renderAttributeInteractions()
+            : ""}
         </paper-card>
       </ha-config-section>
     `;
@@ -166,17 +158,15 @@ export class ZHAClusterAttributes extends LitElement {
           .serviceData="${this._setAttributeServiceData}"
           >Set Zigbee Attribute</ha-call-service-button
         >
-        ${
-          this.showHelp
-            ? html`
-                <ha-service-description
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="set_zigbee_cluster_attribute"
-                ></ha-service-description>
-              `
-            : ""
-        }
+        ${this.showHelp
+          ? html`
+              <ha-service-description
+                .hass="${this.hass}"
+                domain="zha"
+                service="set_zigbee_cluster_attribute"
+              ></ha-service-description>
+            `
+          : ""}
       </div>
     `;
   }
@@ -254,24 +244,18 @@ export class ZHAClusterAttributes extends LitElement {
     this._attributeValue = "";
   }
 
-  private renderStyle(): TemplateResult {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    if (!this._ironFlex) {
-      this._ironFlex = document.importNode(
-        (document.getElementById("iron-flex")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    return html`
-      ${this._ironFlex} ${this._haStyle}
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .flex {
+          -ms-flex: 1 1 0.000000001px;
+          -webkit-flex: 1;
+          flex: 1;
+          -webkit-flex-basis: 0.000000001px;
+          flex-basis: 0.000000001px;
+        }
+
         .content {
           margin-top: 24px;
         }
@@ -287,8 +271,15 @@ export class ZHAClusterAttributes extends LitElement {
         }
 
         .attribute-picker {
-          @apply --layout-horizontal;
-          @apply --layout-center-center;
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          -ms-flex-direction: row;
+          -webkit-flex-direction: row;
+          flex-direction: row;
+          -ms-flex-align: center;
+          -webkit-align-items: center;
+          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
@@ -316,7 +307,8 @@ export class ZHAClusterAttributes extends LitElement {
           display: none;
         }
       </style>
-    `;
+    `,
+    ];
   }
 }
 

@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Idő sablon",
+                                    "hours": "Óra",
+                                    "minutes": "Perc",
+                                    "seconds": "Másodperc"
                                 }
                             }
                         },

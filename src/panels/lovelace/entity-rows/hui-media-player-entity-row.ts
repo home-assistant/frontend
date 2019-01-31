@@ -3,7 +3,6 @@ import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../components/hui-generic-entity-row";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -15,8 +14,7 @@ import {
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
 
-class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
+class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
   private _config?: EntityConfig;
 
@@ -57,44 +55,36 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
         .config="${this._config}"
         .showSecondary="false"
       >
-        ${
-          OFF_STATES.includes(stateObj.state)
-            ? html`
-                <div>
-                  ${
-                    this.localize(`state.media_player.${stateObj.state}`) ||
-                      this.localize(`state.default.${stateObj.state}`) ||
-                      stateObj.state
-                  }
-                </div>
-              `
-            : html`
-                <div class="controls">
-                  ${
-                    stateObj.state !== "playing" &&
-                    !supportsFeature(stateObj, SUPPORTS_PLAY)
-                      ? ""
-                      : html`
-                          <paper-icon-button
-                            icon="${this._computeControlIcon(stateObj)}"
-                            @click="${this._playPause}"
-                          ></paper-icon-button>
-                        `
-                  }
-                  ${
-                    supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
-                      ? html`
-                          <paper-icon-button
-                            icon="hass:skip-next"
-                            @click="${this._nextTrack}"
-                          ></paper-icon-button>
-                        `
-                      : ""
-                  }
-                </div>
-                <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
-              `
-        }
+        ${OFF_STATES.includes(stateObj.state)
+          ? html`
+              <div>
+                ${this.hass!.localize(`state.media_player.${stateObj.state}`) ||
+                  this.hass!.localize(`state.default.${stateObj.state}`) ||
+                  stateObj.state}
+              </div>
+            `
+          : html`
+              <div class="controls">
+                ${stateObj.state !== "playing" &&
+                !supportsFeature(stateObj, SUPPORTS_PLAY)
+                  ? ""
+                  : html`
+                      <paper-icon-button
+                        icon="${this._computeControlIcon(stateObj)}"
+                        @click="${this._playPause}"
+                      ></paper-icon-button>
+                    `}
+                ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+                  ? html`
+                      <paper-icon-button
+                        icon="hass:skip-next"
+                        @click="${this._nextTrack}"
+                      ></paper-icon-button>
+                    `
+                  : ""}
+              </div>
+              <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
+            `}
       </hui-generic-entity-row>
     `;
   }

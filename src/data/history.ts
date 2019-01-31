@@ -2,8 +2,8 @@ import computeStateName from "../common/entity/compute_state_name";
 import computeStateDomain from "../common/entity/compute_state_domain";
 import computeStateDisplay from "../common/entity/compute_state_display";
 import { HassEntity } from "home-assistant-js-websocket";
-import { LocalizeFunc } from "../mixins/localize-base-mixin";
 import { HomeAssistant } from "../types";
+import { LocalizeFunc } from "../common/translations/localize";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "water_heater"];
 const LINE_ATTRIBUTES_TO_KEEP = [
