@@ -429,6 +429,7 @@
                                     "webhook_id": "ID Webhook"
                                 },
                                 "time_pattern": {
+                                    "label": "Pattern temporale",
                                     "hours": "Ore",
                                     "minutes": "Minuti",
                                     "seconds": "Secondi"

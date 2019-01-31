@@ -256,6 +256,7 @@
         },
         "vacuum": {
             "error": "Hata",
+            "idle": "Boşta",
             "off": "Kapalı",
             "on": "Açık"
         }
@@ -369,6 +370,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook Kimliği"
+                                },
+                                "time_pattern": {
+                                    "label": "Zaman Deseni",
+                                    "hours": "Saat",
+                                    "minutes": "Dakika",
+                                    "seconds": "Saniye"
                                 }
                             }
                         },
@@ -448,6 +455,7 @@
                     "editor": {
                         "rename_user": "Kullanıcıyı yeniden adlandır",
                         "change_password": "Parolayı değiştir",
+                        "activate_user": "Kullanıcıyı etkinleştir",
                         "delete_user": "Kullanıcıyı sil"
                     }
                 },
@@ -486,9 +494,22 @@
                     "description": "Bu cihaza bildirimler gönder",
                     "link_promo": "Daha fazla bilgi edinin"
                 },
+                "language": {
+                    "header": "Dil",
+                    "dropdown_label": "Dil"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Tema yok.",
+                    "link_promo": "Temalar hakkında bilgi edinin",
+                    "dropdown_label": "Tema"
+                },
                 "refresh_tokens": {
+                    "header": "Yenileme Anahtarları",
                     "description": "Her yenileme jetonu bir oturum açma oturumunu temsil eder. Yenileme jetonları, çıkış yapmak istediğinizde otomatik olarak kaldırılacaktır. Aşağıdaki yenileme jetonları hesabınız için şu anda aktif.",
+                    "token_title": "{clientId} için yenileme anahtarı",
                     "created_at": "{date} tarihinde oluşturuldu",
+                    "confirm_delete": "{name} için yenileme anahtarını silmek istediğinizden emin misiniz?",
                     "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
                     "not_used": "Hiç kullanılmadı",
                     "current_token_tooltip": "Geçerli yenileme anahtarı silinemedi"
@@ -532,6 +553,8 @@
                 }
             },
             "page-authorize": {
+                "initializing": "Başlatılıyor",
+                "abort_intro": "Giriş iptal edildi",
                 "form": {
                     "working": "Lütfen bekleyin",
                     "unknown_error": "Bir şeyler ters gitti",
@@ -543,10 +566,16 @@
                                         "username": "Kullanıcı Adı",
                                         "password": "Parola"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "İki adımlı kimlik doğrulama kodu"
+                                    }
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola"
+                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola",
+                                "invalid_code": "Geçersiz kimlik doğrulama kodu"
                             },
                             "abort": {
                                 "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
@@ -558,10 +587,19 @@
                                     "data": {
                                         "password": "API Parolası"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "İki adımlı doğrulama kodu"
+                                    }
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Geçersiz API parolası"
+                                "invalid_auth": "Geçersiz API parolası",
+                                "invalid_code": "Geçersiz doğrulama kodu"
+                            },
+                            "abort": {
+                                "login_expired": "Oturum sonlandı, lütfen tekrar giriş yapın."
                             }
                         },
                         "trusted_networks": {
@@ -586,7 +624,10 @@
                         "username": "Kullanıcı Adı",
                         "password": "Parola"
                     },
-                    "create_account": "Hesap Oluştur"
+                    "create_account": "Hesap Oluştur",
+                    "error": {
+                        "required_fields": "Gerekli tüm alanları doldurun"
+                    }
                 }
             },
             "lovelace": {
@@ -657,6 +698,9 @@
             "persistent_notification": {
                 "dismiss": "Kapat"
             },
+            "scene": {
+                "activate": "Etkinleştir"
+            },
             "weather": {
                 "attributes": {
                     "air_pressure": "Hava basıncı",
@@ -664,7 +708,13 @@
                     "temperature": "Sıcaklık",
                     "visibility": "Görünürlük",
                     "wind_speed": "Rüzgar hızı"
-                }
+                },
+                "forecast": "Tahmin"
+            },
+            "alarm_control_panel": {
+                "code": "kod",
+                "arm_night": "Geceyi etkinleştir",
+                "armed_custom_bypass": "Özel atlatma"
             },
             "fan": {
                 "speed": "Hız",
@@ -693,6 +743,7 @@
             },
             "vacuum": {
                 "actions": {
+                    "start_cleaning": "Temizlemeye başla",
                     "turn_on": "Aç",
                     "turn_off": "Kapat"
                 }
@@ -703,10 +754,6 @@
                 "target_temperature": "Hedef sıcaklık",
                 "operation": "İşlem",
                 "away_mode": "Dışarıda modu"
-            },
-            "alarm_control_panel": {
-                "arm_night": "Geceyi etkinleştir",
-                "armed_custom_bypass": "Özel atlatma"
             }
         },
         "dialogs": {
