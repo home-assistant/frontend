@@ -365,7 +365,7 @@
                         "alias": "Nom",
                         "triggers": {
                             "header": "Activadors",
-                            "introduction": "Els activadors són les regles que fan que es dispari un automatisme. Pots definir més d'un activadors per cada automatisme. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.\n\n[Més informació sobre activadors](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Els activadors són les regles que fan que es dispari un automatisme. Pots definir més d'un activador per a cada automatisme. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.\n\n[Més informació sobre activadors](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Afegir activador",
                             "duplicate": "Duplicar",
                             "delete": "Suprimir",

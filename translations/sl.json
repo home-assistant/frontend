@@ -66,11 +66,11 @@
             },
             "sound": {
                 "off": "Čisto",
-                "on": "Zaznan"
+                "on": "Zaznano"
             },
             "vibration": {
                 "off": "Čisto",
-                "on": "Zaznan"
+                "on": "Zaznano"
             },
             "opening": {
                 "off": "Zaprto",
@@ -122,7 +122,7 @@
             }
         },
         "calendar": {
-            "off": "Izklopljen",
+            "off": "Izključen",
             "on": "Vklopljen"
         },
         "camera": {
@@ -131,8 +131,8 @@
             "idle": "V pripravljenosti"
         },
         "climate": {
-            "off": "Izklopljeno",
-            "on": "Vklopljeno",
+            "off": "Izključen",
+            "on": "Vklopljen",
             "heat": "Toplo",
             "cool": "Mrzlo",
             "idle": "V pripravljenosti",
@@ -163,12 +163,12 @@
             "not_home": "Odsoten"
         },
         "fan": {
-            "off": "Izklopljen",
+            "off": "Izključen",
             "on": "Vklopljen"
         },
         "group": {
-            "off": "Izklopljeno",
-            "on": "Vklopljeno",
+            "off": "Izključen",
+            "on": "Vklopljen",
             "home": "Doma",
             "not_home": "Odsoten",
             "open": "Odprto",
@@ -182,19 +182,19 @@
             "problem": "Težava"
         },
         "input_boolean": {
-            "off": "Izklopljeno",
-            "on": "Vklopljeno"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "light": {
-            "off": "Ugasnjena",
-            "on": "Prižgana"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "lock": {
             "locked": "Zaklenjeno",
             "unlocked": "Odklenjeno"
         },
         "media_player": {
-            "off": "Izklopljen",
+            "off": "Izključen",
             "on": "Vklopljen",
             "playing": "Predvaja",
             "paused": "Na pavzi",
@@ -206,15 +206,15 @@
             "problem": "Težava"
         },
         "remote": {
-            "off": "Off",
-            "on": "On"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "scene": {
             "scening": "Nastavitev scene"
         },
         "script": {
-            "off": "Off",
-            "on": "On"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "sensor": {
             "off": "Izključen",

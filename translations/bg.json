@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook идентификатор"
+                                },
+                                "time_pattern": {
+                                    "label": "Времеви шаблон",
+                                    "hours": "Часове",
+                                    "minutes": "Минути",
+                                    "seconds": "Секунди"
                                 }
                             }
                         },
@@ -556,6 +562,10 @@
                         "device_unavailable": "Устройството е недостъпно",
                         "entity_unavailable": "Недостъпен"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Управление на Zigbee мрежата за домашна автоматизация"
                 }
             },
             "profile": {
@@ -926,6 +936,19 @@
                 "save": "Запази",
                 "name": "Име",
                 "entity_id": "Идентификация на обект"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Последно задействане"
+                },
+                "sun": {
+                    "elevation": "Височина",
+                    "rising": "Изгрев",
+                    "setting": "Настройка"
+                },
+                "updater": {
+                    "title": "Инструкции за актуализиране"
+                }
             }
         },
         "auth_store": {
@@ -975,7 +998,8 @@
         "updater": "Обновяване",
         "weblink": "Уеб връзка",
         "zwave": "Z-Wave",
-        "vacuum": "Прахосмукачка"
+        "vacuum": "Прахосмукачка",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

@@ -423,6 +423,11 @@
                                     "event": "Tapahtuma",
                                     "enter": "Saapuminen alueelle",
                                     "leave": "Poistuminen alueelta"
+                                },
+                                "time_pattern": {
+                                    "hours": "Tuntia",
+                                    "minutes": "Minuuttia",
+                                    "seconds": "Sekuntia"
                                 }
                             }
                         },
@@ -552,6 +557,10 @@
                         "device_unavailable": "laite ei saatavissa",
                         "entity_unavailable": "kohde ei saatavilla"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "ZigBee kotiautomaation verkonhallinta"
                 }
             },
             "profile": {
@@ -738,6 +747,13 @@
                         "add": "Lisää näkymä",
                         "edit": "Muokkaa näkymää",
                         "delete": "Poista näkymä"
+                    },
+                    "save_config": {
+                        "header": "Hallitse Lovelace käyttöliittymääsi",
+                        "para": "Oletuksena Home Assistant ylläpitää käyttöliittymääsi, päivittäen sitä uusien yksiköiden tai Lovelace komponenttien tullessa saataville. Jos muokkaat käyttöliittymääsi, emme enää tee muutoksia automaattisesti.",
+                        "para_sure": "Oletko varma että muokata käyttöliittymää?",
+                        "cancel": "Antaa olla",
+                        "save": "Ota hallintaan"
                     }
                 }
             }
@@ -908,6 +924,19 @@
                 "save": "Tallenna",
                 "name": "Nimi",
                 "entity_id": "Kohde ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Edellinen toiminto"
+                },
+                "sun": {
+                    "elevation": "Korkeus",
+                    "rising": "Nousu",
+                    "setting": "Asetus"
+                },
+                "updater": {
+                    "title": "Päivitysohjeet"
+                }
             }
         },
         "auth_store": {
@@ -957,7 +986,8 @@
         "updater": "Päivitys",
         "weblink": "Linkki",
         "zwave": "Z-Wave",
-        "vacuum": "Imuri"
+        "vacuum": "Imuri",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {
