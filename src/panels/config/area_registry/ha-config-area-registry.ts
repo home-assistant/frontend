@@ -162,7 +162,8 @@ All devices in this area will become unassigned.`)
         display: block;
         max-width: 600px;
         margin: 16px auto;
-        background-color: white;
+        background-color: var(--paper-card-background-color, white);
+        color: var(--primary-text-color);
       }
       .empty {
         text-align: center;
