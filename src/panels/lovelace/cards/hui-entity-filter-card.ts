@@ -20,11 +20,11 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
   private _configEntities?: EntityConfig[];
   private _baseCardConfig?: LovelaceCardConfig;
 
-  public getCardSize() {
+  public getCardSize(): number {
     return this._element ? this._element.getCardSize() : 1;
   }
 
-  public setConfig(config: EntityFilterCardConfig) {
+  public setConfig(config: EntityFilterCardConfig): void {
     if (!config.state_filter || !Array.isArray(config.state_filter)) {
       throw new Error("Incorrect filter config.");
     }
