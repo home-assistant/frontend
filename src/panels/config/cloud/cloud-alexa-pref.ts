@@ -62,18 +62,16 @@ export class CloudAlexaPref extends LitElement {
             >This integration requires an Alexa-enabled device like the Amazon
             Echo.</em
           >
-          ${
-            enabled
-              ? html`
-                  <p>Exposed entities:</p>
-                  <cloud-exposed-entities
-                    .hass="${this.hass}"
-                    .filter="${this.cloudStatus!.alexa_entities}"
-                    .supportedDomains="${this.cloudStatus!.alexa_domains}"
-                  ></cloud-exposed-entities>
-                `
-              : ""
-          }
+          ${enabled
+            ? html`
+                <p>Exposed entities:</p>
+                <cloud-exposed-entities
+                  .hass="${this.hass}"
+                  .filter="${this.cloudStatus!.alexa_entities}"
+                  .supportedDomains="${this.cloudStatus!.alexa_domains}"
+                ></cloud-exposed-entities>
+              `
+            : ""}
         </div>
       </paper-card>
     `;

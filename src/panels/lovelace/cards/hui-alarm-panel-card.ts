@@ -14,7 +14,6 @@ import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
@@ -24,11 +23,11 @@ import {
 } from "./hui-error-card";
 
 const ICONS = {
-  armed_away: "hass:security-lock",
+  armed_away: "hass:shield-lock",
   armed_custom_bypass: "hass:security",
-  armed_home: "hass:security-home",
-  armed_night: "hass:security-home",
-  disarmed: "hass:verified",
+  armed_home: "hass:shield-home",
+  armed_night: "hass:shield-home",
+  disarmed: "hass:shield-check",
   pending: "hass:shield-outline",
   triggered: "hass:bell-ring",
 };
@@ -41,8 +40,7 @@ export interface Config extends LovelaceCardConfig {
   states?: string[];
 }
 
-class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import(/* webpackChunkName: "hui-alarm-panel-card-editor" */ "../editor/config-elements/hui-alarm-panel-card-editor");
     return document.createElement("hui-alarm-panel-card-editor");
@@ -124,63 +122,53 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
           .label="${this._stateIconLabel(stateObj.state)}"
         ></ha-label-badge>
         <div id="armActions" class="actions">
-          ${
-            (stateObj.state === "disarmed"
-              ? this._config.states!
-              : ["disarm"]
-            ).map((state) => {
-              return html`
-                <paper-button
-                  noink
-                  raised
-                  .action="${state}"
-                  @click="${this._handleActionClick}"
-                  >${this._label(state)}</paper-button
-                >
-              `;
-            })
-          }
+          ${(stateObj.state === "disarmed"
+            ? this._config.states!
+            : ["disarm"]
+          ).map((state) => {
+            return html`
+              <paper-button
+                noink
+                raised
+                .action="${state}"
+                @click="${this._handleActionClick}"
+                >${this._label(state)}</paper-button
+              >
+            `;
+          })}
         </div>
-        ${
-          !stateObj.attributes.code_format
-            ? html``
-            : html`
-                <paper-input
-                  label="Alarm Code"
-                  type="password"
-                  .value="${this._code}"
-                ></paper-input>
-              `
-        }
-        ${
-          stateObj.attributes.code_format !== FORMAT_NUMBER
-            ? html``
-            : html`
-                <div id="keypad">
-                  ${
-                    BUTTONS.map((value) => {
-                      return value === ""
-                        ? html`
-                            <paper-button disabled></paper-button>
-                          `
-                        : html`
-                            <paper-button
-                              noink
-                              raised
-                              .value="${value}"
-                              @click="${this._handlePadClick}"
-                              >${
-                                value === "clear"
-                                  ? this._label("clear_code")
-                                  : value
-                              }</paper-button
-                            >
-                          `;
-                    })
-                  }
-                </div>
-              `
-        }
+        ${!stateObj.attributes.code_format
+          ? html``
+          : html`
+              <paper-input
+                label="Alarm Code"
+                type="password"
+                .value="${this._code}"
+              ></paper-input>
+            `}
+        ${stateObj.attributes.code_format !== FORMAT_NUMBER
+          ? html``
+          : html`
+              <div id="keypad">
+                ${BUTTONS.map((value) => {
+                  return value === ""
+                    ? html`
+                        <paper-button disabled></paper-button>
+                      `
+                    : html`
+                        <paper-button
+                          noink
+                          raised
+                          .value="${value}"
+                          @click="${this._handlePadClick}"
+                          >${value === "clear"
+                            ? this._label("clear_code")
+                            : value}</paper-button
+                        >
+                      `;
+                })}
+              </div>
+            `}
       </ha-card>
     `;
   }
@@ -196,8 +184,8 @@ class HuiAlarmPanelCard extends hassLocalizeLitMixin(LitElement)
 
   private _label(state: string): string {
     return (
-      this.localize(`state.alarm_control_panel.${state}`) ||
-      this.localize(`ui.card.alarm_control_panel.${state}`)
+      this.hass!.localize(`state.alarm_control_panel.${state}`) ||
+      this.hass!.localize(`ui.card.alarm_control_panel.${state}`)
     );
   }
 

@@ -4,6 +4,7 @@
 import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin";
 import { getActiveTranslation } from "../util/hass-translation";
 import { localizeLiteBaseMixin } from "./localize-lite-base-mixin";
+import { computeLocalize } from "../common/translations/localize";
 
 /**
  * @polymerMixin
@@ -35,6 +36,15 @@ export const localizeLiteMixin = dedupingMixin(
       public ready() {
         super.ready();
         this._initializeLocalizeLite();
+      }
+
+      protected __computeLocalize(language, resources, formats?) {
+        return computeLocalize(
+          this.constructor.prototype,
+          language,
+          resources,
+          formats
+        );
       }
     }
 );

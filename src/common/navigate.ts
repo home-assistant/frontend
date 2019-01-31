@@ -1,7 +1,7 @@
 import { fireEvent } from "./dom/fire_event";
 
 export const navigate = (
-  node: HTMLElement,
+  _node: any,
   path: string,
   replace: boolean = false
 ) => {
@@ -18,5 +18,5 @@ export const navigate = (
       history.pushState(null, "", path);
     }
   }
-  fireEvent(node, "location-changed");
+  fireEvent(window, "location-changed");
 };

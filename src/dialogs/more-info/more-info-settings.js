@@ -11,6 +11,7 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 import computeStateName from "../../common/entity/compute_state_name";
 import computeDomain from "../../common/entity/compute_domain";
 import isComponentLoaded from "../../common/config/is_component_loaded";
+import { updateEntityRegistryEntry } from "../../data/entity_registry";
 
 /*
  * @appliesMixin EventsMixin
@@ -122,12 +123,14 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   async _save() {
     try {
-      const info = await this.hass.callWS({
-        type: "config/entity_registry/update",
-        entity_id: this.stateObj.entity_id,
-        name: this._name,
-        new_entity_id: this._entityId,
-      });
+      const info = await updateEntityRegistryEntry(
+        this.hass,
+        this.stateObj.entity_id,
+        {
+          name: this._name,
+          new_entity_id: this._entityId,
+        }
+      );
 
       this.registryInfo = info;
 

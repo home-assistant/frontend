@@ -14,7 +14,6 @@ import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
@@ -38,8 +37,7 @@ interface Config extends LovelaceCardConfig {
   show_state?: boolean;
 }
 
-class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
+class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
   private _config?: Config;
 
@@ -78,20 +76,18 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
 
     if (!stateObj) {
       return html`
-        ${
-          createErrorCardElement(
-            createErrorCardConfig(
-              `Entity not found: ${this._config.entity}`,
-              this._config
-            )
+        ${createErrorCardElement(
+          createErrorCardConfig(
+            `Entity not found: ${this._config.entity}`,
+            this._config
           )
-        }
+        )}
       `;
     }
 
     const name = this._config.name || computeStateName(stateObj);
     const state = computeStateDisplay(
-      this.localize,
+      this.hass!.localize,
       stateObj,
       this.hass.language
     );
@@ -121,21 +117,17 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
           .hass="${this.hass}"
           .image="${this._config.image}"
           .stateImage="${this._config.state_image}"
-          .cameraImage="${
-            computeDomain(this._config.entity) === "camera"
-              ? this._config.entity
-              : this._config.camera_image
-          }"
+          .cameraImage="${computeDomain(this._config.entity) === "camera"
+            ? this._config.entity
+            : this._config.camera_image}"
           .entity="${this._config.entity}"
           .aspectRatio="${this._config.aspect_ratio}"
           @ha-click="${this._handleTap}"
           @ha-hold="${this._handleHold}"
           .longPress="${longPress()}"
-          class="${
-            classMap({
-              clickable: stateObj.state !== UNAVAILABLE,
-            })
-          }"
+          class="${classMap({
+            clickable: stateObj.state !== UNAVAILABLE,
+          })}"
         ></hui-image>
         ${footer}
       </ha-card>

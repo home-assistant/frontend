@@ -5,9 +5,9 @@ import {
   TemplateResult,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "../config-elements/config-elements-style";
@@ -23,7 +23,7 @@ declare global {
   }
 }
 
-export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
+export class HuiViewEditor extends LitElement {
   static get properties(): PropertyDeclarations {
     return { hass: {}, _config: {} };
   }
@@ -54,6 +54,13 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
       return "";
     }
     return this._config.theme || "Backend-selected";
+  }
+
+  get _panel(): boolean {
+    if (!this._config) {
+      return false;
+    }
+    return this._config.panel || false;
   }
 
   public hass?: HomeAssistant;
@@ -95,6 +102,12 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
+        <paper-toggle-button
+          ?checked="${this._panel !== false}"
+          .configValue="${"panel"}"
+          @change="${this._valueChanged}"
+          >Panel Mode?</paper-toggle-button
+        >
       </div>
     `;
   }
@@ -115,7 +128,8 @@ export class HuiViewEditor extends hassLocalizeLitMixin(LitElement) {
     if (target.configValue) {
       newConfig = {
         ...this._config,
-        [target.configValue]: target.value,
+        [target.configValue!]:
+          target.checked !== undefined ? target.checked : target.value,
       };
     }
 

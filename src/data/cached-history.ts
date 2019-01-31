@@ -6,8 +6,8 @@ import {
   LineChartUnit,
 } from "./history";
 import { HomeAssistant } from "../types";
-import { LocalizeFunc } from "../mixins/localize-base-mixin";
 import { HassEntity } from "home-assistant-js-websocket";
+import { LocalizeFunc } from "../common/translations/localize";
 
 interface CacheConfig {
   refresh: number;

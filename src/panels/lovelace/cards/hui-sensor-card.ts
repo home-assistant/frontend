@@ -233,38 +233,34 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
-        ${
-          !stateObj
-            ? html`
-                <div class="not-found">
-                  Entity not available: ${this._config.entity}
+        ${!stateObj
+          ? html`
+              <div class="not-found">
+                Entity not available: ${this._config.entity}
+              </div>
+            `
+          : html`
+              <div class="flex">
+                <div class="icon">
+                  <ha-icon
+                    .icon="${this._config.icon || stateIcon(stateObj)}"
+                  ></ha-icon>
                 </div>
-              `
-            : html`
-                <div class="flex">
-                  <div class="icon">
-                    <ha-icon
-                      .icon="${this._config.icon || stateIcon(stateObj)}"
-                    ></ha-icon>
-                  </div>
-                  <div class="header">
-                    <span class="name"
-                      >${this._config.name || computeStateName(stateObj)}</span
-                    >
-                  </div>
-                </div>
-                <div class="flex info">
-                  <span id="value">${stateObj.state}</span>
-                  <span id="measurement"
-                    >${
-                      this._config.unit ||
-                        stateObj.attributes.unit_of_measurement
-                    }</span
+                <div class="header">
+                  <span class="name"
+                    >${this._config.name || computeStateName(stateObj)}</span
                   >
                 </div>
-                <div class="graph"><div>${graph}</div></div>
-              `
-        }
+              </div>
+              <div class="flex info">
+                <span id="value">${stateObj.state}</span>
+                <span id="measurement"
+                  >${this._config.unit ||
+                    stateObj.attributes.unit_of_measurement}</span
+                >
+              </div>
+              <div class="graph"><div>${graph}</div></div>
+            `}
       </ha-card>
     `;
   }

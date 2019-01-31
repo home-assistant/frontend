@@ -51,21 +51,19 @@ export class CloudExposedEntities extends LitElement {
 
     return html`
       ${this.renderStyle()}
-      ${
-        repeat(
-          states!,
-          (stateInfo) => stateInfo[1].entity_id,
-          (stateInfo) => html`
-            <span>
-              <ha-state-icon
-                .stateObj="${stateInfo[1]}"
-                @click="${this._handleMoreInfo}"
-              ></ha-state-icon>
-              <paper-tooltip position="bottom">${stateInfo[0]}</paper-tooltip>
-            </span>
-          `
-        )
-      }
+      ${repeat(
+        states!,
+        (stateInfo) => stateInfo[1].entity_id,
+        (stateInfo) => html`
+          <span>
+            <ha-state-icon
+              .stateObj="${stateInfo[1]}"
+              @click="${this._handleMoreInfo}"
+            ></ha-state-icon>
+            <paper-tooltip position="bottom">${stateInfo[0]}</paper-tooltip>
+          </span>
+        `
+      )}
     `;
   }
 

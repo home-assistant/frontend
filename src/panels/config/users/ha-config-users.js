@@ -22,15 +22,12 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
         data="{{_routeData}}"
       ></app-route>
 
-      <template
-        is="dom-if"
-        if="[[_equals(_routeData.user, &quot;picker&quot;)]]"
-      >
+      <template is="dom-if" if='[[_equals(_routeData.user, "picker")]]'>
         <ha-user-picker hass="[[hass]]" users="[[_users]]"></ha-user-picker>
       </template>
       <template
         is="dom-if"
-        if="[[!_equals(_routeData.user, &quot;picker&quot;)]]"
+        if='[[!_equals(_routeData.user, "picker")]]'
         restamp
       >
         <ha-user-editor

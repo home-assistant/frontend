@@ -20,7 +20,7 @@ const BUILT_IN_PANEL_ICONS = [
   "poll-box", // History panel
   "format-list-bulleted-type", // Logbook
   "mailbox", // Mailbox
-  "account-location", // Map
+  "tooltip-account", // Map
   "cart", // Shopping List
 ];
 
