@@ -88,7 +88,7 @@ class HaEntityToggle extends LitElement {
   // with the state. It will be out of sync if our service call did not
   // result in the entity to be turned on. Since the state is not changing,
   // the resync is not called automatic.
-  private async _callService(turnOn) {
+  private async _callService(turnOn): Promise<void> {
     if (!this.hass || !this.stateObj) {
       return;
     }
