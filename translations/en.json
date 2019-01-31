@@ -378,14 +378,6 @@
                                     "event_type": "Event type",
                                     "event_data": "Event data"
                                 },
-                                "geo_location": {
-                                    "label": "Geolocation",
-                                    "source": "Source",
-                                    "zone": "Zone",
-                                    "event": "Event:",
-                                    "enter": "Enter",
-                                    "leave": "Leave"
-                                },
                                 "state": {
                                     "label": "State",
                                     "from": "From",
