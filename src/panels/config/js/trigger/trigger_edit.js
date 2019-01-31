@@ -5,6 +5,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
 import EventTrigger from "./event";
+import GeolocationTrigger from "./geo_location";
 import HassTrigger from "./homeassistant";
 import MQTTTrigger from "./mqtt";
 import NumericStateTrigger from "./numeric_state";
@@ -19,6 +20,7 @@ import ZoneTrigger from "./zone";
 const TYPES = {
   event: EventTrigger,
   state: StateTrigger,
+  geo_location: GeolocationTrigger,
   homeassistant: HassTrigger,
   mqtt: MQTTTrigger,
   numeric_state: NumericStateTrigger,

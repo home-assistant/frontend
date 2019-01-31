@@ -11,7 +11,6 @@ import format_date from "../../../common/datetime/format_date";
 import format_date_time from "../../../common/datetime/format_date_time";
 import format_time from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
   date: format_date,
@@ -20,7 +19,7 @@ const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
 };
 const INTERVAL_FORMAT = ["relative", "total"];
 
-class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
+class HuiTimestampDisplay extends LitElement {
   public hass?: HomeAssistant;
   public ts?: Date;
   public format?: "relative" | "total" | "date" | "datetime" | "time";
@@ -110,11 +109,11 @@ class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
   }
 
   private _updateRelative() {
-    if (this.ts && this.localize) {
+    if (this.ts && this.hass!.localize) {
       this._relative =
         this._format === "relative"
-          ? relativeTime(this.ts, this.localize)
-          : (this._relative = relativeTime(new Date(), this.localize, {
+          ? relativeTime(this.ts, this.hass!.localize)
+          : (this._relative = relativeTime(new Date(), this.hass!.localize, {
               compareTime: this.ts,
               includeTense: false,
             }));

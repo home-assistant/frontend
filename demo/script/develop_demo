@@ -6,6 +6,8 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+node script/gen-icons.js
+
 cd ..
 DEMO=1 ./node_modules/.bin/gulp build-translations gen-icons
 cd demo

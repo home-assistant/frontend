@@ -12,7 +12,6 @@ import {
   EditorTarget,
   actionConfigStruct,
 } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -34,7 +33,7 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
-export class HuiEntityButtonCardEditor extends hassLocalizeLitMixin(LitElement)
+export class HuiEntityButtonCardEditor extends LitElement
   implements LovelaceCardEditor {
   public hass?: HomeAssistant;
   private _config?: Config;

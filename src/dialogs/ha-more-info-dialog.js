@@ -89,7 +89,7 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
           large="{{large}}"
         ></more-info-controls>
       </template>
-      <template is="dom-if" if="[[_equals(_page, &quot;settings&quot;)]]">
+      <template is="dom-if" if='[[_equals(_page, "settings")]]'>
         <more-info-settings
           class="no-padding"
           hass="[[hass]]"

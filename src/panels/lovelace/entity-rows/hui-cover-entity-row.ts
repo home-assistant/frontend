@@ -50,21 +50,19 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        ${
-          isTiltOnly(stateObj)
-            ? html`
-                <ha-cover-tilt-controls
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-cover-tilt-controls>
-              `
-            : html`
-                <ha-cover-controls
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-cover-controls>
-              `
-        }
+        ${isTiltOnly(stateObj)
+          ? html`
+              <ha-cover-tilt-controls
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-cover-tilt-controls>
+            `
+          : html`
+              <ha-cover-controls
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-cover-controls>
+            `}
       </hui-generic-entity-row>
     `;
   }

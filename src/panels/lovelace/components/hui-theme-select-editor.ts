@@ -8,7 +8,6 @@ import "@polymer/paper-button/paper-button";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 declare global {
   // for fire event
@@ -21,7 +20,7 @@ declare global {
   }
 }
 
-export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
+export class HuiThemeSelectionEditor extends LitElement {
   public value?: string;
   public hass?: HomeAssistant;
 
@@ -49,13 +48,11 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
           .selected="${this.value}"
           attr-for-selected="theme"
         >
-          ${
-            themes.map((theme) => {
-              return html`
-                <paper-item theme="${theme}">${theme}</paper-item>
-              `;
-            })
-          }
+          ${themes.map((theme) => {
+            return html`
+              <paper-item theme="${theme}">${theme}</paper-item>
+            `;
+          })}
         </paper-listbox>
       </paper-dropdown-menu>
     `;

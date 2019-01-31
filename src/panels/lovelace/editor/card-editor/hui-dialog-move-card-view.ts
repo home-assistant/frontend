@@ -9,11 +9,11 @@ import "@polymer/paper-item/paper-item";
 // tslint:disable-next-line:no-duplicate-imports
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { moveCard } from "../config-util";
 import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
+import { PolymerChangedEvent } from "../../../../polymer-types";
 
-export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
+export class HuiDialogMoveCardView extends LitElement {
   private _params?: MoveCardViewDialogParams;
 
   static get properties(): PropertyDeclarations {
@@ -61,18 +61,16 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
         @opened-changed="${this._openedChanged}"
       >
         <h2>Choose view to move card</h2>
-        ${
-          this._params!.lovelace!.config.views.map((view, index) => {
-            return html`
-              <paper-item
-                ?active="${this._params!.path![0] === index}"
-                @click="${this._moveCard}"
-                .index="${index}"
-                >${view.title}</paper-item
-              >
-            `;
-          })
-        }
+        ${this._params!.lovelace!.config.views.map((view, index) => {
+          return html`
+            <paper-item
+              ?active="${this._params!.path![0] === index}"
+              @click="${this._moveCard}"
+              .index="${index}"
+              >${view.title}</paper-item
+            >
+          `;
+        })}
       </paper-dialog>
     `;
   }
@@ -94,7 +92,7 @@ export class HuiDialogMoveCardView extends hassLocalizeLitMixin(LitElement) {
     this._dialog.close();
   }
 
-  private _openedChanged(ev: MouseEvent) {
+  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
       this._params = undefined;
     }

@@ -1,10 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-button/paper-button";
 import "@polymer/paper-item/paper-item";
@@ -12,7 +13,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchEntitiesForZhaNode } from "../../../data/zha";
-import "../../../resources/ha-style";
+import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
 
@@ -31,8 +32,6 @@ export class ZHAEntities extends LitElement {
   public selectedNode?: HassEntity;
   private _selectedEntityIndex: number;
   private _entities: HassEntity[];
-  private _haStyle?: DocumentFragment;
-  private _ironFlex?: DocumentFragment;
 
   constructor() {
     super();
@@ -64,7 +63,6 @@ export class ZHAEntities extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      ${this._renderStyle()}
       <div class="node-picker">
         <paper-dropdown-menu label="Entities" class="flex">
           <paper-listbox
@@ -72,36 +70,30 @@ export class ZHAEntities extends LitElement {
             .selected="${this._selectedEntityIndex}"
             @iron-select="${this._selectedEntityChanged}"
           >
-            ${
-              this._entities.map(
-                (entry) => html`
-                  <paper-item>${entry.entity_id}</paper-item>
-                `
-              )
-            }
+            ${this._entities.map(
+              (entry) => html`
+                <paper-item>${entry.entity_id}</paper-item>
+              `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      ${
-        this.showHelp
-          ? html`
-              <div class="helpText">
-                Select entity to view per-entity options
-              </div>
-            `
-          : ""
-      }
-      ${
-        this._selectedEntityIndex !== -1
-          ? html`
-              <div class="actions">
-                <paper-button @click="${this._showEntityInformation}"
-                  >Entity Information</paper-button
-                >
-              </div>
-            `
-          : ""
-      }
+      ${this.showHelp
+        ? html`
+            <div class="helpText">
+              Select entity to view per-entity options
+            </div>
+          `
+        : ""}
+      ${this._selectedEntityIndex !== -1
+        ? html`
+            <div class="actions">
+              <paper-button @click="${this._showEntityInformation}"
+                >Entity Information</paper-button
+              >
+            </div>
+          `
+        : ""}
     `;
   }
 
@@ -125,27 +117,28 @@ export class ZHAEntities extends LitElement {
     });
   }
 
-  private _renderStyle(): TemplateResult {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    if (!this._ironFlex) {
-      this._ironFlex = document.importNode(
-        (document.getElementById("iron-flex")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    return html`
-      ${this._ironFlex} ${this._haStyle}
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .flex {
+          -ms-flex: 1 1 0.000000001px;
+          -webkit-flex: 1;
+          flex: 1;
+          -webkit-flex-basis: 0.000000001px;
+          flex-basis: 0.000000001px;
+        }
+
         .node-picker {
-          @apply --layout-horizontal;
-          @apply --layout-center-center;
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          -ms-flex-direction: row;
+          -webkit-flex-direction: row;
+          flex-direction: row;
+          -ms-flex-align: center;
+          -webkit-align-items: center;
+          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
@@ -163,8 +156,8 @@ export class ZHAEntities extends LitElement {
           color: grey;
           padding: 16px;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 }
 

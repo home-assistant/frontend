@@ -6,8 +6,13 @@ import "../../layouts/hass-error-screen";
 import "./hui-root";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { Lovelace } from "./types";
-import { LitElement, html, PropertyValues, TemplateResult } from "lit-element";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
+import {
+  LitElement,
+  html,
+  PropertyValues,
+  TemplateResult,
+  PropertyDeclarations,
+} from "lit-element";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfig } from "./common/generate-lovelace-config";
 
@@ -17,7 +22,7 @@ interface LovelacePanelConfig {
 
 let editorLoaded = false;
 
-class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
+class LovelacePanel extends LitElement {
   public panel?: PanelInfo<LovelacePanelConfig>;
   public hass?: HomeAssistant;
   public narrow?: boolean;
@@ -29,22 +34,23 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
   private lovelace?: Lovelace;
   private mqls?: MediaQueryList[];
 
-  static get properties() {
+  static get properties(): PropertyDeclarations {
     return {
       hass: {},
       lovelace: {},
-      narrow: { type: Boolean, value: false },
-      showMenu: { type: Boolean, value: false },
+      narrow: {},
+      showMenu: {},
       route: {},
-      _columns: { type: Number, value: 1 },
-      _state: { type: String, value: "loading" },
-      _errorMsg: String,
-      _config: { type: {}, value: null },
+      _columns: {},
+      _state: {},
+      _errorMsg: {},
+      _config: {},
     };
   }
 
   constructor() {
     super();
+    this._state = "loading";
     this._closeEditor = this._closeEditor.bind(this);
   }
 
@@ -155,7 +161,7 @@ class LovelacePanel extends hassLocalizeLitMixin(LitElement) {
         this._errorMsg = err.message;
         return;
       }
-      conf = generateLovelaceConfig(this.hass!, this.localize);
+      conf = generateLovelaceConfig(this.hass!, this.hass!.localize);
       confMode = "generated";
     }
 

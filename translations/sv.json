@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Tidsmönster",
+                                    "hours": "Timmar",
+                                    "minutes": "Minuter",
+                                    "seconds": "Sekunder"
                                 }
                             }
                         },
@@ -556,6 +562,10 @@
                         "device_unavailable": "enhet otillgänglig",
                         "entity_unavailable": "entitet otillgänglig"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation nätverkhantering"
                 }
             },
             "profile": {
@@ -752,6 +762,7 @@
                     },
                     "save_config": {
                         "header": "Ta kontroll över din Lovelace UI",
+                        "para": "Home Assistant kommer som standard att behålla ditt användargränssnitt, uppdatera det när nya enheter eller Lovelace-komponenter blir tillgängliga. Om du tar kontroll kommer vi inte längre göra ändringar automatiskt för dig.",
                         "para_sure": "Är du säker på att du vill ta kontroll över ditt användargränssnitt?",
                         "cancel": "Glöm det",
                         "save": "Ta kontroll"
@@ -827,7 +838,7 @@
                 "disarm": "Larma från",
                 "arm_home": "Larma hemmaläge",
                 "arm_away": "Larma bortaläge",
-                "arm_night": "Nattlarmat",
+                "arm_night": "Larma nattläge",
                 "armed_custom_bypass": "Larm förbikopplat"
             },
             "automation": {
@@ -925,6 +936,19 @@
                 "save": "Spara",
                 "name": "Namn",
                 "entity_id": "Enhets-ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Senaste åtgärd"
+                },
+                "sun": {
+                    "elevation": "Elevation",
+                    "rising": "Solupgång",
+                    "setting": "Solnedgång"
+                },
+                "updater": {
+                    "title": "Uppdateringsanvisningar"
+                }
             }
         },
         "auth_store": {
@@ -974,7 +998,8 @@
         "updater": "Uppdaterare",
         "weblink": "Webblänk",
         "zwave": "Z-Wave",
-        "vacuum": "Dammsugare"
+        "vacuum": "Dammsugare",
+        "zha": "ZHA"
     },
     "attribute": {
         "weather": {

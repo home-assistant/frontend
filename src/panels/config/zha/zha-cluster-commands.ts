@@ -1,10 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-card/paper-card";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -16,7 +17,7 @@ import {
   fetchCommandsForCluster,
   ZHADeviceEntity,
 } from "../../../data/zha";
-import "../../../resources/ha-style";
+import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import {
@@ -32,8 +33,6 @@ export class ZHAClusterCommands extends LitElement {
   public selectedEntity?: ZHADeviceEntity;
   public selectedCluster?: Cluster;
   private _showHelp: boolean;
-  private _haStyle?: DocumentFragment;
-  private _ironFlex?: DocumentFragment;
   private _commands: Command[];
   private _selectedCommandIndex: number;
   private _manufacturerCodeOverride?: number;
@@ -72,7 +71,6 @@ export class ZHAClusterCommands extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">
           <span>Cluster Commands</span>
@@ -96,62 +94,52 @@ export class ZHAClusterCommands extends LitElement {
                 .selected="${this._selectedCommandIndex}"
                 @iron-select="${this._selectedCommandChanged}"
               >
-                ${
-                  this._commands.map(
-                    (entry) => html`
-                      <paper-item
-                        >${entry.name + " (id: " + entry.id + ")"}</paper-item
-                      >
-                    `
-                  )
-                }
+                ${this._commands.map(
+                  (entry) => html`
+                    <paper-item
+                      >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                    >
+                  `
+                )}
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
-          ${
-            this._showHelp
-              ? html`
-                  <div class="helpText">Select a command to interact with</div>
-                `
-              : ""
-          }
-          ${
-            this._selectedCommandIndex !== -1
-              ? html`
-                  <div class="input-text">
-                    <paper-input
-                      label="Manufacturer code override"
-                      type="number"
-                      .value="${this._manufacturerCodeOverride}"
-                      @value-changed="${
-                        this._onManufacturerCodeOverrideChanged
-                      }"
-                      placeholder="Value"
-                    ></paper-input>
-                  </div>
-                  <div class="card-actions">
-                    <ha-call-service-button
-                      .hass="${this.hass}"
-                      domain="zha"
-                      service="issue_zigbee_cluster_command"
-                      .serviceData="${this._issueClusterCommandServiceData}"
-                      >Issue Zigbee Command</ha-call-service-button
-                    >
-                    ${
-                      this._showHelp
-                        ? html`
-                            <ha-service-description
-                              .hass="${this.hass}"
-                              domain="zha"
-                              service="issue_zigbee_cluster_command"
-                            ></ha-service-description>
-                          `
-                        : ""
-                    }
-                  </div>
-                `
-              : ""
-          }
+          ${this._showHelp
+            ? html`
+                <div class="helpText">Select a command to interact with</div>
+              `
+            : ""}
+          ${this._selectedCommandIndex !== -1
+            ? html`
+                <div class="input-text">
+                  <paper-input
+                    label="Manufacturer code override"
+                    type="number"
+                    .value="${this._manufacturerCodeOverride}"
+                    @value-changed="${this._onManufacturerCodeOverrideChanged}"
+                    placeholder="Value"
+                  ></paper-input>
+                </div>
+                <div class="card-actions">
+                  <ha-call-service-button
+                    .hass="${this.hass}"
+                    domain="zha"
+                    service="issue_zigbee_cluster_command"
+                    .serviceData="${this._issueClusterCommandServiceData}"
+                    >Issue Zigbee Command</ha-call-service-button
+                  >
+                  ${this._showHelp
+                    ? html`
+                        <ha-service-description
+                          .hass="${this.hass}"
+                          domain="zha"
+                          service="issue_zigbee_cluster_command"
+                        ></ha-service-description>
+                      `
+                    : ""}
+                </div>
+              `
+            : ""}
         </paper-card>
       </ha-config-section>
     `;
@@ -198,24 +186,18 @@ export class ZHAClusterCommands extends LitElement {
     this._issueClusterCommandServiceData = this._computeIssueClusterCommandServiceData();
   }
 
-  private renderStyle(): TemplateResult {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    if (!this._ironFlex) {
-      this._ironFlex = document.importNode(
-        (document.getElementById("iron-flex")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
-    return html`
-      ${this._ironFlex} ${this._haStyle}
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .flex {
+          -ms-flex: 1 1 0.000000001px;
+          -webkit-flex: 1;
+          flex: 1;
+          -webkit-flex-basis: 0.000000001px;
+          flex-basis: 0.000000001px;
+        }
+
         .content {
           margin-top: 24px;
         }
@@ -231,8 +213,15 @@ export class ZHAClusterCommands extends LitElement {
         }
 
         .command-picker {
-          @apply --layout-horizontal;
-          @apply --layout-center-center;
+          display: -ms-flexbox;
+          display: -webkit-flex;
+          display: flex;
+          -ms-flex-direction: row;
+          -webkit-flex-direction: row;
+          flex-direction: row;
+          -ms-flex-align: center;
+          -webkit-align-items: center;
+          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
@@ -269,7 +258,8 @@ export class ZHAClusterCommands extends LitElement {
           display: none;
         }
       </style>
-    `;
+    `,
+    ];
   }
 }
 

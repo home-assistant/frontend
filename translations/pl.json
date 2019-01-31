@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Identyfikator Webhook"
+                                },
+                                "time_pattern": {
+                                    "label": "Szablon czasu ",
+                                    "hours": "Godziny",
+                                    "minutes": "Minuty",
+                                    "seconds": "Sekundy"
                                 }
                             }
                         },
