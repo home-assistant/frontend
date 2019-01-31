@@ -15,14 +15,14 @@ export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
   private _element?: LovelaceCard;
 
-  set hass(value: HomeAssistant) {
-    this._hass = value;
-    if (this._element) {
-      this._element.hass = value;
+  set hass(hass: HomeAssistant) {
+    if (!this._hass || this._hass.language !== hass.language) {
+      this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
     }
 
-    if (this._hass && computeRTL(this._hass)) {
-      this.style.direction = "rtl";
+    this._hass = hass;
+    if (this._element) {
+      this._element.hass = hass;
     }
   }
 
