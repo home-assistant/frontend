@@ -11,16 +11,19 @@
     "cover": "Cover",
     "device_tracker": "Device tracker",
     "fan": "Fan",
-    "history_graph": "History graph",
     "group": "Group",
+    "hassio": "Hass.io",
+    "history_graph": "History graph",
+    "homeassistant": "Home Assistant",
     "image_processing": "Image processing",
     "input_boolean": "Input boolean",
     "input_datetime": "Input datetime",
-    "input_select": "Input select",
     "input_number": "Input number",
+    "input_select": "Input select",
     "input_text": "Input text",
     "light": "Light",
     "lock": "Lock",
+    "lovelace": "Lovelace",
     "mailbox": "Mailbox",
     "media_player": "Media player",
     "notify": "Notify",
@@ -488,7 +491,7 @@
       },
       "more_info_settings": {
         "save": "Save",
-        "name": "Name",
+        "name": "Name Override",
         "entity_id": "Entity ID"
       }
     },
@@ -524,6 +527,10 @@
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "area_registry": {
+          "caption": "Area Registry",
+          "description": "Overview of all areas in your home."
+        },
         "core": {
           "caption": "General",
           "description": "Validate your configuration file and control the server",
@@ -589,6 +596,14 @@
                   "label": "Event",
                   "event_type": "Event type",
                   "event_data": "Event data"
+                },
+                "geo_location": {
+                  "label": "Geolocation",
+                  "source": "Source",
+                  "zone": "Zone",
+                  "event": "Event:",
+                  "enter": "Enter",
+                  "leave": "Leave"
                 },
                 "state": {
                   "label": "State",
@@ -737,6 +752,10 @@
           "description_login": "Logged in as {email}",
           "description_not_login": "Not logged in"
         },
+        "entity_registry": {
+          "caption": "Entity Registry",
+          "description": "Overview of all known entities."
+        },
         "integrations": {
           "caption": "Integrations",
           "description": "Manage connected devices and services",
@@ -773,7 +792,10 @@
         },
         "zha": {
           "caption": "ZHA",
-          "description": "Zigbee Home Automation network management"
+          "description": "Zigbee Home Automation network management",
+          "services": {
+            "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service."
+          }
         },
         "zwave": {
           "caption": "Z-Wave",
@@ -789,6 +811,11 @@
       },
       "lovelace": {
         "cards": {
+          "empty_state": {
+            "title": "Welcome Home",
+            "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
+            "go_to_integrations_page": "Go to the integrations page."
+          },
           "shopping-list": {
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",

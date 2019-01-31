@@ -9,6 +9,7 @@ import isComponentLoaded from "../../common/config/is_component_loaded";
 import EventsMixin from "../../mixins/events-mixin";
 import NavigateMixin from "../../mixins/navigate-mixin";
 
+import(/* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry");
 import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation");
 import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud");
 import(/* webpackChunkName: "panel-config-config" */ "./config-entries/ha-config-entries");
@@ -16,6 +17,7 @@ import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core");
 import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize");
 import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard");
 import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script");
+import(/* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry");
 import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users");
 import(/* webpackChunkName: "panel-config-zha" */ "./zha/ha-config-zha");
 import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave");
@@ -43,9 +45,18 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;core&quot;)]]"
+        if='[[_equals(_routeData.page, "area_registry")]]'
         restamp
       >
+        <ha-config-area-registry
+          page-name="area_registry"
+          route="[[route]]"
+          hass="[[hass]]"
+          is-wide="[[isWide]]"
+        ></ha-config-area-registry>
+      </template>
+
+      <template is="dom-if" if='[[_equals(_routeData.page, "core")]]' restamp>
         <ha-config-core
           page-name="core"
           hass="[[hass]]"
@@ -53,11 +64,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         ></ha-config-core>
       </template>
 
-      <template
-        is="dom-if"
-        if="[[_equals(_routeData.page, &quot;cloud&quot;)]]"
-        restamp
-      >
+      <template is="dom-if" if='[[_equals(_routeData.page, "cloud")]]' restamp>
         <ha-config-cloud
           page-name="cloud"
           route="[[route]]"
@@ -67,10 +74,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         ></ha-config-cloud>
       </template>
 
-      <template
-        is="dom-if"
-        if="[[_equals(_routeData.page, &quot;dashboard&quot;)]]"
-      >
+      <template is="dom-if" if='[[_equals(_routeData.page, "dashboard")]]'>
         <ha-config-dashboard
           page-name="dashboard"
           hass="[[hass]]"
@@ -83,7 +87,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;automation&quot;)]]"
+        if='[[_equals(_routeData.page, "automation")]]'
         restamp
       >
         <ha-config-automation
@@ -94,11 +98,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         ></ha-config-automation>
       </template>
 
-      <template
-        is="dom-if"
-        if="[[_equals(_routeData.page, &quot;script&quot;)]]"
-        restamp
-      >
+      <template is="dom-if" if='[[_equals(_routeData.page, "script")]]' restamp>
         <ha-config-script
           page-name="script"
           route="[[route]]"
@@ -109,9 +109,18 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;zha&quot;)]]"
+        if='[[_equals(_routeData.page, "entity_registry")]]'
         restamp
       >
+        <ha-config-entity-registry
+          page-name="entity_registry"
+          route="[[route]]"
+          hass="[[hass]]"
+          is-wide="[[isWide]]"
+        ></ha-config-entity-registry>
+      </template>
+
+      <template is="dom-if" if='[[_equals(_routeData.page, "zha")]]' restamp>
         <ha-config-zha
           page-name="zha"
           hass="[[hass]]"
@@ -119,11 +128,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         ></ha-config-zha>
       </template>
 
-      <template
-        is="dom-if"
-        if="[[_equals(_routeData.page, &quot;zwave&quot;)]]"
-        restamp
-      >
+      <template is="dom-if" if='[[_equals(_routeData.page, "zwave")]]' restamp>
         <ha-config-zwave
           page-name="zwave"
           hass="[[hass]]"
@@ -133,7 +138,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;customize&quot;)]]"
+        if='[[_equals(_routeData.page, "customize")]]'
         restamp
       >
         <ha-config-customize
@@ -145,7 +150,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       <template
         is="dom-if"
-        if="[[_equals(_routeData.page, &quot;integrations&quot;)]]"
+        if='[[_equals(_routeData.page, "integrations")]]'
         restamp
       >
         <ha-config-entries
@@ -157,11 +162,7 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         ></ha-config-entries>
       </template>
 
-      <template
-        is="dom-if"
-        if="[[_equals(_routeData.page, &quot;users&quot;)]]"
-        restamp
-      >
+      <template is="dom-if" if='[[_equals(_routeData.page, "users")]]' restamp>
         <ha-config-users
           page-name="users"
           route="[[route]]"

@@ -81,7 +81,7 @@ export const demoPanels: Panels = {
   // },
   // map: {
   //   component_name: "map",
-  //   icon: "hass:account-location",
+  //   icon: "hass:tooltip-account",
   //   title: "map",
   //   config: null,
   //   url_path: "map",

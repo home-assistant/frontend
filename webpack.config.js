@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
-const BabelMinifyPlugin = require("babel-minify-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
@@ -9,6 +8,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 const translationMetadata = require("./build-translations/translationMetadata.json");
 const { babelLoaderConfig } = require("./config/babel.js");
+const { minimizer } = require("./config/minimizer.js");
 
 const version = fs.readFileSync("setup.py", "utf8").match(/\d{8}\.\d+/);
 if (!version) {
@@ -77,29 +77,7 @@ function createConfig(isProdBuild, latestBuild) {
       ],
     },
     optimization: {
-      minimizer: [
-        // Took options from Polymer build tool
-        // https://github.com/Polymer/tools/blob/master/packages/build/src/js-transform.ts
-        new BabelMinifyPlugin(
-          {
-            // Disable the minify-constant-folding plugin because it has a bug relating to
-            // invalid substitution of constant values into export specifiers:
-            // https://github.com/babel/minify/issues/820
-            evaluate: false,
-
-            // TODO(aomarks) Find out why we disabled this plugin.
-            simplifyComparisons: false,
-
-            // Disable the simplify plugin because it can eat some statements preceeding
-            // loops. https://github.com/babel/minify/issues/824
-            simplify: false,
-
-            // This is breaking ES6 output. https://github.com/Polymer/tools/issues/261
-            mangle: false,
-          },
-          {}
-        ),
-      ],
+      minimizer,
     },
     plugins: [
       new webpack.DefinePlugin({

@@ -20,8 +20,8 @@ import { subscribePanels } from "../../data/ws-panels";
 
 export default (superClass) =>
   class extends EventsMixin(LocalizeMixin(superClass)) {
-    ready() {
-      super.ready();
+    firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this._handleConnProm();
     }
 
@@ -48,11 +48,12 @@ export default (superClass) =>
           panels: null,
           services: null,
           user: null,
-          panelUrl: this.panelUrl,
+          panelUrl: this._panelUrl,
 
           language: getActiveTranslation(),
           // If resources are already loaded, don't discard them
           resources: (this.hass && this.hass.resources) || null,
+          localize: () => "",
 
           translationMetadata: translationMetadata,
           dockedSidebar: false,
@@ -65,31 +66,37 @@ export default (superClass) =>
             try {
               await callService(conn, domain, service, serviceData);
 
-              let message;
-              let name;
-              if (
-                serviceData.entity_id &&
-                this.hass.states &&
-                this.hass.states[serviceData.entity_id]
-              ) {
-                name = computeStateName(
-                  this.hass.states[serviceData.entity_id]
-                );
+              const entityIds = Array.isArray(serviceData.entity_id)
+                ? serviceData.entity_id
+                : [serviceData.entity_id];
+
+              const names = [];
+              for (const entityId of entityIds) {
+                const stateObj = this.hass.states[entityId];
+                if (stateObj) {
+                  names.push(computeStateName(stateObj));
+                }
               }
+              if (names.length === 0) {
+                names.push(entityIds[0]);
+              }
+
+              let message;
+              const name = names.join(", ");
               if (service === "turn_on" && serviceData.entity_id) {
-                message = this.localize(
+                message = this.hass.localize(
                   "ui.notification_toast.entity_turned_on",
                   "entity",
-                  name || serviceData.entity_id
+                  name
                 );
               } else if (service === "turn_off" && serviceData.entity_id) {
-                message = this.localize(
+                message = this.hass.localize(
                   "ui.notification_toast.entity_turned_off",
                   "entity",
-                  name || serviceData.entity_id
+                  name
                 );
               } else {
-                message = this.localize(
+                message = this.hass.localize(
                   "ui.notification_toast.service_called",
                   "service",
                   `${domain}/${service}`
@@ -106,7 +113,7 @@ export default (superClass) =>
                   serviceData
                 );
               }
-              const message = this.localize(
+              const message = this.hass.localize(
                 "ui.notification_toast.service_call_failed",
                 "service",
                 `${domain}/${service}`

@@ -2,8 +2,8 @@ import { afterNextRender } from "@polymer/polymer/lib/utils/render-status";
 
 export default (superClass) =>
   class extends superClass {
-    ready() {
-      super.ready();
+    firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       this.addEventListener("hass-more-info", (e) => this._handleMoreInfo(e));
 
       // Load it once we are having the initial rendering done.

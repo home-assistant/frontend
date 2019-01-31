@@ -11,10 +11,10 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import splitByGroups from "../../../common/entity/split_by_groups";
 import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
-import { LocalizeFunc } from "../../../mixins/localize-base-mixin";
 import computeDomain from "../../../common/entity/compute_domain";
 import { EntityRowConfig, WeblinkConfig } from "../entity-rows/types";
 import { EntitiesCardConfig } from "../cards/hui-entities-card";
+import { LocalizeFunc } from "../../../common/translations/localize";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -57,6 +57,14 @@ const computeCards = (
       cards.push({
         type: "thermostat",
         entity: entityId,
+      });
+    } else if (domain === "history_graph" && stateObj) {
+      cards.push({
+        type: "history-graph",
+        entities: stateObj.attributes.entity_id,
+        hours_to_show: stateObj.attributes.hours_to_show,
+        title: stateObj.attributes.friendly_name,
+        refresh_interval: stateObj.attributes.refresh,
       });
     } else if (domain === "media_player") {
       cards.push({
@@ -271,6 +279,14 @@ export const generateLovelaceConfig = (
   if (__DEMO__) {
     views[0].cards!.unshift({
       type: "custom:ha-demo-card",
+    });
+  }
+
+  // User has no entities
+  if (views.length === 1 && views[0].cards!.length === 0) {
+    import("../cards/hui-empty-state-card");
+    views[0].cards!.push({
+      type: "custom:hui-empty-state-card",
     });
   }
 

@@ -28,7 +28,6 @@ import {
   LovelaceCardConfig,
 } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { EntitiesEditorEvent, ViewEditEvent } from "../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
@@ -36,7 +35,7 @@ import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
 
-export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
+export class HuiEditView extends LitElement {
   public lovelace?: Lovelace;
   public viewIndex?: number;
   public hass?: HomeAssistant;
@@ -121,7 +120,9 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     }
     return html`
       <paper-dialog with-backdrop>
-        <h2>${this.localize("ui.panel.lovelace.editor.edit_view.header")}</h2>
+        <h2>
+          ${this.hass!.localize("ui.panel.lovelace.editor.edit_view.header")}
+        </h2>
         <paper-tabs
           scrollable
           hide-scroll-buttons
@@ -133,20 +134,18 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
         </paper-tabs>
         <paper-dialog-scrollable> ${content} </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          ${
-            this.viewIndex !== undefined
-              ? html`
-                  <paper-icon-button
-                    class="delete"
-                    title="Delete"
-                    icon="hass:delete"
-                    @click="${this._delete}"
-                  ></paper-icon-button>
-                `
-              : ""
-          }
+          ${this.viewIndex !== undefined
+            ? html`
+                <paper-icon-button
+                  class="delete"
+                  title="Delete"
+                  icon="hass:delete"
+                  @click="${this._delete}"
+                ></paper-icon-button>
+              `
+            : ""}
           <paper-button @click="${this._closeDialog}"
-            >${this.localize("ui.common.cancel")}</paper-button
+            >${this.hass!.localize("ui.common.cancel")}</paper-button
           >
           <paper-button
             ?disabled="${!this._config || this._saving}"
@@ -156,7 +155,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${this.localize("ui.common.save")}</paper-button
+            ${this.hass!.localize("ui.common.save")}</paper-button
           >
         </div>
       </paper-dialog>

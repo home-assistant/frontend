@@ -30,12 +30,13 @@ import "../../components/ha-icon";
 import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
 import debounce from "../../common/util/debounce";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../types";
 import { LovelaceConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeNotifications } from "./common/compute-notifications";
+import { swapView } from "./editor/config-util";
+
 import "./components/notifications/hui-notification-drawer";
 import "./components/notifications/hui-notifications-button";
 import "./hui-view";
@@ -55,7 +56,7 @@ const JS_CACHE = {};
 
 let loadedUnusedEntities = false;
 
-class HUIRoot extends hassLocalizeLitMixin(LitElement) {
+class HUIRoot extends LitElement {
   public narrow?: boolean;
   public showMenu?: boolean;
   public hass?: HomeAssistant;
@@ -93,7 +94,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
       () => this._selectView(this._curView, true),
-      100
+      100,
+      false
     );
   }
 
@@ -139,10 +141,8 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                     @click="${this._editModeDisable}"
                   ></paper-icon-button>
                   <div main-title>
-                    ${
-                      this.config.title ||
-                        this.localize("ui.panel.lovelace.editor.header")
-                    }
+                    ${this.config.title ||
+                      this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <paper-icon-button
                       icon="hass:pencil"
                       class="edit-icon"
@@ -203,22 +203,20 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
                     >
-                      ${
-                        this._yamlMode
-                          ? html`
-                              <paper-item @click="${this._handleRefresh}"
-                                >Refresh</paper-item
-                              >
-                            `
-                          : ""
-                      }
+                      ${this._yamlMode
+                        ? html`
+                            <paper-item @click="${this._handleRefresh}"
+                              >Refresh</paper-item
+                            >
+                          `
+                        : ""}
                       <paper-item @click="${this._handleUnusedEntities}"
                         >Unused entities</paper-item
                       >
                       <paper-item @click="${this._editModeEnable}"
-                        >${
-                          this.localize("ui.panel.lovelace.editor.configure_ui")
-                        }</paper-item
+                        >${this.hass!.localize(
+                          "ui.panel.lovelace.editor.configure_ui"
+                        )}</paper-item
                       >
                       <paper-item @click="${this._handleHelp}">Help</paper-item>
                     </paper-listbox>
@@ -236,54 +234,62 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
                   >
-                    ${
-                      this.lovelace!.config.views.map(
-                        (view) => html`
-                          <paper-tab>
-                            ${
-                              view.icon
-                                ? html`
-                                    <ha-icon
-                                      title="${view.title}"
-                                      .icon="${view.icon}"
-                                    ></ha-icon>
-                                  `
-                                : view.title || "Unnamed view"
-                            }
-                            ${
-                              this._editMode
-                                ? html`
-                                    <ha-icon
-                                      class="edit-icon view"
-                                      @click="${this._editView}"
-                                      icon="hass:pencil"
-                                    ></ha-icon>
-                                  `
-                                : ""
-                            }
-                          </paper-tab>
+                    ${this.lovelace!.config.views.map(
+                      (view) => html`
+                        <paper-tab>
+                          ${this._editMode
+                            ? html`
+                                <paper-icon-button
+                                  title="Move view left"
+                                  class="edit-icon view"
+                                  icon="hass:arrow-left"
+                                  @click="${this._moveViewLeft}"
+                                  ?disabled="${this._curView === 0}"
+                                ></paper-icon-button>
+                              `
+                            : ""}
+                          ${view.icon
+                            ? html`
+                                <ha-icon
+                                  title="${view.title}"
+                                  .icon="${view.icon}"
+                                ></ha-icon>
+                              `
+                            : view.title || "Unnamed view"}
+                          ${this._editMode
+                            ? html`
+                                <ha-icon
+                                  title="Edit view"
+                                  class="edit-icon view"
+                                  icon="hass:pencil"
+                                  @click="${this._editView}"
+                                ></ha-icon>
+                                <paper-icon-button
+                                  title="Move view right"
+                                  class="edit-icon view"
+                                  icon="hass:arrow-right"
+                                  @click="${this._moveViewRight}"
+                                  ?disabled="${(this._curView! as number) +
+                                    1 ===
+                                    this.lovelace!.config.views.length}"
+                                ></paper-icon-button>
+                              `
+                            : ""}
+                        </paper-tab>
+                      `
+                    )}
+                    ${this._editMode
+                      ? html`
+                          <paper-button id="add-view" @click="${this._addView}">
+                            <ha-icon
+                              title="${this.hass!.localize(
+                                "ui.panel.lovelace.editor.edit_view.add"
+                              )}"
+                              icon="hass:plus"
+                            ></ha-icon>
+                          </paper-button>
                         `
-                      )
-                    }
-                    ${
-                      this._editMode
-                        ? html`
-                            <paper-button
-                              id="add-view"
-                              @click="${this._addView}"
-                            >
-                              <ha-icon
-                                title="${
-                                  this.localize(
-                                    "ui.panel.lovelace.editor.edit_view.add"
-                                  )
-                                }"
-                                icon="hass:plus"
-                              ></ha-icon>
-                            </paper-button>
-                          `
-                        : ""
-                    }
+                      : ""}
                   </paper-tabs>
                 </div>
               `
@@ -330,6 +336,9 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
         .edit-icon {
           color: var(--accent-color);
           padding-left: 8px;
+        }
+        .edit-icon[disabled] {
+          color: var(--disabled-text-color);
         }
         .edit-icon.view {
           display: none;
@@ -526,6 +535,22 @@ class HUIRoot extends hassLocalizeLitMixin(LitElement) {
       lovelace: this.lovelace!,
       viewIndex: this._curView as number,
     });
+  }
+
+  private _moveViewLeft() {
+    const lovelace = this.lovelace!;
+    const oldIndex = this._curView as number;
+    const newIndex = (this._curView as number) - 1;
+    this._curView = newIndex;
+    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
+  }
+
+  private _moveViewRight() {
+    const lovelace = this.lovelace!;
+    const oldIndex = this._curView as number;
+    const newIndex = (this._curView as number) + 1;
+    this._curView = newIndex;
+    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
 
   private _addView() {

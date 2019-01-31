@@ -61,7 +61,6 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
           persistent="[[dockedSidebar]]"
         >
           <ha-sidebar
-            narrow="[[narrow]]"
             hass="[[hass]]"
             default-page="[[_defaultPage]]"
           ></ha-sidebar>
@@ -81,9 +80,6 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       narrow: Boolean,
-      tail: {
-        type: Object,
-      },
       route: {
         type: Object,
         observer: "_routeChanged",
@@ -133,13 +129,6 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     this.$.drawer.close();
     if (this.dockedSidebar) {
       this.fire("hass-dock-sidebar", { dock: false });
-    }
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.tail.prefix === "") {
-      this.navigate(`/${localStorage.defaultPage || DEFAULT_PANEL}`, true);
     }
   }
 

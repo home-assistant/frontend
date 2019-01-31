@@ -6,7 +6,6 @@ import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 
@@ -15,8 +14,7 @@ interface Config extends LovelaceElementConfig {
   suffix?: string;
 }
 
-class HuiStateLabelElement extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceElement {
+class HuiStateLabelElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
   private _config?: Config;
 
@@ -46,11 +44,9 @@ class HuiStateLabelElement extends hassLocalizeLitMixin(LitElement)
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       >
-        ${this._config.prefix}${
-          state
-            ? computeStateDisplay(this.localize, state, this.hass!.language)
-            : "-"
-        }${this._config.suffix}
+        ${this._config.prefix}${state
+          ? computeStateDisplay(this.hass!.localize, state, this.hass!.language)
+          : "-"}${this._config.suffix}
       </div>
     `;
   }

@@ -8,6 +8,7 @@ import "./ha-config-entries-dashboard";
 import "./ha-config-entry-page";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import compare from "../../../common/string/compare";
+import { fetchAreaRegistry } from "../../../data/area_registry";
 
 class HaConfigEntries extends NavigateMixin(PolymerElement) {
   static get template() {
@@ -23,6 +24,7 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
         <ha-config-entry-page
           hass="[[hass]]"
           config-entry="[[_configEntry]]"
+          areas="[[_areas]]"
           entries="[[_entries]]"
           entities="[[_entities]]"
           devices="[[_devices]]"
@@ -67,6 +69,11 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
        * Device Registry entries.
        */
       _devices: Array,
+
+      /**
+       * Area Registry entries.
+       */
+      _areas: Array,
 
       /**
        * Current flows that are in progress and have not been started by a user.
@@ -136,6 +143,10 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
       .then((devices) => {
         this._devices = devices;
       });
+
+    fetchAreaRegistry(this.hass).then((areas) => {
+      this._areas = areas;
+    });
   }
 
   _computeConfigEntry(routeData, entries) {

@@ -5,7 +5,6 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-listbox/paper-listbox";
 
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { confDeleteCard } from "../editor/delete-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -13,7 +12,7 @@ import { Lovelace } from "../types";
 import { swapCard } from "../editor/config-util";
 import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
 
-export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
+export class HuiCardOptions extends LitElement {
   public cardConfig?: LovelaceCardConfig;
   public hass?: HomeAssistant;
   public lovelace?: Lovelace;
@@ -71,9 +70,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
       <div class="options">
         <div class="primary-actions">
           <paper-button @click="${this._editCard}"
-            >${
-              this.localize("ui.panel.lovelace.editor.edit_card.edit")
-            }</paper-button
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_card.edit"
+            )}</paper-button
           >
         </div>
         <div class="secondary-actions">
@@ -82,10 +81,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             class="move-arrow"
             icon="hass:arrow-down"
             @click="${this._cardDown}"
-            ?disabled="${
-              this.lovelace!.config.views[this.path![0]].cards!.length ===
-                this.path![1] + 1
-            }"
+            ?disabled="${this.lovelace!.config.views[this.path![0]].cards!
+              .length ===
+              this.path![1] + 1}"
           ></paper-icon-button>
           <paper-icon-button
             title="Move card up"
@@ -102,9 +100,9 @@ export class HuiCardOptions extends hassLocalizeLitMixin(LitElement) {
             <paper-listbox slot="dropdown-content">
               <paper-item @click="${this._moveCard}">Move Card</paper-item>
               <paper-item @click="${this._deleteCard}"
-                >${
-                  this.localize("ui.panel.lovelace.editor.edit_card.delete")
-                }</paper-item
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.delete"
+                )}</paper-item
               >
             </paper-listbox>
           </paper-menu-button>

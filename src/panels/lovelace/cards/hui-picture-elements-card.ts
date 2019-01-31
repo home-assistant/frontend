@@ -71,11 +71,9 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .entity="${this._config.entity}"
             .aspectRatio="${this._config.aspect_ratio}"
           ></hui-image>
-          ${
-            this._config.elements.map((elementConfig: LovelaceElementConfig) =>
-              this._createHuiElement(elementConfig)
-            )
-          }
+          ${this._config.elements.map((elementConfig: LovelaceElementConfig) =>
+            this._createHuiElement(elementConfig)
+          )}
         </div>
       </ha-card>
     `;

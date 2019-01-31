@@ -145,7 +145,7 @@
             "high_demand": "Vysoký výkon",
             "heat_pump": "Tepelné čerpadlo",
             "gas": "Plyn",
-            "manual": "Manuálny"
+            "manual": "Ručne"
         },
         "configurator": {
             "configure": "Konfigurovať",
@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Časový vzor",
+                                    "hours": "Hodín",
+                                    "minutes": "Minút",
+                                    "seconds": "Sekúnd"
                                 }
                             }
                         },
@@ -553,13 +559,13 @@
                         "manuf": "od {manufacturer}",
                         "hub": "Pripojené cez",
                         "firmware": "Firmvér: {version}",
-                        "device_unavailable": "zariadenie nie je dostupné",
-                        "entity_unavailable": "Entita nie je dostupná"
+                        "device_unavailable": "zariadenie nie je k dispozícii",
+                        "entity_unavailable": "entita nie je k dispozícii"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Riadenie siete ZigBee Home Automation"
+                    "description": "Správa siete ZigBee Home Automation"
                 }
             },
             "profile": {
@@ -725,8 +731,8 @@
             "lovelace": {
                 "cards": {
                     "shopping-list": {
-                        "checked_items": "Začiarknuté položky",
-                        "clear_items": "Vymažte označené položky",
+                        "checked_items": "Označené položky",
+                        "clear_items": "Vymazať označené položky",
                         "add_item": "Pridať položku"
                     }
                 },
@@ -734,20 +740,20 @@
                     "edit_card": {
                         "header": "Konfigurácia karty",
                         "save": "Uložiť",
-                        "toggle_editor": "Prepnúť Editor",
+                        "toggle_editor": "Prepnúť editor",
                         "pick_card": "Vyberte kartu, ktorú chcete pridať.",
                         "add": "Pridať kartu",
                         "edit": "Upraviť",
-                        "delete": "Vymazať"
+                        "delete": "Odstrániť"
                     },
                     "migrate": {
                         "header": "Nekompatibilná konfigurácia",
-                        "para_no_id": "Tento prvok nemá ID. Pridajte ID k tomuto prvku v ui-lovelace.yaml.",
-                        "para_migrate": "Home Assistant dokáže automaticky pridať ID na všetky vaše karty a zobrazenia stlačením tlačidla Migrácia konfigurácie.",
-                        "migrate": "Migrácia konfigurácie"
+                        "para_no_id": "Tento prvok nemá žiadne ID. Doplňte, prosím, ID pre tento prvok v súbore 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant môže automaticky pridať identifikátory pre všetky vaše karty a zobrazenia, keď kliknete na tlačidlo 'Migrovať konfiguráciu'.",
+                        "migrate": "Migrovať konfiguráciu"
                     },
-                    "header": "Úprava používateľského rozhrania",
-                    "configure_ui": "Konfigurácia používateľského rozhrania",
+                    "header": "Upraviť používateľské rozhranie",
+                    "configure_ui": "Konfigurovať používateľské rozhranie",
                     "edit_view": {
                         "header": "Konfigurácia zobrazenia",
                         "add": "Pridať zobrazenie",
@@ -755,9 +761,9 @@
                         "delete": "Odstrániť zobrazenie"
                     },
                     "save_config": {
-                        "header": "Prevziať kontrolu vášho Lovelace rozhrania",
-                        "para": "Štandardne Home Assistant bude udržiavať vaše užívateľské rozhranie a aktualizovať ho, keď budú k dispozícii nové entity alebo komponenty služby Lovelace. Ak prevezmete kontrolu, nebudeme už automaticky robiť zmeny.",
-                        "para_sure": "Naozaj chcete prevziať kontrolu vášho užívateľského rozhrania?",
+                        "header": "Prevziať kontrolu rozhrania Lovelace",
+                        "para": "Štandardne bude Home Assistant udržiavať vaše používateľské rozhranie a aktualizovať ho, keď budú k dispozícii nové entity alebo komponenty rozhrania Lovelace. Ak prevezmete kontrolu, už za vás nebudeme automaticky robiť zmeny.",
+                        "para_sure": "Skutočne chcete prevziať kontrolu vášho používateľského rozhrania?",
                         "cancel": "Nevadí",
                         "save": "Prevziať kontrolu"
                     }
@@ -941,7 +947,7 @@
                     "setting": "Zapadajúce"
                 },
                 "updater": {
-                    "title": "Pokyny na aktualizáciu"
+                    "title": "Pokyny pre aktualizáciu"
                 }
             }
         },
