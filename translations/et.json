@@ -427,6 +427,12 @@
                                 "webhook": {
                                     "label": "",
                                     "webhook_id": ""
+                                },
+                                "time_pattern": {
+                                    "label": "Aeg",
+                                    "hours": "Tundi",
+                                    "minutes": "Minutit",
+                                    "seconds": "Sekundit"
                                 }
                             }
                         },
@@ -726,11 +732,16 @@
                     "edit_card": {
                         "save": "Salvesta",
                         "pick_card": "Vali kaart, mida soovid lisada.",
-                        "add": "Lisada Kaart",
+                        "add": "Lisa kaart",
                         "edit": "Muuda",
                         "delete": "Kustuta"
                     },
+                    "header": "Muuda kasutajaliidest",
+                    "configure_ui": "Seadista kasutajaliidest",
                     "edit_view": {
+                        "header": "Vaata seadeid",
+                        "add": "Lisa vaade",
+                        "edit": "Muuda vaadet",
                         "delete": "Kustuta vaade"
                     }
                 }
@@ -905,7 +916,15 @@
             },
             "more_info_control": {
                 "script": {
-                    "last_action": "Viimane Tegevus"
+                    "last_action": "Viimane tegevus"
+                },
+                "sun": {
+                    "elevation": "Tõus",
+                    "rising": "Tõuseb",
+                    "setting": "Loojub"
+                },
+                "updater": {
+                    "title": "Uuendamise juhised"
                 }
             }
         },
