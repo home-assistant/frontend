@@ -150,8 +150,6 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
       }
       paper-card {
         display: block;
-        background-color: var(--paper-card-background-color, white);
-        color: var(--primary-text-color);
       }
       paper-icon-item {
         cursor: pointer;
