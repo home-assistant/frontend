@@ -74,8 +74,8 @@ export const dialogManagerMixin = (
       if (!(dialogTag in LOADED)) {
         LOADED[dialogTag] = dialogImport().then(() => {
           const dialogEl = document.createElement(dialogTag) as HassDialog;
-          this.shadowRoot!.appendChild(dialogEl);
           this.provideHass(dialogEl);
+          this.shadowRoot!.appendChild(dialogEl);
           return dialogEl;
         });
       }
