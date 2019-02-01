@@ -145,7 +145,7 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
       });
 
     fetchAreaRegistry(this.hass).then((areas) => {
-      this._areas = areas;
+      this._areas = areas.sort((a, b) => compare(a.name, b.name));
     });
   }
 

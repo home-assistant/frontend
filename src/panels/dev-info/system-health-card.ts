@@ -95,7 +95,16 @@ class SystemHealthCard extends LitElement {
   }
 
   private async _fetchInfo() {
-    this._info = await fetchSystemHealthInfo(this.hass!);
+    try {
+      this._info = await fetchSystemHealthInfo(this.hass!);
+    } catch (err) {
+      this._info = {
+        system_health: {
+          error:
+            "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
+        },
+      };
+    }
   }
 
   static get styles(): CSSResult {
