@@ -97,6 +97,7 @@ class DialogAreaDetail extends LitElement {
   }
 
   private async _updateEntry() {
+    this._submitting = true;
     try {
       const values: AreaRegistryEntryMutableParams = {
         name: this._name.trim(),
@@ -109,12 +110,19 @@ class DialogAreaDetail extends LitElement {
       this._params = undefined;
     } catch (err) {
       this._error = err;
+    } finally {
+      this._submitting = false;
     }
   }
 
   private async _deleteEntry() {
-    if (await this._params!.removeEntry()) {
-      this._params = undefined;
+    this._submitting = true;
+    try {
+      if (await this._params!.removeEntry()) {
+        this._params = undefined;
+      }
+    } finally {
+      this._submitting = false;
     }
   }
 
