@@ -29,20 +29,36 @@ import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-comma
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
 class HomeAssistantMain extends LitElement {
-  public hass?: HomeAssistant;
+  public _hass?: HomeAssistant;
   public route?: Route;
   private _narrow?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
-      hass: {},
+      hass: {
+        noAccessor: true,
+      },
       narrow: {},
       route: {},
     };
   }
 
+  set hass(value: HomeAssistant) {
+    this._hass = value;
+
+    const oldHass = this._hass;
+
+    // We need to set this attribute before we do our initial render or else
+    // we are confusing app-drawer-layout
+    if (!oldHass || oldHass.language !== value.language) {
+      this.toggleAttribute("rtl", computeRTL(value));
+    }
+
+    this.requestUpdate("hass", this._hass);
+  }
+
   protected render(): TemplateResult | void {
-    const hass = this.hass;
+    const hass = this._hass;
 
     if (!hass) {
       return;
@@ -108,14 +124,6 @@ class HomeAssistantMain extends LitElement {
 
     if (changedProps.has("route") && this._narrow) {
       this.drawer.close();
-    }
-
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-      if (!oldHass || oldHass.language !== this.hass!.language) {
-        this.toggleAttribute("rtl", computeRTL(this.hass!));
-      }
     }
   }
 
