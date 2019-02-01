@@ -123,25 +123,27 @@ class DialogEntityRegistryDetail extends LitElement {
   }
 
   private async _updateEntry(): Promise<void> {
+    this._submitting = true;
     try {
-      this._submitting = true;
       await this._params!.updateEntry({
         name: this._name.trim() || null,
         new_entity_id: this._entityId.trim(),
       });
       this._params = undefined;
     } catch (err) {
-      this._submitting = false;
       this._error = err;
+    } finally {
+      this._submitting = false;
     }
   }
 
   private async _deleteEntry(): Promise<void> {
     this._submitting = true;
-
-    if (await this._params!.removeEntry()) {
-      this._params = undefined;
-    } else {
+    try {
+      if (await this._params!.removeEntry()) {
+        this._params = undefined;
+      }
+    } finally {
       this._submitting = false;
     }
   }

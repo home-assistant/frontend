@@ -162,7 +162,6 @@ All devices in this area will become unassigned.`)
         display: block;
         max-width: 600px;
         margin: 16px auto;
-        background-color: white;
       }
       .empty {
         text-align: center;

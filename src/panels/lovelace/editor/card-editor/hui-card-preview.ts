@@ -9,15 +9,20 @@ import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { createErrorCardConfig } from "../../cards/hui-error-card";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
   private _element?: LovelaceCard;
 
-  set hass(value: HomeAssistant) {
-    this._hass = value;
+  set hass(hass: HomeAssistant) {
+    if (!this._hass || this._hass.language !== hass.language) {
+      this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
+    }
+
+    this._hass = hass;
     if (this._element) {
-      this._element.hass = value;
+      this._element.hass = hass;
     }
   }
 

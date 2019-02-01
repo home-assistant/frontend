@@ -178,20 +178,18 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
       provider === "Data provided by OpenWeatherMap"
     ) {
       if (new Date().getDay() === date.getDay()) {
-        return date.toLocaleTimeString(
-          this.hass.selectedLanguage || this.hass.language,
-          { hour: "numeric" }
-        );
+        return date.toLocaleTimeString(this.hass.language, { hour: "numeric" });
       }
-      return date.toLocaleDateString(
-        this.hass.selectedLanguage || this.hass.language,
-        { weekday: "long", hour: "numeric" }
-      );
+      return date.toLocaleDateString(this.hass.language, {
+        weekday: "long",
+        hour: "numeric",
+      });
     }
-    return date.toLocaleDateString(
-      this.hass.selectedLanguage || this.hass.language,
-      { weekday: "long", month: "short", day: "numeric" }
-    );
+    return date.toLocaleDateString(this.hass.language, {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    });
   }
 
   getUnit(measure) {
