@@ -190,7 +190,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
                 yaxe.maxWidth = yaxe.chart.width * 0.18;
               },
               position: this.hass.translationMetadata.translations[
-                this.hass.selectedLanguage || this.hass.language
+                this.hass.language
               ].isRTL
                 ? "right"
                 : "left",
