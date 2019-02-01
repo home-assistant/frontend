@@ -21,6 +21,12 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
         a {
           color: var(--primary-color);
         }
+        paper-item {
+          direction: ltr;
+        }
+        paper-item[is-rtl] {
+          direction: rtl;
+        }
       </style>
       <ha-settings-row narrow="[[narrow]]">
         <span slot="heading"
@@ -43,9 +49,9 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
             selected="{{languageSelection}}"
           >
             <template is="dom-repeat" items="[[languages]]">
-              <paper-item language-tag$="[[item.tag]]"
-                >[[item.nativeName]]</paper-item
-              >
+              <paper-item language-tag$="[[item.key]]" is-rtl$="[[item.isRTL]]">
+                [[item.nativeName]]
+              </paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -76,9 +82,10 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (!hass || !hass.translationMetadata) {
       return [];
     }
-    return Object.keys(hass.translationMetadata.translations).map((key) => ({
-      tag: key,
-      nativeName: hass.translationMetadata.translations[key].nativeName,
+    const translations = hass.translationMetadata.translations;
+    return Object.keys(translations).map((key) => ({
+      key,
+      ...translations[key],
     }));
   }
 
