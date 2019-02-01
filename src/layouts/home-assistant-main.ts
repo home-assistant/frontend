@@ -29,36 +29,20 @@ import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-comma
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
 class HomeAssistantMain extends LitElement {
-  public _hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   public route?: Route;
   private _narrow?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
-      hass: {
-        noAccessor: true,
-      },
+      hass: {},
       narrow: {},
       route: {},
     };
   }
 
-  set hass(value: HomeAssistant) {
-    this._hass = value;
-
-    const oldHass = this._hass;
-
-    // We need to set this attribute before we do our initial render or else
-    // we are confusing app-drawer-layout
-    if (!oldHass || oldHass.language !== value.language) {
-      this.toggleAttribute("rtl", computeRTL(value));
-    }
-
-    this.requestUpdate("hass", this._hass);
-  }
-
   protected render(): TemplateResult | void {
-    const hass = this._hass;
+    const hass = this.hass;
 
     if (!hass) {
       return;
@@ -145,9 +129,6 @@ class HomeAssistantMain extends LitElement {
         color: var(--primary-text-color);
         /* remove the grey tap highlights in iOS on the fullscreen touch targets */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-      }
-      :host([rtl]) {
-        direction: rtl;
       }
       partial-panel-resolver,
       ha-sidebar {
