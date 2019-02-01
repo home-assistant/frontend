@@ -32,7 +32,6 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
 
       _rtl: {
         type: String,
-        reflectToAttribute: true,
         computed: "_computeRTLDirection(hass)",
       },
     };
