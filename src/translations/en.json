@@ -826,6 +826,10 @@
         "editor": {
           "header": "Edit UI",
           "configure_ui": "Configure UI",
+          "unused_entities": "Unused entities",
+          "refresh": "Refresh",
+          "raw_editor": "Raw config editor",
+          "help": "Help",
           "edit_view": {
             "header": "View Configuration",
             "add": "Add view",
