@@ -17,6 +17,7 @@ import "./ha-icon";
 import isComponentLoaded from "../common/config/is_component_loaded";
 import { HomeAssistant, Panel } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
+import { DEFAULT_PANEL } from "../common/const";
 
 const computeInitials = (name: string) => {
   if (!name) {
@@ -82,7 +83,12 @@ const computePanels = (hass: HomeAssistant) => {
  */
 class HaSidebar extends LitElement {
   public hass?: HomeAssistant;
-  public defaultPage?: string;
+  public _defaultPage?: string;
+
+  constructor() {
+    super();
+    this._defaultPage = localStorage.defaultPage || DEFAULT_PANEL;
+  }
 
   protected render() {
     const hass = this.hass;
@@ -114,8 +120,8 @@ class HaSidebar extends LitElement {
 
       <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
         <a
-          href="${computeUrl(this.defaultPage)}"
-          data-panel=${this.defaultPage}
+          href="${computeUrl(this._defaultPage)}"
+          data-panel=${this._defaultPage}
           tabindex="-1"
         >
           <paper-icon-item>
@@ -214,7 +220,7 @@ class HaSidebar extends LitElement {
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      defaultPage: {},
+      _defaultPage: {},
     };
   }
 
