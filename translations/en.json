@@ -433,6 +433,14 @@
                                     "hours": "Hours",
                                     "minutes": "Minutes",
                                     "seconds": "Seconds"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocation",
+                                    "source": "Source",
+                                    "zone": "Zone",
+                                    "event": "Event:",
+                                    "enter": "Enter",
+                                    "leave": "Leave"
                                 }
                             }
                         },
@@ -565,7 +573,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation network management"
+                    "description": "Zigbee Home Automation network management",
+                    "services": {
+                        "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Area Registry",
+                    "description": "Overview of all areas in your home."
+                },
+                "entity_registry": {
+                    "caption": "Entity Registry",
+                    "description": "Overview of all known entities."
                 }
             },
             "profile": {
@@ -734,6 +753,11 @@
                         "checked_items": "Checked items",
                         "clear_items": "Clear checked items",
                         "add_item": "Add item"
+                    },
+                    "empty_state": {
+                        "title": "Welcome Home",
+                        "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
+                        "go_to_integrations_page": "Go to the integrations page."
                     }
                 },
                 "editor": {
@@ -934,7 +958,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Save",
-                "name": "Name",
+                "name": "Name Override",
                 "entity_id": "Entity ID"
             },
             "more_info_control": {
@@ -999,7 +1023,10 @@
         "weblink": "Weblink",
         "zwave": "Z-Wave",
         "vacuum": "Vacuum",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace"
     },
     "attribute": {
         "weather": {
