@@ -5,6 +5,7 @@ import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { HomeAssistant } from "../../types";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -81,15 +82,16 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
           ...data,
         },
       };
-      this._updateHass({
-        language,
-        resources,
-        localize: computeLocalize(this, language, resources),
-      });
+      const changes: Partial<HomeAssistant> = { resources };
+      if (language === this.hass!.language) {
+        changes.localize = computeLocalize(this, language, resources);
+      }
+      this._updateHass(changes);
     }
 
     private _selectLanguage(event) {
-      this._updateHass({ selectedLanguage: event.detail.language });
+      const language: string = event.detail.language;
+      this._updateHass({ language, selectedLanguage: language });
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
       storeState(this.hass);
       this._loadResources();
