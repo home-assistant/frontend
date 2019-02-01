@@ -18,7 +18,6 @@ import "@polymer/iron-media-query/iron-media-query";
 import "../util/ha-url-sync";
 
 import "./partial-panel-resolver";
-import { computeRTL } from "../common/util/compute_rtl";
 import { HomeAssistant, Route } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";

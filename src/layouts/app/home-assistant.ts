@@ -5,8 +5,6 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-  CSSResult,
-  css,
 } from "lit-element";
 
 import "../home-assistant-main";
