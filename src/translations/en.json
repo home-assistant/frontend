@@ -35,6 +35,7 @@
     "sensor": "Sensor",
     "sun": "Sun",
     "switch": "Switch",
+    "system_health": "System Health",
     "updater": "Updater",
     "vacuum": "Vacuum",
     "weblink": "Weblink",
