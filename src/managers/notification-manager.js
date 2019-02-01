@@ -2,6 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import LocalizeMixin from "../mixins/localize-mixin";
+import { computeRTL } from "../common/util/compute_rtl";
 
 class NotificationManager extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -14,6 +15,7 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
 
       <ha-toast
         id="toast"
+        dir="[[_rtl]]"
         no-cancel-on-outside-click="[[_cancelOnOutsideClick]]"
       ></ha-toast>
     `;
@@ -27,6 +29,12 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
+
+      _rtl: {
+        type: String,
+        reflectToAttribute: true,
+        computed: "_computeRTLDirection(hass)",
+      },
     };
   }
 
@@ -37,6 +45,10 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
 
   showDialog({ message }) {
     this.$.toast.show(message);
+  }
+
+  _computeRTLDirection(hass) {
+    return computeRTL(hass) ? "rtl" : "ltr";
   }
 }
 
