@@ -9,9 +9,11 @@ import {
   html,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/hui-entities-card";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HuiGenericEntityRow extends LitElement {
   public hass?: HomeAssistant;
@@ -76,6 +78,13 @@ class HuiGenericEntityRow extends LitElement {
     };
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("hass")) {
+      this.toggleAttribute("rtl", computeRTL(this.hass!));
+    }
+  }
+
   static get styles(): CSSResult {
     return css`
       :host {
@@ -118,6 +127,14 @@ class HuiGenericEntityRow extends LitElement {
       }
       state-badge {
         flex: 0 0 40px;
+      }
+      :host([rtl]) .flex {
+        margin-left: 0;
+        margin-right: 16px;
+      }
+      :host([rtl]) .flex ::slotted(*) {
+        margin-left: 0;
+        margin-right: 8px;
       }
     `;
   }
