@@ -433,6 +433,14 @@
                                     "hours": "Stonnen",
                                     "minutes": "Minutten",
                                     "seconds": "Sekonnen"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokalisatioun",
+                                    "source": "Quell",
+                                    "zone": "Zone",
+                                    "event": "Evenement",
+                                    "enter": "Betrieden",
+                                    "leave": "Verloossen"
                                 }
                             }
                         },
@@ -565,7 +573,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Gestioun vum Zigbee Home Automation Reseau"
+                    "description": "Gestioun vum Zigbee Home Automation Reseau",
+                    "services": {
+                        "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen"
+                    }
+                },
+                "area_registry": {
+                    "caption": "Lëscht vun de Beräicher",
+                    "description": "Iwwersiicht vun de Beräicher am Haus"
+                },
+                "entity_registry": {
+                    "caption": "Lëscht vun den Entitéiten",
+                    "description": "Iwwersiicht vun all bekannten Entitéiten."
                 }
             },
             "profile": {
@@ -589,28 +608,28 @@
                     "dropdown_label": "Thema"
                 },
                 "refresh_tokens": {
-                    "header": "Token erneieren",
-                    "description": "All Sessioun Token representéiert eng Login Sessioun. Sessioun's Token ginn automatesch gelëscht wann dir op auslogge klickt. Folgend Sessioun's Token si fir de Moment fir Ären Account aktiv.",
-                    "token_title": "Token erneiren fir {clientId}",
+                    "header": "Jeton erneieren",
+                    "description": "All Sessioun's Jeton representéiert eng Login Sessioun. Sessioun's Jetone ginn automatesch geläscht wann dir op auslogge klickt. Folgend Sessioun's Jetone si fir de Moment fir Ären Account aktiv.",
+                    "token_title": "Jeton erneiren fir {clientId}",
                     "created_at": "Erstallt um {date}",
-                    "confirm_delete": "Sécher fir den Erneierungs Token fir {name} ze läsche?",
-                    "delete_failed": "Fehler beim läschen vum Erneierungs Token",
+                    "confirm_delete": "Sécher fir den Erneierungs Jeton fir {name} ze läsche?",
+                    "delete_failed": "Fehler beim läschen vum Erneierungs Jeton.",
                     "last_used": "Fir d'Läscht benotzt um {date} vun {location}",
                     "not_used": "Nach nie benotzt ginn",
-                    "current_token_tooltip": "Fehler beim läschen vum aktuellen Erneierungs Token"
+                    "current_token_tooltip": "Fehler beim läschen vum aktuellen Erneierungs Jeton"
                 },
                 "long_lived_access_tokens": {
-                    "header": "Lang gëlteg Access Token",
-                    "description": "Erstellt laang gëlteg Access Token déi et äre Skripten erlabe mat ärem Home Assistant z'interagéieren. All eenzelen Token ass gëlteg fir 10 Joer. Folgend Access Token sinn am Moment aktiv.",
+                    "header": "Lang gëlteg Accèss Jetone",
+                    "description": "Erstellt laang gëlteg Accèss Jetone déi et äre Skripten erlabe mat ärem Home Assistant z'interagéieren. All eenzelen Jeton ass gëlteg fir 10 Joer. Folgend Accèss Jeton sinn am Moment aktiv.",
                     "learn_auth_requests": "Leiert wéi een \"authenticated requests\" erstellt.",
                     "created_at": "Erstallt um {date}",
-                    "confirm_delete": "Sécher fir den Access Token fir {name} ze läsche?",
-                    "delete_failed": "Fehler beim läschen vum Access Token",
-                    "create": "Token erstellen",
-                    "create_failed": "Fehler beim erstellen vum Access Token",
+                    "confirm_delete": "Sécher fir den Accèss Jeton fir {name} ze läsche?",
+                    "delete_failed": "Fehler beim läschen vum Accèss Jeton",
+                    "create": "Jeton erstellen",
+                    "create_failed": "Fehler beim erstellen vum Accèss Jeton",
                     "prompt_name": "Numm?",
-                    "prompt_copy_token": "Kopéiert den Access Token. E gëtt nie méi ugewisen.",
-                    "empty_state": "Et ginn nach keng laang gëlteg Access Token.",
+                    "prompt_copy_token": "Kopéiert den Accèss Jeton. E gëtt nie méi ugewisen.",
+                    "empty_state": "Et ginn nach keng laang gëlteg Accèss Jeton.",
                     "last_used": "Fir d'Läscht benotzt um {date} vun {location}",
                     "not_used": "Nach nie benotzt ginn"
                 },
@@ -734,6 +753,11 @@
                         "checked_items": "Markéiert Elementer",
                         "clear_items": "Markéiert Elementer läschen",
                         "add_item": "Element dobäisetzen"
+                    },
+                    "empty_state": {
+                        "title": "Wëllkomm Doheem",
+                        "no_devices": "Dës Säit erlaabt et iech är Apparater ze kontrolléiere, awer wéi et schéngt sinn nach keng Apparater ageriicht. Gitt op d'Integratioun's Säit fir unzefänken.",
+                        "go_to_integrations_page": "Zur Integratiouns Säit goen"
                     }
                 },
                 "editor": {
@@ -999,7 +1023,10 @@
         "weblink": "Weblink",
         "zwave": "Z-Wave",
         "vacuum": "Staubsauger",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace"
     },
     "attribute": {
         "weather": {
