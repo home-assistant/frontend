@@ -433,6 +433,14 @@
                                     "hours": "Hores",
                                     "minutes": "Minuts",
                                     "seconds": "Segons"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalització",
+                                    "source": "Font",
+                                    "zone": "Zona",
+                                    "event": "Esdeveniment:",
+                                    "enter": "Entrar",
+                                    "leave": "Sortir"
                                 }
                             }
                         },
@@ -565,7 +573,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Gestiona la xarxa domòtica ZIgbee"
+                    "description": "Gestiona la xarxa domòtica ZIgbee",
+                    "services": {
+                        "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Registre d'àrees",
+                    "description": "Visió general de totes les àrees de la casa."
+                },
+                "entity_registry": {
+                    "caption": "Registre d'entitats",
+                    "description": "Visió general de totes les entitats conegudes."
                 }
             },
             "profile": {
@@ -734,6 +753,11 @@
                         "checked_items": "Articles seleccionats",
                         "clear_items": "Esborrar els articles seleccionats",
                         "add_item": "Afegir element"
+                    },
+                    "empty_state": {
+                        "title": "Benvingut\/da a casa",
+                        "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per començar.",
+                        "go_to_integrations_page": "Vés a la pàgina d'integracions."
                     }
                 },
                 "editor": {
@@ -753,7 +777,6 @@
                         "migrate": "Migrar la configuració"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
-                    "configure_ui": "Configurar la interfície d'usuari",
                     "edit_view": {
                         "header": "Configuració de la visualització",
                         "add": "Afegeix visualització",
@@ -767,6 +790,9 @@
                         "cancel": "M'ho he repensat",
                         "save": "Prendre el control"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configurar la interfície d'usuari"
                 }
             }
         },
@@ -999,7 +1025,10 @@
         "weblink": "Enllaços web",
         "zwave": "Z-Wave",
         "vacuum": "Aspiradora",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace"
     },
     "attribute": {
         "weather": {

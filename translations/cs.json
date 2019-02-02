@@ -743,7 +743,6 @@
                         "migrate": "Migrovat konfiguraci"
                     },
                     "header": "Upravit UI",
-                    "configure_ui": "Konfigurovat UI",
                     "edit_view": {
                         "header": "Zobrazit konfiguraci",
                         "add": "Přidat pohled",
@@ -757,6 +756,9 @@
                         "cancel": "Zahodit změnu",
                         "save": "Převzít kontrolu"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfigurovat UI"
                 }
             }
         },

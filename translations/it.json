@@ -753,7 +753,6 @@
                         "migrate": "Esporta configurazione"
                     },
                     "header": "Modifica dell'interfaccia utente",
-                    "configure_ui": "Configurare l'interfaccia utente",
                     "edit_view": {
                         "header": "Visualizza configurazione",
                         "add": "Aggiungi vista",
@@ -767,6 +766,9 @@
                         "cancel": "Rinuncia",
                         "save": "Prendere il controllo"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configurare l'interfaccia utente"
                 }
             }
         },

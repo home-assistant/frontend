@@ -751,7 +751,6 @@
                         "migrate": "迁移配置"
                     },
                     "header": "编辑 UI",
-                    "configure_ui": "配置 UI",
                     "edit_view": {
                         "header": "查看配置",
                         "add": "添加视图",
@@ -765,6 +764,9 @@
                         "cancel": "没关系",
                         "save": "自行编辑"
                     }
+                },
+                "menu": {
+                    "configure_ui": "配置 UI"
                 }
             }
         },
