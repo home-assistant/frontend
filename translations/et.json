@@ -737,13 +737,15 @@
                         "delete": "Kustuta"
                     },
                     "header": "Muuda kasutajaliidest",
-                    "configure_ui": "Seadista kasutajaliidest",
                     "edit_view": {
                         "header": "Vaata seadeid",
                         "add": "Lisa vaade",
                         "edit": "Muuda vaadet",
                         "delete": "Kustuta vaade"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Seadista kasutajaliidest"
                 }
             }
         },

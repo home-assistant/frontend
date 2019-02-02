@@ -743,7 +743,6 @@
                         "migrate": "Migrar configuração"
                     },
                     "header": "Editar “interface” do usuário",
-                    "configure_ui": "Configurar “interface” do usuário",
                     "edit_view": {
                         "header": "Configurações",
                         "add": "Editar visualização",
@@ -757,6 +756,9 @@
                         "cancel": "Nunca",
                         "save": "Assuma o controle"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configurar “interface” do usuário"
                 }
             }
         },

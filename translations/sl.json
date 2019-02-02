@@ -753,7 +753,6 @@
                         "migrate": "Migriraj nastavitve"
                     },
                     "header": "Uredi UI",
-                    "configure_ui": "Konfiguriraj UI",
                     "edit_view": {
                         "header": "Prikaži konfiguracijo",
                         "add": "Dodaj pogled",
@@ -767,6 +766,9 @@
                         "cancel": "Pozabi",
                         "save": "Prevzemite nadzor"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfiguriraj UI"
                 }
             }
         },

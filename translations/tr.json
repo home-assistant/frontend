@@ -655,7 +655,6 @@
                         "migrate": "Ayarları aktar"
                     },
                     "header": "Kullanıcı arayüzünü düzenle",
-                    "configure_ui": "Kullanıcı arayüzünü ayarla",
                     "edit_view": {
                         "header": "Ayarları görüntüle",
                         "add": "Görünüm ekle",
@@ -669,6 +668,9 @@
                         "cancel": "Boşver",
                         "save": "Kontrol altına al"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Kullanıcı arayüzünü ayarla"
                 }
             }
         },

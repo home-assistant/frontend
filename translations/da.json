@@ -743,7 +743,6 @@
                         "migrate": "Migrer opsætning"
                     },
                     "header": "Rediger UI",
-                    "configure_ui": "Konfigurer UI",
                     "edit_view": {
                         "header": "Vis konfiguration",
                         "add": "Tilføje visning",
@@ -757,6 +756,9 @@
                         "cancel": "Glem det",
                         "save": "tag kontrol"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfigurer UI"
                 }
             }
         },
