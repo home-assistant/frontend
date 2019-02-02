@@ -743,7 +743,6 @@
                         "migrate": "Migrar configuração"
                     },
                     "header": "Editar UI",
-                    "configure_ui": "Configurar UI",
                     "edit_view": {
                         "header": "Ver configuração",
                         "add": "Acrescentar vista",
@@ -757,6 +756,9 @@
                         "cancel": "Cancelar",
                         "save": "Assumir o controle"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configurar UI"
                 }
             }
         },

@@ -22,9 +22,6 @@ import { HomeAssistant, Route } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 
-import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
-import(/* webpackChunkName: "voice-command-dialog" */ "../dialogs/ha-voice-command-dialog");
-
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
 class HomeAssistantMain extends LitElement {
@@ -51,7 +48,6 @@ class HomeAssistantMain extends LitElement {
 
     return html`
       <ha-url-sync .hass=${hass}></ha-url-sync>
-      <ha-voice-command-dialog .hass=${hass}></ha-voice-command-dialog>
       <iron-media-query
         query="(max-width: 870px)"
         query-matches-changed=${this._narrowChanged}
@@ -84,6 +80,8 @@ class HomeAssistantMain extends LitElement {
   }
 
   protected firstUpdated() {
+    import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
+
     this.addEventListener("hass-open-menu", () => {
       if (this._narrow) {
         this.drawer.open();
@@ -96,9 +94,6 @@ class HomeAssistantMain extends LitElement {
       if (this.hass!.dockedSidebar) {
         fireEvent(this, "hass-dock-sidebar", { dock: false });
       }
-    });
-    this.addEventListener("hass-start-voice", () => {
-      (this.voiceDialog as any).opened = true;
     });
   }
 
@@ -123,10 +118,6 @@ class HomeAssistantMain extends LitElement {
 
   private get drawer(): AppDrawerElement {
     return this.shadowRoot!.querySelector("app-drawer")!;
-  }
-
-  private get voiceDialog() {
-    return this.shadowRoot!.querySelector("ha-voice-command-dialog")!;
   }
 
   static get styles(): CSSResult {

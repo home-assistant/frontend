@@ -753,7 +753,6 @@
                         "migrate": "설정 마이그레이션"
                     },
                     "header": "UI 편집",
-                    "configure_ui": "UI 구성",
                     "edit_view": {
                         "header": "구성 보기",
                         "add": "뷰 추가",
@@ -767,6 +766,9 @@
                         "cancel": "아닙니다",
                         "save": "직접 관리할게요"
                     }
+                },
+                "menu": {
+                    "configure_ui": "UI 구성"
                 }
             }
         },

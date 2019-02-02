@@ -777,7 +777,6 @@
                         "migrate": "Konfiguratioun migréieren"
                     },
                     "header": "UI änneren",
-                    "configure_ui": "UI konfiguréieren",
                     "edit_view": {
                         "header": "Konfiguratioun kucken",
                         "add": "Vue dobäisetzen",
@@ -791,6 +790,9 @@
                         "cancel": "Vergiess et",
                         "save": "Kontroll iwwerhuelen"
                     }
+                },
+                "menu": {
+                    "configure_ui": "UI konfiguréieren"
                 }
             }
         },
