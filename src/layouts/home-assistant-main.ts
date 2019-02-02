@@ -120,10 +120,6 @@ class HomeAssistantMain extends LitElement {
     return this.shadowRoot!.querySelector("app-drawer")!;
   }
 
-  private get voiceDialog() {
-    return this.shadowRoot!.querySelector("ha-voice-command-dialog")!;
-  }
-
   static get styles(): CSSResult {
     return css`
       :host {
