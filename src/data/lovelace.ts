@@ -11,13 +11,18 @@ export interface LovelaceConfig {
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
-  badges?: string[];
+  badges?: (string | LovelaceBadgeConfig)[];
   cards?: LovelaceCardConfig[];
   path?: string;
   icon?: string;
   theme?: string;
   panel?: boolean;
   background?: string;
+}
+
+export interface LovelaceBadgeConfig {
+  entity: string;
+  state_filter?: any[];
 }
 
 export interface LovelaceCardConfig {

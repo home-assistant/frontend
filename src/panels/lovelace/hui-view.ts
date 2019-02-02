@@ -13,7 +13,11 @@ import { HaStateLabelBadge } from "../../components/entity/ha-state-label-badge"
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
-import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
+import {
+  LovelaceViewConfig,
+  LovelaceCardConfig,
+  LovelaceBadgeConfig,
+} from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
 
 import { Lovelace, LovelaceCard } from "./types";
@@ -229,15 +233,58 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    for (const entityId of config.badges) {
-      const element = document.createElement("ha-state-label-badge");
-      element.hass = this.hass;
-      element.state = this.hass!.states[entityId];
-      elements.push({ element, entityId });
-      root.appendChild(element);
+    for (const entityConf of config.badges) {
+      for (const entityId of this._processBadgeEntity(entityConf)) {
+        const element = document.createElement("ha-state-label-badge");
+        element.hass = this.hass;
+        element.state = this.hass!.states[entityId];
+        elements.push({ element, entityId });
+        root.appendChild(element);
+      }
     }
     this._badges = elements;
     root.style.display = elements.length > 0 ? "block" : "none";
+  }
+
+  // Takes a badge entity config and returns a list of entity IDs to show as badges
+  private _processBadgeEntity(
+    entityConf: string | LovelaceBadgeConfig
+  ): Array<string> {
+    if (typeof entityConf === "object" && !Array.isArray(entityConf)) {
+      // an entity object, which has to have at least an `entity` field
+      if (!entityConf.entity) {
+        throw new Error("Badge entity object is missing entity field.");
+      }
+      const entities = this._processBadgeEntity(entityConf.entity);
+      if (Array.isArray(entityConf.state_filter)) {
+        // an entity object with a state filter
+        return entities.filter(
+          (entityId) =>
+            entityConf.state_filter!.indexOf(
+              this.hass!.states[entityId].state
+            ) >= 0
+        );
+      }
+      return entities;
+    } else if (typeof entityConf !== "string") {
+      throw new Error("Badge entities need to be an object or a string");
+    }
+
+    if (entityConf === "*") {
+      // a string representing all entities
+      return Object.keys(this.hass!.states);
+    } else {
+      const match = entityConf.match(/([^.]*)\.\*/);
+      if (match) {
+        // a string representing all entities in a domain
+        const domain = match[1];
+        return Object.keys(this.hass!.states).filter((st) =>
+          st.startsWith(domain + ".")
+        );
+      }
+    }
+    // a string representing a single entity
+    return [entityConf];
   }
 
   private _createCards(config: LovelaceViewConfig): void {
