@@ -159,6 +159,10 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
     return ["dialogOpenChanged(opened)"];
   }
 
+  showDialog() {
+    this.opened = true;
+  }
+
   initRecognition() {
     /* eslint-disable new-cap */
     this.recognition = new webkitSpeechRecognition();
