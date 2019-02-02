@@ -22,7 +22,6 @@ import { HomeAssistant, Route } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 
-import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
 class HomeAssistantMain extends LitElement {
@@ -81,6 +80,8 @@ class HomeAssistantMain extends LitElement {
   }
 
   protected firstUpdated() {
+    import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
+
     this.addEventListener("hass-open-menu", () => {
       if (this._narrow) {
         this.drawer.open();
