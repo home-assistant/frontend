@@ -823,9 +823,17 @@
             "add_item": "Add item"
           }
         },
+        "menu": {
+          "configure_ui": "Configure UI",
+          "unused_entities": "Unused entities",
+          "help": "Help",
+          "refresh": "Refresh"
+        },
         "editor": {
           "header": "Edit UI",
-          "configure_ui": "Configure UI",
+          "menu": {
+            "raw_editor": "Raw config editor"
+          },
           "edit_view": {
             "header": "View Configuration",
             "add": "Add view",
