@@ -1,9 +1,6 @@
 // Load polyfill first so HTML imports start resolving
 /* eslint-disable import/first */
 import "../resources/html-import/polyfill";
-import "@polymer/app-route/app-location";
-import "@polymer/app-route/app-route";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-styles/typography";
 import { setPassiveTouchGestures } from "@polymer/polymer/lib/utils/settings";
 

@@ -1,5 +1,4 @@
 import "@polymer/app-route/app-location";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   html,
   LitElement,
