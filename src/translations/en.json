@@ -808,7 +808,8 @@
         "period": "Period"
       },
       "logbook": {
-        "showing_entries": "[%key:ui::panel::history::showing_entries%]"
+        "showing_entries": "[%key:ui::panel::history::showing_entries%]",
+        "period": "Period"
       },
       "lovelace": {
         "cards": {
