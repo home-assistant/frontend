@@ -753,7 +753,6 @@
                         "migrate": "Configuratie migreren"
                     },
                     "header": "Bewerk UI",
-                    "configure_ui": "Configureer UI",
                     "edit_view": {
                         "header": "Bekijk de configuratie",
                         "add": "Weergave toevoegen",
@@ -767,6 +766,9 @@
                         "cancel": "Laat maar",
                         "save": "Neem over"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configureer UI"
                 }
             }
         },

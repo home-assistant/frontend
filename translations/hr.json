@@ -725,7 +725,6 @@
                         "migrate": "Migriraj konfiguraciju"
                     },
                     "header": "Uredi UI",
-                    "configure_ui": "Konfiguriraj UI",
                     "edit_view": {
                         "header": "Pogledaj konfiguraciju",
                         "add": "Dodaj prikaz",
@@ -739,6 +738,9 @@
                         "cancel": "Nema veze",
                         "save": "Preuzmi kontrolu"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfiguriraj UI"
                 }
             }
         },
