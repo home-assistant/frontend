@@ -16,13 +16,6 @@ import "../components/ha-iconset-svg";
 
 import "../layouts/app/home-assistant";
 
-/* polyfill for paper-dropdown */
-setTimeout(
-  () =>
-    import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"),
-  2000
-);
-
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
 document.createElement = Document.prototype.createElement;
