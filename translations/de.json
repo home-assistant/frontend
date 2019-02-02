@@ -753,7 +753,6 @@
                         "migrate": "Konfiguration migrieren"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
-                    "configure_ui": "Benutzeroberfläche konfigurieren",
                     "edit_view": {
                         "header": "Konfiguration anzeigen",
                         "add": "Ansicht hinzufügen",
@@ -767,6 +766,9 @@
                         "cancel": "Abbrechen",
                         "save": "Kontrolle übernehmen"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Benutzeroberfläche konfigurieren"
                 }
             }
         },
