@@ -73,6 +73,7 @@
     "es6-object-assign": "^1.1.0",
     "eslint-import-resolver-webpack": "^0.10.1",
     "fecha": "^3.0.0",
+    "gulp-hash-filename": "^2.0.1",
     "home-assistant-js-websocket": "^3.2.4",
     "intl-messageformat": "^2.2.0",
     "jquery": "^3.3.1",
