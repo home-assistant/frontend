@@ -5,6 +5,7 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
+  css,
 } from "lit-element";
 
 import "../home-assistant-main";
@@ -27,6 +28,7 @@ import { Route, HomeAssistant } from "../../types";
 import { navigate } from "../../common/navigate";
 
 (LitElement.prototype as any).html = html;
+(LitElement.prototype as any).css = css;
 
 const ext = <T>(baseClass: T, mixins): T =>
   mixins.reduceRight((base, mixin) => mixin(base), baseClass);
