@@ -168,7 +168,9 @@ class HUIRoot extends LitElement {
                       slot="dropdown-content"
                     >
                       <paper-item @click="${this.lovelace!.enableFullEditMode}"
-                        >Raw config editor</paper-item
+                        >${this.hass!.localize(
+                          "ui.panel.lovelace.editor.menu.raw_editor"
+                        )}</paper-item
                       >
                     </paper-listbox>
                   </paper-menu-button>
@@ -206,19 +208,27 @@ class HUIRoot extends LitElement {
                       ${this._yamlMode
                         ? html`
                             <paper-item @click="${this._handleRefresh}"
-                              >Refresh</paper-item
+                              >${this.hass!.localize(
+                                "ui.panel.lovelace.menu.refresh"
+                              )}</paper-item
                             >
                           `
                         : ""}
                       <paper-item @click="${this._handleUnusedEntities}"
-                        >Unused entities</paper-item
+                        >${this.hass!.localize(
+                          "ui.panel.lovelace.menu.unused_entities"
+                        )}</paper-item
                       >
                       <paper-item @click="${this._editModeEnable}"
                         >${this.hass!.localize(
-                          "ui.panel.lovelace.editor.configure_ui"
+                          "ui.panel.lovelace.menu.configure_ui"
                         )}</paper-item
                       >
-                      <paper-item @click="${this._handleHelp}">Help</paper-item>
+                      <paper-item @click="${this._handleHelp}"
+                        >${this.hass!.localize(
+                          "ui.panel.lovelace.menu.help"
+                        )}</paper-item
+                      >
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
