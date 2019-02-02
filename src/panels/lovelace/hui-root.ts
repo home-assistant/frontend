@@ -169,7 +169,7 @@ class HUIRoot extends LitElement {
                     >
                       <paper-item @click="${this.lovelace!.enableFullEditMode}"
                         >${this.hass!.localize(
-                          "ui.panel.lovelace.editor.raw_editor"
+                          "ui.panel.lovelace.editor.menu.raw_editor"
                         )}</paper-item
                       >
                     </paper-listbox>
@@ -209,24 +209,24 @@ class HUIRoot extends LitElement {
                         ? html`
                             <paper-item @click="${this._handleRefresh}"
                               >${this.hass!.localize(
-                                "ui.panel.lovelace.editor.refresh"
+                                "ui.panel.lovelace.menu.refresh"
                               )}</paper-item
                             >
                           `
                         : ""}
                       <paper-item @click="${this._handleUnusedEntities}"
                         >${this.hass!.localize(
-                          "ui.panel.lovelace.editor.unused_entities"
+                          "ui.panel.lovelace.menu.unused_entities"
                         )}</paper-item
                       >
                       <paper-item @click="${this._editModeEnable}"
                         >${this.hass!.localize(
-                          "ui.panel.lovelace.editor.configure_ui"
+                          "ui.panel.lovelace.menu.configure_ui"
                         )}</paper-item
                       >
                       <paper-item @click="${this._handleHelp}"
                         >${this.hass!.localize(
-                          "ui.panel.lovelace.editor.help"
+                          "ui.panel.lovelace.menu.help"
                         )}</paper-item
                       >
                     </paper-listbox>
