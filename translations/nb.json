@@ -753,7 +753,6 @@
                         "migrate": "Overfør konfigurasjon"
                     },
                     "header": "Rediger brukergrensesnitt",
-                    "configure_ui": "Konfigurer brukergrensesnitt",
                     "edit_view": {
                         "header": "Vis konfigurasjon",
                         "add": "Legg til visning",
@@ -767,6 +766,9 @@
                         "cancel": "Glem det",
                         "save": "Ta kontroll"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfigurer brukergrensesnitt"
                 }
             }
         },

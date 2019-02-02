@@ -345,7 +345,7 @@
                 },
                 "customize": {
                     "caption": "Anpassning",
-                    "description": "Anpassa dina enheter"
+                    "description": "Anpassa dina entiteter"
                 },
                 "automation": {
                     "caption": "Automationer",
@@ -418,7 +418,7 @@
                                 },
                                 "zone": {
                                     "label": "Zon",
-                                    "entity": "Enhet med position",
+                                    "entity": "Entitet med position",
                                     "zone": "Zon",
                                     "event": "Händelse",
                                     "enter": "Ankommer",
@@ -433,6 +433,14 @@
                                     "hours": "Timmar",
                                     "minutes": "Minuter",
                                     "seconds": "Sekunder"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocation",
+                                    "source": "Källa",
+                                    "zone": "Zon",
+                                    "event": "Händelse:",
+                                    "enter": "Ankomma",
+                                    "leave": "Lämna"
                                 }
                             }
                         },
@@ -476,7 +484,7 @@
                                 },
                                 "zone": {
                                     "label": "Zon",
-                                    "entity": "Enhet med position",
+                                    "entity": "Entitet med position",
                                     "zone": "Zon"
                                 }
                             }
@@ -565,7 +573,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation nätverkhantering"
+                    "description": "Zigbee Home Automation nätverkhantering",
+                    "services": {
+                        "reconfigure": "Återkonfigurera ZHA-enheten (läka enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är vaken och accepterar kommandon när du använder den här tjänsten."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Områdesregister",
+                    "description": "Oversikt över alla områden i ditt hem"
+                },
+                "entity_registry": {
+                    "caption": "Entitetsregister",
+                    "description": "Översikt över alla kända entiteter"
                 }
             },
             "profile": {
@@ -734,6 +753,11 @@
                         "checked_items": "Markerade objekt",
                         "clear_items": "Rensa avbockade objekt",
                         "add_item": "Lägg till objekt"
+                    },
+                    "empty_state": {
+                        "title": "Välkommen hem",
+                        "no_devices": "På den här sidan kan du styra dina enheter, men det ser ut som om du inte har några enheter ännu. Gå till integrationssidan för att komma igång.",
+                        "go_to_integrations_page": "Gå till integrationssidan."
                     }
                 },
                 "editor": {
@@ -753,7 +777,6 @@
                         "migrate": "Migrera konfigurationen"
                     },
                     "header": "Ändra användargränssnittet",
-                    "configure_ui": "Konfigurera användargränssnittet",
                     "edit_view": {
                         "header": "Visa konfiguration",
                         "add": "Lägg till vy",
@@ -767,6 +790,9 @@
                         "cancel": "Glöm det",
                         "save": "Ta kontroll"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfigurera användargränssnittet"
                 }
             }
         },
@@ -901,7 +927,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Enhet"
+                    "entity": "Entitet"
                 }
             },
             "service-picker": {
@@ -935,7 +961,7 @@
             "more_info_settings": {
                 "save": "Spara",
                 "name": "Namn",
-                "entity_id": "Enhets-ID"
+                "entity_id": "Entitets-ID"
             },
             "more_info_control": {
                 "script": {
@@ -999,7 +1025,11 @@
         "weblink": "Webblänk",
         "zwave": "Z-Wave",
         "vacuum": "Dammsugare",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Systemhälsa"
     },
     "attribute": {
         "weather": {

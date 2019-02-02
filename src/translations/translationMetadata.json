@@ -1,6 +1,7 @@
 {
   "ar": {
-    "nativeName": "العربية"
+    "nativeName": "العربية",
+    "isRTL": true
   },
   "bg": {
     "nativeName": "Български"

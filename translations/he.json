@@ -427,6 +427,20 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "תבנית זמן",
+                                    "hours": "שעות",
+                                    "minutes": "דקות",
+                                    "seconds": "שניות"
+                                },
+                                "geo_location": {
+                                    "label": "מיקום גיאוגרפי",
+                                    "source": "מקור",
+                                    "zone": "אזור",
+                                    "event": "אירוע:",
+                                    "enter": "כניסה",
+                                    "leave": "יציאה"
                                 }
                             }
                         },
@@ -556,6 +570,20 @@
                         "device_unavailable": "התקן אינו זמין",
                         "entity_unavailable": "ישות לא זמינה"
                     }
+                },
+                "zha": {
+                    "description": "ניהול רשת Zigbee לאוטומציה ביתית",
+                    "services": {
+                        "reconfigure": "התקן מחדש את התקן ה ZHA. השתמש באפשרות זו אם אתה נתקל בבעיות בהתקן. אם ההתקן המדובר הוא התקן המופעל באמצעות סוללות, ודא שהוא ער ויכול לקבל פקודות בעת שימוש בשירות זה."
+                    }
+                },
+                "area_registry": {
+                    "caption": "מאגר האזורים",
+                    "description": "סקירה של כל האזורים בביתך."
+                },
+                "entity_registry": {
+                    "caption": "מאגר הישויות",
+                    "description": "סקירה של כל הישויות המוכרות"
                 }
             },
             "profile": {
@@ -724,6 +752,11 @@
                         "checked_items": "פריטים מסומנים",
                         "clear_items": "נקה פריטים מסומנים",
                         "add_item": "הוסף פריט"
+                    },
+                    "empty_state": {
+                        "title": "ברוך הבא הביתה",
+                        "no_devices": "דף זה מאפשר לך לשלוט במכשירים שלך, אך נראה שעדיין לא הוגדרו מכשירים. עבור אל דף האינטגרציות כדי להתחיל.",
+                        "go_to_integrations_page": "עבור אל דף האינטגרציות."
                     }
                 },
                 "editor": {
@@ -743,7 +776,6 @@
                         "migrate": "הגר הגדרה"
                     },
                     "header": "ערוך UI",
-                    "configure_ui": "הגדר UI",
                     "edit_view": {
                         "header": "הצג הגדרות",
                         "add": "הוסף תצוגה",
@@ -757,6 +789,9 @@
                         "cancel": "לא משנה",
                         "save": "קח שליטה"
                     }
+                },
+                "menu": {
+                    "configure_ui": "הגדר UI"
                 }
             }
         },
@@ -926,6 +961,19 @@
                 "save": "שמור",
                 "name": "שם",
                 "entity_id": "מזהה ישות"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "פעולה אחרונה"
+                },
+                "sun": {
+                    "elevation": "גובה",
+                    "rising": "זורחת",
+                    "setting": "שוקעת"
+                },
+                "updater": {
+                    "title": "הוראות עדכון"
+                }
             }
         },
         "auth_store": {

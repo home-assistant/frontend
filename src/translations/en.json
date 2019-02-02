@@ -808,7 +808,8 @@
         "period": "Period"
       },
       "logbook": {
-        "showing_entries": "[%key:ui::panel::history::showing_entries%]"
+        "showing_entries": "[%key:ui::panel::history::showing_entries%]",
+        "period": "Period"
       },
       "lovelace": {
         "cards": {
@@ -823,9 +824,17 @@
             "add_item": "Add item"
           }
         },
+        "menu": {
+          "configure_ui": "Configure UI",
+          "unused_entities": "Unused entities",
+          "help": "Help",
+          "refresh": "Refresh"
+        },
         "editor": {
           "header": "Edit UI",
-          "configure_ui": "Configure UI",
+          "menu": {
+            "raw_editor": "Raw config editor"
+          },
           "edit_view": {
             "header": "View Configuration",
             "add": "Add view",

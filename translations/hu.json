@@ -753,7 +753,6 @@
                         "migrate": "Konfiguráció áttelepítése"
                     },
                     "header": "Felhasználói felület szerkesztése",
-                    "configure_ui": "Felhasználói felület konfigurálása",
                     "edit_view": {
                         "header": "Nézet konfigurálása",
                         "add": "Nézet hozzáadása",
@@ -767,6 +766,9 @@
                         "cancel": "Mégsem",
                         "save": "Irányítás átvétele"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Felhasználói felület konfigurálása"
                 }
             }
         },

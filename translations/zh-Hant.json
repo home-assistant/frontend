@@ -777,7 +777,6 @@
                         "migrate": "遷移設定"
                     },
                     "header": "編輯 UI",
-                    "configure_ui": "設定 UI",
                     "edit_view": {
                         "header": "檢視設定",
                         "add": "新增視圖",
@@ -791,6 +790,9 @@
                         "cancel": "我再想想",
                         "save": "自行編輯"
                     }
+                },
+                "menu": {
+                    "configure_ui": "設定 UI"
                 }
             }
         },

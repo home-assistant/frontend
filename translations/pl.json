@@ -777,7 +777,6 @@
                         "migrate": "Migracja konfiguracji"
                     },
                     "header": "Edycja interfejsu użytkownika",
-                    "configure_ui": "Konfiguracja interfejsu użytkownika",
                     "edit_view": {
                         "header": "Konfiguracja widoku",
                         "add": "Dodaj widok",
@@ -791,6 +790,9 @@
                         "cancel": "Nieważne",
                         "save": "Przejmuję kontrolę"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfiguracja interfejsu użytkownika"
                 }
             }
         },

@@ -1,19 +1,26 @@
+const del = require("del");
 const path = require("path");
 const gulp = require("gulp");
 const foreach = require("gulp-foreach");
 const hash = require("gulp-hash");
+const hashFilename = require("gulp-hash-filename");
 const merge = require("gulp-merge-json");
 const minify = require("gulp-jsonminify");
 const rename = require("gulp-rename");
 const transform = require("gulp-json-transform");
-
-const isDemo = process.env.DEMO === "1";
 
 const inDir = "translations";
 const workDir = "build-translations";
 const fullDir = workDir + "/full";
 const coreDir = workDir + "/core";
 const outDir = workDir + "/output";
+
+String.prototype.rsplit = function(sep, maxsplit) {
+  var split = this.split(sep);
+  return maxsplit
+    ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit))
+    : split;
+};
 
 // Panel translations which should be split from the core translations. These
 // should mirror the fragment definitions in polymer.json, so that we load
@@ -95,6 +102,12 @@ function lokalise_transform(data, original) {
   return output;
 }
 
+let taskName = "clean-translations";
+gulp.task(taskName, function() {
+  return del([`${outDir}/**/*.json`]);
+});
+tasks.push(taskName);
+
 /**
  * This task will build a master translation file, to be used as the base for
  * all languages. This starts with src/translations/en.json, and replaces all
@@ -104,8 +117,8 @@ function lokalise_transform(data, original) {
  * project is buildable immediately after merging new translation keys, since
  * the Lokalise update to translations/en.json will not happen immediately.
  */
-let taskName = "build-master-translation";
-gulp.task(taskName, function() {
+taskName = "build-master-translation";
+gulp.task(taskName, ["clean-translations"], function() {
   return gulp
     .src("src/translations/en.json")
     .pipe(
@@ -207,6 +220,7 @@ gulp.task(taskName, splitTasks, function() {
       })
     )
     .pipe(minify())
+    .pipe(hashFilename())
     .pipe(
       rename((filePath) => {
         if (filePath.dirname === "core") {
@@ -231,7 +245,7 @@ gulp.task(taskName, ["build-flattened-translations"], function() {
       hash({
         algorithm: "md5",
         hashLength: 32,
-        template: isDemo ? "<%= name %>.json" : "<%= name %>-<%= hash %>.json",
+        template: "<%= name %>.json",
       })
     )
     .pipe(hash.manifest("translationFingerprints.json"))
@@ -241,8 +255,10 @@ gulp.task(taskName, ["build-flattened-translations"], function() {
         // all translation fragment fingerprints under the translation name key
         const newData = {};
         Object.entries(data).forEach(([key, value]) => {
-          const parts = key.split("/");
-          let translation = key;
+          const [path, _md5] = key.rsplit("-", 1);
+          // let translation = key;
+          let translation = path;
+          const parts = translation.split("/");
           if (parts.length === 2) {
             translation = parts[1];
           }
@@ -251,7 +267,7 @@ gulp.task(taskName, ["build-flattened-translations"], function() {
               fingerprints: {},
             };
           }
-          newData[translation].fingerprints[key] = value;
+          newData[translation].fingerprints[path] = value;
         });
         return newData;
       })

@@ -753,7 +753,6 @@
                         "migrate": "Migrovať konfiguráciu"
                     },
                     "header": "Upraviť používateľské rozhranie",
-                    "configure_ui": "Konfigurovať používateľské rozhranie",
                     "edit_view": {
                         "header": "Konfigurácia zobrazenia",
                         "add": "Pridať zobrazenie",
@@ -767,6 +766,9 @@
                         "cancel": "Nevadí",
                         "save": "Prevziať kontrolu"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Konfigurovať používateľské rozhranie"
                 }
             }
         },
