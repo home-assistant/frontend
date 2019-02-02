@@ -741,7 +741,6 @@
                         "migrate": "Tuo vanhat asetukset"
                     },
                     "header": "Muokkaa käyttöliittymää",
-                    "configure_ui": "Määrittele käyttöliittymä",
                     "edit_view": {
                         "header": "Näytä asetukset",
                         "add": "Lisää näkymä",
@@ -755,6 +754,9 @@
                         "cancel": "Antaa olla",
                         "save": "Ota hallintaan"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Määrittele käyttöliittymä"
                 }
             }
         },

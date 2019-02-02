@@ -7019,6 +7019,11 @@ gulp-foreach@^0.1.0:
     gulp-util "~2.2.14"
     through2 "~0.6.3"
 
+gulp-hash-filename@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/gulp-hash-filename/-/gulp-hash-filename-2.0.1.tgz#c30656261a9b622d636766e48b8297125b4ddde8"
+  integrity sha512-pMg5owb8Dt0wqjgPx/TFbU3c5ckD16rrgo0BTm9PQ3pVC1Zsgw7AYx1+DP2t31JoUTeN1/dPuXNWnCNvN/wj7A==
+
 gulp-hash@^4.2.2:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/gulp-hash/-/gulp-hash-4.2.2.tgz#2cf4ad081ef7a65393a51e3df58f514f388f4523"

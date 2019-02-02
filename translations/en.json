@@ -777,7 +777,6 @@
                         "migrate": "Migrate config"
                     },
                     "header": "Edit UI",
-                    "configure_ui": "Configure UI",
                     "edit_view": {
                         "header": "View Configuration",
                         "add": "Add view",
@@ -791,6 +790,9 @@
                         "cancel": "Never mind",
                         "save": "Take control"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configure UI"
                 }
             }
         },
@@ -1026,7 +1028,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "System Health"
     },
     "attribute": {
         "weather": {
