@@ -104,7 +104,7 @@ function lokalise_transform(data, original) {
 
 let taskName = "clean-translations";
 gulp.task(taskName, function() {
-  return del([`${workDir}/**`]);
+  return del([`${outDir}/**/*.json`]);
 });
 tasks.push(taskName);
 
