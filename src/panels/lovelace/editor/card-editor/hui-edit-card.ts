@@ -435,9 +435,14 @@ export class HuiEditCard extends LitElement {
         .content {
           display: flex;
           flex-direction: column;
+          margin: 0 -10px;
         }
         .content hui-card-preview {
           margin-top: 16px;
+          margin: 0 10px;
+        }
+        .content .element-editor {
+          margin: 0 10px;
         }
 
         @media (min-width: 1200px) {
@@ -453,7 +458,7 @@ export class HuiEditCard extends LitElement {
             flex: auto;
           }
           .content hui-card-preview {
-            margin: 0 24px;
+            margin: 0 10px;
             flex: 490px;
             max-width: 490px;
           }
