@@ -1,4 +1,3 @@
-import "@polymer/paper-button/paper-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
 
 import {
@@ -60,6 +59,13 @@ class HaInitPage extends LitElement {
         color: var(--primary-color);
       }
     `;
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (changedProps.has("error") && this.error) {
+      import(/* webpackChunkName: "paper-button" */ "@polymer/paper-button/paper-button");
+    }
   }
 
   private _retry() {
