@@ -1,6 +1,6 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-spinner/paper-spinner-lite";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -25,10 +25,10 @@ class HassLoadingScreen extends PolymerElement {
             narrow="[[narrow]]"
             show-menu="[[showMenu]]"
           ></ha-menu-button>
-          <div main-title="">[[title]]</div>
+          <div main-title>[[title]]</div>
         </app-toolbar>
         <div class="layout horizontal center-center">
-          <paper-spinner active=""></paper-spinner>
+          <paper-spinner-lite active></paper-spinner-lite>
         </div>
       </div>
     `;

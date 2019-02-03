@@ -301,7 +301,8 @@
                 "period": "תקופה"
             },
             "logbook": {
-                "showing_entries": "מציג רשומות עבור"
+                "showing_entries": "מציג רשומות עבור",
+                "period": "תקופה"
             },
             "mailbox": {
                 "empty": "אין לך הודעות",
@@ -788,10 +789,16 @@
                         "para_sure": "האם אתה בטוח שאתה רוצה לקחת שליטה על ממשק המשתמש?",
                         "cancel": "לא משנה",
                         "save": "קח שליטה"
+                    },
+                    "menu": {
+                        "raw_editor": "עורך הקונפיגורציה"
                     }
                 },
                 "menu": {
-                    "configure_ui": "הגדר UI"
+                    "configure_ui": "הגדר UI",
+                    "unused_entities": "ישויות שאינן בשימוש",
+                    "help": "עזרה",
+                    "refresh": "רענן"
                 }
             }
         },
@@ -1023,7 +1030,8 @@
         "updater": "המעדכן",
         "weblink": "קישור",
         "zwave": "Z-Wave",
-        "vacuum": "שואב אבק"
+        "vacuum": "שואב אבק",
+        "system_health": "בריאות מערכת"
     },
     "attribute": {
         "weather": {

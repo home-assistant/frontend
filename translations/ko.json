@@ -301,7 +301,8 @@
                 "period": "기간"
             },
             "logbook": {
-                "showing_entries": "다음 날짜의 항목을 표시"
+                "showing_entries": "다음 날짜의 항목을 표시",
+                "period": "기간"
             },
             "mailbox": {
                 "empty": "메시지가 존재하지 않습니다",
@@ -433,6 +434,14 @@
                                     "hours": "시간",
                                     "minutes": "분",
                                     "seconds": "초"
+                                },
+                                "geo_location": {
+                                    "label": "위치정보",
+                                    "source": "소스",
+                                    "zone": "구역",
+                                    "event": "이벤트:",
+                                    "enter": "입장",
+                                    "leave": "퇴장"
                                 }
                             }
                         },
@@ -565,7 +574,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee 홈 자동화 네트워크 관리"
+                    "description": "Zigbee 홈 자동화 네트워크 관리",
+                    "services": {
+                        "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태여야 합니다."
+                    }
+                },
+                "area_registry": {
+                    "caption": "영역 등록",
+                    "description": "집에 등록된 모든 영역"
+                },
+                "entity_registry": {
+                    "caption": "구성요소 등록",
+                    "description": "모든 구성요소"
                 }
             },
             "profile": {
@@ -608,7 +628,7 @@
                     "delete_failed": "액세스 토큰을 삭제할 수 없습니다.",
                     "create": "토큰 만들기",
                     "create_failed": "액세스 토큰을 생성을 할 수 없습니다.",
-                    "prompt_name": "토큰 이름을 지어 주세요.",
+                    "prompt_name": "토큰 이름을 지어주세요.",
                     "prompt_copy_token": "Ctrl + C 를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
                     "empty_state": "장기 액세스 토큰이 없습니다.",
                     "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
@@ -734,6 +754,11 @@
                         "checked_items": "선택한 항목",
                         "clear_items": "선택한 항목 삭제",
                         "add_item": "항목 추가"
+                    },
+                    "empty_state": {
+                        "title": "집에 오신 것을 환영합니다",
+                        "no_devices": "이 페이지에서 장치를 제어 할 수 있지만, 장치가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
+                        "go_to_integrations_page": "통합 페이지로 이동하기."
                     }
                 },
                 "editor": {
@@ -765,10 +790,16 @@
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "cancel": "아닙니다",
                         "save": "직접 관리할게요"
+                    },
+                    "menu": {
+                        "raw_editor": "구성 코드 편집기"
                     }
                 },
                 "menu": {
-                    "configure_ui": "UI 구성"
+                    "configure_ui": "UI 구성",
+                    "unused_entities": "미사용 구성요소",
+                    "help": "도움말",
+                    "refresh": "새로고침"
                 }
             }
         },
@@ -1001,7 +1032,11 @@
         "weblink": "웹링크",
         "zwave": "Z-Wave",
         "vacuum": "청소기",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "시스템 상태"
     },
     "attribute": {
         "weather": {

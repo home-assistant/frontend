@@ -62,7 +62,7 @@ class HaPanelDevInfo extends LitElement {
           <app-toolbar>
             <ha-menu-button
               .narrow="${this.narrow}"
-              showMenu="${this.showMenu}"
+              .showMenu="${this.showMenu}"
             ></ha-menu-button>
             <div main-title>About</div>
           </app-toolbar>
