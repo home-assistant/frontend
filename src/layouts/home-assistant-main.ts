@@ -24,6 +24,14 @@ import { PolymerChangedEvent } from "../polymer-types";
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "hass-open-menu": undefined;
+    "hass-close-menu": undefined;
+  }
+}
+
 class HomeAssistantMain extends LitElement {
   public hass?: HomeAssistant;
   public route?: Route;
@@ -32,7 +40,7 @@ class HomeAssistantMain extends LitElement {
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      narrow: {},
+      _narrow: {},
       route: {},
     };
   }
@@ -50,7 +58,7 @@ class HomeAssistantMain extends LitElement {
       <ha-url-sync .hass=${hass}></ha-url-sync>
       <iron-media-query
         query="(max-width: 870px)"
-        query-matches-changed=${this._narrowChanged}
+        @query-matches-changed=${this._narrowChanged}
       ></iron-media-query>
 
       <app-drawer-layout
