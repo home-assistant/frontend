@@ -458,7 +458,6 @@ export class HuiEditCard extends LitElement {
             flex: auto;
           }
           .content hui-card-preview {
-            margin-top: 0;
             margin: 0 10px;
             flex: 490px;
             max-width: 490px;
