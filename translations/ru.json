@@ -301,7 +301,8 @@
                 "period": "Период"
             },
             "logbook": {
-                "showing_entries": "Отображение записей за"
+                "showing_entries": "Отображение записей за",
+                "period": "Период"
             },
             "mailbox": {
                 "empty": "У вас нет сообщений",
@@ -789,10 +790,16 @@
                         "para_sure": "Вы уверены, что хотите самостоятельно контролировать пользовательский интерфейс?",
                         "cancel": "Оставить как есть",
                         "save": "Получить контроль"
+                    },
+                    "menu": {
+                        "raw_editor": "Текстовый редактор"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Настройка интерфейса"
+                    "configure_ui": "Настройка интерфейса",
+                    "unused_entities": "Неиспользуемые объекты",
+                    "help": "Справка",
+                    "refresh": "Обновить"
                 }
             }
         },
@@ -1028,7 +1035,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "Статус системы"
     },
     "attribute": {
         "weather": {
