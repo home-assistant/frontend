@@ -6,6 +6,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -123,11 +124,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           small: !this._broadCard,
         })}">
         <div id="root">
-          <ha-icon
+          <paper-icon-button
             icon="hass:dots-vertical"
             class="more-info"
             @click="${this._handleMoreInfo}"
-          ></ha-icon>
+          ></paper-icon-button>
           <div id="thermostat"></div>
           <div id="tooltip">
             <div class="title">${this._config.name ||
@@ -548,10 +549,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           margin-left: var(--uom-margin-left);
         }
         .more-info {
-          float: right;
+          position: absolute;
           cursor: pointer;
-          padding-top: 16px;
-          padding-right: 16px;
+          top: 0;
+          right: 0;
           z-index: 25;
           color: var(--secondary-text-color);
         }
