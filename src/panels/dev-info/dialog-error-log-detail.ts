@@ -9,12 +9,12 @@ import {
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
+import { ErrorLogDetailDialogParams } from "./show-dialog-error-log-detail";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/ha-style";
 
-class DialogSystemLogDetail extends LitElement {
-  private _params?: SystemLogDetailDialogParams;
+class DialogErrorLogDetail extends LitElement {
+  private _params?: ErrorLogDetailDialogParams;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -22,7 +22,7 @@ class DialogSystemLogDetail extends LitElement {
     };
   }
 
-  public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
+  public async showDialog(params: ErrorLogDetailDialogParams): Promise<void> {
     this._params = params;
     await this.updateComplete;
   }
@@ -70,8 +70,8 @@ class DialogSystemLogDetail extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-system-log-detail": DialogSystemLogDetail;
+    "dialog-error-log-detail": DialogErrorLogDetail;
   }
 }
 
-customElements.define("dialog-system-log-detail", DialogSystemLogDetail);
+customElements.define("dialog-error-log-detail", DialogErrorLogDetail);

@@ -1,18 +1,18 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import { LoggedError } from "../../data/system_log";
+import { LoggedError } from "../../data/error_log";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "show-dialog-system-log-detail": SystemLogDetailDialogParams;
+    "show-dialog-error-log-detail": ErrorLogDetailDialogParams;
   }
 }
 
 let registeredDialog = false;
-const dialogShowEvent = "show-dialog-system-log-detail";
-const dialogTag = "dialog-system-log-detail";
+const dialogShowEvent = "show-dialog-error-log-detail";
+const dialogTag = "dialog-error-log-detail";
 
-export interface SystemLogDetailDialogParams {
+export interface ErrorLogDetailDialogParams {
   item: LoggedError;
 }
 
@@ -21,12 +21,12 @@ const registerDialog = (element: HTMLElement) =>
     dialogShowEvent,
     dialogTag,
     dialogImport: () =>
-      import(/* webpackChunkName: "system-log-detail-dialog" */ "./dialog-system-log-detail"),
+      import(/* webpackChunkName: "error-log-detail-dialog" */ "./dialog-error-log-detail"),
   });
 
-export const showSystemLogDetailDialog = (
+export const showErrorLogDetailDialog = (
   element: HTMLElement,
-  systemLogDetailParams: SystemLogDetailDialogParams
+  systemLogDetailParams: ErrorLogDetailDialogParams
 ): void => {
   if (!registeredDialog) {
     registeredDialog = true;

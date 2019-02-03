@@ -14,9 +14,9 @@ import "../../components/ha-menu-button";
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/ha-style";
 
-import "./system-log-card";
-import "./error-log-card";
 import "./system-health-card";
+import "./error-log-card";
+import "./system-log-card";
 
 const JS_VERSION = __BUILD__;
 const OPT_IN_PANEL = "states";
@@ -144,8 +144,8 @@ class HaPanelDevInfo extends LitElement {
             </p>
           </div>
           <system-health-card .hass=${this.hass}></system-health-card>
-          <system-log-card .hass=${this.hass}></system-log-card>
           <error-log-card .hass=${this.hass}></error-log-card>
+          <system-log-card .hass=${this.hass}></system-log-card>
         </div>
       </app-header-layout>
     `;
