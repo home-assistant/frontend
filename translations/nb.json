@@ -301,7 +301,8 @@
                 "period": "Periode"
             },
             "logbook": {
-                "showing_entries": "Viser oppføringer for"
+                "showing_entries": "Viser oppføringer for",
+                "period": "Periode"
             },
             "mailbox": {
                 "empty": "Du har ingen meldinger",
@@ -433,6 +434,14 @@
                                     "hours": "Timer",
                                     "minutes": "Minutter",
                                     "seconds": "Sekunder"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokasjon",
+                                    "source": "Kilde",
+                                    "zone": "Sone",
+                                    "event": "Hendelse:",
+                                    "enter": "Ankommer",
+                                    "leave": "Foralter"
                                 }
                             }
                         },
@@ -565,7 +574,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "ZigBee Home Automation nettverksadministrasjon"
+                    "description": "ZigBee Home Automation nettverksadministrasjon",
+                    "services": {
+                        "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Områderegister",
+                    "description": "Oversikt over alle områder i ditt hjem."
+                },
+                "entity_registry": {
+                    "caption": "Enhetsregister",
+                    "description": "Oversikt over alle kjente enheter."
                 }
             },
             "profile": {
@@ -734,6 +754,11 @@
                         "checked_items": "Merkede elementer",
                         "clear_items": "Fjern merkede elementer",
                         "add_item": "Legg til"
+                    },
+                    "empty_state": {
+                        "title": "Velkommen hjem",
+                        "no_devices": "Denne siden lar deg styre enhetene dine, men det ser ut til at du ikke har konfigurert noen enheter ennå. Gå til integrasjonssiden for å komme i gang.",
+                        "go_to_integrations_page": "Gå til integrasjonssiden."
                     }
                 },
                 "editor": {
@@ -765,10 +790,16 @@
                         "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
                         "cancel": "Glem det",
                         "save": "Ta kontroll"
+                    },
+                    "menu": {
+                        "raw_editor": "Tekstbasert konfigurasjonsredigering"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfigurer brukergrensesnitt"
+                    "configure_ui": "Konfigurer brukergrensesnitt",
+                    "unused_entities": "Ubrukte enheter",
+                    "help": "Hjelp",
+                    "refresh": "Oppdater"
                 }
             }
         },
@@ -1001,7 +1032,11 @@
         "weblink": "Lenke",
         "zwave": "Z-Wave",
         "vacuum": "Støvsuger",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Systemhelse"
     },
     "attribute": {
         "weather": {

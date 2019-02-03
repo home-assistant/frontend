@@ -5,6 +5,7 @@ import {
   PropertyDeclarations,
   TemplateResult,
 } from "lit-element";
+import "@polymer/paper-icon-button/paper-icon-button";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { styleMap } from "lit-html/directives/style-map";
@@ -96,11 +97,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
               </div>
             `
           : html`
-              <ha-icon
+              <paper-icon-button
                 icon="hass:dots-vertical"
                 class="more-info"
                 @click="${this._handleMoreInfo}"
-              ></ha-icon>
+              ></paper-icon-button>
               <div id="light"></div>
               <div id="tooltip">
                 <div class="icon-state">
@@ -286,10 +287,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           padding: 8px;
         }
         .more-info {
-          float: right;
+          position: absolute;
           cursor: pointer;
-          padding-top: 16px;
-          padding-right: 16px;
+          top: 0;
+          right: 0;
           z-index: 25;
           color: var(--secondary-text-color);
         }
