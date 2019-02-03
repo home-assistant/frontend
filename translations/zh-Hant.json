@@ -301,7 +301,8 @@
                 "period": "期間長"
             },
             "logbook": {
-                "showing_entries": "選擇要查看的時間"
+                "showing_entries": "選擇要查看的時間",
+                "period": "選擇週期"
             },
             "mailbox": {
                 "empty": "目前沒有任何訊息",
@@ -789,10 +790,16 @@
                         "para_sure": "確定要自行編輯使用者介面？",
                         "cancel": "我再想想",
                         "save": "自行編輯"
+                    },
+                    "menu": {
+                        "raw_editor": "文字設定編輯器"
                     }
                 },
                 "menu": {
-                    "configure_ui": "設定 UI"
+                    "configure_ui": "設定 UI",
+                    "unused_entities": "未使用物件",
+                    "help": "說明",
+                    "refresh": "更新"
                 }
             }
         },
@@ -1028,7 +1035,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "系統健康"
     },
     "attribute": {
         "weather": {

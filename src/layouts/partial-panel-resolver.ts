@@ -6,7 +6,6 @@ import {
 } from "lit-element";
 
 import "./hass-loading-screen";
-import "./hass-error-screen";
 import { HomeAssistant, Panel, PanelElement, Route } from "../types";
 
 // Cache of panel loading promises.
@@ -168,7 +167,15 @@ class PartialPanelResolver extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    // Load it before it's needed, because it will be shown if user is offline
+    // and a panel has to be loaded.
+    import(/* webpackChunkName: "hass-error-screen" */ "./hass-error-screen");
+  }
+
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (!this.hass) {
       return;
     }
