@@ -301,7 +301,8 @@
                 "period": "Period"
             },
             "logbook": {
-                "showing_entries": "Showing entries for"
+                "showing_entries": "Showing entries for",
+                "period": "Period"
             },
             "mailbox": {
                 "empty": "You do not have any messages",
@@ -789,10 +790,16 @@
                         "para_sure": "Are you sure you want to take control of your user interface?",
                         "cancel": "Never mind",
                         "save": "Take control"
+                    },
+                    "menu": {
+                        "raw_editor": "Raw config editor"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configure UI"
+                    "configure_ui": "Configure UI",
+                    "unused_entities": "Unused entities",
+                    "help": "Help",
+                    "refresh": "Refresh"
                 }
             }
         },

@@ -301,7 +301,8 @@
                 "period": "Período"
             },
             "logbook": {
-                "showing_entries": "Exibindo entradas para"
+                "showing_entries": "Exibindo entradas para",
+                "period": "Período"
             },
             "mailbox": {
                 "empty": "Você não tem mensagens",
@@ -427,6 +428,10 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "ID da Webhook"
+                                },
+                                "time_pattern": {
+                                    "hours": "Horas",
+                                    "minutes": "Minutos"
                                 }
                             }
                         },
@@ -724,6 +729,9 @@
                         "checked_items": "Itens marcados",
                         "clear_items": "Limpar itens marcados",
                         "add_item": "Adicionar item"
+                    },
+                    "empty_state": {
+                        "go_to_integrations_page": "Vá para a página de integrações."
                     }
                 },
                 "editor": {
@@ -758,7 +766,10 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurar “interface” do usuário"
+                    "configure_ui": "Configurar “interface” do usuário",
+                    "unused_entities": "Entidades não utilizadas",
+                    "help": "Ajuda",
+                    "refresh": "Atualizar"
                 }
             }
         },
@@ -977,7 +988,8 @@
         "updater": "Atualizador",
         "weblink": "Weblink",
         "zwave": "",
-        "vacuum": "Aspirando"
+        "vacuum": "Aspirando",
+        "system_health": "Integridade Do Sistema"
     },
     "attribute": {
         "weather": {
