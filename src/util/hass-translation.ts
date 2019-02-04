@@ -39,8 +39,8 @@ export function getActiveTranslation() {
   }
   if (navigator.languages) {
     for (let locale of navigator.languages) {
-      // remove country specific name until match or empty string
-      while (locale) {
+      // try to remove country from country specific lanaguages until nothing left
+      while (locale.length > 1) {
         translation = languageGetTranslation(locale);
         if (translation) {
           return translation;
