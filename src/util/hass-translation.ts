@@ -38,7 +38,7 @@ export function getActiveTranslation() {
     }
   }
   if (navigator.languages) {
-    for (const locale of navigator.languages) {
+    for (let locale of navigator.languages) {
       // remove country from country specific lanaguages
       locale = locale.split("-")[0];
       
