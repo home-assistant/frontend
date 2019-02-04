@@ -41,7 +41,7 @@ export function getActiveTranslation() {
     for (let locale of navigator.languages) {
       // remove country from country specific lanaguages
       locale = locale.split("-")[0];
-      
+
       translation = languageGetTranslation(locale);
       if (translation) {
         return translation;
@@ -51,12 +51,6 @@ export function getActiveTranslation() {
   translation = languageGetTranslation(navigator.language);
   if (translation) {
     return translation;
-  }
-  if (navigator.language.includes("-")) {
-    translation = languageGetTranslation(navigator.language.split("-")[0]);
-    if (translation) {
-      return translation;
-    }
   }
 
   // Final fallback
