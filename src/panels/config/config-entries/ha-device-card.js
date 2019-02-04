@@ -81,7 +81,9 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   slot="dropdown-content"
                   selected="[[_computeSelectedArea(areas, device)]]"
                 >
-                  <paper-item>No Area</paper-item>
+                  <paper-item>
+                    [[localize('ui.panel.config.integrations.config_entry.no_area')]]
+                  </paper-item>
                   <template is="dom-repeat" items="[[areas]]">
                     <paper-item area="[[item]]">[[item.name]]</paper-item>
                   </template>
