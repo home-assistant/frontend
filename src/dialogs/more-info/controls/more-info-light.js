@@ -57,7 +57,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           transition: max-height 0.5s ease-in;
         }
 
-        .has-effect_list.is-on .effect_list,
+        .has-effect_list .effect_list,
         .has-brightness .brightness,
         .has-color_temp.is-on .color_temp,
         .has-white_value.is-on .white_value {
