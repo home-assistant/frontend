@@ -98,7 +98,11 @@ export class HuiCardOptions extends LitElement {
               slot="dropdown-trigger"
             ></paper-icon-button>
             <paper-listbox slot="dropdown-content">
-              <paper-item @click="${this._moveCard}">Move Card</paper-item>
+              <paper-item @click="${this._moveCard}"
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.move"
+                )}</paper-item
+              >
               <paper-item @click="${this._deleteCard}"
                 >${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"

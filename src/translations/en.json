@@ -774,7 +774,8 @@
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
             "device_unavailable": "device unavailable",
-            "entity_unavailable": "entity unavailable"
+            "entity_unavailable": "entity unavailable",
+            "no_area": "No Area"
           }
         },
         "users": {
@@ -847,7 +848,8 @@
             "toggle_editor": "Toggle Editor",
             "add": "Add Card",
             "edit": "Edit",
-            "delete": "Delete"
+            "delete": "Delete",
+            "move": "Move"
           },
           "save_config": {
             "header": "Take control of your Lovelace UI",
