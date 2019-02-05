@@ -8,7 +8,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 const translationMetadata = require("./build-translations/translationMetadata.json");
 const { babelLoaderConfig } = require("./config/babel.js");
-const { minimizer } = require("./config/minimizer.js");
+const webpackBase = require("./config/webpack.js");
 
 const version = fs.readFileSync("setup.py", "utf8").match(/\d{8}\.\d+/);
 if (!version) {
@@ -77,7 +77,7 @@ function createConfig(isProdBuild, latestBuild) {
       ],
     },
     optimization: {
-      minimizer,
+      minimizer: webpackBase.minimizer,
     },
     plugins: [
       new webpack.DefinePlugin({
@@ -123,18 +123,7 @@ function createConfig(isProdBuild, latestBuild) {
           !latestBuild && "public/__init__.py",
         ].filter(Boolean)
       ),
-      // Ignore moment.js locales
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-      // Color.js is bloated, it contains all color definitions for all material color sets.
-      new webpack.NormalModuleReplacementPlugin(
-        /@polymer\/paper-styles\/color\.js$/,
-        path.resolve(__dirname, "src/util/empty.js")
-      ),
-      // Ignore roboto pointing at CDN. We use local font-roboto-local.
-      new webpack.NormalModuleReplacementPlugin(
-        /@polymer\/font-roboto\/roboto\.js$/,
-        path.resolve(__dirname, "src/util/empty.js")
-      ),
+      ...webpackBase.plugins,
       isProdBuild &&
         !isCI &&
         !isStatsBuild &&
