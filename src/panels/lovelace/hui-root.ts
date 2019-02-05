@@ -253,7 +253,7 @@ class HUIRoot extends LitElement {
                                 <paper-icon-button
                                   title="Move view left"
                                   class="edit-icon view"
-                                  icon="${computeRTL(this.hass as HomeAssistant)
+                                  icon="${computeRTL(this.hass!)
                                     ? "hass:arrow-right"
                                     : "hass:arrow-left"}"
                                   @click="${this._moveViewLeft}"
@@ -280,7 +280,7 @@ class HUIRoot extends LitElement {
                                 <paper-icon-button
                                   title="Move view right"
                                   class="edit-icon view"
-                                  icon="${computeRTL(this.hass as HomeAssistant)
+                                  icon="${computeRTL(this.hass!)
                                     ? "hass:arrow-left"
                                     : "hass:arrow-right"}"
                                   @click="${this._moveViewRight}"
