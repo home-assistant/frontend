@@ -73,8 +73,6 @@ class HUIRoot extends LitElement {
   private _debouncedConfigChanged: () => void;
   private _unsubNotifications?: () => void;
 
-  private _isRTL?: boolean | false;
-
   static get properties(): PropertyDeclarations {
     return {
       narrow: {},
@@ -255,7 +253,7 @@ class HUIRoot extends LitElement {
                                 <paper-icon-button
                                   title="Move view left"
                                   class="edit-icon view"
-                                  icon="${this._isRTL
+                                  icon="${computeRTL(this.hass as HomeAssistant)
                                     ? "hass:arrow-right"
                                     : "hass:arrow-left"}"
                                   @click="${this._moveViewLeft}"
@@ -282,7 +280,7 @@ class HUIRoot extends LitElement {
                                 <paper-icon-button
                                   title="Move view right"
                                   class="edit-icon view"
-                                  icon="${this._isRTL
+                                  icon="${computeRTL(this.hass as HomeAssistant)
                                     ? "hass:arrow-left"
                                     : "hass:arrow-right"}"
                                   @click="${this._moveViewRight}"
@@ -406,17 +404,8 @@ class HUIRoot extends LitElement {
       huiView.columns = this.columns;
     }
 
-    if (changedProperties.has("hass")) {
-      if (
-        this._isRTL == null ||
-        this._isRTL !== computeRTL(this.hass as HomeAssistant)
-      ) {
-        this._isRTL = computeRTL(this.hass as HomeAssistant);
-      }
-
-      if (huiView) {
-        huiView.hass = this.hass;
-      }
+    if (changedProperties.has("hass") && huiView) {
+      huiView.hass = this.hass;
     }
 
     let newSelectView;
