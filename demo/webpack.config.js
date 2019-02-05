@@ -3,10 +3,12 @@ const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const { babelLoaderConfig } = require("../config/babel.js");
-const { minimizer } = require("../config/babel.js");
+const webpackBase = require("../config/webpack.js");
 
 const isProd = process.env.NODE_ENV === "production";
-const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
+const isStatsBuild = process.env.STATS === "1";
+const chunkFilename =
+  isProd && !isStatsBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
 const buildPath = path.resolve(__dirname, "dist");
 const publicPath = "/";
 
@@ -14,9 +16,7 @@ const latestBuild = false;
 
 module.exports = {
   mode: isProd ? "production" : "development",
-  // Disabled in prod while we make Home Assistant able to serve the right files.
-  // Was source-map
-  devtool: isProd ? "none" : "inline-source-map",
+  devtool: isProd ? "cheap-source-map" : "inline-source-map",
   entry: {
     main: "./src/entrypoint.ts",
     compatibility: "../src/entrypoints/compatibility.js",
@@ -40,7 +40,7 @@ module.exports = {
     ],
   },
   optimization: {
-    minimizer,
+    minimizer: webpackBase.minimizer,
   },
   plugins: [
     new webpack.DefinePlugin({
@@ -71,6 +71,7 @@ module.exports = {
         to: "static/images/leaflet/",
       },
     ]),
+    ...webpackBase.plugins,
     isProd &&
       new WorkboxPlugin.GenerateSW({
         swDest: "service_worker_es5.js",
