@@ -1,4 +1,21 @@
+const webpack = require("webpack");
+const path = require("path");
 const BabelMinifyPlugin = require("babel-minify-webpack-plugin");
+
+module.exports.plugins = [
+  // Ignore moment.js locales
+  new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+  // Color.js is bloated, it contains all color definitions for all material color sets.
+  new webpack.NormalModuleReplacementPlugin(
+    /@polymer\/paper-styles\/color\.js$/,
+    path.resolve(__dirname, "../src/util/empty.js")
+  ),
+  // Ignore roboto pointing at CDN. We use local font-roboto-local.
+  new webpack.NormalModuleReplacementPlugin(
+    /@polymer\/font-roboto\/roboto\.js$/,
+    path.resolve(__dirname, "../src/util/empty.js")
+  ),
+];
 
 module.exports.minimizer = [
   // Took options from Polymer build tool
