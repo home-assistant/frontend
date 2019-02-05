@@ -49,6 +49,7 @@ import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovel
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/ha-style";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -252,7 +253,9 @@ class HUIRoot extends LitElement {
                                 <paper-icon-button
                                   title="Move view left"
                                   class="edit-icon view"
-                                  icon="hass:arrow-left"
+                                  icon="${computeRTL(this.hass!)
+                                    ? "hass:arrow-right"
+                                    : "hass:arrow-left"}"
                                   @click="${this._moveViewLeft}"
                                   ?disabled="${this._curView === 0}"
                                 ></paper-icon-button>
@@ -277,7 +280,9 @@ class HUIRoot extends LitElement {
                                 <paper-icon-button
                                   title="Move view right"
                                   class="edit-icon view"
-                                  icon="hass:arrow-right"
+                                  icon="${computeRTL(this.hass!)
+                                    ? "hass:arrow-left"
+                                    : "hass:arrow-right"}"
                                   @click="${this._moveViewRight}"
                                   ?disabled="${(this._curView! as number) +
                                     1 ===
