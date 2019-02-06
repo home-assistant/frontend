@@ -1,7 +1,7 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { babelLoaderConfig } = require("../config/babel.js");
-const { minimizer } = require("../config/babel.js");
+const webpackBase = require("../config/babel.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
@@ -32,9 +32,7 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    minimizer,
-  },
+  optimization: webpackBase.optimization,
   plugins: [
     new CopyWebpackPlugin([
       "public",
@@ -63,9 +61,7 @@ module.exports = {
         },
       }),
   ].filter(Boolean),
-  resolve: {
-    extensions: [".ts", ".js", ".json"],
-  },
+  resolve: webpackBase.resolve,
   output: {
     filename: "[name].js",
     chunkFilename: chunkFilename,
