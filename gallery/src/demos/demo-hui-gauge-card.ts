@@ -2,6 +2,19 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/demo-cards";
+import { getEntity } from "../../../src/fake_data/entity";
+import { provideHass } from "../../../src/fake_data/provide_hass";
+
+const ENTITIES = [
+  getEntity("sensor", "brightness", "12", {}),
+  getEntity("plant", "bonsai", "ok", {}),
+  getEntity("sensor", "outside_humidity", "54", {
+    unit_of_measurement: "%",
+  }),
+  getEntity("sensor", "outside_temperature", "15.6", {
+    unit_of_measurement: "°C",
+  }),
+];
 
 const CONFIGS = [
   {
@@ -66,7 +79,7 @@ const CONFIGS = [
 class DemoGaugeEntity extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
+      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
     `;
   }
 
@@ -77,6 +90,12 @@ class DemoGaugeEntity extends PolymerElement {
         value: CONFIGS,
       },
     };
+  }
+
+  public ready() {
+    super.ready();
+    const hass = provideHass(this.$.demos);
+    hass.addEntities(ENTITIES);
   }
 }
 
