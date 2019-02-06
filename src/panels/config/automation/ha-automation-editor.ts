@@ -56,7 +56,7 @@ class HaAutomationEditor extends LitElement {
     this._configChanged = this._configChanged.bind(this);
   }
 
-  public disconnectedCallback() {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._rendered) {
       unmountPreact(this._rendered);
@@ -99,7 +99,7 @@ class HaAutomationEditor extends LitElement {
           ?is-wide="${this.isWide}"
           ?dirty="${this._dirty}"
           icon="hass:content-save"
-          title="${this.hass.localize(
+          .title="${this.hass.localize(
             "ui.panel.config.automation.editor.save"
           )}"
           @click=${this._saveAutomation}
@@ -108,7 +108,7 @@ class HaAutomationEditor extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     const oldAutomation = changedProps.get("automation") as AutomationEntity;
@@ -166,7 +166,7 @@ class HaAutomationEditor extends LitElement {
     }
   }
 
-  private _configChanged(config: AutomationConfig) {
+  private _configChanged(config: AutomationConfig): void {
     // onChange gets called a lot during initial rendering causing recursing calls.
     if (!this._rendered) {
       return;
@@ -177,7 +177,7 @@ class HaAutomationEditor extends LitElement {
     // this._updateComponent();
   }
 
-  private _backTapped() {
+  private _backTapped(): void {
     if (
       this._dirty &&
       !confirm(
@@ -189,7 +189,7 @@ class HaAutomationEditor extends LitElement {
     history.back();
   }
 
-  private _saveAutomation() {
+  private _saveAutomation(): void {
     const id = this.creatingNew
       ? "" + Date.now()
       : this.automation!.attributes.id;
