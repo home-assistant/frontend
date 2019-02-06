@@ -2224,20 +2224,15 @@
     "@webassemblyjs/wast-parser" "1.7.11"
     "@xtuc/long" "4.2.1"
 
-"@webcomponents/shadycss@^1.5.2", "@webcomponents/shadycss@^1.6.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.8.0.tgz#10340b87626f876841033b21b5221c3701252e10"
-  integrity sha512-bx0TzeZ11VqYDGLuXfznen8+4u0hADk2dD5RNMFxWL9MM4c5NXCDCgNXgssb4i2zQOos/GGe4tl5AuE0LzJkLA==
+"@webcomponents/shadycss@^1.5.2", "@webcomponents/shadycss@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.0.tgz#8450465037370d4f5c32e801bb2554a7cf2f5037"
+  integrity sha512-g8Xa+6RSEME4g/wLJW4YII0eq15rvXp76RxPAuv7hx+Bdoi7GzZJ/EoZOUfyIbqAsQbII1TcWD4/+Xhs5NcM1w==
 
-"@webcomponents/webcomponentsjs@2.2.1", "@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.1.tgz#bf28cdad466aaf85d88ee56aebed32c83f4c1328"
-  integrity sha512-lZZ+Lkke6JhsJcQQqSVk1Pny6/8y4qhJ98LO7a/MwBSRO8WqHqK1X2vscfeL8vOnYGFnmBUyVG95lwYv/AXyLQ==
-
-"@webcomponents/webcomponentsjs@^2.2.0":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.4.tgz#b520d586e46517914d9708c2220b263116d5f86a"
-  integrity sha512-YkLxK9Mbw6QK5bNZ67Rarb/yj0gN+Ziy5+2sLjM0lDb3XafM36gXKZXaIBz4zvLA/cYYTdg+l1LlqXeHEcmeiA==
+"@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0", "@webcomponents/webcomponentsjs@^2.2.6":
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.6.tgz#b6aa1f837f05ec2a6996eb09185d5ade042ba4a9"
+  integrity sha512-TbuyV7hHIq4jMlvQ8pF3C6QNEqFeBX4be9AND5DO8UCRRYcZBpjl1yH9IChbebeWr1QNcK5WlZC3voAlQCdisQ==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -8660,17 +8655,17 @@ listr@^0.14.2:
     p-map "^2.0.0"
     rxjs "^6.3.3"
 
-lit-element@2.0.0-rc.5:
-  version "2.0.0-rc.5"
-  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.0-rc.5.tgz#3e4323c9ace59d49c3a0950551a3f923e0ccf86b"
-  integrity sha512-cMmWNWSFyYfXAd09bnqFhqDr5kuR/5guImD5ZRTk223EiBJaoo7naZnQngSYAMjgDn1CSbTE1LRtzviMS+g0RA==
+lit-element@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.0.1.tgz#9ec5871d3b64487f432c7c071df80ef031d7091b"
+  integrity sha512-2bu3B2ZYUZgntvOgu3i5mRK8geo45CLUwxwJEYK54hyednoJasjiTZPB13NBg1D+hNM2JfmWTWJnh1QEUQv7zw==
   dependencies:
-    lit-html "^1.0.0-rc.2"
+    lit-html "^1.0.0"
 
-lit-html@1.0.0-rc.2, lit-html@^1.0.0-rc.2:
-  version "1.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.0.0-rc.2.tgz#b9c904520fe005d349aa737a86d83645d97d5a89"
-  integrity sha512-4bq34lhVmwWly1zBXicOBJLOwaWfjOVbchEEmFnZLuztxjh5wRd2WqV0URX8Q47MQ7PaIjn/eXyTRKsYhSAeRw==
+lit-html@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.0.0.tgz#3dc3781a8ca68a9b5c2ff2a61e263662b9b2267b"
+  integrity sha512-oeWlpLmBW3gFl7979Wol2LKITpmKTUFNn7PnFbh6YNynF61W74l6x5WhwItAwPRSATpexaX1egNnRzlN4GOtfQ==
 
 load-json-file@^1.0.0:
   version "1.1.0"
