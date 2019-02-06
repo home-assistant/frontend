@@ -3,8 +3,26 @@ import "@polymer/paper-input/paper-input";
 
 import JSONTextArea from "../json_textarea";
 import { onChangeEvent } from "../../../../common/preact/event";
+import { LocalizeFunc } from "../../../../common/translations/localize";
+import { EventAction } from "../../../../data/script";
 
-export default class EventAction extends Component {
+interface Props {
+  index: number;
+  action: EventAction;
+  localize: LocalizeFunc;
+  onChange: (index: number, action: EventAction) => void;
+}
+
+export default class EventActionForm extends Component<Props> {
+  private onChange: (event: Event) => void;
+
+  static get defaultConfig(): EventAction {
+    return {
+      event: "",
+      event_data: {},
+    };
+  }
+
   constructor() {
     super();
 
@@ -12,16 +30,11 @@ export default class EventAction extends Component {
     this.serviceDataChanged = this.serviceDataChanged.bind(this);
   }
 
-  serviceDataChanged(data) {
-    this.props.onChange(
-      this.props.index,
-      Object.assign({}, this.props.action, { data })
-    );
-  }
-
-  render({ action, localize }) {
-    /* eslint-disable camelcase */
-    const { event, event_data } = action;
+  public render() {
+    const {
+      action: { event, event_data },
+      localize,
+    } = this.props;
     return (
       <div>
         <paper-input
@@ -42,9 +55,11 @@ export default class EventAction extends Component {
       </div>
     );
   }
-}
 
-EventAction.defaultConfig = {
-  event: "",
-  event_data: {},
-};
+  private serviceDataChanged(eventData) {
+    this.props.onChange(this.props.index, {
+      ...this.props.action,
+      event_data: eventData,
+    });
+  }
+}
