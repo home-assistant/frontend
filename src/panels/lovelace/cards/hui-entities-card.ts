@@ -34,6 +34,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   title?: string;
   entities: EntitiesCardEntityConfig[];
   theme?: string;
+  orderBy?: string;
 }
 
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -80,7 +81,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: EntitiesCardConfig): void {
-    const entities = processConfigEntities(config.entities);
+    const entities = processConfigEntities(config.entities, config.orderBy);
 
     this._config = { theme: "default", ...config };
     this._configEntities = entities;
@@ -102,23 +103,27 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card>
-        ${!title && !show_header_toggle
-          ? html``
-          : html`
+        ${
+          !title && !show_header_toggle
+            ? html``
+            : html`
               <div class="header">
                 <div class="name">${title}</div>
-                ${show_header_toggle === false
-                  ? html``
-                  : html`
+                ${
+                  show_header_toggle === false
+                    ? html``
+                    : html`
                       <hui-entities-toggle
                         .hass="${this._hass}"
                         .entities="${this._configEntities!.map(
                           (conf) => conf.entity
                         )}"
                       ></hui-entities-toggle>
-                    `}
+                    `
+                }
               </div>
-            `}
+            `
+        }
         <div id="states">
           ${this._configEntities!.map((entityConf) =>
             this.renderEntity(entityConf)

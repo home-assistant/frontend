@@ -3,13 +3,14 @@ import isValidEntityId from "../../../common/entity/valid_entity_id";
 import { EntityConfig } from "../entity-rows/types";
 
 export const processConfigEntities = <T extends EntityConfig>(
-  entities: Array<T | string>
+  entities: Array<T | string>,
+  orderBy?: string
 ): T[] => {
   if (!entities || !Array.isArray(entities)) {
     throw new Error("Entities need to be an array");
   }
 
-  return entities.map(
+  let mappedEntities = entities.map(
     (entityConf, index): T => {
       if (
         typeof entityConf === "object" &&
@@ -44,4 +45,18 @@ export const processConfigEntities = <T extends EntityConfig>(
       return config;
     }
   );
+
+  if (typeof orderBy === "string" && orderBy.length) {
+    mappedEntities = mappedEntities.sort((a, b) => {
+      if (a[orderBy] < b[orderBy]) {
+        return -1;
+      }
+      if (a[orderBy] > b[orderBy]) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
+  return mappedEntities;
 };
