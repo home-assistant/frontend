@@ -249,7 +249,6 @@ class HaAutomationEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   async _updateComponent() {
     if (this._renderScheduled || !this.hass || !this.config) return;
     this._renderScheduled = true;
-
     await 0;
 
     if (!this._renderScheduled) return;

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "h",
     "target": "es2017",
     "module": "esnext",
     "moduleResolution": "node",

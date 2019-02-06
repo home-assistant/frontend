@@ -197,7 +197,7 @@ function createConfig(isProdBuild, latestBuild) {
       publicPath,
     },
     resolve: {
-      extensions: [".ts", ".js", ".json"],
+      extensions: [".ts", ".js", ".json", ".tsx"],
       alias: {
         react: "preact-compat",
         "react-dom": "preact-compat",
