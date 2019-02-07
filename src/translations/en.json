@@ -958,6 +958,29 @@
           "working": "Please wait",
           "unknown_error": "Something went wrong",
           "providers": {
+            "command_line": {
+              "step": {
+                "init": {
+                  "data": {
+                    "username": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::init::data::username%]",
+                    "password": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::init::data::password%]"
+                  }
+                },
+                "mfa": {
+                  "data": {
+                    "code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::data::code%]"
+                  },
+                  "description": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::description%]"
+                }
+              },
+              "error": {
+                "invalid_auth": "[%key:ui::panel::page-authorize::form::providers::homeassistant::error::invalid_auth%]",
+                "invalid_code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::error::invalid_code%]"
+              },
+              "abort": {
+                "login_expired": "[%key:ui::panel::page-authorize::form::providers::homeassistant::abort::login_expired%]"
+              }
+            },
             "homeassistant": {
               "step": {
                 "init": {
