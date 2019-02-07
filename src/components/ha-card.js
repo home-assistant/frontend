@@ -9,9 +9,9 @@ class HaCard extends PolymerElement {
         :host {
           @apply --paper-material-elevation-1;
           display: block;
-          border-radius: 2px;
+          border-radius: var(--ha-card-border-radius, 2px);
           transition: all 0.3s ease-out;
-          background-color: var(--paper-card-background-color, white);
+          background: var(--ha-card-background, var(--paper-card-background-color, white));
           color: var(--primary-text-color);
         }
         .header {
