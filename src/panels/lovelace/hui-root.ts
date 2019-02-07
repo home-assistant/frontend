@@ -244,6 +244,7 @@ class HUIRoot extends LitElement {
                     scrollable
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
+                    dir="${computeRTL(this.hass!) ? "rtl" : "ltr"}"
                   >
                     ${this.lovelace!.config.views.map(
                       (view) => html`
