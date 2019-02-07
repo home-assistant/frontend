@@ -9,7 +9,7 @@ declare global {
     "yaml-changed": {
       value: string;
     };
-    "yaml-save": {};
+    "yaml-save": undefined;
   }
 }
 
