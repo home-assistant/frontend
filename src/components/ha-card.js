@@ -11,7 +11,10 @@ class HaCard extends PolymerElement {
           display: block;
           border-radius: var(--ha-card-border-radius, 2px);
           transition: all 0.3s ease-out;
-          background: var(--ha-card-background, var(--paper-card-background-color, white));
+          background: var(
+            --ha-card-background,
+            var(--paper-card-background-color, white)
+          );
           color: var(--primary-text-color);
         }
         .header {
