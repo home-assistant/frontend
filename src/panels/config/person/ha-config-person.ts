@@ -59,6 +59,14 @@ class HaConfigPerson extends LitElement {
           <span slot="header">Persons</span>
           <span slot="introduction">
             Here you can define each person of interest in Home Assistant.
+            ${this._configItems.length > 0
+              ? html`
+                  <p>
+                    Note: people configured via configuration.yaml cannot be
+                    edited via the UI.
+                  </p>
+                `
+              : ""}
           </span>
           <paper-card class="storage">
             ${this._storageItems.map((entry) => {
