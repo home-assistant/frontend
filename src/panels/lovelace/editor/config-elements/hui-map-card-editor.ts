@@ -18,6 +18,7 @@ import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
 
 import "../../components/hui-entity-editor";
+import "../../components/hui-input-list-editor";
 
 const entitiesConfigStruct = struct.union([
   {
@@ -28,19 +29,13 @@ const entitiesConfigStruct = struct.union([
   "entity-id",
 ]);
 
-const SOURCES = [
-  "geo_json_events",
-  "nsw_rural_fire_service_feed",
-  "usgs_earthquakes_feed",
-];
-
 const cardConfigStruct = struct({
   type: "string",
   title: "string?",
   aspect_ratio: "string?",
   default_zoom: "number?",
   entities: [entitiesConfigStruct],
-  geo_location_sources: [""],
+  geo_location_sources: "array?",
 });
 
 @customElement("hui-map-card-editor")
@@ -109,25 +104,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
-        <paper-card heading="Geolocation Sources">
-          <paper-listbox
-            id="geo_location_sources"
-            multi
-            on-selected-items-changed="_fetchData"
-            selected-values="{{selectedSources}}"
-            attr-for-selected="item-name"
-          >
-            <template is="dom-repeat" items="[[geo_location_sources]]">
-              <paper-item item-name="[[item.entity_id]]">
-                <span
-                  class="calendar_color"
-                  style$="background-color: [[item.color]]"
-                ></span>
-                <span class="calendar_color_spacer"></span> [[item.name]]
-              </paper-item>
-            </template>
-          </paper-listbox>
-        </paper-card>
+        <hui-input-list-editor
+          id="geo_location_sources"
+          heading="Geolocation Sources"
+          .hass="${this.hass}"
+          .entries="${this._geo_location_sources}"
+          .configValue="${"geo_location_sources"}"
+          @entries-changed="${this._valueChanged}"
+        ></hui-input-list-editor>
       </div>
     `;
   }
