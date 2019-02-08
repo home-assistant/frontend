@@ -60,7 +60,7 @@ class HaConfigPerson extends LitElement {
           <span slot="introduction">
             Here you can define each person of interest in Home Assistant.
           </span>
-          <paper-card>
+          <paper-card class="storage">
             ${this._storageItems.map((entry) => {
               return html`
                 <paper-item @click=${this._openEditEntry} .entry=${entry}>
@@ -83,7 +83,7 @@ class HaConfigPerson extends LitElement {
           </paper-card>
           ${this._configItems.length > 0
             ? html`
-                <paper-card>
+                <paper-card heading="Configuration.yaml people">
                   ${this._configItems.map((entry) => {
                     return html`
                       <paper-item>
@@ -185,9 +185,11 @@ All devices in this area will become unassigned.`)
         text-align: center;
       }
       paper-item {
-        cursor: pointer;
         padding-top: 4px;
         padding-bottom: 4px;
+      }
+      paper-card.storage paper-item {
+        cursor: pointer;
       }
       paper-fab {
         position: fixed;
