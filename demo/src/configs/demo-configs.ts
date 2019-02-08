@@ -7,6 +7,7 @@ export const demoConfigs: Array<() => Promise<DemoConfig>> = [
   () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
   () => import("./kernehed").then((mod) => mod.demoKernehed),
   () => import("./jimpower").then((mod) => mod.demoJimpower),
+  () => import("./yosilevy").then((mod) => mod.demoYosilevy),
 ];
 
 export let selectedDemoConfigIndex: number = 0;

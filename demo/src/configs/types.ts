@@ -9,4 +9,5 @@ export interface DemoConfig {
   lovelace: () => LovelaceConfig;
   entities: () => Entity[];
   theme: () => { [key: string]: string } | null;
+  // language: string;
 }
