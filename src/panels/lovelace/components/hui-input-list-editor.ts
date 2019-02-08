@@ -14,12 +14,14 @@ import { EditorTarget } from "../editor/types";
 export class HuiInputListEditor extends LitElement {
   protected hass?: HomeAssistant;
   protected heading?: string;
+  protected inputLabel?: string;
   protected entries?: string[];
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       heading: {},
+      inputLabel: {},
       entries: {},
     };
   }
@@ -36,7 +38,7 @@ export class HuiInputListEditor extends LitElement {
         ${this.entries.map((listEntry, index) => {
           return html`
             <paper-input
-              label="Source"
+              label="${this.inputLabel}"
               .value="${listEntry}"
               .configValue="${"entry"}"
               .index="${index}"
@@ -54,23 +56,23 @@ export class HuiInputListEditor extends LitElement {
     if (target.value === "") {
       return;
     }
-    const newConfigEntries = this.entries!.concat(target.value as string);
+    const newEntries = this.entries!.concat(target.value as string);
     target.value = "";
-    this.value = newConfigEntries;
+    this.value = newEntries;
     fireEvent(this, "entries-changed");
   }
 
   private _valueChanged(ev: Event): void {
     const target = ev.target! as EditorTarget;
-    const newConfigEntries = this.entries!.concat();
+    const newEntries = this.entries!.concat();
 
     if (target.value === "") {
-      newConfigEntries.splice(target.index!, 1);
+      newEntries.splice(target.index!, 1);
     } else {
-      newConfigEntries[target.index!] = target.value!;
+      newEntries[target.index!] = target.value!;
     }
 
-    this.value = newConfigEntries;
+    this.value = newEntries;
     fireEvent(this, "entries-changed");
   }
 
