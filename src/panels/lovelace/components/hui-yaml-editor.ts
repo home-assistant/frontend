@@ -9,6 +9,7 @@ declare global {
     "yaml-changed": {
       value: string;
     };
+    "yaml-save": undefined;
   }
 }
 
@@ -18,6 +19,9 @@ export class HuiYamlEditor extends HTMLElement {
 
   public constructor() {
     super();
+    CodeMirror.commands.save = (cm: CodeMirror) => {
+      fireEvent(cm.getWrapperElement(), "yaml-save");
+    };
     this._value = "";
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = `
