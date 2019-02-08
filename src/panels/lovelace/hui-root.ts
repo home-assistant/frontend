@@ -49,7 +49,7 @@ import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovel
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/ha-style";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { computeRTL, computeRTLDirection } from "../../common/util/compute_rtl";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -244,6 +244,7 @@ class HUIRoot extends LitElement {
                     scrollable
                     .selected="${this._curView}"
                     @iron-activate="${this._handleViewSelected}"
+                    dir="${computeRTLDirection(this.hass!)}"
                   >
                     ${this.lovelace!.config.views.map(
                       (view) => html`
