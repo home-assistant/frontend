@@ -18,6 +18,7 @@ import "./components/hui-yaml-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiYamlEditor } from "./components/hui-yaml-editor";
+import { HomeAssistant } from "../../types";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -26,6 +27,7 @@ const lovelaceStruct = struct.interface({
 });
 
 class LovelaceFullConfigEditor extends LitElement {
+  public hass?: HomeAssistant;
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
   private _saving?: boolean;
@@ -34,6 +36,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   static get properties() {
     return {
+      hass: {},
       lovelace: {},
       _saving: {},
       _changed: {},
@@ -62,6 +65,7 @@ class LovelaceFullConfigEditor extends LitElement {
         </app-header>
         <div class="content">
           <hui-yaml-editor
+            .hass="${this.hass}"
             @yaml-changed="${this._yamlChanged}"
             @yaml-save="${this._handleSave}"
           >
@@ -102,7 +106,6 @@ class LovelaceFullConfigEditor extends LitElement {
 
         .content {
           height: calc(100vh - 68px);
-          direction: ltr;
         }
 
         hui-code-editor {

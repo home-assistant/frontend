@@ -3,7 +3,10 @@ import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
+import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
+
 declare global {
   interface HASSDomEvents {
     "yaml-changed": {
@@ -14,6 +17,7 @@ declare global {
 }
 
 export class HuiYamlEditor extends HTMLElement {
+  public _hass?: HomeAssistant;
   public codemirror: CodeMirror;
   private _value: string;
 
@@ -26,23 +30,50 @@ export class HuiYamlEditor extends HTMLElement {
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.innerHTML = `
             <style>
-               ${codeMirrorCSS}
-               .CodeMirror {
-                  height: var(--code-mirror-height, 300px);
-                  direction: var(--code-mirror-direction, ltr);
-                }
-                .CodeMirror-gutters {
-                  border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
-                  background-color: var(--paper-dialog-background-color, var(--primary-background-color));
-                  transition: 0.2s ease border-right;
-                }
-                .CodeMirror-focused .CodeMirror-gutters {
-                  border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));;
-                }
-                .CodeMirror-linenumber {
-                  color: var(--paper-dialog-color, var(--primary-text-color));
-                }
+              ${codeMirrorCSS}
+              .CodeMirror {
+                height: var(--code-mirror-height, 300px);
+                direction: var(--code-mirror-direction, ltr);
+              }
+              .CodeMirror-gutters {
+                border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
+                background-color: var(--paper-dialog-background-color, var(--primary-background-color));
+                transition: 0.2s ease border-right;
+              }
+              .CodeMirror-focused .CodeMirror-gutters {
+                border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));;
+              }
+              .CodeMirror-linenumber {
+                color: var(--paper-dialog-color, var(--primary-text-color));
+              }
             </style>`;
+  }
+
+  set hass(hass: HomeAssistant) {
+    if (
+      (!this._hass || this._hass.language !== hass.language) &&
+      this.shadowRoot
+    ) {
+      if (computeRTL(hass)) {
+        this.shadowRoot.innerHTML += `
+            <style id="rtlStyle">
+              .CodeMirror-vscrollbar {
+                right: auto;
+                left: 0px;
+              }
+
+              .rtl-gutter {
+                width: 20px;
+              }
+            </style>`;
+      } else {
+        const rtlStyle = this.shadowRoot.getElementById("rtlStyle");
+        if (rtlStyle && rtlStyle.parentElement) {
+          rtlStyle.parentElement.removeChild(rtlStyle);
+        }
+      }
+    }
+    this._hass = hass;
   }
 
   set value(value: string) {
@@ -76,6 +107,7 @@ export class HuiYamlEditor extends HTMLElement {
             cm.replaceSelection(spaces);
           },
         },
+        gutters: ["rtl-gutter", "CodeMirror-linenumbers"],
       });
       this.codemirror.on("changes", () => this._onChange());
     } else {
