@@ -121,11 +121,7 @@ export class HuiYamlEditor extends HTMLElement {
 
     const scroll = this.shadowRoot.querySelector(".CodeMirror-vscrollbar");
     if (scroll) {
-      if (computeRTL(hass)) {
-        scroll.classList.add("rtl");
-      } else {
-        scroll.classList.remove("rtl");
-      }
+      scroll.classList.toggle("rtl", computeRTL(hass));
     }
   }
 }
