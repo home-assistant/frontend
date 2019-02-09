@@ -1,11 +1,5 @@
 import "@polymer/app-route/app-location";
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  PropertyValues,
-  css,
-} from "lit-element";
+import { html, LitElement, PropertyValues, css, property } from "lit-element";
 
 import "../home-assistant-main";
 import "../ha-init-page";
@@ -43,19 +37,9 @@ export class HomeAssistantAppEl extends ext(HassBaseMixin(LitElement), [
   NotificationMixin,
   dialogManagerMixin,
 ]) {
-  private _route?: Route;
-  private _error?: boolean;
-  private _panelUrl?: string;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _route: {},
-      _routeData: {},
-      _panelUrl: {},
-      _error: {},
-    };
-  }
+  @property() private _route?: Route;
+  @property() private _error?: boolean;
+  @property() private _panelUrl?: string;
 
   protected render() {
     const hass = this.hass;
