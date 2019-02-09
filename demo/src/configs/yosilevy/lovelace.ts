@@ -619,7 +619,7 @@ export const demoLovelaceYosilevy: () => LovelaceConfig = () => ({
               },
               type: "image",
               state_image: {
-                on: "/assets/yosilevy/ToiletLightOn.png",
+                on: "/assets/yosilevy/ToiletLightOn.jpg",
               },
               entity: "light.toilet_light",
               image: "/assets/yosilevy/t.gif",
