@@ -9,7 +9,7 @@ import {
   html,
   CSSResult,
   css,
-  PropertyDeclarations,
+  property,
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -17,7 +17,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
   public hass?: HomeAssistant;
-  public stateObj?: HassEntity;
+  @property() public stateObj?: HassEntity;
 
   protected render(): TemplateResult | void {
     if (!this.stateObj) {
@@ -49,12 +49,6 @@ class HaEntityToggle extends LitElement {
         @change=${this._toggleChanged}
       ></paper-toggle-button>
     `;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      stateObj: {},
-    };
   }
 
   protected firstUpdated(changedProps) {
