@@ -3,8 +3,8 @@ import {
   html,
   CSSResult,
   css,
-  PropertyDeclarations,
   PropertyValues,
+  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -82,13 +82,9 @@ const computePanels = (hass: HomeAssistant) => {
  * @appliesMixin LocalizeMixin
  */
 class HaSidebar extends LitElement {
-  public hass?: HomeAssistant;
-  public _defaultPage?: string;
-
-  constructor() {
-    super();
-    this._defaultPage = localStorage.defaultPage || DEFAULT_PANEL;
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public _defaultPage?: string =
+    localStorage.defaultPage || DEFAULT_PANEL;
 
   protected render() {
     const hass = this.hass;
@@ -215,13 +211,6 @@ class HaSidebar extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _defaultPage: {},
-    };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
