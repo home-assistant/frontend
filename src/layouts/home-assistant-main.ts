@@ -2,7 +2,6 @@ import {
   LitElement,
   html,
   TemplateResult,
-  PropertyDeclarations,
   CSSResult,
   css,
   PropertyValues,
