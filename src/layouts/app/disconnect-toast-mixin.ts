@@ -1,6 +1,7 @@
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { HaToast } from "../../components/ha-toast";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
@@ -24,6 +25,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       if (!this._discToast) {
         const el = document.createElement("ha-toast");
         el.duration = 0;
+        el.dir = computeRTL(this.hass!);
         el.text = this.hass!.localize("ui.notification_toast.connection_lost");
         this._discToast = el;
         this.shadowRoot!.appendChild(el as any);
