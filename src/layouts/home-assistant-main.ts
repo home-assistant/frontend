@@ -6,6 +6,7 @@ import {
   CSSResult,
   css,
   PropertyValues,
+  property,
 } from "lit-element";
 import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import "@polymer/app-layout/app-drawer/app-drawer";
@@ -33,17 +34,9 @@ declare global {
 }
 
 class HomeAssistantMain extends LitElement {
-  public hass?: HomeAssistant;
-  public route?: Route;
-  private _narrow?: boolean;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _narrow: {},
-      route: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public route?: Route;
+  @property() private _narrow?: boolean;
 
   protected render(): TemplateResult | void {
     const hass = this.hass;

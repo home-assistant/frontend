@@ -2,8 +2,8 @@ import {
   html,
   LitElement,
   PropertyValues,
-  PropertyDeclarations,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
@@ -53,20 +53,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return {};
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
+  @property() private _roundSliderStyle?: TemplateResult;
+  @property() private _jQuery?: any;
   private _brightnessTimout?: number;
-  private _roundSliderStyle?: TemplateResult;
-  private _jQuery?: any;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      roundSliderStyle: {},
-      _jQuery: {},
-    };
-  }
 
   public getCardSize(): number {
     return 2;

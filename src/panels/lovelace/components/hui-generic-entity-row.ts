@@ -5,25 +5,20 @@ import "../../../components/ha-icon";
 import computeStateName from "../../../common/entity/compute_state_name";
 import {
   LitElement,
-  PropertyDeclarations,
   html,
   css,
   CSSResult,
   PropertyValues,
+  property,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/hui-entities-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HuiGenericEntityRow extends LitElement {
-  public hass?: HomeAssistant;
-  public config?: EntitiesCardEntityConfig;
-  public showSecondary: boolean;
-
-  constructor() {
-    super();
-    this.showSecondary = true;
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public config?: EntitiesCardEntityConfig;
+  @property() public showSecondary: boolean = true;
 
   protected render() {
     if (!this.hass || !this.config) {
@@ -68,14 +63,6 @@ class HuiGenericEntityRow extends LitElement {
         <slot></slot>
       </div>
     `;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      config: {},
-      showSecondary: {},
-    };
   }
 
   protected updated(changedProps: PropertyValues) {
