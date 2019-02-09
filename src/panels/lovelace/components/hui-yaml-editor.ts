@@ -46,6 +46,14 @@ export class HuiYamlEditor extends HTMLElement {
               .CodeMirror-linenumber {
                 color: var(--paper-dialog-color, var(--primary-text-color));
               }
+
+              .CodeMirror-vscrollbar-RTL {
+                right: auto;
+                left: 0px;
+              }
+              .rtl-gutter {
+                width: 20px;
+              }
             </style>`;
   }
 
@@ -54,24 +62,7 @@ export class HuiYamlEditor extends HTMLElement {
       (!this._hass || this._hass.language !== hass.language) &&
       this.shadowRoot
     ) {
-      if (computeRTL(hass)) {
-        this.shadowRoot.innerHTML += `
-            <style id="rtlStyle">
-              .CodeMirror-vscrollbar {
-                right: auto;
-                left: 0px;
-              }
-
-              .rtl-gutter {
-                width: 20px;
-              }
-            </style>`;
-      } else {
-        const rtlStyle = this.shadowRoot.getElementById("rtlStyle");
-        if (rtlStyle && rtlStyle.parentElement) {
-          rtlStyle.parentElement.removeChild(rtlStyle);
-        }
-      }
+      this.setScrollBarDirection(hass);
     }
     this._hass = hass;
   }
@@ -107,8 +98,12 @@ export class HuiYamlEditor extends HTMLElement {
             cm.replaceSelection(spaces);
           },
         },
-        gutters: ["rtl-gutter", "CodeMirror-linenumbers"],
+        gutters:
+          this._hass && computeRTL(this._hass)
+            ? ["rtl-gutter", "CodeMirror-linenumbers"]
+            : [],
       });
+      this.setScrollBarDirection(this._hass);
       this.codemirror.on("changes", () => this._onChange());
     } else {
       this.codemirror.refresh();
@@ -117,6 +112,21 @@ export class HuiYamlEditor extends HTMLElement {
 
   private _onChange(): void {
     fireEvent(this, "yaml-changed", { value: this.codemirror.getValue() });
+  }
+
+  private setScrollBarDirection(hass: HomeAssistant) {
+    if (!this.shadowRoot) {
+      return;
+    }
+
+    const scroll = this.shadowRoot.querySelector(".CodeMirror-vscrollbar");
+    if (scroll) {
+      if (computeRTL(hass)) {
+        scroll.classList.add("CodeMirror-vscrollbar-RTL");
+      } else {
+        scroll.classList.remove("CodeMirror-vscrollbar-RTL");
+      }
+    }
   }
 }
 
