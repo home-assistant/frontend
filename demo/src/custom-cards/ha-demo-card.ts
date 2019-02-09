@@ -122,6 +122,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult[] {
     return [
       css`
+        :host {
+          direction: ltr;
+        }
+
         a {
           color: var(--primary-color);
         }

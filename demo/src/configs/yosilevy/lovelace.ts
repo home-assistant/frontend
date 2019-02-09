@@ -800,67 +800,62 @@ export const demoLovelaceYosilevy: () => LovelaceConfig = () => ({
               type: "entities",
             },
             {
-              card: {
-                elements: [
-                  {
-                    entity: "sensor.front_garden_moisture",
-                    style: {
-                      color: "white",
-                      left: "10%",
-                      "--ha-label-badge-font-size": "1em",
-                      top: "27%",
-                    },
-                    type: "state-badge",
+              image: "/assets/yosilevy/garden.jpg",
+              type: "picture-elements",
+              elements: [
+                {
+                  entity: "sensor.front_garden_moisture",
+                  style: {
+                    color: "white",
+                    left: "10%",
+                    "--ha-label-badge-font-size": "1em",
+                    top: "27%",
                   },
-                  {
-                    entity: "sensor.front_garden_conductivity",
-                    style: {
-                      color: "white",
-                      left: "25%",
-                      "--ha-label-badge-font-size": "1em",
-                      top: "27%",
-                    },
-                    type: "state-badge",
+                  type: "state-badge",
+                },
+                {
+                  entity: "sensor.front_garden_conductivity",
+                  style: {
+                    color: "white",
+                    left: "25%",
+                    "--ha-label-badge-font-size": "1em",
+                    top: "27%",
                   },
-                  {
-                    entity: "sensor.front_garden_battery",
-                    style: {
-                      color: "white",
-                      left: "40%",
-                      "--ha-label-badge-font-size": "1em",
-                      top: "27%",
-                    },
-                    type: "state-badge",
+                  type: "state-badge",
+                },
+                {
+                  entity: "sensor.front_garden_battery",
+                  style: {
+                    color: "white",
+                    left: "40%",
+                    "--ha-label-badge-font-size": "1em",
+                    top: "27%",
                   },
-                  {
-                    entity: "sensor.front_garden_temperature",
-                    style: {
-                      color: "white",
-                      left: "92%",
-                      "--ha-label-badge-font-size": "1em",
-                      top: "15%",
-                    },
-                    type: "state-label",
+                  type: "state-badge",
+                },
+                {
+                  entity: "sensor.front_garden_temperature",
+                  style: {
+                    direction: "ltr",
+                    color: "white",
+                    left: "92%",
+                    "--ha-label-badge-font-size": "1em",
+                    top: "15%",
                   },
-                  {
-                    entity: "sensor.garden_problem",
-                    style: {
-                      direction: "ltr !important",
-                      color: "white",
-                      left: "50%",
-                      "--ha-label-badge-font-size": "1em",
-                      top: "85%",
-                    },
-                    type: "state-label",
+                  type: "state-label",
+                },
+                {
+                  entity: "sensor.garden_problem",
+                  style: {
+                    direction: "ltr",
+                    color: "white",
+                    left: "50%",
+                    "--ha-label-badge-font-size": "1em",
+                    top: "85%",
                   },
-                ],
-                image: "/assets/yosilevy/garden.jpg",
-                type: "picture-elements",
-              },
-              style: {
-                direction: "ltr",
-              },
-              type: "custom:card-modder",
+                  type: "state-label",
+                },
+              ],
             },
           ],
           type: "vertical-stack",
