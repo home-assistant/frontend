@@ -757,6 +757,10 @@
           "caption": "Entity Registry",
           "description": "Overview of all known entities."
         },
+        "person": {
+          "caption": "People",
+          "description": "Manage the people in Home Assistant."
+        },
         "integrations": {
           "caption": "Integrations",
           "description": "Manage connected devices and services",
