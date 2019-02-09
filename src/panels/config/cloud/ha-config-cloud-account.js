@@ -39,6 +39,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
         .content {
           padding-bottom: 24px;
+          direction: ltr;
         }
         paper-card {
           display: block;
