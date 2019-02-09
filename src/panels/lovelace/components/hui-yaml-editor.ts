@@ -47,7 +47,7 @@ export class HuiYamlEditor extends HTMLElement {
                 color: var(--paper-dialog-color, var(--primary-text-color));
               }
 
-              .CodeMirror-vscrollbar-RTL {
+              .CodeMirror-vscrollbar.rtl {
                 right: auto;
                 left: 0px;
               }
@@ -122,9 +122,9 @@ export class HuiYamlEditor extends HTMLElement {
     const scroll = this.shadowRoot.querySelector(".CodeMirror-vscrollbar");
     if (scroll) {
       if (computeRTL(hass)) {
-        scroll.classList.add("CodeMirror-vscrollbar-RTL");
+        scroll.classList.add("rtl");
       } else {
-        scroll.classList.remove("CodeMirror-vscrollbar-RTL");
+        scroll.classList.remove("rtl");
       }
     }
   }
