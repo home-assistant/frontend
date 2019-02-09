@@ -9,19 +9,6 @@ import isComponentLoaded from "../../common/config/is_component_loaded";
 import EventsMixin from "../../mixins/events-mixin";
 import NavigateMixin from "../../mixins/navigate-mixin";
 
-import(/* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry");
-import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation");
-import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud");
-import(/* webpackChunkName: "panel-config-config" */ "./config-entries/ha-config-entries");
-import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core");
-import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize");
-import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard");
-import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script");
-import(/* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry");
-import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users");
-import(/* webpackChunkName: "panel-config-zha" */ "./zha/ha-config-zha");
-import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave");
-
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin NavigateMixin
@@ -136,6 +123,15 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
         ></ha-config-zwave>
       </template>
 
+      <template is="dom-if" if='[[_equals(_routeData.page, "person")]]' restamp>
+        <ha-config-person
+          page-name="person"
+          route="[[route]]"
+          hass="[[hass]]"
+          is-wide="[[isWide]]"
+        ></ha-config-person>
+      </template>
+
       <template
         is="dom-if"
         if='[[_equals(_routeData.page, "customize")]]'
@@ -207,6 +203,19 @@ class HaPanelConfig extends EventsMixin(NavigateMixin(PolymerElement)) {
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
     );
+    import(/* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry");
+    import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation");
+    import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud");
+    import(/* webpackChunkName: "panel-config-config" */ "./config-entries/ha-config-entries");
+    import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core");
+    import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize");
+    import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard");
+    import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script");
+    import(/* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry");
+    import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users");
+    import(/* webpackChunkName: "panel-config-zha" */ "./zha/ha-config-zha");
+    import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave");
+    import(/* webpackChunkName: "panel-config-person" */ "./person/ha-config-person");
   }
 
   async _updateCloudStatus() {
