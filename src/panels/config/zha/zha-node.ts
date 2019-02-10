@@ -165,7 +165,7 @@ export class ZHANode extends LitElement {
     return html`
       <zha-clusters
         .hass="${this.hass}"
-        .selectedNode="${this._selectedNode}"
+        .selectedDevice="${this._selectedNode}"
         .showHelp="${this._showHelp}"
       ></zha-clusters>
     `;

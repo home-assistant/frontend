@@ -98,6 +98,6 @@ export const fetchClustersForZhaNode = (
   ieeeAddress: string
 ): Promise<Cluster[]> =>
   hass.callWS({
-    type: "zha/entities/clusters",
+    type: "zha/devices/clusters",
     ieee: ieeeAddress,
   });
