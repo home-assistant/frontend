@@ -47,7 +47,7 @@ export class HuiYamlEditor extends HTMLElement {
                 color: var(--paper-dialog-color, var(--primary-text-color));
               }
 
-              .CodeMirror-vscrollbar.rtl {
+              .rtl .CodeMirror-vscrollbar {
                 right: auto;
                 left: 0px;
               }
@@ -58,13 +58,10 @@ export class HuiYamlEditor extends HTMLElement {
   }
 
   set hass(hass: HomeAssistant) {
-    if (
-      (!this._hass || this._hass.language !== hass.language) &&
-      this.shadowRoot
-    ) {
-      this.setScrollBarDirection(hass);
-    }
     this._hass = hass;
+    if (this._hass) {
+      this.setScrollBarDirection();
+    }
   }
 
   set value(value: string) {
@@ -103,7 +100,7 @@ export class HuiYamlEditor extends HTMLElement {
             ? ["rtl-gutter", "CodeMirror-linenumbers"]
             : [],
       });
-      this.setScrollBarDirection(this._hass!);
+      this.setScrollBarDirection();
       this.codemirror.on("changes", () => this._onChange());
     } else {
       this.codemirror.refresh();
@@ -114,15 +111,14 @@ export class HuiYamlEditor extends HTMLElement {
     fireEvent(this, "yaml-changed", { value: this.codemirror.getValue() });
   }
 
-  private setScrollBarDirection(hass: HomeAssistant) {
-    if (!this.shadowRoot) {
+  private setScrollBarDirection() {
+    if (!this.codemirror) {
       return;
     }
 
-    const scroll = this.shadowRoot.querySelector(".CodeMirror-vscrollbar");
-    if (scroll) {
-      scroll.classList.toggle("rtl", computeRTL(hass));
-    }
+    this.codemirror
+      .getWrapperElement()
+      .classList.toggle("rtl", computeRTL(this._hass!));
   }
 }
 
