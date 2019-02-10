@@ -38,6 +38,129 @@ export const demoLovelaceYosilevy: () => LovelaceConfig = () => ({
       cards: [
         { type: "custom:ha-demo-card" },
         {
+          entities: [
+            {
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "scene.livingroom_kitchen_all_shutters_light_position",
+              name: "תריסים אור",
+            },
+            {
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "cover.shutters_three",
+              name: "3 תריסים",
+            },
+            {
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "cover.shutters_four",
+              name: "4 תריסים",
+            },
+            {
+              hold_action: {
+                action: "more-info",
+              },
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "light.telephone",
+              name: "טלפון",
+            },
+          ],
+          type: "glance",
+          show_state: false,
+          columns: 4,
+        },
+        {
+          entities: [
+            {
+              hold_action: {
+                action: "more-info",
+              },
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "light.exterior_all_light",
+              name: "חוץ כללי",
+            },
+            {
+              hold_action: {
+                action: "more-info",
+              },
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "light.kitchen_exterior_light",
+              name: "חוץ מטבח",
+            },
+            {
+              hold_action: {
+                action: "more-info",
+              },
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "light.front_exterior_light",
+              name: "חוץ חזית",
+            },
+            {
+              hold_action: {
+                action: "more-info",
+              },
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "light.livingroom_exterior_light",
+              name: "חוץ סלון",
+            },
+          ],
+          type: "glance",
+          show_state: false,
+          columns: 4,
+        },
+        {
+          entities: [
+            {
+              hold_action: {
+                action: "more-info",
+              },
+              tap_action: {
+                action: "toggle",
+              },
+              entity: "script.turn_off_all_lights",
+              name: "כיבוי אורות",
+            },
+            {
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "scene.shutdown_shutters_and_heaters",
+              name: "כיבוי כללי",
+            },
+            {
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "scene.shutdown_night",
+              name: "כיבוי לילה",
+            },
+            {
+              tap_action: {
+                action: "more-info",
+              },
+              entity: "scene.parents_full_shutdown",
+              name: "כיבוי הורים",
+            },
+          ],
+          type: "glance",
+          show_state: false,
+          columns: 4,
+        },
+        {
           elements: [
             {
               tap_action: {
@@ -684,116 +807,6 @@ export const demoLovelaceYosilevy: () => LovelaceConfig = () => ({
             //   ],
             //   type: "glance",
             // },
-            {
-              show_state: false,
-              columns: 4,
-              entities: [
-                {
-                  tap_action: {
-                    action: "more-info",
-                  },
-                  entity:
-                    "scene.livingroom_kitchen_all_shutters_light_position",
-                  name: "תריסים אור",
-                },
-                {
-                  tap_action: {
-                    action: "more-info",
-                  },
-                  entity: "cover.shutters_three",
-                  name: "3 תריסים",
-                },
-                {
-                  tap_action: {
-                    action: "more-info",
-                  },
-                  entity: "cover.shutters_four",
-                  name: "4 תריסים",
-                },
-                {
-                  hold_action: {
-                    action: "more-info",
-                  },
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "light.telephone",
-                  name: "טלפון",
-                },
-                {
-                  hold_action: {
-                    action: "more-info",
-                  },
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "light.exterior_all_light",
-                  name: "חוץ כללי",
-                },
-                {
-                  hold_action: {
-                    action: "more-info",
-                  },
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "light.kitchen_exterior_light",
-                  name: "חוץ מטבח",
-                },
-                {
-                  hold_action: {
-                    action: "more-info",
-                  },
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "light.front_exterior_light",
-                  name: "חוץ חזית",
-                },
-                {
-                  hold_action: {
-                    action: "more-info",
-                  },
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "light.livingroom_exterior_light",
-                  name: "חוץ סלון",
-                },
-                {
-                  hold_action: {
-                    action: "more-info",
-                  },
-                  tap_action: {
-                    action: "toggle",
-                  },
-                  entity: "script.turn_off_all_lights",
-                  name: "כיבוי אורות",
-                },
-                {
-                  tap_action: {
-                    action: "more-info",
-                  },
-                  entity: "scene.shutdown_shutters_and_heaters",
-                  name: "כיבוי כללי",
-                },
-                {
-                  tap_action: {
-                    action: "more-info",
-                  },
-                  entity: "scene.shutdown_night",
-                  name: "כיבוי לילה",
-                },
-                {
-                  tap_action: {
-                    action: "more-info",
-                  },
-                  entity: "scene.parents_full_shutdown",
-                  name: "כיבוי הורים",
-                },
-              ],
-              type: "glance",
-            },
             {
               entities: ["sensor.on_light_list"],
               show_header_toggle: false,
