@@ -17,7 +17,7 @@ export interface ChangeEvent {
 }
 
 export interface SetAttributeServiceData {
-  entity_id: string;
+  ieee: string;
   cluster_id: number;
   cluster_type: string;
   attribute: number;
@@ -26,7 +26,7 @@ export interface SetAttributeServiceData {
 }
 
 export interface IssueCommandServiceData {
-  entity_id: string;
+  ieee: string;
   cluster_id: number;
   cluster_type: string;
   command: number;
@@ -35,6 +35,10 @@ export interface IssueCommandServiceData {
 
 export interface ZHAEntitySelectedParams {
   entity: HassEntity;
+}
+
+export interface ZHAEntitiesLoadedParams {
+  entities: HassEntity[];
 }
 
 export interface ZHANodeSelectedParams {

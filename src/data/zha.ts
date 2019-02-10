@@ -7,8 +7,15 @@ export interface ZHADeviceEntity extends HassEntity {
   };
 }
 
-export interface ZHAEntities {
-  [key: string]: HassEntity[];
+export interface ZHADevice {
+  name: string;
+  ieee: string;
+  manufacturer: string;
+  model: string;
+  quirk_applied: boolean;
+  quirk_class: string;
+  entities: HassEntity[];
+  manufacturer_code: number;
 }
 
 export interface Attribute {
@@ -29,7 +36,7 @@ export interface Command {
 }
 
 export interface ReadAttributeServiceData {
-  entity_id: string;
+  ieee: string;
   cluster_id: number;
   cluster_type: string;
   attribute: number;
@@ -47,17 +54,20 @@ export const reconfigureNode = (
 
 export const fetchAttributesForCluster = (
   hass: HomeAssistant,
-  entityId: string,
   ieeeAddress: string,
   clusterId: number,
   clusterType: string
 ): Promise<Attribute[]> =>
   hass.callWS({
     type: "zha/entities/clusters/attributes",
-    entity_id: entityId,
     ieee: ieeeAddress,
     cluster_id: clusterId,
     cluster_type: clusterType,
+  });
+
+export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
+  hass.callWS({
+    type: "zha/devices",
   });
 
 export const readAttributeValue = (
@@ -72,14 +82,12 @@ export const readAttributeValue = (
 
 export const fetchCommandsForCluster = (
   hass: HomeAssistant,
-  entityId: string,
   ieeeAddress: string,
   clusterId: number,
   clusterType: string
 ): Promise<Command[]> =>
   hass.callWS({
     type: "zha/entities/clusters/commands",
-    entity_id: entityId,
     ieee: ieeeAddress,
     cluster_id: clusterId,
     cluster_type: clusterType,
@@ -87,18 +95,9 @@ export const fetchCommandsForCluster = (
 
 export const fetchClustersForZhaNode = (
   hass: HomeAssistant,
-  entityId: string,
   ieeeAddress: string
 ): Promise<Cluster[]> =>
   hass.callWS({
     type: "zha/entities/clusters",
-    entity_id: entityId,
     ieee: ieeeAddress,
-  });
-
-export const fetchEntitiesForZhaNode = (
-  hass: HomeAssistant
-): Promise<ZHAEntities> =>
-  hass.callWS({
-    type: "zha/entities",
   });
