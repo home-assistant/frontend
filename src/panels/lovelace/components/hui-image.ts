@@ -1,198 +1,231 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { STATES_OFF } from "../../../common/const";
-import LocalizeMixin from "../../../mixins/localize-mixin";
 
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import {
+  LitElement,
+  TemplateResult,
+  html,
+  property,
+  CSSResult,
+  css,
+  PropertyValues,
+  query,
+} from "lit-element";
+import { HomeAssistant } from "../../../types";
+import { styleMap } from "lit-html/directives/style-map";
+import { classMap } from "lit-html/directives/class-map";
+import { b64toBlob } from "../../../common/file/b64-to-blob";
+import { fetchThumbnail } from "../../../data/camera";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
 
+export interface StateSpecificConfig {
+  [state: string]: string;
+}
+
 /*
  * @appliesMixin LocalizeMixin
  */
-class HuiImage extends LocalizeMixin(PolymerElement) {
-  static get template() {
+class HuiImage extends LitElement {
+  @property() public hass?: HomeAssistant;
+  @property() public entity?: string;
+  @property() public image?: string;
+  @property() public stateImage?: StateSpecificConfig;
+  @property() public cameraImage?: string;
+  @property() public aspectRatio?: string;
+  @property() public filter?: string;
+  @property() public stateFilter?: StateSpecificConfig;
+
+  @property() private _loadError?: boolean;
+  @property() private _cameraImageSrc?: string;
+  @query("img") private _image!: HTMLImageElement;
+  private _lastImageHeight?: number;
+  private _cameraUpdater?: number;
+  private _attached?: boolean;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._attached = true;
+    this._startUpdateCameraInterval();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._attached = false;
+    this._stopUpdateCameraInterval();
+  }
+
+  protected render(): TemplateResult | void {
+    const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
+    const stateObj =
+      this.hass && this.entity ? this.hass.states[this.entity] : undefined;
+    const state = stateObj ? stateObj.state : "unavailable";
+
+    // Figure out image source to use
+    let imageSrc: string | undefined;
+    // Track if we are we using a fallback image, used for filter.
+    let imageFallback = !this.stateImage;
+
+    if (this.cameraImage) {
+      imageSrc = this._cameraImageSrc;
+    } else if (this.stateImage) {
+      const stateImage = this.stateImage[state];
+      imageSrc = stateImage || this.image;
+      imageFallback = !stateImage;
+    } else {
+      imageSrc = this.image;
+    }
+
+    // Figure out filter to use
+    let filter = this.filter || "";
+
+    if (stateObj) {
+      if (this.stateFilter && this.stateFilter[state]) {
+        filter = this.stateFilter[state];
+      }
+    }
+
+    if (!filter && this.entity) {
+      const isOff = !stateObj || STATES_OFF.includes(state);
+      filter = isOff && imageFallback ? DEFAULT_FILTER : "";
+    }
+
     return html`
-      ${this.styleTemplate}
-      <div id="wrapper">
+      <div
+        id="wrapper"
+        style=${styleMap({
+          paddingBottom:
+            ratio && ratio.w > 0 && ratio.h > 0
+              ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
+              : "",
+        })}
+        class=${classMap({
+          ratio: Boolean(ratio && ratio.w > 0 && ratio.h > 0),
+        })}
+      >
         <img
           id="image"
-          src="[[_imageSrc]]"
-          on-error="_onImageError"
-          on-load="_onImageLoad"
+          src=${imageSrc}
+          @error=${this._onImageError}
+          @load=${this._onImageLoad}
+          style=${styleMap({
+            filter,
+            display: this._loadError ? "none" : "block",
+          })}
         />
-        <div id="brokenImage"></div>
+        <div
+          id="brokenImage"
+          style=${styleMap({
+            height: `${this._lastImageHeight || "100"}px`,
+            display: this._loadError ? "block" : "none",
+          })}
+        ></div>
       </div>
     `;
   }
 
-  static get styleTemplate() {
-    return html`
-      <style>
-        img {
-          display: block;
-          height: auto;
-          transition: filter 0.2s linear;
-          width: 100%;
-        }
-
-        .error {
-          text-align: center;
-        }
-
-        .hidden {
-          display: none;
-        }
-
-        .ratio {
-          position: relative;
-          width: 100%;
-          height: 0;
-        }
-
-        .ratio img,
-        .ratio div {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-        }
-
-        #brokenImage {
-          background: grey url("/static/images/image-broken.svg") center/36px
-            no-repeat;
-        }
-      </style>
-    `;
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("cameraImage")) {
+      this._updateCameraImageSrc();
+      this._startUpdateCameraInterval();
+      return;
+    }
   }
 
-  static get properties() {
-    return {
-      hass: {
-        type: Object,
-        observer: "_hassChanged",
-      },
-      entity: String,
-      image: String,
-      stateImage: Object,
-      cameraImage: String,
-      aspectRatio: String,
-      filter: String,
-      stateFilter: Object,
-      _imageSrc: String,
-    };
-  }
-
-  static get observers() {
-    return ["_configChanged(image, stateImage, cameraImage, aspectRatio)"];
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (this.cameraImage) {
-      this.timer = setInterval(
+  private _startUpdateCameraInterval() {
+    this._stopUpdateCameraInterval();
+    if (this.cameraImage && this._attached) {
+      this._cameraUpdater = window.setInterval(
         () => this._updateCameraImageSrc(),
         UPDATE_INTERVAL
       );
     }
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    clearInterval(this.timer);
-  }
-
-  _configChanged(image, stateImage, cameraImage, aspectRatio) {
-    const ratio = parseAspectRatio(aspectRatio);
-
-    if (ratio && ratio.w > 0 && ratio.h > 0) {
-      this.$.wrapper.style.paddingBottom = `${(
-        (100 * ratio.h) /
-        ratio.w
-      ).toFixed(2)}%`;
-      this.$.wrapper.classList.add("ratio");
-    }
-
-    if (cameraImage) {
-      this._updateCameraImageSrc();
-    } else if (image && !stateImage) {
-      this._imageSrc = image;
+  private _stopUpdateCameraInterval() {
+    if (this._cameraUpdater) {
+      clearInterval(this._cameraUpdater);
     }
   }
 
-  _onImageError() {
-    this._imageSrc = null;
-    this.$.image.classList.add("hidden");
-    if (!this.$.wrapper.classList.contains("ratio")) {
-      this.$.brokenImage.style.setProperty(
-        "height",
-        `${this._lastImageHeight || "100"}px`
-      );
-    }
-    this.$.brokenImage.classList.remove("hidden");
+  private _onImageError() {
+    this._loadError = true;
   }
 
-  _onImageLoad() {
-    this.$.image.classList.remove("hidden");
-    this.$.brokenImage.classList.add("hidden");
-    if (!this.$.wrapper.classList.contains("ratio")) {
-      this._lastImageHeight = this.$.image.offsetHeight;
-    }
+  private async _onImageLoad() {
+    this._loadError = false;
+    await this.updateComplete;
+    this._lastImageHeight = this._image.offsetHeight;
   }
 
-  _hassChanged(hass) {
-    if (this.cameraImage || !this.entity) {
+  private async _updateCameraImageSrc() {
+    if (!this.hass || !this.cameraImage) {
       return;
     }
-
-    const stateObj = hass.states[this.entity];
-    const newState = !stateObj ? "unavailable" : stateObj.state;
-
-    if (newState === this._currentState) return;
-    this._currentState = newState;
-
-    this._updateStateImage();
-    this._updateStateFilter(stateObj);
-  }
-
-  _updateStateImage() {
-    if (!this.stateImage) {
-      this._imageFallback = true;
-      return;
+    if (this._cameraImageSrc) {
+      URL.revokeObjectURL(this._cameraImageSrc);
+      this._cameraImageSrc = undefined;
     }
-    const stateImg = this.stateImage[this._currentState];
-    this._imageSrc = stateImg || this.image;
-    this._imageFallback = !stateImg;
-  }
-
-  _updateStateFilter(stateObj) {
-    let filter;
-    if (!this.stateFilter) {
-      filter = this.filter;
-    } else {
-      filter = this.stateFilter[this._currentState] || this.filter;
-    }
-
-    const isOff = !stateObj || STATES_OFF.includes(stateObj.state);
-    this.$.image.style.filter =
-      filter || (isOff && this._imageFallback && DEFAULT_FILTER) || "";
-  }
-
-  async _updateCameraImageSrc() {
     try {
-      const { content_type: contentType, content } = await this.hass.callWS({
-        type: "camera_thumbnail",
-        entity_id: this.cameraImage,
-      });
-      this._imageSrc = `data:${contentType};base64, ${content}`;
+      const { content_type: contentType, content } = await fetchThumbnail(
+        this.hass,
+        this.cameraImage
+      );
+      this._cameraImageSrc = URL.createObjectURL(
+        b64toBlob(content, contentType)
+      );
       this._onImageLoad();
     } catch (err) {
       this._onImageError();
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      img {
+        display: block;
+        height: auto;
+        transition: filter 0.2s linear;
+        width: 100%;
+      }
+
+      .error {
+        text-align: center;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .ratio {
+        position: relative;
+        width: 100%;
+        height: 0;
+      }
+
+      .ratio img,
+      .ratio div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #brokenImage {
+        background: grey url("/static/images/image-broken.svg") center/36px
+          no-repeat;
+      }
+    `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-image": HuiImage;
   }
 }
 
