@@ -73,8 +73,13 @@ class HuiImage extends LitElement {
       imageSrc = this._cameraImageSrc;
     } else if (this.stateImage) {
       const stateImage = this.stateImage[state];
-      imageSrc = stateImage || this.image;
-      imageFallback = !stateImage;
+
+      if (stateImage) {
+        imageSrc = stateImage;
+      } else {
+        imageSrc = this.image;
+        imageFallback = true;
+      }
     } else {
       imageSrc = this.image;
     }
@@ -82,10 +87,8 @@ class HuiImage extends LitElement {
     // Figure out filter to use
     let filter = this.filter || "";
 
-    if (stateObj) {
-      if (this.stateFilter && this.stateFilter[state]) {
-        filter = this.stateFilter[state];
-      }
+    if (this.stateFilter && this.stateFilter[state]) {
+      filter = this.stateFilter[state];
     }
 
     if (!filter && this.entity) {
@@ -95,7 +98,6 @@ class HuiImage extends LitElement {
 
     return html`
       <div
-        id="wrapper"
         style=${styleMap({
           paddingBottom:
             ratio && ratio.w > 0 && ratio.h > 0
@@ -190,14 +192,6 @@ class HuiImage extends LitElement {
         height: auto;
         transition: filter 0.2s linear;
         width: 100%;
-      }
-
-      .error {
-        text-align: center;
-      }
-
-      .hidden {
-        display: none;
       }
 
       .ratio {
