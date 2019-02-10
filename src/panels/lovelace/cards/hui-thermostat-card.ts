@@ -43,6 +43,9 @@ const modeIcons = {
   eco: "hass:leaf",
   dry: "hass:water-percent",
   idle: "hass:power-sleep",
+  program_auto: "hass:calendar-clock",
+  program_cool: "hass:calendar-import",
+  program_heat: "hass:calendar-export",
 };
 
 export interface Config extends LovelaceCardConfig {
@@ -419,6 +422,15 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         }
         .idle {
           --mode-color: var(--idle-color);
+        }
+        .program_auto {
+          --mode-color: var(--auto-color);
+        }
+        .program_cool {
+          --mode-color: var(--cool-color);
+        }
+        .program_heat {
+          --mode-color: var(--heat-color);
         }
         .unknown-mode {
           --mode-color: var(--unknown-color);

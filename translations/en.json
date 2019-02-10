@@ -145,7 +145,10 @@
             "high_demand": "High demand",
             "heat_pump": "Heat pump",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "program_auto": "Program Auto",
+            "program_cool": "Program Cool",
+            "program_heat": "Program Heat"
         },
         "configurator": {
             "configure": "Configure",
