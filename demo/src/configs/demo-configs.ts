@@ -43,7 +43,7 @@ export const setDemoConfig = async (
   hass.mockTheme(config.theme());
 
   if (config.language) {
-    lastSelectedLanguage = hass.selectedLanguage;
+    lastSelectedLanguage = hass.selectedLanguage || hass.language;
     fireEvent(host, "hass-language-select", {
       language: config.language,
     });
