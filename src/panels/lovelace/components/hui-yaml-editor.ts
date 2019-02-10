@@ -3,7 +3,7 @@ import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
@@ -99,11 +99,11 @@ export class HuiYamlEditor extends HTMLElement {
           },
         },
         gutters:
-          this._hass && computeRTL(this._hass)
+          this._hass && computeRTL(this._hass!)
             ? ["rtl-gutter", "CodeMirror-linenumbers"]
             : [],
       });
-      this.setScrollBarDirection(this._hass);
+      this.setScrollBarDirection(this._hass!);
       this.codemirror.on("changes", () => this._onChange());
     } else {
       this.codemirror.refresh();
