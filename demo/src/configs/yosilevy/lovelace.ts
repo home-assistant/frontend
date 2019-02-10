@@ -36,6 +36,7 @@ export const demoLovelaceYosilevy: () => LovelaceConfig = () => ({
     {
       title: "בית",
       cards: [
+        { type: "custom:ha-demo-card" },
         {
           elements: [
             {
@@ -630,7 +631,6 @@ export const demoLovelaceYosilevy: () => LovelaceConfig = () => ({
         },
         {
           cards: [
-            { type: "custom:ha-demo-card" },
             // {
             //   show_state: false,
             //   entities: [

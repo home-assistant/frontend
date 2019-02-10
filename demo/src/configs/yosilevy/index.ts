@@ -10,5 +10,5 @@ export const demoYosilevy: DemoConfig = {
   lovelace: demoLovelaceYosilevy,
   entities: demoEntitiesYosilevy,
   theme: demoThemeYosilevy,
-  //  language: "he",
+  language: "he",
 };

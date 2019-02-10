@@ -7,9 +7,14 @@ import { computeLocalize } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
 
-/*
- * superClass needs to contain `this.hass` and `this._updateHass`.
- */
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "hass-language-select": {
+      language: string;
+    };
+  }
+}
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
@@ -93,7 +98,9 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       const language: string = event.detail.language;
       this._updateHass({ language, selectedLanguage: language });
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
-      storeState(this.hass);
+      if (!__DEMO__) {
+        storeState(this.hass);
+      }
       this._loadResources();
       this._loadBackendTranslations();
       this._loadTranslationFragment(this.hass!.panelUrl);

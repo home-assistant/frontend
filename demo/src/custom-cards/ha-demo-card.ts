@@ -111,8 +111,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   private async _updateConfig(index: number) {
     this._switching = true;
     try {
-      await setDemoConfig(this.hass!, this.lovelace!, index);
+      await setDemoConfig(this, this.hass!, this.lovelace!, index);
     } catch (err) {
+      // tslint:disable-next-line
+      console.error(err);
       alert("Failed to switch config :-(");
     } finally {
       this._switching = false;
