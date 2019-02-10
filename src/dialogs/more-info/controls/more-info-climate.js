@@ -227,7 +227,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   items="[[stateObj.attributes.fan_list]]"
                   on-dom-change="handleFanListUpdate"
                 >
-                  <paper-item>[[item]]</paper-item>
+                  <paper-item
+                    >[[_localizeOperationMode(localize, item)]]</paper-item
+                  >
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
