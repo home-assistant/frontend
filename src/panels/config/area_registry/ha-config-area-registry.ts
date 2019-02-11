@@ -50,7 +50,9 @@ class HaConfigAreaRegistry extends LitElement {
     return html`
       <hass-subpage header="Area Registry">
         <ha-config-section .isWide=${this.isWide}>
-          <span slot="header">Area Registry</span>
+          <span slot="header">
+            ${this.hass.localize("ui.panel.config.area_registry.picker.header")}
+          </span>
           <span slot="introduction">
             Areas are used to organize where devices are. This information will
             be used throughout Home Assistant to help you in organizing your
@@ -74,10 +76,14 @@ class HaConfigAreaRegistry extends LitElement {
             ${this._items.length === 0
               ? html`
                   <div class="empty">
-                    Looks like you have no areas yet!
+                    ${this.hass.localize(
+                      "ui.panel.config.area_registry.picker.no_areas"
+                    )}
                     <paper-button @click=${this._createArea}>
-                      CREATE AREA</paper-button
-                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.area_registry.picker.create_area"
+                      )}
+                    </paper-button>
                   </div>
                 `
               : html``}

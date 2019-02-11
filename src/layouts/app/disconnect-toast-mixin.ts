@@ -1,13 +1,14 @@
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { HaToast } from "../../components/ha-toast";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
     private _discToast?: HaToast;
 
-    protected hassConnected() {
-      super.hassConnected();
+    protected firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
       import(/* webpackChunkName: "ha-toast" */ "../../components/ha-toast");
     }
@@ -24,10 +25,13 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       if (!this._discToast) {
         const el = document.createElement("ha-toast");
         el.duration = 0;
-        el.text = this.hass!.localize("ui.notification_toast.connection_lost");
         this._discToast = el;
         this.shadowRoot!.appendChild(el as any);
       }
+      this._discToast.dir = computeRTL(this.hass!);
+      this._discToast.text = this.hass!.localize(
+        "ui.notification_toast.connection_lost"
+      );
       this._discToast.opened = true;
     }
   };
