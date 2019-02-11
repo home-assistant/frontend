@@ -2,6 +2,25 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/demo-cards";
+import { getEntity } from "../../../src/fake_data/entity";
+import { provideHass } from "../../../src/fake_data/provide_hass";
+
+const ENTITIES = [
+  getEntity("switch", "decorative_lights", "on", {
+    friendly_name: "Decorative Lights",
+  }),
+  getEntity("light", "ceiling_lights", "on", {
+    friendly_name: "Ceiling Lights",
+  }),
+  getEntity("binary_sensor", "movement_backyard", "on", {
+    friendly_name: "Movement Backyard",
+    device_class: "moving",
+  }),
+  getEntity("binary_sensor", "basement_floor_wet", "off", {
+    friendly_name: "Basement Floor Wet",
+    device_class: "moisture",
+  }),
+];
 
 const CONFIGS = [
   {
@@ -105,7 +124,7 @@ const CONFIGS = [
 class DemoPicGlance extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
+      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
     `;
   }
 
@@ -116,6 +135,12 @@ class DemoPicGlance extends PolymerElement {
         value: CONFIGS,
       },
     };
+  }
+
+  public ready() {
+    super.ready();
+    const hass = provideHass(this.$.demos);
+    hass.addEntities(ENTITIES);
   }
 }
 
