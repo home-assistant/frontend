@@ -72,7 +72,7 @@ class ZHADeviceCard extends LitElement {
     `;
   }
 
-  private _openMoreInfo(ev): void {
+  private _openMoreInfo(ev: MouseEvent): void {
     fireEvent(this, "hass-more-info", {
       entityId: (ev.currentTarget as any).entity.entity_id,
     });
