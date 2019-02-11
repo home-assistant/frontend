@@ -258,8 +258,7 @@ export class ZHAClusterCommands extends LitElement {
         [hidden] {
           display: none;
         }
-      </style>
-    `,
+      `,
     ];
   }
 }

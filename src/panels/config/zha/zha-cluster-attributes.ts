@@ -307,8 +307,7 @@ export class ZHAClusterAttributes extends LitElement {
         [hidden] {
           display: none;
         }
-      </style>
-    `,
+      `,
     ];
   }
 }

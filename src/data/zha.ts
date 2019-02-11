@@ -7,6 +7,10 @@ export interface ZHADeviceEntity extends HassEntity {
   };
 }
 
+export interface ZHAEntityReference extends HassEntity {
+  name: string;
+}
+
 export interface ZHADevice {
   name: string;
   ieee: string;
@@ -14,7 +18,7 @@ export interface ZHADevice {
   model: string;
   quirk_applied: boolean;
   quirk_class: string;
-  entities: HassEntity[];
+  entities: ZHAEntityReference[];
   manufacturer_code: number;
 }
 
