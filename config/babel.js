@@ -33,6 +33,14 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
               pragma: "h",
             },
           ],
+          [
+            require("@babel/plugin-proposal-decorators").default,
+            { decoratorsBeforeExport: true },
+          ],
+          [
+            require("@babel/plugin-proposal-class-properties").default,
+            { loose: true },
+          ],
         ],
       },
     },
