@@ -1,7 +1,7 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { babelLoaderConfig } = require("../config/babel.js");
-const webpackBase = require("../config/babel.js");
+const webpackBase = require("../config/webpack.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
