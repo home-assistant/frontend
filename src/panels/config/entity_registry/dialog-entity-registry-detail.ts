@@ -65,7 +65,11 @@ class DialogEntityRegistryDetail extends LitElement {
         <paper-dialog-scrollable>
           ${!stateObj
             ? html`
-                <div>This entity is not currently available.</div>
+                <div>
+                  ${this.hass!.localize(
+                    "ui.panel.config.entity_registry.editor.unavailable"
+                  )}
+                </div>
               `
             : ""}
           ${this._error
@@ -99,13 +103,17 @@ class DialogEntityRegistryDetail extends LitElement {
             @click="${this._deleteEntry}"
             .disabled=${this._submitting}
           >
-            DELETE
+            ${this.hass.localize(
+              "ui.panel.config.entity_registry.editor.delete"
+            )}
           </paper-button>
           <paper-button
             @click="${this._updateEntry}"
             .disabled=${invalidDomainUpdate || this._submitting}
           >
-            UPDATE
+            ${this.hass.localize(
+              "ui.panel.config.entity_registry.editor.update"
+            )}
           </paper-button>
         </div>
       </paper-dialog>

@@ -30,6 +30,9 @@ class HaUserEditor extends EventsMixin(
         paper-card:last-child {
           margin-bottom: 16px;
         }
+        hass-subpage paper-card:first-of-type {
+          direction: ltr;
+        }
       </style>
 
       <hass-subpage header="View user">
