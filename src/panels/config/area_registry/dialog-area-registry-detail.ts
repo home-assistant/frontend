@@ -51,7 +51,13 @@ class DialogAreaDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${this._params.entry ? this._params.entry.name : "New Area"}</h2>
+        <h2>
+          ${this._params.entry
+            ? this._params.entry.name
+            : this.hass.localize(
+                "ui.panel.config.area_registry.editor.default_name"
+              )}
+        </h2>
         <paper-dialog-scrollable>
           ${this._error
             ? html`
@@ -62,7 +68,7 @@ class DialogAreaDetail extends LitElement {
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="Name"
+              .label=${this.hass.localize("ui.dialogs.more_info_settings.name")}
               error-message="Name is required"
               .invalid=${nameInvalid}
             ></paper-input>
@@ -76,7 +82,9 @@ class DialogAreaDetail extends LitElement {
                   @click="${this._deleteEntry}"
                   .disabled=${this._submitting}
                 >
-                  DELETE
+                  ${this.hass.localize(
+                    "ui.panel.config.area_registry.editor.delete"
+                  )}
                 </paper-button>
               `
             : html``}
@@ -84,7 +92,13 @@ class DialogAreaDetail extends LitElement {
             @click="${this._updateEntry}"
             .disabled=${nameInvalid || this._submitting}
           >
-            ${this._params.entry ? "UPDATE" : "CREATE"}
+            ${this._params.entry
+              ? this.hass.localize(
+                  "ui.panel.config.area_registry.editor.update"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.area_registry.editor.create"
+                )}
           </paper-button>
         </div>
       </paper-dialog>
