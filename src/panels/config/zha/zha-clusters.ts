@@ -27,7 +27,9 @@ declare global {
 }
 
 const computeClusterKey = (cluster: Cluster): string => {
-  return `${cluster.name} (id: ${cluster.id}, type: ${cluster.type})`;
+  return `${cluster.name} (Endpoint id: ${cluster.endpoint_id}, Id: ${
+    cluster.id
+  }, Type: ${cluster.type})`;
 };
 
 export class ZHAClusters extends LitElement {
@@ -101,6 +103,9 @@ export class ZHAClusters extends LitElement {
         this.hass,
         this.selectedDevice!.ieee
       );
+      this._clusters.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     }
   }
 

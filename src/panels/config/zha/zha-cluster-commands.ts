@@ -147,9 +147,13 @@ export class ZHAClusterCommands extends LitElement {
       this._commands = await fetchCommandsForCluster(
         this.hass,
         this.selectedNode!.ieee,
+        this.selectedCluster!.endpoint_id,
         this.selectedCluster!.id,
         this.selectedCluster!.type
       );
+      this._commands.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     }
   }
 
@@ -161,6 +165,7 @@ export class ZHAClusterCommands extends LitElement {
     }
     return {
       ieee: this.selectedNode!.ieee,
+      endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
       command: this._commands[this._selectedCommandIndex].id,

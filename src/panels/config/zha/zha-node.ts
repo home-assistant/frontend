@@ -196,6 +196,9 @@ export class ZHANode extends LitElement {
 
   private async _fetchDevices() {
     this._nodes = await fetchDevices(this.hass!);
+    this._nodes.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
   }
 
   static get styles(): CSSResult[] {

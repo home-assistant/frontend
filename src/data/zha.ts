@@ -26,6 +26,7 @@ export interface Attribute {
 export interface Cluster {
   name: string;
   id: number;
+  endpoint_id: number;
   type: string;
 }
 
@@ -37,6 +38,7 @@ export interface Command {
 
 export interface ReadAttributeServiceData {
   ieee: string;
+  endpoint_id: number;
   cluster_id: number;
   cluster_type: string;
   attribute: number;
@@ -48,19 +50,21 @@ export const reconfigureNode = (
   ieeeAddress: string
 ): Promise<void> =>
   hass.callWS({
-    type: "zha/nodes/reconfigure",
+    type: "zha/devices/reconfigure",
     ieee: ieeeAddress,
   });
 
 export const fetchAttributesForCluster = (
   hass: HomeAssistant,
   ieeeAddress: string,
+  endpointId: number,
   clusterId: number,
   clusterType: string
 ): Promise<Attribute[]> =>
   hass.callWS({
-    type: "zha/entities/clusters/attributes",
+    type: "zha/devices/clusters/attributes",
     ieee: ieeeAddress,
+    endpoint_id: endpointId,
     cluster_id: clusterId,
     cluster_type: clusterType,
   });
@@ -76,19 +80,21 @@ export const readAttributeValue = (
 ): Promise<string> => {
   return hass.callWS({
     ...data,
-    type: "zha/entities/clusters/attributes/value",
+    type: "zha/devices/clusters/attributes/value",
   });
 };
 
 export const fetchCommandsForCluster = (
   hass: HomeAssistant,
   ieeeAddress: string,
+  endpointId: number,
   clusterId: number,
   clusterType: string
 ): Promise<Command[]> =>
   hass.callWS({
-    type: "zha/entities/clusters/commands",
+    type: "zha/devices/clusters/commands",
     ieee: ieeeAddress,
+    endpoint_id: endpointId,
     cluster_id: clusterId,
     cluster_type: clusterType,
   });

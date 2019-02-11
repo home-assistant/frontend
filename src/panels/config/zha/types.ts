@@ -1,4 +1,3 @@
-import { HassEntity } from "home-assistant-js-websocket";
 import { ZHADeviceEntity, Cluster } from "../../../data/zha";
 
 export interface PickerTarget extends EventTarget {
@@ -27,18 +26,11 @@ export interface SetAttributeServiceData {
 
 export interface IssueCommandServiceData {
   ieee: string;
+  endpoint_id: number;
   cluster_id: number;
   cluster_type: string;
   command: number;
   command_type: string;
-}
-
-export interface ZHAEntitySelectedParams {
-  entity: HassEntity;
-}
-
-export interface ZHAEntitiesLoadedParams {
-  entities: HassEntity[];
 }
 
 export interface ZHANodeSelectedParams {
