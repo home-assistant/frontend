@@ -787,7 +787,7 @@
           "description": "Manage the persons that Home Assistant tracks.",
           "detail": {
             "name": "Name",
-            "device_tracker_intro": "Select the devices that belong to this user.",
+            "device_tracker_intro": "Select the devices that belong to this person.",
             "device_tracker_picked": "Track Device",
             "device_tracker_pick": "Pick device to track"
           }
