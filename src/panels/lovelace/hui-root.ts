@@ -60,7 +60,7 @@ let loadedUnusedEntities = false;
 declare global {
   // tslint:disable-next-line
   interface HASSDomEvents {
-    "open-changed": {};
+    opened: {};
   }
 }
 
@@ -193,8 +193,8 @@ class HUIRoot extends LitElement {
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   <hui-notifications-button
                     .hass="${this.hass}"
-                    .open="${this._notificationsOpen}"
-                    @open-changed="${this._handleNotificationsOpenChanged}"
+                    .opened="${this._notificationsOpen}"
+                    @opened="${this._handleNotificationsOpenChanged}"
                     .notifications="${this._notifications}"
                   ></hui-notifications-button>
                   <ha-start-voice-button

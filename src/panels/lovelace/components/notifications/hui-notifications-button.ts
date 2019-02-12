@@ -12,7 +12,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 
 class HuiNotificationsButton extends LitElement {
   @property() public notifications?: string[];
-  @property() public open?: boolean;
+  @property() public opened?: boolean;
 
   protected render(): TemplateResult | void {
     return html`
@@ -43,8 +43,8 @@ class HuiNotificationsButton extends LitElement {
   }
 
   private _clicked() {
-    this.open = true;
-    fireEvent(this, "open-changed");
+    this.opened = true;
+    fireEvent(this, "opened", { value: this.opened });
   }
 }
 
