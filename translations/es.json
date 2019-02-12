@@ -574,7 +574,10 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Gestión de red de Zigbee Home Automation"
+                    "description": "Gestión de red de Zigbee Home Automation",
+                    "services": {
+                        "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegurate de que está activo y aceptando comandos cuando uses este servicio."
+                    }
                 },
                 "area_registry": {
                     "caption": "Registro de área",
@@ -754,6 +757,7 @@
                     },
                     "empty_state": {
                         "title": "Bienvenido a casa",
+                        "no_devices": "Esta página te permite controlar tus dispositivos, aunque parece que aún no has configurado ninguno. Dirígete a la página de integraciones para empezar.",
                         "go_to_integrations_page": "Ir a la página de integraciones."
                     }
                 },
