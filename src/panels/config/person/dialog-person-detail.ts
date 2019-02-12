@@ -2,14 +2,15 @@ import {
   LitElement,
   html,
   css,
-  PropertyDeclarations,
   CSSResult,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 
+import "../../../components/entity/ha-entities-picker";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/ha-style";
@@ -17,24 +18,20 @@ import { HomeAssistant } from "../../../types";
 import { PersonMutableParams } from "../../../data/person";
 
 class DialogPersonDetail extends LitElement {
-  public hass!: HomeAssistant;
-  private _name!: string;
-  private _error?: string;
-  private _params?: PersonDetailDialogParams;
-  private _submitting?: boolean;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _error: {},
-      _name: {},
-      _params: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() private _name!: string;
+  @property() private _deviceTrackers!: string[];
+  @property() private _error?: string;
+  @property() private _params?: PersonDetailDialogParams;
+  @property() private _submitting?: boolean;
 
   public async showDialog(params: PersonDetailDialogParams): Promise<void> {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry ? this._params.entry.name : "";
+    this._deviceTrackers = this._params.entry
+      ? this._params.entry.device_trackers || []
+      : [];
     await this.updateComplete;
   }
 
@@ -64,6 +61,23 @@ class DialogPersonDetail extends LitElement {
               error-message="Name is required"
               .invalid=${nameInvalid}
             ></paper-input>
+            <p>
+              ${this.hass.localize(
+                "ui.panel.config.person.detail.device_tracker_intro"
+              )}
+            </p>
+            <ha-entities-picker
+              .hass=${this.hass}
+              .value=${this._deviceTrackers}
+              domainFilter="device_tracker"
+              .pickedEntityLabel=${this.hass.localize(
+                "ui.panel.config.person.detail.device_tracker_picked"
+              )}
+              .pickEntityLabel=${this.hass.localize(
+                "ui.panel.config.person.detail.device_tracker_pick"
+              )}
+              @value-changed=${this._deviceTrackersChanged}
+            ></ha-entities-picker>
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -94,14 +108,19 @@ class DialogPersonDetail extends LitElement {
     this._name = ev.detail.value;
   }
 
+  private _deviceTrackersChanged(ev: PolymerChangedEvent<string[]>) {
+    this._error = undefined;
+    this._deviceTrackers = ev.detail.value;
+  }
+
   private async _updateEntry() {
     this._submitting = true;
     try {
       const values: PersonMutableParams = {
         name: this._name.trim(),
+        device_trackers: this._deviceTrackers,
         // Temp, we will add this in a future PR.
         user_id: null,
-        device_trackers: [],
       };
       if (this._params!.entry) {
         await this._params!.updateEntry(values);
