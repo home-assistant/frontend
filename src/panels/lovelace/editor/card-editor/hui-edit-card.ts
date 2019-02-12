@@ -411,6 +411,10 @@ export class HuiEditCard extends LitElement {
     return [
       haStyleDialog,
       css`
+        :host {
+          --code-mirror-max-height: calc(100vh - 176px);
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           paper-dialog {
