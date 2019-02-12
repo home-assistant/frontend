@@ -1,4 +1,11 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  css,
+  CSSResult,
+  property,
+} from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-checkbox/paper-checkbox";
@@ -26,24 +33,16 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     await import(/* webpackChunkName: "hui-shopping-list-editor" */ "../editor/config-elements/hui-shopping-list-editor");
     return document.createElement("hui-shopping-list-card-editor");
   }
+
   public static getStubConfig(): object {
     return {};
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
-  private _uncheckedItems?: ShoppingListItem[];
-  private _checkedItems?: ShoppingListItem[];
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
+  @property() private _uncheckedItems?: ShoppingListItem[];
+  @property() private _checkedItems?: ShoppingListItem[];
   private _unsubEvents?: Promise<() => Promise<void>>;
-
-  static get properties() {
-    return {
-      hass: {},
-      _config: {},
-      _uncheckedItems: {},
-      _checkedItems: {},
-    };
-  }
 
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
@@ -82,7 +81,6 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
         <div class="addRow">
           <ha-icon
@@ -180,9 +178,9 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      css`
         .editRow,
         .addRow {
           display: flex;
@@ -191,6 +189,9 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
         .addButton {
           padding: 9px 15px 11px 15px;
           cursor: pointer;
+        }
+        paper-item-body {
+          width: 75%;
         }
         paper-checkbox {
           padding: 11px 11px 11px 18px;
@@ -230,8 +231,8 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
         .addRow > ha-icon {
           color: var(--secondary-text-color);
         }
-      </style>
-    `;
+      `,
+    ];
   }
 
   private async _fetchData(): Promise<void> {
