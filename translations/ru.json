@@ -967,7 +967,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Сохранить",
-                "name": "Название",
+                "name": "Переопределение имени",
                 "entity_id": "ID объекта"
             },
             "more_info_control": {

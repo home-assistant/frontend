@@ -301,7 +301,8 @@
                 "period": "日期范围"
             },
             "logbook": {
-                "showing_entries": "显示以下日期的条目"
+                "showing_entries": "显示以下日期的条目",
+                "period": "周期"
             },
             "mailbox": {
                 "empty": "您还没有任何消息",
@@ -432,6 +433,14 @@
                                     "hours": "小时",
                                     "minutes": "分",
                                     "seconds": "秒"
+                                },
+                                "geo_location": {
+                                    "label": "地理位置",
+                                    "source": "位置来源",
+                                    "zone": "区域",
+                                    "event": "事件：",
+                                    "enter": "进入",
+                                    "leave": "离开"
                                 }
                             }
                         },
@@ -564,6 +573,12 @@
                 },
                 "zha": {
                     "description": "Zigbee 智能家居(ZHA) 网络管理"
+                },
+                "area_registry": {
+                    "description": "您家中所有区域的概览。"
+                },
+                "entity_registry": {
+                    "description": "所有已知实体的概览。"
                 }
             },
             "profile": {
@@ -732,6 +747,11 @@
                         "checked_items": "已完成项目",
                         "clear_items": "清除已完成项目",
                         "add_item": "新增项目"
+                    },
+                    "empty_state": {
+                        "title": "欢迎回家",
+                        "no_devices": "此页面是用来控制设备的，不过您好像还没有配置好任何设备。请前往集成页面以开始。",
+                        "go_to_integrations_page": "前往集成页面。"
                     }
                 },
                 "editor": {
@@ -763,10 +783,16 @@
                         "para_sure": "您确定要自行编辑用户界面吗？",
                         "cancel": "没关系",
                         "save": "自行编辑"
+                    },
+                    "menu": {
+                        "raw_editor": "原始配置编辑器"
                     }
                 },
                 "menu": {
-                    "configure_ui": "配置 UI"
+                    "configure_ui": "配置 UI",
+                    "unused_entities": "未使用的实体",
+                    "help": "帮助",
+                    "refresh": "刷新"
                 }
             }
         },
@@ -998,7 +1024,11 @@
         "updater": "更新提示",
         "weblink": "网址",
         "zwave": "Z-Wave",
-        "vacuum": "扫地机"
+        "vacuum": "扫地机",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "系统状态"
     },
     "attribute": {
         "weather": {

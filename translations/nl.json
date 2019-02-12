@@ -301,7 +301,8 @@
                 "period": "Periode"
             },
             "logbook": {
-                "showing_entries": "Toont gegevens van"
+                "showing_entries": "Toont gegevens van",
+                "period": "Periode"
             },
             "mailbox": {
                 "empty": "Je hebt geen berichten",
@@ -433,6 +434,14 @@
                                     "hours": "Uren",
                                     "minutes": "Minuten",
                                     "seconds": "Seconden"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocatie",
+                                    "source": "Bron",
+                                    "zone": "Zone",
+                                    "event": "Gebeurtenis:",
+                                    "enter": "Invoeren",
+                                    "leave": "Verlaten"
                                 }
                             }
                         },
@@ -565,7 +574,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation netwerkbeheer"
+                    "description": "Zigbee Home Automation netwerkbeheer",
+                    "services": {
+                        "reconfigure": "Herconfigureer het ZHA-apparaat (heal device). Gebruik dit als je problemen hebt met het apparaat. Als het een apparaat met batterij is, zorg dan dat het wakker is en commando's accepteert wanneer je deze service gebruikt."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Gebiedenregister",
+                    "description": "Overzicht van alle gebieden in je huis."
+                },
+                "entity_registry": {
+                    "caption": "Entiteiten register",
+                    "description": "Overzicht van alle gekende entiteiten"
                 }
             },
             "profile": {
@@ -734,6 +754,11 @@
                         "checked_items": "Geselecteerde items",
                         "clear_items": "Geselecteerde items wissen",
                         "add_item": "Item toevoegen"
+                    },
+                    "empty_state": {
+                        "title": "Welkom thuis",
+                        "no_devices": "Op deze pagina kun je je apparaten bedienen, maar het lijkt er op dat je nog geen apparaten hebt ingesteld. Ga naar de integraties-pagina om te beginnen.",
+                        "go_to_integrations_page": "Ga naar de integraties-pagina."
                     }
                 },
                 "editor": {
@@ -765,10 +790,16 @@
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "cancel": "Laat maar",
                         "save": "Neem over"
+                    },
+                    "menu": {
+                        "raw_editor": "Platte configuratie-editor"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configureer UI"
+                    "configure_ui": "Configureer UI",
+                    "unused_entities": "Ongebruikte entiteiten",
+                    "help": "Help",
+                    "refresh": "Vernieuwen"
                 }
             }
         },
@@ -936,7 +967,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Opslaan",
-                "name": "Naam",
+                "name": "Naam overschrijven",
                 "entity_id": "Entiteits-ID"
             },
             "more_info_control": {
@@ -1001,7 +1032,11 @@
         "weblink": "Web link",
         "zwave": "Z-Wave",
         "vacuum": "Stofzuigen",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Systeemstatus"
     },
     "attribute": {
         "weather": {

@@ -3,10 +3,12 @@ const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const { babelLoaderConfig } = require("../config/babel.js");
-const { minimizer } = require("../config/babel.js");
+const webpackBase = require("../config/webpack.js");
 
 const isProd = process.env.NODE_ENV === "production";
-const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
+const isStatsBuild = process.env.STATS === "1";
+const chunkFilename =
+  isProd && !isStatsBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
 const buildPath = path.resolve(__dirname, "dist");
 const publicPath = "/";
 
@@ -14,9 +16,7 @@ const latestBuild = false;
 
 module.exports = {
   mode: isProd ? "production" : "development",
-  // Disabled in prod while we make Home Assistant able to serve the right files.
-  // Was source-map
-  devtool: isProd ? "none" : "inline-source-map",
+  devtool: isProd ? "cheap-source-map" : "inline-source-map",
   entry: {
     main: "./src/entrypoint.ts",
     compatibility: "../src/entrypoints/compatibility.js",
@@ -39,9 +39,7 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    minimizer,
-  },
+  optimization: webpackBase.optimization,
   plugins: [
     new webpack.DefinePlugin({
       __DEV__: false,
@@ -71,23 +69,14 @@ module.exports = {
         to: "static/images/leaflet/",
       },
     ]),
+    ...webpackBase.plugins,
     isProd &&
       new WorkboxPlugin.GenerateSW({
         swDest: "service_worker_es5.js",
         importWorkboxFrom: "local",
       }),
   ].filter(Boolean),
-  resolve: {
-    extensions: [".ts", ".js", ".json"],
-    alias: {
-      react: "preact-compat",
-      "react-dom": "preact-compat",
-      // Not necessary unless you consume a module using `createClass`
-      "create-react-class": "preact-compat/lib/create-react-class",
-      // Not necessary unless you consume a module requiring `react-dom-factories`
-      "react-dom-factories": "preact-compat/lib/react-dom-factories",
-    },
-  },
+  resolve: webpackBase.resolve,
   output: {
     filename: "[name].js",
     chunkFilename: chunkFilename,
