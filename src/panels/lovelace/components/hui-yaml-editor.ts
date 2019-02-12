@@ -32,7 +32,7 @@ export class HuiYamlEditor extends HTMLElement {
             <style>
               ${codeMirrorCSS}
               .CodeMirror {
-                height: var(--code-mirror-height, 300px);
+                height: var(--code-mirror-height, 100%);
                 direction: var(--code-mirror-direction, ltr);
               }
               .CodeMirror-gutters {
