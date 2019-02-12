@@ -945,6 +945,10 @@
                 "script": {
                     "last_action": "Poslední akce"
                 },
+                "sun": {
+                    "rising": "Vychází",
+                    "setting": "Zapadá"
+                },
                 "updater": {
                     "title": "Pokyny pro aktualizaci"
                 }

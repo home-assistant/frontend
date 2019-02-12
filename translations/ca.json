@@ -28,7 +28,7 @@
             "disarmed": "Desactivada",
             "armed_home": "Activada, mode a casa",
             "armed_away": "Activada, mode fora",
-            "armed_night": "Activada, mode nit",
+            "armed_night": "Activada, mode nocturn",
             "pending": "Pendent",
             "arming": "Activant",
             "disarming": "Desactivant",
@@ -871,7 +871,7 @@
                 "disarm": "Desactivar",
                 "arm_home": "Activar, a casa",
                 "arm_away": "Activar, fora",
-                "arm_night": "Activar, nit",
+                "arm_night": "Activar, nocturn",
                 "armed_custom_bypass": "Bypass personalitzat"
             },
             "automation": {

@@ -301,7 +301,8 @@
                 "period": "Zeitraum"
             },
             "logbook": {
-                "showing_entries": "Zeige Einträge für"
+                "showing_entries": "Zeige Einträge für",
+                "period": "Zeitraum"
             },
             "mailbox": {
                 "empty": "Du hast keine Nachrichten",
@@ -435,8 +436,11 @@
                                     "seconds": "Sekunden"
                                 },
                                 "geo_location": {
+                                    "label": "Geolokalisierung",
                                     "source": "Quelle",
-                                    "enter": "Betrenten",
+                                    "zone": "Zone",
+                                    "event": "Ereignis:",
+                                    "enter": "Betreten",
                                     "leave": "Verlassen"
                                 }
                             }
@@ -572,7 +576,12 @@
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation Netzwerkmanagement"
                 },
+                "area_registry": {
+                    "caption": "Gebietsregister",
+                    "description": "Überblick über alle Bereiche in Deinem Haus."
+                },
                 "entity_registry": {
+                    "caption": "Entitätsregister",
                     "description": "Überblick aller bekannten Elemente."
                 }
             },
@@ -744,7 +753,9 @@
                         "add_item": "Artikel hinzufügen"
                     },
                     "empty_state": {
-                        "title": "Willkommen zu Hause"
+                        "title": "Willkommen zu Hause",
+                        "no_devices": "Auf dieser Seite kannst du deine Geräte steuern, es sieht jedoch so aus, als hättest du noch keine eingerichtet. Gehe zur Integrationsseite, um damit zu beginnen.",
+                        "go_to_integrations_page": "Gehe zur Integrationsseite."
                     }
                 },
                 "editor": {
@@ -776,12 +787,16 @@
                         "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "cancel": "Abbrechen",
                         "save": "Kontrolle übernehmen"
+                    },
+                    "menu": {
+                        "raw_editor": "Raw-Konfigurationseditor"
                     }
                 },
                 "menu": {
                     "configure_ui": "Benutzeroberfläche konfigurieren",
                     "unused_entities": "Ungenutzte Elemente",
-                    "help": "Hilfe"
+                    "help": "Hilfe",
+                    "refresh": "Aktualisieren"
                 }
             }
         },
@@ -958,7 +973,7 @@
                 },
                 "sun": {
                     "elevation": "Höhe",
-                    "rising": "Aufgehend",
+                    "rising": "Aufgang",
                     "setting": "Untergang"
                 },
                 "updater": {
@@ -1014,7 +1029,11 @@
         "weblink": "Weblink",
         "zwave": "Z-Wave",
         "vacuum": "Staubsauger",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Systemzustand"
     },
     "attribute": {
         "weather": {
