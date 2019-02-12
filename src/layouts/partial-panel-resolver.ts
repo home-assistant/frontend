@@ -1,9 +1,4 @@
-import {
-  LitElement,
-  html,
-  PropertyDeclarations,
-  PropertyValues,
-} from "lit-element";
+import { LitElement, html, PropertyValues, property } from "lit-element";
 
 import "./hass-loading-screen";
 import { HomeAssistant, Panel, PanelElement, Route } from "../types";
@@ -112,34 +107,16 @@ function ensureLoaded(panel): Promise<void> | null {
 }
 
 class PartialPanelResolver extends LitElement {
-  public hass?: HomeAssistant;
-  public narrow?: boolean;
-  public showMenu?: boolean;
-  public route?: Route | null;
+  @property() public hass?: HomeAssistant;
+  @property() public narrow?: boolean;
+  @property() public showMenu?: boolean;
+  @property() public route?: Route | null;
 
-  private _routeTail?: Route | null;
+  @property() private _routeTail?: Route | null;
+  @property() private _panelEl?: PanelElement;
+  @property() private _error?: boolean;
   private _panel?: Panel;
-  private _panelEl?: PanelElement;
-  private _error?: boolean;
-  private _cache: { [name: string]: PanelElement };
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      narrow: {},
-      showMenu: {},
-      route: {},
-
-      _routeTail: {},
-      _error: {},
-      _panelEl: {},
-    };
-  }
-
-  constructor() {
-    super();
-    this._cache = {};
-  }
+  private _cache: { [name: string]: PanelElement } = {};
 
   protected render() {
     if (this._error) {

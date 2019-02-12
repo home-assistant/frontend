@@ -1,4 +1,8 @@
-import { Constructor } from "lit-element";
+import {
+  Constructor,
+  // @ts-ignore
+  property,
+} from "lit-element";
 import { HomeAssistant } from "../../types";
 
 /* tslint:disable */
@@ -17,14 +21,9 @@ export class HassBaseEl {
 export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
   // @ts-ignore
   class extends superClass {
-    private __provideHass: HTMLElement[];
+    private __provideHass: HTMLElement[] = [];
     // @ts-ignore
-    protected hass: HomeAssistant;
-
-    constructor() {
-      super();
-      this.__provideHass = [];
-    }
+    @property() protected hass: HomeAssistant;
 
     // Exists so all methods can safely call super method
     protected hassConnected() {

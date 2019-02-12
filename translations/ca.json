@@ -28,7 +28,7 @@
             "disarmed": "Desactivada",
             "armed_home": "Activada, mode a casa",
             "armed_away": "Activada, mode fora",
-            "armed_night": "Activada, mode nit",
+            "armed_night": "Activada, mode nocturn",
             "pending": "Pendent",
             "arming": "Activant",
             "disarming": "Desactivant",
@@ -301,7 +301,8 @@
                 "period": "Període"
             },
             "logbook": {
-                "showing_entries": "Mostrant entrades de"
+                "showing_entries": "Mostrant entrades de",
+                "period": "Període"
             },
             "mailbox": {
                 "empty": "No tens missatges",
@@ -789,10 +790,16 @@
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
                         "cancel": "M'ho he repensat",
                         "save": "Prendre el control"
+                    },
+                    "menu": {
+                        "raw_editor": "Editor de codi"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurar la interfície d'usuari"
+                    "configure_ui": "Configurar la interfície d'usuari",
+                    "unused_entities": "Entitats sense utilitzar",
+                    "help": "Ajuda",
+                    "refresh": "Actualitzar"
                 }
             }
         },
@@ -864,7 +871,7 @@
                 "disarm": "Desactivar",
                 "arm_home": "Activar, a casa",
                 "arm_away": "Activar, fora",
-                "arm_night": "Activar, nit",
+                "arm_night": "Activar, nocturn",
                 "armed_custom_bypass": "Bypass personalitzat"
             },
             "automation": {
@@ -1028,7 +1035,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "Estat del sistema"
     },
     "attribute": {
         "weather": {

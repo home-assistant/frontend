@@ -427,6 +427,10 @@
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook ID"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokace",
+                                    "zone": "Zóna"
                                 }
                             }
                         },
@@ -556,6 +560,12 @@
                         "device_unavailable": "zařízení není k dispozici",
                         "entity_unavailable": "entita není k dispozici"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA"
+                },
+                "area_registry": {
+                    "description": "Přehled všech oblastí ve vaší domácnosti."
                 }
             },
             "profile": {
@@ -758,7 +768,9 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfigurovat UI"
+                    "configure_ui": "Konfigurovat UI",
+                    "help": "Pomoc",
+                    "refresh": "Obnovit"
                 }
             }
         },
@@ -928,6 +940,18 @@
                 "save": "Uložit",
                 "name": "Název",
                 "entity_id": "Entity ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Poslední akce"
+                },
+                "sun": {
+                    "rising": "Vychází",
+                    "setting": "Zapadá"
+                },
+                "updater": {
+                    "title": "Pokyny pro aktualizaci"
+                }
             }
         },
         "auth_store": {
@@ -978,7 +1002,10 @@
         "weblink": "Webový odkaz",
         "zwave": "Z-Wave",
         "vacuum": "Vysavač",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace"
     },
     "attribute": {
         "weather": {

@@ -53,7 +53,11 @@ class HaConfigEntityRegistry extends LitElement {
     return html`
       <hass-subpage header="Entity Registry">
         <ha-config-section .isWide=${this.isWide}>
-          <span slot="header">Entity Registry</span>
+          <span slot="header">
+            ${this.hass.localize(
+              "ui.panel.config.entity_registry.picker.header"
+            )}
+          </span>
           <span slot="introduction">
             Home Assistant keeps a registry of every entity it has ever seen
             that can be uniquely identified. Each of these entities will have an
@@ -79,7 +83,9 @@ class HaConfigEntityRegistry extends LitElement {
                   <paper-item-body two-line>
                     <div class="name">
                       ${computeEntityRegistryName(this.hass!, entry) ||
-                        "(unavailable)"}
+                        this.hass!.localize(
+                          "ui.panel.config.entity_registry.picker.unavailable"
+                        )}
                     </div>
                     <div class="secondary entity-id">
                       ${entry.entity_id}
@@ -150,6 +156,7 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
       }
       paper-card {
         display: block;
+        direction: ltr;
       }
       paper-icon-item {
         cursor: pointer;

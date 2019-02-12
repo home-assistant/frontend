@@ -12,11 +12,12 @@ import { createCardElement } from "./common/create-card-element";
 import { HomeAssistant } from "../../types";
 import { LovelaceCard } from "./types";
 import { LovelaceConfig } from "../../data/lovelace";
+import computeDomain from "../../common/entity/compute_domain";
 
 export class HuiUnusedEntities extends LitElement {
   private _hass?: HomeAssistant;
   private _config?: LovelaceConfig;
-  private _element?: LovelaceCard;
+  private _elements?: LovelaceCard[];
 
   static get properties(): PropertyDeclarations {
     return {
@@ -27,16 +28,18 @@ export class HuiUnusedEntities extends LitElement {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    if (!this._element) {
-      this._createElement();
+    if (!this._elements) {
+      this._createElements();
       return;
     }
-    this._element.hass = this._hass;
+    for (const element of this._elements) {
+      element.hass = this._hass;
+    }
   }
 
   public setConfig(config: LovelaceConfig): void {
     this._config = config;
-    this._createElement();
+    this._createElements();
   }
 
   protected render(): TemplateResult | void {
@@ -46,7 +49,7 @@ export class HuiUnusedEntities extends LitElement {
 
     return html`
       ${this.renderStyle()}
-      <div id="root">${this._element}</div>
+      <div id="root">${this._elements}</div>
     `;
   }
 
@@ -54,30 +57,47 @@ export class HuiUnusedEntities extends LitElement {
     return html`
       <style>
         #root {
-          max-width: 600px;
-          margin: 0 auto;
-          padding: 8px 0;
+          padding: 4px;
+          display: flex;
+          flex-wrap: wrap;
+        }
+        hui-entities-card {
+          max-width: 400px;
+          padding: 4px;
+          flex: 1;
         }
       </style>
     `;
   }
 
-  private _createElement(): void {
-    if (this._hass) {
-      const entities = computeUnusedEntities(this._hass, this._config!).map(
-        (entity) => ({
-          entity,
-          secondary_info: "entity-id",
-        })
-      );
-      this._element = createCardElement({
-        type: "entities",
-        title: "Unused entities",
-        entities,
-        show_header_toggle: false,
-      });
-      this._element!.hass = this._hass;
+  private _createElements(): void {
+    if (!this._hass) {
+      return;
     }
+    const domains: { [domain: string]: string[] } = {};
+    computeUnusedEntities(this._hass, this._config!).forEach((entity) => {
+      const domain = computeDomain(entity);
+
+      if (!(domain in domains)) {
+        domains[domain] = [];
+      }
+      domains[domain].push(entity);
+    });
+    this._elements = Object.keys(domains)
+      .sort()
+      .map((domain) => {
+        const el = createCardElement({
+          type: "entities",
+          title: this._hass!.localize(`domain.${domain}`) || domain,
+          entities: domains[domain].map((entity) => ({
+            entity,
+            secondary_info: "entity-id",
+          })),
+          show_header_toggle: false,
+        });
+        el.hass = this._hass;
+        return el;
+      });
   }
 }
 

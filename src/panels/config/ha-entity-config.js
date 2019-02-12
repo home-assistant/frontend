@@ -15,6 +15,7 @@ class HaEntityConfig extends PolymerElement {
       <style include="iron-flex ha-style">
         paper-card {
           display: block;
+          direction: ltr;
         }
 
         .device-picker {
