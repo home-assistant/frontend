@@ -301,7 +301,8 @@
                 "period": "Periodo"
             },
             "logbook": {
-                "showing_entries": "Mostra registrazioni per"
+                "showing_entries": "Mostra registrazioni per",
+                "period": "Periodo"
             },
             "mailbox": {
                 "empty": "Non hai nessun messaggio",
@@ -426,13 +427,21 @@
                                 },
                                 "webhook": {
                                     "label": "Webhook",
-                                    "webhook_id": "ID Webhook"
+                                    "webhook_id": "Webhook ID"
                                 },
                                 "time_pattern": {
                                     "label": "Pattern temporale",
                                     "hours": "Ore",
                                     "minutes": "Minuti",
                                     "seconds": "Secondi"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalizzazione",
+                                    "source": "Fonte",
+                                    "zone": "Zona",
+                                    "event": "Evento:",
+                                    "enter": "Ingresso",
+                                    "leave": "Uscita"
                                 }
                             }
                         },
@@ -544,7 +553,7 @@
                     "description_not_login": "Accesso non effettuato"
                 },
                 "integrations": {
-                    "caption": "integrazioni",
+                    "caption": "Integrazioni",
                     "description": "Gestisci dispositivi e servizi connessi",
                     "discovered": "Scoperto",
                     "configured": "Configurato",
@@ -565,7 +574,18 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Gestione rete Zigbee Home Automation"
+                    "description": "Gestione rete Zigbee Home Automation",
+                    "services": {
+                        "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di guarigione). Utilizzare questa opzione se si verificano problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia sveglio e che accetti i comandi quando si utilizza questo servizio."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Registro di area",
+                    "description": "Panoramica di tutte le aree della tua casa."
+                },
+                "entity_registry": {
+                    "caption": "Registro delle entità",
+                    "description": "Panoramica di tutte le entità conosciute."
                 }
             },
             "profile": {
@@ -702,7 +722,7 @@
                                     "data": {
                                         "user": "Utente"
                                     },
-                                    "description": "Perfavore, scegli l'utente con cui vuoi effettuare l'accesso:"
+                                    "description": "Per favore, scegli l'utente con cui vuoi effettuare l'accesso:"
                                 }
                             },
                             "abort": {
@@ -734,6 +754,11 @@
                         "checked_items": "Elementi selezionati",
                         "clear_items": "Cancella gli elementi selezionati",
                         "add_item": "Aggiungi elemento"
+                    },
+                    "empty_state": {
+                        "title": "Benvenuto a casa",
+                        "no_devices": "Questa pagina ti consente di controllare i tuoi dispositivi, tuttavia sembra che tu non abbia ancora configurato uno. Vai alla pagina delle integrazioni per iniziare.",
+                        "go_to_integrations_page": "Vai alla pagina delle integrazioni."
                     }
                 },
                 "editor": {
@@ -765,10 +790,16 @@
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
                         "cancel": "Rinuncia",
                         "save": "Prendere il controllo"
+                    },
+                    "menu": {
+                        "raw_editor": "Editor di configurazione grezzo"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurare l'interfaccia utente"
+                    "configure_ui": "Configurare l'interfaccia utente",
+                    "unused_entities": "Entità non utilizzate",
+                    "help": "Aiuto",
+                    "refresh": "Aggiorna"
                 }
             }
         },
@@ -936,7 +967,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Salva",
-                "name": "Nome",
+                "name": "Sovrascrittura del nome",
                 "entity_id": "ID Entità"
             },
             "more_info_control": {
@@ -1001,7 +1032,11 @@
         "weblink": "Link Web",
         "zwave": "Z-Wave",
         "vacuum": "Aspirapolvere",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Salute del sistema"
     },
     "attribute": {
         "weather": {
