@@ -530,7 +530,18 @@
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
         "area_registry": {
           "caption": "Area Registry",
-          "description": "Overview of all areas in your home."
+          "description": "Overview of all areas in your home.",
+          "picker": {
+            "header": "Area Registry"
+          },
+          "no_areas": "Looks like you have no areas yet!",
+          "create_area": "CREATE AREA",
+          "editor": {
+            "default_name": "New Area",
+            "delete": "DELETE",
+            "update": "UPDATE",
+            "create": "CREATE"
+          }
         },
         "core": {
           "caption": "General",
@@ -565,7 +576,11 @@
         },
         "customize": {
           "caption": "Customization",
-          "description": "Customize your entities"
+          "description": "Customize your entities",
+          "picker": {
+            "header": "Customization",
+            "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
+          }
         },
         "automation": {
           "caption": "Automation",
@@ -755,7 +770,27 @@
         },
         "entity_registry": {
           "caption": "Entity Registry",
-          "description": "Overview of all known entities."
+          "description": "Overview of all known entities.",
+          "picker": {
+            "header": "Entity Registry",
+            "unavailable": "(unavailable)"
+          },
+          "editor": {
+            "unavailable": "This entity is not currently available.",
+            "default_name": "New Area",
+            "delete": "DELETE",
+            "update": "UPDATE"
+          }
+        },
+        "person": {
+          "caption": "Persons",
+          "description": "Manage the persons that Home Assistant tracks.",
+          "detail": {
+            "name": "Name",
+            "device_tracker_intro": "Select the devices that belong to this person.",
+            "device_tracker_picked": "Track Device",
+            "device_tracker_pick": "Pick device to track"
+          }
         },
         "integrations": {
           "caption": "Integrations",
@@ -774,7 +809,8 @@
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
             "device_unavailable": "device unavailable",
-            "entity_unavailable": "entity unavailable"
+            "entity_unavailable": "entity unavailable",
+            "no_area": "No Area"
           }
         },
         "users": {
@@ -847,7 +883,8 @@
             "toggle_editor": "Toggle Editor",
             "add": "Add Card",
             "edit": "Edit",
-            "delete": "Delete"
+            "delete": "Delete",
+            "move": "Move"
           },
           "save_config": {
             "header": "Take control of your Lovelace UI",
@@ -956,6 +993,29 @@
           "working": "Please wait",
           "unknown_error": "Something went wrong",
           "providers": {
+            "command_line": {
+              "step": {
+                "init": {
+                  "data": {
+                    "username": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::init::data::username%]",
+                    "password": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::init::data::password%]"
+                  }
+                },
+                "mfa": {
+                  "data": {
+                    "code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::data::code%]"
+                  },
+                  "description": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::description%]"
+                }
+              },
+              "error": {
+                "invalid_auth": "[%key:ui::panel::page-authorize::form::providers::homeassistant::error::invalid_auth%]",
+                "invalid_code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::error::invalid_code%]"
+              },
+              "abort": {
+                "login_expired": "[%key:ui::panel::page-authorize::form::providers::homeassistant::abort::login_expired%]"
+              }
+            },
             "homeassistant": {
               "step": {
                 "init": {

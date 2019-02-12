@@ -576,10 +576,12 @@
                     "description": "Zigbee Home Automation hálózat menedzsment"
                 },
                 "area_registry": {
-                    "description": "Az összes otthoni terület áttekintése."
+                    "caption": "Terület Nyilvántartás",
+                    "description": "Az összes otthoni terület áttekintése"
                 },
                 "entity_registry": {
-                    "description": "Az összes ismert entitás áttekintése."
+                    "caption": "Entitás Nyilvántartás",
+                    "description": "Az összes ismert entitás áttekintése"
                 }
             },
             "profile": {
@@ -750,7 +752,9 @@
                         "add_item": "Tétel hozzáadása"
                     },
                     "empty_state": {
-                        "title": "Üdv Itthon"
+                        "title": "Üdv Itthon",
+                        "no_devices": "Ez az oldal lehetővé teszi az eszközeid vezérlését, de úgy tűnik, hogy még nincs beállítva egy sem. A kezdéshez lépj át az integrációs oldalra.",
+                        "go_to_integrations_page": "Ugrás az 'integrációk' oldalra."
                     }
                 },
                 "editor": {
@@ -782,6 +786,9 @@
                         "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
                         "cancel": "Mégsem",
                         "save": "Irányítás átvétele"
+                    },
+                    "menu": {
+                        "raw_editor": "Konfiguráció szerkesztő"
                     }
                 },
                 "menu": {
@@ -956,7 +963,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Mentés",
-                "name": "Név",
+                "name": "Név felülbírálása",
                 "entity_id": "Entitás ID"
             },
             "more_info_control": {
@@ -1024,7 +1031,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "Rendszer Állapot"
     },
     "attribute": {
         "weather": {

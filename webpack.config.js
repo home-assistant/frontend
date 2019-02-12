@@ -8,7 +8,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 const translationMetadata = require("./build-translations/translationMetadata.json");
 const { babelLoaderConfig } = require("./config/babel.js");
-const { minimizer } = require("./config/minimizer.js");
+const webpackBase = require("./config/webpack.js");
 
 const version = fs.readFileSync("setup.py", "utf8").match(/\d{8}\.\d+/);
 if (!version) {
@@ -76,9 +76,7 @@ function createConfig(isProdBuild, latestBuild) {
         },
       ],
     },
-    optimization: {
-      minimizer,
-    },
+    optimization: webpackBase.optimization,
     plugins: [
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(!isProdBuild),
@@ -123,18 +121,7 @@ function createConfig(isProdBuild, latestBuild) {
           !latestBuild && "public/__init__.py",
         ].filter(Boolean)
       ),
-      // Ignore moment.js locales
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-      // Color.js is bloated, it contains all color definitions for all material color sets.
-      new webpack.NormalModuleReplacementPlugin(
-        /@polymer\/paper-styles\/color\.js$/,
-        path.resolve(__dirname, "src/util/empty.js")
-      ),
-      // Ignore roboto pointing at CDN. We use local font-roboto-local.
-      new webpack.NormalModuleReplacementPlugin(
-        /@polymer\/font-roboto\/roboto\.js$/,
-        path.resolve(__dirname, "src/util/empty.js")
-      ),
+      ...webpackBase.plugins,
       isProdBuild &&
         !isCI &&
         !isStatsBuild &&
@@ -207,17 +194,7 @@ function createConfig(isProdBuild, latestBuild) {
       path: path.resolve(__dirname, buildPath),
       publicPath,
     },
-    resolve: {
-      extensions: [".ts", ".js", ".json"],
-      alias: {
-        react: "preact-compat",
-        "react-dom": "preact-compat",
-        // Not necessary unless you consume a module using `createClass`
-        "create-react-class": "preact-compat/lib/create-react-class",
-        // Not necessary unless you consume a module requiring `react-dom-factories`
-        "react-dom-factories": "preact-compat/lib/react-dom-factories",
-      },
-    },
+    resolve: webpackBase.resolve,
   };
 }
 

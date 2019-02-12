@@ -29,6 +29,13 @@ declare global {
       getComputedStyleValue(element, propertyName);
     };
   }
+  // for fire event
+  interface HASSDomEvents {
+    "value-changed": {
+      value: unknown;
+    };
+    change: undefined;
+  }
 }
 
 export interface WebhookError {

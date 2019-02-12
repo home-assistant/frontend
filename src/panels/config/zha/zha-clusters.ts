@@ -11,11 +11,7 @@ import "@polymer/paper-card/paper-card";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import {
-  Cluster,
-  fetchClustersForZhaNode,
-  ZHADeviceEntity,
-} from "../../../data/zha";
+import { Cluster, fetchClustersForZhaNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
@@ -31,14 +27,16 @@ declare global {
 }
 
 const computeClusterKey = (cluster: Cluster): string => {
-  return `${cluster.name} (id: ${cluster.id}, type: ${cluster.type})`;
+  return `${cluster.name} (Endpoint id: ${cluster.endpoint_id}, Id: ${
+    cluster.id
+  }, Type: ${cluster.type})`;
 };
 
 export class ZHAClusters extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public showHelp: boolean;
-  public selectedEntity?: ZHADeviceEntity;
+  public selectedDevice?: ZHADevice;
   private _selectedClusterIndex: number;
   private _clusters: Cluster[];
 
@@ -54,14 +52,14 @@ export class ZHAClusters extends LitElement {
       hass: {},
       isWide: {},
       showHelp: {},
-      selectedEntity: {},
+      selectedDevice: {},
       _selectedClusterIndex: {},
       _clusters: {},
     };
   }
 
   protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("selectedEntity")) {
+    if (changedProperties.has("selectedDevice")) {
       this._clusters = [];
       this._selectedClusterIndex = -1;
       fireEvent(this, "zha-cluster-selected", {
@@ -103,9 +101,11 @@ export class ZHAClusters extends LitElement {
     if (this.hass) {
       this._clusters = await fetchClustersForZhaNode(
         this.hass,
-        this.selectedEntity!.entity_id,
-        this.selectedEntity!.device_info!.identifiers[0][1]
+        this.selectedDevice!.ieee
       );
+      this._clusters.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     }
   }
 

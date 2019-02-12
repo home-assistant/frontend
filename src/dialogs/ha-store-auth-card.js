@@ -18,6 +18,10 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
           right: 16px;
         }
 
+        .card-content {
+          color: var(--primary-text-color);
+        }
+
         .card-actions {
           text-align: right;
           border-top: 0;

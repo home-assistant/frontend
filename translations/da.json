@@ -301,7 +301,8 @@
                 "period": "Periode"
             },
             "logbook": {
-                "showing_entries": "Viser emner for"
+                "showing_entries": "Viser emner for",
+                "period": "Periode"
             },
             "mailbox": {
                 "empty": "Du har ingen beskeder",
@@ -420,13 +421,27 @@
                                     "label": "Zone",
                                     "entity": "Enhed med placering",
                                     "zone": "Zone",
-                                    "event": "Begivenhed",
+                                    "event": "Begivenhed:",
                                     "enter": "Ankom",
                                     "leave": "Forlade"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "Webhook-ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Tidsmønster",
+                                    "hours": "Timer",
+                                    "minutes": "Minutter",
+                                    "seconds": "Sekunder"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokation",
+                                    "source": "Kilde",
+                                    "zone": "Zone",
+                                    "event": "Begivenhed",
+                                    "enter": "Ankommer",
+                                    "leave": "Forlad"
                                 }
                             }
                         },
@@ -437,7 +452,7 @@
                             "duplicate": "Kopier",
                             "delete": "Slet",
                             "delete_confirm": "Er du sikker på du vil slette?",
-                            "unsupported_condition": "Ikke-understøttet betingelse: {betingelse}",
+                            "unsupported_condition": "Ikke-understøttet betingelse: {condition}",
                             "type_select": "Betingelsestype",
                             "type": {
                                 "state": {
@@ -448,7 +463,7 @@
                                     "label": "Numerisk stadie",
                                     "above": "Over",
                                     "below": "Under",
-                                    "value_template": "Værdi skabelon (ikke krævet)"
+                                    "value_template": "Værdi skabelon (valgfri)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -556,12 +571,27 @@
                         "device_unavailable": "enhed utilgængelig",
                         "entity_unavailable": "entitet utilgængelig"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation opsætning",
+                    "services": {
+                        "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Område registrering",
+                    "description": "Oversigt over alle områder i dit hjem."
+                },
+                "entity_registry": {
+                    "caption": "Enheds registrering",
+                    "description": "Oversigt over alle kendte enheder."
                 }
             },
             "profile": {
                 "push_notifications": {
                     "header": "Push notifikationer",
-                    "description": "Send meddelelser til denne enhed",
+                    "description": "Send meddelelser til denne enhed.",
                     "error_load_platform": "Konfigurer notify.html5",
                     "error_use_https": "Kræver SSL aktiveret til frontend.",
                     "push_notifications": "Push-meddelelser",
@@ -724,6 +754,11 @@
                         "checked_items": "Markerede elementer",
                         "clear_items": "Ryd markerede elementer",
                         "add_item": "Tilføj element"
+                    },
+                    "empty_state": {
+                        "title": "Velkommen hjem",
+                        "no_devices": "Denne side giver dig mulighed for at styre dine enheder, men det ser ud til, at du endnu ikke har konfigureret enheder. Gå til integrationssiden for at komme i gang.",
+                        "go_to_integrations_page": "Gå til integrationssiden."
                     }
                 },
                 "editor": {
@@ -755,10 +790,16 @@
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugergrænseflade?",
                         "cancel": "Glem det",
                         "save": "tag kontrol"
+                    },
+                    "menu": {
+                        "raw_editor": "Tekstbaseret redigering"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfigurer UI"
+                    "configure_ui": "Konfigurer UI",
+                    "unused_entities": "Ubrugte enheder",
+                    "help": "Hjælp",
+                    "refresh": "Opdater"
                 }
             }
         },
@@ -928,6 +969,19 @@
                 "save": "Gem",
                 "name": "Navn",
                 "entity_id": "Enheds ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Senest udløst"
+                },
+                "sun": {
+                    "elevation": "Elevation",
+                    "rising": "Solopgang",
+                    "setting": "Indstilling"
+                },
+                "updater": {
+                    "title": "Opdateringsvejledning"
+                }
             }
         },
         "auth_store": {
@@ -977,7 +1031,12 @@
         "updater": "Opdater",
         "weblink": "Link",
         "zwave": "Z-Wave",
-        "vacuum": "Støvsuger"
+        "vacuum": "Støvsuger",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "System sundhed"
     },
     "attribute": {
         "weather": {

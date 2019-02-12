@@ -2,8 +2,10 @@ import {
   html,
   LitElement,
   PropertyValues,
-  PropertyDeclarations,
   TemplateResult,
+  CSSResult,
+  css,
+  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -50,20 +52,22 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     return { states: ["arm_home", "arm_away"] };
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
-  private _code?: string;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      _code: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
+  @property() private _code?: string;
 
   public getCardSize(): number {
-    return 4;
+    if (!this._config || !this.hass) {
+      return 0;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+
+    if (!stateObj) {
+      return 0;
+    }
+
+    return stateObj.attributes.code_format !== FORMAT_NUMBER ? 3 : 8;
   }
 
   public setConfig(config: Config): void {
@@ -114,7 +118,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card .header="${this._config.name || this._label(stateObj.state)}">
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
@@ -204,9 +207,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     this._code = "";
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      css`
         ha-card {
           padding-bottom: 16px;
           position: relative;
@@ -293,8 +296,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         paper-button#disarm {
           color: var(--google-red-500);
         }
-      </style>
-    `;
+      `,
+    ];
   }
 }
 
