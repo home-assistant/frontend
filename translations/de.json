@@ -433,6 +433,11 @@
                                     "hours": "Stunden",
                                     "minutes": "Minuten",
                                     "seconds": "Sekunden"
+                                },
+                                "geo_location": {
+                                    "source": "Quelle",
+                                    "enter": "Betrenten",
+                                    "leave": "Verlassen"
                                 }
                             }
                         },
@@ -566,6 +571,9 @@
                 "zha": {
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation Netzwerkmanagement"
+                },
+                "entity_registry": {
+                    "description": "Überblick aller bekannten Elemente."
                 }
             },
             "profile": {
@@ -734,6 +742,9 @@
                         "checked_items": "Markierte Artikel",
                         "clear_items": "Markierte Elemente löschen",
                         "add_item": "Artikel hinzufügen"
+                    },
+                    "empty_state": {
+                        "title": "Willkommen zu Hause"
                     }
                 },
                 "editor": {
@@ -768,7 +779,9 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "Benutzeroberfläche konfigurieren"
+                    "configure_ui": "Benutzeroberfläche konfigurieren",
+                    "unused_entities": "Ungenutzte Elemente",
+                    "help": "Hilfe"
                 }
             }
         },
@@ -946,7 +959,7 @@
                 "sun": {
                     "elevation": "Höhe",
                     "rising": "Aufgehend",
-                    "setting": "Einstellung"
+                    "setting": "Untergang"
                 },
                 "updater": {
                     "title": "Update-Anweisungen"

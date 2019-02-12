@@ -301,7 +301,8 @@
                 "period": "Zäitraum"
             },
             "logbook": {
-                "showing_entries": "Weist Beiträg fir"
+                "showing_entries": "Weist Beiträg fir",
+                "period": "Zäitraum"
             },
             "mailbox": {
                 "empty": "Dir hutt keng Noriicht",
@@ -317,7 +318,7 @@
                     "description": "Konfiguratioun validéieren an de Server kontrolléieren",
                     "section": {
                         "core": {
-                            "header": "Konfiguracja i konktrola serwera",
+                            "header": "Konfiguratioun an Server Kontroll",
                             "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
                             "validation": {
                                 "heading": "Validatioun vun der Konfiguratioun",
@@ -757,7 +758,7 @@
                     "empty_state": {
                         "title": "Wëllkomm Doheem",
                         "no_devices": "Dës Säit erlaabt et iech är Apparater ze kontrolléiere, awer wéi et schéngt sinn nach keng Apparater ageriicht. Gitt op d'Integratioun's Säit fir unzefänken.",
-                        "go_to_integrations_page": "Zur Integratiouns Säit goen"
+                        "go_to_integrations_page": "Zur Integratiouns Säit goen"
                     }
                 },
                 "editor": {
@@ -792,7 +793,10 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "UI konfiguréieren"
+                    "configure_ui": "UI konfiguréieren",
+                    "unused_entities": "Onbenotzt Entitéiten",
+                    "help": "Hëllef",
+                    "refresh": "Erneieren"
                 }
             }
         },
@@ -1028,7 +1032,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "System Zoustand"
     },
     "attribute": {
         "weather": {

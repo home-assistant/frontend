@@ -301,7 +301,8 @@
                 "period": "Période"
             },
             "logbook": {
-                "showing_entries": "Afficher les entrées pour le"
+                "showing_entries": "Afficher les entrées pour le",
+                "period": "Période"
             },
             "mailbox": {
                 "empty": "Vous n'avez aucun message",
@@ -433,6 +434,14 @@
                                     "hours": "Heures",
                                     "minutes": "Minutes",
                                     "seconds": "Secondes"
+                                },
+                                "geo_location": {
+                                    "label": "Géolocalisation",
+                                    "source": "Source",
+                                    "zone": "Zone",
+                                    "event": "Événement :",
+                                    "enter": "Entre",
+                                    "leave": "Quitte"
                                 }
                             }
                         },
@@ -562,6 +571,21 @@
                         "device_unavailable": "appareil indisponible",
                         "entity_unavailable": "entité indisponible"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Gestion de réseau domotique ZigBee",
+                    "services": {
+                        "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Registre des pièces",
+                    "description": "Vue d'ensemble de toutes les pièces de votre maison."
+                },
+                "entity_registry": {
+                    "caption": "Registre des entités",
+                    "description": "Vue d'ensemble de toutes les entités connues."
                 }
             },
             "profile": {
@@ -730,6 +754,11 @@
                         "checked_items": "Éléments cochés",
                         "clear_items": "Effacer éléments cochés",
                         "add_item": "Ajouter un élément"
+                    },
+                    "empty_state": {
+                        "title": "Bienvenue à la maison",
+                        "no_devices": "Cette page vous permet de contrôler vos périphériques. Toutefois, il semble que vous n’ayez pas encore configuré de périphériques. Rendez-vous sur la page des intégrations pour commencer.",
+                        "go_to_integrations_page": "Aller à la page des intégrations."
                     }
                 },
                 "editor": {
@@ -761,10 +790,16 @@
                         "para_sure": "Êtes-vous sûr de vouloir prendre le controle de l'interface utilisateur?",
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "save": "Prenez le contrôle"
+                    },
+                    "menu": {
+                        "raw_editor": "Éditeur de configuration"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurer l'interface utilisateur"
+                    "configure_ui": "Configurer l'interface utilisateur",
+                    "unused_entities": "Entités inutilisées",
+                    "help": "Aide",
+                    "refresh": "Actualiser"
                 }
             }
         },
@@ -941,7 +976,8 @@
                 },
                 "sun": {
                     "elevation": "Élévation",
-                    "rising": "Lever"
+                    "rising": "Lever",
+                    "setting": "Coucher"
                 },
                 "updater": {
                     "title": "Instructions de mise à jour"
@@ -995,7 +1031,12 @@
         "updater": "Mise à jour",
         "weblink": "Lien",
         "zwave": "Z-Wave",
-        "vacuum": "Aspirateur"
+        "vacuum": "Aspirateur",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Santé du système"
     },
     "attribute": {
         "weather": {

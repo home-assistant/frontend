@@ -301,7 +301,8 @@
                 "period": "Periodo"
             },
             "logbook": {
-                "showing_entries": "Mostrando entradas del"
+                "showing_entries": "Mostrando entradas del",
+                "period": "Periodo"
             },
             "mailbox": {
                 "empty": "No tiene ningún mensaje",
@@ -433,6 +434,14 @@
                                     "hours": "Horas",
                                     "minutes": "Minutos",
                                     "seconds": "Segundos"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalización",
+                                    "source": "Fuente",
+                                    "zone": "Zona",
+                                    "event": "Evento:",
+                                    "enter": "Entrar",
+                                    "leave": "Salir"
                                 }
                             }
                         },
@@ -566,6 +575,14 @@
                 "zha": {
                     "caption": "ZHA",
                     "description": "Gestión de red de Zigbee Home Automation"
+                },
+                "area_registry": {
+                    "caption": "Registro de área",
+                    "description": "Visión general de todas las áreas de tu casa."
+                },
+                "entity_registry": {
+                    "caption": "Registro de Entidades",
+                    "description": "Resumen de todas las entidades conocidas."
                 }
             },
             "profile": {
@@ -734,6 +751,10 @@
                         "checked_items": "Elementos marcados",
                         "clear_items": "Borrar elementos marcados",
                         "add_item": "Añadir artículo"
+                    },
+                    "empty_state": {
+                        "title": "Bienvenido a casa",
+                        "go_to_integrations_page": "Ir a la página de integraciones."
                     }
                 },
                 "editor": {
@@ -765,10 +786,16 @@
                         "para_sure": "¿Está seguro de que desea tomar el control de su interfaz de usuario?",
                         "cancel": "No importa",
                         "save": "Tomar el control"
+                    },
+                    "menu": {
+                        "raw_editor": "Editor de configuración en bruto"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurar la interfaz de usuario"
+                    "configure_ui": "Configurar la interfaz de usuario",
+                    "unused_entities": "Entidades no utilizadas",
+                    "help": "Ayuda",
+                    "refresh": "Refrescar"
                 }
             }
         },
@@ -1001,7 +1028,11 @@
         "weblink": "Enlace web",
         "zwave": "Z-Wave",
         "vacuum": "Aspiradora",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Salud del sistema"
     },
     "attribute": {
         "weather": {
