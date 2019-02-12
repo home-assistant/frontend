@@ -4,6 +4,7 @@ import {
   PropertyDeclarations,
   TemplateResult,
   CSSResult,
+  PropertyValues,
   css,
 } from "lit-element";
 import "@polymer/paper-button/paper-button";
@@ -60,9 +61,20 @@ export class ZHANode extends LitElement {
     };
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
+  public firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
     if (this._nodes.length === 0) {
+      this._fetchDevices();
+    }
+    this.addEventListener("hass-service-called", (ev) =>
+      this.serviceCalled(ev)
+    );
+  }
+
+  protected serviceCalled(ev): void {
+    // Check if this is for us
+    if (ev.detail.success && ev.detail.service === "remove") {
+      this._selectedNodeIndex = -1;
       this._fetchDevices();
     }
   }
@@ -93,6 +105,7 @@ export class ZHANode extends LitElement {
               <paper-listbox
                 slot="dropdown-content"
                 @iron-select="${this._selectedNodeChanged}"
+                .selected="${this._selectedNodeIndex}"
               >
                 ${this._nodes.map(
                   (entry) => html`
@@ -195,8 +208,7 @@ export class ZHANode extends LitElement {
   }
 
   private async _fetchDevices() {
-    this._nodes = await fetchDevices(this.hass!);
-    this._nodes.sort((a, b) => {
+    this._nodes = (await fetchDevices(this.hass!)).sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
   }

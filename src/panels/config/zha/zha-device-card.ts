@@ -1,7 +1,7 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
+  property,
   TemplateResult,
   CSSResult,
   css,
@@ -20,21 +20,9 @@ import "../../../components/entity/state-badge";
 import { ZHADevice } from "../../../data/zha";
 
 class ZHADeviceCard extends LitElement {
-  public hass?: HomeAssistant;
-  public narrow?: boolean;
-  private device?: ZHADevice;
-
-  constructor() {
-    super();
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      narrow: {},
-      device: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public narrow?: boolean;
+  @property() public device?: ZHADevice;
 
   protected render(): TemplateResult | void {
     return html`
@@ -53,9 +41,10 @@ class ZHADeviceCard extends LitElement {
         <div class="device-entities">
           ${this.device!.entities.map(
             (entity) => html`
-              <paper-icon-item @click="${
-                this._openMoreInfo
-              }" .entity="${entity}"">
+              <paper-icon-item
+                @click="${this._openMoreInfo}"
+                .entity="${entity}"
+              >
                 <state-badge
                   .stateObj="${this.hass!.states[entity.entity_id]}"
                   slot="item-icon"
