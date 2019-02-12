@@ -198,7 +198,7 @@ export class HuiEditCard extends LitElement {
     if (!this._uiEditor) {
       setTimeout(() => {
         this.yamlEditor.codemirror.refresh();
-      }, 1);
+      }, 50);
     }
   }
 
@@ -456,12 +456,14 @@ export class HuiEditCard extends LitElement {
           .content {
             flex-direction: row;
           }
-          .content .element-editor {
-            flex: auto;
+          .content > * {
+            flex-basis: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+            min-width: 0;
           }
           .content hui-card-preview {
             margin: 0 10px;
-            flex: 490px;
             max-width: 490px;
           }
         }

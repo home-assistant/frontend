@@ -46,7 +46,6 @@ export class HuiYamlEditor extends HTMLElement {
               .CodeMirror-linenumber {
                 color: var(--paper-dialog-color, var(--primary-text-color));
               }
-
               .rtl .CodeMirror-vscrollbar {
                 right: auto;
                 left: 0px;
@@ -89,12 +88,7 @@ export class HuiYamlEditor extends HTMLElement {
         mode: "yaml",
         tabSize: 2,
         autofocus: true,
-        extraKeys: {
-          Tab: (cm: CodeMirror) => {
-            const spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-            cm.replaceSelection(spaces);
-          },
-        },
+        viewportMargin: Infinity,
         gutters:
           this._hass && computeRTL(this._hass!)
             ? ["rtl-gutter", "CodeMirror-linenumbers"]
