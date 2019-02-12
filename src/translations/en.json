@@ -783,8 +783,8 @@
           }
         },
         "person": {
-          "caption": "People",
-          "description": "Manage the people in Home Assistant.",
+          "caption": "Persons",
+          "description": "Manage the persons that Home Assistant tracks.",
           "detail": {
             "name": "Name",
             "device_tracker_intro": "Select the devices that belong to this user.",
