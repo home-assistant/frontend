@@ -63,11 +63,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config.entity];
 
-    if (!stateObj) {
-      return 0;
-    }
-
-    return stateObj.attributes.code_format !== FORMAT_NUMBER ? 3 : 8;
+    return !stateObj || stateObj.attributes.code_format !== FORMAT_NUMBER
+      ? 3
+      : 8;
   }
 
   public setConfig(config: Config): void {
