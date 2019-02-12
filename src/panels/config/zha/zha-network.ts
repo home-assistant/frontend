@@ -102,8 +102,7 @@ export class ZHANetwork extends LitElement {
         [hidden] {
           display: none;
         }
-      </style>
-    `,
+      `,
     ];
   }
 }
