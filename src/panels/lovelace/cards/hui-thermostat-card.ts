@@ -287,7 +287,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private _updateSetTemp(value: string): void {
-    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
+    if (value !== "null") {
+      this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
+    }
   }
 
   private _dragEvent(e): void {
