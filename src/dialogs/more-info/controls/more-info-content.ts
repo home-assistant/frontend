@@ -1,4 +1,9 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  PropertyDeclarations,
+  PropertyValues,
+  UpdatingElement,
+} from "lit-element";
+import { HassEntity } from "home-assistant-js-websocket";
 
 import "./more-info-alarm_control_panel";
 import "./more-info-automation";
@@ -23,26 +28,30 @@ import "./more-info-weather";
 
 import stateMoreInfoType from "../../../common/entity/state_more_info_type";
 import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
+import { HomeAssistant } from "../../../types";
 
-class MoreInfoContent extends PolymerElement {
-  static get properties() {
+class MoreInfoContent extends UpdatingElement {
+  public hass?: HomeAssistant;
+  public stateObj?: HassEntity;
+  private _detachedChild?: ChildNode;
+
+  static get properties(): PropertyDeclarations {
     return {
-      hass: Object,
-      stateObj: Object,
+      hass: {},
+      stateObj: {},
     };
   }
 
-  static get observers() {
-    return ["stateObjChanged(stateObj, hass)"];
-  }
-
-  constructor() {
-    super();
+  protected firstUpdated(): void {
     this.style.display = "block";
   }
 
-  stateObjChanged(stateObj, hass) {
-    let moreInfoType;
+  // This is not a lit element, but an updating element, so we implement update
+  protected update(changedProps: PropertyValues): void {
+    super.update(changedProps);
+    const stateObj = this.stateObj;
+    const hass = this.hass;
+
     if (!stateObj || !hass) {
       if (this.lastChild) {
         this._detachedChild = this.lastChild;
@@ -51,18 +60,20 @@ class MoreInfoContent extends PolymerElement {
       }
       return;
     }
+
     if (this._detachedChild) {
       this.appendChild(this._detachedChild);
-      this._detachedChild = null;
+      this._detachedChild = undefined;
     }
-    if (stateObj.attributes && "custom_ui_more_info" in stateObj.attributes) {
-      moreInfoType = stateObj.attributes.custom_ui_more_info;
-    } else {
-      moreInfoType = "more-info-" + stateMoreInfoType(stateObj);
-    }
+
+    const moreInfoType =
+      stateObj.attributes && "custom_ui_more_info" in stateObj.attributes
+        ? stateObj.attributes.custom_ui_more_info
+        : "more-info-" + stateMoreInfoType(stateObj);
+
     dynamicContentUpdater(this, moreInfoType.toUpperCase(), {
-      hass: hass,
-      stateObj: stateObj,
+      hass,
+      stateObj,
     });
   }
 }

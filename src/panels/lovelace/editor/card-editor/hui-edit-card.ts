@@ -119,8 +119,10 @@ export class HuiEditCard extends LitElement {
             ? this._configElement
             : html`
                 <hui-yaml-editor
+                  .hass="${this.hass}"
                   .value="${this._configValue!.value}"
                   @yaml-changed="${this._handleYamlChanged}"
+                  @yaml-save="${this._save}"
                 ></hui-yaml-editor>
               `}
         </div>

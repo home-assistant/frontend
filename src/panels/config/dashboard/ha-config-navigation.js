@@ -52,13 +52,14 @@ class HaConfigNavigation extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         type: Array,
         value: [
           "core",
-          "customize",
+          "person",
           "entity_registry",
           "area_registry",
           "automation",
           "script",
           "zha",
           "zwave",
+          "customize",
         ],
       },
     };

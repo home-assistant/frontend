@@ -26,6 +26,7 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
       <style include="iron-flex ha-style">
         .content {
           padding-bottom: 24px;
+          direction: ltr;
         }
         [slot="introduction"] {
           margin: -1em 0;
