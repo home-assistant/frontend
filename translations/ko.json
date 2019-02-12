@@ -312,7 +312,7 @@
             },
             "config": {
                 "header": "Home Assistant 설정",
-                "introduction": "여기에서 구성요소와  Home Assistant를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 곧 구현되도록 작업 중입니다",
+                "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 곧 구현되도록 작업 중입니다",
                 "core": {
                     "caption": "일반",
                     "description": "설정 파일의 유효성을 검사하고 서버를 제어합니다",
@@ -329,7 +329,7 @@
                             },
                             "reloading": {
                                 "heading": "설정 새로고침",
-                                "introduction": "Home Assistant의 일부 설정은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성을 내리고 새로운 설정 내용을 읽어들입니다",
+                                "introduction": "Home Assistant 의 일부 설정은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성을 내리고 새로운 설정 내용을 읽어들입니다",
                                 "core": "코어 새로고침",
                                 "group": "그룹 새로고침",
                                 "automation": "자동화 새로고침",
@@ -366,7 +366,7 @@
                         "alias": "이름",
                         "triggers": {
                             "header": "트리거",
-                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다. \n\n[트리거에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant 는 조건을 확인하고 동작을 호출합니다. \n\n[트리거에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "트리거 추가",
                             "duplicate": "복제",
                             "delete": "삭제",
@@ -492,7 +492,7 @@
                         },
                         "actions": {
                             "header": "동작",
-                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant가 수행할 작업입니다.\n\n [동작에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant 가 수행할 작업입니다.\n\n [동작에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "동작 추가",
                             "duplicate": "복제",
                             "delete": "삭제",
@@ -561,7 +561,7 @@
                     "configure": "설정하기",
                     "none": "설정된 구성요소가 없습니다",
                     "config_entry": {
-                        "no_devices": "이 통합 구성요소에는 장치가 없습니다.",
+                        "no_devices": "이 통합 구성요소는 설정해야 할 장치가 없습니다.",
                         "no_device": "장치가 없는 구성요소",
                         "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
                         "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 를 재시작합니다",

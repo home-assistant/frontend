@@ -301,7 +301,8 @@
                 "period": "Período"
             },
             "logbook": {
-                "showing_entries": "Mostrar valores para"
+                "showing_entries": "Mostrar valores para",
+                "period": "Período"
             },
             "mailbox": {
                 "empty": "Não tem qualquer mensagem nova",
@@ -425,8 +426,22 @@
                                     "leave": "Sair"
                                 },
                                 "webhook": {
-                                    "label": "",
-                                    "webhook_id": ""
+                                    "label": "Webhook ID",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Padrão de tempo",
+                                    "hours": "Horas",
+                                    "minutes": "Minutos",
+                                    "seconds": "Segundos"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalização",
+                                    "source": "Fonte",
+                                    "zone": "Zona",
+                                    "event": "Evento:",
+                                    "enter": "Entrar",
+                                    "leave": "Sair"
                                 }
                             }
                         },
@@ -556,6 +571,17 @@
                         "device_unavailable": "Dispositivo indisponível",
                         "entity_unavailable": "Entidade indisponível"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA"
+                },
+                "area_registry": {
+                    "caption": "Registo de áreas",
+                    "description": "Visão geral de todas as áreas da sua casa."
+                },
+                "entity_registry": {
+                    "caption": "Registo de Entidades",
+                    "description": "Visão geral de todas as entidades conhecidas."
                 }
             },
             "profile": {
@@ -724,6 +750,10 @@
                         "checked_items": "Itens marcados",
                         "clear_items": "Limpar itens marcados",
                         "add_item": "Adicionar Item"
+                    },
+                    "empty_state": {
+                        "title": "Bem-vindo a casa",
+                        "go_to_integrations_page": "Ir para a página das integrações."
                     }
                 },
                 "editor": {
@@ -758,7 +788,10 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurar UI"
+                    "configure_ui": "Configurar UI",
+                    "unused_entities": "Entidades não utilizadas",
+                    "help": "Ajuda",
+                    "refresh": "Atualizar"
                 }
             }
         },
@@ -928,6 +961,19 @@
                 "save": "Salvar",
                 "name": "Nome",
                 "entity_id": "ID da entidade"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Última ação"
+                },
+                "sun": {
+                    "elevation": "Elevação",
+                    "rising": "Nascer do sol",
+                    "setting": "Por do sol"
+                },
+                "updater": {
+                    "title": "Instruções de atualização"
+                }
             }
         },
         "auth_store": {
@@ -977,7 +1023,12 @@
         "updater": "Atualizador",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Aspiração"
+        "vacuum": "Aspiração",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Integridade Do Sistema"
     },
     "attribute": {
         "weather": {

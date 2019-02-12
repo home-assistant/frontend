@@ -301,7 +301,8 @@
                 "period": "Okres"
             },
             "logbook": {
-                "showing_entries": "Wyświetlanie rekordów dla"
+                "showing_entries": "Wyświetlanie rekordów dla",
+                "period": "Okres"
             },
             "mailbox": {
                 "empty": "Nie masz żadnych wiadomości",
@@ -789,10 +790,16 @@
                         "para_sure": "Czy na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
                         "cancel": "Nieważne",
                         "save": "Przejmuję kontrolę"
+                    },
+                    "menu": {
+                        "raw_editor": "Ręczny edytor konfiguracji"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfiguracja interfejsu użytkownika"
+                    "configure_ui": "Konfiguracja interfejsu użytkownika",
+                    "unused_entities": "Nieużywane encje",
+                    "help": "Pomoc",
+                    "refresh": "Odśwież"
                 }
             }
         },
@@ -1028,7 +1035,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "Kondycja systemu"
     },
     "attribute": {
         "weather": {

@@ -301,7 +301,8 @@
                 "period": "Obdobie"
             },
             "logbook": {
-                "showing_entries": "Zobrazujú sa záznamy za obdobie"
+                "showing_entries": "Zobrazujú sa záznamy za obdobie",
+                "period": "Obdobie"
             },
             "mailbox": {
                 "empty": "Nemáte žiadne správy",
@@ -433,6 +434,13 @@
                                     "hours": "Hodín",
                                     "minutes": "Minút",
                                     "seconds": "Sekúnd"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokácia",
+                                    "source": "Zdroj",
+                                    "zone": "Zóna",
+                                    "event": "Udalosť:",
+                                    "leave": "Opustiť"
                                 }
                             }
                         },
@@ -566,6 +574,14 @@
                 "zha": {
                     "caption": "ZHA",
                     "description": "Správa siete ZigBee Home Automation"
+                },
+                "area_registry": {
+                    "caption": "Register oblastí",
+                    "description": "Prehľad všetkých oblastí vo vašej domácnosti."
+                },
+                "entity_registry": {
+                    "caption": "Register entít",
+                    "description": "Prehľad všetkých známych entít."
                 }
             },
             "profile": {
@@ -593,7 +609,7 @@
                     "description": "Každý obnovovací token predstavuje prihlásenú reláciu. Obnovovacie tokeny sa po kliknutí na tlačidlo Odhlásiť sa automaticky odstránia. Pre váš účet sú aktívne nasledovné obnovovacie tokeny.",
                     "token_title": "Obnovovací token pre {clientId}",
                     "created_at": "Vytvorený {date}",
-                    "confirm_delete": "Naozaj chcete odstrániť obnovovací token pre {name} ?",
+                    "confirm_delete": "Naozaj chcete odstrániť obnovovací token pre {name}?",
                     "delete_failed": "Nepodarilo sa odstrániť obnovovací token",
                     "last_used": "Naposledy použitý {date} z {location}",
                     "not_used": "Nikdy nebol použitý",
@@ -604,7 +620,7 @@
                     "description": "Vytvorte prístupové tokeny s dlhou životnosťou, ktoré umožnia vašim skriptom komunikovať s vašou inštanciou Home Assistant. Každý token bude platný 10 rokov od vytvorenia. Nasledujúce prístupové tokeny s dlhou životnosťou sú v súčasnosti aktívne.",
                     "learn_auth_requests": "Zistite, ako vytvárať overené požiadavky.",
                     "created_at": "Vytvorený {date}",
-                    "confirm_delete": "Naozaj chcete odstrániť prístupový token pre {name} ?",
+                    "confirm_delete": "Naozaj chcete odstrániť prístupový token pre {name}?",
                     "delete_failed": "Nepodarilo sa odstrániť prístupový token.",
                     "create": "Vytvoriť Token",
                     "create_failed": "Nepodarilo sa vytvoriť prístupový token.",
@@ -614,7 +630,7 @@
                     "last_used": "Naposledy použitý {date} z {location}",
                     "not_used": "Nikdy nebol použitý"
                 },
-                "current_user": "Momentálne ste prihlásení ako {fullName} .",
+                "current_user": "Momentálne ste prihlásení ako {fullName}.",
                 "is_owner": "Ste vlastníkom.",
                 "logout": "Odhlásiť sa",
                 "change_password": {
@@ -629,7 +645,7 @@
                     "header": "Multifaktorové autentifikačné moduly",
                     "disable": "Zakázať",
                     "enable": "Povoliť",
-                    "confirm_disable": "Naozaj chcete zakázať {name} ?"
+                    "confirm_disable": "Naozaj chcete zakázať {name}?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Prerušené",
@@ -642,7 +658,7 @@
             "page-authorize": {
                 "initializing": "Inicializácia",
                 "authorizing_client": "Chystáte sa poskytnúť {clientId} prístup k vašej inštancii Home Assistantu.",
-                "logging_in_with": "Prihlasovanie pomocou ** {authProviderName} **.",
+                "logging_in_with": "Prihlasovanie pomocou **{authProviderName}**.",
                 "pick_auth_provider": "Alebo sa prihláste prostredníctvom",
                 "abort_intro": "Prihlásenie bolo zrušené",
                 "form": {
@@ -661,7 +677,7 @@
                                     "data": {
                                         "code": "Kód dvojfaktorovej autentifikácie"
                                     },
-                                    "description": "Otvorte ** {mfa_module_name} ** v zariadení, aby ste si pozreli svoj dvojfaktorový autentifikačný kód a overili svoju totožnosť:"
+                                    "description": "Otvorte **{mfa_module_name}** v zariadení, aby ste si pozreli svoj dvojfaktorový autentifikačný kód a overili svoju totožnosť:"
                                 }
                             },
                             "error": {
@@ -734,6 +750,10 @@
                         "checked_items": "Označené položky",
                         "clear_items": "Vymazať označené položky",
                         "add_item": "Pridať položku"
+                    },
+                    "empty_state": {
+                        "title": "Vitajte doma",
+                        "go_to_integrations_page": "Prejsť na stránku integrácií"
                     }
                 },
                 "editor": {
@@ -763,12 +783,15 @@
                         "header": "Prevziať kontrolu rozhrania Lovelace",
                         "para": "Štandardne bude Home Assistant udržiavať vaše používateľské rozhranie a aktualizovať ho, keď budú k dispozícii nové entity alebo komponenty rozhrania Lovelace. Ak prevezmete kontrolu, už za vás nebudeme automaticky robiť zmeny.",
                         "para_sure": "Skutočne chcete prevziať kontrolu vášho používateľského rozhrania?",
-                        "cancel": "Nevadí",
+                        "cancel": "Zrušiť",
                         "save": "Prevziať kontrolu"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfigurovať používateľské rozhranie"
+                    "configure_ui": "Konfigurovať používateľské rozhranie",
+                    "unused_entities": "Nepoužité entity",
+                    "help": "Pomoc",
+                    "refresh": "Obnoviť"
                 }
             }
         },
@@ -1001,7 +1024,10 @@
         "weblink": "Webový odkaz",
         "zwave": "Z-Wave",
         "vacuum": "Vysávač",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace"
     },
     "attribute": {
         "weather": {
