@@ -1,5 +1,5 @@
 import "@polymer/paper-spinner/paper-spinner-lite";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import {
   LitElement,
@@ -28,7 +28,7 @@ class HaInitPage extends LitElement {
         ${this.error
           ? html`
               Unable to connect to Home Assistant.
-              <paper-button @click=${this._retry}>Retry</paper-button>
+              <mwc-button @click=${this._retry}>Retry</mwc-button>
             `
           : "Loading data"}
       </div>
@@ -50,10 +50,6 @@ class HaInitPage extends LitElement {
       }
       paper-spinner-lite {
         margin-bottom: 10px;
-      }
-      paper-button {
-        font-weight: 500;
-        color: var(--primary-color);
       }
     `;
   }

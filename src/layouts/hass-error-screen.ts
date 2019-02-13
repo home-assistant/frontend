@@ -7,6 +7,7 @@ import {
   property,
   customElement,
 } from "lit-element";
+import "@material/mwc-button";
 import "./hass-subpage";
 
 @customElement("hass-error-screen")
@@ -20,7 +21,7 @@ class HassErrorScreen extends LitElement {
         <div class="content">
           <h3>${this.error}</h3>
           <slot>
-            <paper-button @click=${this._backTapped}>go back</paper-button>
+            <mwc-button @click=${this._backTapped}>go back</mwc-button>
           </slot>
         </div>
       </hass-subpage>
@@ -40,11 +41,6 @@ class HassErrorScreen extends LitElement {
           align-items: center;
           justify-content: center;
           flex-direction: column;
-        }
-
-        paper-button {
-          font-weight: bold;
-          color: var(--primary-color);
         }
       `,
     ];

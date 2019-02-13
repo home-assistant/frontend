@@ -1,5 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -15,7 +15,7 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="iron-flex iron-flex-alignment"></style>
       <style>
-        paper-button {
+        mwc-button {
           color: var(--primary-color);
           font-weight: 500;
           top: 3px;
@@ -26,17 +26,17 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
 
       <div class="horizontal justified layout">
         ${this.stateInfoTemplate}
-        <paper-button
+        <mwc-button
           on-click="_callService"
           data-service="unlock"
           hidden$="[[!isLocked]]"
-          >[[localize('ui.card.lock.unlock')]]</paper-button
+          >[[localize('ui.card.lock.unlock')]]</mwc-button
         >
-        <paper-button
+        <mwc-button
           on-click="_callService"
           data-service="lock"
           hidden$="[[isLocked]]"
-          >[[localize('ui.card.lock.lock')]]</paper-button
+          >[[localize('ui.card.lock.lock')]]</mwc-button
         >
       </div>
     `;

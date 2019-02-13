@@ -98,23 +98,23 @@ class DialogEntityRegistryDetail extends LitElement {
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button
-            class="danger"
+          <mwc-button
+            class="warning"
             @click="${this._deleteEntry}"
             .disabled=${this._submitting}
           >
             ${this.hass.localize(
               "ui.panel.config.entity_registry.editor.delete"
             )}
-          </paper-button>
-          <paper-button
+          </mwc-button>
+          <mwc-button
             @click="${this._updateEntry}"
             .disabled=${invalidDomainUpdate || this._submitting}
           >
             ${this.hass.localize(
               "ui.panel.config.entity_registry.editor.update"
             )}
-          </paper-button>
+          </mwc-button>
         </div>
       </paper-dialog>
     `;
@@ -172,13 +172,7 @@ class DialogEntityRegistryDetail extends LitElement {
         .form {
           padding-bottom: 24px;
         }
-        paper-button {
-          font-weight: 500;
-        }
-        paper-button.danger {
-          font-weight: 500;
-          color: var(--google-red-500);
-          margin-left: -12px;
+        mwc-button.warning {
           margin-right: auto;
         }
         .error {
