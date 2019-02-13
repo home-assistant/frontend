@@ -17,19 +17,15 @@ class HaProgressButton extends PolymerElement {
         }
 
         .success mwc-button {
-          color: white;
+          --mdc-theme-primary: white;
           background-color: var(--google-green-500);
           transition: none;
         }
 
         .error mwc-button {
-          color: white;
+          --mdc-theme-primary: white;
           background-color: var(--google-red-500);
           transition: none;
-        }
-
-        mwc-button[disabled] {
-          color: #c8c8c8;
         }
 
         .progress {
