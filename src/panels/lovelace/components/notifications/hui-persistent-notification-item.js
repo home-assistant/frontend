@@ -49,7 +49,7 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(
           </span>
         </div>
 
-        <mwc-button slot="actions" raised on-click="_handleDismiss"
+        <mwc-button slot="actions" on-click="_handleDismiss"
           >[[localize('ui.card.persistent_notification.dismiss')]]</mwc-button
         >
       </hui-notification-item-template>

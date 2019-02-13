@@ -23,7 +23,7 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(
 
         <div>[[_getMessage(notification)]]</div>
 
-        <mwc-button slot="actions" raised on-click="_handleClick"
+        <mwc-button slot="actions" on-click="_handleClick"
           >[[_localizeState(notification.state)]]</mwc-button
         >
       </hui-notification-item-template>
