@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Dostosowywanie",
-                    "description": "Dostosuj swoje encje"
+                    "description": "Dostosuj swoje encje",
+                    "picker": {
+                        "header": "Dostosowywanie",
+                        "introduction": "Dostosuj atrybuty encji. Dodawane\/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
+                    }
                 },
                 "automation": {
                     "caption": "Reguły automatyzacji",
@@ -569,7 +573,8 @@
                         "hub": "Połączony przez",
                         "firmware": "Oprogramowanie: {version}",
                         "device_unavailable": "urządzenie niedostępne",
-                        "entity_unavailable": "encja niedostępna"
+                        "entity_unavailable": "encja niedostępna",
+                        "no_area": "Brak lokalizacji"
                     }
                 },
                 "zha": {
@@ -581,11 +586,42 @@
                 },
                 "area_registry": {
                     "caption": "Rejestr lokalizacji",
-                    "description": "Przegląd wszystkich lokalizacji w twoim domu."
+                    "description": "Przegląd wszystkich lokalizacji w twoim domu.",
+                    "picker": {
+                        "header": "Rejestr lokalizacji"
+                    },
+                    "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych lokalizacji!",
+                    "create_area": "STWÓRZ LOKALIZACJĘ",
+                    "editor": {
+                        "default_name": "Nowa lokalizacja",
+                        "delete": "USUŃ",
+                        "update": "UAKTUALNIJ",
+                        "create": "STWÓRZ"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Rejestr encji",
-                    "description": "Przegląd wszystkich znanych encji"
+                    "description": "Przegląd wszystkich znanych encji",
+                    "picker": {
+                        "header": "Rejestr encji",
+                        "unavailable": "(niedostępna)"
+                    },
+                    "editor": {
+                        "unavailable": "Ta encja nie jest obecnie dostępna.",
+                        "default_name": "Nowa lokalizacja",
+                        "delete": "USUŃ",
+                        "update": "UAKTUALNIJ"
+                    }
+                },
+                "person": {
+                    "caption": "Osoby",
+                    "description": "Zarządzaj osobami, które śledzi Home Assistant.",
+                    "detail": {
+                        "name": "Imię",
+                        "device_tracker_intro": "Wybierz urządzenia należące do tej osoby.",
+                        "device_tracker_picked": "Śledź urządzenie",
+                        "device_tracker_pick": "Wybierz urządzenie do śledzenia"
+                    }
                 }
             },
             "profile": {
@@ -679,7 +715,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Dwuskładnikowy kod uwierzytelniający"
+                                        "code": "Kod uwierzytelniania dwuskładnikowego"
                                     },
                                     "description": "Otwórz **{mfa_module_name}** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
                                 }
@@ -702,7 +738,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Dwuskładnikowy kod uwierzytelniający"
+                                        "code": "Kod uwierzytelniania dwuskładnikowego"
                                     },
                                     "description": "Otwórz **{mfa_module_name}** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
                                 }
@@ -727,6 +763,29 @@
                             },
                             "abort": {
                                 "not_whitelisted": "Twój komputer nie znajduje się na białej liście."
+                            }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nazwa użytkownika",
+                                        "password": "Hasło"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kod uwierzytelniania dwuskładnikowego"
+                                    },
+                                    "description": "Otwórz **{mfa_module_name}** na swoim urządzeniu by zobaczyć kod dwuskładnikowego uwierzytelniania i zweryfikować swoją toższamość:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło",
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
+                            },
+                            "abort": {
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie."
                             }
                         }
                     }
@@ -769,7 +828,8 @@
                         "pick_card": "Wybierz kartę, którą chcesz dodać.",
                         "add": "Dodaj kartę",
                         "edit": "Edytuj",
-                        "delete": "Usuń"
+                        "delete": "Usuń",
+                        "move": "Ruch"
                     },
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",

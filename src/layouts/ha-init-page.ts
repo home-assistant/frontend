@@ -1,4 +1,5 @@
 import "@polymer/paper-spinner/paper-spinner-lite";
+import "@material/mwc-button";
 
 import {
   LitElement,
@@ -8,9 +9,6 @@ import {
   css,
 } from "lit-element";
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaInitPage extends LitElement {
   public error?: boolean;
 
@@ -30,22 +28,21 @@ class HaInitPage extends LitElement {
         ${this.error
           ? html`
               Unable to connect to Home Assistant.
-              <paper-button @click=${this._retry}>Retry</paper-button>
+              <mwc-button @click=${this._retry}>Retry</mwc-button>
             `
           : "Loading data"}
       </div>
     `;
   }
 
+  private _retry() {
+    location.reload();
+  }
+
   static get styles(): CSSResult {
     return css`
       div {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -54,22 +51,7 @@ class HaInitPage extends LitElement {
       paper-spinner-lite {
         margin-bottom: 10px;
       }
-      paper-button {
-        font-weight: 500;
-        color: var(--primary-color);
-      }
     `;
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (changedProps.has("error") && this.error) {
-      import(/* webpackChunkName: "paper-button" */ "@polymer/paper-button/paper-button");
-    }
-  }
-
-  private _retry() {
-    location.reload();
   }
 }
 

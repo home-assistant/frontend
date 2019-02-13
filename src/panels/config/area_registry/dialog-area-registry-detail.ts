@@ -77,18 +77,18 @@ class DialogAreaDetail extends LitElement {
         <div class="paper-dialog-buttons">
           ${this._params.entry
             ? html`
-                <paper-button
-                  class="danger"
+                <mwc-button
+                  class="warning"
                   @click="${this._deleteEntry}"
                   .disabled=${this._submitting}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.area_registry.editor.delete"
                   )}
-                </paper-button>
+                </mwc-button>
               `
             : html``}
-          <paper-button
+          <mwc-button
             @click="${this._updateEntry}"
             .disabled=${nameInvalid || this._submitting}
           >
@@ -99,7 +99,7 @@ class DialogAreaDetail extends LitElement {
               : this.hass.localize(
                   "ui.panel.config.area_registry.editor.create"
                 )}
-          </paper-button>
+          </mwc-button>
         </div>
       </paper-dialog>
     `;
@@ -156,13 +156,7 @@ class DialogAreaDetail extends LitElement {
         .form {
           padding-bottom: 24px;
         }
-        paper-button {
-          font-weight: 500;
-        }
-        paper-button.danger {
-          font-weight: 500;
-          color: var(--google-red-500);
-          margin-left: -12px;
+        mwc-button.warning {
           margin-right: auto;
         }
         .error {

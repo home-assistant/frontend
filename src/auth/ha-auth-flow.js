@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import "../components/ha-form";
 import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
@@ -55,8 +55,8 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
             ></ha-form>
           </template>
           <div class="action">
-            <paper-button raised on-click="_handleSubmit"
-              >[[_computeSubmitCaption(_step.type)]]</paper-button
+            <mwc-button raised on-click="_handleSubmit"
+              >[[_computeSubmitCaption(_step.type)]]</mwc-button
             >
           </div>
         </template>

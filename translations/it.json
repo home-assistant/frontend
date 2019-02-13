@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Personalizzazione",
-                    "description": "Personalizza le tue entità"
+                    "description": "Personalizza le tue entità",
+                    "picker": {
+                        "header": "Personalizzazione",
+                        "introduction": "Modificare gli attributi per entità. Le personalizzazioni aggiunte \/ modificate avranno effetto immediato. Le personalizzazioni rimosse avranno effetto quando l'entità viene aggiornata."
+                    }
                 },
                 "automation": {
                     "caption": "Automazione",
@@ -569,7 +573,8 @@
                         "hub": "Connesso tramite",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo non disponibile",
-                        "entity_unavailable": "entità non disponibile"
+                        "entity_unavailable": "entità non disponibile",
+                        "no_area": "Nessuna area"
                     }
                 },
                 "zha": {
@@ -581,11 +586,42 @@
                 },
                 "area_registry": {
                     "caption": "Registro di area",
-                    "description": "Panoramica di tutte le aree della tua casa."
+                    "description": "Panoramica di tutte le aree della tua casa.",
+                    "picker": {
+                        "header": "Registro di area"
+                    },
+                    "no_areas": "Sembra che tu non abbia ancora delle aree!",
+                    "create_area": "CREA AREA",
+                    "editor": {
+                        "default_name": "Nuova area",
+                        "delete": "ELIMINA",
+                        "update": "AGGIORNA",
+                        "create": "CREA"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Registro delle entità",
-                    "description": "Panoramica di tutte le entità conosciute."
+                    "description": "Panoramica di tutte le entità conosciute.",
+                    "picker": {
+                        "header": "Registro delle entità",
+                        "unavailable": "(non disponibile)"
+                    },
+                    "editor": {
+                        "unavailable": "Questa entità non è attualmente disponibile.",
+                        "default_name": "Nuova area",
+                        "delete": "ELIMINA",
+                        "update": "AGGIORNA"
+                    }
+                },
+                "person": {
+                    "caption": "Persone",
+                    "description": "Gestisci le persone di cui tiene traccia Home Assistant",
+                    "detail": {
+                        "name": "Nome",
+                        "device_tracker_intro": "Seleziona i dispositivi che appartengono a questa persona.",
+                        "device_tracker_picked": "Traccia dispositivo",
+                        "device_tracker_pick": "Scegli il dispositivo da tracciare"
+                    }
                 }
             },
             "profile": {
@@ -728,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "Il tuo computer non è nella whitelist."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Username",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codice di autenticazione a due fattori"
+                                    },
+                                    "description": "Apri **{mfa_module_name}** sul tuo dispositivo per vedere il tuo codice di autenticazione a due fattori e verificare la tua identità:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Username o password non validi",
+                                "invalid_code": "Codice di autenticazione non valido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessione scaduta, fai di nuovo il login"
+                            }
                         }
                     }
                 }
@@ -769,7 +828,8 @@
                         "pick_card": "Scegliere la scheda che si desidera aggiungere.",
                         "add": "Aggiungi scheda",
                         "edit": "Modifica",
-                        "delete": "Elimina"
+                        "delete": "Elimina",
+                        "move": "Sposta"
                     },
                     "migrate": {
                         "header": "Configurazione incompatibile",

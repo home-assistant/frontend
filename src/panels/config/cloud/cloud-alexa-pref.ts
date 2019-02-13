@@ -4,7 +4,7 @@ import {
   PropertyDeclarations,
   TemplateResult,
 } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line

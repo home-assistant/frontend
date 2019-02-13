@@ -337,7 +337,7 @@
                             },
                             "server_management": {
                                 "heading": "Serververwaltung",
-                                "introduction": "Kontroll vun Ärem Home Assistant Server ... vun Home Assistant.",
+                                "introduction": "Kontrolléiert ären Home Assistant Server ... vun Home Assistant aus.",
                                 "restart": "Neistart",
                                 "stop": "Stop"
                             }
@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Personaliséieren",
-                    "description": "Är Entitéite personaliséieren"
+                    "description": "Är Entitéite personaliséieren",
+                    "picker": {
+                        "header": "Personaliséieren",
+                        "introduction": "Manipulatioun vun den Attributen pro Entitéit. Nei\/geännert Personlisatiounen sinn direkt effektiv. Geläschte Personalisatioune ginn effektiv wann d'Entitéit sech aktualiséiert."
+                    }
                 },
                 "automation": {
                     "caption": "Automatisme",
@@ -569,7 +573,8 @@
                         "hub": "Verbonnen via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Apparat net erreechbar",
-                        "entity_unavailable": "Entitéit net erreechbar"
+                        "entity_unavailable": "Entitéit net erreechbar",
+                        "no_area": "Kee Beräich"
                     }
                 },
                 "zha": {
@@ -581,11 +586,42 @@
                 },
                 "area_registry": {
                     "caption": "Lëscht vun de Beräicher",
-                    "description": "Iwwersiicht vun de Beräicher am Haus"
+                    "description": "Iwwersiicht vun de Beräicher am Haus",
+                    "picker": {
+                        "header": "Lëscht vun de Beräicher"
+                    },
+                    "no_areas": "Et sinn nach keng Beräicher do!",
+                    "create_area": "Beräich erstellen",
+                    "editor": {
+                        "default_name": "Neie Beräich",
+                        "delete": "Läschen",
+                        "update": "Aktualiséieren",
+                        "create": "Erstellen"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Lëscht vun den Entitéiten",
-                    "description": "Iwwersiicht vun all bekannten Entitéiten."
+                    "description": "Iwwersiicht vun all bekannten Entitéiten.",
+                    "picker": {
+                        "header": "Lëscht vun den Entitéiten",
+                        "unavailable": "(net verfügbar)"
+                    },
+                    "editor": {
+                        "unavailable": "Dës Entitéit ass net erreechba fir de Moment.",
+                        "default_name": "Neie Beräich",
+                        "delete": "Läschen",
+                        "update": "Aktualiséieren"
+                    }
+                },
+                "person": {
+                    "caption": "Persounen",
+                    "description": "Verwalt d'Persoune déi vum Home Assistant suivéiert ginn.",
+                    "detail": {
+                        "name": "Numm",
+                        "device_tracker_intro": "Wiel d'Apparater aus déi zu dëser Persoun gehéieren.",
+                        "device_tracker_picked": "Aparat suivéieren",
+                        "device_tracker_pick": "Wielt den Apparat aus fir ze suivéieren"
+                    }
                 }
             },
             "profile": {
@@ -728,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "Äre Computer ass net fräigeschalt."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benotzernumm",
+                                        "password": "Passwuert"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwee-Faktor Authentifikatiouns Code"
+                                    },
+                                    "description": "Kuckt ären Zwee-Faktor Authentifikatiouns Code am **{mfa_module_name}** op ärem Apparat an iwwerpréift är Identitéit:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongëlte Benotzernumm oder Passwuert",
+                                "invalid_code": "Ongëlten Authentifizéierungs Code"
+                            },
+                            "abort": {
+                                "login_expired": "Sessioun ofgelaf, verbannt iech rëm frësch."
+                            }
                         }
                     }
                 }
@@ -769,7 +828,8 @@
                         "pick_card": "Wielt d'Kaart aus déi soll dobäigesat ginn.",
                         "add": "Kaart dobäisetzen",
                         "edit": "Änneren",
-                        "delete": "Läschen"
+                        "delete": "Läschen",
+                        "move": "Réckelen"
                     },
                     "migrate": {
                         "header": "Konfiguratioun net kompatibel",
