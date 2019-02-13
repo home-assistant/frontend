@@ -3,8 +3,6 @@ import "@polymer/iron-media-query/iron-media-query";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../layouts/hass-error-screen";
-
 import isComponentLoaded from "../../common/config/is_component_loaded";
 import EventsMixin from "../../mixins/events-mixin";
 import NavigateMixin from "../../mixins/navigate-mixin";

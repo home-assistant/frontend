@@ -1,4 +1,5 @@
 import "@polymer/paper-spinner/paper-spinner-lite";
+import "@polymer/paper-button/paper-button";
 
 import {
   LitElement,
@@ -8,9 +9,6 @@ import {
   css,
 } from "lit-element";
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaInitPage extends LitElement {
   public error?: boolean;
 
@@ -37,15 +35,14 @@ class HaInitPage extends LitElement {
     `;
   }
 
+  private _retry() {
+    location.reload();
+  }
+
   static get styles(): CSSResult {
     return css`
       div {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -59,17 +56,6 @@ class HaInitPage extends LitElement {
         color: var(--primary-color);
       }
     `;
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (changedProps.has("error") && this.error) {
-      import(/* webpackChunkName: "paper-button" */ "@polymer/paper-button/paper-button");
-    }
-  }
-
-  private _retry() {
-    location.reload();
   }
 }
 
