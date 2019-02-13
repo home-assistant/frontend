@@ -207,6 +207,7 @@ class PartialPanelResolver extends LitElement {
               this._cache[panel.component_name] = this._panelEl;
             }
 
+            this._error = false;
             this._updatePanel();
           },
           (err) => {
