@@ -172,6 +172,7 @@ documentContainer.innerHTML = `<custom-style>
       --google-blue-500: #4285f4;
       --google-green-500: #0f9d58;
       --google-yellow-500: #f4b400;
+      --paper-spinner-color: var(--primary-color);
 
       /* for paper-slider */
       --paper-green-400: #66bb6a;
