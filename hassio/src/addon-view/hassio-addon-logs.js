@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -24,7 +24,7 @@ class HassioAddonLogs extends PolymerElement {
       <paper-card heading="Log">
         <div class="card-content" id="content"></div>
         <div class="card-actions">
-          <paper-button on-click="refresh">Refresh</paper-button>
+          <mwc-button on-click="refresh">Refresh</mwc-button>
         </div>
       </paper-card>
     `;

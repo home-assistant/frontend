@@ -4,7 +4,7 @@ import {
   PropertyDeclarations,
   TemplateResult,
 } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";

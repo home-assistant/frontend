@@ -6,7 +6,7 @@ import {
   CSSResult,
 } from "lit-element";
 
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-dialog/paper-dialog";
@@ -69,9 +69,9 @@ export class CloudWebhookManageDialog extends LitElement {
 
         <div class="paper-dialog-buttons">
           <a href="${docsUrl}" target="_blank"
-            ><paper-button>VIEW DOCUMENTATION</paper-button></a
+            ><mwc-button>VIEW DOCUMENTATION</mwc-button></a
           >
-          <paper-button @click="${this._closeDialog}">CLOSE</paper-button>
+          <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
         </div>
       </paper-dialog>
     `;
@@ -129,7 +129,7 @@ export class CloudWebhookManageDialog extends LitElement {
         button.link {
           color: var(--primary-color);
         }
-        paper-button {
+        mwc-button {
           color: var(--primary-color);
           font-weight: 500;
         }

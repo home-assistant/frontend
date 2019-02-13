@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -39,7 +39,7 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
           color: var(--google-red-500);
           margin-top: 16px;
         }
-        paper-button.info {
+        mwc-button.info {
           max-width: calc(50% - 12px);
         }
         table.info {
@@ -67,13 +67,13 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
               </template>
             </tbody>
           </table>
-          <paper-button raised on-click="_showHardware" class="info">
+          <mwc-button raised on-click="_showHardware" class="info">
             Hardware
-          </paper-button>
+          </mwc-button>
           <template is="dom-if" if="[[_featureAvailable(data, 'hostname')]]">
-            <paper-button raised on-click="_changeHostnameClicked" class="info">
+            <mwc-button raised on-click="_changeHostnameClicked" class="info">
               Change hostname
-            </paper-button>
+            </mwc-button>
           </template>
           <template is="dom-if" if="[[errors]]">
             <div class="errors">Error: [[errors]]</div>

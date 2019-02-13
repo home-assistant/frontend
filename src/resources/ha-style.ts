@@ -43,23 +43,8 @@ export const haStyle = css`
     text-decoration: none;
   }
 
-  .card-actions paper-button:not([disabled]),
-  .card-actions ha-progress-button:not([disabled]),
-  .card-actions ha-call-api-button:not([disabled]),
-  .card-actions ha-call-service-button:not([disabled]) {
-    color: var(--primary-color);
-    font-weight: 500;
-  }
-
-  .card-actions paper-button.warning:not([disabled]),
-  .card-actions ha-call-api-button.warning:not([disabled]),
-  .card-actions ha-call-service-button.warning:not([disabled]) {
-    color: var(--google-red-500);
-  }
-
-  .card-actions paper-button[primary] {
-    background-color: var(--primary-color);
-    color: var(--text-primary-color);
+  .card-actions .warning {
+    --mdc-theme-primary: var(--google-red-500);
   }
 `;
 
@@ -76,6 +61,15 @@ export const haStyleDialog = css`
     --paper-dialog-scrollable: {
       -webkit-overflow-scrolling: touch;
     }
+  }
+
+  .paper-dialog-buttons {
+    align-items: flex-end;
+    padding: 8px;
+  }
+
+  .paper-dialog-buttons .warning {
+    --mdc-theme-primary: var(--google-red-500);
   }
 
   @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -172,6 +166,7 @@ documentContainer.innerHTML = `<custom-style>
       --google-blue-500: #4285f4;
       --google-green-500: #0f9d58;
       --google-yellow-500: #f4b400;
+      --paper-spinner-color: var(--primary-color);
 
       /* for paper-slider */
       --paper-green-400: #66bb6a;
@@ -212,6 +207,9 @@ documentContainer.innerHTML = `<custom-style>
       --paper-slider-secondary-color: var(--slider-secondary-color);
       --paper-slider-container-color: var(--slider-bar-color);
       --ha-paper-slider-pin-font-size: 15px;
+
+      /* mwc */
+      --mdc-theme-primary: var(--primary-color);
     }
   </style>
 
