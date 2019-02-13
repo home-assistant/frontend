@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 

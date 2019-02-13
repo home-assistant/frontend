@@ -100,7 +100,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
               </div>
             `
           : html`
-              <paper-button>
+              <mwc-button>
                 <div>
                   <ha-icon
                     data-domain="${computeStateDomain(stateObj)}"
@@ -115,7 +115,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
                     ${this._config.name || computeStateName(stateObj)}
                   </span>
                 </div>
-              </paper-button>
+              </mwc-button>
             `}
       </ha-card>
     `;
@@ -158,7 +158,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
           width: 40%;
           height: 40%;
         }
-        paper-button {
+        mwc-button {
           display: flex;
           margin: auto;
           text-align: center;

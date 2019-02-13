@@ -130,12 +130,12 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             : ["disarm"]
           ).map((state) => {
             return html`
-              <paper-button
+              <mwc-button
                 noink
                 raised
                 .action="${state}"
                 @click="${this._handleActionClick}"
-                >${this._label(state)}</paper-button
+                >${this._label(state)}</mwc-button
               >
             `;
           })}
@@ -156,17 +156,17 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 ${BUTTONS.map((value) => {
                   return value === ""
                     ? html`
-                        <paper-button disabled></paper-button>
+                        <mwc-button disabled></mwc-button>
                       `
                     : html`
-                        <paper-button
+                        <mwc-button
                           noink
                           raised
                           .value="${value}"
                           @click="${this._handlePadClick}"
                           >${value === "clear"
                             ? this._label("clear_code")
-                            : value}</paper-button
+                            : value}</mwc-button
                         >
                       `;
                 })}
@@ -275,7 +275,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           margin: auto;
           width: 300px;
         }
-        #keypad paper-button {
+        #keypad mwc-button {
           margin-bottom: 5%;
           width: 30%;
           padding: calc(var(--base-unit));
@@ -289,11 +289,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           justify-content: center;
           font-size: calc(var(--base-unit) * 1);
         }
-        .actions paper-button {
+        .actions mwc-button {
           min-width: calc(var(--base-unit) * 9);
           color: var(--primary-color);
         }
-        paper-button#disarm {
+        mwc-button#disarm {
           color: var(--google-red-500);
         }
       `,

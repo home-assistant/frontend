@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -12,23 +12,23 @@ class HaProgressButton extends PolymerElement {
           display: inline-block;
         }
 
-        paper-button {
+        mwc-button {
           transition: all 1s;
         }
 
-        .success paper-button {
+        .success mwc-button {
           color: white;
           background-color: var(--google-green-500);
           transition: none;
         }
 
-        .error paper-button {
+        .error mwc-button {
           color: white;
           background-color: var(--google-red-500);
           transition: none;
         }
 
-        paper-button[disabled] {
+        mwc-button[disabled] {
           color: #c8c8c8;
         }
 
@@ -43,13 +43,13 @@ class HaProgressButton extends PolymerElement {
         }
       </style>
       <div class="container" id="container">
-        <paper-button
+        <mwc-button
           id="button"
           disabled="[[computeDisabled(disabled, progress)]]"
           on-click="buttonTapped"
         >
           <slot></slot>
-        </paper-button>
+        </mwc-button>
         <template is="dom-if" if="[[progress]]">
           <div class="progress"><paper-spinner active=""></paper-spinner></div>
         </template>

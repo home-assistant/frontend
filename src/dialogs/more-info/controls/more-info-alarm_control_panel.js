@@ -1,5 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -27,15 +27,15 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
           display: flex;
           flex-direction: column;
         }
-        .pad paper-button {
+        .pad mwc-button {
           width: 80px;
         }
-        .actions paper-button {
+        .actions mwc-button {
           min-width: 160px;
           margin-bottom: 16px;
           color: var(--primary-color);
         }
-        paper-button.disarm {
+        mwc-button.disarm {
           color: var(--google-red-500);
         }
       </style>
@@ -51,87 +51,87 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
         <template is="dom-if" if="[[_isNumber(_codeFormat)]]">
           <div class="pad">
             <div>
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="1"
                 raised
-                >1</paper-button
+                >1</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="4"
                 raised
-                >4</paper-button
+                >4</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="7"
                 raised
-                >7</paper-button
+                >7</mwc-button
               >
             </div>
             <div>
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="2"
                 raised
-                >2</paper-button
+                >2</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="5"
                 raised
-                >5</paper-button
+                >5</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="8"
                 raised
-                >8</paper-button
+                >8</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="0"
                 raised
-                >0</paper-button
+                >0</mwc-button
               >
             </div>
             <div>
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="3"
                 raised
-                >3</paper-button
+                >3</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="6"
                 raised
-                >6</paper-button
+                >6</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_digitClicked"
                 disabled="[[!_inputEnabled]]"
                 data-digit="9"
                 raised
-                >9</paper-button
+                >9</mwc-button
               >
-              <paper-button
+              <mwc-button
                 on-click="_clearEnteredCode"
                 disabled="[[!_inputEnabled]]"
                 raised
               >
                 [[localize('ui.card.alarm_control_panel.clear_code')]]
-              </paper-button>
+              </mwc-button>
             </div>
           </div>
         </template>
@@ -139,7 +139,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
 
       <div class="layout horizontal center-justified actions">
         <template is="dom-if" if="[[_disarmVisible]]">
-          <paper-button
+          <mwc-button
             raised
             class="disarm"
             on-click="_callService"
@@ -147,25 +147,25 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
             disabled="[[!_codeValid]]"
           >
             [[localize('ui.card.alarm_control_panel.disarm')]]
-          </paper-button>
+          </mwc-button>
         </template>
         <template is="dom-if" if="[[_armVisible]]">
-          <paper-button
+          <mwc-button
             raised
             on-click="_callService"
             data-service="alarm_arm_home"
             disabled="[[!_codeValid]]"
           >
             [[localize('ui.card.alarm_control_panel.arm_home')]]
-          </paper-button>
-          <paper-button
+          </mwc-button>
+          <mwc-button
             raised
             on-click="_callService"
             data-service="alarm_arm_away"
             disabled="[[!_codeValid]]"
           >
             [[localize('ui.card.alarm_control_panel.arm_away')]]
-          </paper-button>
+          </mwc-button>
         </template>
       </div>
     `;

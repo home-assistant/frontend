@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -71,7 +71,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
             </div>
           </template>
           <template is="dom-if" if="[[!_loading]]">
-            <paper-button on-click="_createUser">Create</paper-button>
+            <mwc-button on-click="_createUser">Create</mwc-button>
           </template>
         </div>
       </paper-dialog>

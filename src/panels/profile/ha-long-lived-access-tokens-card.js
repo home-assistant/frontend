@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -61,9 +61,9 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
           </ha-settings-row>
         </template>
         <div class="card-actions">
-          <paper-button on-click="_handleCreate">
+          <mwc-button on-click="_handleCreate">
             [[localize('ui.panel.profile.long_lived_access_tokens.create')]]
-          </paper-button>
+          </mwc-button>
         </div>
       </paper-card>
     `;

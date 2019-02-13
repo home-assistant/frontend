@@ -17,7 +17,7 @@ import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
@@ -160,7 +160,7 @@ export class HuiEditCard extends LitElement {
         ${!this._loading
           ? html`
               <div class="paper-dialog-buttons">
-                <paper-button
+                <mwc-button
                   class="toggle-button"
                   ?hidden="${!this._configValue || !this._configValue.value}"
                   ?disabled="${this._configElement === null ||
@@ -168,12 +168,12 @@ export class HuiEditCard extends LitElement {
                   @click="${this._toggleEditor}"
                   >${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.toggle_editor"
-                  )}</paper-button
+                  )}</mwc-button
                 >
-                <paper-button @click="${this.closeDialog}"
-                  >${this.hass!.localize("ui.common.cancel")}</paper-button
+                <mwc-button @click="${this.closeDialog}"
+                  >${this.hass!.localize("ui.common.cancel")}</mwc-button
                 >
-                <paper-button
+                <mwc-button
                   ?hidden="${!this._configValue || !this._configValue.value}"
                   ?disabled="${this._saving || this._configState !== "OK"}"
                   @click="${this._save}"
@@ -182,7 +182,7 @@ export class HuiEditCard extends LitElement {
                     ?active="${this._saving}"
                     alt="Saving"
                   ></paper-spinner>
-                  ${this.hass!.localize("ui.common.save")}</paper-button
+                  ${this.hass!.localize("ui.common.save")}</mwc-button
                 >
               </div>
             `
@@ -469,7 +469,7 @@ export class HuiEditCard extends LitElement {
         .margin-bot {
           margin-bottom: 24px;
         }
-        paper-button paper-spinner {
+        mwc-button paper-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;

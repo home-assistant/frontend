@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -23,8 +23,8 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(
 
         <div>[[_getMessage(notification)]]</div>
 
-        <paper-button slot="actions" class="primary" on-click="_handleClick"
-          >[[_localizeState(notification.state)]]</paper-button
+        <mwc-button slot="actions" raised on-click="_handleClick"
+          >[[_localizeState(notification.state)]]</mwc-button
         >
       </hui-notification-item-template>
     `;

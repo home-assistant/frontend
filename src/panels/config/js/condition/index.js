@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import "@polymer/paper-card/paper-card";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import ConditionRow from "./condition_row";
 
@@ -46,9 +46,9 @@ export default class Condition extends Component {
         ))}
         <paper-card>
           <div class="card-actions add-card">
-            <paper-button onTap={this.addCondition}>
+            <mwc-button onTap={this.addCondition}>
               {localize("ui.panel.config.automation.editor.conditions.add")}
-            </paper-button>
+            </mwc-button>
           </div>
         </paper-card>
       </div>

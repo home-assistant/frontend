@@ -6,7 +6,7 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "../../../components/buttons/ha-call-service-button";

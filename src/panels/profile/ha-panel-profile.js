@@ -3,7 +3,7 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -86,8 +86,8 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
             ></ha-push-notifications-row>
 
             <div class="card-actions">
-              <paper-button class="warning" on-click="_handleLogOut"
-                >[[localize('ui.panel.profile.logout')]]</paper-button
+              <mwc-button class="warning" on-click="_handleLogOut"
+                >[[localize('ui.panel.profile.logout')]]</mwc-button
               >
             </div>
           </paper-card>

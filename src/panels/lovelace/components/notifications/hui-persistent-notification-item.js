@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 
@@ -49,8 +49,8 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(
           </span>
         </div>
 
-        <paper-button slot="actions" class="primary" on-click="_handleDismiss"
-          >[[localize('ui.card.persistent_notification.dismiss')]]</paper-button
+        <mwc-button slot="actions" raised on-click="_handleDismiss"
+          >[[localize('ui.card.persistent_notification.dismiss')]]</mwc-button
         >
       </hui-notification-item-template>
     `;

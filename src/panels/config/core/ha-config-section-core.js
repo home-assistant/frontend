@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -40,7 +40,7 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
           font-weight: 500;
         }
 
-        .config-invalid paper-button {
+        .config-invalid mwc-button {
           float: right;
         }
 
@@ -70,9 +70,9 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
                       [[localize('ui.panel.config.core.section.core.validation.valid')]]
                     </div>
                   </template>
-                  <paper-button raised="" on-click="validateConfig">
+                  <mwc-button raised="" on-click="validateConfig">
                     [[localize('ui.panel.config.core.section.core.validation.check_config')]]
-                  </paper-button>
+                  </mwc-button>
                 </template>
                 <template is="dom-if" if="[[validating]]">
                   <paper-spinner active=""></paper-spinner>
@@ -84,9 +84,9 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
                 <span class="text">
                   [[localize('ui.panel.config.core.section.core.validation.invalid')]]
                 </span>
-                <paper-button raised="" on-click="validateConfig">
+                <mwc-button raised="" on-click="validateConfig">
                   [[localize('ui.panel.config.core.section.core.validation.check_config')]]
-                </paper-button>
+                </mwc-button>
               </div>
               <div id="configLog" class="validate-log">[[validateLog]]</div>
             </template>
