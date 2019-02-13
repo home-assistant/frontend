@@ -60,7 +60,7 @@ let loadedUnusedEntities = false;
 declare global {
   // tslint:disable-next-line
   interface HASSDomEvents {
-    opened: {};
+    opened: { value: boolean };
   }
 }
 
