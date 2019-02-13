@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Tilpasning",
-                    "description": "Tilpas dine enheder"
+                    "description": "Tilpas dine enheder",
+                    "picker": {
+                        "header": "Tilpasning",
+                        "introduction": "Tilpas enhedsattributter. Tilføjede\/redigerede tilpasninger træder i kraft med det samme. Fjernede tilpasninger træder i kraft når enheden opdateres."
+                    }
                 },
                 "automation": {
                     "caption": "Automatisering",
@@ -569,7 +573,8 @@
                         "hub": "Forbundet via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "enhed utilgængelig",
-                        "entity_unavailable": "entitet utilgængelig"
+                        "entity_unavailable": "entitet utilgængelig",
+                        "no_area": "Intet område"
                     }
                 },
                 "zha": {
@@ -581,11 +586,42 @@
                 },
                 "area_registry": {
                     "caption": "Område registrering",
-                    "description": "Oversigt over alle områder i dit hjem."
+                    "description": "Oversigt over alle områder i dit hjem.",
+                    "picker": {
+                        "header": "Område registrering"
+                    },
+                    "no_areas": "Du ikke har ingen områder endnu!",
+                    "create_area": "OPRET OMRÅDE",
+                    "editor": {
+                        "default_name": "Nyt område",
+                        "delete": "SLET",
+                        "update": "OPDATER",
+                        "create": "OPRET"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Enheds registrering",
-                    "description": "Oversigt over alle kendte enheder."
+                    "description": "Oversigt over alle kendte enheder.",
+                    "picker": {
+                        "header": "Enheds registrering",
+                        "unavailable": "(utilgængelig)"
+                    },
+                    "editor": {
+                        "unavailable": "Denne enhed er ikke tilgængelig i øjeblikket.",
+                        "default_name": "Nyt område",
+                        "delete": "SLET",
+                        "update": "OPDATER"
+                    }
+                },
+                "person": {
+                    "caption": "Personer",
+                    "description": "Administrer de personer som Home Assistant skal spore.",
+                    "detail": {
+                        "name": "Navn",
+                        "device_tracker_intro": "Vælg de enheder, der tilhører denne person.",
+                        "device_tracker_picked": "Spor enhed",
+                        "device_tracker_pick": "Vælg en enhed, der skal spores"
+                    }
                 }
             },
             "profile": {
@@ -769,7 +805,8 @@
                         "pick_card": "Vælg det kort, du vil tilføje.",
                         "add": "Tilføj kort",
                         "edit": "Rediger",
-                        "delete": "Slet"
+                        "delete": "Slet",
+                        "move": "Flyt"
                     },
                     "migrate": {
                         "header": "Konfiguration ikke færdiggjort",
