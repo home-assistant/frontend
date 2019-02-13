@@ -36,6 +36,7 @@ import { ConfigValue, ConfigError } from "../types";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { addCard, replaceCard } from "../config-util";
+import { afterNextRender } from "../../../../common/util/render-status";
 
 declare global {
   interface HASSDomEvents {
@@ -182,8 +183,8 @@ export class HuiEditCard extends LitElement {
                     ?active="${this._saving}"
                     alt="Saving"
                   ></paper-spinner>
-                  ${this.hass!.localize("ui.common.save")}</mwc-button
-                >
+                  ${this.hass!.localize("ui.common.save")}
+                </mwc-button>
               </div>
             `
           : ""}
@@ -196,9 +197,10 @@ export class HuiEditCard extends LitElement {
     this._loading = false;
     this._resizeDialog();
     if (!this._uiEditor) {
-      setTimeout(() => {
+      afterNextRender(() => {
         this.yamlEditor.codemirror.refresh();
-      }, 1);
+        this._resizeDialog();
+      });
     }
   }
 
@@ -411,6 +413,10 @@ export class HuiEditCard extends LitElement {
     return [
       haStyleDialog,
       css`
+        :host {
+          --code-mirror-max-height: calc(100vh - 176px);
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
           paper-dialog {
@@ -456,12 +462,14 @@ export class HuiEditCard extends LitElement {
           .content {
             flex-direction: row;
           }
-          .content .element-editor {
-            flex: auto;
+          .content > * {
+            flex-basis: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+            min-width: 0;
           }
           .content hui-card-preview {
             margin: 0 10px;
-            flex: 490px;
             max-width: 490px;
           }
         }

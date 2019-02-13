@@ -64,7 +64,6 @@ export const haStyleDialog = css`
   }
 
   .paper-dialog-buttons {
-    height: 56px;
     align-items: flex-end;
     padding: 8px;
   }
