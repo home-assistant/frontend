@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -42,8 +42,8 @@ class OzwLog extends EventsMixin(PolymerElement) {
           </paper-input>
         </div>
         <div class="card-actions">
-          <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>
-          <paper-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</paper-button>
+          <mwc-button raised="true" on-click="_openLogWindow">Load</mwc-button>
+          <mwc-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</mwc-button>
       </paper-card>
     </ha-config-section>
 `;

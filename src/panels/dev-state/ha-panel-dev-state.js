@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
@@ -111,9 +111,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
               spellcheck="false"
               value="{{_stateAttributes}}"
             ></paper-textarea>
-            <paper-button on-click="handleSetState" raised
-              >Set State</paper-button
-            >
+            <mwc-button on-click="handleSetState" raised>Set State</mwc-button>
           </div>
 
           <h1>Current entities</h1>

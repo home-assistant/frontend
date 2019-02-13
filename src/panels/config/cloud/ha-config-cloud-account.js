@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -48,7 +48,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           display: flex;
           padding: 0 16px;
         }
-        paper-button {
+        mwc-button {
           align-self: center;
         }
         .soon {
@@ -66,7 +66,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           text-transform: capitalize;
           padding: 16px;
         }
-        paper-button {
+        mwc-button {
           color: var(--primary-color);
           font-weight: 500;
         }
@@ -100,10 +100,10 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
               <div class="card-actions">
                 <a href="https://account.nabucasa.com" target="_blank"
-                  ><paper-button>Manage Account</paper-button></a
+                  ><mwc-button>Manage Account</mwc-button></a
                 >
-                <paper-button style="float: right" on-click="handleLogout"
-                  >Sign out</paper-button
+                <mwc-button style="float: right" on-click="handleLogout"
+                  >Sign out</mwc-button
                 >
               </div>
             </paper-card>

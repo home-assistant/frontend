@@ -7,7 +7,7 @@ import {
 } from "lit-element";
 import { until } from "lit-html/directives/until";
 import "@polymer/paper-icon-button";
-import "@polymer/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import "../../../src/components/ha-card";
 import { LovelaceCard, Lovelace } from "../../../src/panels/lovelace/types";
@@ -85,7 +85,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         </div>
         <div class="actions">
           <a href="https://www.home-assistant.io" target="_blank">
-            <paper-button>Learn more about Home Assistant</paper-button>
+            <mwc-button>Learn more about Home Assistant</mwc-button>
           </a>
         </div>
       </ha-card>
@@ -146,12 +146,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         }
 
         .actions {
-          padding-left: 5px;
-        }
-
-        .actions paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
+          padding-left: 8px;
         }
       `,
     ];

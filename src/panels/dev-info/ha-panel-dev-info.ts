@@ -138,9 +138,9 @@ class HaPanelDevInfo extends LitElement {
             </p>
             <p>
               <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />
-              <paper-button @click="${this._toggleDefaultPage}" raised>
+              <mwc-button @click="${this._toggleDefaultPage}" raised>
                 ${defaultPageText}
-              </paper-button>
+              </mwc-button>
             </p>
           </div>
           <system-health-card .hass=${this.hass}></system-health-card>

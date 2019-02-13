@@ -1,6 +1,6 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-input/iron-input";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -69,7 +69,7 @@ class MoreInfoConfigurator extends PolymerElement {
           </template>
 
           <p class="submit" hidden$="[[!stateObj.attributes.submit_caption]]">
-            <paper-button
+            <mwc-button
               raised=""
               disabled="[[isConfiguring]]"
               on-click="submitClicked"
@@ -80,7 +80,7 @@ class MoreInfoConfigurator extends PolymerElement {
                 alt="Configuring"
               ></paper-spinner>
               [[stateObj.attributes.submit_caption]]
-            </paper-button>
+            </mwc-button>
           </p>
         </template>
       </div>

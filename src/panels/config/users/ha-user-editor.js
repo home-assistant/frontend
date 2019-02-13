@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -18,7 +18,7 @@ class HaUserEditor extends EventsMixin(
 ) {
   static get template() {
     return html`
-      <style>
+      <style include="ha-style">
         paper-card {
           display: block;
           max-width: 600px;
@@ -58,12 +58,13 @@ class HaUserEditor extends EventsMixin(
         </paper-card>
         <paper-card>
           <div class="card-actions">
-            <paper-button
+            <mwc-button
+              class="warning"
               on-click="_deleteUser"
               disabled="[[user.system_generated]]"
             >
               [[localize('ui.panel.config.users.editor.delete_user')]]
-            </paper-button>
+            </mwc-button>
             <template is="dom-if" if="[[user.system_generated]]">
               Unable to remove system generated users.
             </template>
