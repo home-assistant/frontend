@@ -36,7 +36,6 @@
     "@polymer/iron-pages": "^3.0.1",
     "@polymer/iron-resizable-behavior": "^3.0.1",
     "@polymer/neon-animation": "^3.0.1",
-    "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-card": "^3.0.1",
     "@polymer/paper-checkbox": "^3.0.1",
     "@polymer/paper-dialog": "^3.0.1",
