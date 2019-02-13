@@ -47,11 +47,11 @@ class HuiLockEntityRow extends LitElement implements EntityRow {
     return html`
       ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        <paper-button @click="${this._callService}">
+        <mwc-button @click="${this._callService}">
           ${stateObj.state === "locked"
             ? this.hass!.localize("ui.card.lock.unlock")
             : this.hass!.localize("ui.card.lock.lock")}
-        </paper-button>
+        </mwc-button>
       </hui-generic-entity-row>
     `;
   }
@@ -59,7 +59,7 @@ class HuiLockEntityRow extends LitElement implements EntityRow {
   protected renderStyle(): TemplateResult {
     return html`
       <style>
-        paper-button {
+        mwc-button {
           color: var(--primary-color);
           font-weight: 500;
           margin-right: -0.57em;

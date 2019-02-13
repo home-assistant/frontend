@@ -56,9 +56,9 @@ class HuiSceneEntityRow extends LitElement implements EntityRow {
               ></ha-entity-toggle>
             `
           : html`
-              <paper-button @click="${this._callService}">
+              <mwc-button @click="${this._callService}">
                 ${this.hass!.localize("ui.card.scene.activate")}
-              </paper-button>
+              </mwc-button>
             `}
       </hui-generic-entity-row>
     `;
@@ -67,7 +67,7 @@ class HuiSceneEntityRow extends LitElement implements EntityRow {
   protected renderStyle(): TemplateResult {
     return html`
       <style>
-        paper-button {
+        mwc-button {
           color: var(--primary-color);
           font-weight: 500;
           margin-right: -0.57em;

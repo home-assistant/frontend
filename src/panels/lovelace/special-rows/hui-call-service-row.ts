@@ -1,5 +1,5 @@
 import { html, LitElement, TemplateResult } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import "../../../components/ha-icon";
 
@@ -36,8 +36,8 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
       <ha-icon .icon="${this._config.icon}"></ha-icon>
       <div class="flex">
         <div>${this._config.name}</div>
-        <paper-button @click="${this._callService}"
-          >${this._config.action_name}</paper-button
+        <mwc-button @click="${this._callService}"
+          >${this._config.action_name}</mwc-button
         >
       </div>
     `;
@@ -67,7 +67,7 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        paper-button {
+        mwc-button {
           color: var(--primary-color);
           font-weight: 500;
           margin-right: -0.57em;

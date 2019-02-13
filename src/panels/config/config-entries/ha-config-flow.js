@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -102,10 +102,10 @@ class HaConfigFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
         </paper-dialog-scrollable>
         <div class="buttons">
           <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-            <paper-button on-click="_flowDone">Close</paper-button>
+            <mwc-button on-click="_flowDone">Close</mwc-button>
           </template>
           <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-            <paper-button on-click="_flowDone">Close</paper-button>
+            <mwc-button on-click="_flowDone">Close</mwc-button>
           </template>
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
             <template is="dom-if" if="[[_loading]]">
@@ -115,8 +115,8 @@ class HaConfigFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </template>
             <template is="dom-if" if="[[!_loading]]">
               <div>
-                <paper-button on-click="_submitStep" disabled="[[!_canSubmit]]"
-                  >Submit</paper-button
+                <mwc-button on-click="_submitStep" disabled="[[!_canSubmit]]"
+                  >Submit</mwc-button
                 >
                 <template is="dom-if" if="[[!_canSubmit]]">
                   <paper-tooltip position="left">

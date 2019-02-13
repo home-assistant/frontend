@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -26,17 +26,17 @@ class MoreInfoLock extends LocalizeMixin(PolymerElement) {
           pattern="[[stateObj.attributes.code_format]]"
           type="password"
         ></paper-input>
-        <paper-button
+        <mwc-button
           on-click="callService"
           data-service="unlock"
           hidden$="[[!isLocked]]"
-          >[[localize('ui.card.lock.unlock')]]</paper-button
+          >[[localize('ui.card.lock.unlock')]]</mwc-button
         >
-        <paper-button
+        <mwc-button
           on-click="callService"
           data-service="lock"
           hidden$="[[isLocked]]"
-          >[[localize('ui.card.lock.lock')]]</paper-button
+          >[[localize('ui.card.lock.lock')]]</mwc-button
         >
       </template>
       <ha-attributes

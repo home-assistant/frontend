@@ -12,6 +12,7 @@ class HassioSystem extends PolymerElement {
       <style include="iron-flex ha-style">
         .content {
           margin: 4px;
+          color: var(--primary-text-color);
         }
         .title {
           margin-top: 24px;

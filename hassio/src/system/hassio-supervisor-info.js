@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -80,11 +80,11 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
             >
           </template>
           <template is="dom-if" if='[[_equals(data.channel, "stable")]]'>
-            <paper-button
+            <mwc-button
               on-click="_joinBeta"
               class="warning"
               title="Get beta updates for Home Assistant (RCs), supervisor and host"
-              >Join beta channel</paper-button
+              >Join beta channel</mwc-button
             >
           </template>
         </div>

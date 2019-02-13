@@ -79,11 +79,11 @@ class HaConfigAreaRegistry extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.area_registry.picker.no_areas"
                     )}
-                    <paper-button @click=${this._createArea}>
+                    <mwc-button @click=${this._createArea}>
                       ${this.hass.localize(
                         "ui.panel.config.area_registry.picker.create_area"
                       )}
-                    </paper-button>
+                    </mwc-button>
                   </div>
                 `
               : html``}

@@ -5,7 +5,7 @@ import yaml from "js-yaml";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 
@@ -53,7 +53,7 @@ class LovelaceFullConfigEditor extends LitElement {
               @click="${this._closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
-            <paper-button @click="${this._handleSave}">Save</paper-button>
+            <mwc-button raised @click="${this._handleSave}">Save</mwc-button>
             <ha-icon
               class="save-button
             ${classMap({
@@ -92,9 +92,7 @@ class LovelaceFullConfigEditor extends LitElement {
         app-header-layout {
           height: 100vh;
         }
-        paper-button {
-          font-size: 16px;
-        }
+
         app-toolbar {
           background-color: var(--dark-background-color, #455a64);
           color: var(--dark-text-color);
@@ -114,8 +112,8 @@ class LovelaceFullConfigEditor extends LitElement {
 
         .save-button {
           opacity: 0;
-          margin-left: -16px;
-          margin-top: -4px;
+          margin-left: -21px;
+          margin-top: -1px;
           transition: opacity 1.5s;
         }
 
