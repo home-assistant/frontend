@@ -14,6 +14,7 @@ import "@polymer/paper-fab/paper-fab";
 
 import { h, render } from "preact";
 
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
 import Automation from "../js/automation";
@@ -72,10 +73,9 @@ class HaAutomationEditor extends LitElement {
       <ha-app-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               @click=${this._backTapped}
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title>
               ${this.automation
                 ? computeStateName(this.automation)

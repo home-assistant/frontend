@@ -9,13 +9,17 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-markdown";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
 import "../ha-config-section";
 
+import "../../../components/ha-icon-next";
+
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
+
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
@@ -56,10 +60,8 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
-              on-click="_backTapped"
-            ></paper-icon-button>
+            <ha-paper-icon-button-arrow-prev on-click="_backTapped">
+            </ha-paper-icon-button-arrow-prev>
             <div main-title="">
               [[localize('ui.panel.config.automation.caption')]]
             </div>
@@ -92,7 +94,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
                   <div>[[computeName(automation)]]</div>
                   <div secondary="">[[computeDescription(automation)]]</div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </template>
           </paper-card>

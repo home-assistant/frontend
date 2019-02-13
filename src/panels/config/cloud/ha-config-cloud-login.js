@@ -15,7 +15,7 @@ import "../../../resources/ha-style";
 import "../ha-config-section";
 import EventsMixin from "../../../mixins/events-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
-
+import "../../../components/ha-icon-next";
 /*
  * @appliesMixin NavigateMixin
  * @appliesMixin EventsMixin
@@ -147,7 +147,7 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
                   Start your free 1 month trial
                   <div secondary="">No payment information necessary</div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </paper-card>
           </ha-config-section>

@@ -5,6 +5,8 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../components/ha-paper-icon-button-arrow-prev";
+
 class HassSubpage extends PolymerElement {
   static get template() {
     return html`
@@ -12,10 +14,9 @@ class HassSubpage extends PolymerElement {
       <app-header-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="_backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">[[header]]</div>
             <slot name="toolbar-icon"></slot>
           </app-toolbar>
