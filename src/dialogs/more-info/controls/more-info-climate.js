@@ -555,6 +555,10 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _localizeOperationMode(localize, mode) {
     return localize(`state.climate.${mode}`) || mode;
   }
+
+  _localizeFanMode(localize, mode) {
+    return localize(`state.climate_fan.${mode}`) || mode;
+  }
 }
 
 customElements.define("more-info-climate", MoreInfoClimate);

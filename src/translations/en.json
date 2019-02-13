@@ -190,6 +190,11 @@
       "gas": "Gas",
       "manual": "Manual"
     },
+    "climate_fan": {
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]",
+      "auto": "[%key:state::climate::auto%]"
+    },
     "configurator": {
       "configure": "Configure",
       "configured": "Configured"

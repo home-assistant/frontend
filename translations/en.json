@@ -147,6 +147,11 @@
             "gas": "Gas",
             "manual": "Manual"
         },
+        "climate_fan": {
+            "off": "Off",
+            "on": "On",
+            "auto": "Auto"
+        },
         "configurator": {
             "configure": "Configure",
             "configured": "Configured"
