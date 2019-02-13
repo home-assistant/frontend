@@ -7,7 +7,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import { HomeAssistant } from "../../types";
 import { fetchErrorLog } from "../../data/error_log";
@@ -34,9 +34,9 @@ class ErrorLogCard extends LitElement {
               ></paper-icon-button>
             `
           : html`
-              <paper-button raised @click=${this._refreshErrorLog}>
+              <mwc-button raised @click=${this._refreshErrorLog}>
                 Load Full Home Assistant Log
-              </paper-button>
+              </mwc-button>
             `}
       </p>
       <div class="error-log">${this._errorLog}</div>

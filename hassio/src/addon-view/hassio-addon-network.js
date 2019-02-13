@@ -60,7 +60,7 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
             data="[[resetData]]"
             >Reset to defaults</ha-call-api-button
           >
-          <paper-button on-click="saveTapped">Save</paper-button>
+          <mwc-button on-click="saveTapped">Save</mwc-button>
         </div>
       </paper-card>
     `;

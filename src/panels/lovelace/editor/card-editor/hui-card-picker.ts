@@ -1,5 +1,5 @@
 import { html, css, LitElement, TemplateResult, CSSResult } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
@@ -45,12 +45,9 @@ export class HuiCardPicker extends LitElement {
       <div class="cards-container">
         ${cards.map((card) => {
           return html`
-            <paper-button
-              raised
-              @click="${this._cardPicked}"
-              .type="${card.type}"
-              >${card.name}</paper-button
-            >
+            <mwc-button @click="${this._cardPicked}" .type="${card.type}">
+              ${card.name}
+            </mwc-button>
           `;
         })}
       </div>
@@ -65,11 +62,13 @@ export class HuiCardPicker extends LitElement {
           flex-wrap: wrap;
           margin-bottom: 10px;
         }
-        .cards-container paper-button {
+        .cards-container mwc-button {
           flex: 1 0 25%;
+          margin: 4px;
         }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          .cards-container paper-button {
+          .cards-container mwc-button {
             flex: 1 0 33%;
           }
         }

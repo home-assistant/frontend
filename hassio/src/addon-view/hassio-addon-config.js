@@ -1,5 +1,5 @@
 import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -50,8 +50,8 @@ class HassioAddonConfig extends PolymerElement {
             data="[[resetData]]"
             >Reset to defaults</ha-call-api-button
           >
-          <paper-button on-click="saveTapped" disabled="[[!configParsed]]"
-            >Save</paper-button
+          <mwc-button on-click="saveTapped" disabled="[[!configParsed]]"
+            >Save</mwc-button
           >
         </div>
       </paper-card>

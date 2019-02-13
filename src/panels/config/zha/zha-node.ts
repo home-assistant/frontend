@@ -7,7 +7,7 @@ import {
   PropertyValues,
   css,
 } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
@@ -142,8 +142,8 @@ export class ZHANode extends LitElement {
   private _renderNodeActions(): TemplateResult {
     return html`
       <div class="card-actions">
-        <paper-button @click="${this._onReconfigureNodeClick}"
-          >Reconfigure Node</paper-button
+        <mwc-button @click="${this._onReconfigureNodeClick}"
+          >Reconfigure Node</mwc-button
         >
         ${this._showHelp
           ? html`

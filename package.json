@@ -17,6 +17,8 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
+    "@material/mwc-button": "^0.3.6",
+    "@material/mwc-ripple": "^0.3.6",
     "@mdi/svg": "^3.0.39",
     "@polymer/app-layout": "^3.0.1",
     "@polymer/app-localize-behavior": "^3.0.1",
@@ -35,7 +37,6 @@
     "@polymer/iron-pages": "^3.0.1",
     "@polymer/iron-resizable-behavior": "^3.0.1",
     "@polymer/neon-animation": "^3.0.1",
-    "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-card": "^3.0.1",
     "@polymer/paper-checkbox": "^3.0.1",
     "@polymer/paper-dialog": "^3.0.1",
