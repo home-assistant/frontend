@@ -1,5 +1,5 @@
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -77,7 +77,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           color: white;
           --paper-card-header-color: white;
         }
-        paper-card.warning paper-button {
+        paper-card.warning mwc-button {
           color: white !important;
         }
         .warning {
@@ -169,7 +169,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
               >Update</ha-call-api-button
             >
             <template is="dom-if" if="[[addon.changelog]]">
-              <paper-button on-click="openChangelog">Changelog</paper-button>
+              <mwc-button on-click="openChangelog">Changelog</mwc-button>
             </template>
           </div>
         </paper-card>
@@ -219,7 +219,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 Protection mode on this addon is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this addon.
               </div>
               <div class="card-actions">
-                  <paper-button on-click="protectionToggled">Enable Protection mode</paper-button>
+                  <mwc-button on-click="protectionToggled">Enable Protection mode</mwc-button>
                 </div>
               </div>
             </paper-card>
@@ -250,7 +250,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 <ha-label-badge
                 on-click="showMoreInfo"
                 id="full_access"
-                icon="hassio:chip"  
+                icon="hassio:chip"
                 label="hardware"
                 description=""
                 ></ha-label-badge>
@@ -337,8 +337,8 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
         </div>
         <div class="card-actions">
           <template is="dom-if" if="[[addon.version]]">
-            <paper-button class="warning" on-click="_unistallClicked"
-              >Uninstall</paper-button
+            <mwc-button class="warning" on-click="_unistallClicked"
+              >Uninstall</mwc-button
             >
             <template is="dom-if" if="[[addon.build]]">
               <ha-call-api-button
@@ -378,7 +378,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 tabindex="-1"
                 target="_blank"
                 class="right"
-                ><paper-button>Open web UI</paper-button></a
+                ><mwc-button>Open web UI</mwc-button></a
               >
             </template>
           </template>

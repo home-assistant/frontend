@@ -14,7 +14,7 @@ import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/app-route/app-route";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
@@ -296,14 +296,14 @@ class HUIRoot extends LitElement {
                     )}
                     ${this._editMode
                       ? html`
-                          <paper-button id="add-view" @click="${this._addView}">
-                            <ha-icon
-                              title="${this.hass!.localize(
-                                "ui.panel.lovelace.editor.edit_view.add"
-                              )}"
-                              icon="hass:plus"
-                            ></ha-icon>
-                          </paper-button>
+                          <paper-icon-button
+                            id="add-view"
+                            @click="${this._addView}"
+                            title="${this.hass!.localize(
+                              "ui.panel.lovelace.editor.edit_view.add"
+                            )}"
+                            icon="hass:plus"
+                          ></paper-icon-button>
                         `
                       : ""}
                   </paper-tabs>
@@ -371,7 +371,7 @@ class HUIRoot extends LitElement {
         app-toolbar a {
           color: var(--text-primary-color, white);
         }
-        paper-button.warning:not([disabled]) {
+        mwc-button.warning:not([disabled]) {
           color: var(--google-red-500);
         }
         #view {
