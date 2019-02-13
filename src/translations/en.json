@@ -400,6 +400,11 @@
       "script": {
         "execute": "Execute"
       },
+      "timer": {
+        "active": "active",
+        "idle": "idle",
+        "paused": "paused"
+      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",

@@ -5,6 +5,7 @@ import {
   css,
   CSSResult,
   property,
+  PropertyValues,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -13,11 +14,12 @@ import timerTimeRemaining from "../../../common/entity/timer_time_remaining";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "./types";
+import { HassEntity } from "home-assistant-js-websocket";
 
 class HuiTimerEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityConfig;
-  @property() private _timeRemaining?: number;
+  @property() private _timeRemaining?: number | null;
   private _hass?: HomeAssistant;
 
   public setConfig(config: EntityConfig): void {
@@ -59,9 +61,9 @@ class HuiTimerEntityRow extends LitElement {
 
     if (changedProps.has("hass") && this.hass !== this._hass) {
       const oldStateObj = this._hass
-        ? this._hass.states[this._config.entity]
+        ? this._hass.states[this._config!.entity]
         : "";
-      const stateObj = this.hass.states[this._config.entity];
+      const stateObj = this.hass!.states[this._config!.entity];
       this._hass = this.hass;
 
       if (oldStateObj !== stateObj) {
@@ -73,9 +75,9 @@ class HuiTimerEntityRow extends LitElement {
   }
 
   private _clearInterval(): void {
-    if (this._updateRemaining) {
-      clearInterval(this._updateRemaining);
-      this._updateRemaining = null;
+    if (this._timeRemaining) {
+      clearInterval(this._timeRemaining);
+      this._timeRemaining = null;
     }
   }
 
@@ -92,19 +94,19 @@ class HuiTimerEntityRow extends LitElement {
     this._timeRemaining = timerTimeRemaining(stateObj);
   }
 
-  private _computeDisplay(stateObj: HassEntity): void {
+  private _computeDisplay(stateObj: HassEntity): string | null {
     if (!stateObj) {
       return null;
     }
 
     if (stateObj.state === "idle" || this._timeRemaining === 0) {
-      return stateObj.state;
+      return this.hass!.localize("ui.card.timer." + stateObj.state);
     }
 
-    let display = secondsToDuration(this._timeRemaining);
+    let display = secondsToDuration(this._timeRemaining || 0);
 
     if (stateObj.state === "paused") {
-      display += " (paused)";
+      display += ` (${this.hass!.localize("ui.card.timer.paused")})`;
     }
 
     return display;
