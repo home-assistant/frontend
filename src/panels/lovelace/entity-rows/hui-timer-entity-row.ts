@@ -2,8 +2,6 @@ import {
   html,
   LitElement,
   TemplateResult,
-  css,
-  CSSResult,
   property,
   PropertyValues,
 } from "lit-element";
