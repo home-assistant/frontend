@@ -22,7 +22,7 @@ class HuiNotificationsButton extends LitElement {
       ></paper-icon-button>
       ${this.notifications
         ? html`
-            <paper-badge label="${this.notifications.length}"></paper-badge>
+            <paper-badge .label="${this.notifications.length}"></paper-badge>
           `
         : ""}
     `;
