@@ -146,7 +146,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         }
 
         .actions {
-          padding-left: 5px;
+          padding-left: 8px;
         }
       `,
     ];

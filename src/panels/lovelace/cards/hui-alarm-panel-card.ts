@@ -130,11 +130,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             : ["disarm"]
           ).map((state) => {
             return html`
-              <mwc-button
-                noink
-                raised
-                .action="${state}"
-                @click="${this._handleActionClick}"
+              <mwc-button .action="${state}" @click="${this._handleActionClick}"
                 >${this._label(state)}</mwc-button
               >
             `;
