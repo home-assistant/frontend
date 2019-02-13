@@ -26,6 +26,8 @@ import scrollToTarget from "../../common/dom/scroll-to-target";
 
 import "../../layouts/ha-app-layout";
 import "../../components/ha-start-voice-button";
+import "../../components/ha-paper-icon-button-arrow-next";
+import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
 import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
@@ -49,7 +51,7 @@ import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovel
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/ha-style";
-import { computeRTL, computeRTLDirection } from "../../common/util/compute_rtl";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -251,15 +253,12 @@ class HUIRoot extends LitElement {
                         <paper-tab>
                           ${this._editMode
                             ? html`
-                                <paper-icon-button
+                                <ha-paper-icon-button-arrow-prev
                                   title="Move view left"
                                   class="edit-icon view"
-                                  icon="${computeRTL(this.hass!)
-                                    ? "hass:arrow-right"
-                                    : "hass:arrow-left"}"
                                   @click="${this._moveViewLeft}"
                                   ?disabled="${this._curView === 0}"
-                                ></paper-icon-button>
+                                ></ha-paper-icon-button-arrow-prev>
                               `
                             : ""}
                           ${view.icon
@@ -278,17 +277,14 @@ class HUIRoot extends LitElement {
                                   icon="hass:pencil"
                                   @click="${this._editView}"
                                 ></ha-icon>
-                                <paper-icon-button
+                                <ha-paper-icon-button-arrow-next
                                   title="Move view right"
                                   class="edit-icon view"
-                                  icon="${computeRTL(this.hass!)
-                                    ? "hass:arrow-left"
-                                    : "hass:arrow-right"}"
                                   @click="${this._moveViewRight}"
                                   ?disabled="${(this._curView! as number) +
                                     1 ===
                                     this.lovelace!.config.views.length}"
-                                ></paper-icon-button>
+                                ></ha-paper-icon-button-arrow-next>
                               `
                             : ""}
                         </paper-tab>

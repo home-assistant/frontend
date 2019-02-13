@@ -6,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../resources/ha-style";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 
 import "../ha-config-section";
 import "../ha-entity-config";
@@ -27,10 +28,9 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
       <app-header-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="_backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">
               [[localize('ui.panel.config.customize.caption')]]
             </div>
