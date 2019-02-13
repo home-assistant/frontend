@@ -10,6 +10,8 @@ import "@polymer/paper-icon-button";
 import "@polymer/paper-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-paper-icon-button-next";
+import "../../../src/components/ha-paper-icon-button-prev";
 import { LovelaceCard, Lovelace } from "../../../src/panels/lovelace/types";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
@@ -47,12 +49,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <div class="picker">
-          <paper-icon-button
+          <ha-paper-icon-button-prev
             @click=${this._prevConfig}
-            icon="hass:chevron-right"
-            style="transform: rotate(180deg)"
             .disabled=${this._switching}
-          ></paper-icon-button>
+          ></ha-paper-icon-button-prev>
           <div>
             ${this._switching
               ? html`
@@ -73,11 +73,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                   ""
                 )}
           </div>
-          <paper-icon-button
+          <ha-paper-icon-button-next
             @click=${this._nextConfig}
-            icon="hass:chevron-right"
             .disabled=${this._switching}
-          ></paper-icon-button>
+          ></ha-paper-icon-button-next>
         </div>
         <div class="content">
           Welcome home! You've reached the Home Assistant demo where we showcase

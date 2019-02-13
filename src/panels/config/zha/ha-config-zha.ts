@@ -12,6 +12,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { Cluster } from "../../../data/zha";
 import "../../../layouts/ha-app-layout";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import {
@@ -46,10 +47,9 @@ export class HaConfigZha extends LitElement {
       <ha-app-layout>
         <app-header slot="header">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               @click="${this._onBackTapped}"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title>Zigbee Home Automation</div>
           </app-toolbar>
         </app-header>

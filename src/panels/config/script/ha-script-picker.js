@@ -9,6 +9,8 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../layouts/ha-app-layout";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 
 import "../ha-config-section";
 
@@ -52,10 +54,9 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="_backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">
               [[localize('ui.panel.config.script.caption')]]
             </div>
@@ -86,7 +87,7 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
                   <div>[[computeName(script)]]</div>
                   <div secondary="">[[computeDescription(script)]]</div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </template>
           </paper-card>

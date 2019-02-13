@@ -7,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { h, render } from "preact";
 
 import "../../../layouts/ha-app-layout";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 
 import Script from "../js/script";
 import unmountPreact from "../../../common/preact/unmount";
@@ -85,10 +86,9 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">Script [[computeName(script)]]</div>
           </app-toolbar>
         </app-header>
