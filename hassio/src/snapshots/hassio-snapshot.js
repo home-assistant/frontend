@@ -1,5 +1,5 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-dialog/paper-dialog";
@@ -123,12 +123,12 @@ class HassioSnapshot extends PolymerElement {
             class="download"
             title="Download snapshot"
           ></paper-icon-button>
-          <paper-button on-click="_partialRestoreClicked"
-            >Restore selected</paper-button
+          <mwc-button on-click="_partialRestoreClicked"
+            >Restore selected</mwc-button
           >
           <template is="dom-if" if="[[_isFullSnapshot(snapshot.type)]]">
-            <paper-button on-click="_fullRestoreClicked"
-              >Wipe &amp; restore</paper-button
+            <mwc-button on-click="_fullRestoreClicked"
+              >Wipe &amp; restore</mwc-button
             >
           </template>
         </div>

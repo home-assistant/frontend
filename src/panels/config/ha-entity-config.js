@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
@@ -75,17 +75,17 @@ class HaEntityConfig extends PolymerElement {
           </div>
         </div>
         <div class="card-actions">
-          <paper-button
+          <mwc-button
             on-click="saveEntity"
             disabled="[[computeShowPlaceholder(formState)]]"
-            >SAVE</paper-button
+            >SAVE</mwc-button
           >
           <template is="dom-if" if="[[allowDelete]]">
-            <paper-button
+            <mwc-button
               class="warning"
               on-click="deleteEntity"
               disabled="[[computeShowPlaceholder(formState)]]"
-              >DELETE</paper-button
+              >DELETE</mwc-button
             >
           </template>
         </div>

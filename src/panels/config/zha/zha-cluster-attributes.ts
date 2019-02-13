@@ -7,7 +7,7 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "../../../components/buttons/ha-call-service-button";
@@ -145,8 +145,8 @@ export class ZHAClusterAttributes extends LitElement {
         ></paper-input>
       </div>
       <div class="card-actions">
-        <paper-button @click="${this._onGetZigbeeAttributeClick}"
-          >Get Zigbee Attribute</paper-button
+        <mwc-button @click="${this._onGetZigbeeAttributeClick}"
+          >Get Zigbee Attribute</mwc-button
         >
         <ha-call-service-button
           .hass="${this.hass}"
