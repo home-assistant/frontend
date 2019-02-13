@@ -126,7 +126,7 @@ class PartialPanelResolver extends LitElement {
           error="Error while loading this panel."
           .narrow=${this.narrow}
           .showMenu=${this.showMenu}
-        />
+        ></hass-error-screen>
       `;
     }
 
