@@ -36,7 +36,7 @@ class HassSubpage extends LitElement {
     `;
   }
 
-  private _backTapped() {
+  private _backTapped(): void {
     history.back();
   }
 
