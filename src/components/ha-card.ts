@@ -25,7 +25,7 @@ class HaCard extends LitElement {
           display: block;
           transition: all 0.3s ease-out;
         }
-        .header {
+        .header:not(:empty) {
           -webkit-font-smoothing: antialiased;
           font-family: Roboto, Noto, sans-serif;
           font-size: 24px;
@@ -41,9 +41,7 @@ class HaCard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.header?
-          html`<div class="header">${this.header}</div>`:
-          null}
+      <div class="header">${this.header}</div>
       <slot></slot>
     `;
   }
