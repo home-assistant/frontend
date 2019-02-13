@@ -5,6 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import EventsMixin from "../mixins/events-mixin";
 import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
+import "../components/ha-icon-next";
 
 /*
  * @appliesMixin EventsMixin
@@ -26,7 +27,7 @@ class HaPickAuthProvider extends EventsMixin(
       <template is="dom-repeat" items="[[authProviders]]">
         <paper-item on-click="_handlePick">
           <paper-item-body>[[item.name]]</paper-item-body>
-          <iron-icon icon="hass:chevron-right"></iron-icon>
+          <ha-icon-next></ha-icon-next>
         </paper-item>
       </template>
     `;
