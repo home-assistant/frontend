@@ -197,8 +197,8 @@ export class HuiEditCard extends LitElement {
     this._loading = false;
     this._resizeDialog();
     if (!this._uiEditor) {
-      await new Promise((resolve) => afterNextRender(resolve));
-      this.yamlEditor.codemirror.refresh();
+      afterNextRender(() => this.yamlEditor.codemirror.refresh());
+      afterNextRender(() => this._resizeDialog());
     }
   }
 
