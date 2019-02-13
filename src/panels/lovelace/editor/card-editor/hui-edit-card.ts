@@ -36,6 +36,7 @@ import { ConfigValue, ConfigError } from "../types";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { addCard, replaceCard } from "../config-util";
+import { afterNextRender } from "../../../../common/util/render-status";
 
 declare global {
   interface HASSDomEvents {
@@ -182,8 +183,8 @@ export class HuiEditCard extends LitElement {
                     ?active="${this._saving}"
                     alt="Saving"
                   ></paper-spinner>
-                  ${this.hass!.localize("ui.common.save")}</mwc-button
-                >
+                  ${this.hass!.localize("ui.common.save")}
+                </mwc-button>
               </div>
             `
           : ""}
@@ -196,9 +197,8 @@ export class HuiEditCard extends LitElement {
     this._loading = false;
     this._resizeDialog();
     if (!this._uiEditor) {
-      setTimeout(() => {
-        this.yamlEditor.codemirror.refresh();
-      }, 50);
+      await new Promise((resolve) => afterNextRender(resolve));
+      this.yamlEditor.codemirror.refresh();
     }
   }
 
