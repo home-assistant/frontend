@@ -8,7 +8,7 @@ import {
 } from "lit-element";
 
 class HaCard extends LitElement {
-  @property() public header?: {};
+  @property() public header?: string;
 
   static get styles(): CSSResult {
     return css`
@@ -25,15 +25,11 @@ class HaCard extends LitElement {
         transition: all 0.3s ease-out;
       }
       .header:not(:empty) {
-        -webkit-font-smoothing: antialiased;
-        font-family: Roboto, Noto, sans-serif;
         font-size: 24px;
-        font-weight: 400;
         letter-spacing: -0.012em;
         line-height: 32px;
         opacity: 0.87;
         padding: 24px 16px 16px;
-        text-rendering: optimizeLegibility;
       }
     `;
   }
