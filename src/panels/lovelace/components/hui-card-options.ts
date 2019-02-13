@@ -1,5 +1,5 @@
 import { html, LitElement, PropertyDeclarations } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-listbox/paper-listbox";
@@ -45,11 +45,6 @@ export class HuiCardOptions extends LitElement {
           text-align: right;
         }
 
-        paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
-        }
-
         paper-icon-button {
           color: var(--primary-text-color);
         }
@@ -77,10 +72,10 @@ export class HuiCardOptions extends LitElement {
       <slot></slot>
       <div class="options">
         <div class="primary-actions">
-          <paper-button @click="${this._editCard}"
+          <mwc-button @click="${this._editCard}"
             >${this.hass!.localize(
               "ui.panel.lovelace.editor.edit_card.edit"
-            )}</paper-button
+            )}</mwc-button
           >
         </div>
         <div class="secondary-actions">

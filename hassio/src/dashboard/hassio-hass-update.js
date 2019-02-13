@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -56,7 +56,7 @@ class HassioHassUpdate extends PolymerElement {
                 <a
                   href="https://github.com/home-assistant/home-assistant/releases"
                   target="_blank"
-                  ><paper-button>Release notes</paper-button></a
+                  ><mwc-button>Release notes</mwc-button></a
                 >
               </div>
             </paper-card>

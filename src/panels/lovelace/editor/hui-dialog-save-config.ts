@@ -12,7 +12,7 @@ import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import { haStyleDialog } from "../../../resources/ha-style";
 
@@ -65,22 +65,19 @@ export class HuiSaveConfig extends LitElement {
           </p>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button @click="${this._closeDialog}"
+          <mwc-button @click="${this._closeDialog}"
             >${this.hass!.localize(
               "ui.panel.lovelace.editor.save_config.cancel"
-            )}</paper-button
+            )}</mwc-button
           >
-          <paper-button
-            ?disabled="${this._saving}"
-            @click="${this._saveConfig}"
-          >
+          <mwc-button ?disabled="${this._saving}" @click="${this._saveConfig}">
             <paper-spinner
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
             ${this.hass!.localize(
               "ui.panel.lovelace.editor.save_config.save"
-            )}</paper-button
+            )}</mwc-button
           >
         </div>
       </paper-dialog>
@@ -133,7 +130,7 @@ export class HuiSaveConfig extends LitElement {
         paper-spinner[active] {
           display: block;
         }
-        paper-button paper-spinner {
+        mwc-button paper-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;

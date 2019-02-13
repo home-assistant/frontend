@@ -1,6 +1,6 @@
 import "web-animations-js/web-animations-next-lite.min";
 
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
@@ -65,7 +65,7 @@ class HassioAddonAudio extends EventsMixin(PolymerElement) {
           </paper-dropdown-menu>
         </div>
         <div class="card-actions">
-          <paper-button on-click="_saveSettings">Save</paper-button>
+          <mwc-button on-click="_saveSettings">Save</mwc-button>
         </div>
       </paper-card>
     `;

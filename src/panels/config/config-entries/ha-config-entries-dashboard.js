@@ -1,6 +1,6 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item";
@@ -29,7 +29,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
   static get template() {
     return html`
       <style include="iron-flex ha-style">
-        paper-button {
+        mwc-button {
           color: var(--primary-color);
           font-weight: 500;
           top: 3px;
@@ -65,8 +65,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                   <paper-item-body>
                     [[_computeIntegrationTitle(localize, item.handler)]]
                   </paper-item-body>
-                  <paper-button on-click="_continueFlow"
-                    >[[localize('ui.panel.config.integrations.configure')]]</paper-button
+                  <mwc-button on-click="_continueFlow"
+                    >[[localize('ui.panel.config.integrations.configure')]]</mwc-button
                   >
                 </div>
               </template>
@@ -128,8 +128,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                 <paper-item-body>
                   [[_computeIntegrationTitle(localize, item)]]
                 </paper-item-body>
-                <paper-button on-click="_createFlow"
-                  >[[localize('ui.panel.config.integrations.configure')]]</paper-button
+                <mwc-button on-click="_createFlow"
+                  >[[localize('ui.panel.config.integrations.configure')]]</mwc-button
                 >
               </div>
             </template>

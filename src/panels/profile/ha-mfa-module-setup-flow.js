@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-spinner/paper-spinner";
@@ -107,13 +107,13 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
         </paper-dialog-scrollable>
         <div class="buttons">
           <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-            <paper-button on-click="_flowDone"
-              >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button
+            <mwc-button on-click="_flowDone"
+              >[[localize('ui.panel.profile.mfa_setup.close')]]</mwc-button
             >
           </template>
           <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
-            <paper-button on-click="_flowDone"
-              >[[localize('ui.panel.profile.mfa_setup.close')]]</paper-button
+            <mwc-button on-click="_flowDone"
+              >[[localize('ui.panel.profile.mfa_setup.close')]]</mwc-button
             >
           </template>
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
@@ -123,8 +123,8 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
               </div>
             </template>
             <template is="dom-if" if="[[!_loading]]">
-              <paper-button on-click="_submitStep"
-                >[[localize('ui.panel.profile.mfa_setup.submit')]]</paper-button
+              <mwc-button on-click="_submitStep"
+                >[[localize('ui.panel.profile.mfa_setup.submit')]]</mwc-button
               >
             </template>
           </template>

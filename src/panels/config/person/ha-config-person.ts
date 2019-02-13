@@ -82,8 +82,8 @@ class HaConfigPerson extends LitElement {
               ? html`
                   <div class="empty">
                     Looks like you have no people yet!
-                    <paper-button @click=${this._createPerson}>
-                      CREATE PERSON</paper-button
+                    <mwc-button @click=${this._createPerson}>
+                      CREATE PERSON</mwc-button
                     >
                   </div>
                 `

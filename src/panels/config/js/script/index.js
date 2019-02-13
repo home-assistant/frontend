@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import "@polymer/paper-card/paper-card";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import ActionRow from "./action_row";
 
@@ -46,9 +46,9 @@ export default class Script extends Component {
         ))}
         <paper-card>
           <div class="card-actions add-card">
-            <paper-button onTap={this.addAction}>
+            <mwc-button onTap={this.addAction}>
               {localize("ui.panel.config.automation.editor.actions.add")}
-            </paper-button>
+            </mwc-button>
           </div>
         </paper-card>
       </div>
