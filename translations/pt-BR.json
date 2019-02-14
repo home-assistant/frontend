@@ -703,6 +703,11 @@
                             "abort": {
                                 "not_whitelisted": "Seu computador não está na lista de permissões."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sessão expirada, por favor fazer o login novamente."
+                            }
                         }
                     }
                 }

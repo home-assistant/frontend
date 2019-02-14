@@ -728,6 +728,11 @@
                             "abort": {
                                 "not_whitelisted": "Tu computadora no está en la lista de autorizados."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "La sesión ha caducado, por favor inicie sesión de nuevo."
+                            }
                         }
                     }
                 }

@@ -725,6 +725,11 @@
                             "abort": {
                                 "not_whitelisted": "Dein Computer ist nicht auf der Whitelist."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
+                            }
                         }
                     }
                 }

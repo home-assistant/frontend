@@ -785,7 +785,7 @@
                                 "invalid_code": "Codice di autenticazione non valido"
                             },
                             "abort": {
-                                "login_expired": "Sessione scaduta, fai di nuovo il login"
+                                "login_expired": "Sessione scaduta, effettua nuovamente il login."
                             }
                         }
                     }
@@ -932,7 +932,8 @@
                 "arm_home": "Attiva In casa",
                 "arm_away": "Attiva Fuori Casa",
                 "arm_night": "Attiva Notte",
-                "armed_custom_bypass": "Attiva con bypass"
+                "armed_custom_bypass": "Attiva con bypass",
+                "arm_custom_bypass": "Bypass personalizzato"
             },
             "automation": {
                 "last_triggered": "Ultima attivazione",
@@ -1002,7 +1003,7 @@
             },
             "relative_time": {
                 "past": "{time} fa",
-                "future": "mancano {time}",
+                "future": "{time} fa",
                 "never": "Mai",
                 "duration": {
                     "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",

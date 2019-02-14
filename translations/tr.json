@@ -611,6 +611,11 @@
                                     "description": "Lütfen giriş yapmak istediğiniz bir kullanıcı seçin:"
                                 }
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
+                            }
                         }
                     }
                 }

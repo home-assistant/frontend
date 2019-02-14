@@ -932,7 +932,8 @@
                 "arm_home": "Uzbrojenie (w domu)",
                 "arm_away": "Uzbrojenie (nieobecny)",
                 "arm_night": "Uzbrojenie (noc)",
-                "armed_custom_bypass": "Uzbrój (częściowo)"
+                "armed_custom_bypass": "Uzbrój (częściowo)",
+                "arm_custom_bypass": "Niestandardowy bypass"
             },
             "automation": {
                 "last_triggered": "Ostatnie uruchomienie",
