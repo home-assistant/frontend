@@ -28,6 +28,7 @@ import {
   ItemSelectedEvent,
   SetAttributeServiceData,
 } from "./types";
+import { formatAsPaddedHex } from "./functions";
 
 export class ZHAClusterAttributes extends LitElement {
   public hass?: HomeAssistant;
@@ -102,7 +103,10 @@ export class ZHAClusterAttributes extends LitElement {
                 ${this._attributes.map(
                   (entry) => html`
                     <paper-item
-                      >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                      >${entry.name +
+                        " (id: " +
+                        formatAsPaddedHex(entry.id) +
+                        ")"}</paper-item
                     >
                   `
                 )}
