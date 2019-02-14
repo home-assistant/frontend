@@ -721,6 +721,11 @@
                             "abort": {
                                 "not_whitelisted": "您的电脑不在白名单内。"
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "会话已过期，请重新登录。"
+                            }
                         }
                     }
                 }

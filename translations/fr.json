@@ -581,11 +581,18 @@
                 },
                 "area_registry": {
                     "caption": "Registre des pièces",
-                    "description": "Vue d'ensemble de toutes les pièces de votre maison."
+                    "description": "Vue d'ensemble de toutes les pièces de votre maison.",
+                    "editor": {
+                        "delete": "SUPPRIMER"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Registre des entités",
-                    "description": "Vue d'ensemble de toutes les entités connues."
+                    "description": "Vue d'ensemble de toutes les entités connues.",
+                    "editor": {
+                        "delete": "SUPPRIMER",
+                        "update": "METTRE À JOUR"
+                    }
                 }
             },
             "profile": {
@@ -728,6 +735,29 @@
                             "abort": {
                                 "not_whitelisted": "Votre ordinateur n'est pas en liste blanche."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'utilisateur",
+                                        "password": "Mot de passe"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Code d'authentification à deux facteurs"
+                                    },
+                                    "description": "Ouvrez le **{mfa_module_name}** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'utilisateur ou mot de passe invalide",
+                                "invalid_code": "Code d'authentification invalide"
+                            },
+                            "abort": {
+                                "login_expired": "Session expirée, veuillez vous connecter à nouveau."
+                            }
                         }
                     }
                 }
@@ -769,7 +799,8 @@
                         "pick_card": "Choisissez l'automatisation à ajouter",
                         "add": "Ajouter une action",
                         "edit": "Modifier",
-                        "delete": "Supprimer"
+                        "delete": "Supprimer",
+                        "move": "Déplacer"
                     },
                     "migrate": {
                         "header": "Configuration incompatible",

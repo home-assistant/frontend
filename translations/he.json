@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "התאמה אישית",
-                    "description": "התאם אישית את הישויות שלך"
+                    "description": "התאם אישית את הישויות שלך",
+                    "picker": {
+                        "header": "התאמה אישית",
+                        "introduction": "כוונן תכונות של כל ישות. ההתאמות הנוספות שנוספו \/ ייכנסו לתוקף באופן מיידי. התאמות אישיות שהוסרו ייכנסו לתוקף כאשר הישות תעודכן."
+                    }
                 },
                 "automation": {
                     "caption": "אוטומציה",
@@ -569,7 +573,8 @@
                         "hub": "מחובר באמצעות",
                         "firmware": "קושחה: {version}",
                         "device_unavailable": "התקן אינו זמין",
-                        "entity_unavailable": "ישות לא זמינה"
+                        "entity_unavailable": "ישות לא זמינה",
+                        "no_area": "ללא אזור"
                     }
                 },
                 "zha": {
@@ -580,11 +585,42 @@
                 },
                 "area_registry": {
                     "caption": "מאגר האזורים",
-                    "description": "סקירה של כל האזורים בביתך."
+                    "description": "סקירה של כל האזורים בביתך.",
+                    "picker": {
+                        "header": "מאגר האזורים"
+                    },
+                    "no_areas": "נראה שעדיין אין אזורים!",
+                    "create_area": "צור איזור",
+                    "editor": {
+                        "default_name": "אזור חדש",
+                        "delete": "מחק",
+                        "update": "עדכון",
+                        "create": "צור"
+                    }
                 },
                 "entity_registry": {
                     "caption": "מאגר הישויות",
-                    "description": "סקירה של כל הישויות המוכרות"
+                    "description": "סקירה של כל הישויות המוכרות",
+                    "picker": {
+                        "header": "מאגר הישויות",
+                        "unavailable": "(לא זמין)"
+                    },
+                    "editor": {
+                        "unavailable": "ישות זו אינה זמינה כעת.",
+                        "default_name": "אזור חדש",
+                        "delete": "מחק",
+                        "update": "עדכון"
+                    }
+                },
+                "person": {
+                    "caption": "אנשים",
+                    "description": "נהל את האנשים ש Home Assistant יעקב אחריהם.",
+                    "detail": {
+                        "name": "שם",
+                        "device_tracker_intro": "בחר את המכשירים השייכים לאדם זה.",
+                        "device_tracker_picked": "עקוב אחר מכשיר",
+                        "device_tracker_pick": "בחר מכשיר למעקב"
+                    }
                 }
             },
             "profile": {
@@ -727,6 +763,29 @@
                             "abort": {
                                 "not_whitelisted": "המחשב שלך אינו רשום ברשימת ההיתרים."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "שם משתמש",
+                                        "password": "סיסמא"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "קוד אימות דו-שלבי"
+                                    },
+                                    "description": "פתח את **{mfa_module_name}** במכשיר שלך בכדי לצפות בקוד האימות הדו-שלבי שלך ולאמת את הזהות שלך:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "שם משתמש או סיסמא לא נכונים",
+                                "invalid_code": "קוד אימות לא חוקי"
+                            },
+                            "abort": {
+                                "login_expired": "פג תוקף הפעילות באתר, היכנס שוב."
+                            }
                         }
                     }
                 }
@@ -768,7 +827,8 @@
                         "pick_card": "בחר את הכרטיסייה שברצונך להוסיף.",
                         "add": "הוסף כרטיסייה",
                         "edit": "ערוך",
-                        "delete": "מחק"
+                        "delete": "מחק",
+                        "move": "הזז"
                     },
                     "migrate": {
                         "header": "ההגדרה לא מתאימה",
@@ -871,7 +931,8 @@
                 "arm_home": "דרוך בבית",
                 "arm_away": "דרוך לא בבית",
                 "arm_night": "דריכה לילית",
-                "armed_custom_bypass": "מעקף מותאם"
+                "armed_custom_bypass": "מעקף מותאם",
+                "arm_custom_bypass": "מעקף מותאם אישית"
             },
             "automation": {
                 "last_triggered": "הפעלה אחרונה",

@@ -728,6 +728,11 @@
                             "abort": {
                                 "not_whitelisted": "El teu ordinador no es troba accessible a la llista."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "La sessió ha caducat, torna a iniciar la sessió."
+                            }
                         }
                     }
                 }

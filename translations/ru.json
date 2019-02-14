@@ -932,7 +932,8 @@
                 "arm_home": "Охрана (дома)",
                 "arm_away": "Охрана (не дома)",
                 "arm_night": "Ночная охрана",
-                "armed_custom_bypass": "Охрана с исключениями"
+                "armed_custom_bypass": "Охрана с исключениями",
+                "arm_custom_bypass": "Охрана с пользовательским исключением"
             },
             "automation": {
                 "last_triggered": "Последний запуск",
