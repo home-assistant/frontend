@@ -724,6 +724,11 @@
                             "abort": {
                                 "not_whitelisted": "A számítógéped nem engedélyezett."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "A munkamenet lejárt, kérlek, jelentkezz be újra."
+                            }
                         }
                     }
                 }

@@ -346,7 +346,10 @@
                 },
                 "customize": {
                     "caption": "Prispôsobenie",
-                    "description": "Prispôsobte svoje entity"
+                    "description": "Prispôsobte svoje entity",
+                    "picker": {
+                        "header": "Prispôsobenie"
+                    }
                 },
                 "automation": {
                     "caption": "Automatizácie",
@@ -568,7 +571,8 @@
                         "hub": "Pripojené cez",
                         "firmware": "Firmvér: {version}",
                         "device_unavailable": "zariadenie nie je k dispozícii",
-                        "entity_unavailable": "entita nie je k dispozícii"
+                        "entity_unavailable": "entita nie je k dispozícii",
+                        "no_area": "Žiadna oblasť"
                     }
                 },
                 "zha": {
@@ -577,11 +581,42 @@
                 },
                 "area_registry": {
                     "caption": "Register oblastí",
-                    "description": "Prehľad všetkých oblastí vo vašej domácnosti."
+                    "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
+                    "picker": {
+                        "header": "Register oblastí"
+                    },
+                    "no_areas": "Vyzerá to, že ešte nemáte žiadne oblasti!",
+                    "create_area": "VYTVORIŤ OBLASŤ",
+                    "editor": {
+                        "default_name": "Nová oblasť",
+                        "delete": "VYMAZAŤ",
+                        "update": "AKTUALIZOVAŤ",
+                        "create": "VYTVORIŤ"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Register entít",
-                    "description": "Prehľad všetkých známych entít."
+                    "description": "Prehľad všetkých známych entít.",
+                    "picker": {
+                        "header": "Register entít",
+                        "unavailable": "(nedostupné)"
+                    },
+                    "editor": {
+                        "unavailable": "Táto entita nie je momentálne k dispozícii.",
+                        "default_name": "Nová oblasť",
+                        "delete": "VYMAZAŤ",
+                        "update": "AKTUALIZOVAŤ"
+                    }
+                },
+                "person": {
+                    "caption": "Osoby",
+                    "description": "Spravujte osoby, ktoré Home Assistant sleduje.",
+                    "detail": {
+                        "name": "Meno",
+                        "device_tracker_intro": "Vyberte zariadenia, ktoré patria tejto osobe.",
+                        "device_tracker_picked": "Sledovať zariadenie",
+                        "device_tracker_pick": "Vyberte zariadenie na sledovanie"
+                    }
                 }
             },
             "profile": {
@@ -724,6 +759,28 @@
                             "abort": {
                                 "not_whitelisted": "Váš počítač nie je v zozname povolených zariadení."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Používateľské meno",
+                                        "password": "Heslo"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvojfaktorový autentifikačný kód"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nesprávne používateľske meno alebo heslo",
+                                "invalid_code": "Nesprávny autentifikačný kód"
+                            },
+                            "abort": {
+                                "login_expired": "Relácia vypršala, prihlásťe sa prosím znova"
+                            }
                         }
                     }
                 }
@@ -764,7 +821,8 @@
                         "pick_card": "Vyberte kartu, ktorú chcete pridať.",
                         "add": "Pridať kartu",
                         "edit": "Upraviť",
-                        "delete": "Odstrániť"
+                        "delete": "Odstrániť",
+                        "move": "Presunúť"
                     },
                     "migrate": {
                         "header": "Nekompatibilná konfigurácia",
@@ -785,6 +843,9 @@
                         "para_sure": "Skutočne chcete prevziať kontrolu vášho používateľského rozhrania?",
                         "cancel": "Zrušiť",
                         "save": "Prevziať kontrolu"
+                    },
+                    "menu": {
+                        "raw_editor": "Raw editor konfigurácie"
                     }
                 },
                 "menu": {

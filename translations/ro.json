@@ -694,6 +694,11 @@
                             "abort": {
                                 "not_whitelisted": "Calculatorul dvs. nu este pe lista albă."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sesiunea a expirat, va rugam logati-va din nou."
+                            }
                         }
                     }
                 }
