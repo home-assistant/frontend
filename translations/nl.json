@@ -728,6 +728,11 @@
                             "abort": {
                                 "not_whitelisted": "Uw computer staat niet op de whitelist."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sessie verlopen, meldt u opnieuw aan."
+                            }
                         }
                     }
                 }

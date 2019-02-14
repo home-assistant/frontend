@@ -728,6 +728,11 @@
                             "abort": {
                                 "not_whitelisted": "Datamaskinen din er ikke hvitlistet."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Økten er utløpt, vennligst logg inn på nytt"
+                            }
                         }
                     }
                 }
