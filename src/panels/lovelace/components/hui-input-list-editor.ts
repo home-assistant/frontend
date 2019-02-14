@@ -46,7 +46,10 @@ export class HuiInputListEditor extends LitElement {
             ></paper-input>
           `;
         })}
-        <paper-input @value-changed="${this._addEntity}"></paper-input>
+        <paper-input
+          label="${this.inputLabel}"
+          @change="${this._addEntity}"
+        ></paper-input>
       </div>
     `;
   }
@@ -60,6 +63,7 @@ export class HuiInputListEditor extends LitElement {
     target.value = "";
     this.value = newEntries;
     fireEvent(this, "entries-changed");
+    target.blur();
   }
 
   private _valueChanged(ev: Event): void {
