@@ -138,6 +138,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         align-items: center;
+        text-align: center;
         padding: 4% 0;
         font-size: 1.2rem;
       }
