@@ -64,7 +64,7 @@ export class HuiUnusedEntities extends LitElement {
         hui-entities-card {
           max-width: 400px;
           padding: 4px;
-          flex: 1;
+          flex: 1 auto;
         }
       </style>
     `;
