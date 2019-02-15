@@ -53,14 +53,16 @@ class LovelaceFullConfigEditor extends LitElement {
               @click="${this._closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
-            <mwc-button raised @click="${this._handleSave}">Save</mwc-button>
-            <ha-icon
-              class="save-button
+            <mwc-button raised @click="${this._handleSave}"
+              >Save
+              <ha-icon
+                class="save-button
             ${classMap({
-                saved: this._saving! === false || this._changed === true,
-              })}"
-              icon="${this._changed ? "hass:circle-medium" : "hass:check"}"
-            ></ha-icon>
+                  saved: this._saving! === false || this._changed === true,
+                })}"
+                icon="${this._changed ? "hass:circle-medium" : "hass:check"}"
+              ></ha-icon
+            ></mwc-button>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -113,11 +115,12 @@ class LovelaceFullConfigEditor extends LitElement {
         .save-button {
           opacity: 0;
           margin-left: -21px;
-          margin-top: -1px;
-          transition: opacity 1.5s;
+          transition: all 1.5s;
         }
 
         .saved {
+          margin-left: initial;
+          margin-right: -8px;
           opacity: 1;
         }
       `,

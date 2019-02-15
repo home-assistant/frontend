@@ -932,7 +932,8 @@
                 "arm_home": "Охрана (дома)",
                 "arm_away": "Охрана (не дома)",
                 "arm_night": "Ночная охрана",
-                "armed_custom_bypass": "Охрана с исключениями"
+                "armed_custom_bypass": "Охрана с исключениями",
+                "arm_custom_bypass": "Охрана с исключениями"
             },
             "automation": {
                 "last_triggered": "Последний запуск",
@@ -1002,7 +1003,7 @@
             },
             "relative_time": {
                 "past": "{time} назад",
-                "future": "через {time}",
+                "future": "{time} назад",
                 "never": "Никогда",
                 "duration": {
                     "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",

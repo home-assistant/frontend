@@ -33,7 +33,7 @@
             "arming": "Aktivování",
             "disarming": "Deaktivování",
             "triggered": "Spuštěno",
-            "armed_custom_bypass": "Specifické obejítí alarmu"
+            "armed_custom_bypass": "Aktivní uživatelský bypass"
         },
         "automation": {
             "off": "Neaktivní",
@@ -851,7 +851,7 @@
                         "save": "Převzít kontrolu"
                     },
                     "menu": {
-                        "raw_editor": "Editor konfigurace"
+                        "raw_editor": "Editor zdrojového kódu"
                     }
                 },
                 "menu": {
@@ -931,7 +931,8 @@
                 "arm_home": "Aktivovat režim domov",
                 "arm_away": "Aktivovat režim mimo domov",
                 "arm_night": "Aktivovat noční režim",
-                "armed_custom_bypass": "Specifické obejítí alarmu"
+                "armed_custom_bypass": "Uživatelský bypass",
+                "arm_custom_bypass": "Uživatelský bypass"
             },
             "automation": {
                 "last_triggered": "Naposledy spuštěno",

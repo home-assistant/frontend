@@ -301,7 +301,8 @@
                 "period": "Obdobje"
             },
             "logbook": {
-                "showing_entries": "Prikaz vnosov za"
+                "showing_entries": "Prikaz vnosov za",
+                "period": "Obdobje"
             },
             "mailbox": {
                 "empty": "Nimate sporočil",
@@ -345,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Prilagajanje",
-                    "description": "Prilagodite svoje entitete"
+                    "description": "Prilagodite svoje entitete",
+                    "picker": {
+                        "header": "Prilagajanje",
+                        "introduction": "Prilagajanja atributov na subjektu. Dodane\/spremenjene prilagoditve začnejo veljati takoj. Odstranjene pa po posodobitvi subjekta."
+                    }
                 },
                 "automation": {
                     "caption": "Avtomatizacija",
@@ -433,6 +438,14 @@
                                     "hours": "Ur",
                                     "minutes": "Minut",
                                     "seconds": "Sekund"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokacija",
+                                    "source": "Vir",
+                                    "zone": "Območje",
+                                    "event": "Dogodek:",
+                                    "enter": "Vnesite",
+                                    "leave": "Odidi"
                                 }
                             }
                         },
@@ -560,12 +573,55 @@
                         "hub": "Povezan prek",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "naprava ni na voljo",
-                        "entity_unavailable": "subjekt ni na voljo"
+                        "entity_unavailable": "subjekt ni na voljo",
+                        "no_area": "Brez območja"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Upravljanje omrežja za avtomatizacijo doma Zigbee"
+                    "description": "Upravljanje omrežja za avtomatizacijo doma Zigbee",
+                    "services": {
+                        "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Register območij",
+                    "description": "Pregled vseh območij v vašem domu.",
+                    "picker": {
+                        "header": "Register območij"
+                    },
+                    "no_areas": "Izgleda, da še nimate območij!",
+                    "create_area": "USTVARITE OBMOČJE",
+                    "editor": {
+                        "default_name": "Novo območje",
+                        "delete": "BRISANJE",
+                        "update": "POSODOBITEV",
+                        "create": "USTVARITE"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Register subjekta",
+                    "description": "Pregled vseh znanih subjektov.",
+                    "picker": {
+                        "header": "Register subjekta",
+                        "unavailable": "(ni na voljo)"
+                    },
+                    "editor": {
+                        "unavailable": "Ta entiteta trenutno ni na voljo.",
+                        "default_name": "Novo območje",
+                        "delete": "BRISANJE",
+                        "update": "POSODOBITEV"
+                    }
+                },
+                "person": {
+                    "caption": "Osebe",
+                    "description": "Upravljajte osebe, ki jih sledi Home Assistant.",
+                    "detail": {
+                        "name": "Ime",
+                        "device_tracker_intro": "Izberite naprave, ki pripadajo tej osebi.",
+                        "device_tracker_picked": "Sledi Napravi",
+                        "device_tracker_pick": "Izberite napravo za sledenje"
+                    }
                 }
             },
             "profile": {
@@ -708,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "Vaš računalnik ni dodan med zaupanja vredne."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Uporabniško ime",
+                                        "password": "Geslo"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvofaktorska koda za avtorizacijo"
+                                    },
+                                    "description": "V svoji napravi odprite **{mfa_module_name}**, da si ogledate svojo dvofaktorsko kodo za preverjanje pristnosti in preverite svojo identiteto:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Neveljavno uporabniško ime ali geslo",
+                                "invalid_code": "Neveljavna avtorizacijska koda"
+                            },
+                            "abort": {
+                                "login_expired": "Seja je potekla, prosimo, prijavite se znova."
+                            }
                         }
                     }
                 }
@@ -734,6 +813,11 @@
                         "checked_items": "Označeni predmeti",
                         "clear_items": "Počisti označene elemente",
                         "add_item": "Dodaj element"
+                    },
+                    "empty_state": {
+                        "title": "Dobrodošli Doma",
+                        "no_devices": "Ta stran vam omogoča nadzor nad napravami, vendar je videti, da še niste nastavili nobenih naprav. Pojdite na stran za integracije, da začnete.",
+                        "go_to_integrations_page": "Pojdite na stran za integracije."
                     }
                 },
                 "editor": {
@@ -744,7 +828,8 @@
                         "pick_card": "Izberite kartico, ki jo želite dodati.",
                         "add": "Dodaj kartico",
                         "edit": "Uredi",
-                        "delete": "Izbriši"
+                        "delete": "Izbriši",
+                        "move": "Premakni"
                     },
                     "migrate": {
                         "header": "Konfiguracija Nezdružljiva",
@@ -765,10 +850,16 @@
                         "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
                         "cancel": "Pozabi",
                         "save": "Prevzemite nadzor"
+                    },
+                    "menu": {
+                        "raw_editor": "Urejevalnik konfiguracije"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfiguriraj UI"
+                    "configure_ui": "Konfiguriraj UI",
+                    "unused_entities": "Neuporabljeni subjekti",
+                    "help": "Pomoč",
+                    "refresh": "Osveži"
                 }
             }
         },
@@ -841,7 +932,8 @@
                 "arm_home": "Vklopi doma",
                 "arm_away": "Vklopi odsoten",
                 "arm_night": "Vklopi nočni način",
-                "armed_custom_bypass": "Po meri"
+                "armed_custom_bypass": "Po meri",
+                "arm_custom_bypass": "Izjeme po meri"
             },
             "automation": {
                 "last_triggered": "Nazadnje sprožen",
@@ -1001,7 +1093,11 @@
         "weblink": "Spletna povezava",
         "zwave": "Z-Wave",
         "vacuum": "Sesam",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Zdravje sistema"
     },
     "attribute": {
         "weather": {

@@ -16,6 +16,7 @@ import { haStyle } from "../../../resources/ha-style";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { ItemSelectedEvent } from "./types";
+import { formatAsPaddedHex } from "./functions";
 
 declare global {
   // for fire event
@@ -27,9 +28,9 @@ declare global {
 }
 
 const computeClusterKey = (cluster: Cluster): string => {
-  return `${cluster.name} (Endpoint id: ${cluster.endpoint_id}, Id: ${
-    cluster.id
-  }, Type: ${cluster.type})`;
+  return `${cluster.name} (Endpoint id: ${
+    cluster.endpoint_id
+  }, Id: ${formatAsPaddedHex(cluster.id)}, Type: ${cluster.type})`;
 };
 
 export class ZHAClusters extends LitElement {
