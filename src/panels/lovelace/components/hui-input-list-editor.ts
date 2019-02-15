@@ -1,4 +1,11 @@
-import { html, LitElement, property, TemplateResult } from "lit-element";
+import {
+  html,
+  css,
+  LitElement,
+  property,
+  TemplateResult,
+  CSSResult,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
 
 import { HomeAssistant } from "../../../types";
@@ -18,7 +25,6 @@ export class HuiInputListEditor extends LitElement {
     }
 
     return html`
-      ${this.renderStyle()}
       <h3>${this.heading}</h3>
       <div class="entries">
         ${this.value.map((listEntry, index) => {
@@ -66,13 +72,11 @@ export class HuiInputListEditor extends LitElement {
     fireEvent(this, "value-changed");
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .entries {
-          padding-left: 20px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .entries {
+        padding-left: 20px;
+      }
     `;
   }
 }
