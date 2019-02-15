@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Personalização",
-                    "description": "Personalizar as suas entidades"
+                    "description": "Personalizar as suas entidades",
+                    "picker": {
+                        "header": "Personalização",
+                        "introduction": "Ajustar atributos por entidade. Personalizações acrescentadas\/editadas terão efeitos imediatos. Remoção de personalizaçõe terão efeito quando a entidade for actualizada."
+                    }
                 },
                 "automation": {
                     "caption": "Automação",
@@ -569,19 +573,55 @@
                         "hub": "Ligado via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Dispositivo indisponível",
-                        "entity_unavailable": "Entidade indisponível"
+                        "entity_unavailable": "Entidade indisponível",
+                        "no_area": "Nenhuma área"
                     }
                 },
                 "zha": {
-                    "caption": "ZHA"
+                    "caption": "ZHA",
+                    "description": "Gestão de rede Zigbee Home Automation",
+                    "services": {
+                        "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele está ativo e a aceitar comandos ao usar este serviço."
+                    }
                 },
                 "area_registry": {
                     "caption": "Registo de áreas",
-                    "description": "Visão geral de todas as áreas da sua casa."
+                    "description": "Visão geral de todas as áreas da sua casa.",
+                    "picker": {
+                        "header": "Registo de áreas"
+                    },
+                    "no_areas": "Parece que ainda não tem áreas!",
+                    "create_area": "CRIAR ÁREA",
+                    "editor": {
+                        "default_name": "Nova área",
+                        "delete": "APAGAR",
+                        "update": "ACTUALIZAR",
+                        "create": "CRIAR"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Registo de Entidades",
-                    "description": "Visão geral de todas as entidades conhecidas."
+                    "description": "Visão geral de todas as entidades conhecidas.",
+                    "picker": {
+                        "header": "Registo de Entidades",
+                        "unavailable": "(indisponível)"
+                    },
+                    "editor": {
+                        "unavailable": "Esta entidade não está atualmente disponível.",
+                        "default_name": "Nova área",
+                        "delete": "APAGAR",
+                        "update": "ACTUALIZAR"
+                    }
+                },
+                "person": {
+                    "caption": "Pessoas",
+                    "description": "Gerir as que pessoas que o Home Assistant segue.",
+                    "detail": {
+                        "name": "Nome",
+                        "device_tracker_intro": "Selecione os dispositivos que pertencem a esta pessoa.",
+                        "device_tracker_picked": "Seguir dispositivo",
+                        "device_tracker_pick": "Escolha o dispositivo a seguir"
+                    }
                 }
             },
             "profile": {
@@ -724,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "O seu computador não está na lista de endereços permitidos."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Utilizador",
+                                        "password": "Palavra-passe"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticações por dois factores"
+                                    },
+                                    "description": "Abrir **{mfa_module_name}** no seu dispositivo para ver o código de autenticação por dois factores e verificar a sua identidade:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nome de utilizador ou palavra-passe inválidos",
+                                "invalid_code": "Código de autenticação inválido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessão expirou, por favor entre novamente."
+                            }
                         }
                     }
                 }
@@ -753,6 +816,7 @@
                     },
                     "empty_state": {
                         "title": "Bem-vindo a casa",
+                        "no_devices": "Esta página permite-lhe controlar os seus dispositivos, no entanto, parece que ainda não tem dispositivos configurados. Vá para a página de integrações para começar.",
                         "go_to_integrations_page": "Ir para a página das integrações."
                     }
                 },
@@ -764,7 +828,8 @@
                         "pick_card": "Escolha o cartão que deseja adicionar.",
                         "add": "Adicionar Cartão",
                         "edit": "Editar",
-                        "delete": "Apagar"
+                        "delete": "Apagar",
+                        "move": "Mover"
                     },
                     "migrate": {
                         "header": "Configuração Incompatível",
@@ -785,6 +850,9 @@
                         "para_sure": "Tem certeza que deseja assumir o controle sobre a interface de utilizador?",
                         "cancel": "Cancelar",
                         "save": "Assumir o controle"
+                    },
+                    "menu": {
+                        "raw_editor": "Editor de configuração fonte."
                     }
                 },
                 "menu": {
@@ -864,7 +932,8 @@
                 "arm_home": "Armado casa",
                 "arm_away": "Armado ausente",
                 "arm_night": "Armado noite",
-                "armed_custom_bypass": "Desvio personalizado"
+                "armed_custom_bypass": "Desvio personalizado",
+                "arm_custom_bypass": "bypass personalizado"
             },
             "automation": {
                 "last_triggered": "Última ocorrência",
@@ -969,10 +1038,10 @@
                 "sun": {
                     "elevation": "Elevação",
                     "rising": "Nascer do sol",
-                    "setting": "Por do sol"
+                    "setting": "Pôr do sol"
                 },
                 "updater": {
-                    "title": "Instruções de atualização"
+                    "title": "Instruções para atualização"
                 }
             }
         },
@@ -1028,7 +1097,7 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Integridade Do Sistema"
+        "system_health": "Saúde do sistema"
     },
     "attribute": {
         "weather": {

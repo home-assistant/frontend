@@ -680,6 +680,11 @@
                             "abort": {
                                 "not_whitelisted": "Računalo nije na popisu dopuštenih."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sesija istekla, prijavite se ponovo."
+                            }
                         }
                     }
                 }
