@@ -6,7 +6,6 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-import "@polymer/paper-badge/paper-badge";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
@@ -22,7 +21,9 @@ class HuiNotificationsButton extends LitElement {
       ></paper-icon-button>
       ${this.notifications
         ? html`
-            <paper-badge .label="${this.notifications.length}"></paper-badge>
+            <span class="indicator">
+              <div>${this.notifications.length}</div>
+            </span>
           `
         : ""}
     `;
@@ -34,9 +35,24 @@ class HuiNotificationsButton extends LitElement {
         :host {
           position: relative;
         }
-        paper-badge {
-          left: 23px !important;
-          top: 0px !important;
+
+        .indicator {
+          position: absolute;
+          top: 0px;
+          right: -3px;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: var(--accent-color);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .indicator > div {
+          right: 7px;
+          top: 3px;
+          position: absolute;
+          font-size: 0.55em;
         }
       `,
     ];
