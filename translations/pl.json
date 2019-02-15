@@ -434,7 +434,7 @@
                                     "webhook_id": "Identyfikator Webhook"
                                 },
                                 "time_pattern": {
-                                    "label": "Szablon czasu ",
+                                    "label": "Szablon czasu",
                                     "hours": "Godziny",
                                     "minutes": "Minuty",
                                     "seconds": "Sekundy"
@@ -579,7 +579,7 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zarządzanie siecią ZigBee Home Automation",
+                    "description": "Zarządzanie siecią automatyki domowej ZigBee",
                     "services": {
                         "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tej usługi, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji."
                     }
