@@ -12,8 +12,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { EditorTarget } from "../editor/types";
 
 export class HuiInputListEditor extends LitElement {
-  protected hass?: HomeAssistant;
   public value?: string;
+  protected hass?: HomeAssistant;
   protected heading?: string;
   protected inputLabel?: string;
   protected entries?: string[];
