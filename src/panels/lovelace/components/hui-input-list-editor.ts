@@ -1,9 +1,4 @@
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, property, TemplateResult } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
 import { HomeAssistant } from "../../../types";
@@ -12,19 +7,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { EditorTarget } from "../editor/types";
 
 export class HuiInputListEditor extends LitElement {
-  protected value?: string[];
-  protected hass?: HomeAssistant;
-  protected heading?: string;
-  protected inputLabel?: string;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      value: {},
-      heading: {},
-      inputLabel: {},
-    };
-  }
+  @property() protected value?: string[];
+  @property() protected hass?: HomeAssistant;
+  @property() protected heading?: string;
+  @property() protected inputLabel?: string;
 
   protected render(): TemplateResult | void {
     if (!this.value) {
