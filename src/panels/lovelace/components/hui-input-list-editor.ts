@@ -12,11 +12,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { EditorTarget } from "../editor/types";
 
 export class HuiInputListEditor extends LitElement {
-  public value?: string;
+  protected value?: string[];
   protected hass?: HomeAssistant;
   protected heading?: string;
   protected inputLabel?: string;
-  protected entries?: string[];
 
   static get properties(): PropertyDeclarations {
     return {
@@ -24,12 +23,11 @@ export class HuiInputListEditor extends LitElement {
       value: {},
       heading: {},
       inputLabel: {},
-      entries: {},
     };
   }
 
   protected render(): TemplateResult | void {
-    if (!this.entries) {
+    if (!this.value) {
       return html``;
     }
 
@@ -37,7 +35,7 @@ export class HuiInputListEditor extends LitElement {
       ${this.renderStyle()}
       <h3>${this.heading}</h3>
       <div class="entries">
-        ${this.entries.map((listEntry, index) => {
+        ${this.value.map((listEntry, index) => {
           return html`
             <paper-input
               label="${this.inputLabel}"
@@ -61,7 +59,7 @@ export class HuiInputListEditor extends LitElement {
     if (target.value === "") {
       return;
     }
-    const newEntries = this.entries!.concat(target.value as string);
+    const newEntries = this.value!.concat(target.value as string);
     target.value = "";
     this.value = newEntries;
     fireEvent(this, "value-changed");
@@ -70,7 +68,7 @@ export class HuiInputListEditor extends LitElement {
 
   private _valueChanged(ev: Event): void {
     const target = ev.target! as EditorTarget;
-    const newEntries = this.entries!.concat();
+    const newEntries = this.value!.concat();
 
     if (target.value === "") {
       newEntries.splice(target.index!, 1);
