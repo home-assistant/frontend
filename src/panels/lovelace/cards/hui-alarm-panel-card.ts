@@ -128,9 +128,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             : ["disarm"]
           ).map((state) => {
             return html`
-              <mwc-button .action="${state}" @click="${this._handleActionClick}"
-                >${this._label(state)}</mwc-button
+              <mwc-button
+                .action="${state}"
+                @click="${this._handleActionClick}"
+                outlined
               >
+                ${this._label(state)}
+              </mwc-button>
             `;
           })}
         </div>
@@ -154,14 +158,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                       `
                     : html`
                         <mwc-button
-                          noink
-                          raised
                           .value="${value}"
                           @click="${this._handlePadClick}"
-                          >${value === "clear"
-                            ? this._label("clear_code")
-                            : value}</mwc-button
+                          dense
                         >
+                          ${value === "clear"
+                            ? this._label("clear_code")
+                            : value}
+                        </mwc-button>
                       `;
                 })}
               </div>
@@ -274,6 +278,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           width: 30%;
           padding: calc(var(--base-unit));
           font-size: calc(var(--base-unit) * 1.1);
+          box-sizing: border-box;
         }
         .actions {
           margin: 0 8px;
@@ -286,6 +291,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         .actions mwc-button {
           min-width: calc(var(--base-unit) * 9);
           color: var(--primary-color);
+          margin: 0 4px;
         }
         mwc-button#disarm {
           color: var(--google-red-500);

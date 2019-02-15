@@ -82,7 +82,7 @@
             },
             "presence": {
                 "off": "외출",
-                "on": "재실중"
+                "on": "재실"
             },
             "battery": {
                 "off": "보통",
@@ -97,7 +97,7 @@
                 "on": "연결됨"
             },
             "cold": {
-                "off": "상온",
+                "off": "보통",
                 "on": "저온"
             },
             "door": {
@@ -109,7 +109,7 @@
                 "on": "열림"
             },
             "heat": {
-                "off": "상온",
+                "off": "보통",
                 "on": "고온"
             },
             "window": {
@@ -118,7 +118,7 @@
             },
             "lock": {
                 "off": "잠김",
-                "on": "열림"
+                "on": "해제"
             }
         },
         "calendar": {
@@ -178,7 +178,7 @@
             "stopped": "멈춤",
             "locked": "잠김",
             "unlocked": "해제",
-            "ok": "좋음",
+            "ok": "문제없음",
             "problem": "문제있음"
         },
         "input_boolean": {
@@ -202,7 +202,7 @@
             "standby": "준비중"
         },
         "plant": {
-            "ok": "좋음",
+            "ok": "문제없음",
             "problem": "문제있음"
         },
         "remote": {
@@ -346,13 +346,17 @@
                 },
                 "customize": {
                     "caption": "사용자화",
-                    "description": "구성요소를 사용자화 합니다"
+                    "description": "구성요소를 사용자화 합니다",
+                    "picker": {
+                        "header": "사용자화",
+                        "introduction": "구성요소의 속성을 조정할 수 있습니다. 추가 및 수정 된 사용자화 정의는 즉시 적용되며, 제거 된 사용자화 정의는 구성요소가 업데이트 될 때 적용됩니다."
+                    }
                 },
                 "automation": {
                     "caption": "자동화",
                     "description": "자동화를 만들고 편집합니다",
                     "picker": {
-                        "header": "자동화 편집기",
+                        "header": "자동화 편집",
                         "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집 할 수 있습니다. [안내](https:\/\/home-assistant.io\/docs\/automation\/editor\/) 를 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "pick_automation": "편집할 자동화 선택",
                         "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
@@ -506,7 +510,7 @@
                                 },
                                 "delay": {
                                     "label": "지연",
-                                    "delay": "지연 시간"
+                                    "delay": "지연"
                                 },
                                 "wait_template": {
                                     "label": "대기",
@@ -569,23 +573,55 @@
                         "hub": "연결 경유 대상",
                         "firmware": "펌웨어: {version}",
                         "device_unavailable": "기기 사용불가",
-                        "entity_unavailable": "구성요소 사용불가"
+                        "entity_unavailable": "구성요소 사용불가",
+                        "no_area": "영역 없음"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
                     "description": "Zigbee 홈 자동화 네트워크 관리",
                     "services": {
-                        "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태여야 합니다."
+                        "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태인지 확인해주세요."
                     }
                 },
                 "area_registry": {
-                    "caption": "영역 등록",
-                    "description": "집에 등록된 모든 영역"
+                    "caption": "영역",
+                    "description": "영역을 만들고 편집합니다",
+                    "picker": {
+                        "header": "영역 등록"
+                    },
+                    "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
+                    "create_area": "영역 만들기",
+                    "editor": {
+                        "default_name": "새로운 영역",
+                        "delete": "삭제",
+                        "update": "업데이트",
+                        "create": "만들기"
+                    }
                 },
                 "entity_registry": {
-                    "caption": "구성요소 등록",
-                    "description": "모든 구성요소"
+                    "caption": "구성요소",
+                    "description": "등록된 구성요소를 편집합니다",
+                    "picker": {
+                        "header": "구성요소",
+                        "unavailable": "(사용불가)"
+                    },
+                    "editor": {
+                        "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
+                        "default_name": "새로운 영역",
+                        "delete": "삭제",
+                        "update": "업데이트"
+                    }
+                },
+                "person": {
+                    "caption": "구성원",
+                    "description": "Home Assistant 가 추적하는 구성원을 관리합니다",
+                    "detail": {
+                        "name": "이름",
+                        "device_tracker_intro": "이 구성원에게 속한 장치를 선택해주세요.",
+                        "device_tracker_picked": "추적 장치",
+                        "device_tracker_pick": "추적 할 장치 선택"
+                    }
                 }
             },
             "profile": {
@@ -728,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "이 컴퓨터는 허용 목록에 등록되어 있지 않습니다."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "사용자 이름",
+                                        "password": "비밀번호"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2단계 인증 코드"
+                                    },
+                                    "description": "2단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
+                            },
+                            "abort": {
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
+                            }
                         }
                     }
                 }
@@ -769,7 +828,8 @@
                         "pick_card": "추가하려는 카드를 선택해주세요",
                         "add": "카드 추가",
                         "edit": "편집",
-                        "delete": "삭제"
+                        "delete": "삭제",
+                        "move": "이동"
                     },
                     "migrate": {
                         "header": "설정이 호환되지 않습니다",
@@ -872,7 +932,8 @@
                 "arm_home": "재실 경비",
                 "arm_away": "외출 경비",
                 "arm_night": "야간 경비",
-                "armed_custom_bypass": "사용자 우회"
+                "armed_custom_bypass": "사용자 우회",
+                "arm_custom_bypass": "사용자 우회"
             },
             "automation": {
                 "last_triggered": "최근 트리거 됨",

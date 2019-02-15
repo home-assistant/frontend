@@ -764,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "Din computer er ikke whitelistet."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Brugernavn",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor godkendelseskode"
+                                    },
+                                    "description": "Åbn **{mfa_module_name}** på din enhed for at se din to-faktor godkendelseskode og bekræft din identitet:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldigt brugernavn eller password",
+                                "invalid_code": "Ugyldig godkendelseskode"
+                            },
+                            "abort": {
+                                "login_expired": "Session er udløbet, log ind igen."
+                            }
                         }
                     }
                 }
@@ -909,7 +932,8 @@
                 "arm_home": "Tilkoble hjemme",
                 "arm_away": "Tilkoble ude",
                 "arm_night": "Tilkoblet nat",
-                "armed_custom_bypass": "Brugerdefineret"
+                "armed_custom_bypass": "Brugerdefineret",
+                "arm_custom_bypass": "Brugerdefineret bypass"
             },
             "automation": {
                 "last_triggered": "Senest udløst",

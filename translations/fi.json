@@ -696,6 +696,11 @@
                             "abort": {
                                 "not_whitelisted": "Tietokonettasi ei ole sallittu."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Istunto päättyi, ole hyvä ja kirjaudu uudelleen."
+                            }
                         }
                     }
                 }

@@ -24,6 +24,7 @@ import {
   IssueCommandServiceData,
   ItemSelectedEvent,
 } from "./types";
+import { formatAsPaddedHex } from "./functions";
 
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
@@ -94,7 +95,10 @@ export class ZHAClusterCommands extends LitElement {
                 ${this._commands.map(
                   (entry) => html`
                     <paper-item
-                      >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                      >${entry.name +
+                        " (id: " +
+                        formatAsPaddedHex(entry.id) +
+                        ")"}</paper-item
                     >
                   `
                 )}
