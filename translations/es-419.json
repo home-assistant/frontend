@@ -708,6 +708,11 @@
                             "abort": {
                                 "not_whitelisted": "Tu computadora no está incluida en la lista blanca."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "La sesión expiró, por favor inicie sesión nuevamente."
+                            }
                         }
                     }
                 }

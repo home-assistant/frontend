@@ -662,6 +662,11 @@
                             "abort": {
                                 "not_whitelisted": "Máy tính của bạn không nằm trong danh sách trắng."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại."
+                            }
                         }
                     }
                 }

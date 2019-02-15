@@ -785,7 +785,7 @@
                                 "invalid_code": "Ongëlten Authentifizéierungs Code"
                             },
                             "abort": {
-                                "login_expired": "Sessioun ofgelaf, verbannt iech rëm frësch."
+                                "login_expired": "Sessioun ofgelaaf, log dech rëm frësch an w.e.g."
                             }
                         }
                     }

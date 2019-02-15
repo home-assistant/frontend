@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Personalització",
-                    "description": "Personalitza les entitats"
+                    "description": "Personalitza les entitats",
+                    "picker": {
+                        "header": "Personalització",
+                        "introduction": "Modificació dels atributs d'entitat. Les personalitzacions afegides\/modificades apareixeran immediatament. Les personalitzacions eliminades tindran efecte quan l'entitat s'actualitzi."
+                    }
                 },
                 "automation": {
                     "caption": "Automatització",
@@ -569,7 +573,8 @@
                         "hub": "Connectat a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositiu no disponible",
-                        "entity_unavailable": "entitat no disponible"
+                        "entity_unavailable": "entitat no disponible",
+                        "no_area": "Sense àrea"
                     }
                 },
                 "zha": {
@@ -581,11 +586,42 @@
                 },
                 "area_registry": {
                     "caption": "Registre d'àrees",
-                    "description": "Visió general de totes les àrees de la casa."
+                    "description": "Visió general de totes les àrees de la casa.",
+                    "picker": {
+                        "header": "Registre d'àrees"
+                    },
+                    "no_areas": "Sembla que encara no tens cap àrea, encara.",
+                    "create_area": "CREA ÀREA",
+                    "editor": {
+                        "default_name": "Àrea nova",
+                        "delete": "SUPRIMIR",
+                        "update": "ACTUALITZAR",
+                        "create": "CREAR"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Registre d'entitats",
-                    "description": "Visió general de totes les entitats conegudes."
+                    "description": "Visió general de totes les entitats conegudes.",
+                    "picker": {
+                        "header": "Registre d'entitats",
+                        "unavailable": "(no disponible)"
+                    },
+                    "editor": {
+                        "unavailable": "Aquesta entitat no està disponible actualment.",
+                        "default_name": "Àrea nova",
+                        "delete": "SUPRIMIR",
+                        "update": "ACTUALITZAR"
+                    }
+                },
+                "person": {
+                    "caption": "Persones",
+                    "description": "Gestiona a quines persones fa seguiment Home Assistant.",
+                    "detail": {
+                        "name": "Nom",
+                        "device_tracker_intro": "Selecciona els dispositius que pertanyen a aquesta persona.",
+                        "device_tracker_picked": "Seguint dispositiu",
+                        "device_tracker_pick": "Tria un dispositiu per fer-li el seguiment"
+                    }
                 }
             },
             "profile": {
@@ -728,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "El teu ordinador no es troba accessible a la llista."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'usuari",
+                                        "password": "Contrasenya"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codi de verificació en dos passos"
+                                    },
+                                    "description": "Obre el **{mfa_module_name}** al teu dispositiu per veure el codi de verificació en dos passos i verifica la teva identitat:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'usuari o contrasenya incorrectes",
+                                "invalid_code": "El codi d'autenticació no és vàlid"
+                            },
+                            "abort": {
+                                "login_expired": "La sessió ha caducat, torna a iniciar la sessió."
+                            }
                         }
                     }
                 }
@@ -769,7 +828,8 @@
                         "pick_card": "Tria la targeta que vols afegir.",
                         "add": "Afegir targeta",
                         "edit": "Editar",
-                        "delete": "Suprimir"
+                        "delete": "Suprimir",
+                        "move": "Moure"
                     },
                     "migrate": {
                         "header": "Configuració incompatible",
@@ -872,7 +932,8 @@
                 "arm_home": "Activar, a casa",
                 "arm_away": "Activar, fora",
                 "arm_night": "Activar, nocturn",
-                "armed_custom_bypass": "Bypass personalitzat"
+                "armed_custom_bypass": "Bypass personalitzat",
+                "arm_custom_bypass": "Bypass personalitzat"
             },
             "automation": {
                 "last_triggered": "Última execució",
