@@ -5,14 +5,12 @@ import { HaIcon } from "./ha-icon";
 
 export class HaIconPrev extends HaIcon {
   public connectedCallback() {
-    super.connectedCallback();
-
     this.icon =
       window.getComputedStyle(this).direction === "ltr"
         ? "hass:chevron-left"
         : "hass:chevron-right";
 
-    this.fire("iron-resize");
+    super.connectedCallback();
   }
 }
 
