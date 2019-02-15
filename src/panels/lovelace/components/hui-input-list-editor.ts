@@ -13,6 +13,7 @@ import { EditorTarget } from "../editor/types";
 
 export class HuiInputListEditor extends LitElement {
   protected hass?: HomeAssistant;
+  public value?: string;
   protected heading?: string;
   protected inputLabel?: string;
   protected entries?: string[];
@@ -20,6 +21,7 @@ export class HuiInputListEditor extends LitElement {
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
+      value: {},
       heading: {},
       inputLabel: {},
       entries: {},
@@ -62,8 +64,8 @@ export class HuiInputListEditor extends LitElement {
     const newEntries = this.entries!.concat(target.value as string);
     target.value = "";
     this.value = newEntries;
-    fireEvent(this, "entries-changed");
-    target.blur();
+    fireEvent(this, "value-changed");
+    ev.target.blur();
   }
 
   private _valueChanged(ev: Event): void {
@@ -77,7 +79,7 @@ export class HuiInputListEditor extends LitElement {
     }
 
     this.value = newEntries;
-    fireEvent(this, "entries-changed");
+    fireEvent(this, "value-changed");
   }
 
   private renderStyle(): TemplateResult {
