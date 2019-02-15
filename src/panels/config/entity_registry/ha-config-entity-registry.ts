@@ -51,7 +51,11 @@ class HaConfigEntityRegistry extends LitElement {
       `;
     }
     return html`
-      <hass-subpage header="Entity Registry">
+      <hass-subpage
+        header="${this.hass.localize(
+          "ui.panel.config.entity_registry.caption"
+        )}"
+      >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header">
             ${this.hass.localize(

@@ -820,6 +820,7 @@
             "title": "Users"
           },
           "editor": {
+            "caption": "View user",
             "rename_user": "Rename user",
             "change_password": "Change password",
             "activate_user": "Activate user",
