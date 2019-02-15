@@ -63,7 +63,7 @@ export class HuiInputListEditor extends LitElement {
     target.value = "";
     this.value = newEntries;
     fireEvent(this, "value-changed");
-    ev.target.blur();
+    (ev.target! as LitElement).blur();
   }
 
   private _valueChanged(ev: Event): void {
