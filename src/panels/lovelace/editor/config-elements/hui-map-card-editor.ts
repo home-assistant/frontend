@@ -1,9 +1,11 @@
 import {
   html,
+  css,
   LitElement,
   TemplateResult,
   customElement,
   property,
+  CSSResult,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -105,13 +107,15 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
         <h3>Geolocation Sources</h3>
-        <hui-input-list-editor
-          inputLabel="Source"
-          .hass="${this.hass}"
-          .value="${this._geo_location_sources}"
-          .configValue="${"geo_location_sources"}"
-          @value-changed="${this._valueChanged}"
-        ></hui-input-list-editor>
+        <div class="geo_location_sources">
+          <hui-input-list-editor
+            inputLabel="Source"
+            .hass="${this.hass}"
+            .value="${this._geo_location_sources}"
+            .configValue="${"geo_location_sources"}"
+            @value-changed="${this._valueChanged}"
+          ></hui-input-list-editor>
+        </div>
       </div>
     `;
   }
@@ -145,6 +149,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .geo_location_sources {
+        padding-left: 20px;
+      }
+    `;
   }
 }
 

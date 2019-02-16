@@ -1,11 +1,4 @@
-import {
-  html,
-  css,
-  LitElement,
-  property,
-  TemplateResult,
-  CSSResult,
-} from "lit-element";
+import { html, LitElement, property, TemplateResult } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
 import { HomeAssistant } from "../../../types";
@@ -24,23 +17,21 @@ export class HuiInputListEditor extends LitElement {
     }
 
     return html`
-      <div class="entries">
-        ${this.value.map((listEntry, index) => {
-          return html`
-            <paper-input
-              label="${this.inputLabel}"
-              .value="${listEntry}"
-              .configValue="${"entry"}"
-              .index="${index}"
-              @value-changed="${this._valueChanged}"
-            ></paper-input>
-          `;
-        })}
-        <paper-input
-          label="${this.inputLabel}"
-          @change="${this._addEntity}"
-        ></paper-input>
-      </div>
+      ${this.value.map((listEntry, index) => {
+        return html`
+          <paper-input
+            label="${this.inputLabel}"
+            .value="${listEntry}"
+            .configValue="${"entry"}"
+            .index="${index}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+        `;
+      })}
+      <paper-input
+        label="${this.inputLabel}"
+        @change="${this._addEntity}"
+      ></paper-input>
     `;
   }
 
@@ -68,14 +59,6 @@ export class HuiInputListEditor extends LitElement {
 
     this.value = newEntries;
     fireEvent(this, "value-changed");
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      .entries {
-        padding-left: 20px;
-      }
-    `;
   }
 }
 
