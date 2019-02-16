@@ -194,7 +194,7 @@ class HUIRoot extends LitElement {
                   <hui-notifications-button
                     .hass="${this.hass}"
                     .opened="${this._notificationsOpen}"
-                    @opened="${this._handleNotificationsOpenChanged}"
+                    @opened-changed="${this._handleNotificationsOpenChanged}"
                     .notifications="${this._notifications}"
                   ></hui-notifications-button>
                   <ha-start-voice-button
