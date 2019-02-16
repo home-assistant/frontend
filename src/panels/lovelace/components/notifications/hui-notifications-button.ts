@@ -60,7 +60,7 @@ class HuiNotificationsButton extends LitElement {
 
   private _clicked() {
     this.opened = true;
-    fireEvent(this, "opened", { value: this.opened });
+    fireEvent(this, "opened-changed", { value: this.opened });
   }
 }
 
