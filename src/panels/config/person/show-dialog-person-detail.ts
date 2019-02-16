@@ -1,8 +1,10 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { Person, PersonMutableParams } from "../../../data/person";
+import { User } from "../../../data/auth";
 
 export interface PersonDetailDialogParams {
   entry?: Person;
+  users: User[];
   createEntry: (values: PersonMutableParams) => Promise<unknown>;
   updateEntry: (updates: Partial<PersonMutableParams>) => Promise<unknown>;
   removeEntry: () => Promise<boolean>;
