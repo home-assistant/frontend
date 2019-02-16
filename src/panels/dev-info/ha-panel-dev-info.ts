@@ -12,7 +12,7 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-menu-button";
 
 import { HomeAssistant } from "../../types";
-import { haStyle } from "../../resources/ha-style";
+import { haStyle } from "../../resources/styles";
 
 import "./system-log-card";
 import "./error-log-card";
