@@ -51,8 +51,6 @@ class StateBadge extends LitElement {
   static get styles(): CSSResult {
     return css`
       .profile-badge {
-        /* for ripple */
-        position: relative;
         display: inline-block;
         box-sizing: border-box;
         width: 40px;
