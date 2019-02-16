@@ -104,7 +104,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         <hui-entity-editor
           .hass="${this.hass}"
           .entities="${this._configEntities}"
-          @entities-changed="${this._valueChanged}"
+          @entities-changed="${this._entitiesValueChanged}"
         ></hui-entity-editor>
         <h3>Geolocation Sources</h3>
         <div class="geo_location_sources">
@@ -120,7 +120,19 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _entitiesValueChanged(ev: EntitiesEditorEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const target = ev.target! as EditorTarget;
+    if (ev.detail && ev.detail.entities) {
+      this._config.entities = ev.detail.entities;
+      this._configEntities = processEditorEntities(this._config.entities);
+      fireEvent(this, "config-changed", { config: this._config });
+    }
+  }
+
+  private _valueChanged(ev: Event): void {
     if (!this._config || !this.hass) {
       return;
     }
@@ -132,10 +144,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     ) {
       return;
     }
-    if (ev.detail && ev.detail.entities) {
-      this._config.entities = ev.detail.entities;
-      this._configEntities = processEditorEntities(this._config.entities);
-    } else if (target.configValue && ev.detail) {
+    if (target.configValue && ev.detail) {
       if (
         ev.detail.value === "" ||
         (target.type === "number" && isNaN(Number(ev.detail.value)))

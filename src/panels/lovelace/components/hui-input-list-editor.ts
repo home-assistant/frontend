@@ -86,8 +86,7 @@ export class HuiInputListEditor extends LitElement {
   }
 
   private _removeEntry(ev: Event): void {
-    const target = ev.target! as EditorTarget;
-    const parent = target.parentElement;
+    const parent = (ev.currentTarget as any).parentElement;
     const newEntries = this.value!.concat();
     newEntries.splice(parent.index!, 1);
     fireEvent(this, "value-changed", {
