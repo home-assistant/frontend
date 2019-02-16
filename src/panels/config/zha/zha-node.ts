@@ -15,7 +15,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { ItemSelectedEvent, NodeServiceData } from "./types";

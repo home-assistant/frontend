@@ -12,7 +12,7 @@ import "@polymer/paper-input/paper-input";
 
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/ha-style";
+import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 
