@@ -10,7 +10,7 @@ import {
   customElement,
 } from "lit-element";
 import "../components/ha-menu-button";
-import { haStyle } from "../resources/ha-style";
+import { haStyle } from "../resources/styles";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {

@@ -3,12 +3,17 @@ import {
   Connection,
   getCollection,
 } from "home-assistant-js-websocket";
-import { User } from "../types";
+import { CurrentUser } from "../types";
 
 export const userCollection = (conn: Connection) =>
-  getCollection(conn, "_usr", () => getUser(conn) as Promise<User>, undefined);
+  getCollection(
+    conn,
+    "_usr",
+    () => getUser(conn) as Promise<CurrentUser>,
+    undefined
+  );
 
 export const subscribeUser = (
   conn: Connection,
-  onChange: (user: User) => void
+  onChange: (user: CurrentUser) => void
 ) => userCollection(conn).subscribe(onChange);

@@ -21,7 +21,7 @@ import Automation from "../js/automation";
 import unmountPreact from "../../../common/preact/unmount";
 import computeStateName from "../../../common/entity/compute_state_name";
 
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AutomationEntity, AutomationConfig } from "../../../data/automation";
 import { navigate } from "../../../common/navigate";

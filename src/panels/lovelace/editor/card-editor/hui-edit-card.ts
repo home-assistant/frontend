@@ -10,7 +10,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import yaml from "js-yaml";
 
-import { haStyleDialog } from "../../../../resources/ha-style";
+import { haStyleDialog } from "../../../../resources/styles";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
