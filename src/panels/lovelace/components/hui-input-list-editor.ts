@@ -48,6 +48,7 @@ export class HuiInputListEditor extends LitElement {
   }
 
   private _valueChanged(ev: Event): void {
+    ev.stopPropagation();
     const target = ev.target! as EditorTarget;
     const newEntries = this.value!.concat();
 
