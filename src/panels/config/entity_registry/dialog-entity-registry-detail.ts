@@ -12,7 +12,7 @@ import "@polymer/paper-input/paper-input";
 
 import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/ha-style";
+import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import computeDomain from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
