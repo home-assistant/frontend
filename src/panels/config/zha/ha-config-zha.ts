@@ -12,7 +12,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { Cluster } from "../../../data/zha";
 import "../../../layouts/ha-app-layout";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ZHAClusterSelectedParams, ZHANodeSelectedParams } from "./types";
 import "./zha-cluster-attributes";

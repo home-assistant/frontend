@@ -18,7 +18,7 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 import { HomeAssistant } from "../../../types";
 import { WebhookDialogParams } from "./types";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
