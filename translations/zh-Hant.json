@@ -932,7 +932,8 @@
                 "arm_home": "在家警戒",
                 "arm_away": "離家警戒",
                 "arm_night": "夜間警戒",
-                "armed_custom_bypass": "自定義忽略"
+                "armed_custom_bypass": "警戒模式狀態",
+                "arm_custom_bypass": "警戒模式狀態"
             },
             "automation": {
                 "last_triggered": "上次觸發",
@@ -1027,7 +1028,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "儲存",
-                "name": "名稱撤銷",
+                "name": "名稱覆寫",
                 "entity_id": "物件 ID"
             },
             "more_info_control": {
@@ -1086,7 +1087,7 @@
         "scene": "場景",
         "script": "腳本",
         "sensor": "傳感器",
-        "sun": "太陽",
+        "sun": "日出日落",
         "switch": "開關",
         "updater": "更新器",
         "weblink": "網站鏈接",
