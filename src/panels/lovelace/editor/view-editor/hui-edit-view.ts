@@ -18,7 +18,7 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import { haStyleDialog } from "../../../../resources/ha-style";
+import { haStyleDialog } from "../../../../resources/styles";
 
 import "../../components/hui-entity-editor";
 import "./hui-view-editor";

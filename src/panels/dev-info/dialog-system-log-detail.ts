@@ -11,7 +11,7 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { PolymerChangedEvent } from "../../polymer-types";
-import { haStyleDialog } from "../../resources/ha-style";
+import { haStyleDialog } from "../../resources/styles";
 
 class DialogSystemLogDetail extends LitElement {
   private _params?: SystemLogDetailDialogParams;

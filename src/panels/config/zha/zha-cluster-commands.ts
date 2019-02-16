@@ -16,7 +16,7 @@ import {
   fetchCommandsForCluster,
   ZHADevice,
 } from "../../../data/zha";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import {

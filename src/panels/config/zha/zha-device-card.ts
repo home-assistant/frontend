@@ -13,7 +13,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/entity/state-badge";
