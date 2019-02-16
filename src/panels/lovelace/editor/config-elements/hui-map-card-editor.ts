@@ -104,8 +104,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
+        <h3>Geolocation Sources</h3>
         <hui-input-list-editor
-          heading="Geolocation Sources"
           inputLabel="Source"
           .hass="${this.hass}"
           .value="${this._geo_location_sources}"

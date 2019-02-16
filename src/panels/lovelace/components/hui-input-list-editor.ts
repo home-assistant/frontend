@@ -16,7 +16,6 @@ import { EditorTarget } from "../editor/types";
 export class HuiInputListEditor extends LitElement {
   @property() protected value?: string[];
   @property() protected hass?: HomeAssistant;
-  @property() protected heading?: string;
   @property() protected inputLabel?: string;
 
   protected render(): TemplateResult | void {
@@ -25,7 +24,6 @@ export class HuiInputListEditor extends LitElement {
     }
 
     return html`
-      <h3>${this.heading}</h3>
       <div class="entries">
         ${this.value.map((listEntry, index) => {
           return html`
