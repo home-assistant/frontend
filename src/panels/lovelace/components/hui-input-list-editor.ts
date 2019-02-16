@@ -42,8 +42,9 @@ export class HuiInputListEditor extends LitElement {
     }
     const newEntries = this.value!.concat(target.value as string);
     target.value = "";
-    this.value = newEntries;
-    fireEvent(this, "value-changed");
+    fireEvent(this, "value-changed", {
+      value: newEntries,
+    });
     (ev.target! as LitElement).blur();
   }
 
@@ -57,9 +58,9 @@ export class HuiInputListEditor extends LitElement {
     } else {
       newEntries[target.index!] = target.value!;
     }
-
-    this.value = newEntries;
-    fireEvent(this, "value-changed");
+    fireEvent(this, "value-changed", {
+      value: newEntries,
+    });
   }
 }
 
