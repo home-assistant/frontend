@@ -9,7 +9,7 @@ import {
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import { haStyleDialog } from "../../../../resources/ha-style";
+import { haStyleDialog } from "../../../../resources/styles";
 
 import "./hui-card-picker";
 import { HomeAssistant } from "../../../../types";

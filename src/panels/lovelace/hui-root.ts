@@ -48,7 +48,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
-import { haStyle } from "../../resources/ha-style";
+import { haStyle } from "../../resources/styles";
 import { computeRTL, computeRTLDirection } from "../../common/util/compute_rtl";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
