@@ -280,16 +280,17 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       );
     } else {
       sliderValue = stateObj.attributes.temperature;
-      uiValue = "" + stateObj.attributes.temperature;
+      uiValue =
+        stateObj.attributes.temperature !== null
+          ? String(stateObj.attributes.temperature)
+          : "";
     }
 
     return [sliderValue, uiValue];
   }
 
   private _updateSetTemp(value: string): void {
-    if (value !== "null") {
-      this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
-    }
+    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
   }
 
   private _dragEvent(e): void {
