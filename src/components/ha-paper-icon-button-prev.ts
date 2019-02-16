@@ -10,12 +10,13 @@ const paperIconButtonClass = customElements.get(
 
 export class HaPaperIconButtonPrev extends paperIconButtonClass {
   public connectedCallback() {
-    super.connectedCallback();
-
     this.icon =
       window.getComputedStyle(this).direction === "ltr"
         ? "hass:chevron-left"
         : "hass:chevron-right";
+
+    // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
+    super.connectedCallback();
   }
 }
 
