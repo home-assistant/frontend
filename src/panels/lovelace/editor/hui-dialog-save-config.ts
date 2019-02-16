@@ -14,7 +14,7 @@ import "@polymer/paper-dialog/paper-dialog";
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@material/mwc-button";
 
-import { haStyleDialog } from "../../../resources/ha-style";
+import { haStyleDialog } from "../../../resources/styles";
 
 import { HomeAssistant } from "../../../types";
 
