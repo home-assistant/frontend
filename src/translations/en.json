@@ -532,7 +532,9 @@
           "caption": "Area Registry",
           "description": "Overview of all areas in your home.",
           "picker": {
-            "header": "Area Registry"
+            "header": "Area Registry",
+            "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
+            "introduction2": "To place devices in an area, navigate to [the integrations page](/config/integrations) and then click on a configured integration to get to the device cards."
           },
           "no_areas": "Looks like you have no areas yet!",
           "create_area": "CREATE AREA",
@@ -773,6 +775,8 @@
           "description": "Overview of all known entities.",
           "picker": {
             "header": "Entity Registry",
+            "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
+            "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, remove it from [the integrations page](/config/integrations).",
             "unavailable": "(unavailable)"
           },
           "editor": {
@@ -826,6 +830,13 @@
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user"
+          },
+          "add_user": {
+            "caption": "Add user",
+            "name": "Name",
+            "username": "Username",
+            "password": "Password",
+            "create": "Create"
           }
         },
         "zha": {

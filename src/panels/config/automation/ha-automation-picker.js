@@ -16,6 +16,8 @@ import "../ha-config-section";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
+
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
@@ -42,6 +44,17 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         paper-fab[is-wide] {
           bottom: 24px;
           right: 24px;
+        }
+
+        paper-fab[rtl] {
+          right: auto;
+          left: 16px;
+        }
+
+        paper-fab[rtl][is-wide] {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
         }
 
         a {
@@ -104,6 +117,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           icon="hass:plus"
           title="[[localize('ui.panel.config.automation.picker.add_automation')]]"
           on-click="addAutomation"
+          rtl$="[[rtl]]"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -131,6 +145,12 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       isWide: {
         type: Boolean,
       },
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -157,6 +177,10 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
 
   _backTapped() {
     history.back();
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 
