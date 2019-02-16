@@ -10,6 +10,7 @@ export class HaIconNext extends HaIcon {
         ? "hass:chevron-right"
         : "hass:chevron-left";
 
+    // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
     super.connectedCallback();
   }
 }

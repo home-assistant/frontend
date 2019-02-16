@@ -10,12 +10,13 @@ const paperIconButtonClass = customElements.get(
 
 export class HaPaperIconButtonArrowNext extends paperIconButtonClass {
   public connectedCallback() {
-    super.connectedCallback();
-
     this.icon =
       window.getComputedStyle(this).direction === "ltr"
         ? "hass:arrow-right"
         : "hass:arrow-left";
+
+    // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
+    super.connectedCallback();
   }
 }
 
