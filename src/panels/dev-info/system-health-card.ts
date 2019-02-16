@@ -51,7 +51,9 @@ class SystemHealthCard extends LitElement {
     if (!this._info) {
       sections.push(
         html`
-          <paper-spinner active></paper-spinner>
+          <div class="loading-container">
+            <paper-spinner active></paper-spinner>
+          </div>
         `
       );
     } else {
@@ -119,6 +121,12 @@ class SystemHealthCard extends LitElement {
 
       td:first-child {
         width: 33%;
+      }
+
+      .loading-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     `;
   }
