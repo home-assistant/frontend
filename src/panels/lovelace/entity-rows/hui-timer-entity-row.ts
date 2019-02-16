@@ -17,8 +17,9 @@ import { HassEntity } from "home-assistant-js-websocket";
 class HuiTimerEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityConfig;
-  @property() private _timeRemaining?: number | null;
-  private _hass?: HomeAssistant;
+  @property() private _timeRemaining?: number;
+  private _stateObj?: HassEntity;
+  private _interval?: Timeout;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -57,25 +58,23 @@ class HuiTimerEntityRow extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("hass") && this.hass !== this._hass) {
-      const oldStateObj = this._hass
-        ? this._hass.states[this._config!.entity]
-        : "";
+    if (changedProps.has("hass")) {
       const stateObj = this.hass!.states[this._config!.entity];
-      this._hass = this.hass;
 
-      if (oldStateObj !== stateObj) {
+      if (this._stateObj !== stateObj) {
         this._startInterval(stateObj);
       } else if (!stateObj) {
         this._clearInterval();
       }
+
+      this._stateObj = stateObj;
     }
   }
 
   private _clearInterval(): void {
-    if (this._timeRemaining) {
-      clearInterval(this._timeRemaining);
-      this._timeRemaining = null;
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = undefined;
     }
   }
 
@@ -84,7 +83,10 @@ class HuiTimerEntityRow extends LitElement {
     this._calculateRemaining(stateObj);
 
     if (stateObj.state === "active") {
-      setInterval(() => this._calculateRemaining(stateObj), 1000);
+      this._interval = setInterval(
+        () => this._calculateRemaining(stateObj),
+        1000
+      );
     }
   }
 
