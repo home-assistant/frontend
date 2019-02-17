@@ -147,11 +147,6 @@
             "gas": "Gas",
             "manual": "Manual"
         },
-        "climate_fan": {
-            "off": "Off",
-            "on": "On",
-            "auto": "Auto"
-        },
         "configurator": {
             "configure": "Configure",
             "configured": "Configured"
@@ -270,6 +265,15 @@
             "on": "On",
             "paused": "Paused",
             "returning": "Returning to dock"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+          "fan_mode": {
+            "off": "Off",
+            "on": "On",
+            "auto": "Auto"
+          }
         }
     },
     "state_badge": {
