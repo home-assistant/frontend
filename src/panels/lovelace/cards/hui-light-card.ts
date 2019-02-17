@@ -15,10 +15,6 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { toggleEntity } from "../common/entity/toggle-entity";
-import {
-  createErrorCardElement,
-  createErrorCardConfig,
-} from "./hui-error-card";
 
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -26,6 +22,7 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../components/hui-warning";
 
 const lightConfig = {
   radius: 80,
@@ -84,12 +81,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        ${createErrorCardElement(
-          createErrorCardConfig(
-            `Entity not found: ${this._config.entity}`,
-            this._config
-          )
-        )}
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 

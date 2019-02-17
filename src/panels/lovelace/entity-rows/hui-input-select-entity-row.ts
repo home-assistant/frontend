@@ -1,8 +1,10 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -10,7 +12,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
 import "../../../components/entity/state-badge";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 import { HomeAssistant } from "../../../types";
@@ -18,15 +20,8 @@ import { EntityRow, EntityConfig } from "./types";
 import { setOption } from "../../../data/input-select";
 
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
@@ -45,14 +40,11 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <state-badge .stateObj="${stateObj}"></state-badge>
       <paper-dropdown-menu
         selected-item-label="${stateObj.state}"
@@ -75,18 +67,16 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          display: flex;
-          align-items: center;
-        }
-        paper-dropdown-menu {
-          margin-left: 16px;
-          flex: 1;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: flex;
+        align-items: center;
+      }
+      paper-dropdown-menu {
+        margin-left: 16px;
+        flex: 1;
+      }
     `;
   }
 

@@ -1,13 +1,15 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  property,
+  CSSResult,
+  css,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
@@ -19,15 +21,8 @@ interface SensorEntityConfig extends EntityConfig {
 }
 
 class HuiSensorEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: SensorEntityConfig;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: SensorEntityConfig;
 
   public setConfig(config: SensorEntityConfig): void {
     if (!config) {
@@ -45,14 +40,11 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
           ${stateObj.attributes.device_class === "timestamp"
@@ -73,13 +65,11 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        div {
-          text-align: right;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      div {
+        text-align: right;
+      }
     `;
   }
 }

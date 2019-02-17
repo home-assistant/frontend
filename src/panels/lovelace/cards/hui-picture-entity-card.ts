@@ -8,6 +8,7 @@ import { classMap } from "lit-html/directives/class-map";
 
 import "../../../components/ha-card";
 import "../components/hui-image";
+import "../components/hui-warning";
 
 import computeDomain from "../../../common/entity/compute_domain";
 import computeStateDisplay from "../../../common/entity/compute_state_display";
@@ -19,10 +20,6 @@ import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  createErrorCardElement,
-  createErrorCardConfig,
-} from "./hui-error-card";
 
 interface Config extends LovelaceCardConfig {
   entity: string;
@@ -76,12 +73,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        ${createErrorCardElement(
-          createErrorCardConfig(
-            `Entity not found: ${this._config.entity}`,
-            this._config
-          )
-        )}
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 

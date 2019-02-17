@@ -1,29 +1,24 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import { isTiltOnly } from "../../../util/cover-model";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
 class HuiCoverEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -41,14 +36,11 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         ${isTiltOnly(stateObj)
           ? html`
@@ -67,14 +59,12 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-cover-controls,
-        ha-cover-tilt-controls {
-          margin-right: -0.57em;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-cover-controls,
+      ha-cover-tilt-controls {
+        margin-right: -0.57em;
+      }
     `;
   }
 }

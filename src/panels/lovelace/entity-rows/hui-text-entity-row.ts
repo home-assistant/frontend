@@ -1,27 +1,22 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  property,
+  CSSResult,
+  css,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
 class HuiTextEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -39,14 +34,11 @@ class HuiTextEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
           ${computeStateDisplay(
@@ -59,13 +51,11 @@ class HuiTextEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        div {
-          text-align: right;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      div {
+        text-align: right;
+      }
     `;
   }
 }

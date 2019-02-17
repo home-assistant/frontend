@@ -1,27 +1,22 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  CSSResult,
+  css,
+  property,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
 class HuiSceneEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -39,14 +34,11 @@ class HuiSceneEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         ${stateObj.attributes.can_cancel
           ? html`
@@ -64,15 +56,13 @@ class HuiSceneEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  protected renderStyle(): TemplateResult {
-    return html`
-      <style>
-        mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
-          margin-right: -0.57em;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      mwc-button {
+        color: var(--primary-color);
+        font-weight: 500;
+        margin-right: -0.57em;
+      }
     `;
   }
 

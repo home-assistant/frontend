@@ -1,7 +1,15 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  css,
+  CSSResult,
+  property,
+} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
 
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
@@ -15,15 +23,8 @@ import {
 } from "../../../data/media-player";
 
 class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
-
-  static get properties() {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
@@ -42,14 +43,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning .entity="${this._config.entity}"></hui-warning>
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row
         .hass="${this.hass}"
         .config="${this._config}"
@@ -89,13 +87,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .controls {
-          white-space: nowrap;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .controls {
+        white-space: nowrap;
+      }
     `;
   }
 
