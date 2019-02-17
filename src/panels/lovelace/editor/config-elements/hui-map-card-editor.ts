@@ -18,6 +18,7 @@ import { MapCardConfig } from "../../cards/hui-map-card";
 import { configElementStyle } from "./config-elements-style";
 import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
+import { PolymerChangedEvent } from "../../../../polymer-types";
 
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
@@ -124,7 +125,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (!this._config || !this.hass) {
       return;
     }
-    const target = ev.target! as EditorTarget;
     if (ev.detail && ev.detail.entities) {
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
@@ -132,7 +132,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     }
   }
 
-  private _valueChanged(ev: Event): void {
+  private _valueChanged(ev: PolymerChangedEvent<any>): void {
     if (!this._config || !this.hass) {
       return;
     }
