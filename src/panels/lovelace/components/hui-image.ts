@@ -167,15 +167,14 @@ class HuiImage extends LitElement {
     if (!this.hass || !this.cameraImage) {
       return;
     }
-    if (this._cameraImageSrc) {
-      URL.revokeObjectURL(this._cameraImageSrc);
-      this._cameraImageSrc = undefined;
-    }
     try {
       const { content_type: contentType, content } = await fetchThumbnail(
         this.hass,
         this.cameraImage
       );
+      if (this._cameraImageSrc) {
+        URL.revokeObjectURL(this._cameraImageSrc);
+      }
       this._cameraImageSrc = URL.createObjectURL(
         b64toBlob(content, contentType)
       );
