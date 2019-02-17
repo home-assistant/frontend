@@ -2,22 +2,20 @@ import {
   html,
   LitElement,
   TemplateResult,
-  property,
   CSSResult,
   css,
+  customElement,
 } from "lit-element";
 
+@customElement("hui-warning")
 export class HuiWarning extends LitElement {
-  @property() public warning?: string;
-  @property() public entity?: string;
-
   public getCardSize(): number {
     return 1;
   }
 
   protected render(): TemplateResult | void {
     return html`
-      ${this.warning || "Entity not available"}: ${this.entity || ""}
+      <slot></slot>
     `;
   }
 
@@ -26,7 +24,7 @@ export class HuiWarning extends LitElement {
       :host {
         display: block;
         color: black;
-        background-color: yellow;
+        background-color: #fce588;
         padding: 8px;
       }
     `;
@@ -38,5 +36,3 @@ declare global {
     "hui-warning": HuiWarning;
   }
 }
-
-customElements.define("hui-warning", HuiWarning);
