@@ -18,6 +18,7 @@ import {
   selectedDemoConfig,
   setDemoConfig,
   selectedDemoConfigIndex,
+  setDemoConfigLanguage,
 } from "../configs/demo-configs";
 
 export class HADemoCard extends LitElement implements LovelaceCard {
@@ -87,6 +88,21 @@ export class HADemoCard extends LitElement implements LovelaceCard {
           <a href="https://www.home-assistant.io" target="_blank">
             <paper-button>Learn more about Home Assistant</paper-button>
           </a>
+          ${!this._switching
+            ? until(
+                selectedDemoConfig.then((conf) =>
+                  conf.language
+                    ? html`
+                        <paper-button
+                          @click=${this._setLanguage}
+                          class="setLanguageAction"
+                          >Enable custom language</paper-button
+                        >
+                      `
+                    : ""
+                )
+              )
+            : ""}
         </div>
       </ha-card>
     `;
@@ -110,6 +126,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   private async _updateConfig(index: number) {
     this._switching = true;
+
     try {
       await setDemoConfig(this, this.hass!, this.lovelace!, index);
     } catch (err) {
@@ -119,6 +136,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     } finally {
       this._switching = false;
     }
+  }
+
+  private _setLanguage() {
+    setDemoConfigLanguage(this, this.hass!);
   }
 
   static get styles(): CSSResult[] {
@@ -133,14 +154,13 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         }
 
         .content {
-          padding: 16px;
+          padding: 4px 16px;
         }
 
         .picker {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          height: 60px;
         }
 
         .picker div {
@@ -152,12 +172,32 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         }
 
         .actions {
-          padding-left: 5px;
+          padding-left: 12px;
         }
 
         .actions paper-button {
           color: var(--primary-color);
           font-weight: 500;
+          padding: 4px 0;
+        }
+
+        /* The element to apply the animation to */
+        .setLanguageAction {
+          animation-name: opacityAnimate;
+          animation-duration: 2s;
+          animation-iteration-count: infinite;
+        }
+
+        @keyframes opacityAnimate {
+          0% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
         }
       `,
     ];

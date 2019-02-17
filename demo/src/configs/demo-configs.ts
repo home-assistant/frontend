@@ -41,6 +41,13 @@ export const setDemoConfig = async (
   hass.addEntities(config.entities(), true);
   lovelace.saveConfig(config.lovelace());
   hass.mockTheme(config.theme());
+};
+
+export const setDemoConfigLanguage = async (
+  host: HTMLElement,
+  hass: MockHomeAssistant
+) => {
+  const config = await selectedDemoConfig;
 
   if (config.language) {
     lastSelectedLanguage = hass.selectedLanguage || hass.language;
