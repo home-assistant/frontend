@@ -15,6 +15,10 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { toggleEntity } from "../common/entity/toggle-entity";
+import {
+  createErrorCardElement,
+  createErrorCardConfig,
+} from "./hui-error-card";
 
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -78,41 +82,44 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config!.entity] as LightEntity;
 
+    if (!stateObj) {
+      return html`
+        ${createErrorCardElement(
+          createErrorCardConfig(
+            `Entity not found: ${this._config.entity}`,
+            this._config
+          )
+        )}
+      `;
+    }
+
     return html`
       ${this.renderStyle()}
       <ha-card>
-        ${!stateObj
-          ? html`
-              <div class="not-found">
-                Entity not available: ${this._config.entity}
-              </div>
-            `
-          : html`
-              <paper-icon-button
-                icon="hass:dots-vertical"
-                class="more-info"
-                @click="${this._handleMoreInfo}"
-              ></paper-icon-button>
-              <div id="light"></div>
-              <div id="tooltip">
-                <div class="icon-state">
-                  <ha-icon
-                    class="light-icon"
-                    data-state="${stateObj.state}"
-                    .icon="${stateIcon(stateObj)}"
-                    style="${styleMap({
-                      filter: this._computeBrightness(stateObj),
-                      color: this._computeColor(stateObj),
-                    })}"
-                    @click="${this._handleTap}"
-                  ></ha-icon>
-                  <div class="brightness" @ha-click="${this._handleTap}"></div>
-                  <div class="name">
-                    ${this._config.name || computeStateName(stateObj)}
-                  </div>
-                </div>
-              </div>
-            `}
+        <paper-icon-button
+          icon="hass:dots-vertical"
+          class="more-info"
+          @click="${this._handleMoreInfo}"
+        ></paper-icon-button>
+        <div id="light"></div>
+        <div id="tooltip">
+          <div class="icon-state">
+            <ha-icon
+              class="light-icon"
+              data-state="${stateObj.state}"
+              .icon="${stateIcon(stateObj)}"
+              style="${styleMap({
+                filter: this._computeBrightness(stateObj),
+                color: this._computeColor(stateObj),
+              })}"
+              @click="${this._handleTap}"
+            ></ha-icon>
+            <div class="brightness" @ha-click="${this._handleTap}"></div>
+            <div class="name">
+              ${this._config.name || computeStateName(stateObj)}
+            </div>
+          </div>
+        </div>
       </ha-card>
     `;
   }
@@ -271,11 +278,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         }
         .show_brightness {
           opacity: 1;
-        }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
         }
         .more-info {
           position: absolute;
