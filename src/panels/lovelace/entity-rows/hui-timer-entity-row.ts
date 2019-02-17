@@ -19,7 +19,7 @@ class HuiTimerEntityRow extends LitElement {
   @property() private _config?: EntityConfig;
   @property() private _timeRemaining?: number;
   private _stateObj?: HassEntity;
-  private _interval?: Timeout;
+  private _interval?: NodeJS.Timeout;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
