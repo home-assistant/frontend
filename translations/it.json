@@ -1036,9 +1036,9 @@
                     "last_action": "Ultima azione"
                 },
                 "sun": {
-                    "elevation": "Alba",
-                    "rising": "Tramonto",
-                    "setting": "Impostazione"
+                    "elevation": "Altezza",
+                    "rising": "Alba",
+                    "setting": "Tramonto"
                 },
                 "updater": {
                     "title": "Aggiorna istruzioni"
