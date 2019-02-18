@@ -1,26 +1,26 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  css,
+  CSSResult,
+  property,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 
 import "../../../components/ha-card";
+import "../components/hui-warning";
+
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
-
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import {
-  createErrorCardConfig,
-  createErrorCardElement,
-} from "./hui-error-card";
 
 export interface SeverityConfig {
   green?: number;
@@ -54,16 +54,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return {};
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
   private _updated?: boolean;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
 
   public getCardSize(): number {
     return 2;
@@ -88,57 +81,59 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (!this._config || !this.hass) {
       return html``;
     }
+
     const stateObj = this.hass.states[this._config.entity];
-    let state;
-    let error;
 
     if (!stateObj) {
-      error = "Entity not available: " + this._config.entity;
-    } else {
-      state = Number(stateObj.state);
-
-      if (isNaN(state)) {
-        error = "Entity is non-numeric: " + this._config.entity;
-      }
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
     }
 
-    if (error) {
+    const state = Number(stateObj.state);
+
+    if (isNaN(state)) {
       return html`
-        ${createErrorCardElement(createErrorCardConfig(error, this._config))}
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_non_numeric",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
-        ${error
-          ? html`
-              <div class="not-found">${error}</div>
-            `
-          : html`
-              <div class="container">
-                <div class="gauge-a"></div>
-                <div class="gauge-b"></div>
-                <div
-                  class="gauge-c"
-                  style="${styleMap({
-                    transform: `rotate(${this._translateTurn(state)}turn)`,
-                    "background-color": this._computeSeverity(state),
-                  })}"
-                ></div>
-                <div class="gauge-data">
-                  <div id="percent">
-                    ${stateObj.state}
-                    ${this._config.unit ||
-                      stateObj.attributes.unit_of_measurement ||
-                      ""}
-                  </div>
-                  <div id="name">
-                    ${this._config.name || computeStateName(stateObj)}
-                  </div>
-                </div>
-              </div>
-            `}
+        <div class="container">
+          <div class="gauge-a"></div>
+          <div class="gauge-b"></div>
+          <div
+            class="gauge-c"
+            style="${styleMap({
+              transform: `rotate(${this._translateTurn(state)}turn)`,
+              "background-color": this._computeSeverity(state),
+            })}"
+          ></div>
+          <div class="gauge-data">
+            <div id="percent">
+              ${stateObj.state}
+              ${this._config.unit ||
+                stateObj.attributes.unit_of_measurement ||
+                ""}
+            </div>
+            <div id="name">
+              ${this._config.name || computeStateName(stateObj)}
+            </div>
+          </div>
+        </div>
       </ha-card>
     `;
   }
@@ -225,90 +220,88 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-card {
-          --base-unit: 50px;
-          height: calc(var(--base-unit) * 3);
-          position: relative;
-          cursor: pointer;
-        }
-        .container {
-          width: calc(var(--base-unit) * 4);
-          height: calc(var(--base-unit) * 2);
-          position: absolute;
-          top: calc(var(--base-unit) * 1.5);
-          left: 50%;
-          overflow: hidden;
-          text-align: center;
-          transform: translate(-50%, -50%);
-        }
-        .gauge-a {
-          z-index: 1;
-          position: absolute;
-          background-color: var(--primary-background-color);
-          width: calc(var(--base-unit) * 4);
-          height: calc(var(--base-unit) * 2);
-          top: 0%;
-          border-radius: calc(var(--base-unit) * 2.5)
-            calc(var(--base-unit) * 2.5) 0px 0px;
-        }
-        .gauge-b {
-          z-index: 3;
-          position: absolute;
-          background-color: var(--paper-card-background-color);
-          width: calc(var(--base-unit) * 2.5);
-          height: calc(var(--base-unit) * 1.25);
-          top: calc(var(--base-unit) * 0.75);
-          margin-left: calc(var(--base-unit) * 0.75);
-          margin-right: auto;
-          border-radius: calc(var(--base-unit) * 2.5)
-            calc(var(--base-unit) * 2.5) 0px 0px;
-        }
-        .gauge-c {
-          z-index: 2;
-          position: absolute;
-          background-color: var(--label-badge-blue);
-          width: calc(var(--base-unit) * 4);
-          height: calc(var(--base-unit) * 2);
-          top: calc(var(--base-unit) * 2);
-          margin-left: auto;
-          margin-right: auto;
-          border-radius: 0px 0px calc(var(--base-unit) * 2)
-            calc(var(--base-unit) * 2);
-          transform-origin: center top;
-        }
-        .init .gauge-c {
-          transition: all 1.3s ease-in-out;
-        }
-        .gauge-data {
-          z-index: 4;
-          color: var(--primary-text-color);
-          line-height: calc(var(--base-unit) * 0.3);
-          position: absolute;
-          width: calc(var(--base-unit) * 4);
-          height: calc(var(--base-unit) * 2.1);
-          top: calc(var(--base-unit) * 1.2);
-          margin-left: auto;
-          margin-right: auto;
-        }
-        .init .gauge-data {
-          transition: all 1s ease-out;
-        }
-        .gauge-data #percent {
-          font-size: calc(var(--base-unit) * 0.55);
-        }
-        .gauge-data #name {
-          padding-top: calc(var(--base-unit) * 0.15);
-          font-size: calc(var(--base-unit) * 0.3);
-        }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-card {
+        --base-unit: 50px;
+        height: calc(var(--base-unit) * 3);
+        position: relative;
+        cursor: pointer;
+      }
+      .container {
+        width: calc(var(--base-unit) * 4);
+        height: calc(var(--base-unit) * 2);
+        position: absolute;
+        top: calc(var(--base-unit) * 1.5);
+        left: 50%;
+        overflow: hidden;
+        text-align: center;
+        transform: translate(-50%, -50%);
+      }
+      .gauge-a {
+        z-index: 1;
+        position: absolute;
+        background-color: var(--primary-background-color);
+        width: calc(var(--base-unit) * 4);
+        height: calc(var(--base-unit) * 2);
+        top: 0%;
+        border-radius: calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5)
+          0px 0px;
+      }
+      .gauge-b {
+        z-index: 3;
+        position: absolute;
+        background-color: var(--paper-card-background-color);
+        width: calc(var(--base-unit) * 2.5);
+        height: calc(var(--base-unit) * 1.25);
+        top: calc(var(--base-unit) * 0.75);
+        margin-left: calc(var(--base-unit) * 0.75);
+        margin-right: auto;
+        border-radius: calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5)
+          0px 0px;
+      }
+      .gauge-c {
+        z-index: 2;
+        position: absolute;
+        background-color: var(--label-badge-blue);
+        width: calc(var(--base-unit) * 4);
+        height: calc(var(--base-unit) * 2);
+        top: calc(var(--base-unit) * 2);
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 0px 0px calc(var(--base-unit) * 2)
+          calc(var(--base-unit) * 2);
+        transform-origin: center top;
+      }
+      .init .gauge-c {
+        transition: all 1.3s ease-in-out;
+      }
+      .gauge-data {
+        z-index: 4;
+        color: var(--primary-text-color);
+        line-height: calc(var(--base-unit) * 0.3);
+        position: absolute;
+        width: calc(var(--base-unit) * 4);
+        height: calc(var(--base-unit) * 2.1);
+        top: calc(var(--base-unit) * 1.2);
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .init .gauge-data {
+        transition: all 1s ease-out;
+      }
+      .gauge-data #percent {
+        font-size: calc(var(--base-unit) * 0.55);
+      }
+      .gauge-data #name {
+        padding-top: calc(var(--base-unit) * 0.15);
+        font-size: calc(var(--base-unit) * 0.3);
+      }
+      .not-found {
+        flex: 1;
+        background-color: yellow;
+        padding: 8px;
+      }
     `;
   }
 }

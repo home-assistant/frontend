@@ -19,10 +19,7 @@ import {
 
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
-import {
-  createErrorCardConfig,
-  createErrorCardElement,
-} from "./hui-error-card";
+import "../components/hui-warning";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -107,11 +104,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
-      const element = createErrorCardElement(
-        createErrorCardConfig("Entity not Found!", this._config)
-      );
       return html`
-        ${element}
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
