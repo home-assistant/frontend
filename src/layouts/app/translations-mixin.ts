@@ -1,5 +1,8 @@
 import { translationMetadata } from "../../resources/translations-metadata";
-import { getTranslation } from "../../util/hass-translation";
+import {
+  getTranslation,
+  getLocalTranslation,
+} from "../../util/hass-translation";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
@@ -25,9 +28,10 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     protected hassConnected() {
       super.hassConnected();
       // user may have different language setting, reload resource
-      this._loadResources(this.hass);
-      this._loadBackendTranslations();
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
+      this._loadResources(this.hass!);
+      this._loadBackendTranslations();
+      this._loadTranslationFragment(this.hass!.panelUrl);
     }
 
     protected hassReconnected() {
@@ -69,9 +73,8 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
 
     private async _loadResources(hass?, fragment?) {
       const result = await getTranslation(
-        hass,
         fragment,
-        hass ? hass.language : undefined
+        hass ? hass.language : getLocalTranslation()
       );
       this._updateResources(result.language, result.data);
     }
@@ -99,8 +102,10 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     private _selectLanguage(event) {
       const language: string = event.detail.language;
       this._updateHass({ language });
+      if (event.detail.save) {
+        saveFrontendUserData(this.hass!, "language", language);
+      }
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
-      saveFrontendUserData(this.hass!, "language", language);
       this._loadResources(this.hass!);
       this._loadBackendTranslations();
       this._loadTranslationFragment(this.hass!.panelUrl);

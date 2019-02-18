@@ -12,7 +12,10 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 import EventsMixin from "../../mixins/events-mixin";
 
 import { getState } from "../../util/ha-pref-storage";
-import { getActiveTranslation } from "../../util/hass-translation";
+import {
+  getActiveTranslation,
+  getLocalTranslation,
+} from "../../util/hass-translation";
 import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
 import computeStateName from "../../common/entity/compute_state_name";
@@ -50,6 +53,7 @@ export default (superClass) =>
           user: null,
           panelUrl: this._panelUrl,
 
+          language: getLocalTranslation(),
           // If resources are already loaded, don't discard them
           resources: (this.hass && this.hass.resources) || null,
           localize: () => "",
@@ -154,9 +158,11 @@ export default (superClass) =>
         getState()
       );
 
-      // getActiveTranslation need call callWS method
-      this.hass.language = await getActiveTranslation(this.hass);
-
+      getActiveTranslation(this.hass).then((language) => {
+        if (this.hass.language !== language) {
+          this.fire("hass-language-select", { language, save: false });
+        }
+      });
       this.hassConnected();
     }
 

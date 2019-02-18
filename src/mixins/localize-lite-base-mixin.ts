@@ -36,7 +36,6 @@ export const localizeLiteBaseMixin = (superClass) =>
 
     private async _updateResources() {
       const { language, data } = await getTranslation(
-        null,
         this.translationFragment,
         this.language
       );
