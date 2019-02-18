@@ -9,6 +9,13 @@ import {
 import "@polymer/paper-icon-button/paper-icon-button";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
+declare global {
+  // tslint:disable-next-line
+  interface HASSDomEvents {
+    "opened-changed": { value: boolean };
+  }
+}
+
 class HuiNotificationsButton extends LitElement {
   @property() public notifications?: string[];
   @property() public opened?: boolean;
@@ -19,7 +26,7 @@ class HuiNotificationsButton extends LitElement {
         icon="hass:bell"
         @click="${this._clicked}"
       ></paper-icon-button>
-      ${this.notifications
+      ${this.notifications && this.notifications.length > 0
         ? html`
             <span class="indicator">
               <div>${this.notifications.length}</div>
