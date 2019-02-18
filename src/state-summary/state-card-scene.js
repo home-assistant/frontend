@@ -15,8 +15,6 @@ class StateCardScene extends LocalizeMixin(PolymerElement) {
       <style include="iron-flex iron-flex-alignment"></style>
       <style>
         mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
           top: 3px;
           height: 37px;
           margin-right: -0.57em;

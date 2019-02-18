@@ -37,8 +37,6 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           margin: 16px auto;
         }
         mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
           margin-right: -0.57em;
         }
       </style>
