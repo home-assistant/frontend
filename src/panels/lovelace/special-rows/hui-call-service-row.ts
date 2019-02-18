@@ -68,8 +68,6 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
           text-overflow: ellipsis;
         }
         mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
           margin-right: -0.57em;
         }
       </style>
