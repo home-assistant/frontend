@@ -581,11 +581,27 @@
                 },
                 "area_registry": {
                     "caption": "Gebiedenregister",
-                    "description": "Overzicht van alle gebieden in je huis."
+                    "description": "Overzicht van alle gebieden in je huis.",
+                    "picker": {
+                        "header": "Gebiedenregister"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Entiteiten register",
-                    "description": "Overzicht van alle gekende entiteiten"
+                    "description": "Overzicht van alle gekende entiteiten",
+                    "picker": {
+                        "header": "Entiteiten register"
+                    },
+                    "editor": {
+                        "delete": "VERWIJDEREN"
+                    }
+                },
+                "person": {
+                    "caption": "Personen",
+                    "description": "Beheer de personen die Home Assistant volgt.",
+                    "detail": {
+                        "name": "Naam"
+                    }
                 }
             },
             "profile": {

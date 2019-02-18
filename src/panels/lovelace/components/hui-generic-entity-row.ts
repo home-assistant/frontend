@@ -1,7 +1,3 @@
-import "../../../components/entity/state-badge";
-import "../../../components/ha-relative-time";
-import "../../../components/ha-icon";
-
 import computeStateName from "../../../common/entity/compute_state_name";
 import {
   LitElement,
@@ -11,9 +7,15 @@ import {
   PropertyValues,
   property,
 } from "lit-element";
+
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/hui-entities-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
+
+import "../../../components/entity/state-badge";
+import "../../../components/ha-relative-time";
+import "../../../components/ha-icon";
+import "../components/hui-warning";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -30,7 +32,13 @@ class HuiGenericEntityRow extends LitElement {
 
     if (!stateObj) {
       return html`
-        <div class="not-found">Entity not available: [[config.entity]]</div>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this.config.entity
+          )}</hui-warning
+        >
       `;
     }
 
@@ -106,11 +114,6 @@ class HuiGenericEntityRow extends LitElement {
       ha-relative-time {
         display: block;
         color: var(--secondary-text-color);
-      }
-      .not-found {
-        flex: 1;
-        background-color: yellow;
-        padding: 8px;
       }
       state-badge {
         flex: 0 0 40px;
