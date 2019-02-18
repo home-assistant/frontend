@@ -7,6 +7,7 @@ import {
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
 
 import timerTimeRemaining from "../../../common/entity/timer_time_remaining";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
@@ -41,9 +42,13 @@ class HuiTimerEntityRow extends LitElement {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
@@ -60,7 +65,9 @@ class HuiTimerEntityRow extends LitElement {
     if (changedProps.has("hass")) {
       const stateObj = this.hass!.states[this._config!.entity];
       const oldHass = changedProps.get("hass") as this["hass"];
-      const oldStateObj = oldHass ? oldHass.states[this._config!.entity] : "";
+      const oldStateObj = oldHass
+        ? oldHass.states[this._config!.entity]
+        : undefined;
 
       if (oldStateObj !== stateObj) {
         this._startInterval(stateObj);
