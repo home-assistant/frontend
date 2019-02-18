@@ -1,5 +1,6 @@
 import deepClone from "deep-clone-simple";
 
+import "../elements/hui-conditional-element";
 import "../elements/hui-icon-element";
 import "../elements/hui-image-element";
 import "../elements/hui-service-button-element";
@@ -23,6 +24,7 @@ const ELEMENT_TYPES = new Set([
   "state-badge",
   "state-icon",
   "state-label",
+  "conditional",
 ]);
 const TIMEOUT = 2000;
 

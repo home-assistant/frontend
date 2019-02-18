@@ -10,7 +10,6 @@ export interface LovelaceElementConfig {
   service_data?: object;
   tap_action?: ActionConfig;
   title?: string;
-  conditions: Condition[];
 }
 
 export interface LovelaceElement extends HTMLElement {
