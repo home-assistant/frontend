@@ -899,6 +899,10 @@
             "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
             "migrate": "Migrate config"
           }
+        },
+        "warning": {
+          "entity_not_found": "Entity not available: {entity}",
+          "entity_non_numeric": "Entity is non-numeric: {entity}"
         }
       },
       "mailbox": {
