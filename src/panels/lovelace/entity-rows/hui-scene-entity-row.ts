@@ -65,8 +65,6 @@ class HuiSceneEntityRow extends LitElement implements EntityRow {
   static get styles(): CSSResult {
     return css`
       mwc-button {
-        color: var(--primary-color);
-        font-weight: 500;
         margin-right: -0.57em;
       }
     `;
