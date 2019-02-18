@@ -18,8 +18,7 @@ class HuiTimerEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityConfig;
   @property() private _timeRemaining?: number;
-  private _stateObj?: HassEntity;
-  private _interval?: NodeJS.Timeout;
+  private _interval?: number;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -60,20 +59,20 @@ class HuiTimerEntityRow extends LitElement {
 
     if (changedProps.has("hass")) {
       const stateObj = this.hass!.states[this._config!.entity];
+      const oldHass = changedProps.get("hass") as this["hass"];
+      const oldStateObj = oldHass ? oldHass.states[this._config!.entity] : "";
 
-      if (this._stateObj !== stateObj) {
+      if (oldStateObj !== stateObj) {
         this._startInterval(stateObj);
       } else if (!stateObj) {
         this._clearInterval();
       }
-
-      this._stateObj = stateObj;
     }
   }
 
   private _clearInterval(): void {
     if (this._interval) {
-      clearInterval(this._interval);
+      window.clearInterval(this._interval);
       this._interval = undefined;
     }
   }
@@ -83,7 +82,7 @@ class HuiTimerEntityRow extends LitElement {
     this._calculateRemaining(stateObj);
 
     if (stateObj.state === "active") {
-      this._interval = setInterval(
+      this._interval = window.setInterval(
         () => this._calculateRemaining(stateObj),
         1000
       );
