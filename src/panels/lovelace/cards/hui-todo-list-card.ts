@@ -1,0 +1,340 @@
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  css,
+  CSSResult,
+  property,
+} from "lit-element";
+import { repeat } from "lit-html/directives/repeat";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-checkbox/paper-checkbox";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+
+import { HomeAssistant } from "../../../types";
+import { LovelaceCard } from "../types";
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import {
+  createToDoListAPI,
+  ToDoListAPI,
+  ToDoListItem,
+} from "../../../data/todo-list";
+
+export interface Config extends LovelaceCardConfig {
+  provider?: string;
+  listId?: string;
+}
+
+class HuiToDoListCard extends LitElement implements LovelaceCard {
+  public static getStubConfig(): object {
+    return {};
+  }
+
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
+  @property() private _uncheckedItems?: ToDoListItem[];
+  @property() private _checkedItems?: ToDoListItem[];
+  private _toDoListAPI: ToDoListAPI;
+  private _unsubEvents?: Promise<() => Promise<void>>;
+
+  public getCardSize(): number {
+    return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
+  }
+
+  private get _showCompleted(): boolean {
+    return !!(this._config && this._config.show_completed);
+  }
+
+  public setConfig(config: Config): void {
+    if (!config || !config.provider) {
+      throw new Error("Invalid Configuration: 'provider' required!");
+    }
+    this._toDoListAPI = createToDoListAPI(config.provider);
+
+    if (!config.listId && this._toDoListAPI.listIdRequired()) {
+      throw new Error(
+        "Invalid Configuration: 'listId' required for this provider!"
+      );
+    }
+
+    this._config = config;
+    this._uncheckedItems = [];
+    this._checkedItems = [];
+    this._fetchData();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+
+    if (this._config && this._config.provider) {
+      this._toDoListAPI = createToDoListAPI(this._config.provider);
+    }
+
+    if (this.hass) {
+      this._unsubEvents = this.hass.connection.subscribeEvents(
+        () => this._fetchData(),
+        "todo_list_updated"
+      );
+      this._fetchData();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    if (this._unsubEvents) {
+      this._unsubEvents.then((unsub) => unsub());
+    }
+  }
+
+  protected render(): TemplateResult | void {
+    if (!this._config || !this.hass) {
+      return html``;
+    }
+
+    return html`
+      <ha-card .header="${this._config.title}">
+        <div class="addRow">
+          <ha-icon
+            class="addButton"
+            @click="${this._addItem}"
+            icon="hass:plus"
+            .title="${this.hass!.localize(
+              "ui.panel.lovelace.cards.todo-list.add_item"
+            )}"
+          >
+          </ha-icon>
+          <paper-item-body>
+            <paper-input
+              no-label-float
+              class="addBox"
+              placeholder="${this.hass!.localize(
+                "ui.panel.lovelace.cards.todo-list.add_item"
+              )}"
+              @keydown="${this._addKeyPress}"
+            ></paper-input>
+          </paper-item-body>
+        </div>
+        ${repeat(
+          this._uncheckedItems!,
+          (item) => item.id,
+          (item, index) =>
+            html`
+              <div class="editRow">
+                <paper-checkbox
+                  slot="item-icon"
+                  id="${index}"
+                  ?checked="${item.complete}"
+                  .itemId="${item.id}"
+                  @click="${this._completeItem}"
+                  tabindex="0"
+                ></paper-checkbox>
+                <paper-item-body>
+                  <paper-input
+                    no-label-float
+                    .value="${item.name}"
+                    .itemId="${item.id}"
+                    @change="${this._saveEdit}"
+                  ></paper-input>
+                </paper-item-body>
+              </div>
+            `
+        )}
+        ${this._checkedItems!.length > 0
+          ? html`
+              <div class="divider"></div>
+              <div class="checked">
+                <span class="label">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.cards.todo-list.checked_items"
+                  )}
+                </span>
+                <ha-icon
+                  class="clearall"
+                  @click="${this._clearItems}"
+                  icon="hass:notification-clear-all"
+                  .title="${this.hass!.localize(
+                    "ui.panel.lovelace.cards.todo-list.clear_items"
+                  )}"
+                >
+                </ha-icon>
+              </div>
+              ${repeat(
+                this._checkedItems!,
+                (item) => item.id,
+                (item, index) =>
+                  html`
+                    <div class="editRow">
+                      <paper-checkbox
+                        slot="item-icon"
+                        id="${index}"
+                        ?checked="${item.complete}"
+                        .itemId="${item.id}"
+                        @click="${this._completeItem}"
+                        tabindex="0"
+                      ></paper-checkbox>
+                      <paper-item-body>
+                        <paper-input
+                          no-label-float
+                          .value="${item.name}"
+                          .itemId="${item.id}"
+                          @change="${this._saveEdit}"
+                        ></paper-input>
+                      </paper-item-body>
+                    </div>
+                  `
+              )}
+            `
+          : ""}
+      </ha-card>
+    `;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        .editRow,
+        .addRow {
+          display: flex;
+          flex-direction: row;
+        }
+        .addButton {
+          padding: 9px 15px 11px 15px;
+          cursor: pointer;
+        }
+        paper-item-body {
+          width: 75%;
+        }
+        paper-checkbox {
+          padding: 11px 11px 11px 18px;
+        }
+        paper-input {
+          --paper-input-container-underline: {
+            display: none;
+          }
+          --paper-input-container-underline-focus: {
+            display: none;
+          }
+          --paper-input-container-underline-disabled: {
+            display: none;
+          }
+          position: relative;
+          top: 1px;
+        }
+        .checked {
+          margin-left: 17px;
+          margin-bottom: 11px;
+          margin-top: 11px;
+        }
+        .label {
+          color: var(--primary-color);
+        }
+        .divider {
+          height: 1px;
+          background-color: var(--divider-color);
+          margin: 10px;
+        }
+        .clearall {
+          cursor: pointer;
+          margin-bottom: 3px;
+          float: right;
+          padding-right: 10px;
+        }
+        .addRow > ha-icon {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
+  }
+
+  private async _fetchData(): Promise<void> {
+    if (this.hass) {
+      const checkedItems: ToDoListItem[] = [];
+      const uncheckedItems: ToDoListItem[] = [];
+      const listId = this._config ? this._config.listId : null;
+      const showCompleted = this._showCompleted;
+
+      const items = await this._toDoListAPI.fetchItems(
+        this.hass,
+        listId,
+        showCompleted
+      );
+      for (const key in items) {
+        if (items[key].complete) {
+          checkedItems.push(items[key]);
+        } else {
+          uncheckedItems.push(items[key]);
+        }
+      }
+      this._checkedItems = checkedItems;
+      this._uncheckedItems = uncheckedItems;
+    }
+  }
+
+  private _completeItem(ev): void {
+    const listId = this._config!.listId;
+    const updatedTask: ToDoListItem = {
+      complete: ev.target.checked,
+    };
+    this._toDoListAPI
+      .updateItem(this.hass!, listId, ev.target.itemId, updatedTask)
+      .finally(() => this._fetchData());
+  }
+
+  private _saveEdit(ev): void {
+    this._toDoListAPI
+      .updateItem(this.hass!, ev.target.itemId, {
+        name: ev.target.value,
+      })
+      .finally(() => this._fetchData());
+
+    ev.target.blur();
+  }
+
+  private _clearItems(): void {
+    if (this.hass) {
+      this._toDoListAPI.clearItems(this.hass).catch(() => this._fetchData());
+    }
+  }
+
+  private get _newItem(): PaperInputElement {
+    return this.shadowRoot!.querySelector(".addBox") as PaperInputElement;
+  }
+
+  private _addItem(ev): void {
+    const newItem = this._newItem;
+
+    if (newItem.value!.length > 0) {
+      const listId = this._config!.listId;
+      const newTask: ToDoListItem = {
+        name: newItem.value!,
+        complete: false,
+      };
+
+      this._toDoListAPI
+        .addItem(this.hass!, listId, newTask)
+        .finally(() => this._fetchData());
+    }
+
+    newItem.value = "";
+    if (ev) {
+      newItem.focus();
+    }
+  }
+
+  private _addKeyPress(ev): void {
+    if (ev.keyCode === 13) {
+      this._addItem(null);
+    }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-todo-list-card": HuiToDoListCard;
+  }
+}
+
+customElements.define("hui-todo-list-card", HuiToDoListCard);

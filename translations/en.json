@@ -301,6 +301,11 @@
                 "add_item": "Add item",
                 "microphone_tip": "Tap the microphone on the top right and say “Add candy to my shopping list”"
             },
+            "todo-list": {
+                "clear_completed": "Clear completed",
+                "add_item": "Add item",
+                "microphone_tip": "Tap the microphone on the top right and say “Add candy to my shopping list”"
+            },
             "history": {
                 "showing_entries": "Showing entries for",
                 "period": "Period"

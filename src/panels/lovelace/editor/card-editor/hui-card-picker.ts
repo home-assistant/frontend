@@ -31,6 +31,7 @@ const cards = [
   { name: "Thermostat", type: "thermostat" },
   { name: "Vertical Stack", type: "vertical-stack" },
   { name: "Weather Forecast", type: "weather-forecast" },
+  { name: "ToDo List", type: "todo-list" },
 ];
 
 export class HuiCardPicker extends LitElement {
