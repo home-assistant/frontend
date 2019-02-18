@@ -297,11 +297,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         padding-top: calc(var(--base-unit) * 0.15);
         font-size: calc(var(--base-unit) * 0.3);
       }
-      .not-found {
-        flex: 1;
-        background-color: yellow;
-        padding: 8px;
-      }
     `;
   }
 }
