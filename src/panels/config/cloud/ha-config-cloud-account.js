@@ -66,10 +66,6 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           text-transform: capitalize;
           padding: 16px;
         }
-        mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
-        }
       </style>
       <hass-subpage header="Home Assistant Cloud">
         <div class="content">
