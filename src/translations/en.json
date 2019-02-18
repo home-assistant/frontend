@@ -271,6 +271,11 @@
       "off": "[%key:state::default::off%]",
       "on": "[%key:state::default::on%]"
     },
+    "timer": {
+      "active": "active",
+      "idle": "idle",
+      "paused": "paused"
+    },
     "vacuum": {
       "cleaning": "Cleaning",
       "docked": "Docked",
@@ -399,11 +404,6 @@
       },
       "script": {
         "execute": "Execute"
-      },
-      "timer": {
-        "active": "active",
-        "idle": "idle",
-        "paused": "paused"
       },
       "vacuum": {
         "actions": {
