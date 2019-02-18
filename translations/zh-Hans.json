@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "自定义",
-                    "description": "自定义实体"
+                    "description": "自定义实体",
+                    "picker": {
+                        "header": "自定义",
+                        "introduction": "调整每个实体的属性。添加\/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
+                    }
                 },
                 "automation": {
                     "caption": "自动化",
@@ -568,17 +572,50 @@
                         "hub": "链接于",
                         "firmware": "固件：{version}",
                         "device_unavailable": "设备不可用",
-                        "entity_unavailable": "实体不可用"
+                        "entity_unavailable": "实体不可用",
+                        "no_area": "没有区域"
                     }
                 },
                 "zha": {
                     "description": "Zigbee 智能家居(ZHA) 网络管理"
                 },
                 "area_registry": {
-                    "description": "您家中所有区域的概览。"
+                    "description": "您家中所有区域的概览。",
+                    "picker": {
+                        "header": "注册区域"
+                    },
+                    "no_areas": "看来你还没有建立区域!",
+                    "create_area": "创建区域",
+                    "editor": {
+                        "default_name": "新区域",
+                        "delete": "删除",
+                        "update": "更新",
+                        "create": "创建"
+                    }
                 },
                 "entity_registry": {
-                    "description": "所有已知实体的概览。"
+                    "caption": "实体注册",
+                    "description": "所有已知实体的概览。",
+                    "picker": {
+                        "header": "实体注册",
+                        "unavailable": "(不可用)"
+                    },
+                    "editor": {
+                        "unavailable": "该实体暂不可用。",
+                        "default_name": "新区域",
+                        "delete": "删除",
+                        "update": "更新"
+                    }
+                },
+                "person": {
+                    "caption": "人",
+                    "description": "管理Home Assistant跟踪的人员。",
+                    "detail": {
+                        "name": "名字",
+                        "device_tracker_intro": "选择属于此人的设备。",
+                        "device_tracker_picked": "跟踪设备",
+                        "device_tracker_pick": "选择要跟踪的设备"
+                    }
                 }
             },
             "profile": {
@@ -674,7 +711,7 @@
                                     "data": {
                                         "code": "双重认证口令"
                                     },
-                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
+                                    "description": "在设备上打开 **{mfa_module_name}** 查看双重认证口令并验证您的身份:"
                                 }
                             },
                             "error": {
@@ -697,7 +734,7 @@
                                     "data": {
                                         "code": "双重认证口令"
                                     },
-                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
+                                    "description": "在设备上打开 **{mfa_module_name}** 查看双重认证口令并验证您的身份:"
                                 }
                             },
                             "error": {
@@ -723,6 +760,24 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "用户名",
+                                        "password": "密码"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "二次认证口令"
+                                    },
+                                    "description": "在设备上打开 **{mfa_module_name}** 查看二次认证口令并验证您的身份:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "无效的用户名或密码",
+                                "invalid_code": "无效的验证码"
+                            },
                             "abort": {
                                 "login_expired": "会话已过期，请重新登录。"
                             }
@@ -767,7 +822,8 @@
                         "pick_card": "请选择要添加的卡片。",
                         "add": "添加卡片",
                         "edit": "编辑",
-                        "delete": "删除"
+                        "delete": "删除",
+                        "move": "移动"
                     },
                     "migrate": {
                         "header": "配置不兼容",
@@ -870,7 +926,8 @@
                 "arm_home": "在家警戒",
                 "arm_away": "离家警戒",
                 "arm_night": "夜间警戒",
-                "armed_custom_bypass": "自定义略过"
+                "armed_custom_bypass": "自定义略过",
+                "arm_custom_bypass": "自定义略过条件"
             },
             "automation": {
                 "last_triggered": "上次触发",

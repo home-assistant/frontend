@@ -850,6 +850,9 @@
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
                         "cancel": "Vergiess et",
                         "save": "Kontroll iwwerhuelen"
+                    },
+                    "menu": {
+                        "raw_editor": "Editeur fir déi reng Konfiguratioun"
                     }
                 },
                 "menu": {
@@ -929,7 +932,8 @@
                 "arm_home": "Aktivéiert Doheem",
                 "arm_away": "Aktivéiert Ënnerwee",
                 "arm_night": "Aktivéiert Nuecht",
-                "armed_custom_bypass": "Personaliséierte Bypass"
+                "armed_custom_bypass": "Personaliséierte Bypass",
+                "arm_custom_bypass": "Personaliséierte Bypass"
             },
             "automation": {
                 "last_triggered": "Läscht ausgeléist",
