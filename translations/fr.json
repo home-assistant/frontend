@@ -569,7 +569,8 @@
                         "hub": "Connecté via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "appareil indisponible",
-                        "entity_unavailable": "entité indisponible"
+                        "entity_unavailable": "entité indisponible",
+                        "no_area": "Pas de pièce"
                     }
                 },
                 "zha": {
@@ -582,14 +583,23 @@
                 "area_registry": {
                     "caption": "Registre des pièces",
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
+                    "picker": {
+                        "header": "Registre des pièces"
+                    },
+                    "no_areas": "Vous n'avez pas encore configuré de pièce !",
+                    "create_area": "CRÉER UNE PIÈCE",
                     "editor": {
-                        "delete": "SUPPRIMER"
+                        "default_name": "Nouvelle pièce",
+                        "delete": "SUPPRIMER",
+                        "update": "METTRE À JOUR",
+                        "create": "CRÉER"
                     }
                 },
                 "entity_registry": {
                     "caption": "Registre des entités",
                     "description": "Vue d'ensemble de toutes les entités connues.",
                     "editor": {
+                        "default_name": "Nouvelle pièce",
                         "delete": "SUPPRIMER",
                         "update": "METTRE À JOUR"
                     }

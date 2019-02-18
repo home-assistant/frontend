@@ -241,7 +241,7 @@
             }
         },
         "weather": {
-            "clear-night": "맑은 밤",
+            "clear-night": "맑음 (밤)",
             "cloudy": "흐림",
             "fog": "안개",
             "hail": "우박",

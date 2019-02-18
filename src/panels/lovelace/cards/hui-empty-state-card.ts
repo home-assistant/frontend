@@ -73,8 +73,6 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
 
       mwc-button {
         margin-left: -8px;
-        font-weight: 500;
-        color: var(--primary-color);
       }
     `;
   }

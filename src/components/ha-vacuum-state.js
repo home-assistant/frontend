@@ -39,8 +39,6 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
     return html`
       <style>
         mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
           top: 3px;
           height: 37px;
           margin-right: -0.57em;

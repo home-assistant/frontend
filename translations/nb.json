@@ -588,6 +588,7 @@
                     "picker": {
                         "header": "Områderegister"
                     },
+                    "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "create_area": "OPPRETT OMRÅDE",
                     "editor": {
                         "default_name": "Nytt område",
@@ -612,9 +613,12 @@
                 },
                 "person": {
                     "caption": "Personer",
+                    "description": "Administrer personer som Home Assistant sporer.",
                     "detail": {
                         "name": "Navn",
-                        "device_tracker_intro": "Velg enhetene som tilhører denne personen."
+                        "device_tracker_intro": "Velg enhetene som tilhører denne personen.",
+                        "device_tracker_picked": "Spor enhet",
+                        "device_tracker_pick": "Velg en enhet å spore"
                     }
                 }
             },
@@ -769,7 +773,8 @@
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Ugyldig brukernavn eller passord"
+                                "invalid_auth": "Ugyldig brukernavn eller passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
                             },
                             "abort": {
                                 "login_expired": "Økten er utløpt, vennligst logg inn på nytt"

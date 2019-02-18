@@ -7,7 +7,7 @@ import {
 
 import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
@@ -40,9 +40,13 @@ class HuiToggleEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
