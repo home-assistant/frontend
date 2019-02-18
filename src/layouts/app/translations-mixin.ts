@@ -47,15 +47,15 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
         return;
       }
 
-      const language = hass.selectedLanguage || hass.language;
+      const language = hass.language;
 
       const { resources } = await hass.callWS({
         type: "frontend/get_translations",
         language,
       });
 
-      // If we've switched selected languages just ignore this response
-      if ((hass.selectedLanguage || hass.language) !== language) {
+      // Ignore the repsonse if user switched languages before we got response
+      if (hass.language !== language) {
         return;
       }
 
@@ -99,7 +99,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
 
     private _selectLanguage(event) {
       const language: string = event.detail.language;
-      this._updateHass({ language, selectedLanguage: language });
+      this._updateHass({ language });
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
       saveFrontendUserData(this.hass!, "language", language);
       this._loadResources(this.hass!);
