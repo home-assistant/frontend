@@ -62,12 +62,13 @@ class HaConfigAreaRegistry extends LitElement {
               "ui.panel.config.area_registry.picker.introduction"
             )}
             <p>
-              <ha-markdown
-                content="${this.hass.localize(
-                  "ui.panel.config.area_registry.picker.introduction2"
-                )}"
-              ></ha-markdown>
+              ${this.hass.localize(
+                "ui.panel.config.area_registry.picker.introduction2"
+              )}
             </p>
+            <a href="/config/integrations"
+              ><ha-icon icon="mdi:link"></ha-icon
+            ></a>
           </span>
           <paper-card>
             ${this._items.map((entry) => {

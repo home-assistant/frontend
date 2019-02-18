@@ -67,11 +67,12 @@ class HaConfigEntityRegistry extends LitElement {
               "ui.panel.config.entity_registry.picker.introduction"
             )}
             <p>
-              <ha-markdown
-                content="${this.hass.localize(
-                  "ui.panel.config.entity_registry.picker.introduction2"
-                )}"
-              ></ha-markdown>
+              ${this.hass.localize(
+                "ui.panel.config.entity_registry.picker.introduction2"
+              )}
+              <a href="/config/integrations"
+                ><ha-icon icon="mdi:link"></ha-icon
+              ></a>
             </p>
           </span>
           <paper-card>

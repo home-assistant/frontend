@@ -8,7 +8,6 @@ import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-markdown";
 import "../../../layouts/ha-app-layout";
 
 import "../ha-config-section";
@@ -60,10 +59,6 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         a {
           color: var(--primary-color);
         }
-
-        ha-markdown p {
-          margin: 0px;
-        }
       </style>
 
       <ha-app-layout has-scrolling-region="">
@@ -84,9 +79,10 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             [[localize('ui.panel.config.automation.picker.header')]]
           </div>
           <div slot="introduction">
-            <ha-markdown
-              content="[[localize('ui.panel.config.automation.picker.introduction')]]"
-            ></ha-markdown>
+            [[localize('ui.panel.config.automation.picker.introduction')]]
+            <a href="https://home-assistant.io/docs/automation/editor/"
+              ><ha-icon icon="mdi:link"></ha-icon
+            ></a>
           </div>
 
           <paper-card
