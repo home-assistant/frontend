@@ -30,8 +30,6 @@ class HaConfigManagerDashboard extends LocalizeMixin(
     return html`
       <style include="iron-flex ha-style">
         mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
           top: 3px;
           margin-right: -0.57em;
         }

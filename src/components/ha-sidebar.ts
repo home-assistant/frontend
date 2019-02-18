@@ -83,7 +83,7 @@ class HaSidebar extends LitElement {
         ${hass.user
           ? html`
               <a href="/profile">
-                <ha-user-badge user=${hass.user}></ha-user-badge>
+                <ha-user-badge .user=${hass.user}></ha-user-badge>
               </a>
             `
           : ""}
