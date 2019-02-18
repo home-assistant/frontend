@@ -226,10 +226,6 @@ export class CloudWebhooks extends LitElement {
           flex-direction: column;
           justify-content: center;
         }
-        mwc-button {
-          font-weight: 500;
-          color: var(--primary-color);
-        }
         .footer {
           padding: 16px;
         }

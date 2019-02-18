@@ -10,10 +10,6 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
-        mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
-        }
         .flex {
           display: flex;
           justify-content: space-between;

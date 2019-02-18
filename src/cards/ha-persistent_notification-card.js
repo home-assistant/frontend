@@ -40,7 +40,6 @@ class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
         }
         mwc-button {
           margin: 8px;
-          font-weight: 500;
         }
       </style>
 
