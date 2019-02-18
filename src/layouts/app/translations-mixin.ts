@@ -1,6 +1,5 @@
 import { translationMetadata } from "../../resources/translations-metadata";
 import { getTranslation } from "../../util/hass-translation";
-import { storeState } from "../../util/ha-pref-storage";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
