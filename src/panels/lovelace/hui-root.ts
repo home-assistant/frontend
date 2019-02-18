@@ -57,13 +57,6 @@ const JS_CACHE = {};
 
 let loadedUnusedEntities = false;
 
-declare global {
-  // tslint:disable-next-line
-  interface HASSDomEvents {
-    "opened-changed": { value: boolean };
-  }
-}
-
 class HUIRoot extends LitElement {
   public narrow?: boolean;
   public showMenu?: boolean;
