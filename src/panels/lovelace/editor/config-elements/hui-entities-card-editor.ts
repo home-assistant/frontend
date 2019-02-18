@@ -12,7 +12,11 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { processEditorEntities } from "../process-editor-entities";
 import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
+import {
+  EntitiesEditorEvent,
+  EditorTarget,
+  actionConfigStruct,
+} from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -33,6 +37,8 @@ const entitiesConfigStruct = struct.union([
     entity: "entity-id",
     name: "string?",
     icon: "icon?",
+    tap_action: struct.optional(actionConfigStruct),
+    hold_action: struct.optional(actionConfigStruct),
   },
   "entity-id",
 ]);

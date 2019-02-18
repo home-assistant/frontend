@@ -1,10 +1,13 @@
 import { HomeAssistant } from "../../../types";
+import { ActionConfig } from "../../../data/lovelace";
 
 export interface EntityConfig {
   entity: string;
   type?: string;
   name?: string;
   icon?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
 }
 export interface DividerConfig {
   type: string;

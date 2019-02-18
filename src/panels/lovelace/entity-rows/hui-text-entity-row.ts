@@ -12,8 +12,11 @@ import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
+
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-text-entity-row")
 class HuiTextEntityRow extends LitElement implements EntityRow {
@@ -48,7 +51,13 @@ class HuiTextEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row
+        .hass="${this.hass}"
+        .config="${this._config}"
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
+      >
         <div>
           ${computeStateDisplay(
             this.hass!.localize,
@@ -66,6 +75,14 @@ class HuiTextEntityRow extends LitElement implements EntityRow {
         text-align: right;
       }
     `;
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 

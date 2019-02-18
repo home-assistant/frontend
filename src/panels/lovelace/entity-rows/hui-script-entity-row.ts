@@ -14,6 +14,8 @@ import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements EntityRow {
@@ -48,7 +50,13 @@ class HuiScriptEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row
+        .hass="${this.hass}"
+        .config="${this._config}"
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
+      >
         ${stateObj.attributes.can_cancel
           ? html`
               <ha-entity-toggle
@@ -78,6 +86,14 @@ class HuiScriptEntityRow extends LitElement implements EntityRow {
     this.hass!.callService("script", "turn_on", {
       entity_id: this._config!.entity,
     });
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
