@@ -9,10 +9,6 @@ import {
 
 @customElement("hui-warning")
 export class HuiWarning extends LitElement {
-  public getCardSize(): number {
-    return 1;
-  }
-
   protected render(): TemplateResult | void {
     return html`
       <slot></slot>

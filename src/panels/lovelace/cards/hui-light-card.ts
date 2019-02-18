@@ -79,14 +79,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config!.entity] as LightEntity;
 
-    console.log(
-      this.hass.localize(
-        "ui.panel.lovelace.warning.entity_not_found",
-        "entity",
-        this._config.entity
-      )
-    );
-
     if (!stateObj) {
       return html`
         <hui-warning
