@@ -50,7 +50,6 @@ export default (superClass) =>
           user: null,
           panelUrl: this._panelUrl,
 
-          language: getActiveTranslation(),
           // If resources are already loaded, don't discard them
           resources: (this.hass && this.hass.resources) || null,
           localize: () => "",
@@ -154,6 +153,9 @@ export default (superClass) =>
         },
         getState()
       );
+
+      // getActiveTranslation need call callWS method
+      this.hass.language = await getActiveTranslation(this.hass);
 
       this.hassConnected();
     }

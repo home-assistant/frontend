@@ -4,7 +4,7 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "lit-element";
-import { getActiveTranslation } from "../util/hass-translation";
+import { getLocalTranslation } from "../util/hass-translation";
 import { localizeLiteBaseMixin } from "./localize-lite-base-mixin";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 
@@ -35,7 +35,8 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
       super();
       // This will prevent undefined errors if called before connected to DOM.
       this.localize = empty;
-      this.language = getActiveTranslation();
+      // Use browser language setup before login.
+      this.language = getLocalTranslation();
     }
 
     public connectedCallback(): void {

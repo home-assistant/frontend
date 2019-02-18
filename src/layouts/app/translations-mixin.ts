@@ -6,6 +6,7 @@ import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
+import { saveFrontendUserData } from "../../data/frontend-user-data";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -18,11 +19,14 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       this.addEventListener("hass-language-select", (e) =>
         this._selectLanguage(e)
       );
-      this._loadResources();
+      // load default language resource
+      this._loadResources(this.hass);
     }
 
     protected hassConnected() {
       super.hassConnected();
+      // user may have different language setting, reload resource
+      this._loadResources(this.hass);
       this._loadBackendTranslations();
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
     }
@@ -60,12 +64,16 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
 
     private _loadTranslationFragment(panelUrl) {
       if (translationMetadata.fragments.includes(panelUrl)) {
-        this._loadResources(panelUrl);
+        this._loadResources(this.hass, panelUrl);
       }
     }
 
-    private async _loadResources(fragment?) {
-      const result = await getTranslation(fragment);
+    private async _loadResources(hass?, fragment?) {
+      const result = await getTranslation(
+        hass,
+        fragment,
+        hass ? hass.language : undefined
+      );
       this._updateResources(result.language, result.data);
     }
 
@@ -93,8 +101,8 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       const language: string = event.detail.language;
       this._updateHass({ language, selectedLanguage: language });
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
-      storeState(this.hass);
-      this._loadResources();
+      saveFrontendUserData(this.hass!, "language", language);
+      this._loadResources(this.hass!);
       this._loadBackendTranslations();
       this._loadTranslationFragment(this.hass!.panelUrl);
     }
