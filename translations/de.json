@@ -346,7 +346,10 @@
                 },
                 "customize": {
                     "caption": "Anpassung",
-                    "description": "Elemente anpassen"
+                    "description": "Elemente anpassen",
+                    "picker": {
+                        "header": "Anpassung"
+                    }
                 },
                 "automation": {
                     "caption": "Automatisierung",
@@ -569,20 +572,51 @@
                         "hub": "Verbunden über",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Gerät nicht verfügbar",
-                        "entity_unavailable": "Entität nicht verfügbar"
+                        "entity_unavailable": "Entität nicht verfügbar",
+                        "no_area": "Kein Bereich"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation Netzwerkmanagement"
+                    "description": "Zigbee Home Automation Netzwerkmanagement",
+                    "services": {
+                        "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt."
+                    }
                 },
                 "area_registry": {
                     "caption": "Gebietsregister",
-                    "description": "Überblick über alle Bereiche in Deinem Haus."
+                    "description": "Überblick über alle Bereiche in Deinem Haus.",
+                    "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
+                    "create_area": "BEREICH ERSTELLEN",
+                    "editor": {
+                        "default_name": "Neuer Bereich",
+                        "delete": "LÖSCHEN",
+                        "update": "AKTUALISIEREN",
+                        "create": "ERSTELLEN"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Entitätsregister",
-                    "description": "Überblick aller bekannten Elemente."
+                    "description": "Überblick aller bekannten Elemente.",
+                    "picker": {
+                        "unavailable": "(nicht verfügbar)"
+                    },
+                    "editor": {
+                        "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
+                        "default_name": "Neuer Bereich",
+                        "delete": "LÖSCHEN",
+                        "update": "UPDATE"
+                    }
+                },
+                "person": {
+                    "caption": "Personen",
+                    "description": "Verwalte die Personen, die Home Assistant verfolgt.",
+                    "detail": {
+                        "name": "Name",
+                        "device_tracker_intro": "Wähle die Geräte, die dieser Person gehören.",
+                        "device_tracker_picked": "Verfolge Gerät",
+                        "device_tracker_pick": "Wähle zu verfolgendes Gerät"
+                    }
                 }
             },
             "profile": {
@@ -727,6 +761,24 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benutzername",
+                                        "password": "Passwort"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwei-Faktor Authentifizierungscode"
+                                    },
+                                    "description": "Öffne das **{mfa_module_name}** auf deinem Gerät um den 2-Faktor Authentifizierungscode zu sehen und deine Identität zu bestätigen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ungültiger Benutzername oder Passwort",
+                                "invalid_code": "Ungültiger Authentifizierungscode"
+                            },
                             "abort": {
                                 "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
                             }
@@ -771,7 +823,8 @@
                         "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
                         "add": "Karte hinzufügen",
                         "edit": "Bearbeiten",
-                        "delete": "Löschen"
+                        "delete": "Löschen",
+                        "move": "Bewegen"
                     },
                     "migrate": {
                         "header": "Konfiguration inkompatibel",

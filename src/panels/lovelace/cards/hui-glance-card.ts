@@ -13,6 +13,7 @@ import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
+import { handleClick } from "../common/handle-click";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -21,7 +22,7 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { handleClick } from "../common/handle-click";
+import "../components/hui-warning";
 
 export interface ConfigEntity extends EntityConfig {
   tap_action?: ActionConfig;
@@ -176,10 +177,6 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         state-badge {
           margin: 8px 0;
         }
-        .not-found {
-          background-color: yellow;
-          text-align: center;
-        }
       </style>
     `;
   }
@@ -189,10 +186,13 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <div class="entity not-found">
-          <div class="name">${entityConf.entity}</div>
-          Entity Not Available
-        </div>
+        <hui-warning
+          >${this.hass!.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            entityConf.entity
+          )}</hui-warning
+        >
       `;
     }
 

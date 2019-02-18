@@ -129,10 +129,6 @@ export class CloudWebhookManageDialog extends LitElement {
         button.link {
           color: var(--primary-color);
         }
-        mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
-        }
       `,
     ];
   }
