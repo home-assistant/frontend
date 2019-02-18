@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../../../types";
-import { ActionConfig } from "../../../data/lovelace";
+import { ActionConfig, Condition } from "../../../data/lovelace";
 
 export interface LovelaceElementConfig {
   type: string;
@@ -10,6 +10,7 @@ export interface LovelaceElementConfig {
   service_data?: object;
   tap_action?: ActionConfig;
   title?: string;
+  conditions: Condition[];
 }
 
 export interface LovelaceElement extends HTMLElement {

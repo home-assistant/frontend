@@ -23,16 +23,25 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   static get properties() {
     return {
+      hass: {},
       _config: {},
     };
   }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    for (const el of this.shadowRoot!.querySelectorAll("#root > *")) {
+    this.shadowRoot!.querySelectorAll("#root > *").forEach((el, index) => {
       const element = el as LovelaceElement;
       element.hass = this._hass;
-    }
+      // skip hui-image
+      if (index > 0) {
+        element.style.display = this._evalConditions(
+          this._config!.elements[index - 1]
+        )
+          ? "block"
+          : "none";
+      }
+    });
   }
 
   public getCardSize(): number {
@@ -55,7 +64,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult | void {
-    if (!this._config) {
+    if (!this._hass || !this._config) {
       return html``;
     }
 
@@ -71,8 +80,16 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .entity="${this._config.entity}"
             .aspectRatio="${this._config.aspect_ratio}"
           ></hui-image>
-          ${this._config.elements.map((elementConfig: LovelaceElementConfig) =>
-            this._createHuiElement(elementConfig)
+          ${this._config.elements.map(
+            (elementConfig: LovelaceElementConfig) => {
+              const el = this._createHuiElement(elementConfig);
+
+              el.style.display = this._evalConditions(elementConfig)
+                ? "block"
+                : "none";
+
+              return el;
+            }
           )}
         </div>
       </ha-card>
@@ -92,6 +109,18 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
         }
       </style>
     `;
+  }
+
+  private _evalConditions(elementConfig: LovelaceElementConfig): boolean {
+    return elementConfig!.conditions.every((c) => {
+      if (!(c.entity in this._hass!.states)) {
+        return false;
+      }
+      if (c.state) {
+        return this._hass!.states[c.entity].state === c.state;
+      }
+      return this._hass!.states[c.entity].state !== c.state_not;
+    });
   }
 
   private _createHuiElement(

@@ -52,6 +52,12 @@ export interface NoActionConfig {
   action: "none";
 }
 
+export interface Condition {
+  entity: string;
+  state?: string;
+  state_not?: string;
+}
+
 export type ActionConfig =
   | ToggleActionConfig
   | CallServiceActionConfig
