@@ -33,8 +33,9 @@ class HaConfigManagerDashboard extends LocalizeMixin(
           top: 3px;
           margin-right: -0.57em;
         }
-        paper-card:last-child {
-          margin-top: 12px;
+        .config-new-entity-card {
+          margin-top: auto;
+          margin-bottom: 12px;
         }
         .config-entry-row {
           display: flex;
@@ -120,8 +121,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
           <span slot="header"
             >[[localize('ui.panel.config.integrations.new')]]</span
           >
-          <paper-card>
-            <template is="dom-repeat" items="[[handlers]]">
+          <template is="dom-repeat" items="[[handlers]]">
+            <paper-card class="config-new-entity-card">
               <div class="config-entry-row">
                 <paper-item-body>
                   [[_computeIntegrationTitle(localize, item)]]
@@ -130,8 +131,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                   >[[localize('ui.panel.config.integrations.configure')]]</mwc-button
                 >
               </div>
-            </template>
-          </paper-card>
+            </paper-card>
+          </template>
         </ha-config-section>
       </hass-subpage>
     `;
