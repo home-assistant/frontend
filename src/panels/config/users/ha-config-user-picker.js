@@ -6,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../layouts/hass-subpage";
+import "../../../components/ha-icon-next";
 
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
@@ -71,7 +72,7 @@ class HaUserPicker extends EventsMixin(
                     </template>
                   </div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
           </template>
