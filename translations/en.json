@@ -267,6 +267,15 @@
             "returning": "Returning to dock"
         }
     },
+    "state_attributes": {
+        "climate": {
+          "fan_mode": {
+            "off": "Off",
+            "on": "On",
+            "auto": "Auto"
+          }
+        }
+    },
     "state_badge": {
         "default": {
             "unknown": "Unk",

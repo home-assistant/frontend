@@ -315,6 +315,15 @@
       }
     }
   },
+  "state_attributes": {
+    "climate": {
+      "fan_mode": {
+        "off": "[%key:state::default::off%]",
+        "on": "[%key:state::default::on%]",
+        "auto": "[%key:state::climate::auto%]"
+      }
+    }
+  },
   "state_badge": {
     "default": {
       "unknown": "Unk",
