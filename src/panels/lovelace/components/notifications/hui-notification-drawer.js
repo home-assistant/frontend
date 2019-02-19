@@ -6,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./hui-notification-item";
+import "../../../../components/ha-paper-icon-button-next";
 
 import EventsMixin from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
@@ -121,7 +122,7 @@ export class HuiNotificationDrawer extends EventsMixin(
     <div class="container">
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
-        <paper-icon-button icon="hass:chevron-right" on-click="_closeDrawer"></paper-icon-button>
+        <ha-paper-icon-button-next on-click="_closeDrawer"></paper-icon-button>
       </app-toolbar>
       <div class="notifications">
         <template is="dom-if" if="[[!_empty(notifications)]]">
