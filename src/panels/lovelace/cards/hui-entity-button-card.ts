@@ -177,7 +177,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     if (!stateObj.attributes.hs_color) {
       return "";
     }
-    const { hue, sat } = stateObj.attributes.hs_color;
+    const [hue, sat] = stateObj.attributes.hs_color;
     if (sat <= 10) {
       return "";
     }
