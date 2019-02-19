@@ -265,6 +265,11 @@
             "on": "On",
             "paused": "Sat på pause",
             "returning": "Vender tilbage til dock"
+        },
+        "timer": {
+            "active": "aktiv",
+            "idle": "inaktiv",
+            "paused": "pause"
         }
     },
     "state_badge": {
@@ -860,6 +865,10 @@
                     "unused_entities": "Ubrugte enheder",
                     "help": "Hjælp",
                     "refresh": "Opdater"
+                },
+                "warning": {
+                    "entity_not_found": "Enhed ikke tilgængelig: {entity}",
+                    "entity_non_numeric": "Enhed er ikke-numerisk: {entity}"
                 }
             }
         },
