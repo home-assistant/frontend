@@ -13,7 +13,7 @@ import "../components/hui-generic-entity-row";
 import "../../../components/ha-slider";
 import "../components/hui-warning";
 
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { setValue } from "../../../data/input_text";
@@ -28,6 +28,16 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
       throw new Error("Configuration error");
     }
     this._config = config;
+  }
+
+  protected firstUpdated(): void {
+    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
+
+    if (!element) {
+      return;
+    }
+
+    element.hidden = this.clientWidth <= 350;
   }
 
   protected render(): TemplateResult | void {
@@ -50,11 +60,7 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row
-        .hass="${this.hass}"
-        .config="${this._config}"
-        id="input_number_card"
-      >
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
           ${stateObj.attributes.mode === "slider"
             ? html`
@@ -111,8 +117,10 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private get _inputElement(): PaperInputElement {
-    return this.shadowRoot!.getElementById("input") as PaperInputElement;
+  private get _inputElement(): { value: string } {
+    return (this.shadowRoot!.getElementById("input") as unknown) as {
+      value: string;
+    };
   }
 
   private _selectedValueChanged(): void {
@@ -125,7 +133,7 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
   }
 
   private _computeRTLDirection(): string {
-    return computeRTL(this.hass!) ? "rtl" : "ltr";
+    return computeRTLDirection(this.hass!);
   }
 }
 
