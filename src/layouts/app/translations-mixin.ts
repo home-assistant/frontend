@@ -5,7 +5,7 @@ import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
-import { saveFrontendUserData } from "../../data/frontend-user-data";
+import { saveFrontendUserData } from "../../data/frontend";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
