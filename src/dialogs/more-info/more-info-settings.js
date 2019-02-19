@@ -13,6 +13,7 @@ import computeDomain from "../../common/entity/compute_domain";
 import isComponentLoaded from "../../common/config/is_component_loaded";
 import { updateEntityRegistryEntry } from "../../data/entity_registry";
 
+import "../../components/ha-paper-icon-button-arrow-prev";
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -44,10 +45,9 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <app-toolbar>
-        <paper-icon-button
-          icon="hass:arrow-left"
+        <ha-paper-icon-button-arrow-prev
           on-click="_backTapped"
-        ></paper-icon-button>
+        ></ha-paper-icon-button-arrow-prev>
         <div main-title="">[[_computeStateName(stateObj)]]</div>
         <mwc-button on-click="_save" disabled="[[_computeInvalid(_entityId)]]"
           >[[localize('ui.dialogs.more_info_settings.save')]]</mwc-button
