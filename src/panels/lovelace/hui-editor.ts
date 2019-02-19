@@ -38,6 +38,7 @@ class LovelaceFullConfigEditor extends LitElement {
     return {
       hass: {},
       lovelace: {},
+      closeEditor: {},
       _saving: {},
       _changed: {},
     };
