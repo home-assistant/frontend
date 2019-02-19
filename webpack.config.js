@@ -147,6 +147,19 @@ function createConfig(isProdBuild, latestBuild) {
         }),
         filename: `index.html`,
       }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: "./src/html/test-redirect.js.template",
+        // Default templateParameterGenerator code
+        // https://github.com/jantimon/html-webpack-plugin/blob/master/index.js#L719
+        templateParameters: (compilation, assets, option) => ({
+          compatibility: assets.chunks.compatibility.entry,
+          appJS: assets.chunks.app.entry,
+          customPanelJS: assets.chunks["custom-panel"].entry,
+          hassIconsJS: assets.chunks["hass-icons"].entry,
+        }),
+        filename: `test-redirect.js`,
+      }),
       generateJSPage("onboarding", latestBuild),
       generateJSPage("authorize", latestBuild),
       new WorkboxPlugin.InjectManifest({

@@ -1,0 +1,7 @@
+// This file is used by the web component tester to load
+// the hashed version of the app and all webcomponents.
+import "<%= compatibility.replace('/frontend_latest', '.').replace('/frontend_es5/', '.') %>";
+import "<%= appJS.replace('/frontend_latest', '.').replace('/frontend_es5/', '.') %>";
+import "<%= hassIconsJS.replace('/frontend_latest', '.').replace('/frontend_es5/', '.') %>";
+window.customPanelJS =
+  "<%= customPanelJS.replace('/frontend_latest', '.').replace('/frontend_es5/', '.') %>";
