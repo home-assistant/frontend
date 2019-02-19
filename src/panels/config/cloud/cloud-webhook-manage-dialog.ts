@@ -18,7 +18,7 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 import { HomeAssistant } from "../../../types";
 import { WebhookDialogParams } from "./types";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
@@ -128,10 +128,6 @@ export class CloudWebhookManageDialog extends LitElement {
         }
         button.link {
           color: var(--primary-color);
-        }
-        mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
         }
       `,
     ];

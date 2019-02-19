@@ -730,6 +730,24 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nombre de usuario",
+                                        "password": "Contraseña"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de Autenticación de Doble Factor"
+                                    },
+                                    "description": "Abre el **{mfa_module_name}** en tú dispositivo para ver tú código de autenticación de doble factor y verificar tu identidad"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Usuario o contraseña incorrecto",
+                                "invalid_code": "Código de autenticación no válido"
+                            },
                             "abort": {
                                 "login_expired": "La sesión ha caducado, por favor inicie sesión de nuevo."
                             }

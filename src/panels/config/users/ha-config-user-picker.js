@@ -138,4 +138,4 @@ class HaUserPicker extends EventsMixin(
   }
 }
 
-customElements.define("ha-user-picker", HaUserPicker);
+customElements.define("ha-config-user-picker", HaUserPicker);

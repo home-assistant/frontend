@@ -346,7 +346,10 @@
                 },
                 "customize": {
                     "caption": "Tilpasning",
-                    "description": "Tilpass dine oppføringer"
+                    "description": "Tilpass dine oppføringer",
+                    "picker": {
+                        "header": "Tilpasning"
+                    }
                 },
                 "automation": {
                     "caption": "Automatisering",
@@ -581,11 +584,42 @@
                 },
                 "area_registry": {
                     "caption": "Områderegister",
-                    "description": "Oversikt over alle områder i ditt hjem."
+                    "description": "Oversikt over alle områder i ditt hjem.",
+                    "picker": {
+                        "header": "Områderegister"
+                    },
+                    "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
+                    "create_area": "OPPRETT OMRÅDE",
+                    "editor": {
+                        "default_name": "Nytt område",
+                        "delete": "SLETT",
+                        "update": "OPPDATER",
+                        "create": "OPPRETT"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Enhetsregister",
-                    "description": "Oversikt over alle kjente enheter."
+                    "description": "Oversikt over alle kjente enheter.",
+                    "picker": {
+                        "header": "Enhetsregister",
+                        "unavailable": "(utilgjengelig)"
+                    },
+                    "editor": {
+                        "unavailable": "Denne enheten er ikke tilgjengelig for øyeblikket.",
+                        "default_name": "Nytt område",
+                        "delete": "SLETT",
+                        "update": "OPPDATER"
+                    }
+                },
+                "person": {
+                    "caption": "Personer",
+                    "description": "Administrer personer som Home Assistant sporer.",
+                    "detail": {
+                        "name": "Navn",
+                        "device_tracker_intro": "Velg enhetene som tilhører denne personen.",
+                        "device_tracker_picked": "Spor enhet",
+                        "device_tracker_pick": "Velg en enhet å spore"
+                    }
                 }
             },
             "profile": {
@@ -730,6 +764,18 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Brukernavn",
+                                        "password": "Passord"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig brukernavn eller passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
+                            },
                             "abort": {
                                 "login_expired": "Økten er utløpt, vennligst logg inn på nytt"
                             }
@@ -774,7 +820,8 @@
                         "pick_card": "Velge det kortet du ønsker å legge til.",
                         "add": "Legg til kort",
                         "edit": "Rediger",
-                        "delete": "Slett"
+                        "delete": "Slett",
+                        "move": "Flytt"
                     },
                     "migrate": {
                         "header": "Konfigurasjon inkompatibel",

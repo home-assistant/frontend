@@ -13,7 +13,7 @@ import { struct } from "./common/structs/struct";
 import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
-import { haStyle } from "../../resources/ha-style";
+import { haStyle } from "../../resources/styles";
 import "./components/hui-yaml-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
@@ -38,6 +38,7 @@ class LovelaceFullConfigEditor extends LitElement {
     return {
       hass: {},
       lovelace: {},
+      closeEditor: {},
       _saving: {},
       _changed: {},
     };
@@ -150,7 +151,9 @@ class LovelaceFullConfigEditor extends LitElement {
       }
     }
     window.onbeforeunload = null;
-    this.closeEditor!();
+    if (this.closeEditor) {
+      this.closeEditor();
+    }
   }
 
   private async _handleSave() {

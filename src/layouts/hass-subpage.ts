@@ -10,7 +10,7 @@ import {
   customElement,
   CSSResult,
 } from "lit-element";
-import { haStyle } from "../resources/ha-style";
+import { haStyle } from "../resources/styles";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {

@@ -48,7 +48,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
-import { haStyle } from "../../resources/ha-style";
+import { haStyle } from "../../resources/styles";
 import { computeRTL, computeRTLDirection } from "../../common/util/compute_rtl";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
@@ -186,8 +186,8 @@ class HUIRoot extends LitElement {
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   <hui-notifications-button
                     .hass="${this.hass}"
-                    .open="${this._notificationsOpen}"
-                    @open-changed="${this._handleNotificationsOpenChanged}"
+                    .opened="${this._notificationsOpen}"
+                    @opened-changed="${this._handleNotificationsOpenChanged}"
                     .notifications="${this._notifications}"
                   ></hui-notifications-button>
                   <ha-start-voice-button

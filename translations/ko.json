@@ -241,7 +241,7 @@
             }
         },
         "weather": {
-            "clear-night": "맑은 밤",
+            "clear-night": "맑음 (밤)",
             "cloudy": "흐림",
             "fog": "안개",
             "hail": "우박",
@@ -263,8 +263,13 @@
             "idle": "대기중",
             "off": "꺼짐",
             "on": "켜짐",
-            "paused": "일시 중지됨",
+            "paused": "일시중지됨",
             "returning": "충전 복귀 중"
+        },
+        "timer": {
+            "active": "활성화",
+            "idle": "대기중",
+            "paused": "일시중지됨"
         }
     },
     "state_badge": {
@@ -860,6 +865,10 @@
                     "unused_entities": "미사용 구성요소",
                     "help": "도움말",
                     "refresh": "새로고침"
+                },
+                "warning": {
+                    "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}",
+                    "entity_non_numeric": "구성요소가 숫자형식이 아닙니다: {entity}"
                 }
             }
         },

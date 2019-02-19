@@ -10,7 +10,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import yaml from "js-yaml";
 
-import { haStyleDialog } from "../../../../resources/ha-style";
+import { haStyleDialog } from "../../../../resources/styles";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
@@ -138,6 +138,7 @@ export class HuiEditCard extends LitElement {
       <paper-dialog
         with-backdrop
         opened
+        modal
         @opened-changed="${this._openedChanged}"
       >
         <h2>
@@ -200,6 +201,7 @@ export class HuiEditCard extends LitElement {
       afterNextRender(() => {
         this.yamlEditor.codemirror.refresh();
         this._resizeDialog();
+        this.yamlEditor.codemirror.focus();
       });
     }
   }
