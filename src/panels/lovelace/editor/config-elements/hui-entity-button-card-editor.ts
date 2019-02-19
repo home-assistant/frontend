@@ -31,6 +31,7 @@ const cardConfigStruct = struct({
   show_name: "boolean?",
   icon: "string?",
   show_icon: "boolean?",
+  icon_height: "string?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
   theme: "string?",
@@ -68,6 +69,10 @@ export class HuiEntityButtonCardEditor extends LitElement
     return this._config!.show_icon || true;
   }
 
+  get _icon_height(): string {
+    return this._config!.icon_height || "";
+  }
+
   get _tap_action(): ActionConfig {
     return this._config!.tap_action || { action: "more-info" };
   }
@@ -97,17 +102,23 @@ export class HuiEntityButtonCardEditor extends LitElement
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
+        <paper-input
+          label="Name (Optional)"
+          .value="${this._name}"
+          .configValue="${"name"}"
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
         <div class="side-by-side">
-          <paper-input
-            label="Name (Optional)"
-            .value="${this._name}"
-            .configValue="${"name"}"
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
           <paper-input
             label="Icon (Optional)"
             .value="${this._icon}"
             .configValue="${"icon"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+          <paper-input
+            label="Icon Height (Optional)"
+            .value="${this._icon_height}"
+            .configValue="${"icon_height"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
