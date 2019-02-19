@@ -7,7 +7,7 @@ import { demoPanels } from "./demo_panels";
 import { getEntity, Entity } from "./entity";
 import { HomeAssistant } from "../types";
 import { HassEntities } from "home-assistant-js-websocket";
-import { getLocalTranslation } from "../util/hass-translation";
+import { getLocalLanguage } from "../util/hass-translation";
 import { translationMetadata } from "../resources/translations-metadata";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
@@ -134,7 +134,7 @@ export const provideHass = (
     },
     panelUrl: "lovelace",
 
-    language: getLocalTranslation(),
+    language: getLocalLanguage(),
     resources: null as any,
     localize: () => "",
 

@@ -1,8 +1,5 @@
 import { translationMetadata } from "../../resources/translations-metadata";
-import {
-  getTranslation,
-  getLocalTranslation,
-} from "../../util/hass-translation";
+import { getTranslation, getLocalLanguage } from "../../util/hass-translation";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
@@ -74,7 +71,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     private async _loadResources(hass?, fragment?) {
       const result = await getTranslation(
         fragment,
-        hass ? hass.language : getLocalTranslation()
+        hass ? hass.language : getLocalLanguage()
       );
       this._updateResources(result.language, result.data);
     }
