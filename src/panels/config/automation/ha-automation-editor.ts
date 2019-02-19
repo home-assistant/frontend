@@ -110,6 +110,9 @@ class HaAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.save"
           )}"
           @click=${this._saveAutomation}
+          class="${classMap({
+            rtl: computeRTL(this.hass),
+          })}"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -279,6 +282,17 @@ class HaAutomationEditor extends LitElement {
 
         paper-fab[dirty] {
           margin-bottom: 0;
+        }
+
+        paper-fab.rtl {
+          right: auto;
+          left: 16px;
+        }
+
+        paper-fab[is-wide].rtl {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
         }
       `,
     ];
