@@ -200,6 +200,7 @@ export class HuiEditCard extends LitElement {
       afterNextRender(() => {
         this.yamlEditor.codemirror.refresh();
         this._resizeDialog();
+        this.yamlEditor.codemirror.focus();
       });
     }
   }
