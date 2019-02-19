@@ -265,6 +265,11 @@
             "on": "Включен",
             "paused": "Приостановлен",
             "returning": "Возвращается к док-станции"
+        },
+        "timer": {
+            "active": "Отсчёт",
+            "idle": "Ожидание",
+            "paused": "Пауза"
         }
     },
     "state_badge": {
@@ -860,6 +865,10 @@
                     "unused_entities": "Неиспользуемые объекты",
                     "help": "Справка",
                     "refresh": "Обновить"
+                },
+                "warning": {
+                    "entity_not_found": "Объект недоступен: {entity}",
+                    "entity_non_numeric": "Объект не является числом: {entity}"
                 }
             }
         },
