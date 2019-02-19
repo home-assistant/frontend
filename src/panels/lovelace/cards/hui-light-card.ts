@@ -135,6 +135,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[this._config!.entity] as LightEntity;
 
     if (!stateObj) {
+      // Card will require refresh to work again
       return;
     }
 

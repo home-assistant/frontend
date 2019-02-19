@@ -22,9 +22,10 @@ import { HassEntity } from "home-assistant-js-websocket";
 class HaEntitiesPickerLight extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public value?: string[];
-  @property() public domainFilter?: string;
-  @property() public pickedEntityLabel?: string;
-  @property() public pickEntityLabel?: string;
+  @property({ attribute: "domain-filter" }) public domainFilter?: string;
+  @property({ attribute: "picked-entity-label" })
+  public pickedEntityLabel?: string;
+  @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
 
   protected render(): TemplateResult | void {
     if (!this.hass) {

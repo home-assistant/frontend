@@ -265,6 +265,11 @@
             "on": "Encesa",
             "paused": "Pausada",
             "returning": "Retornant a la base"
+        },
+        "timer": {
+            "active": "actiu",
+            "idle": "inactiu",
+            "paused": "en pausa"
         }
     },
     "state_badge": {
@@ -860,6 +865,10 @@
                     "unused_entities": "Entitats sense utilitzar",
                     "help": "Ajuda",
                     "refresh": "Actualitzar"
+                },
+                "warning": {
+                    "entity_not_found": "Entitat no disponible: {entity}",
+                    "entity_non_numeric": "Entitat no numèrica: {entity}"
                 }
             }
         },

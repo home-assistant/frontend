@@ -213,6 +213,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   private get _stepSize(): number {
     const stateObj = this.hass!.states[this._config!.entity];
+
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
     }
@@ -220,6 +221,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private async _initialLoad(): Promise<void> {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
+
+    if (!stateObj) {
+      // Card will require refresh to work again
+      return;
+    }
+
     this._loaded = true;
 
     await this.updateComplete;
@@ -233,14 +241,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     (this.shadowRoot!.querySelector(
       "#thermostat"
-    )! as HTMLElement).style.height = radius * 2 + "px";
+    ) as HTMLElement)!.style.height = radius * 2 + "px";
 
     const loaded = await loadRoundslider();
 
     this._roundSliderStyle = loaded.roundSliderStyle;
     this._jQuery = loaded.jQuery;
-
-    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     const _sliderType =
       stateObj.attributes.target_temp_low &&
