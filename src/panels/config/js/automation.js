@@ -3,7 +3,6 @@ import { h, Component } from "preact";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import "../ha-config-section";
-import "../../../components/ha-markdown";
 
 import Trigger from "./trigger/index";
 import Condition from "./condition/index";
@@ -68,11 +67,14 @@ export default class Automation extends Component {
             {localize("ui.panel.config.automation.editor.triggers.header")}
           </span>
           <span slot="introduction">
-            <ha-markdown
-              content={localize(
+            <p>
+              {localize(
                 "ui.panel.config.automation.editor.triggers.introduction"
               )}
-            />
+            </p>
+            <a href="https://home-assistant.io/docs/automation/trigger/">
+              <ha-icon icon="mdi:link" />
+            </a>
           </span>
           <Trigger
             trigger={trigger}
@@ -87,11 +89,14 @@ export default class Automation extends Component {
             {localize("ui.panel.config.automation.editor.conditions.header")}
           </span>
           <span slot="introduction">
-            <ha-markdown
-              content={localize(
+            <p>
+              {localize(
                 "ui.panel.config.automation.editor.conditions.introduction"
               )}
-            />
+            </p>
+            <a href="https://home-assistant.io/docs/scripts/conditions/">
+              <ha-icon icon="mdi:link" />
+            </a>
           </span>
           <Condition
             condition={condition || []}
@@ -106,11 +111,14 @@ export default class Automation extends Component {
             {localize("ui.panel.config.automation.editor.actions.header")}
           </span>
           <span slot="introduction">
-            <ha-markdown
-              content={localize(
+            <p>
+              {localize(
                 "ui.panel.config.automation.editor.actions.introduction"
               )}
-            />
+            </p>
+            <a href="https://home-assistant.io/docs/automation/action/">
+              <ha-icon icon="mdi:link" />
+            </a>
           </span>
           <Script
             script={action}

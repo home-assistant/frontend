@@ -8,7 +8,6 @@ import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-markdown";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
@@ -19,6 +18,7 @@ import "../../../components/ha-icon-next";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -48,12 +48,19 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           right: 24px;
         }
 
-        a {
-          color: var(--primary-color);
+        paper-fab[rtl] {
+          right: auto;
+          left: 16px;
         }
 
-        ha-markdown p {
-          margin: 0px;
+        paper-fab[rtl][is-wide] {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
+        }
+
+        a {
+          color: var(--primary-color);
         }
       </style>
 
@@ -73,9 +80,10 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             [[localize('ui.panel.config.automation.picker.header')]]
           </div>
           <div slot="introduction">
-            <ha-markdown
-              content="[[localize('ui.panel.config.automation.picker.introduction')]]"
-            ></ha-markdown>
+            [[localize('ui.panel.config.automation.picker.introduction')]]
+            <a href="https://home-assistant.io/docs/automation/editor/"
+              ><ha-icon icon="mdi:link"></ha-icon
+            ></a>
           </div>
 
           <paper-card
@@ -106,6 +114,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           icon="hass:plus"
           title="[[localize('ui.panel.config.automation.picker.add_automation')]]"
           on-click="addAutomation"
+          rtl$="[[rtl]]"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -133,6 +142,12 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       isWide: {
         type: Boolean,
       },
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -159,6 +174,10 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
 
   _backTapped() {
     history.back();
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 

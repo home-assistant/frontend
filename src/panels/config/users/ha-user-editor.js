@@ -35,7 +35,9 @@ class HaUserEditor extends EventsMixin(
         }
       </style>
 
-      <hass-subpage header="View user">
+      <hass-subpage
+        header="[[localize('ui.panel.config.users.editor.caption')]]"
+      >
         <paper-card heading="[[_computeName(user)]]">
           <table class="card-content">
             <tr>

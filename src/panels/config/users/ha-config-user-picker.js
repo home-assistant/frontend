@@ -12,6 +12,8 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import EventsMixin from "../../../mixins/events-mixin";
 
+import { computeRTL } from "../../../common/util/compute_rtl";
+
 let registeredDialog = false;
 
 /*
@@ -35,6 +37,16 @@ class HaUserPicker extends EventsMixin(
           bottom: 24px;
           right: 24px;
         }
+        paper-fab[rtl] {
+          right: auto;
+          left: 16px;
+        }
+        paper-fab[rtl][is-wide] {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
+        }
+
         paper-card {
           display: block;
           max-width: 600px;
@@ -71,6 +83,7 @@ class HaUserPicker extends EventsMixin(
           icon="hass:plus"
           title="[[localize('ui.panel.config.users.picker.add_user')]]"
           on-click="_addUser"
+          rtl$="[[rtl]]"
         ></paper-fab>
       </hass-subpage>
     `;
@@ -80,6 +93,12 @@ class HaUserPicker extends EventsMixin(
     return {
       hass: Object,
       users: Array,
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -103,6 +122,10 @@ class HaUserPicker extends EventsMixin(
 
   _computeUrl(user) {
     return `/config/users/${user.id}`;
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 
   _addUser() {
