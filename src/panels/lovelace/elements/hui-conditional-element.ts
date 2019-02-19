@@ -27,7 +27,9 @@ class HuiConditionalElement extends LitElement implements LovelaceElement {
       !Array.isArray(config.conditions) ||
       !config.elements ||
       !Array.isArray(config.elements) ||
-      !config.conditions.every((c) => c.entity && (c.state || c.state_not))
+      !config.conditions.every(
+        (c) => ((c.entity && (c.state || c.state_not)) as unknown) as boolean
+      )
     ) {
       throw new Error("Error in card configuration.");
     }
