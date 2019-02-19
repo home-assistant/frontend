@@ -231,9 +231,15 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       radius = 100;
     }
 
-    (this.shadowRoot!.querySelector(
+    const element = this.shadowRoot!.querySelector(
       "#thermostat"
-    )! as HTMLElement).style.height = radius * 2 + "px";
+    ) as HTMLElement;
+
+    if (!element) {
+      return;
+    }
+
+    element.style.height = radius * 2 + "px";
 
     const loaded = await loadRoundslider();
 
