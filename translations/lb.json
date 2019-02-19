@@ -265,6 +265,11 @@
             "on": "Un",
             "paused": "Pauseiert",
             "returning": "Kënnt zur Statioun zeréck"
+        },
+        "timer": {
+            "active": "Aktiv",
+            "idle": "Waart",
+            "paused": "Pauseiert"
         }
     },
     "state_badge": {
@@ -860,6 +865,10 @@
                     "unused_entities": "Onbenotzt Entitéiten",
                     "help": "Hëllef",
                     "refresh": "Erneieren"
+                },
+                "warning": {
+                    "entity_not_found": "Entitéit net erreechbar: {entitiy}",
+                    "entity_non_numeric": "Entitéit ass net numerescher Natur: {entitiy}"
                 }
             }
         },
