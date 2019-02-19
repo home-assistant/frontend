@@ -12,7 +12,7 @@ import "@polymer/paper-input/paper-input";
 
 import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/ha-style";
+import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import computeDomain from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -65,7 +65,11 @@ class DialogEntityRegistryDetail extends LitElement {
         <paper-dialog-scrollable>
           ${!stateObj
             ? html`
-                <div>This entity is not currently available.</div>
+                <div>
+                  ${this.hass!.localize(
+                    "ui.panel.config.entity_registry.editor.unavailable"
+                  )}
+                </div>
               `
             : ""}
           ${this._error
@@ -94,19 +98,23 @@ class DialogEntityRegistryDetail extends LitElement {
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button
-            class="danger"
+          <mwc-button
+            class="warning"
             @click="${this._deleteEntry}"
             .disabled=${this._submitting}
           >
-            DELETE
-          </paper-button>
-          <paper-button
+            ${this.hass.localize(
+              "ui.panel.config.entity_registry.editor.delete"
+            )}
+          </mwc-button>
+          <mwc-button
             @click="${this._updateEntry}"
             .disabled=${invalidDomainUpdate || this._submitting}
           >
-            UPDATE
-          </paper-button>
+            ${this.hass.localize(
+              "ui.panel.config.entity_registry.editor.update"
+            )}
+          </mwc-button>
         </div>
       </paper-dialog>
     `;
@@ -164,13 +172,7 @@ class DialogEntityRegistryDetail extends LitElement {
         .form {
           padding-bottom: 24px;
         }
-        paper-button {
-          font-weight: 500;
-        }
-        paper-button.danger {
-          font-weight: 500;
-          color: var(--google-red-500);
-          margin-left: -12px;
+        mwc-button.warning {
           margin-right: auto;
         }
         .error {

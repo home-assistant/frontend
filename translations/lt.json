@@ -61,11 +61,27 @@
                         }
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "empty_state": {
+                        "go_to_integrations_page": "Į integracijų puslapį"
+                    }
+                },
+                "menu": {
+                    "unused_entities": "Nepanaudoti elementai",
+                    "help": "Pagalba",
+                    "refresh": "Atnaujinti"
+                }
+            },
+            "logbook": {
+                "period": "Laikotarpis"
             }
         }
     },
     "domain": {
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "system_health": "Sistemos sveikata"
     },
     "state": {
         "climate": {

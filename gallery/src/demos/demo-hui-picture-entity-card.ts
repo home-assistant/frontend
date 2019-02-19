@@ -2,6 +2,17 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/demo-cards";
+import { provideHass } from "../../../src/fake_data/provide_hass";
+import { getEntity } from "../../../src/fake_data/entity";
+
+const ENTITIES = [
+  getEntity("light", "kitchen_lights", "on", {
+    friendly_name: "Kitchen Lights",
+  }),
+  getEntity("light", "bed_light", "off", {
+    friendly_name: "Bed Light",
+  }),
+];
 
 const CONFIGS = [
   {
@@ -10,6 +21,8 @@ const CONFIGS = [
 - type: picture-entity
   image: /images/kitchen.png
   entity: light.kitchen_lights
+  tap_action:
+    action: toggle
     `,
   },
   {
@@ -18,6 +31,8 @@ const CONFIGS = [
 - type: picture-entity
   image: /images/bed.png
   entity: light.bed_light
+  tap_action:
+    action: toggle
     `,
   },
   {
@@ -68,7 +83,7 @@ const CONFIGS = [
 class DemoPicEntity extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
+      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
     `;
   }
 
@@ -79,6 +94,12 @@ class DemoPicEntity extends PolymerElement {
         value: CONFIGS,
       },
     };
+  }
+
+  public ready() {
+    super.ready();
+    const hass = provideHass(this.$.demos);
+    hass.addEntities(ENTITIES);
   }
 }
 

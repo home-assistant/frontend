@@ -12,6 +12,7 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { fetchRecent } from "../../../data/history";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -19,7 +20,7 @@ import stateIcon from "../../../common/entity/state_icon";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { fetchRecent } from "../../../data/history";
+import "../components/hui-warning";
 
 const midPoint = (
   _Ax: number,
@@ -199,15 +200,27 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config.entity];
 
+    if (!stateObj) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
+
     let graph;
 
     if (stateObj && this._config.graph === "line") {
       if (!stateObj.attributes.unit_of_measurement) {
-        graph = html`
-          <div class="not-found">
-            Entity: ${this._config.entity} - Has no Unit of Measurement and
-            therefore can not display a line graph.
-          </div>
+        return html`
+          <hui-warning
+            >Entity: ${this._config.entity} - Has no Unit of Measurement and
+            therefore can not display a line graph.</hui-warning
+          >
         `;
       } else if (!this._history) {
         graph = svg`
@@ -233,34 +246,26 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
-        ${!stateObj
-          ? html`
-              <div class="not-found">
-                Entity not available: ${this._config.entity}
-              </div>
-            `
-          : html`
-              <div class="flex">
-                <div class="icon">
-                  <ha-icon
-                    .icon="${this._config.icon || stateIcon(stateObj)}"
-                  ></ha-icon>
-                </div>
-                <div class="header">
-                  <span class="name"
-                    >${this._config.name || computeStateName(stateObj)}</span
-                  >
-                </div>
-              </div>
-              <div class="flex info">
-                <span id="value">${stateObj.state}</span>
-                <span id="measurement"
-                  >${this._config.unit ||
-                    stateObj.attributes.unit_of_measurement}</span
-                >
-              </div>
-              <div class="graph"><div>${graph}</div></div>
-            `}
+        <div class="flex">
+          <div class="icon">
+            <ha-icon
+              .icon="${this._config.icon || stateIcon(stateObj)}"
+            ></ha-icon>
+          </div>
+          <div class="header">
+            <span class="name"
+              >${this._config.name || computeStateName(stateObj)}</span
+            >
+          </div>
+        </div>
+        <div class="flex info">
+          <span id="value">${stateObj.state}</span>
+          <span id="measurement"
+            >${this._config.unit ||
+              stateObj.attributes.unit_of_measurement}</span
+          >
+        </div>
+        <div class="graph"><div>${graph}</div></div>
       </ha-card>
     `;
   }
@@ -398,11 +403,6 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         .graph > div {
           align-self: flex-end;
           margin: auto 8px;
-        }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
         }
       </style>
     `;

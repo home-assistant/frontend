@@ -1,5 +1,5 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -34,7 +34,7 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
           @apply --ha-more-info-app-toolbar-title;
         }
 
-        app-toolbar paper-button {
+        app-toolbar mwc-button {
           font-size: 0.8em;
           margin: 0;
         }
@@ -49,8 +49,8 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
           on-click="_backTapped"
         ></ha-paper-icon-button-arrow-prev>
         <div main-title="">[[_computeStateName(stateObj)]]</div>
-        <paper-button on-click="_save" disabled="[[_computeInvalid(_entityId)]]"
-          >[[localize('ui.dialogs.more_info_settings.save')]]</paper-button
+        <mwc-button on-click="_save" disabled="[[_computeInvalid(_entityId)]]"
+          >[[localize('ui.dialogs.more_info_settings.save')]]</mwc-button
         >
       </app-toolbar>
 

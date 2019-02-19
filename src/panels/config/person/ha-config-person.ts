@@ -27,12 +27,14 @@ import {
   showPersonDetailDialog,
   loadPersonDetailDialog,
 } from "./show-dialog-person-detail";
+import { User, fetchUsers } from "../../../data/auth";
 
 class HaConfigPerson extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   private _storageItems?: Person[];
   private _configItems?: Person[];
+  private _usersLoad?: Promise<User[]>;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -62,7 +64,7 @@ class HaConfigPerson extends LitElement {
             ${this._configItems.length > 0
               ? html`
                   <p>
-                    Note: people configured via configuration.yaml cannot be
+                    Note: persons configured via configuration.yaml cannot be
                     edited via the UI.
                   </p>
                 `
@@ -81,9 +83,9 @@ class HaConfigPerson extends LitElement {
             ${this._storageItems.length === 0
               ? html`
                   <div class="empty">
-                    Looks like you have no people yet!
-                    <paper-button @click=${this._createPerson}>
-                      CREATE PERSON</paper-button
+                    Looks like you have not created any persons yet.
+                    <mwc-button @click=${this._createPerson}>
+                      CREATE PERSON</mwc-button
                     >
                   </div>
                 `
@@ -91,7 +93,7 @@ class HaConfigPerson extends LitElement {
           </paper-card>
           ${this._configItems.length > 0
             ? html`
-                <paper-card heading="Configuration.yaml people">
+                <paper-card heading="Configuration.yaml persons">
                   ${this._configItems.map((entry) => {
                     return html`
                       <paper-item>
@@ -123,6 +125,7 @@ class HaConfigPerson extends LitElement {
   }
 
   private async _fetchData() {
+    this._usersLoad = fetchUsers(this.hass!);
     const personData = await fetchPersons(this.hass!);
 
     this._storageItems = personData.storage.sort((ent1, ent2) =>
@@ -142,9 +145,27 @@ class HaConfigPerson extends LitElement {
     this._openDialog(entry);
   }
 
-  private _openDialog(entry?: Person) {
+  private _allowedUsers(users: User[], currentPerson?: Person) {
+    const used = new Set();
+    for (const coll of [this._configItems, this._storageItems]) {
+      for (const pers of coll!) {
+        if (pers.user_id) {
+          used.add(pers.user_id);
+        }
+      }
+    }
+    const currentUserId = currentPerson ? currentPerson.user_id : undefined;
+    return users.filter(
+      (user) => user.id === currentUserId || !used.has(user.id)
+    );
+  }
+
+  private async _openDialog(entry?: Person) {
+    const users = await this._usersLoad!;
+
     showPersonDetailDialog(this, {
       entry,
+      users: this._allowedUsers(users, entry),
       createEntry: async (values) => {
         const created = await createPerson(this.hass!, values);
         this._storageItems = this._storageItems!.concat(created).sort(
@@ -191,6 +212,7 @@ All devices in this area will become unassigned.`)
       }
       .empty {
         text-align: center;
+        padding: 8px;
       }
       paper-item {
         padding-top: 4px;

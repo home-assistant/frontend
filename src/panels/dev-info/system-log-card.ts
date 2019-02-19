@@ -137,9 +137,10 @@ class SystemLogCard extends LitElement {
       }
 
       .loading-container {
-        @apply --layout-vertical;
-        @apply --layout-center-center;
         height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     `;
   }

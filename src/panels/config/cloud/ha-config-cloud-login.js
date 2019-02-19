@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
@@ -26,6 +26,7 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
       <style include="iron-flex ha-style">
         .content {
           padding-bottom: 24px;
+          direction: ltr;
         }
         [slot="introduction"] {
           margin: -1em 0;

@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "../components/ha-toast";
 
 export default (installingWorker) => {
@@ -7,7 +7,7 @@ export default (installingWorker) => {
   toast.text = "A new version of the frontend is available.";
   toast.duration = 0;
 
-  const button = document.createElement("paper-button");
+  const button = document.createElement("mwc-button");
   button.addEventListener("click", () =>
     installingWorker.postMessage({ type: "skipWaiting" })
   );

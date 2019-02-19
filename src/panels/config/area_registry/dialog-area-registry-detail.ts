@@ -12,7 +12,7 @@ import "@polymer/paper-input/paper-input";
 
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/ha-style";
+import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 
@@ -51,7 +51,13 @@ class DialogAreaDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${this._params.entry ? this._params.entry.name : "New Area"}</h2>
+        <h2>
+          ${this._params.entry
+            ? this._params.entry.name
+            : this.hass.localize(
+                "ui.panel.config.area_registry.editor.default_name"
+              )}
+        </h2>
         <paper-dialog-scrollable>
           ${this._error
             ? html`
@@ -62,7 +68,7 @@ class DialogAreaDetail extends LitElement {
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="Name"
+              .label=${this.hass.localize("ui.dialogs.more_info_settings.name")}
               error-message="Name is required"
               .invalid=${nameInvalid}
             ></paper-input>
@@ -71,21 +77,29 @@ class DialogAreaDetail extends LitElement {
         <div class="paper-dialog-buttons">
           ${this._params.entry
             ? html`
-                <paper-button
-                  class="danger"
+                <mwc-button
+                  class="warning"
                   @click="${this._deleteEntry}"
                   .disabled=${this._submitting}
                 >
-                  DELETE
-                </paper-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.area_registry.editor.delete"
+                  )}
+                </mwc-button>
               `
             : html``}
-          <paper-button
+          <mwc-button
             @click="${this._updateEntry}"
             .disabled=${nameInvalid || this._submitting}
           >
-            ${this._params.entry ? "UPDATE" : "CREATE"}
-          </paper-button>
+            ${this._params.entry
+              ? this.hass.localize(
+                  "ui.panel.config.area_registry.editor.update"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.area_registry.editor.create"
+                )}
+          </mwc-button>
         </div>
       </paper-dialog>
     `;
@@ -142,13 +156,7 @@ class DialogAreaDetail extends LitElement {
         .form {
           padding-bottom: 24px;
         }
-        paper-button {
-          font-weight: 500;
-        }
-        paper-button.danger {
-          font-weight: 500;
-          color: var(--google-red-500);
-          margin-left: -12px;
+        mwc-button.warning {
           margin-right: auto;
         }
         .error {

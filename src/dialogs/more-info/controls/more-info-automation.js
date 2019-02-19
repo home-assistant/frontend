@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -10,10 +10,6 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
-        paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
-        }
         .flex {
           display: flex;
           justify-content: space-between;
@@ -33,9 +29,9 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
       </div>
 
       <div class="actions">
-        <paper-button on-click="handleTriggerTapped">
+        <mwc-button on-click="handleTriggerTapped">
           [[localize('ui.card.automation.trigger')]]
-        </paper-button>
+        </mwc-button>
       </div>
     `;
   }

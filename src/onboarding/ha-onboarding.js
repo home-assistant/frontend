@@ -1,7 +1,7 @@
 import "@polymer/polymer/lib/elements/dom-if";
 import "@polymer/polymer/lib/elements/dom-repeat";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
@@ -64,9 +64,9 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
 
       <template is='dom-if' if='[[!_loading]]'>
         <p class='action'>
-          <paper-button raised on-click='_submitForm'>
+          <mwc-button raised on-click='_submitForm'>
             [[localize('ui.panel.page-onboarding.user.create_account')]]
-          </paper-button>
+          </mwc-button>
         </p>
       </template>
     </div>

@@ -13,13 +13,9 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { Cluster } from "../../../data/zha";
 import "../../../layouts/ha-app-layout";
 import "../../../components/ha-paper-icon-button-arrow-prev";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import {
-  ZHAClusterSelectedParams,
-  ZHAEntitySelectedParams,
-  ZHANodeSelectedParams,
-} from "./types";
+import { ZHAClusterSelectedParams, ZHANodeSelectedParams } from "./types";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 import "./zha-network";
@@ -30,14 +26,12 @@ export class HaConfigZha extends LitElement {
   public isWide?: boolean;
   private _selectedNode?: HassEntity;
   private _selectedCluster?: Cluster;
-  private _selectedEntity?: HassEntity;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
       isWide: {},
       _selectedCluster: {},
-      _selectedEntity: {},
       _selectedNode: {},
     };
   }
@@ -64,7 +58,6 @@ export class HaConfigZha extends LitElement {
           .hass="${this.hass}"
           @zha-cluster-selected="${this._onClusterSelected}"
           @zha-node-selected="${this._onNodeSelected}"
-          @zha-entity-selected="${this._onEntitySelected}"
         ></zha-node>
         ${this._selectedCluster
           ? html`
@@ -72,7 +65,6 @@ export class HaConfigZha extends LitElement {
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
                 .selectedNode="${this._selectedNode}"
-                .selectedEntity="${this._selectedEntity}"
                 .selectedCluster="${this._selectedCluster}"
               ></zha-cluster-attributes>
 
@@ -80,7 +72,6 @@ export class HaConfigZha extends LitElement {
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
                 .selectedNode="${this._selectedNode}"
-                .selectedEntity="${this._selectedEntity}"
                 .selectedCluster="${this._selectedCluster}"
               ></zha-cluster-commands>
             `
@@ -100,13 +91,6 @@ export class HaConfigZha extends LitElement {
   ): void {
     this._selectedNode = selectedNodeEvent.detail.node;
     this._selectedCluster = undefined;
-    this._selectedEntity = undefined;
-  }
-
-  private _onEntitySelected(
-    selectedEntityEvent: HASSDomEvent<ZHAEntitySelectedParams>
-  ): void {
-    this._selectedEntity = selectedEntityEvent.detail.entity;
   }
 
   static get styles(): CSSResult[] {

@@ -236,8 +236,8 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   hidden$="[[!showHelp]]"
                 >
                 </ha-service-description>
-                <paper-button on-click="_nodeMoreInfo"
-                  >Node Information</paper-button
+                <mwc-button on-click="_nodeMoreInfo"
+                  >Node Information</mwc-button
                 >
               </div>
 
@@ -277,8 +277,8 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     hidden$="[[!showHelp]]"
                   >
                   </ha-service-description>
-                  <paper-button on-click="_entityMoreInfo"
-                    >Entity Information</paper-button
+                  <mwc-button on-click="_entityMoreInfo"
+                    >Entity Information</mwc-button
                   >
                 </div>
                 <div class="form-group">

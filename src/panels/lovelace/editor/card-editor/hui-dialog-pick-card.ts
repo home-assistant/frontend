@@ -9,7 +9,7 @@ import {
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import { haStyleDialog } from "../../../../resources/ha-style";
+import { haStyleDialog } from "../../../../resources/styles";
 
 import "./hui-card-picker";
 import { HomeAssistant } from "../../../../types";
@@ -41,7 +41,7 @@ export class HuiDialogPickCard extends LitElement {
           ></hui-card-picker>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button @click="${this._skipPick}">MANUAL CARD</paper-button>
+          <mwc-button @click="${this._skipPick}">MANUAL CARD</mwc-button>
         </div>
       </paper-dialog>
     `;

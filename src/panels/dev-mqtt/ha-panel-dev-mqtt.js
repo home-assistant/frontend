@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
@@ -33,7 +33,7 @@ class HaPanelDevMqtt extends PolymerElement {
           display: block;
         }
 
-        paper-button {
+        mwc-button {
           background-color: white;
         }
       </style>
@@ -69,7 +69,7 @@ class HaPanelDevMqtt extends PolymerElement {
               ></paper-textarea>
             </div>
             <div class="card-actions">
-              <paper-button on-click="_publish">Publish</paper-button>
+              <mwc-button on-click="_publish">Publish</mwc-button>
             </div>
           </paper-card>
         </div>
