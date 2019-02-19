@@ -1,26 +1,21 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
 class HuiLockEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -38,33 +33,32 @@ class HuiLockEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        <paper-button @click="${this._callService}">
+        <mwc-button @click="${this._callService}">
           ${stateObj.state === "locked"
             ? this.hass!.localize("ui.card.lock.unlock")
             : this.hass!.localize("ui.card.lock.lock")}
-        </paper-button>
+        </mwc-button>
       </hui-generic-entity-row>
     `;
   }
 
-  protected renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
-          margin-right: -0.57em;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      mwc-button {
+        margin-right: -0.57em;
+      }
     `;
   }
 

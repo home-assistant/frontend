@@ -33,7 +33,7 @@ export const handleClick = (
     case "more-info":
       if (config.entity || config.camera_image) {
         fireEvent(node, "hass-more-info", {
-          entityId: config.entity ? config.entity! : config.camera_image!,
+          entityId: config.entity ? config.entity : config.camera_image!,
         });
       }
       break;

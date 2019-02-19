@@ -423,6 +423,17 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Salir"
+                                },
+                                "webhook": {
+                                    "label": "Webhook"
+                                },
+                                "time_pattern": {
+                                    "hours": "Horas",
+                                    "minutes": "Minutos",
+                                    "seconds": "Hass.io"
+                                },
+                                "geo_location": {
+                                    "event": "Evento:"
                                 }
                             }
                         },
@@ -552,6 +563,9 @@
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA"
                 }
             },
             "profile": {
@@ -694,6 +708,11 @@
                             "abort": {
                                 "not_whitelisted": "Tu computadora no está incluida en la lista blanca."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "La sesión expiró, por favor inicie sesión nuevamente."
+                            }
                         }
                     }
                 }
@@ -726,7 +745,8 @@
                     "edit_card": {
                         "header": "Configuración de la tarjeta",
                         "save": "Guardar",
-                        "toggle_editor": "Cambiar editor"
+                        "toggle_editor": "Cambiar editor",
+                        "edit": "Editar"
                     },
                     "migrate": {
                         "header": "Configuración inválida",
@@ -734,6 +754,9 @@
                         "para_migrate": "Home Assistant puede agregar ID a todas sus tarjetas y vistas automáticamente por usted presionando el botón 'Migrar configuración'.",
                         "migrate": "Migrar configuración"
                     }
+                },
+                "menu": {
+                    "help": "Ayuda"
                 }
             }
         },
@@ -951,7 +974,10 @@
         "updater": "Actualizador",
         "weblink": "Enlace web",
         "zwave": "",
-        "vacuum": "Aspiradora"
+        "vacuum": "Aspiradora",
+        "zha": "ZHA",
+        "lovelace": "Lovelace",
+        "system_health": "Estado del sistema"
     },
     "attribute": {
         "weather": {

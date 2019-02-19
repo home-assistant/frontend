@@ -2,7 +2,7 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -68,9 +68,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
                 label="Event Data (JSON, optional)"
                 value="{{eventData}}"
               ></paper-textarea>
-              <paper-button on-click="fireEvent" raised
-                >Fire Event</paper-button
-              >
+              <mwc-button on-click="fireEvent" raised>Fire Event</mwc-button>
             </div>
           </div>
 

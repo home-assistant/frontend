@@ -6,7 +6,6 @@ import {
   PropertyValues,
   property,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-icon-item";
@@ -14,26 +13,11 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "./ha-icon";
 
+import "../components/user/ha-user-badge";
 import isComponentLoaded from "../common/config/is_component_loaded";
 import { HomeAssistant, Panel } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { DEFAULT_PANEL } from "../common/const";
-
-const computeInitials = (name: string) => {
-  if (!name) {
-    return "user";
-  }
-  return (
-    name
-      .trim()
-      // Split by space and take first 3 words
-      .split(" ")
-      .slice(0, 3)
-      // Of each word, take first letter
-      .map((s) => s.substr(0, 1))
-      .join("")
-  );
-};
 
 const computeUrl = (urlPath) => `/${urlPath}`;
 
@@ -93,22 +77,13 @@ class HaSidebar extends LitElement {
       return html``;
     }
 
-    const initials = hass.user ? computeInitials(hass.user.name) : "";
-
     return html`
       <app-toolbar>
         <div main-title>Home Assistant</div>
         ${hass.user
           ? html`
-              <a
-                href="/profile"
-                class="${classMap({
-                  "profile-badge": true,
-                  long: initials.length > 2,
-                })}"
-              >
-                <paper-ripple></paper-ripple>
-                ${initials}
+              <a href="/profile">
+                <ha-user-badge .user=${hass.user}></ha-user-badge>
               </a>
             `
           : ""}
@@ -343,23 +318,6 @@ class HaSidebar extends LitElement {
 
       .dev-tools a {
         color: var(--sidebar-icon-color);
-      }
-
-      .profile-badge {
-        /* for ripple */
-        position: relative;
-        box-sizing: border-box;
-        width: 40px;
-        line-height: 40px;
-        border-radius: 50%;
-        text-align: center;
-        background-color: var(--light-primary-color);
-        text-decoration: none;
-        color: var(--primary-text-color);
-      }
-
-      .profile-badge.long {
-        font-size: 80%;
       }
     `;
   }
