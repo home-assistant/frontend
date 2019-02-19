@@ -265,6 +265,10 @@
             "on": "开启",
             "paused": "已暂停",
             "returning": "正在返回"
+        },
+        "timer": {
+            "active": "激活",
+            "idle": "空闲"
         }
     },
     "state_badge": {
@@ -301,7 +305,8 @@
                 "period": "日期范围"
             },
             "logbook": {
-                "showing_entries": "显示以下日期的条目"
+                "showing_entries": "显示以下日期的条目",
+                "period": "周期"
             },
             "mailbox": {
                 "empty": "您还没有任何消息",
@@ -345,7 +350,11 @@
                 },
                 "customize": {
                     "caption": "自定义",
-                    "description": "自定义实体"
+                    "description": "自定义实体",
+                    "picker": {
+                        "header": "自定义",
+                        "introduction": "调整每个实体的属性。添加\/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
+                    }
                 },
                 "automation": {
                     "caption": "自动化",
@@ -432,6 +441,14 @@
                                     "hours": "小时",
                                     "minutes": "分",
                                     "seconds": "秒"
+                                },
+                                "geo_location": {
+                                    "label": "地理位置",
+                                    "source": "位置来源",
+                                    "zone": "区域",
+                                    "event": "事件：",
+                                    "enter": "进入",
+                                    "leave": "离开"
                                 }
                             }
                         },
@@ -559,11 +576,50 @@
                         "hub": "链接于",
                         "firmware": "固件：{version}",
                         "device_unavailable": "设备不可用",
-                        "entity_unavailable": "实体不可用"
+                        "entity_unavailable": "实体不可用",
+                        "no_area": "没有区域"
                     }
                 },
                 "zha": {
                     "description": "Zigbee 智能家居(ZHA) 网络管理"
+                },
+                "area_registry": {
+                    "description": "您家中所有区域的概览。",
+                    "picker": {
+                        "header": "注册区域"
+                    },
+                    "no_areas": "看来你还没有建立区域!",
+                    "create_area": "创建区域",
+                    "editor": {
+                        "default_name": "新区域",
+                        "delete": "删除",
+                        "update": "更新",
+                        "create": "创建"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "实体注册",
+                    "description": "所有已知实体的概览。",
+                    "picker": {
+                        "header": "实体注册",
+                        "unavailable": "(不可用)"
+                    },
+                    "editor": {
+                        "unavailable": "该实体暂不可用。",
+                        "default_name": "新区域",
+                        "delete": "删除",
+                        "update": "更新"
+                    }
+                },
+                "person": {
+                    "caption": "人",
+                    "description": "管理Home Assistant跟踪的人员。",
+                    "detail": {
+                        "name": "名字",
+                        "device_tracker_intro": "选择属于此人的设备。",
+                        "device_tracker_picked": "跟踪设备",
+                        "device_tracker_pick": "选择要跟踪的设备"
+                    }
                 }
             },
             "profile": {
@@ -659,7 +715,7 @@
                                     "data": {
                                         "code": "双重认证口令"
                                     },
-                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
+                                    "description": "在设备上打开 **{mfa_module_name}** 查看双重认证口令并验证您的身份:"
                                 }
                             },
                             "error": {
@@ -682,7 +738,7 @@
                                     "data": {
                                         "code": "双重认证口令"
                                     },
-                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
+                                    "description": "在设备上打开 **{mfa_module_name}** 查看双重认证口令并验证您的身份:"
                                 }
                             },
                             "error": {
@@ -705,6 +761,29 @@
                             },
                             "abort": {
                                 "not_whitelisted": "您的电脑不在白名单内。"
+                            }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "用户名",
+                                        "password": "密码"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "二次认证口令"
+                                    },
+                                    "description": "在设备上打开 **{mfa_module_name}** 查看二次认证口令并验证您的身份:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "无效的用户名或密码",
+                                "invalid_code": "无效的验证码"
+                            },
+                            "abort": {
+                                "login_expired": "会话已过期，请重新登录。"
                             }
                         }
                     }
@@ -732,6 +811,11 @@
                         "checked_items": "已完成项目",
                         "clear_items": "清除已完成项目",
                         "add_item": "新增项目"
+                    },
+                    "empty_state": {
+                        "title": "欢迎回家",
+                        "no_devices": "此页面是用来控制设备的，不过您好像还没有配置好任何设备。请前往集成页面以开始。",
+                        "go_to_integrations_page": "前往集成页面。"
                     }
                 },
                 "editor": {
@@ -742,7 +826,8 @@
                         "pick_card": "请选择要添加的卡片。",
                         "add": "添加卡片",
                         "edit": "编辑",
-                        "delete": "删除"
+                        "delete": "删除",
+                        "move": "移动"
                     },
                     "migrate": {
                         "header": "配置不兼容",
@@ -763,10 +848,19 @@
                         "para_sure": "您确定要自行编辑用户界面吗？",
                         "cancel": "没关系",
                         "save": "自行编辑"
+                    },
+                    "menu": {
+                        "raw_editor": "原始配置编辑器"
                     }
                 },
                 "menu": {
-                    "configure_ui": "配置 UI"
+                    "configure_ui": "配置 UI",
+                    "unused_entities": "未使用的实体",
+                    "help": "帮助",
+                    "refresh": "刷新"
+                },
+                "warning": {
+                    "entity_not_found": "实体不可用"
                 }
             }
         },
@@ -839,7 +933,8 @@
                 "arm_home": "在家警戒",
                 "arm_away": "离家警戒",
                 "arm_night": "夜间警戒",
-                "armed_custom_bypass": "自定义略过"
+                "armed_custom_bypass": "自定义略过",
+                "arm_custom_bypass": "自定义略过条件"
             },
             "automation": {
                 "last_triggered": "上次触发",
@@ -998,7 +1093,11 @@
         "updater": "更新提示",
         "weblink": "网址",
         "zwave": "Z-Wave",
-        "vacuum": "扫地机"
+        "vacuum": "扫地机",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "系统状态"
     },
     "attribute": {
         "weather": {

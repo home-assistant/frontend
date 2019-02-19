@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-card/paper-card";
@@ -78,8 +78,8 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
               <div><paper-spinner active></paper-spinner></div>
             </template>
             <template is="dom-if" if="[[!_loading]]">
-              <paper-button on-click="_changePassword"
-                >[[localize('ui.panel.profile.change_password.submit')]]</paper-button
+              <mwc-button on-click="_changePassword"
+                >[[localize('ui.panel.profile.change_password.submit')]]</mwc-button
               >
             </template>
           </div>

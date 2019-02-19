@@ -36,6 +36,7 @@ export default class WaitAction extends Component {
           name="wait_template"
           value={wait_template}
           onvalue-changed={this.onTemplateChange}
+          dir="ltr"
         />
         <paper-input
           label={localize(

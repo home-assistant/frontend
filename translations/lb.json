@@ -265,6 +265,11 @@
             "on": "Un",
             "paused": "Pauseiert",
             "returning": "Kënnt zur Statioun zeréck"
+        },
+        "timer": {
+            "active": "Aktiv",
+            "idle": "Waart",
+            "paused": "Pauseiert"
         }
     },
     "state_badge": {
@@ -301,7 +306,8 @@
                 "period": "Zäitraum"
             },
             "logbook": {
-                "showing_entries": "Weist Beiträg fir"
+                "showing_entries": "Weist Beiträg fir",
+                "period": "Zäitraum"
             },
             "mailbox": {
                 "empty": "Dir hutt keng Noriicht",
@@ -317,7 +323,7 @@
                     "description": "Konfiguratioun validéieren an de Server kontrolléieren",
                     "section": {
                         "core": {
-                            "header": "Konfiguracja i konktrola serwera",
+                            "header": "Konfiguratioun an Server Kontroll",
                             "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
                             "validation": {
                                 "heading": "Validatioun vun der Konfiguratioun",
@@ -336,7 +342,7 @@
                             },
                             "server_management": {
                                 "heading": "Serververwaltung",
-                                "introduction": "Kontroll vun Ärem Home Assistant Server ... vun Home Assistant.",
+                                "introduction": "Kontrolléiert ären Home Assistant Server ... vun Home Assistant aus.",
                                 "restart": "Neistart",
                                 "stop": "Stop"
                             }
@@ -345,7 +351,11 @@
                 },
                 "customize": {
                     "caption": "Personaliséieren",
-                    "description": "Är Entitéite personaliséieren"
+                    "description": "Är Entitéite personaliséieren",
+                    "picker": {
+                        "header": "Personaliséieren",
+                        "introduction": "Manipulatioun vun den Attributen pro Entitéit. Nei\/geännert Personlisatiounen sinn direkt effektiv. Geläschte Personalisatioune ginn effektiv wann d'Entitéit sech aktualiséiert."
+                    }
                 },
                 "automation": {
                     "caption": "Automatisme",
@@ -568,7 +578,8 @@
                         "hub": "Verbonnen via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Apparat net erreechbar",
-                        "entity_unavailable": "Entitéit net erreechbar"
+                        "entity_unavailable": "Entitéit net erreechbar",
+                        "no_area": "Kee Beräich"
                     }
                 },
                 "zha": {
@@ -580,11 +591,42 @@
                 },
                 "area_registry": {
                     "caption": "Lëscht vun de Beräicher",
-                    "description": "Iwwersiicht vun de Beräicher am Haus"
+                    "description": "Iwwersiicht vun de Beräicher am Haus",
+                    "picker": {
+                        "header": "Lëscht vun de Beräicher"
+                    },
+                    "no_areas": "Et sinn nach keng Beräicher do!",
+                    "create_area": "Beräich erstellen",
+                    "editor": {
+                        "default_name": "Neie Beräich",
+                        "delete": "Läschen",
+                        "update": "Aktualiséieren",
+                        "create": "Erstellen"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Lëscht vun den Entitéiten",
-                    "description": "Iwwersiicht vun all bekannten Entitéiten."
+                    "description": "Iwwersiicht vun all bekannten Entitéiten.",
+                    "picker": {
+                        "header": "Lëscht vun den Entitéiten",
+                        "unavailable": "(net verfügbar)"
+                    },
+                    "editor": {
+                        "unavailable": "Dës Entitéit ass net erreechba fir de Moment.",
+                        "default_name": "Neie Beräich",
+                        "delete": "Läschen",
+                        "update": "Aktualiséieren"
+                    }
+                },
+                "person": {
+                    "caption": "Persounen",
+                    "description": "Verwalt d'Persoune déi vum Home Assistant suivéiert ginn.",
+                    "detail": {
+                        "name": "Numm",
+                        "device_tracker_intro": "Wiel d'Apparater aus déi zu dëser Persoun gehéieren.",
+                        "device_tracker_picked": "Aparat suivéieren",
+                        "device_tracker_pick": "Wielt den Apparat aus fir ze suivéieren"
+                    }
                 }
             },
             "profile": {
@@ -727,6 +769,29 @@
                             "abort": {
                                 "not_whitelisted": "Äre Computer ass net fräigeschalt."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benotzernumm",
+                                        "password": "Passwuert"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwee-Faktor Authentifikatiouns Code"
+                                    },
+                                    "description": "Kuckt ären Zwee-Faktor Authentifikatiouns Code am **{mfa_module_name}** op ärem Apparat an iwwerpréift är Identitéit:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongëlte Benotzernumm oder Passwuert",
+                                "invalid_code": "Ongëlten Authentifizéierungs Code"
+                            },
+                            "abort": {
+                                "login_expired": "Sessioun ofgelaaf, log dech rëm frësch an w.e.g."
+                            }
                         }
                     }
                 }
@@ -757,7 +822,7 @@
                     "empty_state": {
                         "title": "Wëllkomm Doheem",
                         "no_devices": "Dës Säit erlaabt et iech är Apparater ze kontrolléiere, awer wéi et schéngt sinn nach keng Apparater ageriicht. Gitt op d'Integratioun's Säit fir unzefänken.",
-                        "go_to_integrations_page": "Zur Integratiouns Säit goen"
+                        "go_to_integrations_page": "Zur Integratiouns Säit goen"
                     }
                 },
                 "editor": {
@@ -768,7 +833,8 @@
                         "pick_card": "Wielt d'Kaart aus déi soll dobäigesat ginn.",
                         "add": "Kaart dobäisetzen",
                         "edit": "Änneren",
-                        "delete": "Läschen"
+                        "delete": "Läschen",
+                        "move": "Réckelen"
                     },
                     "migrate": {
                         "header": "Konfiguratioun net kompatibel",
@@ -789,10 +855,20 @@
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
                         "cancel": "Vergiess et",
                         "save": "Kontroll iwwerhuelen"
+                    },
+                    "menu": {
+                        "raw_editor": "Editeur fir déi reng Konfiguratioun"
                     }
                 },
                 "menu": {
-                    "configure_ui": "UI konfiguréieren"
+                    "configure_ui": "UI konfiguréieren",
+                    "unused_entities": "Onbenotzt Entitéiten",
+                    "help": "Hëllef",
+                    "refresh": "Erneieren"
+                },
+                "warning": {
+                    "entity_not_found": "Entitéit net erreechbar: {entitiy}",
+                    "entity_non_numeric": "Entitéit ass net numerescher Natur: {entitiy}"
                 }
             }
         },
@@ -865,7 +941,8 @@
                 "arm_home": "Aktivéiert Doheem",
                 "arm_away": "Aktivéiert Ënnerwee",
                 "arm_night": "Aktivéiert Nuecht",
-                "armed_custom_bypass": "Personaliséierte Bypass"
+                "armed_custom_bypass": "Personaliséierte Bypass",
+                "arm_custom_bypass": "Personaliséierte Bypass"
             },
             "automation": {
                 "last_triggered": "Läscht ausgeléist",
@@ -1028,7 +1105,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "system_health": "System Zoustand"
     },
     "attribute": {
         "weather": {

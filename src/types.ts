@@ -29,6 +29,13 @@ declare global {
       getComputedStyleValue(element, propertyName);
     };
   }
+  // for fire event
+  interface HASSDomEvents {
+    "value-changed": {
+      value: unknown;
+    };
+    change: undefined;
+  }
 }
 
 export interface WebhookError {
@@ -47,7 +54,7 @@ export interface MFAModule {
   enabled: boolean;
 }
 
-export interface User {
+export interface CurrentUser {
   id: string;
   is_owner: boolean;
   name: string;
@@ -123,7 +130,7 @@ export interface HomeAssistant {
 
   dockedSidebar: boolean;
   moreInfoEntityId: string;
-  user: User;
+  user: CurrentUser;
   callService: (
     domain: string,
     service: string,

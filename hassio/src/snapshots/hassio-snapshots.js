@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -90,10 +90,10 @@ class HassioSnapshots extends EventsMixin(PolymerElement) {
               </template>
             </div>
             <div class="card-actions">
-              <paper-button
+              <mwc-button
                 disabled="[[creatingSnapshot]]"
                 on-click="_createSnapshot"
-                >Create</paper-button
+                >Create</mwc-button
               >
             </div>
           </paper-card>

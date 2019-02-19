@@ -18,6 +18,10 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
           right: 16px;
         }
 
+        .card-content {
+          color: var(--primary-text-color);
+        }
+
         .card-actions {
           text-align: right;
           border-top: 0;
@@ -33,11 +37,11 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
       <paper-card elevation="4">
         <div class="card-content">[[localize('ui.auth_store.ask')]]</div>
         <div class="card-actions">
-          <paper-button on-click="_done"
-            >[[localize('ui.auth_store.decline')]]</paper-button
+          <mwc-button on-click="_done"
+            >[[localize('ui.auth_store.decline')]]</mwc-button
           >
-          <paper-button primary on-click="_save"
-            >[[localize('ui.auth_store.confirm')]]</paper-button
+          <mwc-button raised on-click="_save"
+            >[[localize('ui.auth_store.confirm')]]</mwc-button
           >
         </div>
       </paper-card>

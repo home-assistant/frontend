@@ -265,6 +265,11 @@
             "on": "On",
             "paused": "Paused",
             "returning": "Returning to dock"
+        },
+        "timer": {
+            "active": "active",
+            "idle": "idle",
+            "paused": "paused"
         }
     },
     "state_badge": {
@@ -346,7 +351,11 @@
                 },
                 "customize": {
                     "caption": "Customization",
-                    "description": "Customize your entities"
+                    "description": "Customize your entities",
+                    "picker": {
+                        "header": "Customization",
+                        "introduction": "Tweak per-entity attributes. Added\/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
+                    }
                 },
                 "automation": {
                     "caption": "Automation",
@@ -569,7 +578,8 @@
                         "hub": "Connected via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "device unavailable",
-                        "entity_unavailable": "entity unavailable"
+                        "entity_unavailable": "entity unavailable",
+                        "no_area": "No Area"
                     }
                 },
                 "zha": {
@@ -581,11 +591,42 @@
                 },
                 "area_registry": {
                     "caption": "Area Registry",
-                    "description": "Overview of all areas in your home."
+                    "description": "Overview of all areas in your home.",
+                    "picker": {
+                        "header": "Area Registry"
+                    },
+                    "no_areas": "Looks like you have no areas yet!",
+                    "create_area": "CREATE AREA",
+                    "editor": {
+                        "default_name": "New Area",
+                        "delete": "DELETE",
+                        "update": "UPDATE",
+                        "create": "CREATE"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Entity Registry",
-                    "description": "Overview of all known entities."
+                    "description": "Overview of all known entities.",
+                    "picker": {
+                        "header": "Entity Registry",
+                        "unavailable": "(unavailable)"
+                    },
+                    "editor": {
+                        "unavailable": "This entity is not currently available.",
+                        "default_name": "New Area",
+                        "delete": "DELETE",
+                        "update": "UPDATE"
+                    }
+                },
+                "person": {
+                    "caption": "Persons",
+                    "description": "Manage the persons that Home Assistant tracks.",
+                    "detail": {
+                        "name": "Name",
+                        "device_tracker_intro": "Select the devices that belong to this person.",
+                        "device_tracker_picked": "Track Device",
+                        "device_tracker_pick": "Pick device to track"
+                    }
                 }
             },
             "profile": {
@@ -728,6 +769,29 @@
                             "abort": {
                                 "not_whitelisted": "Your computer is not whitelisted."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Username",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Two-factor Authentication Code"
+                                    },
+                                    "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Invalid username or password",
+                                "invalid_code": "Invalid authentication code"
+                            },
+                            "abort": {
+                                "login_expired": "Session expired, please login again."
+                            }
                         }
                     }
                 }
@@ -769,7 +833,8 @@
                         "pick_card": "Pick the card you want to add.",
                         "add": "Add Card",
                         "edit": "Edit",
-                        "delete": "Delete"
+                        "delete": "Delete",
+                        "move": "Move"
                     },
                     "migrate": {
                         "header": "Configuration Incompatible",
@@ -800,6 +865,10 @@
                     "unused_entities": "Unused entities",
                     "help": "Help",
                     "refresh": "Refresh"
+                },
+                "warning": {
+                    "entity_not_found": "Entity not available: {entity}",
+                    "entity_non_numeric": "Entity is non-numeric: {entity}"
                 }
             }
         },
@@ -872,7 +941,8 @@
                 "arm_home": "Arm home",
                 "arm_away": "Arm away",
                 "arm_night": "Arm night",
-                "armed_custom_bypass": "Custom bypass"
+                "armed_custom_bypass": "Custom bypass",
+                "arm_custom_bypass": "Custom bypass"
             },
             "automation": {
                 "last_triggered": "Last triggered",

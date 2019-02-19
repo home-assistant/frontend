@@ -346,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "自定義",
-                    "description": "自定義元件內容與中文化"
+                    "description": "自定義元件內容與中文化",
+                    "picker": {
+                        "header": "自定義",
+                        "introduction": "調整每個物件屬性。新增\/編輯自訂化將可以立即生效，移除自訂化則必須等到物件更新時、方能生效。"
+                    }
                 },
                 "automation": {
                     "caption": "設定自動化",
@@ -569,7 +573,8 @@
                         "hub": "連線：",
                         "firmware": "韌體：{version}",
                         "device_unavailable": "裝置不可用",
-                        "entity_unavailable": "物件不可用"
+                        "entity_unavailable": "物件不可用",
+                        "no_area": "無分區"
                     }
                 },
                 "zha": {
@@ -580,12 +585,43 @@
                     }
                 },
                 "area_registry": {
-                    "caption": "區域 ID",
-                    "description": "家中所有區域概觀。"
+                    "caption": "分區 ID",
+                    "description": "家中所有分區概觀。",
+                    "picker": {
+                        "header": "分區 ID"
+                    },
+                    "no_areas": "看起來你還沒有建立分區！",
+                    "create_area": "建立分區",
+                    "editor": {
+                        "default_name": "新增分區",
+                        "delete": "刪除",
+                        "update": "更新",
+                        "create": "建立"
+                    }
                 },
                 "entity_registry": {
                     "caption": "物件 ID",
-                    "description": "所有已知物件概觀。"
+                    "description": "所有已知物件概觀。",
+                    "picker": {
+                        "header": "物件 ID",
+                        "unavailable": "（不可用）"
+                    },
+                    "editor": {
+                        "unavailable": "該物件目前不可用。",
+                        "default_name": "新分區",
+                        "delete": "刪除",
+                        "update": "更新"
+                    }
+                },
+                "person": {
+                    "caption": "人員",
+                    "description": "管理 Home Assistant 追蹤人員。",
+                    "detail": {
+                        "name": "名稱",
+                        "device_tracker_intro": "選擇此人員所擁有的設備。",
+                        "device_tracker_picked": "追蹤設備",
+                        "device_tracker_pick": "選擇追蹤設備"
+                    }
                 }
             },
             "profile": {
@@ -728,6 +764,29 @@
                             "abort": {
                                 "not_whitelisted": "電腦尚未加入許可清單。"
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "使用者名稱",
+                                        "password": "使用者密碼"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "兩步驟驗證碼"
+                                    },
+                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "使用者名稱或密碼無效",
+                                "invalid_code": "驗證碼無效"
+                            },
+                            "abort": {
+                                "login_expired": "登入階段已逾時，請重新登錄。"
+                            }
                         }
                     }
                 }
@@ -769,7 +828,8 @@
                         "pick_card": "選擇所要新增的卡片。",
                         "add": "新增卡片",
                         "edit": "編輯",
-                        "delete": "刪除"
+                        "delete": "刪除",
+                        "move": "移動"
                     },
                     "migrate": {
                         "header": "設定不相容",
@@ -872,7 +932,8 @@
                 "arm_home": "在家警戒",
                 "arm_away": "離家警戒",
                 "arm_night": "夜間警戒",
-                "armed_custom_bypass": "自定義忽略"
+                "armed_custom_bypass": "警戒模式狀態",
+                "arm_custom_bypass": "警戒模式狀態"
             },
             "automation": {
                 "last_triggered": "上次觸發",
@@ -967,7 +1028,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "儲存",
-                "name": "名稱撤銷",
+                "name": "名稱覆寫",
                 "entity_id": "物件 ID"
             },
             "more_info_control": {
@@ -1026,7 +1087,7 @@
         "scene": "場景",
         "script": "腳本",
         "sensor": "傳感器",
-        "sun": "太陽",
+        "sun": "日出日落",
         "switch": "開關",
         "updater": "更新器",
         "weblink": "網站鏈接",

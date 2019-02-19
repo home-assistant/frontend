@@ -6,9 +6,10 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import NavigateMixin from "../../../mixins/navigate-mixin";
 
-import "./ha-user-picker";
+import "./ha-config-user-picker";
 import "./ha-user-editor";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { fetchUsers } from "../../../data/auth";
 
 /*
  * @appliesMixin NavigateMixin
@@ -23,7 +24,10 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
       ></app-route>
 
       <template is="dom-if" if='[[_equals(_routeData.user, "picker")]]'>
-        <ha-user-picker hass="[[hass]]" users="[[_users]]"></ha-user-picker>
+        <ha-config-user-picker
+          hass="[[hass]]"
+          users="[[_users]]"
+        ></ha-config-user-picker>
       </template>
       <template
         is="dom-if"
@@ -93,9 +97,7 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   }
 
   async _loadData() {
-    this._users = await this.hass.callWS({
-      type: "config/auth/list",
-    });
+    this._users = await fetchUsers(this.hass);
   }
 }
 
