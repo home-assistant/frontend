@@ -265,6 +265,10 @@
             "on": "开启",
             "paused": "已暂停",
             "returning": "正在返回"
+        },
+        "timer": {
+            "active": "激活",
+            "idle": "空闲"
         }
     },
     "state_badge": {
@@ -854,6 +858,9 @@
                     "unused_entities": "未使用的实体",
                     "help": "帮助",
                     "refresh": "刷新"
+                },
+                "warning": {
+                    "entity_not_found": "实体不可用"
                 }
             }
         },
