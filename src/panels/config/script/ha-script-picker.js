@@ -8,6 +8,8 @@ import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import { computeRTL } from "../../../common/util/compute_rtl";
+
 import "../../../layouts/ha-app-layout";
 
 import "../ha-config-section";
@@ -42,6 +44,17 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         paper-fab[is-wide] {
           bottom: 24px;
           right: 24px;
+        }
+
+        paper-fab[rtl] {
+          right: auto;
+          left: 16px;
+        }
+
+        paper-fab[rtl][is-wide] {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
         }
 
         a {
@@ -98,6 +111,7 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           icon="hass:plus"
           title="Add Script"
           on-click="addScript"
+          rtl$="[[rtl]]"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -125,6 +139,12 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       isWide: {
         type: Boolean,
       },
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -150,6 +170,10 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
 
   _backTapped() {
     history.back();
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 
