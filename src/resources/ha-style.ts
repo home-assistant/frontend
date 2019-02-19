@@ -1,99 +1,6 @@
 import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/polymer-legacy";
-import { css } from "lit-element";
-
-export const haStyle = css`
-  :host {
-    @apply --paper-font-body1;
-  }
-
-  app-header-layout,
-  ha-app-layout {
-    background-color: var(--primary-background-color);
-  }
-
-  app-header,
-  app-toolbar {
-    background-color: var(--primary-color);
-    font-weight: 400;
-    color: var(--text-primary-color, white);
-  }
-
-  app-toolbar ha-menu-button + [main-title],
-  app-toolbar paper-icon-button + [main-title] {
-    margin-left: 24px;
-  }
-
-  h1 {
-    @apply --paper-font-title;
-  }
-
-  button.link {
-    background: none;
-    color: inherit;
-    border: none;
-    padding: 0;
-    font: inherit;
-    text-align: left;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  .card-actions a {
-    text-decoration: none;
-  }
-
-  .card-actions paper-button:not([disabled]),
-  .card-actions ha-progress-button:not([disabled]),
-  .card-actions ha-call-api-button:not([disabled]),
-  .card-actions ha-call-service-button:not([disabled]) {
-    color: var(--primary-color);
-    font-weight: 500;
-  }
-
-  .card-actions paper-button.warning:not([disabled]),
-  .card-actions ha-call-api-button.warning:not([disabled]),
-  .card-actions ha-call-service-button.warning:not([disabled]) {
-    color: var(--google-red-500);
-  }
-
-  .card-actions paper-button[primary] {
-    background-color: var(--primary-color);
-    color: var(--text-primary-color);
-  }
-`;
-
-export const haStyleDialog = css`
-  /* prevent clipping of positioned elements */
-  paper-dialog-scrollable {
-    --paper-dialog-scrollable: {
-      -webkit-overflow-scrolling: auto;
-    }
-  }
-
-  /* force smooth scrolling for iOS 10 */
-  paper-dialog-scrollable.can-scroll {
-    --paper-dialog-scrollable: {
-      -webkit-overflow-scrolling: touch;
-    }
-  }
-
-  @media all and (max-width: 450px), all and (max-height: 500px) {
-    paper-dialog {
-      margin: 0;
-      width: 100% !important;
-      max-height: calc(100% - 64px);
-
-      position: fixed !important;
-      bottom: 0px;
-      left: 0px;
-      right: 0px;
-      overflow: scroll;
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
-    }
-  }
-`;
+import { haStyle, haStyleDialog } from "./styles";
 
 const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");
@@ -172,6 +79,7 @@ documentContainer.innerHTML = `<custom-style>
       --google-blue-500: #4285f4;
       --google-green-500: #0f9d58;
       --google-yellow-500: #f4b400;
+      --paper-spinner-color: var(--primary-color);
 
       /* for paper-slider */
       --paper-green-400: #66bb6a;
@@ -212,6 +120,9 @@ documentContainer.innerHTML = `<custom-style>
       --paper-slider-secondary-color: var(--slider-secondary-color);
       --paper-slider-container-color: var(--slider-bar-color);
       --ha-paper-slider-pin-font-size: 15px;
+
+      /* mwc */
+      --mdc-theme-primary: var(--primary-color);
     }
   </style>
 

@@ -301,7 +301,8 @@
                 "period": "Periodo"
             },
             "logbook": {
-                "showing_entries": "Mostra registrazioni per"
+                "showing_entries": "Mostra registrazioni per",
+                "period": "Periodo"
             },
             "mailbox": {
                 "empty": "Non hai nessun messaggio",
@@ -345,7 +346,11 @@
                 },
                 "customize": {
                     "caption": "Personalizzazione",
-                    "description": "Personalizza le tue entità"
+                    "description": "Personalizza le tue entità",
+                    "picker": {
+                        "header": "Personalizzazione",
+                        "introduction": "Modificare gli attributi per entità. Le personalizzazioni aggiunte \/ modificate avranno effetto immediato. Le personalizzazioni rimosse avranno effetto quando l'entità viene aggiornata."
+                    }
                 },
                 "automation": {
                     "caption": "Automazione",
@@ -426,13 +431,21 @@
                                 },
                                 "webhook": {
                                     "label": "Webhook",
-                                    "webhook_id": "ID Webhook"
+                                    "webhook_id": "Webhook ID"
                                 },
                                 "time_pattern": {
                                     "label": "Pattern temporale",
                                     "hours": "Ore",
                                     "minutes": "Minuti",
                                     "seconds": "Secondi"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalizzazione",
+                                    "source": "Fonte",
+                                    "zone": "Zona",
+                                    "event": "Evento:",
+                                    "enter": "Ingresso",
+                                    "leave": "Uscita"
                                 }
                             }
                         },
@@ -544,7 +557,7 @@
                     "description_not_login": "Accesso non effettuato"
                 },
                 "integrations": {
-                    "caption": "integrazioni",
+                    "caption": "Integrazioni",
                     "description": "Gestisci dispositivi e servizi connessi",
                     "discovered": "Scoperto",
                     "configured": "Configurato",
@@ -560,12 +573,55 @@
                         "hub": "Connesso tramite",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo non disponibile",
-                        "entity_unavailable": "entità non disponibile"
+                        "entity_unavailable": "entità non disponibile",
+                        "no_area": "Nessuna area"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Gestione rete Zigbee Home Automation"
+                    "description": "Gestione rete Zigbee Home Automation",
+                    "services": {
+                        "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di guarigione). Utilizzare questa opzione se si verificano problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia sveglio e che accetti i comandi quando si utilizza questo servizio."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Registro di area",
+                    "description": "Panoramica di tutte le aree della tua casa.",
+                    "picker": {
+                        "header": "Registro di area"
+                    },
+                    "no_areas": "Sembra che tu non abbia ancora delle aree!",
+                    "create_area": "CREA AREA",
+                    "editor": {
+                        "default_name": "Nuova area",
+                        "delete": "ELIMINA",
+                        "update": "AGGIORNA",
+                        "create": "CREA"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Registro delle entità",
+                    "description": "Panoramica di tutte le entità conosciute.",
+                    "picker": {
+                        "header": "Registro delle entità",
+                        "unavailable": "(non disponibile)"
+                    },
+                    "editor": {
+                        "unavailable": "Questa entità non è attualmente disponibile.",
+                        "default_name": "Nuova area",
+                        "delete": "ELIMINA",
+                        "update": "AGGIORNA"
+                    }
+                },
+                "person": {
+                    "caption": "Persone",
+                    "description": "Gestisci le persone di cui tiene traccia Home Assistant",
+                    "detail": {
+                        "name": "Nome",
+                        "device_tracker_intro": "Seleziona i dispositivi che appartengono a questa persona.",
+                        "device_tracker_picked": "Traccia dispositivo",
+                        "device_tracker_pick": "Scegli il dispositivo da tracciare"
+                    }
                 }
             },
             "profile": {
@@ -702,11 +758,34 @@
                                     "data": {
                                         "user": "Utente"
                                     },
-                                    "description": "Perfavore, scegli l'utente con cui vuoi effettuare l'accesso:"
+                                    "description": "Per favore, scegli l'utente con cui vuoi effettuare l'accesso:"
                                 }
                             },
                             "abort": {
                                 "not_whitelisted": "Il tuo computer non è nella whitelist."
+                            }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Username",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codice di autenticazione a due fattori"
+                                    },
+                                    "description": "Apri **{mfa_module_name}** sul tuo dispositivo per vedere il tuo codice di autenticazione a due fattori e verificare la tua identità:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Username o password non validi",
+                                "invalid_code": "Codice di autenticazione non valido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessione scaduta, effettua nuovamente il login."
                             }
                         }
                     }
@@ -734,6 +813,11 @@
                         "checked_items": "Elementi selezionati",
                         "clear_items": "Cancella gli elementi selezionati",
                         "add_item": "Aggiungi elemento"
+                    },
+                    "empty_state": {
+                        "title": "Benvenuto a casa",
+                        "no_devices": "Questa pagina ti consente di controllare i tuoi dispositivi, tuttavia sembra che tu non abbia ancora configurato uno. Vai alla pagina delle integrazioni per iniziare.",
+                        "go_to_integrations_page": "Vai alla pagina delle integrazioni."
                     }
                 },
                 "editor": {
@@ -744,7 +828,8 @@
                         "pick_card": "Scegliere la scheda che si desidera aggiungere.",
                         "add": "Aggiungi scheda",
                         "edit": "Modifica",
-                        "delete": "Elimina"
+                        "delete": "Elimina",
+                        "move": "Sposta"
                     },
                     "migrate": {
                         "header": "Configurazione incompatibile",
@@ -765,10 +850,16 @@
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
                         "cancel": "Rinuncia",
                         "save": "Prendere il controllo"
+                    },
+                    "menu": {
+                        "raw_editor": "Editor di configurazione grezzo"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurare l'interfaccia utente"
+                    "configure_ui": "Configurare l'interfaccia utente",
+                    "unused_entities": "Entità non utilizzate",
+                    "help": "Aiuto",
+                    "refresh": "Aggiorna"
                 }
             }
         },
@@ -841,7 +932,8 @@
                 "arm_home": "Attiva In casa",
                 "arm_away": "Attiva Fuori Casa",
                 "arm_night": "Attiva Notte",
-                "armed_custom_bypass": "Attiva con bypass"
+                "armed_custom_bypass": "Attiva con bypass",
+                "arm_custom_bypass": "Bypass personalizzato"
             },
             "automation": {
                 "last_triggered": "Ultima attivazione",
@@ -911,7 +1003,7 @@
             },
             "relative_time": {
                 "past": "{time} fa",
-                "future": "mancano {time}",
+                "future": "tra {time}",
                 "never": "Mai",
                 "duration": {
                     "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
@@ -936,7 +1028,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Salva",
-                "name": "Nome",
+                "name": "Sovrascrittura del nome",
                 "entity_id": "ID Entità"
             },
             "more_info_control": {
@@ -944,9 +1036,9 @@
                     "last_action": "Ultima azione"
                 },
                 "sun": {
-                    "elevation": "Alba",
-                    "rising": "Tramonto",
-                    "setting": "Impostazione"
+                    "elevation": "Elevazione",
+                    "rising": "Alba",
+                    "setting": "Tramonto"
                 },
                 "updater": {
                     "title": "Aggiorna istruzioni"
@@ -1001,7 +1093,11 @@
         "weblink": "Link Web",
         "zwave": "Z-Wave",
         "vacuum": "Aspirapolvere",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Salute del sistema"
     },
     "attribute": {
         "weather": {

@@ -301,7 +301,8 @@
                 "period": "Période"
             },
             "logbook": {
-                "showing_entries": "Afficher les entrées pour le"
+                "showing_entries": "Afficher les entrées pour le",
+                "period": "Période"
             },
             "mailbox": {
                 "empty": "Vous n'avez aucun message",
@@ -433,6 +434,14 @@
                                     "hours": "Heures",
                                     "minutes": "Minutes",
                                     "seconds": "Secondes"
+                                },
+                                "geo_location": {
+                                    "label": "Géolocalisation",
+                                    "source": "Source",
+                                    "zone": "Zone",
+                                    "event": "Événement :",
+                                    "enter": "Entre",
+                                    "leave": "Quitte"
                                 }
                             }
                         },
@@ -560,7 +569,39 @@
                         "hub": "Connecté via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "appareil indisponible",
-                        "entity_unavailable": "entité indisponible"
+                        "entity_unavailable": "entité indisponible",
+                        "no_area": "Pas de pièce"
+                    }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Gestion de réseau domotique ZigBee",
+                    "services": {
+                        "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Registre des pièces",
+                    "description": "Vue d'ensemble de toutes les pièces de votre maison.",
+                    "picker": {
+                        "header": "Registre des pièces"
+                    },
+                    "no_areas": "Vous n'avez pas encore configuré de pièce !",
+                    "create_area": "CRÉER UNE PIÈCE",
+                    "editor": {
+                        "default_name": "Nouvelle pièce",
+                        "delete": "SUPPRIMER",
+                        "update": "METTRE À JOUR",
+                        "create": "CRÉER"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Registre des entités",
+                    "description": "Vue d'ensemble de toutes les entités connues.",
+                    "editor": {
+                        "default_name": "Nouvelle pièce",
+                        "delete": "SUPPRIMER",
+                        "update": "METTRE À JOUR"
                     }
                 }
             },
@@ -704,6 +745,29 @@
                             "abort": {
                                 "not_whitelisted": "Votre ordinateur n'est pas en liste blanche."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'utilisateur",
+                                        "password": "Mot de passe"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Code d'authentification à deux facteurs"
+                                    },
+                                    "description": "Ouvrez le **{mfa_module_name}** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'utilisateur ou mot de passe invalide",
+                                "invalid_code": "Code d'authentification invalide"
+                            },
+                            "abort": {
+                                "login_expired": "Session expirée, veuillez vous connecter à nouveau."
+                            }
                         }
                     }
                 }
@@ -730,6 +794,11 @@
                         "checked_items": "Éléments cochés",
                         "clear_items": "Effacer éléments cochés",
                         "add_item": "Ajouter un élément"
+                    },
+                    "empty_state": {
+                        "title": "Bienvenue à la maison",
+                        "no_devices": "Cette page vous permet de contrôler vos périphériques. Toutefois, il semble que vous n’ayez pas encore configuré de périphériques. Rendez-vous sur la page des intégrations pour commencer.",
+                        "go_to_integrations_page": "Aller à la page des intégrations."
                     }
                 },
                 "editor": {
@@ -740,7 +809,8 @@
                         "pick_card": "Choisissez l'automatisation à ajouter",
                         "add": "Ajouter une action",
                         "edit": "Modifier",
-                        "delete": "Supprimer"
+                        "delete": "Supprimer",
+                        "move": "Déplacer"
                     },
                     "migrate": {
                         "header": "Configuration incompatible",
@@ -761,10 +831,16 @@
                         "para_sure": "Êtes-vous sûr de vouloir prendre le controle de l'interface utilisateur?",
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "save": "Prenez le contrôle"
+                    },
+                    "menu": {
+                        "raw_editor": "Éditeur de configuration"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Configurer l'interface utilisateur"
+                    "configure_ui": "Configurer l'interface utilisateur",
+                    "unused_entities": "Entités inutilisées",
+                    "help": "Aide",
+                    "refresh": "Actualiser"
                 }
             }
         },
@@ -941,7 +1017,8 @@
                 },
                 "sun": {
                     "elevation": "Élévation",
-                    "rising": "Lever"
+                    "rising": "Lever",
+                    "setting": "Coucher"
                 },
                 "updater": {
                     "title": "Instructions de mise à jour"
@@ -995,7 +1072,12 @@
         "updater": "Mise à jour",
         "weblink": "Lien",
         "zwave": "Z-Wave",
-        "vacuum": "Aspirateur"
+        "vacuum": "Aspirateur",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Santé du système"
     },
     "attribute": {
         "weather": {

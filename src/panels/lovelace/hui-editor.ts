@@ -5,7 +5,7 @@ import yaml from "js-yaml";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 
@@ -13,11 +13,12 @@ import { struct } from "./common/structs/struct";
 import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
-import { haStyle } from "../../resources/ha-style";
+import { haStyle } from "../../resources/styles";
 import "./components/hui-yaml-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { HuiYamlEditor } from "./components/hui-yaml-editor";
+import { HomeAssistant } from "../../types";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -26,6 +27,7 @@ const lovelaceStruct = struct.interface({
 });
 
 class LovelaceFullConfigEditor extends LitElement {
+  public hass?: HomeAssistant;
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
   private _saving?: boolean;
@@ -34,7 +36,9 @@ class LovelaceFullConfigEditor extends LitElement {
 
   static get properties() {
     return {
+      hass: {},
       lovelace: {},
+      closeEditor: {},
       _saving: {},
       _changed: {},
     };
@@ -50,18 +54,21 @@ class LovelaceFullConfigEditor extends LitElement {
               @click="${this._closeEditor}"
             ></paper-icon-button>
             <div main-title>Edit Config</div>
-            <paper-button @click="${this._handleSave}">Save</paper-button>
-            <ha-icon
-              class="save-button
+            <mwc-button raised @click="${this._handleSave}"
+              >Save
+              <ha-icon
+                class="save-button
             ${classMap({
-                saved: this._saving! === false || this._changed === true,
-              })}"
-              icon="${this._changed ? "hass:circle-medium" : "hass:check"}"
-            ></ha-icon>
+                  saved: this._saving! === false || this._changed === true,
+                })}"
+                icon="${this._changed ? "hass:circle-medium" : "hass:check"}"
+              ></ha-icon
+            ></mwc-button>
           </app-toolbar>
         </app-header>
         <div class="content">
           <hui-yaml-editor
+            .hass="${this.hass}"
             @yaml-changed="${this._yamlChanged}"
             @yaml-save="${this._handleSave}"
           >
@@ -88,9 +95,7 @@ class LovelaceFullConfigEditor extends LitElement {
         app-header-layout {
           height: 100vh;
         }
-        paper-button {
-          font-size: 16px;
-        }
+
         app-toolbar {
           background-color: var(--dark-background-color, #455a64);
           color: var(--dark-text-color);
@@ -102,7 +107,6 @@ class LovelaceFullConfigEditor extends LitElement {
 
         .content {
           height: calc(100vh - 68px);
-          direction: ltr;
         }
 
         hui-code-editor {
@@ -111,12 +115,13 @@ class LovelaceFullConfigEditor extends LitElement {
 
         .save-button {
           opacity: 0;
-          margin-left: -16px;
-          margin-top: -4px;
-          transition: opacity 1.5s;
+          margin-left: -21px;
+          transition: all 1.5s;
         }
 
         .saved {
+          margin-left: initial;
+          margin-right: -8px;
           opacity: 1;
         }
       `,
@@ -146,7 +151,9 @@ class LovelaceFullConfigEditor extends LitElement {
       }
     }
     window.onbeforeunload = null;
-    this.closeEditor!();
+    if (this.closeEditor) {
+      this.closeEditor();
+    }
   }
 
   private async _handleSave() {

@@ -53,11 +53,11 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
         </div>
         <div class="card-actions">
           <a href="/config/integrations">
-            <paper-button>
+            <mwc-button>
               ${this.hass.localize(
                 "ui.panel.lovelace.cards.empty_state.go_to_integrations_page"
               )}
-            </paper-button>
+            </mwc-button>
           </a>
         </div>
       </paper-card>
@@ -71,10 +71,8 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
         padding: 16px;
       }
 
-      paper-button {
+      mwc-button {
         margin-left: -8px;
-        font-weight: 500;
-        color: var(--primary-color);
       }
     `;
   }

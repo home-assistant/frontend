@@ -39,11 +39,11 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
 
         <div class$="[[computeClasses(isWide)]]">
           <ha-config-section is-wide="[[isWide]]">
-            <span slot="header">Customization</span>
+            <span slot="header">
+              [[localize('ui.panel.config.customize.picker.header')]]
+            </span>
             <span slot="introduction">
-              Tweak per-entity attributes.<br />
-              Added/edited customizations will take effect immediately. Removed
-              customizations will take effect when the entity is updated.
+              [[localize('ui.panel.config.customize.picker.introduction')]]
             </span>
             <ha-entity-config
               hass="[[hass]]"

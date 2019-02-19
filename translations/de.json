@@ -301,7 +301,8 @@
                 "period": "Zeitraum"
             },
             "logbook": {
-                "showing_entries": "Zeige Einträge für"
+                "showing_entries": "Zeige Einträge für",
+                "period": "Zeitraum"
             },
             "mailbox": {
                 "empty": "Du hast keine Nachrichten",
@@ -345,7 +346,10 @@
                 },
                 "customize": {
                     "caption": "Anpassung",
-                    "description": "Elemente anpassen"
+                    "description": "Elemente anpassen",
+                    "picker": {
+                        "header": "Anpassung"
+                    }
                 },
                 "automation": {
                     "caption": "Automatisierung",
@@ -433,6 +437,14 @@
                                     "hours": "Stunden",
                                     "minutes": "Minuten",
                                     "seconds": "Sekunden"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokalisierung",
+                                    "source": "Quelle",
+                                    "zone": "Zone",
+                                    "event": "Ereignis:",
+                                    "enter": "Betreten",
+                                    "leave": "Verlassen"
                                 }
                             }
                         },
@@ -560,12 +572,51 @@
                         "hub": "Verbunden über",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Gerät nicht verfügbar",
-                        "entity_unavailable": "Entität nicht verfügbar"
+                        "entity_unavailable": "Entität nicht verfügbar",
+                        "no_area": "Kein Bereich"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation Netzwerkmanagement"
+                    "description": "Zigbee Home Automation Netzwerkmanagement",
+                    "services": {
+                        "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Gebietsregister",
+                    "description": "Überblick über alle Bereiche in Deinem Haus.",
+                    "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
+                    "create_area": "BEREICH ERSTELLEN",
+                    "editor": {
+                        "default_name": "Neuer Bereich",
+                        "delete": "LÖSCHEN",
+                        "update": "AKTUALISIEREN",
+                        "create": "ERSTELLEN"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Entitätsregister",
+                    "description": "Überblick aller bekannten Elemente.",
+                    "picker": {
+                        "unavailable": "(nicht verfügbar)"
+                    },
+                    "editor": {
+                        "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
+                        "default_name": "Neuer Bereich",
+                        "delete": "LÖSCHEN",
+                        "update": "UPDATE"
+                    }
+                },
+                "person": {
+                    "caption": "Personen",
+                    "description": "Verwalte die Personen, die Home Assistant verfolgt.",
+                    "detail": {
+                        "name": "Name",
+                        "device_tracker_intro": "Wähle die Geräte, die dieser Person gehören.",
+                        "device_tracker_picked": "Verfolge Gerät",
+                        "device_tracker_pick": "Wähle zu verfolgendes Gerät"
+                    }
                 }
             },
             "profile": {
@@ -708,6 +759,29 @@
                             "abort": {
                                 "not_whitelisted": "Dein Computer ist nicht auf der Whitelist."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benutzername",
+                                        "password": "Passwort"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwei-Faktor Authentifizierungscode"
+                                    },
+                                    "description": "Öffne das **{mfa_module_name}** auf deinem Gerät um den 2-Faktor Authentifizierungscode zu sehen und deine Identität zu bestätigen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ungültiger Benutzername oder Passwort",
+                                "invalid_code": "Ungültiger Authentifizierungscode"
+                            },
+                            "abort": {
+                                "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
+                            }
                         }
                     }
                 }
@@ -734,6 +808,11 @@
                         "checked_items": "Markierte Artikel",
                         "clear_items": "Markierte Elemente löschen",
                         "add_item": "Artikel hinzufügen"
+                    },
+                    "empty_state": {
+                        "title": "Willkommen zu Hause",
+                        "no_devices": "Auf dieser Seite kannst du deine Geräte steuern, es sieht jedoch so aus, als hättest du noch keine eingerichtet. Gehe zur Integrationsseite, um damit zu beginnen.",
+                        "go_to_integrations_page": "Gehe zur Integrationsseite."
                     }
                 },
                 "editor": {
@@ -744,7 +823,8 @@
                         "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
                         "add": "Karte hinzufügen",
                         "edit": "Bearbeiten",
-                        "delete": "Löschen"
+                        "delete": "Löschen",
+                        "move": "Bewegen"
                     },
                     "migrate": {
                         "header": "Konfiguration inkompatibel",
@@ -765,10 +845,16 @@
                         "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "cancel": "Abbrechen",
                         "save": "Kontrolle übernehmen"
+                    },
+                    "menu": {
+                        "raw_editor": "Raw-Konfigurationseditor"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Benutzeroberfläche konfigurieren"
+                    "configure_ui": "Benutzeroberfläche konfigurieren",
+                    "unused_entities": "Ungenutzte Elemente",
+                    "help": "Hilfe",
+                    "refresh": "Aktualisieren"
                 }
             }
         },
@@ -945,8 +1031,8 @@
                 },
                 "sun": {
                     "elevation": "Höhe",
-                    "rising": "Aufgehend",
-                    "setting": "Einstellung"
+                    "rising": "Aufgang",
+                    "setting": "Untergang"
                 },
                 "updater": {
                     "title": "Update-Anweisungen"
@@ -1001,7 +1087,11 @@
         "weblink": "Weblink",
         "zwave": "Z-Wave",
         "vacuum": "Staubsauger",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Systemzustand"
     },
     "attribute": {
         "weather": {

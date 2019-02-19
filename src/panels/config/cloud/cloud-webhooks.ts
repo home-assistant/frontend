@@ -122,8 +122,8 @@ export class CloudWebhooks extends LitElement {
               `
             : this._cloudHooks![entry.webhook_id]
             ? html`
-                <paper-button @click="${this._handleManageButton}"
-                  >Manage</paper-button
+                <mwc-button @click="${this._handleManageButton}"
+                  >Manage</mwc-button
                 >
               `
             : html`
@@ -225,10 +225,6 @@ export class CloudWebhooks extends LitElement {
           display: flex;
           flex-direction: column;
           justify-content: center;
-        }
-        paper-button {
-          font-weight: 500;
-          color: var(--primary-color);
         }
         .footer {
           padding: 16px;

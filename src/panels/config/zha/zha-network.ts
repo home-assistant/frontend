@@ -6,12 +6,12 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 
@@ -102,8 +102,7 @@ export class ZHANetwork extends LitElement {
         [hidden] {
           display: none;
         }
-      </style>
-    `,
+      `,
     ];
   }
 }

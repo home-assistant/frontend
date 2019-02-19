@@ -1,8 +1,9 @@
 {
-    "recommendations": [
-        "dbaeumer.vscode-eslint",
-        "eg2.tslint",
-        "esbenp.prettier-vscode",
-        "bierner.lit-html"
-    ]
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "esbenp.prettier-vscode",
+    "bierner.lit-html",
+    "runem.lit-plugin"
+  ]
 }
