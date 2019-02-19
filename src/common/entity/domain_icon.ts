@@ -28,6 +28,7 @@ const fixedIcons = {
   light: "hass:lightbulb",
   mailbox: "hass:mailbox",
   notify: "hass:comment-alert",
+  person: "hass:account",
   plant: "hass:flower",
   proximity: "hass:apple-safari",
   remote: "hass:remote",

@@ -15,12 +15,15 @@ import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
 import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
+import { classMap } from "lit-html/directives/class-map";
 
 import { Lovelace, LovelaceCard } from "./types";
 import { createCardElement } from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "./cards/hui-error-card";
+
+import { computeRTL } from "../../common/util/compute_rtl";
 
 let editCodeLoaded = false;
 
@@ -99,6 +102,9 @@ export class HUIView extends LitElement {
                 "ui.panel.lovelace.editor.edit_card.add"
               )}"
               @click="${this._addCard}"
+              class="${classMap({
+                rtl: computeRTL(this.hass!),
+              })}"
             ></paper-fab>
           `
         : ""}
@@ -146,6 +152,12 @@ export class HUIView extends LitElement {
           bottom: 16px;
           right: 16px;
           z-index: 1;
+        }
+
+        paper-fab.rtl {
+          float: left;
+          right: auto;
+          left: 16px;
         }
 
         @media (max-width: 500px) {

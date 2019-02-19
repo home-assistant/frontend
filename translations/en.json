@@ -265,6 +265,11 @@
             "on": "On",
             "paused": "Paused",
             "returning": "Returning to dock"
+        },
+        "timer": {
+            "active": "active",
+            "idle": "idle",
+            "paused": "paused"
         }
     },
     "state_badge": {
@@ -860,6 +865,10 @@
                     "unused_entities": "Unused entities",
                     "help": "Help",
                     "refresh": "Refresh"
+                },
+                "warning": {
+                    "entity_not_found": "Entity not available: {entity}",
+                    "entity_non_numeric": "Entity is non-numeric: {entity}"
                 }
             }
         },

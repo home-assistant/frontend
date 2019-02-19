@@ -31,14 +31,14 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
         opened="{{_opened}}"
         on-opened-changed="_openedChanged"
       >
-        <h2>Add user</h2>
+        <h2>[[localize('ui.panel.config.users.add_user.caption')]]</h2>
         <div>
           <template is="dom-if" if="[[_errorMsg]]">
             <div class="error">[[_errorMsg]]</div>
           </template>
           <paper-input
             class="name"
-            label="Name"
+            label="[[localize('ui.panel.config.users.add_user.name')]]"
             value="{{_name}}"
             required
             auto-validate
@@ -48,7 +48,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
           ></paper-input>
           <paper-input
             class="username"
-            label="Username"
+            label="[[localize('ui.panel.config.users.add_user.username')]]"
             value="{{_username}}"
             required
             auto-validate
@@ -56,7 +56,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
             error-message="Required"
           ></paper-input>
           <paper-input
-            label="Password"
+            label="[[localize('ui.panel.config.users.add_user.password')]]"
             type="password"
             value="{{_password}}"
             required
@@ -71,7 +71,9 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
             </div>
           </template>
           <template is="dom-if" if="[[!_loading]]">
-            <mwc-button on-click="_createUser">Create</mwc-button>
+            <mwc-button on-click="_createUser"
+              >[[localize('ui.panel.config.users.add_user.create')]]</mwc-button
+            >
           </template>
         </div>
       </paper-dialog>
