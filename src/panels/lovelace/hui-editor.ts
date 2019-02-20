@@ -19,7 +19,6 @@ import "./components/hui-yaml-editor";
 // tslint:disable-next-line
 import { HuiYamlEditor } from "./components/hui-yaml-editor";
 import { HomeAssistant } from "../../types";
-import { computeRTL } from "../../common/util/compute_rtl";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -54,18 +53,30 @@ class LovelaceFullConfigEditor extends LitElement {
               icon="hass:close"
               @click="${this._closeEditor}"
             ></paper-icon-button>
-            <div main-title>Edit Config</div>
+            <div main-title>
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.raw_editor.header"
+              )}
+            </div>
+            <div
+              class="save-button
+              ${classMap({
+                saved: this._saving! === false || this._changed === true,
+              })}"
+            >
+              ${this._changed
+                ? this.hass!.localize(
+                    "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.lovelace.editor.raw_editor.saved"
+                  )}
+            </div>
             <mwc-button raised @click="${this._handleSave}"
-              >Save
-              <ha-icon
-                class="save-button
-            ${classMap({
-                  saved: this._saving! === false || this._changed === true,
-                  rtl: computeRTL(this.hass!),
-                })}"
-                icon="${this._changed ? "hass:circle-medium" : "hass:check"}"
-              ></ha-icon
-            ></mwc-button>
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.raw_editor.save"
+              )}</mwc-button
+            >
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -117,22 +128,12 @@ class LovelaceFullConfigEditor extends LitElement {
 
         .save-button {
           opacity: 0;
-          margin-left: -21px;
-          transition: all 1.5s;
-        }
-        .save-button.rtl {
-          margin-left: initial;
-          margin-right: -21px;
+          font-size: 14px;
+          padding: 0px 10px;
         }
 
         .saved {
-          margin-left: initial;
-          margin-right: -8px;
           opacity: 1;
-        }
-        .saved.rtl {
-          margin-left: -8px;
-          margin-right: initial;
         }
       `,
     ];
