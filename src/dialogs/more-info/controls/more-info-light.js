@@ -20,7 +20,6 @@ const FEATURE_CLASS_NAMES = {
   16: "has-color",
   128: "has-white_value",
 };
-
 /*
  * @appliesMixin EventsMixin
  */
@@ -151,7 +150,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           ></ha-labeled-slider>
         </div>
 
-        <div class="white_value">
+        <div class="control white_value">
           <ha-labeled-slider
             caption="[[localize('ui.card.light.white_value')]]"
             icon="hass:file-word-box"
