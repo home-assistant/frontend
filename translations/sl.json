@@ -265,6 +265,11 @@
             "on": "Vključen",
             "paused": "Zaustavljeno",
             "returning": "Vračam se na postajo"
+        },
+        "timer": {
+            "active": "aktiven",
+            "idle": "V pripravljenosti",
+            "paused": "Na pavzi"
         }
     },
     "state_badge": {
@@ -548,7 +553,15 @@
                         "change_password": "Spremeni geslo",
                         "activate_user": "Aktiviraj uporabnika",
                         "deactivate_user": "Deaktiviraj uporabnika",
-                        "delete_user": "Izbriši uporabnika"
+                        "delete_user": "Izbriši uporabnika",
+                        "caption": "Prikaži uporabnika"
+                    },
+                    "add_user": {
+                        "caption": "Dodaj uporabnika",
+                        "name": "Ime",
+                        "username": "Uporabniško ime",
+                        "password": "Geslo",
+                        "create": "Ustvari"
                     }
                 },
                 "cloud": {
@@ -860,6 +873,10 @@
                     "unused_entities": "Neuporabljeni subjekti",
                     "help": "Pomoč",
                     "refresh": "Osveži"
+                },
+                "warning": {
+                    "entity_not_found": "Subjekt ni na voljo: {entity}",
+                    "entity_non_numeric": "Subjekt je neštevilski: {entity}"
                 }
             }
         },
@@ -1104,6 +1121,15 @@
             "humidity": "Vlažnost",
             "visibility": "Vidljivost",
             "wind_speed": "Hitrost vetra"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Izključen",
+                "on": "Vklopljen",
+                "auto": "Samodejno"
+            }
         }
     }
 }

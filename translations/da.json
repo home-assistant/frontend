@@ -553,7 +553,15 @@
                         "change_password": "Skift adgangskode",
                         "activate_user": "Aktivér bruger",
                         "deactivate_user": "Deaktiver bruger",
-                        "delete_user": "Slet bruger"
+                        "delete_user": "Slet bruger",
+                        "caption": "Vis bruger"
+                    },
+                    "add_user": {
+                        "caption": "Tilføj bruger",
+                        "name": "Navn",
+                        "username": "Brugernavn",
+                        "password": "Adgangskode",
+                        "create": "Opret"
                     }
                 },
                 "cloud": {
@@ -593,7 +601,9 @@
                     "caption": "Område registrering",
                     "description": "Oversigt over alle områder i dit hjem.",
                     "picker": {
-                        "header": "Område registrering"
+                        "header": "Område registrering",
+                        "introduction": "Områder bruges til at organisere hvor enhederne er. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din grænseflade, tilladelser og integrationer med andre systemer.",
+                        "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene."
                     },
                     "no_areas": "Du ikke har ingen områder endnu!",
                     "create_area": "OPRET OMRÅDE",
@@ -609,7 +619,9 @@
                     "description": "Oversigt over alle kendte enheder.",
                     "picker": {
                         "header": "Enheds registrering",
-                        "unavailable": "(utilgængelig)"
+                        "unavailable": "(utilgængelig)",
+                        "introduction": "Home Assistant opbevarer en registrering over hver unikke enhed det nogensinde har set. Hver af disse enheder vil have et registrerings ID tildelt som er forbeholdt netop denne enhed.",
+                        "introduction2": "Brug enhedsregistrering til at overskrive navnet, ændre enheds ID eller fjerne enheden fra Home Assistant. Bemærk at fjernelse af enhedens registrering ikke fjerner enheden. For at gøre det skal du følge linket herunder og fjerne det fra integrationssiden."
                     },
                     "editor": {
                         "unavailable": "Denne enhed er ikke tilgængelig i øjeblikket.",

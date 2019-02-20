@@ -9,6 +9,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-menu-button";
+import "../../../components/ha-icon-next";
 
 import "../ha-config-section";
 import "./ha-config-navigation";
@@ -66,7 +67,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                       </div>
                     </template>
                   </paper-item-body>
-                  <iron-icon icon="hass:chevron-right"></iron-icon>
+                  <ha-icon-next></ha-icon-next>
                 </paper-item>
               </paper-card>
             </a>
@@ -81,7 +82,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                     [[localize('ui.panel.config.integrations.description')]]
                   </div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
 
@@ -93,7 +94,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                     [[localize('ui.panel.config.users.description')]]
                   </div>
                 </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
+                <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
           </paper-card>
