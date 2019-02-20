@@ -341,7 +341,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   segmentClick() {
-    if (this.hueSegments == 24 && this.saturationSegments == 8){
+    if (this.hueSegments === 24 && this.saturationSegments === 8) {
       this.hueSegments = 0;
       this.saturationSegments = 0;
     } else {
