@@ -64,25 +64,25 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .segmentationButton {
           position: absolute;
-          top: 0%;
-          left: 100%;
-          transform: translate(-100%, 0%);
+          top: 11%;
+          transform: translate(0%, 0%);
           padding: 0px;
           max-height: 0px;
-          width: 28px;
-          height: 28px;
+          width: 23px;
+          height: 23px;
+          opacity: var(--dark-secondary-opacity);
           overflow: hidden;
           transition: max-height 0.5s ease-in;
         }
 
         .has-color.is-on .segmentationContainer .segmentationButton {
           position: absolute;
-          top: 0%;
-          left: 100%;
-          transform: translate(-100%, 0%);
-          width: 45px;
-          height: 45px;
-          padding: 8px;
+          top: 11%;
+          transform: translate(0%, 0%);
+          width: 23px;
+          height: 23px;
+          padding: 0px;
+          opacity: var(--dark-secondary-opacity);
         }
 
         .has-effect_list.is-on .effect_list,
