@@ -135,6 +135,7 @@ export const provideHass = (
     panelUrl: "lovelace",
 
     language: getLocalLanguage(),
+    selectedLanguage: getLocalLanguage(),
     resources: null as any,
     localize: () => "",
 
