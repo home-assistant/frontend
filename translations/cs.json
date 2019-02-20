@@ -265,6 +265,11 @@
             "on": "On",
             "paused": "Pozastaveno",
             "returning": "Návrat do stanice"
+        },
+        "timer": {
+            "active": "aktivní",
+            "idle": "nečinné",
+            "paused": "pozastaveno"
         }
     },
     "state_badge": {
@@ -348,7 +353,8 @@
                     "caption": "Přizpůsobení",
                     "description": "Přizpůsobte své entity",
                     "picker": {
-                        "header": "Přizpůsobení"
+                        "header": "Přizpůsobení",
+                        "introduction": "Upravit atributy entity. Přídání\/úprava bude mít okamžitý efekt. Odebraní se projeví až po aktualizaci entity."
                     }
                 },
                 "automation": {
@@ -547,7 +553,15 @@
                         "change_password": "Změnit heslo",
                         "activate_user": "Aktivovat uživatele",
                         "deactivate_user": "Deaktivovat uživatele",
-                        "delete_user": "Odstranit uživatele"
+                        "delete_user": "Odstranit uživatele",
+                        "caption": "Zobrazit uživatele"
+                    },
+                    "add_user": {
+                        "caption": "Přidat uživatele",
+                        "name": "Jméno",
+                        "username": "Uživatelské jméno",
+                        "password": "Heslo",
+                        "create": "Vytvořit"
                     }
                 },
                 "cloud": {
@@ -587,7 +601,9 @@
                     "caption": "Registr oblastí",
                     "description": "Přehled všech oblastí ve vaší domácnosti.",
                     "picker": {
-                        "header": "Registr oblastí"
+                        "header": "Registr oblastí",
+                        "introduction": "Oblasti se používají k uspořádání zařízení podle místa kde jsou. Tato informace bude použita k organizaci rozhraní, k nastavení oprávnění a v integraci s ostatnímy systémy.",
+                        "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení."
                     },
                     "no_areas": "Vypadá to, že ještě nemáte žádné oblasti!",
                     "create_area": "VYTVOŘIT OBLAST",
@@ -603,7 +619,9 @@
                     "description": "Přehled všech známých entit",
                     "picker": {
                         "header": "Registr entit",
-                        "unavailable": "(není k dispozici)"
+                        "unavailable": "(není k dispozici)",
+                        "introduction": "Homa Assistant uchovává registr všech entit, které kdy viděl a mohou být jednoznačně identifikovány. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
+                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu. Poznámka: odebrání entity z registru entit nesmaže entitu. Pro smazání přejděte na stránku integrací pomocí odkazu níže."
                     },
                     "editor": {
                         "unavailable": "Tato entita není momentálně k dispozici.",
@@ -859,6 +877,10 @@
                     "unused_entities": "Nepoužívané entity",
                     "help": "Pomoc",
                     "refresh": "Obnovit"
+                },
+                "warning": {
+                    "entity_not_found": "Entita není k dispozici: {entity}",
+                    "entity_non_numeric": "Entita není číselná: {entity}"
                 }
             }
         },
@@ -1103,6 +1125,15 @@
             "humidity": "Vlhkost vzduchu",
             "visibility": "Viditelnost",
             "wind_speed": "Rychlost větru"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Vypnuto",
+                "on": "Zapnuto",
+                "auto": "Automaticky"
+            }
         }
     }
 }
