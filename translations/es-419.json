@@ -265,6 +265,11 @@
             "on": "Apagada",
             "paused": "Pausado",
             "returning": "Regresar al dock"
+        },
+        "timer": {
+            "active": "activo",
+            "idle": "inactivo",
+            "paused": "pausado"
         }
     },
     "state_badge": {
@@ -301,7 +306,8 @@
                 "period": "Período"
             },
             "logbook": {
-                "showing_entries": "Mostrando registros del"
+                "showing_entries": "Mostrando registros del",
+                "period": "Período"
             },
             "mailbox": {
                 "empty": "No tienes ningún mensaje",
@@ -345,7 +351,11 @@
                 },
                 "customize": {
                     "caption": "Personalización",
-                    "description": "Personaliza tus entidades"
+                    "description": "Personaliza tus entidades",
+                    "picker": {
+                        "header": "Personalización",
+                        "introduction": "Ajustar los atributos por entidad. Las personalizaciones agregadas\/editadas tendrán efecto inmediatamente. Las personalizaciones eliminadas entrarán en vigor cuando se actualice la entidad."
+                    }
                 },
                 "automation": {
                     "caption": "Automatización",
@@ -425,15 +435,22 @@
                                     "leave": "Salir"
                                 },
                                 "webhook": {
-                                    "label": "Webhook"
+                                    "label": "Webhook",
+                                    "webhook_id": "ID de Webhook"
                                 },
                                 "time_pattern": {
+                                    "label": "Patrón de tiempo",
                                     "hours": "Horas",
                                     "minutes": "Minutos",
                                     "seconds": "Hass.io"
                                 },
                                 "geo_location": {
-                                    "event": "Evento:"
+                                    "label": "Geolocalización",
+                                    "source": "Fuente",
+                                    "zone": "Zona",
+                                    "event": "Evento:",
+                                    "enter": "Entrar",
+                                    "leave": "Salir"
                                 }
                             }
                         },
@@ -536,7 +553,15 @@
                         "change_password": "Cambiar contraseña",
                         "activate_user": "Activar usuario",
                         "deactivate_user": "Desactivar usuario",
-                        "delete_user": "Eliminar usuario"
+                        "delete_user": "Eliminar usuario",
+                        "caption": "Ver usuario"
+                    },
+                    "add_user": {
+                        "caption": "Agregar usuario",
+                        "name": "Nombre",
+                        "username": "Nombre de usuario",
+                        "password": "Contraseña",
+                        "create": "Crear"
                     }
                 },
                 "cloud": {
@@ -561,11 +586,59 @@
                         "hub": "Conectado a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo no disponible",
-                        "entity_unavailable": "entidad no disponible"
+                        "entity_unavailable": "entidad no disponible",
+                        "no_area": "Ninguna área"
                     }
                 },
                 "zha": {
-                    "caption": "ZHA"
+                    "caption": "ZHA",
+                    "description": "Gestión de red de Zigbee Home Automation",
+                    "services": {
+                        "reconfigure": "Reconfigure el dispositivo ZHA (dispositivo de curación). Use esto si tiene problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrese de que esté activado y acepte los comandos cuando utilice este servicio."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Registro de áreas",
+                    "description": "Visión general de todas las áreas de su casa.",
+                    "picker": {
+                        "header": "Registro de áreas",
+                        "introduction": "Las áreas se utilizan para organizar donde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarlo a organizar su interfaz, permisos e integraciones con otros sistemas.",
+                        "introduction2": "Para colocar dispositivos en un área, use el enlace a continuación para navegar a la página de integraciones y luego haga clic en una integración configurada para acceder a las tarjetas del dispositivo."
+                    },
+                    "no_areas": "¡Parece que aún no tienes áreas!",
+                    "create_area": "CREAR AREA",
+                    "editor": {
+                        "default_name": "Nueva Área",
+                        "delete": "ELIMINAR",
+                        "update": "ACTUALIZAR",
+                        "create": "CREAR"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Registro de entidades",
+                    "description": "Visión general de todas las entidades conocidas.",
+                    "picker": {
+                        "header": "Registro de entidades",
+                        "unavailable": "(no disponible)",
+                        "introduction": "Home Assistant mantiene un registro de todas las entidades que ha visto y que pueden identificarse de manera única. Cada una de estas entidades tendrá un ID de entidad asignado que se reservará solo para esta entidad.",
+                        "introduction2": "Utilice el registro de la entidad para reemplazar el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Tenga en cuenta que eliminar la entrada del registro de la entidad no eliminará la entidad. Para hacerlo, siga el enlace a continuación y elimínelo de la página de integraciones."
+                    },
+                    "editor": {
+                        "unavailable": "Esta entidad no está disponible actualmente.",
+                        "default_name": "Nueva Área",
+                        "delete": "ELIMINAR",
+                        "update": "ACTUALIZAR"
+                    }
+                },
+                "person": {
+                    "caption": "Personas",
+                    "description": "Gestiona las personas que rastrea Home Assistant.",
+                    "detail": {
+                        "name": "Nombre",
+                        "device_tracker_intro": "Selecciona los dispositivos que pertenecen a esta persona.",
+                        "device_tracker_picked": "Dispositivo de seguimiento",
+                        "device_tracker_pick": "Elegir dispositivo para rastrear"
+                    }
                 }
             },
             "profile": {
@@ -710,6 +783,18 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nombre de usuario",
+                                        "password": "Contraseña"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nombre de usuario o contraseña inválidos",
+                                "invalid_code": "Código de autenticación inválido"
+                            },
                             "abort": {
                                 "login_expired": "La sesión expiró, por favor inicie sesión nuevamente."
                             }
@@ -739,6 +824,11 @@
                         "checked_items": "lementos marcados",
                         "clear_items": "Borrar elementos marcados",
                         "add_item": "Agregar elemento"
+                    },
+                    "empty_state": {
+                        "title": "Bienvenido a casa",
+                        "no_devices": "Esta página le permite controlar sus dispositivos, sin embargo, parece que aún no tiene dispositivos configurados. Dirígete a la página de integraciones para empezar.",
+                        "go_to_integrations_page": "Ir a la página de integraciones."
                     }
                 },
                 "editor": {
@@ -746,17 +836,45 @@
                         "header": "Configuración de la tarjeta",
                         "save": "Guardar",
                         "toggle_editor": "Cambiar editor",
-                        "edit": "Editar"
+                        "pick_card": "Elija la tarjeta que desea agregar.",
+                        "add": "Agregar tarjeta",
+                        "edit": "Editar",
+                        "delete": "Eliminar",
+                        "move": "Mover"
                     },
                     "migrate": {
                         "header": "Configuración inválida",
                         "para_no_id": "Este elemento no tiene un ID. Por favor agregue uno a este elemento en 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant puede agregar ID a todas sus tarjetas y vistas automáticamente por usted presionando el botón 'Migrar configuración'.",
                         "migrate": "Migrar configuración"
+                    },
+                    "header": "Editar interfaz de usuario",
+                    "edit_view": {
+                        "header": "Ver configuración",
+                        "add": "Agregar vista",
+                        "edit": "Editar vista",
+                        "delete": "Eliminar vista"
+                    },
+                    "save_config": {
+                        "header": "Toma el control de tu interfaz de usuario de Lovelace",
+                        "para": "Por defecto, Home Assistant mantendrá su interfaz de usuario y la actualizará cuando haya nuevas entidades o componentes de Lovelace disponibles. Si usted toma el control, ya no haremos cambios automáticamente para usted.",
+                        "para_sure": "¿Está seguro de que desea tomar el control de su interfaz de usuario?",
+                        "cancel": "Olvídalo",
+                        "save": "Tomar el control"
+                    },
+                    "menu": {
+                        "raw_editor": "Editor de configuraciones en bruto"
                     }
                 },
                 "menu": {
-                    "help": "Ayuda"
+                    "configure_ui": "Configurar interfaz de usuario",
+                    "unused_entities": "Entidades no utilizadas",
+                    "help": "Ayuda",
+                    "refresh": "Refrescar"
+                },
+                "warning": {
+                    "entity_not_found": "Entidad no disponible: {entity}",
+                    "entity_non_numeric": "Entidad no es numérica: {entity}"
                 }
             }
         },
@@ -766,7 +884,8 @@
         },
         "common": {
             "loading": "Cargando",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "save": "Guardar"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {día}\n  other {días}\n}",
@@ -828,7 +947,8 @@
                 "arm_home": "Proteger en casa",
                 "arm_away": "Proteger fuera de casa",
                 "arm_night": "Armado nocturno",
-                "armed_custom_bypass": "Bypass personalizado"
+                "armed_custom_bypass": "Bypass personalizado",
+                "arm_custom_bypass": "Bypass personalizado"
             },
             "automation": {
                 "last_triggered": "Última activación",
@@ -925,6 +1045,19 @@
                 "save": "Guardar",
                 "name": "Nombre",
                 "entity_id": "ID de la entidad"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Última acción"
+                },
+                "sun": {
+                    "elevation": "Elevación",
+                    "rising": "Salida",
+                    "setting": "Puesta"
+                },
+                "updater": {
+                    "title": "Instrucciones de actualización"
+                }
             }
         },
         "auth_store": {
@@ -976,6 +1109,8 @@
         "zwave": "",
         "vacuum": "Aspiradora",
         "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
         "system_health": "Estado del sistema"
     },
@@ -984,6 +1119,15 @@
             "humidity": "Humedad",
             "visibility": "Visibilidad",
             "wind_speed": "Velocidad del viento"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Apagado",
+                "on": "Encendido",
+                "auto": "Auto"
+            }
         }
     }
 }

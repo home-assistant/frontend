@@ -10,6 +10,8 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 
 import isComponentLoaded from "../../../common/config/is_component_loaded";
 
+import "../../../components/ha-icon-next";
+
 const CORE_PAGES = ["core", "customize", "entity_registry", "area_registry"];
 /*
  * @appliesMixin LocalizeMixin
@@ -34,7 +36,7 @@ class HaConfigNavigation extends LocalizeMixin(NavigateMixin(PolymerElement)) {
                 [[_computeCaption(item, localize)]]
                 <div secondary="">[[_computeDescription(item, localize)]]</div>
               </paper-item-body>
-              <iron-icon icon="hass:chevron-right"></iron-icon>
+              <ha-icon-next></ha-icon-next>
             </paper-item>
           </template>
         </template>
