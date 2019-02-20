@@ -11,13 +11,10 @@ import {
 import "../components/hui-generic-entity-row";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
-import "../components/hui-warning";
 
 import { isTiltOnly } from "../../../util/cover-model";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
-import { longPress } from "../common/directives/long-press-directive";
-import { handleClick } from "../common/handle-click";
 
 @customElement("hui-cover-entity-row")
 class HuiCoverEntityRow extends LitElement implements EntityRow {
@@ -39,26 +36,8 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
 
     const stateObj = this.hass.states[this._config.entity];
 
-    if (!stateObj) {
-      return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
-      `;
-    }
-
     return html`
-      <hui-generic-entity-row
-        .hass="${this.hass}"
-        .config="${this._config}"
-        @ha-click="${this._handleTap}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
-      >
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         ${isTiltOnly(stateObj)
           ? html`
               <ha-cover-tilt-controls
@@ -83,14 +62,6 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
         margin-right: -0.57em;
       }
     `;
-  }
-
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
-  }
-
-  private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
   }
 }
 

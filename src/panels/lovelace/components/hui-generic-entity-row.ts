@@ -12,6 +12,8 @@ import {
 import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/hui-entities-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
@@ -46,32 +48,39 @@ class HuiGenericEntityRow extends LitElement {
     }
 
     return html`
-      <state-badge
-        .stateObj="${stateObj}"
-        .overrideIcon="${this.config.icon}"
-      ></state-badge>
-      <div class="flex">
-        <div class="info">
-          ${this.config.name || computeStateName(stateObj)}
-          <div class="secondary">
-            ${!this.showSecondary
-              ? html`
-                  <slot name="secondary"></slot>
-                `
-              : this.config.secondary_info === "entity-id"
-              ? stateObj.entity_id
-              : this.config.secondary_info === "last-changed"
-              ? html`
-                  <ha-relative-time
-                    .hass="${this.hass}"
-                    .datetime="${stateObj.last_changed}"
-                  ></ha-relative-time>
-                `
-              : ""}
+      <div
+        class="host"
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
+      >
+        <state-badge
+          .stateObj="${stateObj}"
+          .overrideIcon="${this.config.icon}"
+        ></state-badge>
+        <div class="flex">
+          <div class="info">
+            ${this.config.name || computeStateName(stateObj)}
+            <div class="secondary">
+              ${!this.showSecondary
+                ? html`
+                    <slot name="secondary"></slot>
+                  `
+                : this.config.secondary_info === "entity-id"
+                ? stateObj.entity_id
+                : this.config.secondary_info === "last-changed"
+                ? html`
+                    <ha-relative-time
+                      .hass="${this.hass}"
+                      .datetime="${stateObj.last_changed}"
+                    ></ha-relative-time>
+                  `
+                : ""}
+            </div>
           </div>
-        </div>
 
-        <slot></slot>
+          <slot></slot>
+        </div>
       </div>
     `;
   }
@@ -85,7 +94,7 @@ class HuiGenericEntityRow extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      .host {
         display: flex;
         align-items: center;
       }
@@ -130,6 +139,14 @@ class HuiGenericEntityRow extends LitElement {
         margin-right: 8px;
       }
     `;
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this.config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this.config!, true);
   }
 }
 customElements.define("hui-generic-entity-row", HuiGenericEntityRow);

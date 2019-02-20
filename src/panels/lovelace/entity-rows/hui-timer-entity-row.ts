@@ -8,15 +8,12 @@ import {
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
-import "../components/hui-warning";
 
 import timerTimeRemaining from "../../../common/entity/timer_time_remaining";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "./types";
 import { HassEntity } from "home-assistant-js-websocket";
-import { longPress } from "../common/directives/long-press-directive";
-import { handleClick } from "../common/handle-click";
 
 @customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {
@@ -47,26 +44,8 @@ class HuiTimerEntityRow extends LitElement {
 
     const stateObj = this.hass.states[this._config.entity];
 
-    if (!stateObj) {
-      return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
-      `;
-    }
-
     return html`
-      <hui-generic-entity-row
-        .hass="${this.hass}"
-        .config="${this._config}"
-        @ha-click="${this._handleTap}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
-      >
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>${this._computeDisplay(stateObj)}</div>
       </hui-generic-entity-row>
     `;
@@ -129,14 +108,6 @@ class HuiTimerEntityRow extends LitElement {
     }
 
     return display;
-  }
-
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
-  }
-
-  private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
