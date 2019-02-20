@@ -15,6 +15,7 @@ import { classMap } from "lit-html/directives/class-map";
 
 import { h, render } from "preact";
 
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
 import Automation from "../js/automation";
@@ -74,10 +75,9 @@ class HaAutomationEditor extends LitElement {
       <ha-app-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               @click=${this._backTapped}
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title>
               ${this.automation
                 ? computeStateName(this.automation)
@@ -110,6 +110,9 @@ class HaAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.save"
           )}"
           @click=${this._saveAutomation}
+          class="${classMap({
+            rtl: computeRTL(this.hass),
+          })}"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -279,6 +282,17 @@ class HaAutomationEditor extends LitElement {
 
         paper-fab[dirty] {
           margin-bottom: 0;
+        }
+
+        paper-fab.rtl {
+          right: auto;
+          left: 16px;
+        }
+
+        paper-fab[is-wide].rtl {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
         }
       `,
     ];

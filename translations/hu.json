@@ -346,7 +346,10 @@
                 },
                 "customize": {
                     "caption": "Testreszabás",
-                    "description": "Entitások testreszabása"
+                    "description": "Entitások testreszabása",
+                    "picker": {
+                        "header": "Testreszabás"
+                    }
                 },
                 "automation": {
                     "caption": "Automatizálás",
@@ -436,6 +439,7 @@
                                     "seconds": "Másodperc"
                                 },
                                 "geo_location": {
+                                    "label": "Helylokáció",
                                     "source": "Forrás",
                                     "zone": "Zóna",
                                     "event": "Esemény:",
@@ -568,20 +572,55 @@
                         "hub": "Kapcsolódva",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "eszköz nem érhető el",
-                        "entity_unavailable": "entitás nem érhető el"
+                        "entity_unavailable": "entitás nem érhető el",
+                        "no_area": "Nincs Terület"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation hálózat menedzsment"
+                    "description": "Zigbee Home Automation hálózat menedzsment",
+                    "services": {
+                        "reconfigure": "A ZHA készülék újratelepítése (eszköz rendbehozatala). Ezt a funkciót használd, ha problémáid vannak a készülékkel. Ha a kérdéses eszköz akkumulátoros, győződj meg róla, hogy nincs alvó állapotban és fogadja a parancsokat, amikor ezt a szolgáltatást használod."
+                    }
                 },
                 "area_registry": {
                     "caption": "Terület Nyilvántartás",
-                    "description": "Az összes otthoni terület áttekintése"
+                    "description": "Az összes otthoni terület áttekintése",
+                    "picker": {
+                        "header": "Terület Nyilvántartás"
+                    },
+                    "no_areas": "Úgy tűnik nem hoztál létre még egy területet sem!",
+                    "create_area": "TERÜLET LÉTREHOZÁSA",
+                    "editor": {
+                        "default_name": "Új Terület",
+                        "delete": "TÖRLÉS",
+                        "update": "FRISSÍTÉS",
+                        "create": "LÉTREHOZÁS"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Entitás Nyilvántartás",
-                    "description": "Az összes ismert entitás áttekintése"
+                    "description": "Az összes ismert entitás áttekintése",
+                    "picker": {
+                        "header": "Entitás Nyilvántartás",
+                        "unavailable": "(nem elérhető)"
+                    },
+                    "editor": {
+                        "unavailable": "Ez a entitás jelenleg nem elérhető.",
+                        "default_name": "Új Terület",
+                        "delete": "TÖRLÉS",
+                        "update": "FRISSÍTÉS"
+                    }
+                },
+                "person": {
+                    "caption": "Személyek",
+                    "description": "Kezeld azon személyeket, melyeket a Home Assistant követ.",
+                    "detail": {
+                        "name": "Név",
+                        "device_tracker_intro": "Válaszd ki az eszközöket, melyek ehhez a felhasználóhoz tartoznak",
+                        "device_tracker_picked": "Eszköz követése",
+                        "device_tracker_pick": "Válassz egy követni kívánt eszközt"
+                    }
                 }
             },
             "profile": {
@@ -726,6 +765,23 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Felhasználónév",
+                                        "password": "Jelszó"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Két faktoros hitelesítő kód"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Érvénytelen felhasználónév vagy jelszó",
+                                "invalid_code": "Érvénytelen hitelesítő kód"
+                            },
                             "abort": {
                                 "login_expired": "A munkamenet lejárt, kérlek, jelentkezz be újra."
                             }
@@ -770,7 +826,8 @@
                         "pick_card": "Válaszd ki a kártyát amit hozzá szeretnél adni.",
                         "add": "Kártya hozzáadása",
                         "edit": "Szerkesztés",
-                        "delete": "Törlés"
+                        "delete": "Törlés",
+                        "move": "Mozgatás"
                     },
                     "migrate": {
                         "header": "Inkompatibilis Konfiguráció",

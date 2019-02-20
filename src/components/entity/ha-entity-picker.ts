@@ -55,11 +55,12 @@ const rowRenderer = (
 class HaEntityPicker extends LitElement {
   @property({ type: Boolean }) public autofocus?: boolean;
   @property({ type: Boolean }) public disabled?: boolean;
-  @property({ type: Boolean }) public allowCustomEntity;
+  @property({ type: Boolean, attribute: "allow-custom-entity" })
+  public allowCustomEntity;
   @property() public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
-  @property() public domainFilter?: string;
+  @property({ attribute: "domain-filter" }) public domainFilter?: string;
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
   @property({ type: Boolean }) private _opened?: boolean;
   @property() private _hass?: HomeAssistant;

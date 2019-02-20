@@ -7,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { h, render } from "preact";
 
 import "../../../layouts/ha-app-layout";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 
 import Script from "../js/script";
 import unmountPreact from "../../../common/preact/unmount";
@@ -15,6 +16,8 @@ import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateName from "../../../common/entity/compute_state_name";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);
@@ -81,14 +84,24 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         paper-fab[dirty] {
           margin-bottom: 0;
         }
+
+        paper-fab[rtl] {
+          right: auto;
+          left: 16px;
+        }
+
+        paper-fab[rtl][is-wide] {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
+        }
       </style>
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">Script [[computeName(script)]]</div>
           </app-toolbar>
         </app-header>
@@ -105,6 +118,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           icon="hass:content-save"
           title="Save"
           on-click="saveScript"
+          rtl$="[[rtl]]"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -163,6 +177,12 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       _renderScheduled: {
         type: Boolean,
         value: false,
+      },
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -286,6 +306,10 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
 
   computeName(script) {
     return script && computeStateName(script);
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 

@@ -12,6 +12,7 @@ import { styleMap } from "lit-html/directives/style-map";
 import "@material/mwc-ripple";
 
 import "../../../components/ha-card";
+import "../components/hui-warning";
 
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import stateIcon from "../../../common/entity/state_icon";
@@ -91,9 +92,13 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <div class="not-found">
-          Entity not available: ${this._config.entity}
-        </div>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
@@ -157,11 +162,6 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       ha-icon[data-state="unavailable"] {
         color: var(--state-icon-unavailable-color);
       }
-      .not-found {
-        flex: 1;
-        background-color: yellow;
-        padding: 8px;
-      }
     `;
   }
 
@@ -177,7 +177,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     if (!stateObj.attributes.hs_color) {
       return "";
     }
-    const { hue, sat } = stateObj.attributes.hs_color;
+    const [hue, sat] = stateObj.attributes.hs_color;
     if (sat <= 10) {
       return "";
     }

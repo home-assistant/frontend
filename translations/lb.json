@@ -265,6 +265,11 @@
             "on": "Un",
             "paused": "Pauseiert",
             "returning": "Kënnt zur Statioun zeréck"
+        },
+        "timer": {
+            "active": "Aktiv",
+            "idle": "Waart",
+            "paused": "Pauseiert"
         }
     },
     "state_badge": {
@@ -850,6 +855,9 @@
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
                         "cancel": "Vergiess et",
                         "save": "Kontroll iwwerhuelen"
+                    },
+                    "menu": {
+                        "raw_editor": "Editeur fir déi reng Konfiguratioun"
                     }
                 },
                 "menu": {
@@ -857,6 +865,10 @@
                     "unused_entities": "Onbenotzt Entitéiten",
                     "help": "Hëllef",
                     "refresh": "Erneieren"
+                },
+                "warning": {
+                    "entity_not_found": "Entitéit net erreechbar: {entitiy}",
+                    "entity_non_numeric": "Entitéit ass net numerescher Natur: {entitiy}"
                 }
             }
         },
@@ -929,7 +941,8 @@
                 "arm_home": "Aktivéiert Doheem",
                 "arm_away": "Aktivéiert Ënnerwee",
                 "arm_night": "Aktivéiert Nuecht",
-                "armed_custom_bypass": "Personaliséierte Bypass"
+                "armed_custom_bypass": "Personaliséierte Bypass",
+                "arm_custom_bypass": "Personaliséierte Bypass"
             },
             "automation": {
                 "last_triggered": "Läscht ausgeléist",

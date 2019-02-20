@@ -11,6 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/entity/ha-state-icon";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
+import "../../../components/ha-icon-next";
 
 import "../ha-config-section";
 import EventsMixin from "../../../mixins/events-mixin";
@@ -30,8 +31,6 @@ class HaConfigManagerDashboard extends LocalizeMixin(
     return html`
       <style include="iron-flex ha-style">
         mwc-button {
-          color: var(--primary-color);
-          font-weight: 500;
           top: 3px;
           margin-right: -0.57em;
         }
@@ -111,7 +110,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                       </template>
                     </div>
                   </paper-item-body>
-                  <iron-icon icon="hass:chevron-right"></iron-icon>
+                  <ha-icon-next></ha-icon-next>
                 </paper-item>
               </a>
             </template>

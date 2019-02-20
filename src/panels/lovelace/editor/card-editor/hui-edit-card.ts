@@ -138,6 +138,7 @@ export class HuiEditCard extends LitElement {
       <paper-dialog
         with-backdrop
         opened
+        modal
         @opened-changed="${this._openedChanged}"
       >
         <h2>
@@ -200,6 +201,7 @@ export class HuiEditCard extends LitElement {
       afterNextRender(() => {
         this.yamlEditor.codemirror.refresh();
         this._resizeDialog();
+        this.yamlEditor.codemirror.focus();
       });
     }
   }
