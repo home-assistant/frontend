@@ -553,7 +553,15 @@
                         "change_password": "Canviar contrasenya",
                         "activate_user": "Activar usuari",
                         "deactivate_user": "Desactivar usuari",
-                        "delete_user": "Eliminar usuari"
+                        "delete_user": "Eliminar usuari",
+                        "caption": "Mostrar usuari"
+                    },
+                    "add_user": {
+                        "caption": "Afegir usuari",
+                        "name": "Nom",
+                        "username": "Nom d'usuari",
+                        "password": "Contrasenya",
+                        "create": "Crear"
                     }
                 },
                 "cloud": {
@@ -1113,6 +1121,15 @@
             "humidity": "Humitat",
             "visibility": "Visibilitat",
             "wind_speed": "Velocitat del vent"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Desactivat",
+                "on": "Activat",
+                "auto": "Automàtic"
+            }
         }
     }
 }
