@@ -595,7 +595,7 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   segmentationChange() {
     if (this.backgroundLayer) {
-        this.drawColorWheel();
+      this.drawColorWheel();
     }
   }
 }
