@@ -4,6 +4,7 @@ import {
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  customElement,
 } from "lit-element";
 
 import "../../../components/ha-card";
@@ -37,6 +38,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+@customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor");
@@ -190,5 +192,3 @@ declare global {
     "hui-entities-card": HuiEntitiesCard;
   }
 }
-
-customElements.define("hui-entities-card", HuiEntitiesCard);
