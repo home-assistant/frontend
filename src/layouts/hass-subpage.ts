@@ -22,10 +22,9 @@ class HassSubpage extends LitElement {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               @click=${this._backTapped}
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title>${this.header}</div>
             <slot name="toolbar-icon"></slot>
           </app-toolbar>
