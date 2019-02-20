@@ -5,7 +5,7 @@ import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
-import { saveFrontendUserData } from "../../data/frontend";
+import { saveFrontendUserData, getTranslations } from "../../data/frontend";
 import { storeState } from "../../util/ha-pref-storage";
 
 /*
@@ -49,11 +49,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       }
 
       const language = hass.language;
-
-      const { resources } = await hass.callWS({
-        type: "frontend/get_translations",
-        language,
-      });
+      const resources = await getTranslations(hass, language);
 
       // Ignore the repsonse if user switched languages before we got response
       if (hass.language !== language) {

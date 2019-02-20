@@ -21,3 +21,14 @@ export const saveFrontendUserData = async (
     key,
     value,
   });
+
+export const getTranslations = async (
+  hass: HomeAssistant,
+  language: string
+): Promise<{}> => {
+  const result = await hass.callWS<{ resources: {} }>({
+    type: "frontend/get_translations",
+    language,
+  });
+  return result.resources;
+};
