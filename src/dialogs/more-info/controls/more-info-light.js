@@ -20,6 +20,7 @@ const FEATURE_CLASS_NAMES = {
   16: "has-color",
   128: "has-white_value",
 };
+
 /*
  * @appliesMixin EventsMixin
  */
@@ -48,6 +49,11 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           --paper-slider-knob-start-border-color: var(--primary-color);
         }
 
+        .segmentationContainer {
+          position: relative;
+          width: 100%;
+        }
+
         ha-color-picker {
           display: block;
           width: 100%;
@@ -55,6 +61,29 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           max-height: 0px;
           overflow: hidden;
           transition: max-height 0.5s ease-in;
+        }
+
+        .segmentationButton {
+          position: absolute;
+          top: 0%;
+          left: 100%;
+          transform: translate(-100%, 0%);
+          padding: 0px;
+          max-height: 0px;
+          width: 28px;
+          height: 28px;
+          overflow: hidden;
+          transition: max-height 0.5s ease-in;
+        }
+
+        .has-color.is-on .segmentationContainer .segmentationButton {
+          position: absolute;
+          top: 0%;
+          left: 100%;
+          transform: translate(-100%, 0%);
+          width: 45px;
+          height: 45px;
+          padding: 8px;
         }
 
         .has-effect_list.is-on .effect_list,
@@ -73,6 +102,11 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .has-color_temp.is-on .color_temp,
         .has-white_value.is-on .white_value {
           padding-top: 16px;
+        }
+
+        .has-color.is-on .segmentationButton {
+          max-height: 100px;
+          overflow: visible;
         }
 
         .has-color.is-on ha-color-picker {
@@ -117,7 +151,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           ></ha-labeled-slider>
         </div>
 
-        <div class="control white_value">
+        <div class="white_value">
           <ha-labeled-slider
             caption="[[localize('ui.card.light.white_value')]]"
             icon="hass:file-word-box"
@@ -126,16 +160,22 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
             on-change="wvSliderChanged"
           ></ha-labeled-slider>
         </div>
-
-        <ha-color-picker
-          class="control color"
-          on-colorselected="colorPicked"
-          desired-hs-color="{{colorPickerColor}}"
-          throttle="500"
-          hue-segments="24"
-          saturation-segments="8"
-        >
-        </ha-color-picker>
+        <div class="segmentationContainer">
+          <ha-color-picker
+            class="control color"
+            on-colorselected="colorPicked"
+            desired-hs-color="{{colorPickerColor}}"
+            throttle="500"
+            hue-segments="{{hueSegments}}"
+            saturation-segments="{{saturationSegments}}"
+          >
+          </ha-color-picker>
+          <paper-icon-button
+            icon="mdi:palette"
+            on-click="segmentClick"
+            class="control segmentationButton"
+          ></paper-icon-button>
+        </div>
 
         <div class="control effect_list">
           <paper-dropdown-menu
@@ -192,6 +232,16 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
       wvSliderValue: {
         type: Number,
         value: 0,
+      },
+
+      hueSegments: {
+        type: Number,
+        value: 24,
+      },
+
+      saturationSegments: {
+        type: Number,
+        value: 8,
       },
 
       colorPickerColor: {
@@ -289,6 +339,16 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
       entity_id: this.stateObj.entity_id,
       white_value: wv,
     });
+  }
+
+  segmentClick() {
+    if (this.hueSegments == 24 && this.saturationSegments == 8){
+      this.hueSegments = 0;
+      this.saturationSegments = 0;
+    } else {
+      this.hueSegments = 24;
+      this.saturationSegments = 8;
+    }
   }
 
   serviceChangeColor(hass, entityId, color) {
