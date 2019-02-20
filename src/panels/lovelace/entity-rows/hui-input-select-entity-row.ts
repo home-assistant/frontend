@@ -14,6 +14,7 @@ import "@polymer/paper-listbox/paper-listbox";
 
 import "../../../components/entity/state-badge";
 import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 import { HomeAssistant } from "../../../types";
@@ -41,29 +42,38 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
 
     const stateObj = this.hass.states[this._config.entity];
 
-    return html`
-    <hui-generic-entity-row
-        .hass="${this.hass}"
-        .config="${this._config}"
-      ></hui-generic-entity-row>
-      <paper-dropdown-menu
-        selected-item-label="${stateObj.state}"
-        @selected-item-label-changed="${this._selectedChanged}"
-        label="${this._config.name || computeStateName(stateObj)}"
-      >
-        <paper-listbox
-          slot="dropdown-content"
-          selected="${stateObj.attributes.options.indexOf(stateObj.state)}"
+    if (!stateObj) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
         >
-          ${repeat(
-            stateObj.attributes.options,
-            (option) =>
-              html`
-                <paper-item>${option}</paper-item>
-              `
-          )}
-        </paper-listbox>
-      </paper-dropdown-menu>
+      `;
+    }
+
+    return html`
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+        <paper-dropdown-menu
+          selected-item-label="${stateObj.state}"
+          @selected-item-label-changed="${this._selectedChanged}"
+          label="${this._config.name || computeStateName(stateObj)}"
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            selected="${stateObj.attributes.options.indexOf(stateObj.state)}"
+          >
+            ${repeat(
+              stateObj.attributes.options,
+              (option) =>
+                html`
+                  <paper-item>${option}</paper-item>
+                `
+            )}
+          </paper-listbox>
+        </paper-dropdown-menu>
       </hui-generic-entity-row>
     `;
   }

@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 
@@ -34,6 +35,18 @@ class HuiTextEntityRow extends LitElement implements EntityRow {
     }
 
     const stateObj = this.hass.states[this._config.entity];
+
+    if (!stateObj) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
 
     return html`
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
