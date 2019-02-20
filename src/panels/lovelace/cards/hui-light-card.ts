@@ -2,8 +2,8 @@ import {
   html,
   LitElement,
   PropertyValues,
-  PropertyDeclarations,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
@@ -22,6 +22,7 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../components/hui-warning";
 
 const lightConfig = {
   radius: 80,
@@ -53,20 +54,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return {};
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
+  @property() private _roundSliderStyle?: TemplateResult;
+  @property() private _jQuery?: any;
   private _brightnessTimout?: number;
-  private _roundSliderStyle?: TemplateResult;
-  private _jQuery?: any;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      roundSliderStyle: {},
-      _jQuery: {},
-    };
-  }
 
   public getCardSize(): number {
     return 2;
@@ -87,41 +79,45 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config!.entity] as LightEntity;
 
+    if (!stateObj) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
+
     return html`
       ${this.renderStyle()}
       <ha-card>
-        ${!stateObj
-          ? html`
-              <div class="not-found">
-                Entity not available: ${this._config.entity}
-              </div>
-            `
-          : html`
-              <paper-icon-button
-                icon="hass:dots-vertical"
-                class="more-info"
-                @click="${this._handleMoreInfo}"
-              ></paper-icon-button>
-              <div id="light"></div>
-              <div id="tooltip">
-                <div class="icon-state">
-                  <ha-icon
-                    class="light-icon"
-                    data-state="${stateObj.state}"
-                    .icon="${stateIcon(stateObj)}"
-                    style="${styleMap({
-                      filter: this._computeBrightness(stateObj),
-                      color: this._computeColor(stateObj),
-                    })}"
-                    @click="${this._handleTap}"
-                  ></ha-icon>
-                  <div class="brightness" @ha-click="${this._handleTap}"></div>
-                  <div class="name">
-                    ${this._config.name || computeStateName(stateObj)}
-                  </div>
-                </div>
-              </div>
-            `}
+        <paper-icon-button
+          icon="hass:dots-vertical"
+          class="more-info"
+          @click="${this._handleMoreInfo}"
+        ></paper-icon-button>
+        <div id="light"></div>
+        <div id="tooltip">
+          <div class="icon-state">
+            <ha-icon
+              class="light-icon"
+              data-state="${stateObj.state}"
+              .icon="${stateIcon(stateObj)}"
+              style="${styleMap({
+                filter: this._computeBrightness(stateObj),
+                color: this._computeColor(stateObj),
+              })}"
+              @click="${this._handleTap}"
+            ></ha-icon>
+            <div class="brightness" @ha-click="${this._handleTap}"></div>
+            <div class="name">
+              ${this._config.name || computeStateName(stateObj)}
+            </div>
+          </div>
+        </div>
       </ha-card>
     `;
   }
@@ -139,6 +135,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[this._config!.entity] as LightEntity;
 
     if (!stateObj) {
+      // Card will require refresh to work again
       return;
     }
 
@@ -280,11 +277,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         }
         .show_brightness {
           opacity: 1;
-        }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
         }
         .more-info {
           position: absolute;

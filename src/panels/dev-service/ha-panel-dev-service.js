@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -131,11 +131,8 @@ class HaPanelDevService extends PolymerElement {
               autocomplete="off"
               spellcheck="false"
             ></paper-textarea>
-            <paper-button
-              on-click="_callService"
-              raised
-              disabled="[[!validJSON]]"
-              >Call Service</paper-button
+            <mwc-button on-click="_callService" raised disabled="[[!validJSON]]"
+              >Call Service</mwc-button
             >
             <template is="dom-if" if="[[!validJSON]]">
               <span class="error">Invalid JSON</span>

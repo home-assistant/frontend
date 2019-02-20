@@ -11,19 +11,22 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-fab/paper-fab";
+import { classMap } from "lit-html/directives/class-map";
 
 import { h, render } from "preact";
 
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
 import Automation from "../js/automation";
 import unmountPreact from "../../../common/preact/unmount";
 import computeStateName from "../../../common/entity/compute_state_name";
 
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AutomationEntity, AutomationConfig } from "../../../data/automation";
 import { navigate } from "../../../common/navigate";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
@@ -72,10 +75,9 @@ class HaAutomationEditor extends LitElement {
       <ha-app-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               @click=${this._backTapped}
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title>
               ${this.automation
                 ? computeStateName(this.automation)
@@ -92,7 +94,12 @@ class HaAutomationEditor extends LitElement {
                 <div class="errors">${this._errors}</div>
               `
             : ""}
-          <div id="root"></div>
+          <div
+            id="root"
+            class="${classMap({
+              rtl: computeRTL(this.hass),
+            })}"
+          ></div>
         </div>
         <paper-fab
           slot="fab"
@@ -103,6 +110,9 @@ class HaAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.save"
           )}"
           @click=${this._saveAutomation}
+          class="${classMap({
+            rtl: computeRTL(this.hass),
+          })}"
         ></paper-fab>
       </ha-app-layout>
     `;
@@ -235,7 +245,7 @@ class HaAutomationEditor extends LitElement {
         .script paper-card {
           margin-top: 16px;
         }
-        .add-card paper-button {
+        .add-card mwc-button {
           display: block;
           text-align: center;
         }
@@ -245,6 +255,10 @@ class HaAutomationEditor extends LitElement {
           right: 0;
           z-index: 1;
           color: var(--primary-text-color);
+        }
+        .rtl .card-menu {
+          right: auto;
+          left: 0;
         }
         .card-menu paper-item {
           cursor: pointer;
@@ -268,6 +282,17 @@ class HaAutomationEditor extends LitElement {
 
         paper-fab[dirty] {
           margin-bottom: 0;
+        }
+
+        paper-fab.rtl {
+          right: auto;
+          left: 16px;
+        }
+
+        paper-fab[is-wide].rtl {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
         }
       `,
     ];

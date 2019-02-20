@@ -7,9 +7,11 @@ import {
 } from "lit-element";
 import { until } from "lit-html/directives/until";
 import "@polymer/paper-icon-button";
-import "@polymer/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-paper-icon-button-next";
+import "../../../src/components/ha-paper-icon-button-prev";
 import { LovelaceCard, Lovelace } from "../../../src/panels/lovelace/types";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
@@ -48,12 +50,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <div class="picker">
-          <paper-icon-button
+          <ha-paper-icon-button-prev
             @click=${this._prevConfig}
-            icon="hass:chevron-right"
-            style="transform: rotate(180deg)"
             .disabled=${this._switching}
-          ></paper-icon-button>
+          ></ha-paper-icon-button-prev>
           <div>
             ${this._switching
               ? html`
@@ -74,11 +74,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                   ""
                 )}
           </div>
-          <paper-icon-button
+          <ha-paper-icon-button-next
             @click=${this._nextConfig}
-            icon="hass:chevron-right"
             .disabled=${this._switching}
-          ></paper-icon-button>
+          ></ha-paper-icon-button-next>
         </div>
         <div class="content">
           Welcome home! You've reached the Home Assistant demo where we showcase
@@ -86,14 +85,14 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         </div>
         <div class="actions">
           <a href="https://www.home-assistant.io" target="_blank">
-            <paper-button>Learn more about Home Assistant</paper-button>
+            <mwc-button>Learn more about Home Assistant</mwc-button>
           </a>
           ${!this._switching
             ? until(
                 selectedDemoConfig.then((conf) =>
                   conf.language
                     ? html`
-                        <paper-button
+                        <mwc-button
                           @click=${this._setLanguage}
                           class="setLanguageAction"
                           >Enable custom language</paper-button
@@ -140,6 +139,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   private _setLanguage() {
     setDemoConfigLanguage(this, this.hass!);
+    (this.shadowRoot!.querySelector(
+      ".setLanguageAction"
+    )! as HTMLElement).style.display = "none";
   }
 
   static get styles(): CSSResult[] {
@@ -172,7 +174,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         }
 
         .actions {
-          padding-left: 12px;
+          padding-left: 8px;
         }
 
         .actions paper-button {

@@ -8,16 +8,15 @@ import {
   css,
 } from "lit-element";
 import "@polymer/paper-card/paper-card";
-import { HassEntity } from "home-assistant-js-websocket";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import {
   Cluster,
   Command,
   fetchCommandsForCluster,
-  ZHADeviceEntity,
+  ZHADevice,
 } from "../../../data/zha";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import {
@@ -25,12 +24,12 @@ import {
   IssueCommandServiceData,
   ItemSelectedEvent,
 } from "./types";
+import { formatAsPaddedHex } from "./functions";
 
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
-  public selectedNode?: HassEntity;
-  public selectedEntity?: ZHADeviceEntity;
+  public selectedNode?: ZHADevice;
   public selectedCluster?: Cluster;
   private _showHelp: boolean;
   private _commands: Command[];
@@ -50,7 +49,6 @@ export class ZHAClusterCommands extends LitElement {
       hass: {},
       isWide: {},
       selectedNode: {},
-      selectedEntity: {},
       selectedCluster: {},
       _showHelp: {},
       _commands: {},
@@ -97,7 +95,10 @@ export class ZHAClusterCommands extends LitElement {
                 ${this._commands.map(
                   (entry) => html`
                     <paper-item
-                      >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                      >${entry.name +
+                        " (id: " +
+                        formatAsPaddedHex(entry.id) +
+                        ")"}</paper-item
                     >
                   `
                 )}
@@ -146,25 +147,29 @@ export class ZHAClusterCommands extends LitElement {
   }
 
   private async _fetchCommandsForCluster(): Promise<void> {
-    if (this.selectedEntity && this.selectedCluster && this.hass) {
+    if (this.selectedNode && this.selectedCluster && this.hass) {
       this._commands = await fetchCommandsForCluster(
         this.hass,
-        this.selectedEntity!.entity_id,
-        this.selectedEntity!.device_info!.identifiers[0][1],
+        this.selectedNode!.ieee,
+        this.selectedCluster!.endpoint_id,
         this.selectedCluster!.id,
         this.selectedCluster!.type
       );
+      this._commands.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     }
   }
 
   private _computeIssueClusterCommandServiceData():
     | IssueCommandServiceData
     | undefined {
-    if (!this.selectedEntity || !this.selectedCluster) {
+    if (!this.selectedNode || !this.selectedCluster) {
       return;
     }
     return {
-      entity_id: this.selectedEntity!.entity_id,
+      ieee: this.selectedNode!.ieee,
+      endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
       command: this._commands[this._selectedCommandIndex].id,
@@ -257,8 +262,7 @@ export class ZHAClusterCommands extends LitElement {
         [hidden] {
           display: none;
         }
-      </style>
-    `,
+      `,
     ];
   }
 }

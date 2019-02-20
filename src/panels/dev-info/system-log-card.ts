@@ -68,6 +68,16 @@ class SystemLogCard extends LitElement {
                                 this.hass!.language
                               )}
                               ${item.source} (${item.level})
+                              ${item.count > 1
+                                ? html`
+                                    - message first occured at
+                                    ${formatLogTime(
+                                      item.first_occured,
+                                      this.hass!.language
+                                    )}
+                                    and shows up ${item.count} times
+                                  `
+                                : html``}
                             </div>
                           </paper-item-body>
                         </paper-item>
@@ -137,9 +147,10 @@ class SystemLogCard extends LitElement {
       }
 
       .loading-container {
-        @apply --layout-vertical;
-        @apply --layout-center-center;
         height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     `;
   }

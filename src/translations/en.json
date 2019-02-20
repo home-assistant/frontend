@@ -271,6 +271,11 @@
       "off": "[%key:state::default::off%]",
       "on": "[%key:state::default::on%]"
     },
+    "timer": {
+      "active": "active",
+      "idle": "idle",
+      "paused": "paused"
+    },
     "vacuum": {
       "cleaning": "Cleaning",
       "docked": "Docked",
@@ -310,6 +315,15 @@
       }
     }
   },
+  "state_attributes": {
+    "climate": {
+      "fan_mode": {
+        "off": "[%key:state::default::off%]",
+        "on": "[%key:state::default::on%]",
+        "auto": "[%key:state::climate::auto%]"
+      }
+    }
+  },
   "state_badge": {
     "default": {
       "unknown": "Unk",
@@ -346,7 +360,7 @@
         "arm_home": "Arm home",
         "arm_away": "Arm away",
         "arm_night": "Arm night",
-        "armed_custom_bypass": "Custom bypass"
+        "arm_custom_bypass": "Custom bypass"
       },
       "automation": {
         "last_triggered": "Last triggered",
@@ -530,7 +544,20 @@
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
         "area_registry": {
           "caption": "Area Registry",
-          "description": "Overview of all areas in your home."
+          "description": "Overview of all areas in your home.",
+          "picker": {
+            "header": "Area Registry",
+            "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
+            "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards."
+          },
+          "no_areas": "Looks like you have no areas yet!",
+          "create_area": "CREATE AREA",
+          "editor": {
+            "default_name": "New Area",
+            "delete": "DELETE",
+            "update": "UPDATE",
+            "create": "CREATE"
+          }
         },
         "core": {
           "caption": "General",
@@ -565,14 +592,18 @@
         },
         "customize": {
           "caption": "Customization",
-          "description": "Customize your entities"
+          "description": "Customize your entities",
+          "picker": {
+            "header": "Customization",
+            "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
+          }
         },
         "automation": {
           "caption": "Automation",
           "description": "Create and edit automations",
           "picker": {
             "header": "Automation Editor",
-            "introduction": "The automation editor allows you to create and edit automations. Please read [the instructions](https://home-assistant.io/docs/automation/editor/) to make sure that you have configured Home Assistant correctly.",
+            "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "pick_automation": "Pick automation to edit",
             "no_automations": "We couldn’t find any editable automations",
             "add_automation": "Add automation"
@@ -585,7 +616,7 @@
             "alias": "Name",
             "triggers": {
               "header": "Triggers",
-              "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.\n\n[Learn more about triggers.](https://home-assistant.io/docs/automation/trigger/)",
+              "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action. Click the link below to learn more about triggers.",
               "add": "Add trigger",
               "duplicate": "Duplicate",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
@@ -666,7 +697,7 @@
             },
             "conditions": {
               "header": "Conditions",
-              "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.\n\n[Learn more about conditions.](https://home-assistant.io/docs/scripts/conditions/)",
+              "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off. Click the link below to learn more about conditions.",
               "add": "Add condition",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
@@ -711,7 +742,7 @@
             },
             "actions": {
               "header": "Actions",
-              "introduction": "The actions are what Home Assistant will do when the automation is triggered.\n\n[Learn more about actions.](https://home-assistant.io/docs/automation/action/)",
+              "introduction": "The actions are what Home Assistant will do when the automation is triggered. Click the link below to learn more about actions.",
               "add": "Add action",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
@@ -755,7 +786,29 @@
         },
         "entity_registry": {
           "caption": "Entity Registry",
-          "description": "Overview of all known entities."
+          "description": "Overview of all known entities.",
+          "picker": {
+            "header": "Entity Registry",
+            "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
+            "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
+            "unavailable": "(unavailable)"
+          },
+          "editor": {
+            "unavailable": "This entity is not currently available.",
+            "default_name": "New Area",
+            "delete": "DELETE",
+            "update": "UPDATE"
+          }
+        },
+        "person": {
+          "caption": "Persons",
+          "description": "Manage the persons that Home Assistant tracks.",
+          "detail": {
+            "name": "Name",
+            "device_tracker_intro": "Select the devices that belong to this person.",
+            "device_tracker_picked": "Track Device",
+            "device_tracker_pick": "Pick device to track"
+          }
         },
         "integrations": {
           "caption": "Integrations",
@@ -785,11 +838,19 @@
             "title": "Users"
           },
           "editor": {
+            "caption": "View user",
             "rename_user": "Rename user",
             "change_password": "Change password",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user"
+          },
+          "add_user": {
+            "caption": "Add user",
+            "name": "Name",
+            "username": "Username",
+            "password": "Password",
+            "create": "Create"
           }
         },
         "zha": {
@@ -864,6 +925,10 @@
             "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
             "migrate": "Migrate config"
           }
+        },
+        "warning": {
+          "entity_not_found": "Entity not available: {entity}",
+          "entity_non_numeric": "Entity is non-numeric: {entity}"
         }
       },
       "mailbox": {

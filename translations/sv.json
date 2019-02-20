@@ -727,6 +727,11 @@
                             "abort": {
                                 "not_whitelisted": "Din dator är inte vitlistad"
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sessionen avslutades. Logga in igen."
+                            }
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import { fetchConfig, LovelaceConfig, saveConfig } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
@@ -73,21 +73,13 @@ class LovelacePanel extends LitElement {
 
     if (state === "error") {
       return html`
-        <style>
-          paper-button {
-            color: var(--primary-color);
-            font-weight: 500;
-          }
-        </style>
         <hass-error-screen
           title="Lovelace"
           .error="${this._errorMsg}"
           .narrow="${this.narrow}"
           .showMenu="${this.showMenu}"
         >
-          <paper-button on-click="_forceFetchConfig"
-            >Reload Lovelace</paper-button
-          >
+          <mwc-button on-click="_forceFetchConfig">Reload Lovelace</mwc-button>
         </hass-error-screen>
       `;
     }
@@ -95,6 +87,7 @@ class LovelacePanel extends LitElement {
     if (state === "yaml-editor") {
       return html`
         <hui-editor
+          .hass="${this.hass}"
           .lovelace="${this.lovelace}"
           .closeEditor="${this._closeEditor}"
         ></hui-editor>

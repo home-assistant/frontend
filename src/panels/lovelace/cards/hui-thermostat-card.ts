@@ -10,6 +10,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../components/hui-warning";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -102,16 +103,19 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       return html``;
     }
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
+
     if (!stateObj) {
       return html`
-        ${this.renderStyle()}
-        <ha-card>
-          <div class="not-found">
-            Entity not available: ${this._config.entity}
-          </div>
-        </ha-card>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
+
     const mode = modeIcons[stateObj.attributes.operation_mode || ""]
       ? stateObj.attributes.operation_mode!
       : "unknown-mode";
@@ -209,6 +213,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   private get _stepSize(): number {
     const stateObj = this.hass!.states[this._config!.entity];
+
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
     }
@@ -216,6 +221,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private async _initialLoad(): Promise<void> {
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
+
+    if (!stateObj) {
+      // Card will require refresh to work again
+      return;
+    }
+
     this._loaded = true;
 
     await this.updateComplete;
@@ -229,14 +241,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     (this.shadowRoot!.querySelector(
       "#thermostat"
-    )! as HTMLElement).style.height = radius * 2 + "px";
+    ) as HTMLElement)!.style.height = radius * 2 + "px";
 
     const loaded = await loadRoundslider();
 
     this._roundSliderStyle = loaded.roundSliderStyle;
     this._jQuery = loaded.jQuery;
-
-    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     const _sliderType =
       stateObj.attributes.target_temp_low &&
@@ -280,7 +290,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       );
     } else {
       sliderValue = stateObj.attributes.temperature;
-      uiValue = "" + stateObj.attributes.temperature;
+      uiValue =
+        stateObj.attributes.temperature !== null
+          ? String(stateObj.attributes.temperature)
+          : "";
     }
 
     return [sliderValue, uiValue];
@@ -383,11 +396,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           --dry-color: #efbd07;
           --idle-color: #8a8a8a;
           --unknown-color: #bac;
-        }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
         }
         #root {
           position: relative;

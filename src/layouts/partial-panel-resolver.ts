@@ -1,11 +1,7 @@
-import {
-  LitElement,
-  html,
-  PropertyDeclarations,
-  PropertyValues,
-} from "lit-element";
+import { LitElement, html, PropertyValues, property } from "lit-element";
 
 import "./hass-loading-screen";
+import "./hass-error-screen";
 import { HomeAssistant, Panel, PanelElement, Route } from "../types";
 
 // Cache of panel loading promises.
@@ -112,44 +108,25 @@ function ensureLoaded(panel): Promise<void> | null {
 }
 
 class PartialPanelResolver extends LitElement {
-  public hass?: HomeAssistant;
-  public narrow?: boolean;
-  public showMenu?: boolean;
-  public route?: Route | null;
+  @property() public hass?: HomeAssistant;
+  @property() public narrow?: boolean;
+  @property() public showMenu?: boolean;
+  @property() public route?: Route | null;
 
-  private _routeTail?: Route | null;
+  @property() private _routeTail?: Route | null;
+  @property() private _panelEl?: PanelElement;
+  @property() private _error?: boolean;
   private _panel?: Panel;
-  private _panelEl?: PanelElement;
-  private _error?: boolean;
-  private _cache: { [name: string]: PanelElement };
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      narrow: {},
-      showMenu: {},
-      route: {},
-
-      _routeTail: {},
-      _error: {},
-      _panelEl: {},
-    };
-  }
-
-  constructor() {
-    super();
-    this._cache = {};
-  }
+  private _cache: { [name: string]: PanelElement } = {};
 
   protected render() {
     if (this._error) {
       return html`
         <hass-error-screen
-          title=""
           error="Error while loading this panel."
           .narrow=${this.narrow}
           .showMenu=${this.showMenu}
-        />
+        ></hass-error-screen>
       `;
     }
 
@@ -165,13 +142,6 @@ class PartialPanelResolver extends LitElement {
     return html`
       ${this._panelEl}
     `;
-  }
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    // Load it before it's needed, because it will be shown if user is offline
-    // and a panel has to be loaded.
-    import(/* webpackChunkName: "hass-error-screen" */ "./hass-error-screen");
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -237,6 +207,7 @@ class PartialPanelResolver extends LitElement {
               this._cache[panel.component_name] = this._panelEl;
             }
 
+            this._error = false;
             this._updatePanel();
           },
           (err) => {

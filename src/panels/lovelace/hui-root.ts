@@ -14,7 +14,7 @@ import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/app-route/app-route";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
@@ -26,6 +26,8 @@ import scrollToTarget from "../../common/dom/scroll-to-target";
 
 import "../../layouts/ha-app-layout";
 import "../../components/ha-start-voice-button";
+import "../../components/ha-paper-icon-button-arrow-next";
+import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
 import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
@@ -48,8 +50,8 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
-import { haStyle } from "../../resources/ha-style";
-import { computeRTL, computeRTLDirection } from "../../common/util/compute_rtl";
+import { haStyle } from "../../resources/styles";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -186,8 +188,8 @@ class HUIRoot extends LitElement {
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   <hui-notifications-button
                     .hass="${this.hass}"
-                    .open="${this._notificationsOpen}"
-                    @open-changed="${this._handleNotificationsOpenChanged}"
+                    .opened="${this._notificationsOpen}"
+                    @opened-changed="${this._handleNotificationsOpenChanged}"
                     .notifications="${this._notifications}"
                   ></hui-notifications-button>
                   <ha-start-voice-button
@@ -251,15 +253,12 @@ class HUIRoot extends LitElement {
                         <paper-tab>
                           ${this._editMode
                             ? html`
-                                <paper-icon-button
+                                <ha-paper-icon-button-arrow-prev
                                   title="Move view left"
                                   class="edit-icon view"
-                                  icon="${computeRTL(this.hass!)
-                                    ? "hass:arrow-right"
-                                    : "hass:arrow-left"}"
                                   @click="${this._moveViewLeft}"
                                   ?disabled="${this._curView === 0}"
-                                ></paper-icon-button>
+                                ></ha-paper-icon-button-arrow-prev>
                               `
                             : ""}
                           ${view.icon
@@ -278,17 +277,14 @@ class HUIRoot extends LitElement {
                                   icon="hass:pencil"
                                   @click="${this._editView}"
                                 ></ha-icon>
-                                <paper-icon-button
+                                <ha-paper-icon-button-arrow-next
                                   title="Move view right"
                                   class="edit-icon view"
-                                  icon="${computeRTL(this.hass!)
-                                    ? "hass:arrow-left"
-                                    : "hass:arrow-right"}"
                                   @click="${this._moveViewRight}"
                                   ?disabled="${(this._curView! as number) +
                                     1 ===
                                     this.lovelace!.config.views.length}"
-                                ></paper-icon-button>
+                                ></ha-paper-icon-button-arrow-next>
                               `
                             : ""}
                         </paper-tab>
@@ -296,14 +292,14 @@ class HUIRoot extends LitElement {
                     )}
                     ${this._editMode
                       ? html`
-                          <paper-button id="add-view" @click="${this._addView}">
-                            <ha-icon
-                              title="${this.hass!.localize(
-                                "ui.panel.lovelace.editor.edit_view.add"
-                              )}"
-                              icon="hass:plus"
-                            ></ha-icon>
-                          </paper-button>
+                          <paper-icon-button
+                            id="add-view"
+                            @click="${this._addView}"
+                            title="${this.hass!.localize(
+                              "ui.panel.lovelace.editor.edit_view.add"
+                            )}"
+                            icon="hass:plus"
+                          ></paper-icon-button>
                         `
                       : ""}
                   </paper-tabs>
@@ -371,7 +367,7 @@ class HUIRoot extends LitElement {
         app-toolbar a {
           color: var(--text-primary-color, white);
         }
-        paper-button.warning:not([disabled]) {
+        mwc-button.warning:not([disabled]) {
           color: var(--google-red-500);
         }
         #view {

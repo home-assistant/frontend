@@ -433,6 +433,9 @@
                                     "hours": "Stundas",
                                     "minutes": "Minūtes",
                                     "seconds": "Sekundes"
+                                },
+                                "geo_location": {
+                                    "label": "Ģeogrāfiskā atrašanās vieta"
                                 }
                             }
                         },
@@ -566,6 +569,9 @@
                 "zha": {
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation tīkla pārvaldība"
+                },
+                "area_registry": {
+                    "description": "Pārskats par visām vietām jūsu mājās."
                 }
             },
             "profile": {
@@ -708,6 +714,26 @@
                             "abort": {
                                 "not_whitelisted": "Jūsu dators nav iekļauts baltajā sarakstā."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Lietotājvārds",
+                                        "password": "Parole"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Divpakāpju Autorizācijas Kods"
+                                    },
+                                    "description": "Atveriet **{mfa_module_name}** Jūsu ierīcē, lai apskatītu savu divpakāpju autorizācijas kodu un aptiprinātu savu identitāti:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nepareizs lietotājvārds un parole",
+                                "invalid_code": "Nepareizs autorizācijas kods"
+                            }
                         }
                     }
                 }
@@ -841,7 +867,8 @@
                 "arm_home": "Pieslēgt mājas",
                 "arm_away": "Pieslēgt prombūtni",
                 "arm_night": "Pieslēgts uz nakti",
-                "armed_custom_bypass": "Pielāgots apvedceļš"
+                "armed_custom_bypass": "Pielāgots apvedceļš",
+                "arm_custom_bypass": "Pielāgots apvedceļš"
             },
             "automation": {
                 "last_triggered": "Pēdējais izsaukums",
@@ -1001,7 +1028,10 @@
         "weblink": "Weblink",
         "zwave": "Z-Wave",
         "vacuum": "Putekļsūcējs",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace"
     },
     "attribute": {
         "weather": {

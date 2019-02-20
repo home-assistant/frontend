@@ -51,18 +51,28 @@ class HaConfigEntityRegistry extends LitElement {
       `;
     }
     return html`
-      <hass-subpage header="Entity Registry">
+      <hass-subpage
+        header="${this.hass.localize(
+          "ui.panel.config.entity_registry.caption"
+        )}"
+      >
         <ha-config-section .isWide=${this.isWide}>
-          <span slot="header">Entity Registry</span>
+          <span slot="header">
+            ${this.hass.localize(
+              "ui.panel.config.entity_registry.picker.header"
+            )}
+          </span>
           <span slot="introduction">
-            Home Assistant keeps a registry of every entity it has ever seen
-            that can be uniquely identified. Each of these entities will have an
-            entity ID assigned which will be reserved for just this entity.
+            ${this.hass.localize(
+              "ui.panel.config.entity_registry.picker.introduction"
+            )}
             <p>
-              Use the entity registry to override the name, change the entity ID
-              or remove the entry from Home Assistant. Note, removing the entity
-              registry entry won't remove the entity. To do that, remove it from
-              <a href="/config/integrations">the integrations page</a>.
+              ${this.hass.localize(
+                "ui.panel.config.entity_registry.picker.introduction2"
+              )}
+              <a href="/config/integrations"
+                ><ha-icon icon="mdi:link"></ha-icon
+              ></a>
             </p>
           </span>
           <paper-card>
@@ -79,7 +89,9 @@ class HaConfigEntityRegistry extends LitElement {
                   <paper-item-body two-line>
                     <div class="name">
                       ${computeEntityRegistryName(this.hass!, entry) ||
-                        "(unavailable)"}
+                        this.hass!.localize(
+                          "ui.panel.config.entity_registry.picker.unavailable"
+                        )}
                     </div>
                     <div class="secondary entity-id">
                       ${entry.entity_id}
@@ -150,6 +162,7 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
       }
       paper-card {
         display: block;
+        direction: ltr;
       }
       paper-icon-item {
         cursor: pointer;

@@ -12,7 +12,7 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-menu-button";
 
 import { HomeAssistant } from "../../types";
-import { haStyle } from "../../resources/ha-style";
+import { haStyle } from "../../resources/styles";
 
 import "./system-log-card";
 import "./error-log-card";
@@ -138,9 +138,9 @@ class HaPanelDevInfo extends LitElement {
             </p>
             <p>
               <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />
-              <paper-button @click="${this._toggleDefaultPage}" raised>
+              <mwc-button @click="${this._toggleDefaultPage}" raised>
                 ${defaultPageText}
-              </paper-button>
+              </mwc-button>
             </p>
           </div>
           <system-health-card .hass=${this.hass}></system-health-card>

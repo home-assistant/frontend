@@ -1,6 +1,6 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item";
@@ -11,6 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/entity/ha-state-icon";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
+import "../../../components/ha-icon-next";
 
 import "../ha-config-section";
 import EventsMixin from "../../../mixins/events-mixin";
@@ -29,9 +30,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
   static get template() {
     return html`
       <style include="iron-flex ha-style">
-        paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
+        mwc-button {
           top: 3px;
           margin-right: -0.57em;
         }
@@ -65,8 +64,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                   <paper-item-body>
                     [[_computeIntegrationTitle(localize, item.handler)]]
                   </paper-item-body>
-                  <paper-button on-click="_continueFlow"
-                    >[[localize('ui.panel.config.integrations.configure')]]</paper-button
+                  <mwc-button on-click="_continueFlow"
+                    >[[localize('ui.panel.config.integrations.configure')]]</mwc-button
                   >
                 </div>
               </template>
@@ -111,7 +110,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                       </template>
                     </div>
                   </paper-item-body>
-                  <iron-icon icon="hass:chevron-right"></iron-icon>
+                  <ha-icon-next></ha-icon-next>
                 </paper-item>
               </a>
             </template>
@@ -128,8 +127,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                 <paper-item-body>
                   [[_computeIntegrationTitle(localize, item)]]
                 </paper-item-body>
-                <paper-button on-click="_createFlow"
-                  >[[localize('ui.panel.config.integrations.configure')]]</paper-button
+                <mwc-button on-click="_createFlow"
+                  >[[localize('ui.panel.config.integrations.configure')]]</mwc-button
                 >
               </div>
             </template>

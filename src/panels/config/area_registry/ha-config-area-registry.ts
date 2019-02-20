@@ -27,6 +27,8 @@ import {
   showAreaRegistryDetailDialog,
   loadAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { classMap } from "lit-html/directives/class-map";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 class HaConfigAreaRegistry extends LitElement {
   public hass?: HomeAssistant;
@@ -48,18 +50,25 @@ class HaConfigAreaRegistry extends LitElement {
       `;
     }
     return html`
-      <hass-subpage header="Area Registry">
+      <hass-subpage
+        header="${this.hass.localize("ui.panel.config.area_registry.caption")}"
+      >
         <ha-config-section .isWide=${this.isWide}>
-          <span slot="header">Area Registry</span>
+          <span slot="header">
+            ${this.hass.localize("ui.panel.config.area_registry.picker.header")}
+          </span>
           <span slot="introduction">
-            Areas are used to organize where devices are. This information will
-            be used throughout Home Assistant to help you in organizing your
-            interface, permissions and integrations with other systems.
+            ${this.hass.localize(
+              "ui.panel.config.area_registry.picker.introduction"
+            )}
             <p>
-              To place devices in an area, navigate to
-              <a href="/config/integrations">the integrations page</a> and then
-              click on a configured integration to get to the device cards.
+              ${this.hass.localize(
+                "ui.panel.config.area_registry.picker.introduction2"
+              )}
             </p>
+            <a href="/config/integrations"
+              ><ha-icon icon="mdi:link"></ha-icon
+            ></a>
           </span>
           <paper-card>
             ${this._items.map((entry) => {
@@ -74,10 +83,14 @@ class HaConfigAreaRegistry extends LitElement {
             ${this._items.length === 0
               ? html`
                   <div class="empty">
-                    Looks like you have no areas yet!
-                    <paper-button @click=${this._createArea}>
-                      CREATE AREA</paper-button
-                    >
+                    ${this.hass.localize(
+                      "ui.panel.config.area_registry.picker.no_areas"
+                    )}
+                    <mwc-button @click=${this._createArea}>
+                      ${this.hass.localize(
+                        "ui.panel.config.area_registry.picker.create_area"
+                      )}
+                    </mwc-button>
                   </div>
                 `
               : html``}
@@ -88,8 +101,13 @@ class HaConfigAreaRegistry extends LitElement {
       <paper-fab
         ?is-wide=${this.isWide}
         icon="hass:plus"
-        title="Create Area"
+        title="${this.hass.localize(
+          "ui.panel.config.area_registry.picker.create_area"
+        )}"
         @click=${this._createArea}
+        class="${classMap({
+          rtl: computeRTL(this.hass),
+        })}"
       ></paper-fab>
     `;
   }
@@ -181,6 +199,17 @@ All devices in this area will become unassigned.`)
       paper-fab[is-wide] {
         bottom: 24px;
         right: 24px;
+      }
+
+      paper-fab.rtl {
+        right: auto;
+        left: 16px;
+      }
+
+      paper-fab[is-wide].rtl {
+        bottom: 24px;
+        right: auto;
+        left: 24px;
       }
     `;
   }

@@ -7,8 +7,19 @@ export interface ZHADeviceEntity extends HassEntity {
   };
 }
 
-export interface ZHAEntities {
-  [key: string]: HassEntity[];
+export interface ZHAEntityReference extends HassEntity {
+  name: string;
+}
+
+export interface ZHADevice {
+  name: string;
+  ieee: string;
+  manufacturer: string;
+  model: string;
+  quirk_applied: boolean;
+  quirk_class: string;
+  entities: ZHAEntityReference[];
+  manufacturer_code: number;
 }
 
 export interface Attribute {
@@ -19,6 +30,7 @@ export interface Attribute {
 export interface Cluster {
   name: string;
   id: number;
+  endpoint_id: number;
   type: string;
 }
 
@@ -29,7 +41,8 @@ export interface Command {
 }
 
 export interface ReadAttributeServiceData {
-  entity_id: string;
+  ieee: string;
+  endpoint_id: number;
   cluster_id: number;
   cluster_type: string;
   attribute: number;
@@ -41,23 +54,28 @@ export const reconfigureNode = (
   ieeeAddress: string
 ): Promise<void> =>
   hass.callWS({
-    type: "zha/nodes/reconfigure",
+    type: "zha/devices/reconfigure",
     ieee: ieeeAddress,
   });
 
 export const fetchAttributesForCluster = (
   hass: HomeAssistant,
-  entityId: string,
   ieeeAddress: string,
+  endpointId: number,
   clusterId: number,
   clusterType: string
 ): Promise<Attribute[]> =>
   hass.callWS({
-    type: "zha/entities/clusters/attributes",
-    entity_id: entityId,
+    type: "zha/devices/clusters/attributes",
     ieee: ieeeAddress,
+    endpoint_id: endpointId,
     cluster_id: clusterId,
     cluster_type: clusterType,
+  });
+
+export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
+  hass.callWS({
+    type: "zha/devices",
   });
 
 export const readAttributeValue = (
@@ -66,39 +84,30 @@ export const readAttributeValue = (
 ): Promise<string> => {
   return hass.callWS({
     ...data,
-    type: "zha/entities/clusters/attributes/value",
+    type: "zha/devices/clusters/attributes/value",
   });
 };
 
 export const fetchCommandsForCluster = (
   hass: HomeAssistant,
-  entityId: string,
   ieeeAddress: string,
+  endpointId: number,
   clusterId: number,
   clusterType: string
 ): Promise<Command[]> =>
   hass.callWS({
-    type: "zha/entities/clusters/commands",
-    entity_id: entityId,
+    type: "zha/devices/clusters/commands",
     ieee: ieeeAddress,
+    endpoint_id: endpointId,
     cluster_id: clusterId,
     cluster_type: clusterType,
   });
 
 export const fetchClustersForZhaNode = (
   hass: HomeAssistant,
-  entityId: string,
   ieeeAddress: string
 ): Promise<Cluster[]> =>
   hass.callWS({
-    type: "zha/entities/clusters",
-    entity_id: entityId,
+    type: "zha/devices/clusters",
     ieee: ieeeAddress,
-  });
-
-export const fetchEntitiesForZhaNode = (
-  hass: HomeAssistant
-): Promise<ZHAEntities> =>
-  hass.callWS({
-    type: "zha/entities",
   });

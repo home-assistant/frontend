@@ -12,6 +12,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-service-description";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 import "../../../resources/ha-style";
 
@@ -85,10 +86,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="_backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">
               [[localize('ui.panel.config.zwave.caption')]]
             </div>
@@ -236,8 +236,8 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   hidden$="[[!showHelp]]"
                 >
                 </ha-service-description>
-                <paper-button on-click="_nodeMoreInfo"
-                  >Node Information</paper-button
+                <mwc-button on-click="_nodeMoreInfo"
+                  >Node Information</mwc-button
                 >
               </div>
 
@@ -277,8 +277,8 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     hidden$="[[!showHelp]]"
                   >
                   </ha-service-description>
-                  <paper-button on-click="_entityMoreInfo"
-                    >Entity Information</paper-button
+                  <mwc-button on-click="_entityMoreInfo"
+                    >Entity Information</mwc-button
                   >
                 </div>
                 <div class="form-group">

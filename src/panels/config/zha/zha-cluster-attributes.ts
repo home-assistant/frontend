@@ -7,10 +7,9 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { HassEntity } from "home-assistant-js-websocket";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import {
@@ -19,9 +18,9 @@ import {
   fetchAttributesForCluster,
   ReadAttributeServiceData,
   readAttributeValue,
-  ZHADeviceEntity,
+  ZHADevice,
 } from "../../../data/zha";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import {
@@ -29,13 +28,13 @@ import {
   ItemSelectedEvent,
   SetAttributeServiceData,
 } from "./types";
+import { formatAsPaddedHex } from "./functions";
 
 export class ZHAClusterAttributes extends LitElement {
   public hass?: HomeAssistant;
   public isWide?: boolean;
   public showHelp: boolean;
-  public selectedNode?: HassEntity;
-  public selectedEntity?: ZHADeviceEntity;
+  public selectedNode?: ZHADevice;
   public selectedCluster?: Cluster;
   private _attributes: Attribute[];
   private _selectedAttributeIndex: number;
@@ -57,7 +56,6 @@ export class ZHAClusterAttributes extends LitElement {
       isWide: {},
       showHelp: {},
       selectedNode: {},
-      selectedEntity: {},
       selectedCluster: {},
       _attributes: {},
       _selectedAttributeIndex: {},
@@ -105,7 +103,10 @@ export class ZHAClusterAttributes extends LitElement {
                 ${this._attributes.map(
                   (entry) => html`
                     <paper-item
-                      >${entry.name + " (id: " + entry.id + ")"}</paper-item
+                      >${entry.name +
+                        " (id: " +
+                        formatAsPaddedHex(entry.id) +
+                        ")"}</paper-item
                     >
                   `
                 )}
@@ -148,8 +149,8 @@ export class ZHAClusterAttributes extends LitElement {
         ></paper-input>
       </div>
       <div class="card-actions">
-        <paper-button @click="${this._onGetZigbeeAttributeClick}"
-          >Get Zigbee Attribute</paper-button
+        <mwc-button @click="${this._onGetZigbeeAttributeClick}"
+          >Get Zigbee Attribute</mwc-button
         >
         <ha-call-service-button
           .hass="${this.hass}"
@@ -172,49 +173,54 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private async _fetchAttributesForCluster(): Promise<void> {
-    if (this.selectedEntity && this.selectedCluster && this.hass) {
+    if (this.selectedNode && this.selectedCluster && this.hass) {
       this._attributes = await fetchAttributesForCluster(
         this.hass,
-        this.selectedEntity!.entity_id,
-        this.selectedEntity!.device_info!.identifiers[0][1],
+        this.selectedNode!.ieee,
+        this.selectedCluster!.endpoint_id,
         this.selectedCluster!.id,
         this.selectedCluster!.type
       );
+      this._attributes.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     }
   }
 
   private _computeReadAttributeServiceData():
     | ReadAttributeServiceData
     | undefined {
-    if (!this.selectedEntity || !this.selectedCluster || !this.selectedNode) {
+    if (!this.selectedCluster || !this.selectedNode) {
       return;
     }
     return {
-      entity_id: this.selectedEntity!.entity_id,
+      ieee: this.selectedNode!.ieee,
+      endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
       attribute: this._attributes[this._selectedAttributeIndex].id,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
-        : this.selectedNode!.attributes.manufacturer_code,
+        : this.selectedNode!.manufacturer_code,
     };
   }
 
   private _computeSetAttributeServiceData():
     | SetAttributeServiceData
     | undefined {
-    if (!this.selectedEntity || !this.selectedCluster || !this.selectedNode) {
+    if (!this.selectedCluster || !this.selectedNode) {
       return;
     }
     return {
-      entity_id: this.selectedEntity!.entity_id,
+      ieee: this.selectedNode!.ieee,
+      endpoint_id: this.selectedCluster!.endpoint_id,
       cluster_id: this.selectedCluster!.id,
       cluster_type: this.selectedCluster!.type,
       attribute: this._attributes[this._selectedAttributeIndex].id,
       value: this._attributeValue,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
-        : this.selectedNode!.attributes.manufacturer_code,
+        : this.selectedNode!.manufacturer_code,
     };
   }
 
@@ -306,8 +312,7 @@ export class ZHAClusterAttributes extends LitElement {
         [hidden] {
           display: none;
         }
-      </style>
-    `,
+      `,
     ];
   }
 }

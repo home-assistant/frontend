@@ -1,5 +1,5 @@
 import { html, LitElement, TemplateResult } from "lit-element";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import "../../../src/components/ha-card";
 import { longPress } from "../../../src/panels/lovelace/common/directives/long-press-directive";
@@ -11,13 +11,13 @@ export class DemoUtilLongPress extends LitElement {
       ${[1, 2, 3].map(
         () => html`
           <ha-card>
-            <paper-button
+            <mwc-button
               @ha-click="${this._handleTap}"
               @ha-hold="${this._handleHold}"
               .longPress="${longPress()}"
             >
               (long) press me!
-            </paper-button>
+            </mwc-button>
 
             <textarea></textarea>
 
@@ -58,11 +58,6 @@ export class DemoUtilLongPress extends LitElement {
         }
         ha-card:last-of-type {
           margin-bottom: 16px;
-        }
-
-        paper-button {
-          font-weight: bold;
-          color: var(--primary-color);
         }
 
         textarea {

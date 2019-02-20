@@ -15,10 +15,10 @@ import "@polymer/paper-icon-button/paper-icon-button.js";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import { haStyleDialog } from "../../../../resources/ha-style";
+import { haStyleDialog } from "../../../../resources/styles";
 
 import "../../components/hui-entity-editor";
 import "./hui-view-editor";
@@ -144,10 +144,10 @@ export class HuiEditView extends LitElement {
                 ></paper-icon-button>
               `
             : ""}
-          <paper-button @click="${this._closeDialog}"
-            >${this.hass!.localize("ui.common.cancel")}</paper-button
+          <mwc-button @click="${this._closeDialog}"
+            >${this.hass!.localize("ui.common.cancel")}</mwc-button
           >
-          <paper-button
+          <mwc-button
             ?disabled="${!this._config || this._saving}"
             @click="${this._save}"
           >
@@ -155,7 +155,7 @@ export class HuiEditView extends LitElement {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${this.hass!.localize("ui.common.save")}</paper-button
+            ${this.hass!.localize("ui.common.save")}</mwc-button
           >
         </div>
       </paper-dialog>
@@ -288,7 +288,7 @@ export class HuiEditView extends LitElement {
           text-transform: uppercase;
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
-        paper-button paper-spinner {
+        mwc-button paper-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;

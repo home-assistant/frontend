@@ -707,6 +707,11 @@
                             "abort": {
                                 "not_whitelisted": "Sinu arvuti ei ole lubatute nimekirjas."
                             }
+                        },
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sessioon aegus, palun logi uuesti sisse."
+                            }
                         }
                     }
                 }
