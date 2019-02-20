@@ -2,6 +2,8 @@ import { translationMetadata } from "../resources/translations-metadata";
 import { fetchFrontendUserData } from "../data/frontend";
 import { HomeAssistant } from "../types";
 
+const STORAGE = window.localStorage || {};
+
 // Chinese locales need map to Simplified or Traditional Chinese
 const LOCALE_LOOKUP = {
   "zh-cn": "zh-Hans",
@@ -56,6 +58,16 @@ export async function getUserLanguage(hass: HomeAssistant) {
  */
 export function getLocalLanguage() {
   let language = null;
+  if (STORAGE.selectedLanguage) {
+    try {
+      language = findAvailableLanguage(JSON.parse(STORAGE.selectedLanguage));
+      if (language) {
+        return language;
+      }
+    } catch (e) {
+      // Ignore parsing error.
+    }
+  }
   if (navigator.languages) {
     for (const locale of navigator.languages) {
       language = findAvailableLanguage(locale);

@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-const STORED_STATE = ["dockedSidebar", "selectedTheme"];
+const STORED_STATE = ["dockedSidebar", "selectedTheme", "selectedLanguage"];
 const STORAGE = window.localStorage || {};
 
 export function storeState(hass: HomeAssistant) {

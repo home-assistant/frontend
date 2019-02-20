@@ -11,7 +11,7 @@ import { translationMetadata } from "../../resources/translations-metadata";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import EventsMixin from "../../mixins/events-mixin";
 
-import { getState } from "../../util/ha-pref-storage";
+import { getState, storeState } from "../../util/ha-pref-storage";
 import { getUserLanguage, getLocalLanguage } from "../../util/hass-translation";
 import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
@@ -37,6 +37,8 @@ export default (superClass) =>
         return;
       }
 
+      const localLanguage = getLocalLanguage();
+
       this.hass = Object.assign(
         {
           auth,
@@ -50,7 +52,7 @@ export default (superClass) =>
           user: null,
           panelUrl: this._panelUrl,
 
-          language: getLocalLanguage(),
+          language: localLanguage,
           // If resources are already loaded, don't discard them
           resources: (this.hass && this.hass.resources) || null,
           localize: () => "",
@@ -156,6 +158,8 @@ export default (superClass) =>
       );
 
       getUserLanguage(this.hass).then((language) => {
+        this.hass.selectedLanguage = language;
+        storeState(this.hass);
         if (this.hass.language !== language) {
           this.fire("hass-language-select", { language, save: false });
         }

@@ -118,6 +118,7 @@ export interface HomeAssistant {
 
   // i18n
   language: string;
+  selectedLanguage: string;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: {

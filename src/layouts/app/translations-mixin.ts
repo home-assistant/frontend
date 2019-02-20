@@ -6,6 +6,7 @@ import { computeLocalize } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
 import { saveFrontendUserData } from "../../data/frontend";
+import { storeState } from "../../util/ha-pref-storage";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -19,14 +20,14 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
         this._selectLanguage(e)
       );
       // load default language resource
-      this._loadResources(this.hass);
+      this._loadResources(this.hass ? this.hass.language : getLocalLanguage());
     }
 
     protected hassConnected() {
       super.hassConnected();
       // user may have different language setting, reload resource
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
-      this._loadResources(this.hass!);
+      this._loadResources(this.hass!.language);
       this._loadBackendTranslations();
       this._loadTranslationFragment(this.hass!.panelUrl);
     }
@@ -64,15 +65,15 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
 
     private _loadTranslationFragment(panelUrl) {
       if (translationMetadata.fragments.includes(panelUrl)) {
-        this._loadResources(this.hass, panelUrl);
+        this._loadResources(
+          this.hass ? this.hass.language : getLocalLanguage(),
+          panelUrl
+        );
       }
     }
 
-    private async _loadResources(hass?, fragment?) {
-      const result = await getTranslation(
-        fragment,
-        hass ? hass.language : getLocalLanguage()
-      );
+    private async _loadResources(language: string, fragment?) {
+      const result = await getTranslation(fragment, language);
       this._updateResources(result.language, result.data);
     }
 
@@ -98,12 +99,13 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
 
     private _selectLanguage(event) {
       const language: string = event.detail.language;
-      this._updateHass({ language });
+      this._updateHass({ language, selectedLanguage: language });
       if (event.detail.save) {
+        storeState(this.hass!);
         saveFrontendUserData(this.hass!, "language", language);
       }
       this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
-      this._loadResources(this.hass!);
+      this._loadResources(language);
       this._loadBackendTranslations();
       this._loadTranslationFragment(this.hass!.panelUrl);
     }
