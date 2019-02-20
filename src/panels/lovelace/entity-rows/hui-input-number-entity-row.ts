@@ -7,7 +7,6 @@ import {
   css,
   CSSResult,
 } from "lit-element";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 import "../components/hui-generic-entity-row";
 import "../../../components/ha-slider";
