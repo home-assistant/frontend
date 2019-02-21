@@ -1,5 +1,6 @@
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig, Condition } from "../../../data/lovelace";
+import { computeCardSize } from "../common/compute-card-size";
 import { HuiConditional } from "../components/hui-conditional";
 
 interface Config extends LovelaceCardConfig {
@@ -16,7 +17,7 @@ class HuiConditionalCard extends HuiConditional implements LovelaceCard {
   }
 
   public getCardSize() {
-    return super.getCardSize();
+    return computeCardSize(this._card!);
   }
 }
 

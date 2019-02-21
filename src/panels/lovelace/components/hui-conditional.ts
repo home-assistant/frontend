@@ -6,7 +6,6 @@ import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { EntityRowConfig } from "../entity-rows/types";
 import { createCardElement } from "../common/create-card-element";
 // import { createRowElement } from "../common/create-row-element";
-import { computeCardSize } from "../common/compute-card-size";
 
 export interface ConditionalConfig {
   conditions: Condition[];
@@ -19,10 +18,10 @@ export interface ConditionalConfig {
 }
 
 export class HuiConditional extends LitElement {
+  protected _card?: LovelaceCard;
+
   private _hass?: HomeAssistant;
   private _conditionalConfig?: ConditionalConfig;
-
-  private _card?: LovelaceCard;
   private _elements: LovelaceElement[] = [];
 
   set hass(hass: HomeAssistant) {
@@ -63,10 +62,6 @@ export class HuiConditional extends LitElement {
     if (this._hass) {
       this.hass = this._hass;
     }
-  }
-
-  public getCardSize() {
-    return computeCardSize(this._card!);
   }
 
   protected getCustomStyle(): string {
