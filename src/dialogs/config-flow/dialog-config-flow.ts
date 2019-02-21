@@ -53,7 +53,7 @@ class ConfigFlowDialog extends LitElement {
   @property()
   private _errorMsg?: string;
 
-  public async showDialog(params: HaConfigFlowParams) {
+  public async showDialog(params: HaConfigFlowParams): Promise<void> {
     this._params = params;
     this._loading = true;
     this._instance = instance++;
@@ -88,7 +88,7 @@ class ConfigFlowDialog extends LitElement {
     setTimeout(() => this._dialog.center(), 0);
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }
@@ -111,7 +111,7 @@ class ConfigFlowDialog extends LitElement {
       headerContent = "Aborted";
       bodyContent = html``;
       buttonContent = html`
-        <mwc-button on-click="_flowDone">Close</mwc-button>
+        <mwc-button @click="${this._flowDone}">Close</mwc-button>
       `;
     } else if (step.type === "create_entry") {
       descriptionKey = `component.${
@@ -122,7 +122,7 @@ class ConfigFlowDialog extends LitElement {
         <p>Created config for ${step.title}</p>
       `;
       buttonContent = html`
-        <mwc-button on-click="_flowDone">Close</mwc-button>
+        <mwc-button @click="${this._flowDone}">Close</mwc-button>
       `;
     } else {
       // form
@@ -206,7 +206,7 @@ class ConfigFlowDialog extends LitElement {
             : ""}
           ${description
             ? html`
-                <ha-markdown content=${description} allow-svg></ha-markdown>
+                <ha-markdown .content=${description} allow-svg></ha-markdown>
               `
             : ""}
           ${bodyContent}
@@ -218,7 +218,7 @@ class ConfigFlowDialog extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
