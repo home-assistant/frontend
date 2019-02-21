@@ -1,5 +1,6 @@
 import deepClone from "deep-clone-simple";
 
+// the conditional element is not imported since it causes a circular reference
 import "../elements/hui-conditional-element";
 import "../elements/hui-icon-element";
 import "../elements/hui-image-element";
