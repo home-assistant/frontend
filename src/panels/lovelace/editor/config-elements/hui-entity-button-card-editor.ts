@@ -120,6 +120,7 @@ export class HuiEntityButtonCardEditor extends LitElement
             .value="${this._icon_height}"
             .configValue="${"icon_height"}"
             @value-changed="${this._valueChanged}"
+            type="number"
           ></paper-input>
         </div>
         <div class="side-by-side">
