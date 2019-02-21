@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../../../types";
-import { ActionConfig, Condition } from "../../../data/lovelace";
+import { ActionConfig } from "../../../data/lovelace";
 
 export interface LovelaceElementConfig {
   type: string;

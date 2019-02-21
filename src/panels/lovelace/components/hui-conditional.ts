@@ -1,29 +1,29 @@
-import { createCardElement } from "../common/create-card-element";
-import { computeCardSize } from "../common/compute-card-size";
+import { LitElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig, Condition } from "../../../data/lovelace";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
+import { EntityRowConfig } from "../entity-rows/types";
+import { createCardElement } from "../common/create-card-element";
+// import { createRowElement } from "../common/create-row-element";
+import { computeCardSize } from "../common/compute-card-size";
 
 export interface ConditionalConfig {
   conditions: Condition[];
   card: LovelaceCardConfig;
   elements: LovelaceElementConfig[];
+  rows: EntityRowConfig[];
   // todo: add row (can't find any createhuirow or LovelaceRowConfig...)
   // rows: Lovelace;
+  // use it with createRowElement
 }
 
-export class HuiConditional extends HTMLElement {
+export class HuiConditional extends LitElement {
   private _hass?: HomeAssistant;
   private _conditionalConfig?: ConditionalConfig;
 
   private _card?: LovelaceCard;
   private _elements: LovelaceElement[] = [];
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-  }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -49,12 +49,9 @@ export class HuiConditional extends HTMLElement {
     }
 
     this._conditionalConfig = config;
-    if (this._hass) {
-      this.hass = this._hass;
-    }
 
     // set style (overridable)
-    // LitElement can't work since styles are static and we want to allow deriving classes to modify it
+    // LitElement static styles can't work since we want to allow deriving classes to modify it
     const styleElement: HTMLStyleElement = document.createElement("style");
     styleElement.innerHTML = this.getCustomStyle();
     this.shadowRoot!.appendChild(styleElement);
@@ -62,6 +59,10 @@ export class HuiConditional extends HTMLElement {
     this.removeItems();
 
     this.createItems();
+
+    if (this._hass) {
+      this.hass = this._hass;
+    }
   }
 
   public getCardSize() {
@@ -91,7 +92,7 @@ export class HuiConditional extends HTMLElement {
         }
       );
     }
-    //todo: add rows, etc'....
+    // todo: add rows, etc'....
   }
 
   private handleItems(): boolean {
@@ -119,13 +120,13 @@ export class HuiConditional extends HTMLElement {
   private appendItems() {
     if (this._card) {
       this._card.hass = this._hass;
-      if (!this._card!.parentElement) {
+      if (!this._card!.parentNode) {
         this.shadowRoot!.appendChild(this._card);
       }
     } else if (this._elements.length > 0) {
       this._elements.map((el: LovelaceElement) => {
-        if (!el.parentElement) {
-          el.hass = this._hass;
+        el.hass = this._hass;
+        if (!el.parentNode) {
           this.shadowRoot!.appendChild(el);
         }
       });
@@ -133,11 +134,11 @@ export class HuiConditional extends HTMLElement {
   }
 
   private removeItems() {
-    if (this._card && this._card.parentElement) {
+    if (this._card && this._card.parentNode) {
       this.shadowRoot!.removeChild(this._card);
     } else if (this._elements.length > 0) {
       this._elements.map((el: LovelaceElement) => {
-        if (el.parentElement) {
+        if (el.parentNode) {
           this.shadowRoot!.removeChild(el);
         }
       });
