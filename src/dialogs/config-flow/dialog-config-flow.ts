@@ -6,6 +6,7 @@ import {
   css,
   customElement,
   property,
+  PropertyValues,
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
