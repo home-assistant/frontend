@@ -11,7 +11,7 @@ class HuiConditionalCard extends HuiConditional implements LovelaceCard {
   public isPanel?: boolean;
 
   public setConfig(config) {
-    //todo: artifically using the above config but it's still important to distinguish between card config and the internal hui-conditional implementation config
+    // todo: artifically using the above config but it's still important to distinguish between card config and the internal hui-conditional implementation config
     super.setConditionalConfig(config as Config);
   }
 
