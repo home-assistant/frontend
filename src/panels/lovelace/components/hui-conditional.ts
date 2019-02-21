@@ -91,7 +91,7 @@ export class HuiConditional extends HTMLElement {
         }
       );
     }
-    //todo: add rows, etc'....
+    // todo: add rows, etc'....
   }
 
   private handleItems(): boolean {
