@@ -916,7 +916,7 @@
                 "activate": "הפעל"
             },
             "script": {
-                "execute": "ביצוע"
+                "execute": "הפעל"
             },
             "weather": {
                 "attributes": {
