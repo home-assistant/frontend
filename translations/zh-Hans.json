@@ -268,7 +268,8 @@
         },
         "timer": {
             "active": "激活",
-            "idle": "空闲"
+            "idle": "空闲",
+            "paused": "已暂停"
         }
     },
     "state_badge": {
@@ -551,7 +552,15 @@
                         "change_password": "更改密码",
                         "activate_user": "激活用户",
                         "deactivate_user": "停用用户",
-                        "delete_user": "删除用户"
+                        "delete_user": "删除用户",
+                        "caption": "用户信息"
+                    },
+                    "add_user": {
+                        "caption": "添加用户",
+                        "name": "名字",
+                        "username": "用户名",
+                        "password": "密码",
+                        "create": "创建"
                     }
                 },
                 "cloud": {
@@ -581,9 +590,11 @@
                     }
                 },
                 "zha": {
+                    "caption": "ZHA",
                     "description": "Zigbee 智能家居(ZHA) 网络管理"
                 },
                 "area_registry": {
+                    "caption": "区域注册",
                     "description": "您家中所有区域的概览。",
                     "picker": {
                         "header": "注册区域"
@@ -602,7 +613,9 @@
                     "description": "所有已知实体的概览。",
                     "picker": {
                         "header": "实体注册",
-                        "unavailable": "(不可用)"
+                        "unavailable": "(不可用)",
+                        "introduction": "Home Assistant 将会以唯一标识的形式记录发现的每个实体。这些实体都将分配一个实体ID，该ID将仅保留给该实体。",
+                        "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。"
                     },
                     "editor": {
                         "unavailable": "该实体暂不可用。",
@@ -860,7 +873,8 @@
                     "refresh": "刷新"
                 },
                 "warning": {
-                    "entity_not_found": "实体不可用"
+                    "entity_not_found": "实体 {entity} 不可用",
+                    "entity_non_numeric": "实体 {entity} 非数值"
                 }
             }
         },
@@ -1052,7 +1066,7 @@
             "confirm": "保存"
         },
         "notification_drawer": {
-            "click_to_configure": "单击按钮可以配置{entity}",
+            "click_to_configure": "单击按钮可以配置 {entity}",
             "empty": "没有任何通知",
             "title": "通知"
         }
@@ -1094,6 +1108,7 @@
         "weblink": "网址",
         "zwave": "Z-Wave",
         "vacuum": "扫地机",
+        "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
@@ -1104,6 +1119,15 @@
             "humidity": "湿度",
             "visibility": "能见度",
             "wind_speed": "风速"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "关",
+                "on": "开",
+                "auto": "自动"
+            }
         }
     }
 }
