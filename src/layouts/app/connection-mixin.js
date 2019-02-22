@@ -65,44 +65,6 @@ export default (superClass) =>
             }
             try {
               await callService(conn, domain, service, serviceData);
-
-              const entityIds = Array.isArray(serviceData.entity_id)
-                ? serviceData.entity_id
-                : [serviceData.entity_id];
-
-              const names = [];
-              for (const entityId of entityIds) {
-                const stateObj = this.hass.states[entityId];
-                if (stateObj) {
-                  names.push(computeStateName(stateObj));
-                }
-              }
-              if (names.length === 0) {
-                names.push(entityIds[0]);
-              }
-
-              let message;
-              const name = names.join(", ");
-              if (service === "turn_on" && serviceData.entity_id) {
-                message = this.hass.localize(
-                  "ui.notification_toast.entity_turned_on",
-                  "entity",
-                  name
-                );
-              } else if (service === "turn_off" && serviceData.entity_id) {
-                message = this.hass.localize(
-                  "ui.notification_toast.entity_turned_off",
-                  "entity",
-                  name
-                );
-              } else {
-                message = this.hass.localize(
-                  "ui.notification_toast.service_called",
-                  "service",
-                  `${domain}/${service}`
-                );
-              }
-              this.fire("hass-notification", { message });
             } catch (err) {
               if (__DEV__) {
                 // eslint-disable-next-line
