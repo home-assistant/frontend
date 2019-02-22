@@ -69,7 +69,7 @@ export class HuiConditional extends LitElement {
   }
 
   protected _createHuiElement(
-    elementConfig: LovelaceElementConfig
+    _elementConfig: LovelaceElementConfig
   ): LovelaceElement {
     return (null as unknown) as LovelaceElement;
   }
