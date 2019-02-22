@@ -21,6 +21,8 @@ import { setValue } from "../../../data/input_text";
 class HuiInputNumberEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityConfig;
+  private _loaded?: boolean;
+  private _updated?: boolean;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -29,14 +31,18 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     this._config = config;
   }
 
-  protected firstUpdated(): void {
-    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
-
-    if (!element) {
-      return;
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._updated && !this._loaded) {
+      this._initialLoad();
     }
+  }
 
-    element.hidden = this.clientWidth <= 350;
+  protected firstUpdated(): void {
+    this._updated = true;
+    if (this.isConnected && !this._loaded) {
+      this._initialLoad();
+    }
   }
 
   protected render(): TemplateResult | void {
@@ -114,6 +120,18 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
         text-align: right;
       }
     `;
+  }
+
+  private async _initialLoad(): Promise<void> {
+    this._loaded = true;
+    await this.updateComplete;
+    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
+
+    if (!element || !this.parentElement) {
+      return;
+    }
+
+    element.hidden = this.parentElement.clientWidth <= 350;
   }
 
   private get _inputElement(): { value: string } {
