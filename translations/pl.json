@@ -265,6 +265,11 @@
             "on": "włączony",
             "paused": "wstrzymany",
             "returning": "powrót do stacji dokującej"
+        },
+        "timer": {
+            "active": "aktywny",
+            "idle": "bezczynny",
+            "paused": "wstrzymany"
         }
     },
     "state_badge": {
@@ -548,7 +553,15 @@
                         "change_password": "Zmień hasło",
                         "activate_user": "Aktywuj użytkownika",
                         "deactivate_user": "Dezaktywuj użytkownika",
-                        "delete_user": "Usuń użytkownika"
+                        "delete_user": "Usuń użytkownika",
+                        "caption": "Wyświetl użytkownika"
+                    },
+                    "add_user": {
+                        "caption": "Dodaj użytkownika",
+                        "name": "Nazwa",
+                        "username": "Nazwa użytkownika",
+                        "password": "Hasło",
+                        "create": "Utwórz"
                     }
                 },
                 "cloud": {
@@ -588,7 +601,9 @@
                     "caption": "Rejestr lokalizacji",
                     "description": "Przegląd wszystkich lokalizacji w twoim domu.",
                     "picker": {
-                        "header": "Rejestr lokalizacji"
+                        "header": "Rejestr lokalizacji",
+                        "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
+                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij na skonfigurowaną integrację, aby dostać się do kart urządzeń."
                     },
                     "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych lokalizacji!",
                     "create_area": "STWÓRZ LOKALIZACJĘ",
@@ -604,7 +619,9 @@
                     "description": "Przegląd wszystkich znanych encji",
                     "picker": {
                         "header": "Rejestr encji",
-                        "unavailable": "(niedostępna)"
+                        "unavailable": "(niedostępna)",
+                        "introduction": "Home Assistant prowadzi rejestr każdego podmiotu, jaki kiedykolwiek widział, i który można jednoznacznie zidentyfikować. Każda z tych jednostek będzie miała przypisany identyfikator podmiotu, który będzie zarezerwowany tylko dla tego podmiotu.",
+                        "introduction2": "Użyj rejestru jednostek, aby nadpisać nazwę, zmienić identyfikator jednostki lub usunąć wpis z Home Assistant. Uwaga: usunięcie wpisu rejestru jednostki nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń go ze strony integracji."
                     },
                     "editor": {
                         "unavailable": "Ta encja nie jest obecnie dostępna.",
@@ -860,6 +877,10 @@
                     "unused_entities": "Nieużywane encje",
                     "help": "Pomoc",
                     "refresh": "Odśwież"
+                },
+                "warning": {
+                    "entity_not_found": "Ta encja nie jest dostępna: {entity}",
+                    "entity_non_numeric": "Ta encja nie jest numeryczna: {entity}"
                 }
             }
         },
@@ -1104,6 +1125,15 @@
             "humidity": "Wilgotność",
             "visibility": "Widoczność",
             "wind_speed": "Prędkość wiatru"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Wył.",
+                "on": "Wł.",
+                "auto": "Auto"
+            }
         }
     }
 }
