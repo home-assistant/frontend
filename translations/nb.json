@@ -265,6 +265,11 @@
             "on": "På",
             "paused": "Pauset",
             "returning": "Returner til dokken"
+        },
+        "timer": {
+            "active": "aktiv",
+            "idle": "inaktiv",
+            "paused": "pauset"
         }
     },
     "state_badge": {
@@ -547,7 +552,15 @@
                         "change_password": "Endre passord",
                         "activate_user": "Aktiver bruker",
                         "deactivate_user": "Deaktiver bruker",
-                        "delete_user": "Slett bruker"
+                        "delete_user": "Slett bruker",
+                        "caption": "Vis bruker"
+                    },
+                    "add_user": {
+                        "caption": "Legg til bruker",
+                        "name": "Navn",
+                        "username": "Brukernavn",
+                        "password": "Passord",
+                        "create": "Skape"
                     }
                 },
                 "cloud": {
@@ -852,6 +865,10 @@
                     "unused_entities": "Ubrukte enheter",
                     "help": "Hjelp",
                     "refresh": "Oppdater"
+                },
+                "warning": {
+                    "entity_not_found": "Enhet ikke tilgjengelig: {entity}",
+                    "entity_non_numeric": "Entitet er ikke-numerisk: {entity}"
                 }
             }
         },
@@ -1095,6 +1112,15 @@
             "humidity": "Luftfuktighet",
             "visibility": "Sikt",
             "wind_speed": "Vindhastighet"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Av",
+                "on": "På",
+                "auto": "Auto"
+            }
         }
     }
 }
