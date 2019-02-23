@@ -1,4 +1,12 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  customElement,
+  css,
+  CSSResult,
+} from "lit-element";
 
 import "../components/hui-image";
 
@@ -7,8 +15,12 @@ import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { ActionConfig } from "../../../data/lovelace";
 
-interface Config extends LovelaceElementConfig {
+export interface Config extends LovelaceElementConfig {
+  entity?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
   image?: string;
   state_image?: string;
   camera_image?: string;
@@ -17,13 +29,10 @@ interface Config extends LovelaceElementConfig {
   aspect_ratio?: string;
 }
 
+@customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
-  public hass?: HomeAssistant;
-  private _config?: Config;
-
-  static get properties() {
-    return { hass: {}, _config: {} };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
 
   public setConfig(config: Config): void {
     if (!config) {
@@ -38,12 +47,11 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
   }
 
   protected render(): TemplateResult | void {
-    if (!this._config) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-image
         .hass="${this.hass}"
         .entity="${this._config.entity}"
@@ -52,7 +60,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         .cameraImage="${this._config.camera_image}"
         .filter="${this._config.filter}"
         .stateFilter="${this._config.state_filter}"
-        .title="${computeTooltip(this.hass!, this._config)}"
+        .title="${computeTooltip(this.hass, this._config)}"
         .aspectRatio="${this._config.aspect_ratio}"
         @ha-click="${this._handleTap}"
         @ha-hold="${this._handleHold}"
@@ -61,26 +69,24 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host(.clickable) {
-          cursor: pointer;
-          overflow: hidden;
-          -webkit-touch-callout: none !important;
-        }
-        hui-image {
-          -webkit-user-select: none !important;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host(.clickable) {
+        cursor: pointer;
+        overflow: hidden;
+        -webkit-touch-callout: none !important;
+      }
+      hui-image {
+        -webkit-user-select: none !important;
+      }
     `;
   }
 
-  private _handleTap() {
+  private _handleTap(): void {
     handleClick(this, this.hass!, this._config!, false);
   }
 
-  private _handleHold() {
+  private _handleHold(): void {
     handleClick(this, this.hass!, this._config!, true);
   }
 }
@@ -90,5 +96,3 @@ declare global {
     "hui-image-element": HuiImageElement;
   }
 }
-
-customElements.define("hui-image-element", HuiImageElement);
