@@ -64,7 +64,14 @@ class DialogSystemLogDetail extends LitElement {
   }
 
   static get styles(): CSSResult[] {
-    return [haStyleDialog, css``];
+    return [
+      haStyleDialog,
+      css`
+        paper-dialog {
+          direction: ltr;
+        }
+      `,
+    ];
   }
 }
 
