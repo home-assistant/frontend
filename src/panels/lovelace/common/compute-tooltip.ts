@@ -3,10 +3,14 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig } from "../elements/types";
 import { ActionConfig } from "../../../data/lovelace";
 
-export const computeTooltip = (
-  hass: HomeAssistant,
-  config: LovelaceElementConfig
-): string => {
+interface Config extends LovelaceElementConfig {
+  entity?: string;
+  title?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+}
+
+export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
   if (config.title) {
     return config.title;
   }
