@@ -897,6 +897,12 @@
           "menu": {
             "raw_editor": "Raw config editor"
           },
+          "raw_editor": {
+            "header": "Edit Config",
+            "save": "Save",
+            "unsaved_changes": "Unsaved changes",
+            "saved": "Saved"
+          },
           "edit_view": {
             "header": "View Configuration",
             "add": "Add view",
