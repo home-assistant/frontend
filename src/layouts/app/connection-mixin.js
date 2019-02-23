@@ -15,7 +15,6 @@ import { getState } from "../../util/ha-pref-storage";
 import { getActiveTranslation } from "../../util/hass-translation";
 import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
-import computeStateName from "../../common/entity/compute_state_name";
 import { subscribePanels } from "../../data/ws-panels";
 
 export default (superClass) =>
