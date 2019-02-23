@@ -14,9 +14,6 @@ declare global {
     "iron-resize": undefined;
     "config-refresh": undefined;
     "ha-refresh-cloud-status": undefined;
-    "hass-more-info": {
-      entityId: string;
-    };
     "location-changed": undefined;
     "hass-notification": {
       message: string;
