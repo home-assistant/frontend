@@ -71,7 +71,7 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
             ? html`
                 <div class="flex">
                   <ha-slider
-                    .dir="${this._computeRTLDirection}"
+                    .dir="${this._computeRTLDirection()}"
                     .step="${Number(stateObj.attributes.step)}"
                     .min="${Number(stateObj.attributes.min)}"
                     .max="${Number(stateObj.attributes.max)}"
