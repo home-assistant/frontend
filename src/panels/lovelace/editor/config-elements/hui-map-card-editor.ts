@@ -62,10 +62,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._config!.default_zoom || NaN;
   }
 
-  get _entities(): string[] {
-    return this._config!.entities || [];
-  }
-
   protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;

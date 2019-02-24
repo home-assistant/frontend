@@ -8,6 +8,7 @@ import {
   property,
   PropertyValues,
   CSSResult,
+  customElement,
 } from "lit-element";
 
 import "../../map/ha-entity-marker";
@@ -35,6 +36,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   geo_location_sources?: string[];
 }
 
+@customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import(/* webpackChunkName: "hui-map-card-editor" */ "../editor/config-elements/hui-map-card-editor");
@@ -71,7 +73,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _mapItems: Array<Marker | Circle> = [];
   private _connected = false;
 
-  public setConfig(config): void {
+  public setConfig(config: MapCardConfig): void {
     if (!config) {
       throw new Error("Error in card configuration.");
     }
@@ -398,4 +400,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 }
 
-customElements.define("hui-map-card", HuiMapCard);
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-map-card": HuiMapCard;
+  }
+}
