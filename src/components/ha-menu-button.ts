@@ -1,7 +1,15 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-import { property, TemplateResult, LitElement, html } from "lit-element";
+import {
+  property,
+  TemplateResult,
+  LitElement,
+  html,
+  customElement,
+} from "lit-element";
+
 import { fireEvent } from "../common/dom/fire_event";
 
+@customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
   @property({ type: Boolean })
   public showMenu = false;
@@ -29,4 +37,8 @@ class HaMenuButton extends LitElement {
   }
 }
 
-customElements.define("ha-menu-button", HaMenuButton);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-menu-button": HaMenuButton;
+  }
+}
