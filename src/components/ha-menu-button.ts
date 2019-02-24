@@ -20,7 +20,7 @@ class HaMenuButton extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <paper-icon-button
-        .icon=${`${this.hassio ? "hassio" : "hass"}:menu`}
+        .icon=${this.hassio ? "hassio:menu" : "hass:menu"}
         @click=${this._toggleMenu}
       ></paper-icon-button>
     `;
