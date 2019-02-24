@@ -17,8 +17,10 @@ import "../ha-config-section";
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
-
-let registeredDialog = false;
+import {
+  loadConfigFlowDialog,
+  showConfigFlowDialog,
+} from "../../../dialogs/config-flow/show-dialog-config-flow";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -165,20 +167,11 @@ class HaConfigManagerDashboard extends LocalizeMixin(
 
   connectedCallback() {
     super.connectedCallback();
-
-    if (!registeredDialog) {
-      registeredDialog = true;
-      this.fire("register-dialog", {
-        dialogShowEvent: "show-config-flow",
-        dialogTag: "ha-config-flow",
-        dialogImport: () =>
-          import(/* webpackChunkName: "ha-config-flow" */ "./ha-config-flow"),
-      });
-    }
+    loadConfigFlowDialog();
   }
 
   _createFlow(ev) {
-    this.fire("show-config-flow", {
+    showConfigFlowDialog(this, {
       hass: this.hass,
       newFlowForHandler: ev.model.item,
       dialogClosedCallback: () => this.fire("hass-reload-entries"),
@@ -186,7 +179,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
   }
 
   _continueFlow(ev) {
-    this.fire("show-config-flow", {
+    showConfigFlowDialog(this, {
       hass: this.hass,
       continueFlowId: ev.model.item.flow_id,
       dialogClosedCallback: () => this.fire("hass-reload-entries"),
