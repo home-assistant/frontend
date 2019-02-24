@@ -232,7 +232,7 @@ class ConfigFlowDialog extends LitElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  private async _submitStep() {
+  private async _submitStep(): Promise<void> {
     this._loading = true;
     this._errorMsg = undefined;
 
@@ -269,7 +269,7 @@ class ConfigFlowDialog extends LitElement {
     }
   }
 
-  private _processStep(step: ConfigFlowStep) {
+  private _processStep(step: ConfigFlowStep): void {
     this._step = step;
 
     // We got a new form if there are no errors.
@@ -290,7 +290,7 @@ class ConfigFlowDialog extends LitElement {
     }
   }
 
-  private _flowDone() {
+  private _flowDone(): void {
     if (!this._params) {
       return;
     }
@@ -313,18 +313,18 @@ class ConfigFlowDialog extends LitElement {
     this._params = undefined;
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
+  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     // Closed dialog by clicking on the overlay
     if (this._step && !ev.detail.value) {
       this._flowDone();
     }
   }
 
-  private _stepDataChanged(ev: PolymerChangedEvent<any>) {
+  private _stepDataChanged(ev: PolymerChangedEvent<any>): void {
     this._stepData = applyPolymerEvent(ev, this._stepData);
   }
 
-  private _labelCallback = (schema: FieldSchema) => {
+  private _labelCallback = (schema: FieldSchema): string => {
     const step = this._step as ConfigFlowStepForm;
 
     return this._params!.hass.localize(
