@@ -10,9 +10,12 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-dialog/paper-dialog";
+// Not duplicate, is for typing
+// tslint:disable-next-line
+import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 
 import "../../components/ha-form";
 import "../../components/ha-markdown";
@@ -27,9 +30,6 @@ import {
   FieldSchema,
   ConfigFlowStepForm,
 } from "../../data/config_entries";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { PolymerChangedEvent, applyPolymerEvent } from "../../polymer-types";
 import { HaConfigFlowParams } from "./show-dialog-config-flow";
 
