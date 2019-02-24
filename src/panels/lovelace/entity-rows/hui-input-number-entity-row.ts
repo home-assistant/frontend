@@ -114,10 +114,10 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
       }
       .state {
         min-width: 45px;
-        text-align: center;
+        text-align: end;
       }
       paper-input {
-        text-align: right;
+        text-align: end;
       }
     `;
   }
