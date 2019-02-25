@@ -11,7 +11,7 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-alarm-panel-card";
+import { MapCardConfig } from "../../cards/hui-map-card";
 import { configElementStyle } from "./config-elements-style";
 import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
@@ -37,10 +37,10 @@ const cardConfigStruct = struct({
 
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   public hass?: HomeAssistant;
-  private _config?: Config;
+  private _config?: MapCardConfig;
   private _configEntities?: EntityConfig[];
 
-  public setConfig(config: Config): void {
+  public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
@@ -60,10 +60,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   get _default_zoom(): number {
     return this._config!.default_zoom || NaN;
-  }
-
-  get _entities(): string[] {
-    return this._config!.entities || [];
   }
 
   protected render(): TemplateResult | void {
