@@ -143,6 +143,7 @@ export class HaStateLabelBadge extends LitElement {
       case "binary_sensor":
       case "device_tracker":
       case "updater":
+      case "person":
         return stateIcon(state);
       case "sun":
         return state.state === "above_horizon"
