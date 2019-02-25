@@ -15,6 +15,11 @@ import computeDomain from "../../../common/entity/compute_domain";
 import { EntityRowConfig, WeblinkConfig } from "../entity-rows/types";
 import { EntitiesCardConfig } from "../cards/hui-entities-card";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  groupByAreaAndDevice,
+  AreaDeviceEntitiesMap,
+  NULL,
+} from "../../../common/entity/group_by_area_and_device";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -40,6 +45,8 @@ const computeCards = (
 
   // For entity card
   const entities: Array<string | EntityRowConfig> = [];
+  // For glance card
+  const badgeEntities: Array<string | EntityRowConfig> = [];
 
   for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);
@@ -92,6 +99,8 @@ const computeCards = (
         conf.icon = stateObj.attributes.icon;
       }
       entities.push(conf);
+    } else if (DOMAINS_BADGES.includes(domain)) {
+      badgeEntities.push(entityId);
     } else {
       entities.push(entityId);
     }
@@ -105,7 +114,57 @@ const computeCards = (
     });
   }
 
+  if (badgeEntities.length > 0) {
+    cards.unshift({
+      type: "glance",
+      entities: badgeEntities,
+      ...entityCardOptions,
+    });
+  }
+
   return cards;
+};
+
+const computeDeviceCard = (states: HassEntity[]): LovelaceCardConfig[] => {
+  if (states.length === 0) {
+    return [];
+  }
+  const deviceName = states[0].device_name || undefined;
+  const domains: { [domain: string]: string[] } = {};
+  for (const state of states) {
+    const domain = computeDomain(state.entity_id);
+    if (domains[domain]) {
+      domains[domain].push(state.entity_id);
+    } else {
+      domains[domain] = [state.entity_id];
+    }
+  }
+
+  if (domains.camera) {
+    const cards: LovelaceCardConfig[] = [];
+    cards.push({
+      type: "picture-glance",
+      title: deviceName,
+      camera_image: domains.camera[0], // use firest camera as background image
+      entities: states
+        .filter((state) => !domains.camera.includes(state.entity_id))
+        .map((state) => state.entity_id),
+    });
+    for (let i = 1; i < domains.camera.length; i++) {
+      cards.push({
+        type: "picture-entity",
+        entity: domains.camera[i],
+      });
+    }
+    return cards;
+  } else {
+    return computeCards(
+      states.map((state): [string, HassEntity] => [state.entity_id, state]),
+      {
+        title: deviceName,
+      }
+    );
+  }
 };
 
 const computeDefaultViewStates = (hass: HomeAssistant): HassEntities => {
@@ -206,6 +265,103 @@ const generateViewConfig = (
   return view;
 };
 
+const generateDeviceViewConfig = (
+  localize: LocalizeFunc,
+  path: string,
+  title: string | undefined,
+  icon: string | undefined,
+  entities: AreaDeviceEntitiesMap,
+  groupOrders: { [entityId: string]: number }
+): LovelaceViewConfig => {
+  // const splitted = splitByGroups(entities);
+  // splitted.groups.sort(
+  //   (gr1, gr2) => groupOrders[gr1.entity_id] - groupOrders[gr2.entity_id]
+  // );
+
+  const badgeEntities: { [domain: string]: HassEntity[] } = {};
+  const ungroupedEntitites: { [domain: string]: HassEntity[] } = {};
+
+  // Organize entities without device_id in badges/ungrouped things
+  Object.keys(entities).forEach((areaId) => {
+    if (entities[areaId][NULL]) {
+      entities[areaId][NULL].forEach((entity) => {
+        const domain = computeStateDomain(entity);
+
+        const coll = DOMAINS_BADGES.includes(domain)
+          ? badgeEntities
+          : ungroupedEntitites;
+
+        if (!(domain in coll)) {
+          coll[domain] = [];
+        }
+
+        coll[domain].push(entity);
+      });
+    }
+  });
+
+  let badges: string[] = [];
+  DOMAINS_BADGES.forEach((domain) => {
+    if (domain in badgeEntities) {
+      badges = badges.concat(badgeEntities[domain].map((e) => e.entity_id));
+    }
+  });
+
+  let cards: LovelaceCardConfig[] = [];
+
+  // Iterate though area, but only orgnized by device for now
+  Object.keys(entities).forEach((areaId) => {
+    Object.keys(entities[areaId]).forEach((deviceId) => {
+      if (deviceId === NULL) {
+        return;
+      }
+      cards = cards.concat(computeDeviceCard(entities[areaId][deviceId]));
+    });
+  });
+
+  // splitted.groups.forEach((groupEntity) => {
+  //   cards = cards.concat(
+  //     computeCards(
+  //       groupEntity.attributes.entity_id.map(
+  //         (entityId): [string, HassEntity] => [entityId, entities[entityId]]
+  //       ),
+  //       {
+  //         title: computeStateName(groupEntity),
+  //         show_header_toggle: groupEntity.attributes.control !== "hidden",
+  //       }
+  //     )
+  //   );
+  // });
+
+  Object.keys(ungroupedEntitites)
+    .sort()
+    .forEach((domain) => {
+      cards = cards.concat(
+        computeCards(
+          ungroupedEntitites[domain].map(
+            (entity): [string, HassEntity] => [entity.entity_id, entity]
+          ),
+          {
+            title: localize(`domain.${domain}`),
+          }
+        )
+      );
+    });
+
+  const view: LovelaceViewConfig = {
+    path,
+    title,
+    badges,
+    cards,
+  };
+
+  if (icon) {
+    view.icon = icon;
+  }
+
+  return view;
+};
+
 export const generateLovelaceConfig = (
   hass: HomeAssistant,
   localize: LocalizeFunc
@@ -250,16 +406,28 @@ export const generateLovelaceConfig = (
       }
     });
 
-    views.unshift(
-      generateViewConfig(
-        localize,
-        "default_view",
-        "Home",
-        undefined,
-        states,
-        groupOrders
-      )
+    // views.unshift(
+    //   generateViewConfig(
+    //     localize,
+    //     "default_view",
+    //     "Home",
+    //     undefined,
+    //     states,
+    //     groupOrders
+    //   )
+    // );
+
+    const areaDeviceEntities = groupByAreaAndDevice(states);
+    console.log(areaDeviceEntities);
+    const view = generateDeviceViewConfig(
+      localize,
+      "default_view",
+      "Home",
+      undefined,
+      areaDeviceEntities,
+      groupOrders
     );
+    views.unshift(view);
 
     // Add map of geo locations to default view if loaded
     if (hass.config.components.includes("geo_location")) {
