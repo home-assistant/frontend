@@ -158,7 +158,7 @@ export class HaStateLabelBadge extends LitElement {
   private _computeLabel(domain, state, _timerTimeRemaining) {
     if (
       state.state === "unavailable" ||
-      ["device_tracker", "alarm_control_panel"].includes(domain)
+      ["device_tracker", "alarm_control_panel","person"].includes(domain)
     ) {
       // Localize the state with a special state_badge namespace, which has variations of
       // the state translations that are truncated to fit within the badge label. Translations
