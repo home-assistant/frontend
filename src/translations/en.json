@@ -27,6 +27,7 @@
     "mailbox": "Mailbox",
     "media_player": "Media player",
     "notify": "Notify",
+    "person": "Person",
     "plant": "Plant",
     "proximity": "Proximity",
     "remote": "Remote",
@@ -244,6 +245,10 @@
       "idle": "Idle",
       "standby": "Standby"
     },
+    "person": {
+      "home": "Home",
+      "not_home": "Away"
+    },
     "plant": {
       "ok": "[%key:state::binary_sensor::problem::off%]",
       "problem": "[%key:state::binary_sensor::problem::on%]"
@@ -342,6 +347,10 @@
       "triggered": "Trig"
     },
     "device_tracker": {
+      "home": "[%key:state::device_tracker::home%]",
+      "not_home": "[%key:state::device_tracker::not_home%]"
+    },
+    "person": {
       "home": "[%key:state::device_tracker::home%]",
       "not_home": "[%key:state::device_tracker::not_home%]"
     }
