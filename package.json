@@ -107,6 +107,7 @@
     "@gfx/zopfli": "^1.0.9",
     "@types/chai": "^4.1.7",
     "@types/codemirror": "^0.0.71",
+    "@types/leaflet": "^1.4.3",
     "@types/memoize-one": "^4.1.0",
     "@types/mocha": "^5.2.5",
     "babel-eslint": "^10",
