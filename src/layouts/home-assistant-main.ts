@@ -15,8 +15,6 @@ import { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
 import "@polymer/app-route/app-route";
 import "@polymer/iron-media-query/iron-media-query";
 
-import "../util/ha-url-sync";
-
 import "./partial-panel-resolver";
 import { HomeAssistant, Route } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
@@ -47,7 +45,6 @@ class HomeAssistantMain extends LitElement {
     const disableSwipe = NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
 
     return html`
-      <ha-url-sync .hass=${hass}></ha-url-sync>
       <iron-media-query
         query="(max-width: 870px)"
         @query-matches-changed=${this._narrowChanged}

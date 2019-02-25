@@ -17,6 +17,8 @@ import { dialogManagerMixin } from "./dialog-manager-mixin";
 import ConnectionMixin from "./connection-mixin";
 import NotificationMixin from "./notification-mixin";
 import DisconnectToastMixin from "./disconnect-toast-mixin";
+import { urlSyncMixin } from "./url-sync-mixin";
+
 import { Route, HomeAssistant } from "../../types";
 import { navigate } from "../../common/navigate";
 
@@ -36,6 +38,7 @@ export class HomeAssistantAppEl extends ext(HassBaseMixin(LitElement), [
   ConnectionMixin,
   NotificationMixin,
   dialogManagerMixin,
+  urlSyncMixin,
 ]) {
   @property() private _route?: Route;
   @property() private _error?: boolean;
