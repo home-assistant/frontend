@@ -351,8 +351,8 @@
       "not_home": "[%key:state::device_tracker::not_home%]"
     },
     "person": {
-      "home": "[%key:state::device_tracker::home%]",
-      "not_home": "[%key:state::device_tracker::not_home%]"
+      "home": "[%key:state::person::home%]",
+      "not_home": "[%key:state::person::not_home%]"
     }
   },
   "ui": {
