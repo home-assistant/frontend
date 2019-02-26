@@ -201,6 +201,10 @@
             "idle": "Ожидание",
             "standby": "Ожидание"
         },
+        "person": {
+            "home": "Дома",
+            "not_home": "Отсутствует"
+        },
         "plant": {
             "ok": "ОК",
             "problem": "Проблема"
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Охрана"
         },
         "device_tracker": {
+            "home": "Дома",
+            "not_home": "Не дома"
+        },
+        "person": {
             "home": "Дома",
             "not_home": "Не дома"
         }
