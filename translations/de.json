@@ -201,6 +201,10 @@
             "idle": "Untätig",
             "standby": "Standby"
         },
+        "person": {
+            "home": "Zu Hause",
+            "not_home": "Abwesend"
+        },
         "plant": {
             "ok": "OK",
             "problem": "Problem"
@@ -285,6 +289,10 @@
             "armed_custom_bypass": "Aktiv"
         },
         "device_tracker": {
+            "home": "Z. Hause",
+            "not_home": "Abwes."
+        },
+        "person": {
             "home": "Z. Hause",
             "not_home": "Abwes."
         }
