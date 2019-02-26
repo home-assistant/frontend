@@ -274,6 +274,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           cursor: pointer;
           color: var(--brightness-font-color);
           text-shadow: var(--brightness-font-text-shadow);
+          pointer-events: none;
         }
         .show_brightness {
           opacity: 1;
