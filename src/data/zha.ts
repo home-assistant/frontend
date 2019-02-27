@@ -14,6 +14,8 @@ export interface ZHADevice {
   quirk_class: string;
   entities: ZHAEntityReference[];
   manufacturer_code: number;
+  device_reg_id: string;
+  user_given_name: string;
 }
 
 export interface Attribute {

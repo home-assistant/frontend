@@ -10,6 +10,7 @@ import {
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -18,9 +19,13 @@ import "../../../components/ha-service-description";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
-import { ItemSelectedEvent, NodeServiceData } from "./types";
+import { ItemSelectedEvent, NodeServiceData, ChangeEvent } from "./types";
 import "./zha-clusters";
 import "./zha-device-card";
+import {
+  updateDeviceRegistryEntry,
+  DeviceRegistryEntryMutableParams,
+} from "../../../data/device_registry";
 import { reconfigureNode, fetchDevices, ZHADevice } from "../../../data/zha";
 
 declare global {
@@ -40,6 +45,7 @@ export class ZHANode extends LitElement {
   private _selectedNode?: ZHADevice;
   private _serviceData?: {};
   private _nodes: ZHADevice[];
+  private _userSelectedName?: string;
 
   constructor() {
     super();
@@ -58,6 +64,7 @@ export class ZHANode extends LitElement {
       _entities: {},
       _serviceData: {},
       _nodes: {},
+      _userSelectedName: {},
     };
   }
 
@@ -109,7 +116,11 @@ export class ZHANode extends LitElement {
               >
                 ${this._nodes.map(
                   (entry) => html`
-                    <paper-item>${entry.name}</paper-item>
+                    <paper-item
+                      >${entry.user_given_name
+                        ? entry.user_given_name
+                        : entry.name}</paper-item
+                    >
                   `
                 )}
               </paper-listbox>
@@ -130,6 +141,18 @@ export class ZHANode extends LitElement {
                   .device="${this._selectedNode}"
                   .narrow="${!this.isWide}"
                 ></zha-device-card>
+              `
+            : ""}
+          ${this._selectedNodeIndex !== -1
+            ? html`
+                <div class="input-text">
+                  <paper-input
+                    type="string"
+                    .value="${this._userSelectedName}"
+                    @value-changed="${this._onUserSelectedNameChanged}"
+                    placeholder="User given name"
+                  ></paper-input>
+                </div>
               `
             : ""}
           ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
@@ -170,6 +193,21 @@ export class ZHANode extends LitElement {
               />
             `
           : ""}
+        <mwc-button
+          @click="${this._onUpdateDeviceNameClick}"
+          .disabled="${!this._userSelectedName ||
+            this._userSelectedName === ""}"
+          >Update Name</mwc-button
+        >
+        ${this._showHelp
+          ? html`
+              <div class="helpText">
+                ${this.hass!.localize(
+                  "ui.panel.config.zha.services.updateDeviceName"
+                )}
+              </div>
+            `
+          : ""}
       </div>
     `;
   }
@@ -191,6 +229,7 @@ export class ZHANode extends LitElement {
   private _selectedNodeChanged(event: ItemSelectedEvent): void {
     this._selectedNodeIndex = event!.target!.selected;
     this._selectedNode = this._nodes[this._selectedNodeIndex];
+    this._userSelectedName = "";
     fireEvent(this, "zha-node-selected", { node: this._selectedNode });
     this._serviceData = this._computeNodeServiceData();
   }
@@ -198,6 +237,27 @@ export class ZHANode extends LitElement {
   private async _onReconfigureNodeClick(): Promise<void> {
     if (this.hass) {
       await reconfigureNode(this.hass, this._selectedNode!.ieee);
+    }
+  }
+
+  private _onUserSelectedNameChanged(value: ChangeEvent): void {
+    this._userSelectedName = value.detail!.value;
+  }
+
+  private async _onUpdateDeviceNameClick(): Promise<void> {
+    if (this.hass) {
+      const values: DeviceRegistryEntryMutableParams = {
+        name_by_user: this._userSelectedName,
+      };
+
+      await updateDeviceRegistryEntry(
+        this.hass,
+        this._selectedNode!.device_reg_id,
+        values
+      );
+
+      this._selectedNode!.user_given_name = this._userSelectedName!;
+      this._userSelectedName = "";
     }
   }
 
@@ -277,6 +337,7 @@ export class ZHANode extends LitElement {
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
+          word-wrap: break-word;
         }
 
         ha-service-description {
@@ -293,6 +354,12 @@ export class ZHANode extends LitElement {
           top: 6px;
           right: 0;
           color: var(--primary-color);
+        }
+
+        .input-text {
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 10px;
         }
       `,
     ];
