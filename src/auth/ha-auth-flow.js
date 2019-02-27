@@ -94,7 +94,7 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
 
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
-        this._handleSubmit();
+        this._handleSubmit(ev);
       }
     });
   }
@@ -205,7 +205,8 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
       );
   }
 
-  async _handleSubmit() {
+  async _handleSubmit(ev) {
+    ev.preventDefault();
     if (this._step.type !== "form") {
       this._providerChanged(this.authProvider, null);
       return;
