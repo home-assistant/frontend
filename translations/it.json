@@ -265,6 +265,11 @@
             "on": "Acceso",
             "paused": "In pausa",
             "returning": "Ritornando alla base"
+        },
+        "timer": {
+            "active": "Attivo",
+            "idle": "Inattivo",
+            "paused": "In pausa"
         }
     },
     "state_badge": {
@@ -548,7 +553,15 @@
                         "change_password": "Cambia password",
                         "activate_user": "Attiva utente",
                         "deactivate_user": "Disattiva utente",
-                        "delete_user": "Elimina utente"
+                        "delete_user": "Elimina utente",
+                        "caption": "Visualizza utente"
+                    },
+                    "add_user": {
+                        "caption": "Aggiungi utente",
+                        "name": "Nome",
+                        "username": "Nome utente",
+                        "password": "Password",
+                        "create": "Crea"
                     }
                 },
                 "cloud": {
@@ -588,7 +601,9 @@
                     "caption": "Registro di area",
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "picker": {
-                        "header": "Registro di area"
+                        "header": "Registro di area",
+                        "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
+                        "introduction2": "Per posizionare i dispositivi in un'area, utilizzare il collegamento seguente per accedere alla pagina delle integrazioni e quindi fare clic su un'integrazione configurata per accedere alle schede del dispositivo."
                     },
                     "no_areas": "Sembra che tu non abbia ancora delle aree!",
                     "create_area": "CREA AREA",
@@ -604,7 +619,9 @@
                     "description": "Panoramica di tutte le entità conosciute.",
                     "picker": {
                         "header": "Registro delle entità",
-                        "unavailable": "(non disponibile)"
+                        "unavailable": "(non disponibile)",
+                        "introduction": "Home Assistant mantiene un registro di tutte le entità che ha mai localizzato che possono essere identificate in modo univoco. A ciascuna di queste entità sarà assegnato un ID che sarà riservato solo a questa entità.",
+                        "introduction2": "Utilizzare il registro delle entità per sovrascrivere il nome, modificare l'entity ID o rimuovere la voce da Home Assistant. Nota, la rimozione della voce del registro entità non rimuoverà l'entità. Per farlo, segui il link sottostante e rimuovilo dalla pagina delle integrazioni."
                     },
                     "editor": {
                         "unavailable": "Questa entità non è attualmente disponibile.",
@@ -860,6 +877,10 @@
                     "unused_entities": "Entità non utilizzate",
                     "help": "Aiuto",
                     "refresh": "Aggiorna"
+                },
+                "warning": {
+                    "entity_not_found": "Entità non disponibile: {entity}",
+                    "entity_non_numeric": "L'entità non è numerica: {entity}"
                 }
             }
         },
@@ -1104,6 +1125,15 @@
             "humidity": "Umidità",
             "visibility": "Visibilità",
             "wind_speed": "Velocità del vento"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Off",
+                "on": "On",
+                "auto": "Auto"
+            }
         }
     }
 }

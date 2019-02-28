@@ -19,6 +19,7 @@ import { LocalizeFunc } from "../../../common/translations/localize";
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
   "binary_sensor",
+  "person",
   "device_tracker",
   "mailbox",
   "sensor",
