@@ -265,6 +265,11 @@
             "on": "An",
             "paused": "Pausiert",
             "returning": "Rückkehr zur Dockingstation"
+        },
+        "timer": {
+            "active": "aktiv",
+            "idle": "Leerlauf",
+            "paused": "pausiert"
         }
     },
     "state_badge": {
@@ -348,7 +353,8 @@
                     "caption": "Anpassung",
                     "description": "Elemente anpassen",
                     "picker": {
-                        "header": "Anpassung"
+                        "header": "Anpassung",
+                        "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte \/ bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
                     }
                 },
                 "automation": {
@@ -547,7 +553,15 @@
                         "change_password": "Passwort ändern",
                         "activate_user": "Benutzer aktivieren",
                         "deactivate_user": "Benutzer deaktivieren",
-                        "delete_user": "Benutzer löschen"
+                        "delete_user": "Benutzer löschen",
+                        "caption": "Benutzer anzeigen"
+                    },
+                    "add_user": {
+                        "caption": "Benutzer hinzufügen",
+                        "name": "Name",
+                        "username": "Benutzername",
+                        "password": "Passwort",
+                        "create": "Benutzerkonto anlegen"
                     }
                 },
                 "cloud": {
@@ -584,8 +598,13 @@
                     }
                 },
                 "area_registry": {
-                    "caption": "Gebietsregister",
+                    "caption": "Bereichsregister",
                     "description": "Überblick über alle Bereiche in Deinem Haus.",
+                    "picker": {
+                        "header": "Bereichsregister",
+                        "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um dich bei der Organisation deiner Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
+                        "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen."
+                    },
                     "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
                     "create_area": "BEREICH ERSTELLEN",
                     "editor": {
@@ -599,7 +618,10 @@
                     "caption": "Entitätsregister",
                     "description": "Überblick aller bekannten Elemente.",
                     "picker": {
-                        "unavailable": "(nicht verfügbar)"
+                        "header": "Entitätsregister",
+                        "unavailable": "(nicht verfügbar)",
+                        "introduction": "Der Home Assistant führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
+                        "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entitäts-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite."
                     },
                     "editor": {
                         "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
@@ -855,6 +877,10 @@
                     "unused_entities": "Ungenutzte Elemente",
                     "help": "Hilfe",
                     "refresh": "Aktualisieren"
+                },
+                "warning": {
+                    "entity_not_found": "Entität nicht verfügbar: {entity}",
+                    "entity_non_numeric": "Die Entität ist nicht-numerisch: {entity}"
                 }
             }
         },
@@ -927,7 +953,8 @@
                 "arm_home": "Aktivieren, Zuhause",
                 "arm_away": "Aktivieren, unterwegs",
                 "arm_night": "Nacht aktiviert",
-                "armed_custom_bypass": "Benutzerdefinierter Bypass"
+                "armed_custom_bypass": "Benutzerdefinierter Bypass",
+                "arm_custom_bypass": "Benutzerdefinierter Bypass"
             },
             "automation": {
                 "last_triggered": "Zuletzt ausgelöst",
@@ -1098,6 +1125,15 @@
             "humidity": "Luftfeuchtigkeit",
             "visibility": "Sichtweite",
             "wind_speed": "Windgeschwindigkeit"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Aus",
+                "on": "An",
+                "auto": "Auto"
+            }
         }
     }
 }

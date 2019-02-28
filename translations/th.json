@@ -12,7 +12,9 @@
         "dev-events": "เหตุการณ์",
         "dev-templates": "แม่แบบ",
         "dev-mqtt": "MQTT",
-        "dev-info": "ข้อมูล"
+        "dev-info": "ข้อมูล",
+        "calendar": "ปฏิทิน",
+        "profile": "ข้อมูลส่วนตัว"
     },
     "state": {
         "default": {
@@ -256,9 +258,18 @@
         },
         "vacuum": {
             "cleaning": "กำลังทำความสะอาด",
+            "docked": "เชื่อมต่อ",
+            "error": "ผิดพลาด",
             "idle": "ว่าง",
             "off": "ปิด",
-            "on": "เปิด"
+            "on": "เปิด",
+            "paused": "หยุดชั่วคราว",
+            "returning": "กลับไปจุดเชื่อมต่อ"
+        },
+        "timer": {
+            "active": "ใช้งานอยู่",
+            "idle": "ไม่ได้ใช้งาน",
+            "paused": "หยุดชั่วคราว"
         }
     },
     "state_badge": {
@@ -295,7 +306,8 @@
                 "period": "ระยะเวลา"
             },
             "logbook": {
-                "showing_entries": "แสดงรายการ"
+                "showing_entries": "แสดงรายการ",
+                "period": "ระยะเวลา"
             },
             "mailbox": {
                 "empty": "ไม่มีข้อความ",
@@ -339,7 +351,10 @@
                 },
                 "customize": {
                     "caption": "การปรับแต่ง",
-                    "description": "ปรับแต่งรายการของคุณ"
+                    "description": "ปรับแต่งรายการของคุณ",
+                    "picker": {
+                        "header": "การปรับแต่ง"
+                    }
                 },
                 "automation": {
                     "caption": "การทำงานอัตโนมัติ",
@@ -417,6 +432,24 @@
                                     "event": "เหตุการณ์",
                                     "enter": "เข้าสู่",
                                     "leave": "ออกจาก"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "รูปแบบเวลา",
+                                    "hours": "ชั่วโมง",
+                                    "minutes": "นาที",
+                                    "seconds": "วินาที"
+                                },
+                                "geo_location": {
+                                    "label": "พิกัดตำแหน่ง",
+                                    "source": "แหล่งที่มา",
+                                    "zone": "โซน",
+                                    "event": "เหตุการณ์:",
+                                    "enter": "เข้าสู่",
+                                    "leave": "ออก"
                                 }
                             }
                         },
@@ -508,46 +541,326 @@
                     "caption": "Z-Wave",
                     "description": "จัดการเครือข่าย Z-Wave"
                 },
+                "users": {
+                    "caption": "ผู้ใช้",
+                    "description": "จัดการผู้ใช้",
+                    "picker": {
+                        "title": "ผู้ใช้"
+                    },
+                    "editor": {
+                        "rename_user": "เปลี่ยนชื่อผู้ใช้",
+                        "change_password": "เปลี่ยนรหัสผ่าน",
+                        "activate_user": "เปิดใช้งานผู้ใช้",
+                        "deactivate_user": "ปิดใช้งานผู้ใช้",
+                        "delete_user": "ลบผู้ใช้",
+                        "caption": "เพิ่มผู้ใช้"
+                    },
+                    "add_user": {
+                        "caption": "เพิ่มผู้ใช้",
+                        "name": "ชื่อ",
+                        "username": "ชื่อผู้ใช้",
+                        "password": "รหัสผ่าน",
+                        "create": "สร้าง"
+                    }
+                },
                 "cloud": {
-                    "description_login": "ลงชื่อเข้าใช้เป็น {email}"
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "ลงชื่อเข้าใช้เป็น {email}",
+                    "description_not_login": "ยังไม่ได้เข้าสู่ระบบ"
                 },
                 "integrations": {
+                    "discovered": "ค้นพบแล้ว",
+                    "configured": "การกำหนดค่าแล้ว",
+                    "configure": "ปรับแต่ง",
+                    "none": "ยังไม่มีการกำหนดค่าใดๆ เลย",
                     "config_entry": {
+                        "no_device": "เป็น Entities โดยไม่มีอุปกรณ์",
                         "delete_confirm": "แน่ใจหรือว่าต้องการจะลบการบูรณาการนี้",
                         "restart_confirm": "เริ่ม Home Assistant ใหม่หลังจากลบการบูรณาการนี้",
                         "manuf": "โดย {manufacturer}",
                         "hub": "เชื่อมต่อแล้ว",
-                        "firmware": "เฟิร์มแวร์: {version}"
+                        "firmware": "Firmware: {version}",
+                        "device_unavailable": "อุปกรณ์นี้ไม่พร้อมใช้งาน",
+                        "entity_unavailable": "Entity นี้ไม่พร้อมใช้งาน",
+                        "no_area": "ไม่มีพื้นที่"
                     }
-                }
-            },
-            "page-authorize": {
-                "form": {
-                    "providers": {
-                        "legacy_api_password": {
-                            "abort": {
-                                "login_expired": "เซสชั่นหมดอายุ โปรดเข้าสู่ระบบใหม่"
-                            }
-                        }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "การจัดการระบบอัติโนมัติของ Zigbee"
+                },
+                "area_registry": {
+                    "caption": "การลงทะเบียนพื้นที่",
+                    "description": "ภาพรวมของพื้นที่ทั้งหมดในบ้านของคุณ",
+                    "picker": {
+                        "header": "การลงทะเบียนพื้นที่"
+                    },
+                    "no_areas": "ดูเหมือนว่าคุณยังไม่มีพื้นที่เลย!",
+                    "create_area": "สร้างพื้นที่",
+                    "editor": {
+                        "default_name": "พื้นที่ใหม่",
+                        "delete": "ลบ",
+                        "update": "แก้ไข",
+                        "create": "สร้าง"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Entity Registry",
+                    "description": "ภาพรวมของ Entity ที่รู้จักทั้งหมด",
+                    "picker": {
+                        "header": "Entity Registry",
+                        "unavailable": "(ไม่พร้อมใช้งาน)"
+                    },
+                    "editor": {
+                        "unavailable": "Entity นี้ยังไม่พร้อมใช้งานในขณะนี้",
+                        "default_name": "พื้นที่ใหม่",
+                        "delete": "ลบ",
+                        "update": "แก้ไข"
+                    }
+                },
+                "person": {
+                    "caption": "บุคคล",
+                    "description": "จัดการบุคคลที่ระบบจะทำการติดตาม",
+                    "detail": {
+                        "name": "ชื่อ",
+                        "device_tracker_intro": "เลือกอุปกรณ์ที่จะให้บุคคลนี้เป็นเจ้าของ",
+                        "device_tracker_picked": "ติดตามอุปกรณ์",
+                        "device_tracker_pick": "เลือกอุปกรณ์ที่จะติดตาม"
                     }
                 }
             },
             "profile": {
+                "push_notifications": {
+                    "header": "การแจ้งเตือน",
+                    "description": "ส่งการแจ้งเตือนไปยังอุปกรณ์นี้",
+                    "error_load_platform": "กำหนดค่า notify.html5.",
+                    "error_use_https": "ต้องเปิดใช้งาน SSL สำหรับส่วนหน้า",
+                    "push_notifications": "การแจ้งเตือน",
+                    "link_promo": "เรียนรู้เพิ่มเติม"
+                },
+                "language": {
+                    "header": "ภาษา",
+                    "link_promo": "ช่วยเราแปลภาษาเป็นประเทศของคุณ",
+                    "dropdown_label": "ภาษา"
+                },
+                "themes": {
+                    "header": "ชุดตกแต่ง",
+                    "error_no_theme": "ไม่มีธีม",
+                    "link_promo": "เรียนรู้เกี่ยวกับธีม",
+                    "dropdown_label": "ธีม"
+                },
+                "refresh_tokens": {
+                    "header": "Refresh Tokens",
+                    "description": "ในการโหลดใหม่แต่ละครั้ง Refresh Token จะถูกมองเห็นเป็น Login Session และ Refresh Token จะถูกลบโดยอัติโนมัติ เมื่อคุณออกจากระบบ ตามข้างต้น Refresh Token จะยังใช้อยู่ในบัญชีของคุณเสมอ",
+                    "token_title": "Refresh Tokens สำหรับ {clientId}",
+                    "created_at": "สร้างเมื่อ {date}",
+                    "confirm_delete": "คุณแน่ใจหรือไม่ว่าต้องการลบ Refresh Tokens ของ {name} ?",
+                    "delete_failed": "การลบ Refresh Token ล้มเหลว",
+                    "last_used": "ใช้ครั้งล่าสุดเมื่อ {date} ในตำแหน่ง {location}",
+                    "not_used": "ยังไม่เคยถูกใช้งาน",
+                    "current_token_tooltip": "ไม่สามารถลบ Refresh Token ปัจจุบันได้"
+                },
                 "long_lived_access_tokens": {
-                    "confirm_delete": "คุณแน่ใจหรือไม่ว่าต้องการลบโทเค็นการเข้าถึงของ {name} ?"
+                    "header": "Access Tokens สำหรับการเข้าถึงระยะยาว",
+                    "learn_auth_requests": "เรียนรู้วิธีสร้างคำขอที่มีการรับรองความถูกต้อง",
+                    "created_at": "สร้างเมื่อ {date}",
+                    "confirm_delete": "คุณแน่ใจหรือไม่ว่าต้องการลบโทเค็นการเข้าถึงของ {name} ?",
+                    "delete_failed": "เกิดข้อผิดพลาดในการลบ Access Token ",
+                    "create": "สร้าง Token ใหม่",
+                    "create_failed": "เกิดข้อผิดพลาดในการลบ Access Token ",
+                    "prompt_name": "ชื่อ?",
+                    "prompt_copy_token": "จด Access Token ของคุณไว้ที่อื่นด้วย มันจะไม่แสดงให้เห็นอีกแล้วหลังจากนี้",
+                    "empty_state": "คุณยังไม่มี Access Token ระยะยาวเลย",
+                    "last_used": "ใช้ครั้งล่าสุดเมื่อ {date} ในตำแหน่ง {location}",
+                    "not_used": "ยังไม่เคยถูกใช้งาน"
                 },
                 "current_user": "ขณะนี้คุณเข้าสู่ระบบในชื่อ {fullName}",
+                "is_owner": "คุณเป็นเจ้าของ",
+                "logout": "ชื่อผู้ใช้",
                 "change_password": {
                     "header": "เปลี่ยนรหัสผ่าน",
-                    "current_password": "รหัสผ่านปัจจุบัน"
+                    "current_password": "รหัสผ่านปัจจุบัน",
+                    "new_password": "รหัสผ่านใหม่",
+                    "confirm_new_password": "ยืนยันรหัสผ่านใหม่",
+                    "error_required": "ต้องระบุ",
+                    "submit": "ส่งข้อมูล"
                 },
                 "mfa": {
+                    "header": "โมดูลการรับรองความถูกต้องด้วยหลายปัจจัย",
                     "disable": "ปิดการใช้งาน",
                     "enable": "เปิดใช้งาน",
                     "confirm_disable": "คุณแน่ใจหรือไม่ว่าต้องการปิดใช้งาน {name} ?"
                 },
                 "mfa_setup": {
-                    "title_success": "งานสำเร็จ!"
+                    "title_aborted": "ยกเลิก",
+                    "title_success": "สำเร็จ!",
+                    "step_done": "ติดตั้งเสร็จแล้วในขั้นตอนที่ {step}",
+                    "close": "ปิด",
+                    "submit": "ส่งข้อมูล"
+                }
+            },
+            "page-authorize": {
+                "initializing": "กำลังเริ่มการทำงาน",
+                "authorizing_client": "คุณกำลังจะให้ {clientId} เข้าถึงเซิร์ฟเวอร์ Home Assistant ของคุณ",
+                "logging_in_with": "เข้าสู่ระบบด้วย ** {authProviderName} **",
+                "pick_auth_provider": "หรือเข้าสู่ระบบด้วย",
+                "abort_intro": "เข้าสู่ระบบถูกยกเลิก",
+                "form": {
+                    "working": "กรุณารอสักครู่",
+                    "unknown_error": "มีบางอย่างผิดพลาด",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "ชื่อผู้ใช้",
+                                        "password": "รหัสผ่าน"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "รหัสรับรองความถูกต้องสองปัจจัย"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+                                "invalid_code": "รหัสรับรองความถูกต้องสองปัจจัย ไม่ถูกต้อง"
+                            },
+                            "abort": {
+                                "login_expired": "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "รหัสผ่าน API"
+                                    },
+                                    "description": "โปรดป้อน API Password ในการกำหนดค่า http ของคุณ:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "รหัสรับรองความถูกต้องสองปัจจัย"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "API Password ไม่ถูกต้อง",
+                                "invalid_code": "รหัสรับรองความถูกต้องสองปัจจัย ไม่ถูกต้อง"
+                            },
+                            "abort": {
+                                "no_api_password_set": "คุณยังไม่ได้ตั้งค่า API Password เลย",
+                                "login_expired": "เซสชั่นหมดอายุ โปรดเข้าสู่ระบบใหม่"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "ผู้ใช้"
+                                    },
+                                    "description": "โปรดเลือกผู้ใช้ที่ คุณต้องการเข้าสู่ระบบในชื่อของ "
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "คอมพิวเตอร์ของคุณไม่ได้รับสิทธิ์ในการเข้าถึง"
+                            }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "ชื่อผู้ใช้",
+                                        "password": "รหัสผ่าน"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "รหัสผ่านยืนยัน 2 ขั้นตอน"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "ชื่อผู้ใช้ หรือ รหัสผ่าน ไม่ถูกต้อง",
+                                "invalid_code": "โค๊ตการเข้าสู่ระบบไม่ถูกต้อง"
+                            },
+                            "abort": {
+                                "login_expired": "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง"
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "มาเริ่มกันเลยด้วยการสร้างบัญชีผู้ใช้",
+                    "required_field": "ต้องระบุ",
+                    "data": {
+                        "name": "ชื่อ",
+                        "username": "ชื่อผู้ใช้",
+                        "password": "รหัสผ่าน"
+                    },
+                    "create_account": "สร้างบัญชี",
+                    "error": {
+                        "required_fields": "กรอกข้อมูลในฟิลด์ที่จำเป็นทั้งหมด"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "รายการที่เลือก",
+                        "clear_items": "ล้างรายการที่เลือก",
+                        "add_item": "เพิ่มรายการ"
+                    },
+                    "empty_state": {
+                        "title": "ยินดีต้อนรับกลับบ้าน",
+                        "go_to_integrations_page": "ไปที่หน้าการรวมระบบ"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "การกำหนดค่าการ์ด",
+                        "save": "บันทึก",
+                        "toggle_editor": "เปิด\/ปิดเครื่องมือแก้ไข",
+                        "pick_card": "เลือกการ์ดที่คุณอยากจะเพิ่ม",
+                        "add": "เพิ่มการ์ดใหม่",
+                        "edit": "แก้ไข",
+                        "delete": "ลบ",
+                        "move": "ย้าย"
+                    },
+                    "migrate": {
+                        "header": "การกำหนดค่าไม่ถูกต้อง",
+                        "migrate": "โอนย้ายการกำหนดค่า"
+                    },
+                    "header": "แก้ไข UI",
+                    "edit_view": {
+                        "header": "ดูการกำหนดค่า",
+                        "add": "เพิ่มมุมมอง",
+                        "edit": "แก้ไขมุมมอง",
+                        "delete": "ลบมุมมอง"
+                    },
+                    "save_config": {
+                        "header": "ควบคุม Lovelace UI ในแบบของคุณ",
+                        "para": "โดยเริ่มต้น Home Assistant จะควบคุมส่วนต่อประสานผู้ใช้งานเอง เมื่อมี Entity หรือส่วนควบคุมใหม่ๆ จะถูกแสดงขึ้นให้เอง แต่ถ้าคุณอยากจะควบคุมเอง เราจะไม่มีการอัพเดทตามข้างต้นให้กับคุณ",
+                        "para_sure": "คุณแน่ใจหรือไม่ว่าต้องการควบคุมส่วนต่อประสานผู้ใช้งาน?",
+                        "cancel": "ไม่เป็นไร",
+                        "save": "ใช้การควบคุม"
+                    },
+                    "menu": {
+                        "raw_editor": "ตัวแก้ไข config แบบดิบๆ"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "ตั้งค่า UI",
+                    "unused_entities": "Entity ที่ไม่ได้ถูกใช้",
+                    "help": "วิธีใช้",
+                    "refresh": "รีเฟรช"
+                },
+                "warning": {
+                    "entity_not_found": "Entity ไม่พร้อมใช้งาน: {entity}",
+                    "entity_non_numeric": "Entity ที่ไม่ใช่ตัวเลข: {entity}"
                 }
             }
         },
@@ -557,7 +870,8 @@
         },
         "common": {
             "loading": "กำลังโหลด",
-            "cancel": "ยกเลิก"
+            "cancel": "ยกเลิก",
+            "save": "บันทึก"
         },
         "duration": {
             "day": "วัน",
@@ -611,7 +925,14 @@
                 "forecast": "พยากรณ์"
             },
             "alarm_control_panel": {
-                "disarm": "ปิดระบบสัญญาณกันขโมย"
+                "code": "รหัส",
+                "clear_code": "ล้าง",
+                "disarm": "ปิดระบบสัญญาณกันขโมย",
+                "arm_home": "ล็อคแบบอยู่บ้าน",
+                "arm_away": "ล็อคแบบออกข้างนอก",
+                "arm_night": "เฝ้ายามกลางคืน",
+                "armed_custom_bypass": "ปล่อยผ่านตามที่กำหนด",
+                "arm_custom_bypass": "ปล่อยผ่านตามที่กำหนด"
             },
             "automation": {
                 "last_triggered": "การทำงานครั้งล่าสุด",
@@ -633,16 +954,30 @@
                 "effect": "ลูกเล่น"
             },
             "media_player": {
-                "text_to_speak": "ข้อความที่จะให้ออกเสียง"
+                "text_to_speak": "ข้อความที่จะให้ออกเสียง",
+                "source": "แหล่งที่มา",
+                "sound_mode": "โหมดเสียง"
             },
             "climate": {
                 "currently": "ในขณะนี้",
                 "on_off": "เปิด \/ ปิด",
                 "target_temperature": "อุณหภูมิที่ต้องการ",
-                "target_humidity": "ค่าความชื้นที่ต้องการ"
+                "target_humidity": "ค่าความชื้นที่ต้องการ",
+                "operation": "การทำงาน",
+                "fan_mode": "โหมดของพัดลม",
+                "swing_mode": "โหมดแกว่ง",
+                "away_mode": "โหมดไม่อยู่บ้าน"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "ล็อค",
+                "unlock": "ปลดล็อค"
             },
             "vacuum": {
                 "actions": {
+                    "resume_cleaning": "ทำความสะอาดต่อไป",
+                    "return_to_base": "กลับไปจุดเชื่อมต่อ",
+                    "start_cleaning": "เริ่มทำความสะอาด",
                     "turn_on": "เปิดใข้งาน",
                     "turn_off": "ปิดใข้งาน"
                 }
@@ -650,7 +985,9 @@
             "water_heater": {
                 "currently": "ในขณะนี้",
                 "on_off": "เปิด \/ ปิด",
-                "target_temperature": "อุณหภูมิ"
+                "target_temperature": "อุณหภูมิ",
+                "operation": "การดำเนินการ",
+                "away_mode": "โหมดไม่อยู่บ้าน"
             }
         },
         "components": {
@@ -673,12 +1010,41 @@
             }
         },
         "notification_toast": {
+            "entity_turned_on": "เปิดใช้งาน {entity} แล้ว",
+            "entity_turned_off": "ปิดใช้งาน {หน่วย} แล้ว",
+            "service_called": "เรียกบริการ {service} แล้ว",
+            "service_call_failed": "การเรียกบริการ {service} ล้มเหลว",
             "connection_lost": "สูญเสียการเชื่อมต่อ ดำเนินการเชื่อมต่อใหม่..."
         },
         "dialogs": {
             "more_info_settings": {
+                "save": "บันทึก",
+                "name": "การแทนที่ชื่อ",
                 "entity_id": "รหัสเอนทิตี"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "การทำงานครั้งล่าสุด"
+                },
+                "sun": {
+                    "elevation": "การยกระดับ",
+                    "rising": "เพิ่มขึ้น",
+                    "setting": "การตั้งค่า"
+                },
+                "updater": {
+                    "title": "คำแนะนำในการอัพเดท"
+                }
             }
+        },
+        "auth_store": {
+            "ask": "คุณต้องการจำการเข้าระบบนี้หรือไม่?",
+            "decline": "ไม่เป็นไรขอบคุณ",
+            "confirm": "จำการเข้าสู่ระบบ"
+        },
+        "notification_drawer": {
+            "click_to_configure": "คลิกปุ่มเพื่อกำหนดค่า {entity}",
+            "empty": "ไม่มีการแจ้งเตือน",
+            "title": "การแจ้งเตือน"
         }
     },
     "domain": {
@@ -717,13 +1083,27 @@
         "updater": "อัพเดต",
         "weblink": "เว็บลิงค์",
         "zwave": "Z-Wave",
-        "vacuum": "เครื่องดูดฝุ่น"
+        "vacuum": "เครื่องดูดฝุ่น",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "ข้อมูลสถานะของระบบ"
     },
     "attribute": {
         "weather": {
             "humidity": "ความชื้น",
             "visibility": "ความชัดเจน",
             "wind_speed": "ความเร็วลม"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "ปิด",
+                "on": "เปิด",
+                "auto": "อัตโนมัติ"
+            }
         }
     }
 }

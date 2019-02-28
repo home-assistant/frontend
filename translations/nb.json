@@ -353,7 +353,8 @@
                     "caption": "Tilpasning",
                     "description": "Tilpass dine oppføringer",
                     "picker": {
-                        "header": "Tilpasning"
+                        "header": "Tilpasning",
+                        "introduction": "Juster per-enhet attributter. Lagt til\/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når enheten er oppdatert."
                     }
                 },
                 "automation": {
@@ -560,7 +561,7 @@
                         "name": "Navn",
                         "username": "Brukernavn",
                         "password": "Passord",
-                        "create": "Skape"
+                        "create": "Opprett"
                     }
                 },
                 "cloud": {
@@ -585,7 +586,8 @@
                         "hub": "Tilkoblet via",
                         "firmware": "Fastvare: {version}",
                         "device_unavailable": "enheten er utilgjengelig",
-                        "entity_unavailable": "oppføringen er utilgjengelig"
+                        "entity_unavailable": "oppføringen er utilgjengelig",
+                        "no_area": "Ingen område"
                     }
                 },
                 "zha": {
@@ -597,9 +599,11 @@
                 },
                 "area_registry": {
                     "caption": "Områderegister",
-                    "description": "Oversikt over alle områder i ditt hjem.",
+                    "description": "Oversikt over alle områder i ditt hjem",
                     "picker": {
-                        "header": "Områderegister"
+                        "header": "Områderegister",
+                        "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
+                        "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene."
                     },
                     "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "create_area": "OPPRETT OMRÅDE",
@@ -612,10 +616,12 @@
                 },
                 "entity_registry": {
                     "caption": "Enhetsregister",
-                    "description": "Oversikt over alle kjente enheter.",
+                    "description": "Oversikt over alle kjente enheter",
                     "picker": {
                         "header": "Enhetsregister",
-                        "unavailable": "(utilgjengelig)"
+                        "unavailable": "(utilgjengelig)",
+                        "introduction": "Home Assistant beholder et register over hver enhet som den noensinne har sett som kan identifiseres unikt. Hver av disse enhetene vil ha en enhets ID tilknyttet som vil bli reservert for bare denne enheten.",
+                        "introduction2": "Bruk entitetsregisteret til å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden."
                     },
                     "editor": {
                         "unavailable": "Denne enheten er ikke tilgjengelig for øyeblikket.",
@@ -626,7 +632,7 @@
                 },
                 "person": {
                     "caption": "Personer",
-                    "description": "Administrer personer som Home Assistant sporer.",
+                    "description": "Administrer personer som Home Assistant sporer",
                     "detail": {
                         "name": "Navn",
                         "device_tracker_intro": "Velg enhetene som tilhører denne personen.",
@@ -783,6 +789,12 @@
                                         "username": "Brukernavn",
                                         "password": "Passord"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor autentiseringskode"
+                                    },
+                                    "description": "Åpne **{mfa_module_name}** på enheten din for å se din to-faktor autentiseringskode og bekrefte identiteten din:"
                                 }
                             },
                             "error": {
@@ -797,7 +809,7 @@
                 }
             },
             "page-onboarding": {
-                "intro": "Er du klar til å vekke hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av tinkerers?",
+                "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av tinkerers?",
                 "user": {
                     "intro": "La oss begynne med å opprette en brukerkonto.",
                     "required_field": "Kreves",
@@ -868,7 +880,7 @@
                 },
                 "warning": {
                     "entity_not_found": "Enhet ikke tilgjengelig: {entity}",
-                    "entity_non_numeric": "Entitet er ikke-numerisk: {entity}"
+                    "entity_non_numeric": "Enheten er ikke-numerisk: {entity}"
                 }
             }
         },
@@ -941,7 +953,8 @@
                 "arm_home": "Armer hjemme",
                 "arm_away": "Armer borte",
                 "arm_night": "Armer natt",
-                "armed_custom_bypass": "Tilpasset bypass"
+                "armed_custom_bypass": "Tilpasset bypass",
+                "arm_custom_bypass": "Tilpasset bypass"
             },
             "automation": {
                 "last_triggered": "Sist utløst",

@@ -133,8 +133,8 @@
         "climate": {
             "off": "Apagat",
             "on": "Encès",
-            "heat": "Escalfar",
-            "cool": "Refredar",
+            "heat": "Calent",
+            "cool": "Fred",
             "idle": "Inactiu",
             "auto": "Automàtic",
             "dry": "Assecar",
