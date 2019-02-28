@@ -265,6 +265,11 @@
             "on": "Be",
             "paused": "Felfüggesztve",
             "returning": "Dokkolás folyamatban"
+        },
+        "timer": {
+            "active": "aktív",
+            "idle": "tétlen",
+            "paused": "szüneteltetve"
         }
     },
     "state_badge": {
@@ -348,7 +353,8 @@
                     "caption": "Testreszabás",
                     "description": "Entitások testreszabása",
                     "picker": {
-                        "header": "Testreszabás"
+                        "header": "Testreszabás",
+                        "introduction": "Szabd testre az entitások tulajdonságait. A hozzáadott\/szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
                     }
                 },
                 "automation": {
@@ -356,7 +362,7 @@
                     "description": "Automatizálások létrehozása és szerkesztése",
                     "picker": {
                         "header": "Automatizálás szerkesztő",
-                        "introduction": "Az automatizálás szerkesztővel automatizálási szabályokat tudsz létrehozni és szerkeszteni. Kérlek olvasd el az [útmutatót](https:\/\/home-assistant.io\/docs\/automation\/editor\/), hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
+                        "introduction": "Az automatizálás szerkesztővel automatizálási szabályokat tudsz létrehozni és szerkeszteni. Kérlek olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "pick_automation": "Válassz ki egy automatizálást szerkesztésre",
                         "no_automations": "Nem találtunk szerkeszthető automatizálást",
                         "add_automation": "Automatizálás hozzáadása"
@@ -369,7 +375,7 @@
                         "alias": "Név",
                         "triggers": {
                             "header": "Triggerek",
-                            "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindul, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet.\n\n[Tudj meg többet a triggerekről.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindul, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet. Kattints az alábbi linkre, ha többet szeretnél megtudni a triggerekről.",
                             "add": "Trigger hozzáadása",
                             "duplicate": "Megkettőzés",
                             "delete": "Törlés",
@@ -450,7 +456,7 @@
                         },
                         "conditions": {
                             "header": "Feltételek",
-                            "introduction": "A feltételek opcionális részei az automatizálási szabályoknak és arra lehet őket használni, hogy meggátoljuk egy művelet végrehajtását, ha triggerelődik. A feltételek hasonlítanak a triggerekre, mégis teljesen máshogy működnek. A triggerek a rendszerben történő események bekövetkezését figyelik, míg a feltételek csak azt látják, hogy milyen a rendszer pillanatnyi állapota. Egy trigger például észre tudja venni, ha egy kapcsoló fel lett kapcsolva. Egy feltétel csak azt látja, hogy a kapcsoló éppen fel vagy le van kapcsolva.\n\n[Tudj meg többet a feltételekről.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "A feltételek opcionális részei az automatizálási szabályoknak és arra lehet őket használni, hogy meggátoljuk egy művelet végrehajtását, ha triggerelődik. A feltételek hasonlítanak a triggerekre, mégis teljesen máshogy működnek. A triggerek a rendszerben történő események bekövetkezését figyelik, míg a feltételek csak azt látják, hogy milyen a rendszer pillanatnyi állapota. Egy trigger például észre tudja venni, ha egy kapcsoló fel lett kapcsolva. Egy feltétel csak azt látja, hogy a kapcsoló éppen fel vagy le van kapcsolva. Kattints az alábbi linkre, ha többet szeretnél megtudni a feltételekről.",
                             "add": "Feltétel hozzáadása",
                             "duplicate": "Megkettőzés",
                             "delete": "Törlés",
@@ -495,7 +501,7 @@
                         },
                         "actions": {
                             "header": "Műveletek",
-                            "introduction": "A műveleteket hajtja végre a Home Assistant, ha egy automatizálás triggerelődik.\n\n[Tudj meg többet a műveletekről.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "A műveleteket hajtja végre a Home Assistant, ha egy automatizálás triggerelődik. Kattints az alábbi linkre, ha többet szeretnél megtudni a műveletekről.",
                             "add": "Művelet hozzáadása",
                             "duplicate": "Megkettőzés",
                             "delete": "Törlés",
@@ -547,7 +553,15 @@
                         "change_password": "Jelszó módosítása",
                         "activate_user": "Felhasználó aktiválása",
                         "deactivate_user": "Felhasználó inaktiválása",
-                        "delete_user": "Felhasználó törlése"
+                        "delete_user": "Felhasználó törlése",
+                        "caption": "Felhasználó megtekintése"
+                    },
+                    "add_user": {
+                        "caption": "Felhasználó hozzáadása",
+                        "name": "Név",
+                        "username": "Felhasználónév",
+                        "password": "Jelszó",
+                        "create": "Létrehozás"
                     }
                 },
                 "cloud": {
@@ -587,7 +601,9 @@
                     "caption": "Terület Nyilvántartás",
                     "description": "Az összes otthoni terület áttekintése",
                     "picker": {
-                        "header": "Terület Nyilvántartás"
+                        "header": "Terület Nyilvántartás",
+                        "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
+                        "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez."
                     },
                     "no_areas": "Úgy tűnik nem hoztál létre még egy területet sem!",
                     "create_area": "TERÜLET LÉTREHOZÁSA",
@@ -603,10 +619,12 @@
                     "description": "Az összes ismert entitás áttekintése",
                     "picker": {
                         "header": "Entitás Nyilvántartás",
-                        "unavailable": "(nem elérhető)"
+                        "unavailable": "(nem elérhető)",
+                        "introduction": "A Home Assistant nyilvántartást vezet minden olyan entitásról, melyet valaha látott, és egyedileg azonosítható. Ezen entitások mindegyikéhez létrejön egy entitás ID, amely csak az adott entitáshoz van rendelve.",
+                        "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációs oldalról."
                     },
                     "editor": {
-                        "unavailable": "Ez a entitás jelenleg nem elérhető.",
+                        "unavailable": "Ez az entitás jelenleg nem elérhető.",
                         "default_name": "Új Terület",
                         "delete": "TÖRLÉS",
                         "update": "FRISSÍTÉS"
@@ -617,7 +635,7 @@
                     "description": "Kezeld azon személyeket, melyeket a Home Assistant követ.",
                     "detail": {
                         "name": "Név",
-                        "device_tracker_intro": "Válaszd ki az eszközöket, melyek ehhez a felhasználóhoz tartoznak",
+                        "device_tracker_intro": "Válaszd ki azokat az eszközöket, amelyek ehhez a felhasználóhoz tartoznak.",
                         "device_tracker_picked": "Eszköz követése",
                         "device_tracker_pick": "Válassz egy követni kívánt eszközt"
                     }
@@ -774,13 +792,14 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Két faktoros hitelesítő kód"
-                                    }
+                                        "code": "Kétfaktoros Hitelesítési Kód"
+                                    },
+                                    "description": "Nyisd meg a(z) **{mfa_module_name}** applikációt az eszközödön, hogy megtekintsd a kétfaktoros hitelesítési kódodat a személyazonosságod ellenőrzéséhez."
                                 }
                             },
                             "error": {
                                 "invalid_auth": "Érvénytelen felhasználónév vagy jelszó",
-                                "invalid_code": "Érvénytelen hitelesítő kód"
+                                "invalid_code": "Érvénytelen hitelesítési kód"
                             },
                             "abort": {
                                 "login_expired": "A munkamenet lejárt, kérlek, jelentkezz be újra."
@@ -858,6 +877,10 @@
                     "unused_entities": "Nem használt entitások",
                     "help": "Súgó",
                     "refresh": "Frissítés"
+                },
+                "warning": {
+                    "entity_not_found": "Entitás nem elérhető: {entity}",
+                    "entity_non_numeric": "Entitás nem numerikus: {entity}"
                 }
             }
         },
@@ -930,7 +953,8 @@
                 "arm_home": "Élesít (otthon)",
                 "arm_away": "Élesít (távozó)",
                 "arm_night": "Élesít (éjszakai)",
-                "armed_custom_bypass": "Egyéni áthidalás"
+                "armed_custom_bypass": "Egyéni áthidalás",
+                "arm_custom_bypass": "Egyéni áthidalás"
             },
             "automation": {
                 "last_triggered": "Utoljára aktiválva",
@@ -1101,6 +1125,15 @@
             "humidity": "Páratartalom",
             "visibility": "Láthatóság",
             "wind_speed": "Szélsebesség"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Ki",
+                "on": "Be",
+                "auto": "Automatikus"
+            }
         }
     }
 }

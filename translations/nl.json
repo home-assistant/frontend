@@ -265,6 +265,11 @@
             "on": "Aan",
             "paused": "Gepauseerd",
             "returning": "Terugkeren naar dock"
+        },
+        "timer": {
+            "active": "actief",
+            "idle": "inactief",
+            "paused": "gepauzeerd"
         }
     },
     "state_badge": {
@@ -346,7 +351,11 @@
                 },
                 "customize": {
                     "caption": "Aanpassingen",
-                    "description": "Pas je entiteiten aan"
+                    "description": "Pas je entiteiten aan",
+                    "picker": {
+                        "header": "Aanpassingen",
+                        "introduction": "Pas attributen per entiteit aan. Toegevoegde\/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
+                    }
                 },
                 "automation": {
                     "caption": "Automatisering",
@@ -544,7 +553,15 @@
                         "change_password": "Wachtwoord wijzigen",
                         "activate_user": "Activeer gebruiker",
                         "deactivate_user": "Deactiveer gebruiker",
-                        "delete_user": "Verwijder gebruiker"
+                        "delete_user": "Verwijder gebruiker",
+                        "caption": "Bekijk gebruiker"
+                    },
+                    "add_user": {
+                        "caption": "Gebruiker toevoegen",
+                        "name": "Naam",
+                        "username": "Gebruikersnaam",
+                        "password": "Wachtwoord",
+                        "create": "Maken"
                     }
                 },
                 "cloud": {
@@ -569,7 +586,8 @@
                         "hub": "Verbonden via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "apparaat niet beschikbaar",
-                        "entity_unavailable": "entiteit niet beschikbaar"
+                        "entity_unavailable": "entiteit niet beschikbaar",
+                        "no_area": "Geen gebied"
                     }
                 },
                 "zha": {
@@ -583,24 +601,43 @@
                     "caption": "Gebiedenregister",
                     "description": "Overzicht van alle gebieden in je huis.",
                     "picker": {
-                        "header": "Gebiedenregister"
+                        "header": "Gebiedenregister",
+                        "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om u te helpen bij het organiseren van uw interface, machtigingen en integraties met andere systemen.",
+                        "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan."
+                    },
+                    "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
+                    "create_area": "MAAK GEBIED",
+                    "editor": {
+                        "default_name": "Nieuw gebied",
+                        "delete": "VERWIJDEREN",
+                        "update": "BIJWERKEN",
+                        "create": "MAKEN"
                     }
                 },
                 "entity_registry": {
                     "caption": "Entiteiten register",
                     "description": "Overzicht van alle gekende entiteiten",
                     "picker": {
-                        "header": "Entiteiten register"
+                        "header": "Entiteiten register",
+                        "unavailable": "(niet beschikbaar)",
+                        "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
+                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit de Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina."
                     },
                     "editor": {
-                        "delete": "VERWIJDEREN"
+                        "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
+                        "default_name": "Nieuw gebied",
+                        "delete": "VERWIJDEREN",
+                        "update": "BIJWERKEN"
                     }
                 },
                 "person": {
                     "caption": "Personen",
                     "description": "Beheer de personen die Home Assistant volgt.",
                     "detail": {
-                        "name": "Naam"
+                        "name": "Naam",
+                        "device_tracker_intro": "Selecteer de apparaten die bij deze persoon horen.",
+                        "device_tracker_picked": "Volg apparaat",
+                        "device_tracker_pick": "Kies apparaat om te volgen"
                     }
                 }
             },
@@ -746,6 +783,23 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Gebruikersnaam",
+                                        "password": "Wachtwoord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Twee-factor authenticatie code"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord",
+                                "invalid_code": "Onjuiste authenticatie code"
+                            },
                             "abort": {
                                 "login_expired": "Sessie verlopen, meldt u opnieuw aan."
                             }
@@ -778,8 +832,8 @@
                     },
                     "empty_state": {
                         "title": "Welkom thuis",
-                        "no_devices": "Op deze pagina kun je je apparaten bedienen, maar het lijkt er op dat je nog geen apparaten hebt ingesteld. Ga naar de integraties-pagina om te beginnen.",
-                        "go_to_integrations_page": "Ga naar de integraties-pagina."
+                        "no_devices": "Op deze pagina kun je je apparaten bedienen, maar het lijkt er op dat je nog geen apparaten hebt ingesteld. Ga naar de integraties pagina om te beginnen.",
+                        "go_to_integrations_page": "Ga naar de integraties pagina."
                     }
                 },
                 "editor": {
@@ -790,7 +844,8 @@
                         "pick_card": "Kies de kaart die je wilt toevoegen.",
                         "add": "Kaart toevoegen",
                         "edit": "Bewerken",
-                        "delete": "Verwijder"
+                        "delete": "Verwijder",
+                        "move": "Verplaatsen"
                     },
                     "migrate": {
                         "header": "Configuratie incompatibel",
@@ -821,6 +876,10 @@
                     "unused_entities": "Ongebruikte entiteiten",
                     "help": "Help",
                     "refresh": "Vernieuwen"
+                },
+                "warning": {
+                    "entity_not_found": "Entiteit niet beschikbaar: {entity}",
+                    "entity_non_numeric": "Entiteit is niet-numeriek: {entity}"
                 }
             }
         },
@@ -893,7 +952,8 @@
                 "arm_home": "Inschakelen thuis",
                 "arm_away": "Inschakelen afwezig",
                 "arm_night": "Inschakelen nacht",
-                "armed_custom_bypass": "Aangepaste overbrugging(en)"
+                "armed_custom_bypass": "Aangepaste overbrugging(en)",
+                "arm_custom_bypass": "Gedeeltelijk actief"
             },
             "automation": {
                 "last_triggered": "Laatst uitgevoerd",
@@ -1064,6 +1124,15 @@
             "humidity": "Vochtigheid",
             "visibility": "Zichtbaarheid",
             "wind_speed": "Windsnelheid"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Uit",
+                "on": "Aan",
+                "auto": "Auto"
+            }
         }
     }
 }

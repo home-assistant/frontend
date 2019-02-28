@@ -268,7 +268,8 @@
         },
         "timer": {
             "active": "激活",
-            "idle": "空闲"
+            "idle": "空闲",
+            "paused": "暂停"
         }
     },
     "state_badge": {
@@ -551,7 +552,15 @@
                         "change_password": "更改密码",
                         "activate_user": "激活用户",
                         "deactivate_user": "停用用户",
-                        "delete_user": "删除用户"
+                        "delete_user": "删除用户",
+                        "caption": "用户信息"
+                    },
+                    "add_user": {
+                        "caption": "添加用户",
+                        "name": "名字",
+                        "username": "用户名",
+                        "password": "密码",
+                        "create": "创建"
                     }
                 },
                 "cloud": {
@@ -581,17 +590,21 @@
                     }
                 },
                 "zha": {
+                    "caption": "ZHA",
                     "description": "Zigbee 智能家居(ZHA) 网络管理"
                 },
                 "area_registry": {
+                    "caption": "区域注册",
                     "description": "您家中所有区域的概览。",
                     "picker": {
-                        "header": "注册区域"
+                        "header": "区域注册表",
+                        "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
+                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。"
                     },
-                    "no_areas": "看来你还没有建立区域!",
+                    "no_areas": "看来你还没有建立区域！",
                     "create_area": "创建区域",
                     "editor": {
-                        "default_name": "新区域",
+                        "default_name": "新建区域",
                         "delete": "删除",
                         "update": "更新",
                         "create": "创建"
@@ -601,19 +614,21 @@
                     "caption": "实体注册",
                     "description": "所有已知实体的概览。",
                     "picker": {
-                        "header": "实体注册",
-                        "unavailable": "(不可用)"
+                        "header": "实体注册表",
+                        "unavailable": "(不可用)",
+                        "introduction": "Home Assistant 将会以唯一标识的形式记录发现的每个实体。这些实体被各自分配一个实体 ID，仅保留给对应实体。",
+                        "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。"
                     },
                     "editor": {
                         "unavailable": "该实体暂不可用。",
-                        "default_name": "新区域",
+                        "default_name": "新建区域",
                         "delete": "删除",
                         "update": "更新"
                     }
                 },
                 "person": {
-                    "caption": "人",
-                    "description": "管理Home Assistant跟踪的人员。",
+                    "caption": "人员",
+                    "description": "管理 Home Assistant 跟踪的人员。",
                     "detail": {
                         "name": "名字",
                         "device_tracker_intro": "选择属于此人的设备。",
@@ -768,19 +783,19 @@
                                 "init": {
                                     "data": {
                                         "username": "用户名",
-                                        "password": "密码"
+                                        "password": "ui::panel::page-authorize::form::providers::homeassistant::step::init::data::password"
                                     }
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "二次认证口令"
+                                        "code": "双重认证口令"
                                     },
-                                    "description": "在设备上打开 **{mfa_module_name}** 查看二次认证口令并验证您的身份:"
+                                    "description": "在设备上打开 **{mfa_module_name}** 查看双重认证口令并验证您的身份:"
                                 }
                             },
                             "error": {
                                 "invalid_auth": "无效的用户名或密码",
-                                "invalid_code": "无效的验证码"
+                                "invalid_code": "无效口令"
                             },
                             "abort": {
                                 "login_expired": "会话已过期，请重新登录。"
@@ -860,7 +875,8 @@
                     "refresh": "刷新"
                 },
                 "warning": {
-                    "entity_not_found": "实体不可用"
+                    "entity_not_found": "实体 {entity} 不可用",
+                    "entity_non_numeric": "实体 {entity} 非数值"
                 }
             }
         },
@@ -1052,7 +1068,7 @@
             "confirm": "保存"
         },
         "notification_drawer": {
-            "click_to_configure": "单击按钮可以配置{entity}",
+            "click_to_configure": "单击按钮可以配置 {entity}",
             "empty": "没有任何通知",
             "title": "通知"
         }
@@ -1094,6 +1110,7 @@
         "weblink": "网址",
         "zwave": "Z-Wave",
         "vacuum": "扫地机",
+        "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
@@ -1104,6 +1121,15 @@
             "humidity": "湿度",
             "visibility": "能见度",
             "wind_speed": "风速"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "关",
+                "on": "开",
+                "auto": "自动"
+            }
         }
     }
 }
