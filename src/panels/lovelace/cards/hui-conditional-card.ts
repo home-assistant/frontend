@@ -1,14 +1,12 @@
 import { createCardElement } from "../common/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
+import {
+  checkConditionsMet,
+  validateConditionalConfig,
+} from "../../lovelace/common/validate-condition";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-
-interface Condition {
-  entity: string;
-  state?: string;
-  state_not?: string;
-}
+import { LovelaceCardConfig, Condition } from "../../../data/lovelace";
 
 interface Config extends LovelaceCardConfig {
   card: LovelaceCardConfig;
@@ -25,7 +23,7 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
       !config.card ||
       !config.conditions ||
       !Array.isArray(config.conditions) ||
-      !config.conditions.every((c) => c.entity && (c.state || c.state_not))
+      !validateConditionalConfig(config.conditions)
     ) {
       throw new Error("Error in card configuration.");
     }
@@ -49,16 +47,7 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
     }
 
     const visible =
-      this._config &&
-      this._config.conditions.every((c) => {
-        if (!(c.entity in hass.states)) {
-          return false;
-        }
-        if (c.state) {
-          return hass.states[c.entity].state === c.state;
-        }
-        return hass.states[c.entity].state !== c.state_not;
-      });
+      this._config && checkConditionsMet(this._config.conditions, hass);
 
     if (visible) {
       this._card.hass = hass;

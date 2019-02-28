@@ -101,9 +101,11 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     element.hass = this._hass;
     element.classList.add("element");
 
-    Object.keys(elementConfig.style).forEach((prop) => {
-      element.style.setProperty(prop, elementConfig.style[prop]);
-    });
+    if (elementConfig.style) {
+      Object.keys(elementConfig.style).forEach((prop) => {
+        element.style.setProperty(prop, elementConfig.style[prop]);
+      });
+    }
 
     return element;
   }
