@@ -13,7 +13,7 @@ import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
 
-@customElement("hui-webline-row")
+@customElement("hui-weblink-row")
 class HuiWeblinkRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
 
@@ -71,5 +71,3 @@ declare global {
     "hui-weblink-row": HuiWeblinkRow;
   }
 }
-
-customElements.define("hui-weblink-row", HuiWeblinkRow);
