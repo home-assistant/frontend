@@ -1,4 +1,10 @@
-import { html, LitElement, TemplateResult, property } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  customElement,
+} from "lit-element";
 
 import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
@@ -9,8 +15,10 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
+@customElement("hui-group-entity-row")
 class HuiGroupEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -73,5 +81,3 @@ declare global {
     "hui-group-entity-row": HuiGroupEntityRow;
   }
 }
-
-customElements.define("hui-group-entity-row", HuiGroupEntityRow);

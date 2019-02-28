@@ -5,6 +5,7 @@ import {
   property,
   css,
   CSSResult,
+  customElement,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -19,8 +20,10 @@ import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setOption } from "../../../data/input-select";
 
+@customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -106,5 +109,3 @@ declare global {
     "hui-input-select-entity-row": HuiInputSelectEntityRow;
   }
 }
-
-customElements.define("hui-input-select-entity-row", HuiInputSelectEntityRow);
