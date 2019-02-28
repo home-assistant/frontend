@@ -265,6 +265,11 @@
             "on": "On",
             "paused": "En pause",
             "returning": "Retourne à la base"
+        },
+        "timer": {
+            "active": "actif",
+            "idle": "En veille",
+            "paused": "en pause"
         }
     },
     "state_badge": {
@@ -346,7 +351,11 @@
                 },
                 "customize": {
                     "caption": "Personnalisation",
-                    "description": "Personnalisez vos entités"
+                    "description": "Personnalisez vos entités",
+                    "picker": {
+                        "header": "Personnalisation",
+                        "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées \/ modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
+                    }
                 },
                 "automation": {
                     "caption": "Automatisation",
@@ -544,7 +553,15 @@
                         "change_password": "Changer le mot de passe",
                         "activate_user": "Activer l'utilisateur",
                         "deactivate_user": "Désactiver l'utilisateur",
-                        "delete_user": "Supprimer l'utilisateur"
+                        "delete_user": "Supprimer l'utilisateur",
+                        "caption": "Voir l'utilisateur"
+                    },
+                    "add_user": {
+                        "caption": "Ajouter un utilisateur",
+                        "name": "Nom",
+                        "username": "Nom d'utilisateur",
+                        "password": "Mot de passe",
+                        "create": "Créer"
                     }
                 },
                 "cloud": {
@@ -584,7 +601,9 @@
                     "caption": "Registre des pièces",
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "picker": {
-                        "header": "Registre des pièces"
+                        "header": "Registre des pièces",
+                        "introduction": "Les zones sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
+                        "introduction2": "Pour placer des périphériques dans une zone, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique."
                     },
                     "no_areas": "Vous n'avez pas encore configuré de pièce !",
                     "create_area": "CRÉER UNE PIÈCE",
@@ -598,10 +617,27 @@
                 "entity_registry": {
                     "caption": "Registre des entités",
                     "description": "Vue d'ensemble de toutes les entités connues.",
+                    "picker": {
+                        "header": "Registre des entités",
+                        "unavailable": "(indisponible)",
+                        "introduction": "Home Assistant tient un registre de chaque entité qu'il n’a jamais vue et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
+                        "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations."
+                    },
                     "editor": {
+                        "unavailable": "Cette entité n'est pas disponible actuellement.",
                         "default_name": "Nouvelle pièce",
                         "delete": "SUPPRIMER",
                         "update": "METTRE À JOUR"
+                    }
+                },
+                "person": {
+                    "caption": "Personnes",
+                    "description": "Gérez les personnes suivies par Home Assistant.",
+                    "detail": {
+                        "name": "Nom",
+                        "device_tracker_intro": "Sélectionnez les appareils appartenant à cette personne.",
+                        "device_tracker_picked": "Appareil suivi",
+                        "device_tracker_pick": "Choisissez le périphérique à suivre"
                     }
                 }
             },
@@ -841,6 +877,10 @@
                     "unused_entities": "Entités inutilisées",
                     "help": "Aide",
                     "refresh": "Actualiser"
+                },
+                "warning": {
+                    "entity_not_found": "Entité non disponible: {entity}",
+                    "entity_non_numeric": "L'entité est non numérique: {entity}"
                 }
             }
         },
@@ -913,7 +953,8 @@
                 "arm_home": "Armer (domicile)",
                 "arm_away": "Armer (absent)",
                 "arm_night": "Armer nuit",
-                "armed_custom_bypass": "Bypass personnalisé"
+                "armed_custom_bypass": "Bypass personnalisé",
+                "arm_custom_bypass": "Bypass personnalisé"
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
@@ -1084,6 +1125,15 @@
             "humidity": "Humidité",
             "visibility": "Visibilité",
             "wind_speed": "Vitesse du vent"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Off",
+                "on": "On",
+                "auto": "Auto"
+            }
         }
     }
 }

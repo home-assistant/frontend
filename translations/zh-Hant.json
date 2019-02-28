@@ -265,6 +265,11 @@
             "on": "開啟",
             "paused": "暫停",
             "returning": "返回充電"
+        },
+        "timer": {
+            "active": "啟用",
+            "idle": "閒置",
+            "paused": "暫停"
         }
     },
     "state_badge": {
@@ -357,7 +362,7 @@
                     "description": "新增和編輯自動化內容",
                     "picker": {
                         "header": "自動化編輯器",
-                        "introduction": "自動化編輯器可以讓你編輯想要的自動化內容\n請閱讀設定文件以確保自動化設定格式正確\n常見的錯誤為前後多餘的空格與上下欄位的對齊\n否則無法正常啟用。\n\n想知道更多關於自動化編輯器的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/automation\/editor\/",
+                        "introduction": "自動化編輯器允許新增或編輯自動化。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "pick_automation": "選擇欲編輯的自動化",
                         "no_automations": "沒有任何可編輯的自動化",
                         "add_automation": "新增一個自動化"
@@ -370,7 +375,7 @@
                         "alias": "名稱",
                         "triggers": {
                             "header": "觸發",
-                            "introduction": "觸發條件可使你設定好的自動化開始運作\n你可以指定針對一個自動化設定一個或多個觸發條件\n當觸發通過後，Home Assistant會開始檢查下一步的觸發判斷式，如果判斷通過，就會開始執行觸發後動作\n\n想知道更多關於事件觸發，可參考文件\nhttps:\/\/home-assistant.io\/docs\/automation\/trigger\/",
+                            "introduction": "「觸發條件」為可使設定好的自動化開始運作。可以針對一個自動化設定多個觸發條件。一旦觸發後，Home Assistant 會檢查觸發判斷式，並開始執行動作。請參考下方連結以了解更多關於「事件觸發」的資料。",
                             "add": "新增一個觸發",
                             "duplicate": "複製",
                             "delete": "刪除",
@@ -451,7 +456,7 @@
                         },
                         "conditions": {
                             "header": "觸發判斷",
-                            "introduction": "「觸發判斷」為自動化規則中，選項使用的部分。可以用以避免誤觸發某些動作。「觸發判斷」看起來跟觸發很類似，但實際上不盡相同。觸發主要監看系統中、事件的變化產生，而觸發判斷僅監看系統目前的狀況。例如：觸發可以觀察到開關被開啟，而觸發判斷僅關注目前開關是開啟或關閉的狀態。\n\n想了解更多關於「觸發判斷」的資料，請參考。\nhttps:\/\/home-assistant.io\/docs\/scripts\/conditions\/",
+                            "introduction": "「觸發判斷」為自動化規則中，選項使用的部分。可以用以避免誤觸發某些動作。「觸發判斷」看起來跟觸發很類似，但實際上不盡相同。觸發主要監看系統中、事件的變化產生，而觸發判斷僅監看系統目前的狀況。例如：觸發可以觀察到開關被開啟，而觸發判斷僅關注目前開關是開啟或關閉的狀態。請參考下方連結以了解更多關於「觸發判斷」的資料。",
                             "add": "新增一個判斷式",
                             "duplicate": "複製",
                             "delete": "刪除",
@@ -496,7 +501,7 @@
                         },
                         "actions": {
                             "header": "觸發後動作",
-                            "introduction": "「動作」為自動化觸發後，Home Assistant 所會執行的。\n\n想了解更多關於「動作」的資料，請參考文件。\nhttps:\/\/home-assistant.io\/docs\/automation\/action\/",
+                            "introduction": "「動作」為自動化觸發後，Home Assistant 所執行的自動化。點選下方連結以了解更多關於「動作」的資料。",
                             "add": "新增一個動作",
                             "duplicate": "複製",
                             "delete": "刪除",
@@ -548,7 +553,15 @@
                         "change_password": "更改密碼",
                         "activate_user": "激活用戶",
                         "deactivate_user": "停用用戶",
-                        "delete_user": "刪除用戶"
+                        "delete_user": "刪除用戶",
+                        "caption": "檢視用戶"
+                    },
+                    "add_user": {
+                        "caption": "新增用戶",
+                        "name": "名稱",
+                        "username": "使用者名稱",
+                        "password": "密碼",
+                        "create": "新增"
                     }
                 },
                 "cloud": {
@@ -588,7 +601,9 @@
                     "caption": "分區 ID",
                     "description": "家中所有分區概觀。",
                     "picker": {
-                        "header": "分區 ID"
+                        "header": "分區 ID",
+                        "introduction": "分區主要用以管理裝置所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
+                        "introduction2": "欲於分區中放置裝置，請使用下方連結至整合頁面，並點選設定整合以設定裝置卡片。"
                     },
                     "no_areas": "看起來你還沒有建立分區！",
                     "create_area": "建立分區",
@@ -604,7 +619,9 @@
                     "description": "所有已知物件概觀。",
                     "picker": {
                         "header": "物件 ID",
-                        "unavailable": "（不可用）"
+                        "unavailable": "（不可用）",
+                        "introduction": "Home Assistant 保持每個物件 ID 的獨特辨識性，此些物件將會指定一組專用的 物件 ID。",
+                        "introduction2": "使用物件 ID 以覆寫名稱、變更物件 ID 或由 Home Assistant 移除物件。請注意：移除物件 ID 項目並不會移除物件。欲移除，請跟隨下方連結，並於整合頁面中進行移除。"
                     },
                     "editor": {
                         "unavailable": "該物件目前不可用。",
@@ -860,6 +877,10 @@
                     "unused_entities": "未使用物件",
                     "help": "說明",
                     "refresh": "更新"
+                },
+                "warning": {
+                    "entity_not_found": "物件不可用：{entity}",
+                    "entity_non_numeric": "物件為非數字：{entity}"
                 }
             }
         },
@@ -1104,6 +1125,15 @@
             "humidity": "濕度",
             "visibility": "能見度",
             "wind_speed": "風速"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "關閉",
+                "on": "開啟",
+                "auto": "自動模式"
+            }
         }
     }
 }

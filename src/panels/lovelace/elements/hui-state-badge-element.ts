@@ -1,21 +1,29 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
+import "../components/hui-warning";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 
+export interface Config extends LovelaceElementConfig {
+  entity: string;
+}
+
+@customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement
   implements LovelaceElement {
-  public hass?: HomeAssistant;
-  private _config?: LovelaceElementConfig;
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: Config;
 
-  static get properties() {
-    return { hass: {}, _config: {} };
-  }
-
-  public setConfig(config: LovelaceElementConfig): void {
+  public setConfig(config: Config): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }
@@ -24,20 +32,29 @@ export class HuiStateBadgeElement extends LitElement
   }
 
   protected render(): TemplateResult | void {
-    if (
-      !this._config ||
-      !this.hass ||
-      !this.hass.states[this._config.entity!]
-    ) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
-    const state = this.hass.states[this._config.entity!];
+    const stateObj = this.hass.states[this._config.entity!];
+
+    if (!stateObj) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
+
     return html`
       <ha-state-label-badge
         .hass="${this.hass}"
-        .state="${state}"
-        .title="${computeStateName(state)}"
+        .state="${stateObj}"
+        .title="${computeStateName(stateObj)}"
       ></ha-state-label-badge>
     `;
   }
@@ -48,5 +65,3 @@ declare global {
     "hui-state-badge-element": HuiStateBadgeElement;
   }
 }
-
-customElements.define("hui-state-badge-element", HuiStateBadgeElement);

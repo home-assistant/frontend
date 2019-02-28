@@ -6,7 +6,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-more-info": {
-      entityId: string;
+      entityId: string | null;
     };
   }
 }
