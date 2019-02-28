@@ -20,8 +20,11 @@ import { setValue } from "../../../data/input_text";
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
+
   private _loaded?: boolean;
+
   private _updated?: boolean;
 
   public setConfig(config: EntityConfig): void {
