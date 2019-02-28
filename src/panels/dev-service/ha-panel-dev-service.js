@@ -6,6 +6,7 @@ import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import { ENTITY_COMPONENT_DOMAINS } from "../../data/entity";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
 import "../../components/ha-service-picker";
@@ -293,7 +294,7 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _computeEntityDomainFilter(domain) {
-    return domain === "homeassistant" ? null : domain;
+    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? domain : null;
   }
 
   _callService() {
