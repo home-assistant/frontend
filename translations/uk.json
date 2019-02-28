@@ -381,7 +381,7 @@
                             "delete": "Видалити",
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
                             "unsupported_platform": "Непідтримувана платформа: {platform}",
-                            "type_select": "Тип подразнювача",
+                            "type_select": "Тип тригера",
                             "type": {
                                 "event": {
                                     "label": "Подія:",
@@ -850,6 +850,10 @@
                     "unused_entities": "Незадіяні об'єкти",
                     "help": "Допомога",
                     "refresh": "Оновити"
+                },
+                "warning": {
+                    "entity_not_found": "Об'єкт не доступний: {entity}",
+                    "entity_non_numeric": "Об'єкт не є числовим: {entity}"
                 }
             }
         },
@@ -993,7 +997,7 @@
             },
             "relative_time": {
                 "past": "{time} тому",
-                "future": "В {time}",
+                "future": "{time} тому",
                 "never": "Ніколи",
                 "duration": {
                     "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
@@ -1028,7 +1032,7 @@
                 "sun": {
                     "elevation": "Висота",
                     "rising": "Схід сонця",
-                    "setting": "Налаштування"
+                    "setting": "Захід сонця"
                 },
                 "updater": {
                     "title": "Інструкції по оновленню"
