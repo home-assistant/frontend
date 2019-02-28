@@ -98,7 +98,7 @@ class SystemHealthCard extends LitElement {
 
   private async _fetchInfo() {
     try {
-      if (!("system_health" in this.hass!.config.components)) {
+      if (!this.hass!.config.components.includes("system_health")) {
         throw new Error();
       }
       this._info = await fetchSystemHealthInfo(this.hass!);
