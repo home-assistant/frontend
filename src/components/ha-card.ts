@@ -26,7 +26,6 @@ class HaCard extends LitElement {
         );
         color: var(--primary-text-color);
         display: block;
-        overflow: hidden;
         transition: all 0.3s ease-out;
       }
       .header:not(:empty) {
