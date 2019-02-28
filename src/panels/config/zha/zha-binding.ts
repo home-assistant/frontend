@@ -12,7 +12,7 @@ import "@polymer/paper-card/paper-card";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import { ZHADevice, bindDevices, unbindDevices } from "../../../data/zha";
-import { haStyle } from "../../../resources/ha-style";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { ItemSelectedEvent } from "./types";
