@@ -846,7 +846,7 @@
                         "add": "Dodaj kartę",
                         "edit": "Edytuj",
                         "delete": "Usuń",
-                        "move": "Ruch"
+                        "move": "Przenieś"
                     },
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",

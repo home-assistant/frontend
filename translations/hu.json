@@ -354,7 +354,7 @@
                     "description": "Entitások testreszabása",
                     "picker": {
                         "header": "Testreszabás",
-                        "introduction": "Szabd testre az entitások tulajdonságait. A hozzáadott\/szerkesztett testreszabások azonnal érvényesülnek. Az eltávolított testreszabások akkor lépnek életbe, amikor az entitás frissül."
+                        "introduction": "Szabd testre az entitások tulajdonságait. A hozzáadott\/szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
                     }
                 },
                 "automation": {
@@ -602,7 +602,7 @@
                     "description": "Az összes otthoni terület áttekintése",
                     "picker": {
                         "header": "Terület Nyilvántartás",
-                        "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni fog tudni előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
+                        "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
                         "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez."
                     },
                     "no_areas": "Úgy tűnik nem hoztál létre még egy területet sem!",
@@ -621,7 +621,7 @@
                         "header": "Entitás Nyilvántartás",
                         "unavailable": "(nem elérhető)",
                         "introduction": "A Home Assistant nyilvántartást vezet minden olyan entitásról, melyet valaha látott, és egyedileg azonosítható. Ezen entitások mindegyikéhez létrejön egy entitás ID, amely csak az adott entitáshoz van rendelve.",
-                        "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy a bejegyzés entitás nyilvántartásból történő eltávolítása nem fogja eltávolítani az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációs oldalról."
+                        "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációs oldalról."
                     },
                     "editor": {
                         "unavailable": "Ez az entitás jelenleg nem elérhető.",
@@ -635,7 +635,7 @@
                     "description": "Kezeld azon személyeket, melyeket a Home Assistant követ.",
                     "detail": {
                         "name": "Név",
-                        "device_tracker_intro": "Válaszd ki az eszközöket, melyek ehhez a felhasználóhoz tartoznak",
+                        "device_tracker_intro": "Válaszd ki azokat az eszközöket, amelyek ehhez a felhasználóhoz tartoznak.",
                         "device_tracker_picked": "Eszköz követése",
                         "device_tracker_pick": "Válassz egy követni kívánt eszközt"
                     }
