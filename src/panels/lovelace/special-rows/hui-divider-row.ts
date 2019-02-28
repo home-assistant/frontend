@@ -1,16 +1,19 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
+
 import { EntityRow, DividerConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
+@customElement("hui-divider-row")
 class HuiDividerRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
-  private _config?: DividerConfig;
 
-  static get properties() {
-    return {
-      _config: {},
-    };
-  }
+  @property() private _config?: DividerConfig;
 
   public setConfig(config): void {
     if (!config) {
@@ -48,5 +51,3 @@ declare global {
     "hui-divider-row": HuiDividerRow;
   }
 }
-
-customElements.define("hui-divider-row", HuiDividerRow);

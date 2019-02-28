@@ -1,18 +1,23 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
+} from "lit-element";
+
 import { EntityRow, WeblinkConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
 
+@customElement("hui-webline-row")
 class HuiWeblinkRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
-  private _config?: WeblinkConfig;
 
-  static get properties() {
-    return {
-      _config: {},
-    };
-  }
+  @property() private _config?: WeblinkConfig;
 
   public setConfig(config: WeblinkConfig): void {
     if (!config || !config.url) {
@@ -32,7 +37,6 @@ class HuiWeblinkRow extends LitElement implements EntityRow {
     }
 
     return html`
-      ${this.renderStyle()}
       <a href="${this._config.url}" target="_blank">
         <ha-icon .icon="${this._config.icon}"></ha-icon>
         <div>${this._config.name}</div>
@@ -40,26 +44,24 @@ class HuiWeblinkRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        a {
-          display: flex;
-          align-items: center;
-          color: var(--primary-color);
-        }
-        ha-icon {
-          padding: 8px;
-          color: var(--paper-item-icon-color);
-        }
-        div {
-          flex: 1;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          margin-left: 16px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      a {
+        display: flex;
+        align-items: center;
+        color: var(--primary-color);
+      }
+      ha-icon {
+        padding: 8px;
+        color: var(--paper-item-icon-color);
+      }
+      div {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-left: 16px;
+      }
     `;
   }
 }
