@@ -6,6 +6,7 @@ import {
   TemplateResult,
   CSSResult,
   css,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-card/paper-card";
 import "../../../components/buttons/ha-call-service-button";
@@ -16,21 +17,15 @@ import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { ItemSelectedEvent } from "./types";
 
+@customElement("zha-binding-control")
 export class ZHABindingControl extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
   @property() public selectedDevice?: ZHADevice;
-  @property() private _showHelp: boolean;
-  @property() private _bindTargetIndex: number;
-  @property() private bindableDevices: ZHADevice[];
+  @property() private _showHelp: boolean = false;
+  @property() private _bindTargetIndex: number = -1;
+  @property() private bindableDevices: ZHADevice[] = [];
   private _deviceToBind?: ZHADevice;
-
-  constructor() {
-    super();
-    this._showHelp = false;
-    this._bindTargetIndex = -1;
-    this.bindableDevices = [];
-  }
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -214,5 +209,3 @@ declare global {
     "zha-binding-control": ZHABindingControl;
   }
 }
-
-customElements.define("zha-binding-control", ZHABindingControl);

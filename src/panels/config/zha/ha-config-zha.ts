@@ -27,12 +27,7 @@ export class HaConfigZha extends LitElement {
   @property() public isWide?: boolean;
   @property() private _selectedDevice?: ZHADevice;
   @property() private _selectedCluster?: Cluster;
-  @property() private _bindableDevices: ZHADevice[];
-
-  constructor() {
-    super();
-    this._bindableDevices = [];
-  }
+  @property() private _bindableDevices: ZHADevice[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("_selectedDevice")) {
