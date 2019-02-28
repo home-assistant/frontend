@@ -133,8 +133,8 @@
         "climate": {
             "off": "Apagat",
             "on": "Encès",
-            "heat": "Escalfar",
-            "cool": "Refredar",
+            "heat": "Calent",
+            "cool": "Fred",
             "idle": "Inactiu",
             "auto": "Automàtic",
             "dry": "Assecar",
@@ -601,7 +601,9 @@
                     "caption": "Registre d'àrees",
                     "description": "Visió general de totes les àrees de la casa.",
                     "picker": {
-                        "header": "Registre d'àrees"
+                        "header": "Registre d'àrees",
+                        "introduction": "Les àrees s'utilitzen per organitzar la situació dels dispositius. Aquesta informació serà utilitzada per Home Assistant per ajudar-te a organitzar millor la teva interfície, els permisos i les integracions amb d'altres sistemes.",
+                        "introduction2": "Per col·locar dispositius en una àrea, utilitza l'enllaç de sota per anar a la pàgina d'integracions i, a continuació, fes clic a una integració configurada per accedir a les targetes del dispositiu."
                     },
                     "no_areas": "Sembla que encara no tens cap àrea, encara.",
                     "create_area": "CREA ÀREA",
@@ -617,7 +619,9 @@
                     "description": "Visió general de totes les entitats conegudes.",
                     "picker": {
                         "header": "Registre d'entitats",
-                        "unavailable": "(no disponible)"
+                        "unavailable": "(no disponible)",
+                        "introduction": "Home Assistant manté un registre de totes les entitats que ha detectat alguna vegada les quals tenen una identificació única. Cadascuna d'aquestes entitats té un identificador (ID) assignat que està reservat només per a ella.",
+                        "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant de les entitats. Tingues en compte que eliminar-les del registre d'entitats no eliminarà l'entitat. Per fer-ho, segueix l'enllaç següent i elimineu-la dins la pàgina d'integracions."
                     },
                     "editor": {
                         "unavailable": "Aquesta entitat no està disponible actualment.",

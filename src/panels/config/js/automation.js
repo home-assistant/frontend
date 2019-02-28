@@ -73,7 +73,9 @@ export default class Automation extends Component {
               )}
             </p>
             <a href="https://home-assistant.io/docs/automation/trigger/">
-              <ha-icon icon="mdi:link" />
+              {localize(
+                "ui.panel.config.automation.editor.triggers.learn_more"
+              )}
             </a>
           </span>
           <Trigger
@@ -95,7 +97,9 @@ export default class Automation extends Component {
               )}
             </p>
             <a href="https://home-assistant.io/docs/scripts/conditions/">
-              <ha-icon icon="mdi:link" />
+              {localize(
+                "ui.panel.config.automation.editor.conditions.learn_more"
+              )}
             </a>
           </span>
           <Condition
@@ -117,7 +121,7 @@ export default class Automation extends Component {
               )}
             </p>
             <a href="https://home-assistant.io/docs/automation/action/">
-              <ha-icon icon="mdi:link" />
+              {localize("ui.panel.config.automation.editor.actions.learn_more")}
             </a>
           </span>
           <Script

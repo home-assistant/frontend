@@ -553,7 +553,15 @@
                         "change_password": "Passwuert änneren",
                         "activate_user": "Benotzer aktivéieren",
                         "deactivate_user": "Benotzer déaktivéieren",
-                        "delete_user": "Benotzer läschen"
+                        "delete_user": "Benotzer läschen",
+                        "caption": "Benotzer kucken"
+                    },
+                    "add_user": {
+                        "caption": "Benotzer erstellen",
+                        "name": "Numm",
+                        "username": "Benotzernumm",
+                        "password": "Passwuert",
+                        "create": "Erstellen"
                     }
                 },
                 "cloud": {
@@ -593,7 +601,9 @@
                     "caption": "Lëscht vun de Beräicher",
                     "description": "Iwwersiicht vun de Beräicher am Haus",
                     "picker": {
-                        "header": "Lëscht vun de Beräicher"
+                        "header": "Lëscht vun de Beräicher",
+                        "introduction": "Beräicher gi benotzt fir d'Organisatioun vum Standuert vun den Apparater. Dës Informatioun gëtt vum Home Assistant benotzt fir iech ze hëllefe fir den Interface, Berechtegungen an Integratioune mat aner Systemer ze geréieren.",
+                        "introduction2": "Fir Apparater an e Beräich ze setzen, benotzt de Link ënne fir op d'Integratiouns Säit ze kommen a klickt do op eng konfiguréiert Integratioun fir d'Kaart vum Apparat unzeweisen."
                     },
                     "no_areas": "Et sinn nach keng Beräicher do!",
                     "create_area": "Beräich erstellen",
@@ -609,10 +619,12 @@
                     "description": "Iwwersiicht vun all bekannten Entitéiten.",
                     "picker": {
                         "header": "Lëscht vun den Entitéiten",
-                        "unavailable": "(net verfügbar)"
+                        "unavailable": "(net verfügbar)",
+                        "introduction": "Home Assistant hält eng Lëscht vun all Entitéit's ID déi eenzel erkennbar ass a bis elo vum System erkannt gouf. All eenzel vun dësen Entitéite kritt eng ID zougewise welch nëmme fir dës Entitéit reservéiert ass.",
+                        "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen. Remarque: Läsche vun der Entitéit aus der Lëscht läscht d'Entitéit selwer net. Fir dës ze läsche follegt dem Link ënnen a läscht et op der Integratiouns Säit."
                     },
                     "editor": {
-                        "unavailable": "Dës Entitéit ass net erreechba fir de Moment.",
+                        "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                         "default_name": "Neie Beräich",
                         "delete": "Läschen",
                         "update": "Aktualiséieren"
@@ -1113,6 +1125,15 @@
             "humidity": "Loftfiichtegkeet",
             "visibility": "Visibilitéit",
             "wind_speed": "Wand Vitesse"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Aus",
+                "on": "Un",
+                "auto": "Autmatesch"
+            }
         }
     }
 }

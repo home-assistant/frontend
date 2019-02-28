@@ -265,6 +265,11 @@
             "on": "Encendido",
             "paused": "En pausa",
             "returning": "Volviendo a la base"
+        },
+        "timer": {
+            "active": "activo",
+            "idle": "inactivo",
+            "paused": "pausado"
         }
     },
     "state_badge": {
@@ -346,7 +351,11 @@
                 },
                 "customize": {
                     "caption": "Personalización",
-                    "description": "Personaliza tus entidades"
+                    "description": "Personaliza tus entidades",
+                    "picker": {
+                        "header": "Personalización",
+                        "introduction": "Ajustar los atributos de cada entidad. Las personalizaciones añadidas\/editadas tendrán efecto inmediatamente. Las personalizaciones eliminadas tendrán efecto cuando la entidad se actualice."
+                    }
                 },
                 "automation": {
                     "caption": "Automatización",
@@ -544,7 +553,15 @@
                         "change_password": "Cambia la contraseña",
                         "activate_user": "Activar usuario",
                         "deactivate_user": "Desactivar usuario",
-                        "delete_user": "Borrar usuario"
+                        "delete_user": "Borrar usuario",
+                        "caption": "Ver usuario"
+                    },
+                    "add_user": {
+                        "caption": "Añadir usuario",
+                        "name": "Nombre",
+                        "username": "Nombre de usuario",
+                        "password": "Contraseña",
+                        "create": "Crear"
                     }
                 },
                 "cloud": {
@@ -569,7 +586,8 @@
                         "hub": "Conectado a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo no disponible",
-                        "entity_unavailable": "entidad no disponible"
+                        "entity_unavailable": "entidad no disponible",
+                        "no_area": "Ninguna área"
                     }
                 },
                 "zha": {
@@ -581,11 +599,46 @@
                 },
                 "area_registry": {
                     "caption": "Registro de área",
-                    "description": "Visión general de todas las áreas de tu casa."
+                    "description": "Visión general de todas las áreas de tu casa.",
+                    "picker": {
+                        "header": "Registro de Área",
+                        "introduction": "Las áreas se utilizan para organizar dónde están los dispositivos. Esta información se utilizará en Home Assistant para ayudarle a organizar su interfaz, permisos e integraciones con otros sistemas.",
+                        "introduction2": "Para colocar dispositivos en un área, utilice el siguiente enlace para navegar a la página de integraciones y luego haga clic en una integración configurada para llegar a las tarjetas de dispositivos."
+                    },
+                    "no_areas": "¡Parece que no tienes áreas!",
+                    "create_area": "CREAR ÁREA",
+                    "editor": {
+                        "default_name": "Área Nueva",
+                        "delete": "BORRAR",
+                        "update": "ACTUALIZAR",
+                        "create": "CREAR"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Registro de Entidades",
-                    "description": "Resumen de todas las entidades conocidas."
+                    "description": "Resumen de todas las entidades conocidas.",
+                    "picker": {
+                        "header": "Registro de Entidades",
+                        "unavailable": "(no disponible)",
+                        "introduction": "Home Assistant mantiene un registro de cada entidad que ha visto. Cada una de estas entidades tendrá una identificación asignada que se reservará sólo para esta entidad.",
+                        "introduction2": "Utilice el registro de entidades para anular el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Nota: la eliminación de la entrada del registro de entidades no eliminará la entidad. Para ello, siga el siguiente enlace y elimínelo de la página de integraciones."
+                    },
+                    "editor": {
+                        "unavailable": "Esta entidad no está disponible actualmente.",
+                        "default_name": "Área Nueva",
+                        "delete": "BORRAR",
+                        "update": "ACTUALIZAR"
+                    }
+                },
+                "person": {
+                    "caption": "Personas",
+                    "description": "Gestiona las personas que rastrea Home Assistant.",
+                    "detail": {
+                        "name": "Nombre",
+                        "device_tracker_intro": "Seleccione los dispositivos que pertenecen a esta persona.",
+                        "device_tracker_picked": "Rastrear dispositivo",
+                        "device_tracker_pick": "Seleccionar dispositivo para rastrear"
+                    }
                 }
             },
             "profile": {
@@ -792,7 +845,8 @@
                         "pick_card": "Escoge la tarjeta que desea agregar.",
                         "add": "Añadir tarjeta",
                         "edit": "Editar",
-                        "delete": "Eliminar"
+                        "delete": "Eliminar",
+                        "move": "Mover"
                     },
                     "migrate": {
                         "header": "Configuración incompatible",
@@ -823,6 +877,10 @@
                     "unused_entities": "Entidades no utilizadas",
                     "help": "Ayuda",
                     "refresh": "Refrescar"
+                },
+                "warning": {
+                    "entity_not_found": "La entidad no esta disponible: {entity}",
+                    "entity_non_numeric": "La entidad no es numérica: {entity}"
                 }
             }
         },
@@ -895,7 +953,8 @@
                 "arm_home": "Armar en casa",
                 "arm_away": "Armar fuera de casa",
                 "arm_night": "Armado nocturno",
-                "armed_custom_bypass": "Armada zona específica"
+                "armed_custom_bypass": "Armada zona específica",
+                "arm_custom_bypass": "Bypass personalizada"
             },
             "automation": {
                 "last_triggered": "Última activación",
@@ -1066,6 +1125,15 @@
             "humidity": "Humedad",
             "visibility": "Visibilidad",
             "wind_speed": "Velocidad del viento"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Apagado",
+                "on": "Prendido",
+                "auto": "Automatico"
+            }
         }
     }
 }

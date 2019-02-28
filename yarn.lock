@@ -1653,6 +1653,11 @@
   resolved "https://registry.yarnpkg.com/@types/freeport/-/freeport-1.0.21.tgz#73f6543ed67d3ca3fff97b985591598b7092066f"
   integrity sha1-c/ZUPtZ9PKP/+XuYVZFZi3CSBm8=
 
+"@types/geojson@*":
+  version "7946.0.6"
+  resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.6.tgz#416f388a06b227784a2d91a88a53f14de05cd54b"
+  integrity sha512-f6qai3iR62QuMPPdgyH+LyiXTL2n9Rf62UniJjV7KHrbiwzLTZUKsdq0mFSTxAHbO7JvwxwC4tH0m1UnweuLrA==
+
 "@types/glob-stream@*":
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/@types/glob-stream/-/glob-stream-6.1.0.tgz#7ede8a33e59140534f8d8adfb8ac9edfb31897bc"
@@ -1724,6 +1729,13 @@
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@types/launchpad/-/launchpad-0.6.0.tgz#37296109b7f277f6e6c5fd7e0c0706bc918fbb51"
   integrity sha1-NylhCbfyd/bmxf1+DAcGvJGPu1E=
+
+"@types/leaflet@^1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.4.3.tgz#62638cb73770eeaed40222042afbcc7b495f0cc4"
+  integrity sha512-jFRBSsPHi1EwQSwrN0cOJLdPhwOZsRl4IMxvm/2ShLh0YM5GfCtQXCzsrv8RE7DWL+AykXdYSAd9bFLWbZT4CQ==
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/memoize-one@^4.1.0":
   version "4.1.0"

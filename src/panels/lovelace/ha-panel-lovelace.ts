@@ -120,6 +120,18 @@ class LovelacePanel extends LitElement {
     this._updateColumns();
   }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (
+      this.lovelace &&
+      this.hass &&
+      this.lovelace.language !== this.hass.language
+    ) {
+      // language has been changed, rebuild UI
+      this._fetchConfig(false);
+    }
+  }
+
   private _closeEditor() {
     this._state = "loaded";
   }
@@ -163,6 +175,7 @@ class LovelacePanel extends LitElement {
       config: conf,
       editMode: this.lovelace ? this.lovelace.editMode : false,
       mode: confMode,
+      language: this.hass!.language,
       enableFullEditMode: () => {
         if (!editorLoaded) {
           editorLoaded = true;

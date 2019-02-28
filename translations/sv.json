@@ -53,20 +53,20 @@
                 "on": "Detekterad"
             },
             "motion": {
-                "off": "Av",
-                "on": "Detekterad"
-            },
-            "occupancy": {
                 "off": "Klart",
                 "on": "Detekterad"
             },
+            "occupancy": {
+                "off": "Tomt",
+                "on": "Detekterad"
+            },
             "smoke": {
-                "off": "Av",
+                "off": "Klart",
                 "on": "Detekterad"
             },
             "sound": {
-                "off": "Av",
-                "on": "På"
+                "off": "Klart",
+                "on": "Detekterad"
             },
             "vibration": {
                 "off": "Klart",
@@ -265,6 +265,11 @@
             "on": "På",
             "paused": "Pausad",
             "returning": "Återgår till docka"
+        },
+        "timer": {
+            "active": "aktiv",
+            "idle": "inaktiv",
+            "paused": "pausad"
         }
     },
     "state_badge": {
@@ -292,7 +297,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Rensa klara",
+                "clear_completed": "Rensning slutförd",
                 "add_item": "Lägg till objekt",
                 "microphone_tip": "Tryck på mikrofonen längst upp till höger och säg \"Add candy to my shopping list\""
             },
@@ -301,7 +306,8 @@
                 "period": "Period"
             },
             "logbook": {
-                "showing_entries": "Visar poster för"
+                "showing_entries": "Visar poster för",
+                "period": "Period"
             },
             "mailbox": {
                 "empty": "Du har inga meddelanden",
@@ -329,14 +335,14 @@
                             "reloading": {
                                 "heading": "Uppdatering av konfigurationen",
                                 "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"Uppdatera\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
-                                "core": "Uppdatera core",
+                                "core": "Uppdatera kärnan",
                                 "group": "Uppdatera grupper",
                                 "automation": "Uppdatera automationer",
                                 "script": "Uppdatera skript"
                             },
                             "server_management": {
                                 "heading": "Serverhantering",
-                                "introduction": "Hantera din Home Assistant-server... från Home Assistant.",
+                                "introduction": "Hantera din Home Assistant server... från Home Assistant.",
                                 "restart": "Starta om",
                                 "stop": "Stoppa"
                             }
@@ -345,7 +351,11 @@
                 },
                 "customize": {
                     "caption": "Anpassning",
-                    "description": "Anpassa dina entiteter"
+                    "description": "Anpassa dina entiteter",
+                    "picker": {
+                        "header": "Anpassning",
+                        "introduction": "Justera attribut per enhet. Tillagda och redigerade anpassningar kommer att tillträda omedelbart. Borttagna anpassningar kommer att träda i kraft när enheten är uppdaterad."
+                    }
                 },
                 "automation": {
                     "caption": "Automationer",
@@ -370,7 +380,7 @@
                             "duplicate": "Duplicera",
                             "delete": "Radera",
                             "delete_confirm": "Säker på att du vill radera?",
-                            "unsupported_platform": "Plattform stöds inte: {platform}",
+                            "unsupported_platform": "Plattform stöds ej: {platform}",
                             "type_select": "Aktiveringstyp",
                             "type": {
                                 "event": {
@@ -451,7 +461,7 @@
                             "duplicate": "Duplicera",
                             "delete": "Radera",
                             "delete_confirm": "Säker på att du vill radera?",
-                            "unsupported_condition": "Villkor stöds inte: {{condition}}",
+                            "unsupported_condition": "Villkor stöds inte: {condition}",
                             "type_select": "Villkorstyp",
                             "type": {
                                 "state": {
@@ -509,14 +519,14 @@
                                 },
                                 "wait_template": {
                                     "label": "paus",
-                                    "wait_template": "pause mall",
+                                    "wait_template": "paus mall",
                                     "timeout": "Timeout (valfritt)"
                                 },
                                 "condition": {
                                     "label": "Villkor"
                                 },
                                 "event": {
-                                    "label": "Fire event",
+                                    "label": "Brand händelse",
                                     "event": "Händelse",
                                     "service_data": "Tjänstedata"
                                 }
@@ -530,7 +540,7 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Hantera ditt Z-Wave-nätverk"
+                    "description": "Hantera ditt Z-Wave nätverk"
                 },
                 "users": {
                     "caption": "Användare",
@@ -543,11 +553,19 @@
                         "change_password": "Ändra lösenord",
                         "activate_user": "Aktivera användare",
                         "deactivate_user": "Avaktivera användare",
-                        "delete_user": "Ta bort användare"
+                        "delete_user": "Ta bort användare",
+                        "caption": "Visa användare"
+                    },
+                    "add_user": {
+                        "caption": "Lägg till användare",
+                        "name": "Namn",
+                        "username": "Användarnamn",
+                        "password": "Lösenord",
+                        "create": "Skapa"
                     }
                 },
                 "cloud": {
-                    "caption": "Home Assistant moln",
+                    "caption": "Home Assistant Cloud",
                     "description_login": "Inloggad som {email}",
                     "description_not_login": "Inte inloggad"
                 },
@@ -568,32 +586,68 @@
                         "hub": "Ansluten via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "enhet otillgänglig",
-                        "entity_unavailable": "entitet otillgänglig"
+                        "entity_unavailable": "entitet otillgänglig",
+                        "no_area": "Inget område (\"area\")"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation nätverkhantering",
+                    "description": "Zigbee Home Automation (ZHA) nätverkshantering",
                     "services": {
-                        "reconfigure": "Återkonfigurera ZHA-enheten (läka enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är vaken och accepterar kommandon när du använder den här tjänsten."
+                        "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion."
                     }
                 },
                 "area_registry": {
                     "caption": "Områdesregister",
-                    "description": "Oversikt över alla områden i ditt hem"
+                    "description": "Oversikt över alla områden i ditt hem",
+                    "picker": {
+                        "header": "Områdesregister",
+                        "introduction": "Områden används för att organisera var enheter befinner sig. Denna information kommer att användas i hela Home Assistant för att hjälpa dig att organisera ditt gränssnitt, behörigheter och integreringar med andra system.",
+                        "introduction2": "Om du vill placera enheter i ett område använder du länken nedan för att navigera till integrationssidan och klickar sedan på en konfigurerad integration för att komma till enhetskort."
+                    },
+                    "no_areas": "Det verkar som om du inte har några områden än!",
+                    "create_area": "SKAPA OMRÅDE",
+                    "editor": {
+                        "default_name": "Nytt område",
+                        "delete": "RADERA",
+                        "update": "UPPDATERA",
+                        "create": "SKAPA"
+                    }
                 },
                 "entity_registry": {
                     "caption": "Entitetsregister",
-                    "description": "Översikt över alla kända entiteter"
+                    "description": "Översikt över alla kända entiteter",
+                    "picker": {
+                        "header": "Enhetsregister",
+                        "unavailable": "(ej tillgänglig)",
+                        "introduction": "Home Assistanthar ett enhetsregister som innehåller varje enhet som någonsin har setts vars identifieras kan vara unikt. Var och en av dessa enheter kommer att ha ett ID-nummer som är reserverat för bara den enheten.",
+                        "introduction2": "Använd enhetsregistret för att skriva över namnet, ändra ID eller ta bort posten ifrån Home Assistant. Obs! Att ta bort posten ifrån entity registry (enhetsregister) kommer inte att ta bort enheten. För att göra det, följ länken nedan och ta bort det från integreringssidan."
+                    },
+                    "editor": {
+                        "unavailable": "Denna enhet är inte tillgänglig för tillfället.",
+                        "default_name": "Nytt område",
+                        "delete": "RADERA",
+                        "update": "UPPDATERA"
+                    }
+                },
+                "person": {
+                    "caption": "Personer",
+                    "description": "Hantera de personer som Home Assistant spårar.",
+                    "detail": {
+                        "name": "Namn",
+                        "device_tracker_intro": "Välj de enheter som tillhör till den här personen.",
+                        "device_tracker_picked": "Spåra enheten",
+                        "device_tracker_pick": "Välj enhet att spåra"
+                    }
                 }
             },
             "profile": {
                 "push_notifications": {
-                    "header": "Pushmeddelanden",
+                    "header": "Push-meddelanden",
                     "description": "Skicka meddelanden till den här enheten",
                     "error_load_platform": "Konfigurera notify.html5.",
-                    "error_use_https": "Kräver att SSL aktiverat för frontend.",
-                    "push_notifications": "Pushmeddelanden",
+                    "error_use_https": "Kräver att SSL är aktiverat för frontend.",
+                    "push_notifications": "Push-meddelanden",
                     "link_promo": "Läs mer"
                 },
                 "language": {
@@ -620,7 +674,7 @@
                 },
                 "long_lived_access_tokens": {
                     "header": "Långlivade åtkomsttoken",
-                    "description": "Skapa långlivade åtkomsttokens för att låta dina skript interagera med din hemassistentenhet. Varje token kommer att vara giltig i 10 år från skapandet. Följande långlivade åtkomsttoken är för närvarande aktiva.",
+                    "description": "Skapa långlivade åtkomsttokens för att låta dina skript interagera med din Home Assistant. Varje token kommer att vara giltig i 10 år från skapandet. Följande långlivade åtkomsttoken är för närvarande aktiva.",
                     "learn_auth_requests": "Lär dig hur du gör autentiserade förfrågningar.",
                     "created_at": "Skapades den {date}",
                     "confirm_delete": "Är du säker du vill radera åtkomsttoken för {name}?",
@@ -701,7 +755,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Tvåfaktorsautentiseringskod"
+                                        "code": "Tvåfaktors autentiseringskod"
                                     },
                                     "description": "Öppna **{mfa_module_name}** på din enhet för att visa din tvåfaktors autentiseringskod och verifiera din identitet:"
                                 }
@@ -711,8 +765,8 @@
                                 "invalid_code": "Ogiltig autentiseringskod"
                             },
                             "abort": {
-                                "no_api_password_set": "Du har inget API lösenord konfigurerat",
-                                "login_expired": "Sessionen avslutades. Logga in igen."
+                                "no_api_password_set": "Du har inget API-lösenord konfigurerat",
+                                "login_expired": "Sessionen har gått ut, vänligen logga in igen."
                             }
                         },
                         "trusted_networks": {
@@ -729,8 +783,26 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Användarnamn",
+                                        "password": "Lösenord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Tvåfaktors autentiseringskod"
+                                    },
+                                    "description": "Öppna **{mfa_module_name}** på din enhet för att se din tvåfaktors autentiseringskod och verifiera din identitet:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ogiltigt användarnamn eller lösenord",
+                                "invalid_code": "Ogiltig autentiseringskod"
+                            },
                             "abort": {
-                                "login_expired": "Sessionen avslutades. Logga in igen."
+                                "login_expired": "Sessionen har gått ut, vänligen logga in igen."
                             }
                         }
                     }
@@ -773,12 +845,13 @@
                         "pick_card": "Välj det kort du vill lägga till.",
                         "add": "Lägg till kort",
                         "edit": "Redigera",
-                        "delete": "Ta bort"
+                        "delete": "Ta bort",
+                        "move": "Flytta"
                     },
                     "migrate": {
                         "header": "Konfigurationen är inte giltig",
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\".",
-                        "para_migrate": "Home Assistant kan automatiskt lägga till IDn till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
+                        "para_migrate": "Home Assistant kan automatiskt lägga till ID till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
                         "migrate": "Migrera konfigurationen"
                     },
                     "header": "Ändra användargränssnittet",
@@ -789,15 +862,25 @@
                         "delete": "Radera vy"
                     },
                     "save_config": {
-                        "header": "Ta kontroll över din Lovelace UI",
+                        "header": "Ta kontroll över ditt Lovelace användargränssnitt",
                         "para": "Home Assistant kommer som standard att behålla ditt användargränssnitt, uppdatera det när nya enheter eller Lovelace-komponenter blir tillgängliga. Om du tar kontroll kommer vi inte längre göra ändringar automatiskt för dig.",
                         "para_sure": "Är du säker på att du vill ta kontroll över ditt användargränssnitt?",
                         "cancel": "Glöm det",
                         "save": "Ta kontroll"
+                    },
+                    "menu": {
+                        "raw_editor": "Rå konfigurationseditor"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfigurera användargränssnittet"
+                    "configure_ui": "Konfigurera användargränssnittet",
+                    "unused_entities": "Oanvända enheter",
+                    "help": "Hjälp",
+                    "refresh": "Uppdatera"
+                },
+                "warning": {
+                    "entity_not_found": "Enheten är ej tillgänglig: {entity}",
+                    "entity_non_numeric": "Enheten är icke-numerisk: {entity}"
                 }
             }
         },
@@ -870,7 +953,8 @@
                 "arm_home": "Larma hemmaläge",
                 "arm_away": "Larma bortaläge",
                 "arm_night": "Larma nattläge",
-                "armed_custom_bypass": "Larm förbikopplat"
+                "armed_custom_bypass": "Larm förbikopplat",
+                "arm_custom_bypass": "Larm förbikopplat"
             },
             "automation": {
                 "last_triggered": "Utlöstes senast",
@@ -957,7 +1041,7 @@
         },
         "notification_toast": {
             "entity_turned_on": "Slog på {entity}.",
-            "entity_turned_off": "Stängde av {entity}.",
+            "entity_turned_off": "Slog av {entity}.",
             "service_called": "Tjänsten {service} anropad.",
             "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
             "connection_lost": "Anslutning tappad. Ansluter igen..."
@@ -965,7 +1049,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Spara",
-                "name": "Namn",
+                "name": "Skriv över namn",
                 "entity_id": "Entitets-ID"
             },
             "more_info_control": {
@@ -974,7 +1058,7 @@
                 },
                 "sun": {
                     "elevation": "Elevation",
-                    "rising": "Solupgång",
+                    "rising": "Soluppgång",
                     "setting": "Solnedgång"
                 },
                 "updater": {
@@ -1041,6 +1125,15 @@
             "humidity": "Luftfuktighet",
             "visibility": "Sikt",
             "wind_speed": "Vindhastighet"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Av",
+                "on": "På",
+                "auto": "Auto"
+            }
         }
     }
 }
