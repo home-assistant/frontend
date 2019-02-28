@@ -5,6 +5,7 @@ import {
   property,
   CSSResult,
   css,
+  customElement,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -20,8 +21,10 @@ interface SensorEntityConfig extends EntityConfig {
   format?: "relative" | "date" | "time" | "datetime";
 }
 
+@customElement("hui-sensor-entity-row")
 class HuiSensorEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: SensorEntityConfig;
 
   public setConfig(config: SensorEntityConfig): void {
@@ -85,5 +88,3 @@ declare global {
     "hui-sensor-entity-row": HuiSensorEntityRow;
   }
 }
-
-customElements.define("hui-sensor-entity-row", HuiSensorEntityRow);

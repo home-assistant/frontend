@@ -5,6 +5,7 @@ import {
   property,
   css,
   CSSResult,
+  customElement,
 } from "lit-element";
 
 import "../../../components/ha-climate-state";
@@ -14,8 +15,10 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
+@customElement("hui-climate-entity-row")
 class HuiClimateEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -69,5 +72,3 @@ declare global {
     "hui-climate-entity-row": HuiClimateEntityRow;
   }
 }
-
-customElements.define("hui-climate-entity-row", HuiClimateEntityRow);
