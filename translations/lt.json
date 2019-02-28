@@ -9,9 +9,73 @@
         "shopping_list": "Pirkinių sąrašas",
         "dev-mqtt": "MQTT"
     },
+    "state": {
+        "automation": {
+            "off": "Išjungta"
+        },
+        "group": {
+            "off": "Išjungta",
+            "on": "Įjungta",
+            "ok": "Ok"
+        },
+        "remote": {
+            "off": "Išjungta",
+            "on": "Įjungta"
+        },
+        "script": {
+            "off": "Išjungta",
+            "on": "Įjungta"
+        },
+        "sensor": {
+            "off": "Išjungta",
+            "on": "Įjungta"
+        },
+        "switch": {
+            "off": "Išjungta",
+            "on": "Įjungta"
+        },
+        "zwave": {
+            "query_stage": {
+                "dead": "Miręs"
+            }
+        },
+        "binary_sensor": {
+            "door": {
+                "off": "Uždaryta",
+                "on": "Atidaryta"
+            },
+            "garage_door": {
+                "off": "Uždaryta",
+                "on": "Atidaryta"
+            },
+            "window": {
+                "off": "Uždaryta",
+                "on": "Atidaryta"
+            }
+        },
+        "climate": {
+            "manual": "Rankinis"
+        }
+    },
+    "state_badge": {
+        "alarm_control_panel": {
+            "armed_home": "Užrakinta",
+            "armed_away": "Užrakinta",
+            "armed_night": "Užrakinta"
+        },
+        "device_tracker": {
+            "home": "Namie",
+            "not_home": "Išvykęs"
+        }
+    },
     "ui": {
         "sidebar": {
             "log_out": "Atsijungti"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
+            "week": "count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}",
+            "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}"
         },
         "panel": {
             "config": {
@@ -20,14 +84,34 @@
                 },
                 "automation": {
                     "editor": {
-                        "conditions": {
+                        "triggers": {
+                            "delete": "Ištrinti",
                             "type": {
+                                "sun": {
+                                    "event": "Ivykis"
+                                },
+                                "zone": {
+                                    "zone": "Vieta",
+                                    "event": "Įvykis"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "duplicate": "Dubliuoti",
+                            "delete": "Ištrinti",
+                            "type": {
+                                "numeric_state": {
+                                    "below": "žemiau"
+                                },
                                 "sun": {
                                     "label": "Saulė",
                                     "before": "Prieš:",
                                     "after": "Po:",
                                     "sunrise": "Saulėtekis",
                                     "sunset": "Saulėlydis"
+                                },
+                                "template": {
+                                    "label": "Šablonas"
                                 },
                                 "time": {
                                     "label": "Laikas",
@@ -60,6 +144,22 @@
                             }
                         }
                     }
+                },
+                "users": {
+                    "editor": {
+                        "caption": "Peržiūrėti vartotoją"
+                    },
+                    "add_user": {
+                        "caption": "Pridėti vartotoją",
+                        "name": "Vardas",
+                        "username": "Vartotojo vardas",
+                        "password": "Slaptažodis"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "description": "Siųsti pranešimus į šį įrenginį."
                 }
             },
             "lovelace": {
@@ -76,16 +176,32 @@
             },
             "logbook": {
                 "period": "Laikotarpis"
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Vartotojo vardas",
+                                        "password": "Slaptažodis"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvieju lygiu autentifikacija"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     },
     "domain": {
         "zwave": "Z-Wave",
         "system_health": "Sistemos sveikata"
-    },
-    "state": {
-        "climate": {
-            "manual": "Rankinis"
-        }
     }
 }

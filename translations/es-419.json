@@ -138,7 +138,7 @@
             "idle": "Inactivo",
             "auto": "Automatico",
             "dry": "Seco",
-            "fan_only": "Solo Ventilador",
+            "fan_only": "Sólo ventilador",
             "eco": "Eco",
             "electric": "Electrico",
             "performance": "Rendimiento",
@@ -442,7 +442,7 @@
                                     "label": "Patrón de tiempo",
                                     "hours": "Horas",
                                     "minutes": "Minutos",
-                                    "seconds": "Hass.io"
+                                    "seconds": "Segundos"
                                 },
                                 "geo_location": {
                                     "label": "Geolocalización",
@@ -478,8 +478,8 @@
                                     "label": "Sol",
                                     "before": "Antes de:",
                                     "after": "Después de:",
-                                    "before_offset": "Antes de compensan (opcional)",
-                                    "after_offset": "Después de compensación (opcional)",
+                                    "before_offset": "Antes del intervalo (opcional)",
+                                    "after_offset": "Después del intervalo (opcional)",
                                     "sunrise": "Salida del sol",
                                     "sunset": "Puesta de sol"
                                 },
@@ -1018,7 +1018,7 @@
             },
             "relative_time": {
                 "past": "Hace {time}",
-                "future": "En {time}",
+                "future": "en {time}",
                 "never": "Nunca",
                 "duration": {
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
@@ -1052,8 +1052,8 @@
                 },
                 "sun": {
                     "elevation": "Elevación",
-                    "rising": "Salida",
-                    "setting": "Puesta"
+                    "rising": "Salida del sol",
+                    "setting": "Puesta del sol"
                 },
                 "updater": {
                     "title": "Instrucciones de actualización"
