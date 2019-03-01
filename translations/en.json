@@ -270,6 +270,10 @@
             "active": "active",
             "idle": "idle",
             "paused": "paused"
+        },
+        "person": {
+            "home": "Home",
+            "not_home": "Away"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Armed"
         },
         "device_tracker": {
+            "home": "Home",
+            "not_home": "Away"
+        },
+        "person": {
             "home": "Home",
             "not_home": "Away"
         }
@@ -365,7 +373,8 @@
                         "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "pick_automation": "Pick automation to edit",
                         "no_automations": "We couldn’t find any editable automations",
-                        "add_automation": "Add automation"
+                        "add_automation": "Add automation",
+                        "learn_more": "Learn more about automations"
                     },
                     "editor": {
                         "introduction": "Use automations to bring your home alive",
@@ -375,7 +384,7 @@
                         "alias": "Name",
                         "triggers": {
                             "header": "Triggers",
-                            "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action. Click the link below to learn more about triggers.",
+                            "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
                             "add": "Add trigger",
                             "duplicate": "Duplicate",
                             "delete": "Delete",
@@ -452,11 +461,12 @@
                                     "enter": "Enter",
                                     "leave": "Leave"
                                 }
-                            }
+                            },
+                            "learn_more": "Learn more about triggers"
                         },
                         "conditions": {
                             "header": "Conditions",
-                            "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off. Click the link below to learn more about conditions.",
+                            "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
                             "add": "Add condition",
                             "duplicate": "Duplicate",
                             "delete": "Delete",
@@ -497,11 +507,12 @@
                                     "entity": "Entity with location",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "Learn more about conditions"
                         },
                         "actions": {
                             "header": "Actions",
-                            "introduction": "The actions are what Home Assistant will do when the automation is triggered. Click the link below to learn more about actions.",
+                            "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
                             "add": "Add action",
                             "duplicate": "Duplicate",
                             "delete": "Delete",
@@ -530,7 +541,8 @@
                                     "event": "Event:",
                                     "service_data": "Service data"
                                 }
-                            }
+                            },
+                            "learn_more": "Learn more about actions"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Area Registry",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
-                        "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards."
+                        "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
+                        "integrations_page": "Integrations page"
                     },
                     "no_areas": "Looks like you have no areas yet!",
                     "create_area": "CREATE AREA",
@@ -621,7 +634,8 @@
                         "header": "Entity Registry",
                         "unavailable": "(unavailable)",
                         "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
-                        "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page."
+                        "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
+                        "integrations_page": "Integrations page"
                     },
                     "editor": {
                         "unavailable": "This entity is not currently available.",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Raw config editor"
+                    },
+                    "raw_editor": {
+                        "header": "Edit Config",
+                        "save": "Save",
+                        "unsaved_changes": "Unsaved changes",
+                        "saved": "Saved"
                     }
                 },
                 "menu": {
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "System Health"
+        "system_health": "System Health",
+        "person": "Person"
     },
     "attribute": {
         "weather": {
