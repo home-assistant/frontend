@@ -84,11 +84,13 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       <style>
         #root {
           position: relative;
-          overflow: hidden;
         }
         .element {
           position: absolute;
           transform: translate(-50%, -50%);
+        }
+        ha-card {
+          overflow: hidden;
         }
       </style>
     `;
