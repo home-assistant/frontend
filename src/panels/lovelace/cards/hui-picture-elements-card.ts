@@ -1,6 +1,6 @@
 import { html, LitElement, TemplateResult } from "lit-element";
 
-import { createConfiguredHuiElement } from "../../lovelace/common/validate-condition";
+import { createConfiguredHuiElement } from "../../lovelace/cards/picture-elements/create-configured-hui-element";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";

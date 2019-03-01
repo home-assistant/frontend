@@ -1,11 +1,9 @@
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import {
   Condition,
-  createConfiguredHuiElement,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../lovelace/common/validate-condition";
+import { createConfiguredHuiElement } from "../../lovelace/cards/picture-elements/create-configured-hui-element";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
@@ -15,7 +13,7 @@ interface Config extends LovelaceElementConfig {
   elements: LovelaceElementConfig[];
 }
 
-class HuiConditionalElement extends PolymerElement implements LovelaceElement {
+class HuiConditionalElement extends HTMLElement implements LovelaceElement {
   public _hass?: HomeAssistant;
   private _config?: Config;
   private _elements: LovelaceElement[] = [];
@@ -65,9 +63,7 @@ class HuiConditionalElement extends PolymerElement implements LovelaceElement {
     });
   }
 
-  public ready() {
-    super.ready();
-
+  public connectedCallback() {
     if (this._hass) {
       this.hass = this._hass;
     }
