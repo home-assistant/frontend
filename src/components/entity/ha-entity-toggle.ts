@@ -110,11 +110,21 @@ class HaEntityToggle extends LitElement {
       entity_id: this.stateObj.entity_id,
     });
 
-    setTimeout(() => {
+    setTimeout(async () => {
       // If after 2 seconds we have not received a state update
       // reset the switch to it's original state.
-      if (this.stateObj === currentState) {
-        this.requestUpdate();
+      if (this.stateObj !== currentState) {
+        return;
+      }
+      // Force a re-render. It's not good enough to just call this.requestUpdate()
+      // because the value has changed outside of Lit's render function, and so Lit
+      // won't update the property again, because it's the same as last update.
+      // So we just temporarily unset the stateObj and set it again.
+      this.stateObj = undefined;
+      await this.updateComplete;
+      // Make sure that a stateObj was not set in between.
+      if (this.stateObj === undefined) {
+        this.stateObj = currentState;
       }
     }, 2000);
   }
