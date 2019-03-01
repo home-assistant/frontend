@@ -5,6 +5,7 @@ import {
   property,
   css,
   CSSResult,
+  customElement,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -16,8 +17,10 @@ import { isTiltOnly } from "../../../util/cover-model";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
+@customElement("hui-cover-entity-row")
 class HuiCoverEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -80,5 +83,3 @@ declare global {
     "hui-cover-entity-row": HuiCoverEntityRow;
   }
 }
-
-customElements.define("hui-cover-entity-row", HuiCoverEntityRow);

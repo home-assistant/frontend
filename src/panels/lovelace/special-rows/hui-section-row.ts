@@ -1,18 +1,23 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
+} from "lit-element";
+
 import { EntityRow, SectionConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
 
+@customElement("hui-section-row")
 class HuiSectionRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
-  private _config?: SectionConfig;
 
-  static get properties() {
-    return {
-      _config: {},
-    };
-  }
+  @property() private _config?: SectionConfig;
 
   public setConfig(config: SectionConfig): void {
     if (!config) {
@@ -28,7 +33,6 @@ class HuiSectionRow extends LitElement implements EntityRow {
     }
 
     return html`
-      ${this.renderStyle()}
       <div class="divider"></div>
       ${this._config.label
         ? html`
@@ -38,24 +42,22 @@ class HuiSectionRow extends LitElement implements EntityRow {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .label {
-          color: var(--primary-color);
-          margin-left: 8px;
-          margin-bottom: 16px;
-          margin-top: 16px;
-        }
-        .divider {
-          height: 1px;
-          background-color: var(--secondary-text-color);
-          opacity: 0.25;
-          margin-left: -16px;
-          margin-right: -16px;
-          margin-top: 8px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .label {
+        color: var(--primary-color);
+        margin-left: 8px;
+        margin-bottom: 16px;
+        margin-top: 16px;
+      }
+      .divider {
+        height: 1px;
+        background-color: var(--secondary-text-color);
+        opacity: 0.25;
+        margin-left: -16px;
+        margin-right: -16px;
+        margin-top: 8px;
+      }
     `;
   }
 }
@@ -65,5 +67,3 @@ declare global {
     "hui-section-row": HuiSectionRow;
   }
 }
-
-customElements.define("hui-section-row", HuiSectionRow);
