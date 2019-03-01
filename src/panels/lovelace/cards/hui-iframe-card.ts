@@ -1,7 +1,6 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   customElement,
   property,
