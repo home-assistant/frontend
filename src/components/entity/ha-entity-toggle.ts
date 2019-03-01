@@ -10,14 +10,19 @@ import {
   CSSResult,
   css,
   property,
+  PropertyValues,
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
+
+const isOn = (stateObj?: HassEntity) =>
+  stateObj !== undefined && !STATES_OFF.includes(stateObj.state);
 
 class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
+  @property() private _isOn: boolean = false;
 
   protected render(): TemplateResult | void {
     if (!this.stateObj) {
@@ -26,26 +31,24 @@ class HaEntityToggle extends LitElement {
       `;
     }
 
-    const isOn = this._isOn;
-
     if (this.stateObj.attributes.assumed_state) {
       return html`
         <paper-icon-button
           icon="hass:flash-off"
           @click=${this._turnOff}
-          ?state-active=${!isOn}
+          ?state-active=${!this._isOn}
         ></paper-icon-button>
         <paper-icon-button
           icon="hass:flash"
           @click=${this._turnOn}
-          ?state-active=${isOn}
+          ?state-active=${this._isOn}
         ></paper-icon-button>
       `;
     }
 
     return html`
       <paper-toggle-button
-        .checked=${isOn}
+        .checked=${this._isOn}
         @change=${this._toggleChanged}
       ></paper-toggle-button>
     `;
@@ -56,10 +59,10 @@ class HaEntityToggle extends LitElement {
     this.addEventListener("click", (ev) => ev.stopPropagation());
   }
 
-  private get _isOn(): boolean {
-    return (
-      this.stateObj !== undefined && !STATES_OFF.includes(this.stateObj.state)
-    );
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("stateObj")) {
+      this._isOn = isOn(this.stateObj);
+    }
   }
 
   private _toggleChanged(ev) {
@@ -106,6 +109,9 @@ class HaEntityToggle extends LitElement {
 
     const currentState = this.stateObj;
 
+    // Optimistic update.
+    this._isOn = turnOn;
+
     await this.hass.callService(serviceDomain, service, {
       entity_id: this.stateObj.entity_id,
     });
@@ -113,18 +119,8 @@ class HaEntityToggle extends LitElement {
     setTimeout(async () => {
       // If after 2 seconds we have not received a state update
       // reset the switch to it's original state.
-      if (this.stateObj !== currentState) {
-        return;
-      }
-      // Force a re-render. It's not good enough to just call this.requestUpdate()
-      // because the value has changed outside of Lit's render function, and so Lit
-      // won't update the property again, because it's the same as last update.
-      // So we just temporarily unset the stateObj and set it again.
-      this.stateObj = undefined;
-      await this.updateComplete;
-      // Make sure that a stateObj was not set in between.
-      if (this.stateObj === undefined) {
-        this.stateObj = currentState;
+      if (this.stateObj === currentState) {
+        this._isOn = isOn(this.stateObj);
       }
     }, 2000);
   }
