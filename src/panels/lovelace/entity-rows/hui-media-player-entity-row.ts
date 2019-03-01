@@ -5,6 +5,7 @@ import {
   css,
   CSSResult,
   property,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
@@ -22,8 +23,10 @@ import {
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
 
+@customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -156,5 +159,3 @@ declare global {
     "hui-media-player-entity-row": HuiMediaPlayerEntityRow;
   }
 }
-
-customElements.define("hui-media-player-entity-row", HuiMediaPlayerEntityRow);

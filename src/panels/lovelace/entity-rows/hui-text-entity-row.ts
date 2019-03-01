@@ -5,6 +5,7 @@ import {
   property,
   CSSResult,
   css,
+  customElement,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -14,8 +15,10 @@ import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
+@customElement("hui-text-entity-row")
 class HuiTextEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -71,5 +74,3 @@ declare global {
     "hui-text-entity-row": HuiTextEntityRow;
   }
 }
-
-customElements.define("hui-text-entity-row", HuiTextEntityRow);

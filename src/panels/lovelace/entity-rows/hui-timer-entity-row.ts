@@ -4,6 +4,7 @@ import {
   TemplateResult,
   property,
   PropertyValues,
+  customElement,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -15,10 +16,14 @@ import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "./types";
 import { HassEntity } from "home-assistant-js-websocket";
 
+@customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
+
   @property() private _timeRemaining?: number;
+
   private _interval?: number;
 
   public setConfig(config: EntityConfig): void {
@@ -124,5 +129,3 @@ declare global {
     "hui-timer-entity-row": HuiTimerEntityRow;
   }
 }
-
-customElements.define("hui-timer-entity-row", HuiTimerEntityRow);

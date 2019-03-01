@@ -1,4 +1,10 @@
-import { html, LitElement, TemplateResult, property } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  customElement,
+} from "lit-element";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 import "../components/hui-generic-entity-row";
@@ -8,8 +14,10 @@ import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setValue } from "../../../data/input_text";
 
+@customElement("hui-input-text-entity-row")
 class HuiInputTextEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -76,5 +84,3 @@ declare global {
     "hui-input-text-entity-row": HuiInputTextEntityRow;
   }
 }
-
-customElements.define("hui-input-text-entity-row", HuiInputTextEntityRow);
