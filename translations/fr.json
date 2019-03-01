@@ -270,6 +270,10 @@
             "active": "actif",
             "idle": "En veille",
             "paused": "en pause"
+        },
+        "person": {
+            "home": "Présent",
+            "not_home": "Absent"
         }
     },
     "state_badge": {
@@ -292,6 +296,10 @@
         "device_tracker": {
             "home": "Maison",
             "not_home": "Absent.e"
+        },
+        "person": {
+            "home": "Présent",
+            "not_home": "Absent"
         }
     },
     "ui": {
@@ -365,7 +373,8 @@
                         "introduction": "L'éditeur d'automatisation vous permet de créer et éditer des automatisations. Veuillez lire [les instructions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) pour être sûr d'avoir configuré Home-Assistant correctement.",
                         "pick_automation": "Choisissez l'automatisation à éditer",
                         "no_automations": "Il n'y a aucune automatisation modifiable.",
-                        "add_automation": "Ajouter une automatisation"
+                        "add_automation": "Ajouter une automatisation",
+                        "learn_more": "En savoir plus sur les automatisations"
                     },
                     "editor": {
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
@@ -452,7 +461,8 @@
                                     "enter": "Entre",
                                     "leave": "Quitte"
                                 }
-                            }
+                            },
+                            "learn_more": "En savoir plus sur les déclencheurs"
                         },
                         "conditions": {
                             "header": "Conditions",
@@ -497,7 +507,8 @@
                                     "entity": "Entité avec localisation",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "En savoir plus sur les conditions"
                         },
                         "actions": {
                             "header": "Actions",
@@ -530,7 +541,8 @@
                                     "event": "Évènement :",
                                     "service_data": "Données du service"
                                 }
-                            }
+                            },
+                            "learn_more": "En savoir plus sur les actions"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Registre des pièces",
                         "introduction": "Les zones sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
-                        "introduction2": "Pour placer des périphériques dans une zone, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique."
+                        "introduction2": "Pour placer des périphériques dans une zone, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique.",
+                        "integrations_page": "Page des intégrations"
                     },
                     "no_areas": "Vous n'avez pas encore configuré de pièce !",
                     "create_area": "CRÉER UNE PIÈCE",
@@ -621,7 +634,8 @@
                         "header": "Registre des entités",
                         "unavailable": "(indisponible)",
                         "introduction": "Home Assistant tient un registre de chaque entité qu'il n’a jamais vue et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
-                        "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations."
+                        "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations.",
+                        "integrations_page": "Page des intégrations"
                     },
                     "editor": {
                         "unavailable": "Cette entité n'est pas disponible actuellement.",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Éditeur de configuration"
+                    },
+                    "raw_editor": {
+                        "header": "Modifier la configuration",
+                        "save": "Enregistrer",
+                        "unsaved_changes": "Modifications non enregistrées",
+                        "saved": "Enregistré"
                     }
                 },
                 "menu": {
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Santé du système"
+        "system_health": "Santé du système",
+        "person": "Personne"
     },
     "attribute": {
         "weather": {
