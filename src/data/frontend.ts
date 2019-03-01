@@ -1,10 +1,14 @@
 import { HomeAssistant } from "../types";
 
+export interface FrontendUserData {
+  language: string;
+}
+
 export const fetchFrontendUserData = async (
   hass: HomeAssistant,
   key: string
-): Promise<any> => {
-  const result = await hass.callWS<{ value: any }>({
+): Promise<FrontendUserData> => {
+  const result = await hass.callWS<{ value: FrontendUserData }>({
     type: "frontend/get_user_data",
     key,
   });
@@ -14,7 +18,7 @@ export const fetchFrontendUserData = async (
 export const saveFrontendUserData = async (
   hass: HomeAssistant,
   key: string,
-  value: any
+  value: FrontendUserData
 ): Promise<void> =>
   hass.callWS<void>({
     type: "frontend/set_user_data",
@@ -22,7 +26,7 @@ export const saveFrontendUserData = async (
     value,
   });
 
-export const getTranslations = async (
+export const getHassTranslations = async (
   hass: HomeAssistant,
   language: string
 ): Promise<{}> => {

@@ -1,11 +1,15 @@
 import { translationMetadata } from "../../resources/translations-metadata";
-import { getTranslation, getLocalLanguage } from "../../util/hass-translation";
+import {
+  getTranslation,
+  getLocalLanguage,
+  getUserLanguage,
+} from "../../util/hass-translation";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
-import { saveFrontendUserData, getTranslations } from "../../data/frontend";
+import { saveFrontendUserData, getHassTranslations } from "../../data/frontend";
 import { storeState } from "../../util/ha-pref-storage";
 
 /*
@@ -17,63 +21,86 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) =>
-        this._selectLanguage(e)
+        this._selectLanguage((e as CustomEvent).detail.language, true)
       );
-      // load default language resource
-      this._loadResources(this.hass ? this.hass.language : getLocalLanguage());
+      this._loadCoreTranslations(getLocalLanguage());
     }
 
     protected hassConnected() {
       super.hassConnected();
-      // user may have different language setting, reload resource
-      this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
-      this._loadResources(this.hass!.language);
-      this._loadBackendTranslations();
-      this._loadTranslationFragment(this.hass!.panelUrl);
+      getUserLanguage(this.hass!).then((language) => {
+        if (language && this.hass!.language !== language) {
+          // We just get language from backend, no need to save back
+          this._selectLanguage(language, false);
+        }
+      });
+      this._loadTranslations(this.hass!);
     }
 
     protected hassReconnected() {
       super.hassReconnected();
-      this._loadBackendTranslations();
+      this._loadTranslations(this.hass!);
     }
 
     protected panelUrlChanged(newPanelUrl) {
       super.panelUrlChanged(newPanelUrl);
-      this._loadTranslationFragment(newPanelUrl);
+      // this may be triggered before hassConnected
+      this._loadFragmentTranslations(
+        this.hass ? this.hass.language : getLocalLanguage(),
+        newPanelUrl
+      );
     }
 
-    private async _loadBackendTranslations() {
-      const hass = this.hass;
-      if (!hass || !hass.language) {
+    private _selectLanguage(language: string, saveToBackend: boolean) {
+      if (!this.hass) {
+        // should not happen, do it to avoid use this.hass!
         return;
       }
 
-      const language = hass.language;
-      const resources = await getTranslations(hass, language);
+      // update selectedLanguage so that it can be saved to local storage
+      this._updateHass({ language, selectedLanguage: language });
+      storeState(this.hass);
+      if (saveToBackend) {
+        saveFrontendUserData(this.hass, "language", { language });
+      }
+
+      this._loadTranslations(this.hass);
+    }
+
+    private _loadTranslations(hass: HomeAssistant) {
+      this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
+      this._loadCoreTranslations(hass.language);
+      this._loadHassTranslations(hass.language);
+      this._loadFragmentTranslations(hass.language, hass.panelUrl);
+    }
+
+    private async _loadHassTranslations(language: string) {
+      const resources = await getHassTranslations(this.hass!, language);
 
       // Ignore the repsonse if user switched languages before we got response
-      if (hass.language !== language) {
+      if (this.hass!.language !== language) {
         return;
       }
 
       this._updateResources(language, resources);
     }
 
-    private _loadTranslationFragment(panelUrl) {
+    private async _loadFragmentTranslations(
+      language: string,
+      panelUrl: string
+    ) {
       if (translationMetadata.fragments.includes(panelUrl)) {
-        this._loadResources(
-          this.hass ? this.hass.language : getLocalLanguage(),
-          panelUrl
-        );
+        const result = await getTranslation(panelUrl, language);
+        this._updateResources(result.language, result.data);
       }
     }
 
-    private async _loadResources(language: string, fragment?) {
-      const result = await getTranslation(fragment, language);
+    private async _loadCoreTranslations(language: string) {
+      const result = await getTranslation(null, language);
       this._updateResources(result.language, result.data);
     }
 
-    private _updateResources(language, data) {
+    private _updateResources(language: string, data: any) {
       // Update the language in hass, and update the resources with the newly
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
@@ -91,18 +118,5 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
         changes.localize = computeLocalize(this, language, resources);
       }
       this._updateHass(changes);
-    }
-
-    private _selectLanguage(event) {
-      const language: string = event.detail.language;
-      this._updateHass({ language, selectedLanguage: language });
-      if (event.detail.save) {
-        storeState(this.hass!);
-        saveFrontendUserData(this.hass!, "language", language);
-      }
-      this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
-      this._loadResources(language);
-      this._loadBackendTranslations();
-      this._loadTranslationFragment(this.hass!.panelUrl);
     }
   };

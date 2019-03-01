@@ -43,14 +43,14 @@ function findAvailableLanguage(language: string) {
  * Get user selected language from backend
  */
 export async function getUserLanguage(hass: HomeAssistant) {
-  const userLanguage = await fetchFrontendUserData(hass, "language");
-  if (userLanguage) {
-    const language = findAvailableLanguage(userLanguage);
-    if (language) {
-      return language;
+  const { language } = await fetchFrontendUserData(hass, "language");
+  if (language) {
+    const availableLanguage = findAvailableLanguage(language);
+    if (availableLanguage) {
+      return availableLanguage;
     }
   }
-  return getLocalLanguage();
+  return null;
 }
 
 /**
