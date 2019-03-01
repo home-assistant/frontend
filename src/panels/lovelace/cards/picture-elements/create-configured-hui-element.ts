@@ -4,10 +4,12 @@ import { createHuiElement } from "../../common/create-hui-element";
 
 export function createConfiguredHuiElement(
   elementConfig: LovelaceElementConfig,
-  hass: HomeAssistant
+  hass: HomeAssistant | undefined
 ): LovelaceElement {
   const element = createHuiElement(elementConfig) as LovelaceElement;
-  element.hass = hass;
+  if (hass) {
+    element.hass = hass;
+  }
   element.classList.add("element");
 
   if (elementConfig.style) {

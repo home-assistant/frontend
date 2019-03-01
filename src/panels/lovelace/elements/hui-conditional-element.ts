@@ -29,12 +29,20 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       throw new Error("Error in card configuration.");
     }
 
+    if (this._elements && this._elements.length > 0) {
+      this._elements.map((el: LovelaceElement) => {
+        if (el.parentElement) {
+          el.parentElement.removeChild(el);
+        }
+      });
+
+      this._elements = [];
+    }
+
     this._config = config;
 
     this._config.elements.map((elementConfig: LovelaceElementConfig) => {
-      this._elements.push(
-        createConfiguredHuiElement(elementConfig, this._hass!)
-      );
+      this._elements.push(createConfiguredHuiElement(elementConfig, undefined));
     });
 
     if (this._hass) {
@@ -67,6 +75,14 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
     if (this._hass) {
       this.hass = this._hass;
     }
+  }
+
+  public disconnectedCallback() {
+    this._elements.map((el: LovelaceElement) => {
+      if (el.parentElement) {
+        el.parentElement.removeChild(el);
+      }
+    });
   }
 }
 
