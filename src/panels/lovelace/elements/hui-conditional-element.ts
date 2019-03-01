@@ -1,25 +1,24 @@
-import { html, LitElement, property, TemplateResult } from "lit-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/entity/ha-state-label-badge";
-
-import { createHuiElement } from "../common/create-hui-element";
 import {
+  Condition,
+  createConfiguredHuiElement,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../lovelace/common/validate-condition";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { Condition } from "../../../data/lovelace";
 
 interface Config extends LovelaceElementConfig {
   conditions: Condition[];
   elements: LovelaceElementConfig[];
 }
 
-class HuiConditionalElement extends LitElement implements LovelaceElement {
-  @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+class HuiConditionalElement extends PolymerElement implements LovelaceElement {
+  public _hass?: HomeAssistant;
+  private _config?: Config;
+  private _elements: LovelaceElement[] = [];
 
   public setConfig(config: Config): void {
     if (
@@ -33,64 +32,45 @@ class HuiConditionalElement extends LitElement implements LovelaceElement {
     }
 
     this._config = config;
+
+    this._config.elements.map((elementConfig: LovelaceElementConfig) => {
+      this._elements.push(
+        createConfiguredHuiElement(elementConfig, this._hass!)
+      );
+    });
+
+    if (this._hass) {
+      this.hass = this._hass;
+    }
   }
 
-  protected render(): TemplateResult | void {
-    if (!this._config || !this.hass) {
-      return html``;
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
+
+    if (!this._config || !this.parentElement) {
+      return;
     }
 
-    return html`
-      ${this.renderStyle()}
-      ${this._config.elements.map((elementConfig: LovelaceElementConfig) => {
-        const el = this._createHuiElement(elementConfig);
+    const visible = checkConditionsMet(this._config.conditions, hass);
 
-        el.style.display = checkConditionsMet(
-          this._config!.conditions,
-          this.hass!
-        )
-          ? "block"
-          : "none";
-
-        return el;
-      })}
-    `;
+    this._elements.map((el: LovelaceElement) => {
+      if (visible) {
+        el.hass = hass;
+        if (!el.parentElement) {
+          this.parentElement!.appendChild(el);
+        }
+      } else if (el.parentElement) {
+        this.parentElement!.removeChild(el);
+      }
+    });
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          position: absolute;
-          left: 0px;
-          top: 0px;
-          width: 100%;
-          height: 100%;
-          transform: none !important;
-        }
+  public ready() {
+    super.ready();
 
-        .element {
-          position: absolute;
-          transform: translate(-50%, -50%);
-        }
-      </style>
-    `;
-  }
-
-  private _createHuiElement(
-    elementConfig: LovelaceElementConfig
-  ): LovelaceElement {
-    const element = createHuiElement(elementConfig) as LovelaceElement;
-    element.hass = this.hass;
-    element.classList.add("element");
-
-    if (elementConfig.style) {
-      Object.keys(elementConfig.style).forEach((prop) => {
-        element.style.setProperty(prop, elementConfig.style[prop]);
-      });
+    if (this._hass) {
+      this.hass = this._hass;
     }
-
-    return element;
   }
 }
 

@@ -1,6 +1,6 @@
 import { html, LitElement, TemplateResult } from "lit-element";
 
-import { createHuiElement } from "../common/create-hui-element";
+import { createConfiguredHuiElement } from "../../lovelace/common/validate-condition";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -72,7 +72,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .aspectRatio="${this._config.aspect_ratio}"
           ></hui-image>
           ${this._config.elements.map((elementConfig: LovelaceElementConfig) =>
-            this._createHuiElement(elementConfig)
+            createConfiguredHuiElement(elementConfig, this._hass!)
           )}
         </div>
       </ha-card>
@@ -92,22 +92,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
         }
       </style>
     `;
-  }
-
-  private _createHuiElement(
-    elementConfig: LovelaceElementConfig
-  ): LovelaceElement {
-    const element = createHuiElement(elementConfig) as LovelaceElement;
-    element.hass = this._hass;
-    element.classList.add("element");
-
-    if (elementConfig.style) {
-      Object.keys(elementConfig.style).forEach((prop) => {
-        element.style.setProperty(prop, elementConfig.style[prop]);
-      });
-    }
-
-    return element;
   }
 }
 

@@ -1,5 +1,29 @@
 import { HomeAssistant } from "../../../types";
-import { Condition } from "../../../data/lovelace";
+import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
+import { createHuiElement } from "../common/create-hui-element";
+
+export interface Condition {
+  entity: string;
+  state?: string;
+  state_not?: string;
+}
+
+export function createConfiguredHuiElement(
+  elementConfig: LovelaceElementConfig,
+  hass: HomeAssistant
+): LovelaceElement {
+  const element = createHuiElement(elementConfig) as LovelaceElement;
+  element.hass = hass;
+  element.classList.add("element");
+
+  if (elementConfig.style) {
+    Object.keys(elementConfig.style).forEach((prop) => {
+      element.style.setProperty(prop, elementConfig.style[prop]);
+    });
+  }
+
+  return element;
+}
 
 export function checkConditionsMet(
   conditions: Condition[],

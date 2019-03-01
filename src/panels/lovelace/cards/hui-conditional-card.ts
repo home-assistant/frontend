@@ -1,12 +1,13 @@
 import { createCardElement } from "../common/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
 import {
+  Condition,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../lovelace/common/validate-condition";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig, Condition } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 
 interface Config extends LovelaceCardConfig {
   card: LovelaceCardConfig;

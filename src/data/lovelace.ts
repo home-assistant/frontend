@@ -76,9 +76,3 @@ export const saveConfig = (
     type: "lovelace/config/save",
     config,
   });
-
-export interface Condition {
-  entity: string;
-  state?: string;
-  state_not?: string;
-}
