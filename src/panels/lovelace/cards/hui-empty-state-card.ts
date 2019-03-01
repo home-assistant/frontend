@@ -1,10 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   CSSResult,
   css,
+  customElement,
+  property,
 } from "lit-element";
 
 import "@polymer/paper-card/paper-card";
@@ -18,8 +19,9 @@ export interface Config extends LovelaceCardConfig {
   title?: string;
 }
 
+@customElement("hui-empty-state-card")
 export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
-  public hass?: HomeAssistant;
+  @property() public hass?: HomeAssistant;
 
   public getCardSize(): number {
     return 2;
@@ -27,12 +29,6 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
 
   public setConfig(_config: Config): void {
     // tslint:disable-next-line
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-    };
   }
 
   protected render(): TemplateResult | void {
@@ -83,5 +79,3 @@ declare global {
     "hui-empty-state-card": HuiEmptyStateCard;
   }
 }
-
-customElements.define("hui-empty-state-card", HuiEmptyStateCard);

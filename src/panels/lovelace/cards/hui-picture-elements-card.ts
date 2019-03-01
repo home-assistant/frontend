@@ -1,4 +1,12 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  customElement,
+  css,
+  CSSResult,
+} from "lit-element";
 
 import { createHuiElement } from "../common/create-hui-element";
 
@@ -17,15 +25,11 @@ interface Config extends LovelaceCardConfig {
   elements: LovelaceElementConfig[];
 }
 
+@customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
-  private _config?: Config;
-  private _hass?: HomeAssistant;
+  @property() private _config?: Config;
 
-  static get properties() {
-    return {
-      _config: {},
-    };
-  }
+  private _hass?: HomeAssistant;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -60,7 +64,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
         <div id="root">
           <hui-image
@@ -79,20 +82,20 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        #root {
-          position: relative;
-        }
-        .element {
-          position: absolute;
-          transform: translate(-50%, -50%);
-        }
-        ha-card {
-          overflow: hidden;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      #root {
+        position: relative;
+      }
+
+      .element {
+        position: absolute;
+        transform: translate(-50%, -50%);
+      }
+
+      ha-card {
+        overflow: hidden;
+      }
     `;
   }
 
@@ -116,5 +119,3 @@ declare global {
     "hui-picture-elements-card": HuiPictureElementsCard;
   }
 }
-
-customElements.define("hui-picture-elements-card", HuiPictureElementsCard);
