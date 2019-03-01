@@ -63,10 +63,6 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        @apply --paper-font-body1;
-      }
-
       ha-markdown {
         display: block;
         padding: 0 16px 16px;

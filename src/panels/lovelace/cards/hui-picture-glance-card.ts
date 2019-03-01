@@ -189,7 +189,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       }
 
       .box {
-        @apply --paper-font-common-nowrap;
         position: absolute;
         left: 0;
         right: 0;

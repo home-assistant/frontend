@@ -146,7 +146,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       .header {
-        @apply --paper-font-headline;
         /* overwriting line-height +8 because entity-toggle can be 40px height,
             compensating this with reduced padding */
         line-height: 40px;
@@ -154,10 +153,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         padding: 4px 0 12px;
         display: flex;
         justify-content: space-between;
-      }
-
-      .header .name {
-        @apply --paper-font-common-nowrap;
       }
 
       .state-card-dialog {
