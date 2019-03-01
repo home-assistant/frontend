@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -10,19 +11,15 @@ import "../../../components/entity/ha-entity-toggle";
 import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
+
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 
+@customElement("hui-toggle-entity-row")
 class HuiToggleEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -78,5 +75,3 @@ declare global {
     "hui-toggle-entity-row": HuiToggleEntityRow;
   }
 }
-
-customElements.define("hui-toggle-entity-row", HuiToggleEntityRow);

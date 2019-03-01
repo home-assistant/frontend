@@ -270,6 +270,10 @@
             "active": "aktiv",
             "idle": "Leerlauf",
             "paused": "pausiert"
+        },
+        "person": {
+            "home": "Zuhause",
+            "not_home": "Abwesend"
         }
     },
     "state_badge": {
@@ -292,6 +296,10 @@
         "device_tracker": {
             "home": "Z. Hause",
             "not_home": "Abwes."
+        },
+        "person": {
+            "home": "Zuhause",
+            "not_home": "Abwesend"
         }
     },
     "ui": {
@@ -362,10 +370,11 @@
                     "description": "Automatisierungen erstellen und bearbeiten",
                     "picker": {
                         "header": "Automatisierungseditor",
-                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte lies [die Anleitungen](https:\/\/home-assistant.io\/docs\/automation\/editor\/), um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
+                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte folge dem nachfolgenden Link, um die Anleitung zu lesen, um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
-                        "add_automation": "Automatisierung hinzufügen"
+                        "add_automation": "Automatisierung hinzufügen",
+                        "learn_more": "Erfahre mehr über Automatisierungen"
                     },
                     "editor": {
                         "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
@@ -375,7 +384,7 @@
                         "alias": "Name",
                         "triggers": {
                             "header": "Auslöser",
-                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.",
                             "add": "Auslöser hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -452,11 +461,12 @@
                                     "enter": "Betreten",
                                     "leave": "Verlassen"
                                 }
-                            }
+                            },
+                            "learn_more": "Erfahre mehr über Auslöser"
                         },
                         "conditions": {
                             "header": "Bedingungen",
-                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, ob ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.\n\n[Erfahre mehr über Bedingungen.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, ob ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.",
                             "add": "Bedingung hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -497,11 +507,12 @@
                                     "entity": "Entität mit Standort",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "Erfahre mehr über Bedingungen"
                         },
                         "actions": {
                             "header": "Aktionen",
-                            "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.\n\n[Erfahre mehr über Aktionen.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.",
                             "add": "Aktion hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -530,7 +541,8 @@
                                     "event": "Ereignis:",
                                     "service_data": "Dienstdaten"
                                 }
-                            }
+                            },
+                            "learn_more": "Erfahre mehr über Aktionen"
                         }
                     }
                 },
@@ -870,6 +882,12 @@
                     },
                     "menu": {
                         "raw_editor": "Raw-Konfigurationseditor"
+                    },
+                    "raw_editor": {
+                        "header": "Konfiguration bearbeiten",
+                        "save": "Speichern",
+                        "unsaved_changes": "Nicht gespeicherte Änderungen",
+                        "saved": "Gespeichert"
                     }
                 },
                 "menu": {
@@ -1118,7 +1136,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Systemzustand"
+        "system_health": "Systemzustand",
+        "person": "Person"
     },
     "attribute": {
         "weather": {

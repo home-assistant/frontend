@@ -270,6 +270,10 @@
             "active": "Aktiv",
             "idle": "Waart",
             "paused": "Pauseiert"
+        },
+        "person": {
+            "home": "Doheem",
+            "not_home": "Ënnerwee"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Aktiv"
         },
         "device_tracker": {
+            "home": "Doheem",
+            "not_home": "Ënnerwee"
+        },
+        "person": {
             "home": "Doheem",
             "not_home": "Ënnerwee"
         }
@@ -870,6 +878,9 @@
                     },
                     "menu": {
                         "raw_editor": "Editeur fir déi reng Konfiguratioun"
+                    },
+                    "raw_editor": {
+                        "save": "Späicheren"
                     }
                 },
                 "menu": {
@@ -879,8 +890,8 @@
                     "refresh": "Erneieren"
                 },
                 "warning": {
-                    "entity_not_found": "Entitéit net erreechbar: {entitiy}",
-                    "entity_non_numeric": "Entitéit ass net numerescher Natur: {entitiy}"
+                    "entity_not_found": "Entitéit net erreechbar: {entity}",
+                    "entity_non_numeric": "Entitéit ass net numerescher Natur: {entity}"
                 }
             }
         },
@@ -1118,7 +1129,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "System Zoustand"
+        "system_health": "System Zoustand",
+        "person": "Persoun"
     },
     "attribute": {
         "weather": {
