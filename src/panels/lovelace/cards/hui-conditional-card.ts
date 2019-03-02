@@ -35,9 +35,8 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
 
     this._config = config;
     this._card = createCardElement(config.card);
-    if (this._hass) {
-      this.hass = this._hass;
-    }
+
+    this.update();
   }
 
   set hass(hass: HomeAssistant) {
@@ -64,6 +63,12 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
 
   public getCardSize() {
     return computeCardSize(this._card!);
+  }
+
+  private update() {
+    if (this._hass) {
+      this.hass = this._hass;
+    }
   }
 }
 

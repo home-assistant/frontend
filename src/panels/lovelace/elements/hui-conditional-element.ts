@@ -7,6 +7,7 @@ import { createConfiguredHuiElement } from "../../lovelace/cards/picture-element
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { updateAreaRegistryEntry } from "../../../data/area_registry";
 
 interface Config extends LovelaceElementConfig {
   conditions: Condition[];
@@ -45,9 +46,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       this._elements.push(createConfiguredHuiElement(elementConfig, undefined));
     });
 
-    if (this._hass) {
-      this.hass = this._hass;
-    }
+    this.update();
   }
 
   set hass(hass: HomeAssistant) {
@@ -72,9 +71,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
   }
 
   public connectedCallback() {
-    if (this._hass) {
-      this.hass = this._hass;
-    }
+    this.update();
   }
 
   public disconnectedCallback() {
@@ -83,6 +80,12 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
         el.parentElement.removeChild(el);
       }
     });
+  }
+
+  private update() {
+    if (this._hass) {
+      this.hass = this._hass;
+    }
   }
 }
 
