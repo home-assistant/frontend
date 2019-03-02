@@ -7,7 +7,6 @@ import { createConfiguredHuiElement } from "../../lovelace/cards/picture-element
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { updateAreaRegistryEntry } from "../../../data/area_registry";
 
 interface Config extends LovelaceElementConfig {
   conditions: Condition[];
@@ -43,49 +42,35 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
     this._config = config;
 
     this._config.elements.map((elementConfig: LovelaceElementConfig) => {
-      this._elements.push(createConfiguredHuiElement(elementConfig, undefined));
+      this._elements.push(createConfiguredHuiElement(elementConfig));
     });
 
-    this.update();
+    this.updateElements();
   }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
 
-    if (!this._config || !this.parentElement) {
+    this.updateElements();
+  }
+
+  private updateElements() {
+    if (!this._hass || !this._config) {
       return;
     }
 
-    const visible = checkConditionsMet(this._config.conditions, hass);
+    const visible = checkConditionsMet(this._config.conditions, this._hass);
 
     this._elements.map((el: LovelaceElement) => {
       if (visible) {
-        el.hass = hass;
+        el.hass = this._hass;
         if (!el.parentElement) {
-          this.parentElement!.appendChild(el);
+          this.appendChild(el);
         }
       } else if (el.parentElement) {
-        this.parentElement!.removeChild(el);
-      }
-    });
-  }
-
-  public connectedCallback() {
-    this.update();
-  }
-
-  public disconnectedCallback() {
-    this._elements.map((el: LovelaceElement) => {
-      if (el.parentElement) {
         el.parentElement.removeChild(el);
       }
     });
-  }
-
-  private update() {
-    if (this._hass) {
-      this.hass = this._hass;
-    }
   }
 }
 
