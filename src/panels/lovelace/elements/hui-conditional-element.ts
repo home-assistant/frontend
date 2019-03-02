@@ -29,7 +29,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       throw new Error("Error in card configuration.");
     }
 
-    if (this._elements && this._elements.length > 0) {
+    if (this._elements.length > 0) {
       this._elements.map((el: LovelaceElement) => {
         if (el.parentElement) {
           el.parentElement.removeChild(el);
