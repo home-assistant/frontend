@@ -71,14 +71,16 @@ export default (superClass) =>
                   "Error calling service",
                   domain,
                   service,
-                  serviceData
+                  serviceData,
+                  err
                 );
               }
-              const message = this.hass.localize(
-                "ui.notification_toast.service_call_failed",
-                "service",
-                `${domain}/${service}`
-              );
+              const message =
+                this.hass.localize(
+                  "ui.notification_toast.service_call_failed",
+                  "service",
+                  `${domain}/${service}`
+                ) + ` ${err.message}`;
               this.fire("hass-notification", { message });
               throw err;
             }
