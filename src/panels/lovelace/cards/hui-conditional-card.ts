@@ -42,15 +42,23 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
   set hass(hass: HomeAssistant) {
     this._hass = hass;
 
-    if (!this._card) {
+    this.update();
+  }
+
+  public getCardSize() {
+    return computeCardSize(this._card!);
+  }
+
+  private update() {
+    if (!this._card || !this._hass) {
       return;
     }
 
     const visible =
-      this._config && checkConditionsMet(this._config.conditions, hass);
+      this._config && checkConditionsMet(this._config.conditions, this._hass);
 
     if (visible) {
-      this._card.hass = hass;
+      this._card.hass = this._hass;
       if (!this._card.parentElement) {
         this.appendChild(this._card);
       }
@@ -59,16 +67,6 @@ class HuiConditionalCard extends HTMLElement implements LovelaceCard {
     }
     // This will hide the complete card so it won't get styled by parent
     this.style.setProperty("display", visible ? "" : "none");
-  }
-
-  public getCardSize() {
-    return computeCardSize(this._card!);
-  }
-
-  private update() {
-    if (this._hass) {
-      this.hass = this._hass;
-    }
   }
 }
 

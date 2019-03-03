@@ -3,7 +3,7 @@ import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../lovelace/common/validate-condition";
-import { createConfiguredHuiElement } from "../../lovelace/cards/picture-elements/create-configured-hui-element";
+import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
 
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
@@ -42,7 +42,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
     this._config = config;
 
     this._config.elements.map((elementConfig: LovelaceElementConfig) => {
-      this._elements.push(createConfiguredHuiElement(elementConfig));
+      this._elements.push(createStyledHuiElement(elementConfig));
     });
 
     this.updateElements();

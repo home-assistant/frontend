@@ -1,6 +1,6 @@
 import { html, LitElement, TemplateResult } from "lit-element";
 
-import { createConfiguredHuiElement } from "../../lovelace/cards/picture-elements/create-configured-hui-element";
+import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
 
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -71,8 +71,13 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .entity="${this._config.entity}"
             .aspectRatio="${this._config.aspect_ratio}"
           ></hui-image>
-          ${this._config.elements.map((elementConfig: LovelaceElementConfig) =>
-            createConfiguredHuiElement(elementConfig, this._hass!)
+          ${this._config.elements.map(
+            (elementConfig: LovelaceElementConfig) => {
+              const element = createStyledHuiElement(elementConfig);
+              element.hass = this._hass;
+
+              return element;
+            }
           )}
         </div>
       </ha-card>
