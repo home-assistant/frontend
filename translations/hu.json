@@ -270,6 +270,10 @@
             "active": "aktív",
             "idle": "tétlen",
             "paused": "szüneteltetve"
+        },
+        "person": {
+            "home": "Otthon",
+            "not_home": "Távol"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Éles"
         },
         "device_tracker": {
+            "home": "Otthon",
+            "not_home": "Távol"
+        },
+        "person": {
             "home": "Otthon",
             "not_home": "Távol"
         }
@@ -365,7 +373,8 @@
                         "introduction": "Az automatizálás szerkesztővel automatizálási szabályokat tudsz létrehozni és szerkeszteni. Kérlek olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "pick_automation": "Válassz ki egy automatizálást szerkesztésre",
                         "no_automations": "Nem találtunk szerkeszthető automatizálást",
-                        "add_automation": "Automatizálás hozzáadása"
+                        "add_automation": "Automatizálás hozzáadása",
+                        "learn_more": "Tudj meg többet az automatizálásról"
                     },
                     "editor": {
                         "introduction": "Használj automatizálásokat otthonod életre keltéséhez",
@@ -452,7 +461,8 @@
                                     "enter": "Érkezés",
                                     "leave": "Távozás"
                                 }
-                            }
+                            },
+                            "learn_more": "Tudj meg többet a triggerekről"
                         },
                         "conditions": {
                             "header": "Feltételek",
@@ -497,7 +507,8 @@
                                     "entity": "Entitás helyszínnel",
                                     "zone": "Zóna"
                                 }
-                            }
+                            },
+                            "learn_more": "Tudj meg többet a feltételekről"
                         },
                         "actions": {
                             "header": "Műveletek",
@@ -530,7 +541,8 @@
                                     "event": "Esemény:",
                                     "service_data": "Szolgáltatás adatai"
                                 }
-                            }
+                            },
+                            "learn_more": "Tudj meg többet a műveletekről"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Terület Nyilvántartás",
                         "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
-                        "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez."
+                        "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez.",
+                        "integrations_page": "Integrációk oldal"
                     },
                     "no_areas": "Úgy tűnik nem hoztál létre még egy területet sem!",
                     "create_area": "TERÜLET LÉTREHOZÁSA",
@@ -621,7 +634,8 @@
                         "header": "Entitás Nyilvántartás",
                         "unavailable": "(nem elérhető)",
                         "introduction": "A Home Assistant nyilvántartást vezet minden olyan entitásról, melyet valaha látott, és egyedileg azonosítható. Ezen entitások mindegyikéhez létrejön egy entitás ID, amely csak az adott entitáshoz van rendelve.",
-                        "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációs oldalról."
+                        "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációk oldalról.",
+                        "integrations_page": "Integrációk oldal"
                     },
                     "editor": {
                         "unavailable": "Ez az entitás jelenleg nem elérhető.",
@@ -632,7 +646,7 @@
                 },
                 "person": {
                     "caption": "Személyek",
-                    "description": "Kezeld azon személyeket, melyeket a Home Assistant követ.",
+                    "description": "A Home Assistant által követett személyek kezelése",
                     "detail": {
                         "name": "Név",
                         "device_tracker_intro": "Válaszd ki azokat az eszközöket, amelyek ehhez a felhasználóhoz tartoznak.",
@@ -846,7 +860,7 @@
                         "add": "Kártya hozzáadása",
                         "edit": "Szerkesztés",
                         "delete": "Törlés",
-                        "move": "Mozgatás"
+                        "move": "Áthelyezés"
                     },
                     "migrate": {
                         "header": "Inkompatibilis Konfiguráció",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Konfiguráció szerkesztő"
+                    },
+                    "raw_editor": {
+                        "header": "Konfiguráció szerkesztése",
+                        "save": "Mentés",
+                        "unsaved_changes": "Nem mentett változások",
+                        "saved": "Mentett"
                     }
                 },
                 "menu": {
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Rendszer Állapot"
+        "system_health": "Rendszer Állapot",
+        "person": "Személy"
     },
     "attribute": {
         "weather": {

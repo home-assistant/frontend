@@ -270,6 +270,10 @@
             "active": "aktywny",
             "idle": "bezczynny",
             "paused": "wstrzymany"
+        },
+        "person": {
+            "home": "w domu",
+            "not_home": "poza domem"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "uzbr"
         },
         "device_tracker": {
+            "home": "dom",
+            "not_home": "poza"
+        },
+        "person": {
             "home": "dom",
             "not_home": "poza"
         }
@@ -365,7 +373,8 @@
                         "introduction": "Edytor automatyzacji pozwala tworzyć i edytować reguły automatyzacji. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant'a.",
                         "pick_automation": "Wybierz regułę automatyzacji do edycji",
                         "no_automations": "Nie znaleziono żadnych edytowalnych reguł automatyzacji",
-                        "add_automation": "Dodaj regułę automatyzacji"
+                        "add_automation": "Dodaj regułę automatyzacji",
+                        "learn_more": "Dowiedz się więcej o regułach automatyki"
                     },
                     "editor": {
                         "introduction": "Użyj reguł automatyzacji, aby utrzymać swój dom przy życiu",
@@ -452,7 +461,8 @@
                                     "enter": "wejście",
                                     "leave": "wyjście"
                                 }
-                            }
+                            },
+                            "learn_more": "Dowiedz się więcej o wyzwalaczach"
                         },
                         "conditions": {
                             "header": "Warunki",
@@ -497,7 +507,8 @@
                                     "entity": "Encja z lokalizacją",
                                     "zone": "Strefa"
                                 }
-                            }
+                            },
+                            "learn_more": "Dowiedz się więcej o warunkach"
                         },
                         "actions": {
                             "header": "Akcje",
@@ -530,7 +541,8 @@
                                     "event": "Zdarzenie:",
                                     "service_data": "Dane usługi"
                                 }
-                            }
+                            },
+                            "learn_more": "Dowiedz się więcej o akcjach"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Rejestr lokalizacji",
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
-                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij na skonfigurowaną integrację, aby dostać się do kart urządzeń."
+                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij na skonfigurowaną integrację, aby dostać się do kart urządzeń.",
+                        "integrations_page": "Strona integracji"
                     },
                     "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych lokalizacji!",
                     "create_area": "STWÓRZ LOKALIZACJĘ",
@@ -621,7 +634,8 @@
                         "header": "Rejestr encji",
                         "unavailable": "(niedostępna)",
                         "introduction": "Home Assistant prowadzi rejestr każdego podmiotu, jaki kiedykolwiek widział, i który można jednoznacznie zidentyfikować. Każda z tych jednostek będzie miała przypisany identyfikator podmiotu, który będzie zarezerwowany tylko dla tego podmiotu.",
-                        "introduction2": "Użyj rejestru jednostek, aby nadpisać nazwę, zmienić identyfikator jednostki lub usunąć wpis z Home Assistant. Uwaga: usunięcie wpisu rejestru jednostki nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń go ze strony integracji."
+                        "introduction2": "Użyj rejestru jednostek, aby nadpisać nazwę, zmienić identyfikator jednostki lub usunąć wpis z Home Assistant. Uwaga: usunięcie wpisu rejestru jednostki nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń go ze strony integracji.",
+                        "integrations_page": "Strona integracji"
                     },
                     "editor": {
                         "unavailable": "Ta encja nie jest obecnie dostępna.",
@@ -644,7 +658,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "Powiadomienia push",
-                    "description": "Wysyłaj powiadomienia na to urządzenie",
+                    "description": "Wysyłaj powiadomienia na to urządzenie.",
                     "error_load_platform": "Skonfiguruj notify.html5.",
                     "error_use_https": "Wymagany protokół SSL dla interfejsu użytkownika.",
                     "push_notifications": "Powiadomienia push",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Ręczny edytor konfiguracji"
+                    },
+                    "raw_editor": {
+                        "header": "Edytuj konfigurację",
+                        "save": "Zapisz",
+                        "unsaved_changes": "Niezapisane zmiany",
+                        "saved": "Zapisano"
                     }
                 },
                 "menu": {
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Kondycja systemu"
+        "system_health": "Kondycja systemu",
+        "person": "Osoba"
     },
     "attribute": {
         "weather": {
