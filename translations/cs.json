@@ -33,7 +33,7 @@
             "arming": "Aktivování",
             "disarming": "Deaktivování",
             "triggered": "Spuštěno",
-            "armed_custom_bypass": "Aktivní uživatelský bypass"
+            "armed_custom_bypass": "Aktivní uživatelským obejitím"
         },
         "automation": {
             "off": "Neaktivní",
@@ -270,6 +270,10 @@
             "active": "aktivní",
             "idle": "nečinné",
             "paused": "pozastaveno"
+        },
+        "person": {
+            "home": "Doma",
+            "not_home": "Pryč"
         }
     },
     "state_badge": {
@@ -278,20 +282,24 @@
             "unavailable": "Není"
         },
         "alarm_control_panel": {
-            "armed": "Aktiv",
-            "disarmed": "Neaktiv",
-            "armed_home": "Aktiv",
-            "armed_away": "Aktiv",
-            "armed_night": "Aktiv",
+            "armed": "Aktivní",
+            "disarmed": "Neaktivní",
+            "armed_home": "Aktivní",
+            "armed_away": "Aktivní",
+            "armed_night": "Aktivní",
             "pending": "Čeká",
-            "arming": "Reaktiv",
-            "disarming": "Deaktiv",
+            "arming": "Aktivace",
+            "disarming": "Deaktivace",
             "triggered": "Spuštěn",
-            "armed_custom_bypass": "Aktiv"
+            "armed_custom_bypass": "Aktivní"
         },
         "device_tracker": {
             "home": "Doma",
-            "not_home": "Mimo"
+            "not_home": "Pryč"
+        },
+        "person": {
+            "home": "Doma",
+            "not_home": "Pryč"
         }
     },
     "ui": {
@@ -365,7 +373,8 @@
                         "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), abyste se ujistili, že jste aplikaci Home Assistant nakonfigurovali správně.",
                         "pick_automation": "Vyberte automatizaci, kterou chcete upravit",
                         "no_automations": "Nelze najít žádnou upravitelnou automatizaci",
-                        "add_automation": "Přidat automatizaci"
+                        "add_automation": "Přidat automatizaci",
+                        "learn_more": "Další informace o automatizaci"
                     },
                     "editor": {
                         "introduction": "Použijte automatizace k oživení svého domova",
@@ -452,7 +461,8 @@
                                     "enter": "Vstup",
                                     "leave": "Opuštění"
                                 }
-                            }
+                            },
+                            "learn_more": "Další informace o spouštěčích"
                         },
                         "conditions": {
                             "header": "Podmínky",
@@ -497,7 +507,8 @@
                                     "entity": "Entita s umístěním",
                                     "zone": "Zóna"
                                 }
-                            }
+                            },
+                            "learn_more": "Další informace o podmínkách"
                         },
                         "actions": {
                             "header": "Akce",
@@ -530,7 +541,8 @@
                                     "event": "Událost:",
                                     "service_data": "Data služby"
                                 }
-                            }
+                            },
+                            "learn_more": "Další informace o akcích"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Registr oblastí",
                         "introduction": "Oblasti se používají k uspořádání zařízení podle místa kde jsou. Tato informace bude použita k organizaci rozhraní, k nastavení oprávnění a v integraci s ostatnímy systémy.",
-                        "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení."
+                        "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení.",
+                        "integrations_page": "Stránka integrací"
                     },
                     "no_areas": "Vypadá to, že ještě nemáte žádné oblasti!",
                     "create_area": "VYTVOŘIT OBLAST",
@@ -621,7 +634,8 @@
                         "header": "Registr entit",
                         "unavailable": "(není k dispozici)",
                         "introduction": "Homa Assistant uchovává registr všech entit, které kdy viděl a mohou být jednoznačně identifikovány. Každá z těchto entit bude mít přiděleno ID, které bude rezervováno pouze pro tuto entitu.",
-                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu. Poznámka: odebrání entity z registru entit nesmaže entitu. Pro smazání přejděte na stránku integrací pomocí odkazu níže."
+                        "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu. Poznámka: odebrání entity z registru entit nesmaže entitu. Pro smazání přejděte na stránku integrací pomocí odkazu níže.",
+                        "integrations_page": "Stránka integrací"
                     },
                     "editor": {
                         "unavailable": "Tato entita není momentálně k dispozici.",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Editor zdrojového kódu"
+                    },
+                    "raw_editor": {
+                        "header": "Upravit konfiguraci",
+                        "save": "Uložit",
+                        "unsaved_changes": "Neuložené změny",
+                        "saved": "Uloženo"
                     }
                 },
                 "menu": {
@@ -953,8 +973,8 @@
                 "arm_home": "Aktivovat režim domov",
                 "arm_away": "Aktivovat režim mimo domov",
                 "arm_night": "Aktivovat noční režim",
-                "armed_custom_bypass": "Uživatelský bypass",
-                "arm_custom_bypass": "Uživatelský bypass"
+                "armed_custom_bypass": "Vlastní obejítí",
+                "arm_custom_bypass": "Vlastní obejítí"
             },
             "automation": {
                 "last_triggered": "Naposledy spuštěno",
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Kondice systému"
+        "system_health": "Kondice systému",
+        "person": "Osoba"
     },
     "attribute": {
         "weather": {
