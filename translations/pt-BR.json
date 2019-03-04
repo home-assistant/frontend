@@ -535,6 +535,12 @@
                         "activate_user": "Ativar usuário",
                         "deactivate_user": "Desativar usuário",
                         "delete_user": "Excluir usuário"
+                    },
+                    "add_user": {
+                        "caption": "Adicionar Usuário",
+                        "name": "Nome",
+                        "username": "Usuário",
+                        "create": "Criar"
                     }
                 },
                 "cloud": {
@@ -768,6 +774,10 @@
                         "para_sure": "Tem certeza de que deseja assumir o controle da sua interface de usuário?",
                         "cancel": "Nunca",
                         "save": "Assuma o controle"
+                    },
+                    "raw_editor": {
+                        "save": "Salvar",
+                        "saved": "Salvo"
                     }
                 },
                 "menu": {
@@ -994,7 +1004,8 @@
         "weblink": "Weblink",
         "zwave": "",
         "vacuum": "Aspirando",
-        "system_health": "Integridade Do Sistema"
+        "system_health": "Integridade Do Sistema",
+        "person": "Pessoa"
     },
     "attribute": {
         "weather": {
