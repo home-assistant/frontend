@@ -270,6 +270,10 @@
             "active": "aktiv",
             "idle": "inaktiv",
             "paused": "pauset"
+        },
+        "person": {
+            "home": "Hjemme",
+            "not_home": "Borte"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Aktivert"
         },
         "device_tracker": {
+            "home": "Hjemme",
+            "not_home": "Borte"
+        },
+        "person": {
             "home": "Hjemme",
             "not_home": "Borte"
         }
@@ -365,7 +373,8 @@
                         "introduction": "Automatiseringsredigeringen lar deg lage og redigere automatiseringer. Vennligst les [instruksjonene](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "pick_automation": "Velg automatisering for å redigere",
                         "no_automations": "Vi kunne ikke finne noen redigerbare automatiseringer",
-                        "add_automation": "Legg til automatisering"
+                        "add_automation": "Legg til automatisering",
+                        "learn_more": "Lær mer om automatiseringer"
                     },
                     "editor": {
                         "introduction": "Bruk automatiseringer for å få liv i hjemmet ditt",
@@ -452,7 +461,8 @@
                                     "enter": "Ankommer",
                                     "leave": "Foralter"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær mer om utløsere"
                         },
                         "conditions": {
                             "header": "Betingelser",
@@ -497,7 +507,8 @@
                                     "entity": "Enhet med posisjon",
                                     "zone": "Sone"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær mer om betingelser"
                         },
                         "actions": {
                             "header": "Handlinger",
@@ -530,7 +541,8 @@
                                     "event": "Hendelse",
                                     "service_data": "Tjeneste data"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær mer om handlinger"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Områderegister",
                         "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
-                        "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene."
+                        "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene.",
+                        "integrations_page": "Integrasjonsside"
                     },
                     "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "create_area": "OPPRETT OMRÅDE",
@@ -621,7 +634,8 @@
                         "header": "Enhetsregister",
                         "unavailable": "(utilgjengelig)",
                         "introduction": "Home Assistant beholder et register over hver enhet som den noensinne har sett som kan identifiseres unikt. Hver av disse enhetene vil ha en enhets ID tilknyttet som vil bli reservert for bare denne enheten.",
-                        "introduction2": "Bruk entitetsregisteret til å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden."
+                        "introduction2": "Bruk entitetsregisteret til å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
+                        "integrations_page": "Integrasjonsside"
                     },
                     "editor": {
                         "unavailable": "Denne enheten er ikke tilgjengelig for øyeblikket.",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Tekstbasert konfigurasjonsredigering"
+                    },
+                    "raw_editor": {
+                        "header": "Rediger konfigurasjon",
+                        "save": "Lagre",
+                        "unsaved_changes": "Ulagrede endringer",
+                        "saved": "Lagret"
                     }
                 },
                 "menu": {
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Systemhelse"
+        "system_health": "Systemhelse",
+        "person": "Person"
     },
     "attribute": {
         "weather": {

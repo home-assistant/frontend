@@ -270,6 +270,10 @@
             "active": "激活",
             "idle": "空闲",
             "paused": "暂停"
+        },
+        "person": {
+            "home": "在家",
+            "not_home": "离开"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "警戒中"
         },
         "device_tracker": {
+            "home": "在家",
+            "not_home": "离开"
+        },
+        "person": {
             "home": "在家",
             "not_home": "离开"
         }
@@ -365,7 +373,8 @@
                         "introduction": "自动化编辑器方便你创建及编辑自动化。请阅读相关[说明](https:\/\/home-assistant.io\/docs\/automation\/editor\/)以确保正确配置。",
                         "pick_automation": "选择要编辑的自动化",
                         "no_automations": "未找到可编辑的自动化",
-                        "add_automation": "添加自动化"
+                        "add_automation": "添加自动化",
+                        "learn_more": "详细了解自动化"
                     },
                     "editor": {
                         "introduction": "使用自动化让你的家聪明起来",
@@ -439,6 +448,7 @@
                                     "webhook_id": "Webhook ID"
                                 },
                                 "time_pattern": {
+                                    "label": "时间模式",
                                     "hours": "小时",
                                     "minutes": "分",
                                     "seconds": "秒"
@@ -451,7 +461,8 @@
                                     "enter": "进入",
                                     "leave": "离开"
                                 }
-                            }
+                            },
+                            "learn_more": "详细了解触发"
                         },
                         "conditions": {
                             "header": "环境条件",
@@ -496,7 +507,8 @@
                                     "entity": "位置追踪设备",
                                     "zone": "地点"
                                 }
-                            }
+                            },
+                            "learn_more": "详细了解环境条件"
                         },
                         "actions": {
                             "header": "动作",
@@ -529,7 +541,8 @@
                                     "event": "事件：",
                                     "service_data": "服务数据"
                                 }
-                            }
+                            },
+                            "learn_more": "详细了解动作"
                         }
                     }
                 },
@@ -591,7 +604,10 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee 智能家居(ZHA) 网络管理"
+                    "description": "Zigbee 智能家居(ZHA) 网络管理",
+                    "services": {
+                        "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。"
+                    }
                 },
                 "area_registry": {
                     "caption": "区域注册",
@@ -599,7 +615,8 @@
                     "picker": {
                         "header": "区域注册表",
                         "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
-                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。"
+                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。",
+                        "integrations_page": "集成页面"
                     },
                     "no_areas": "看来你还没有建立区域！",
                     "create_area": "创建区域",
@@ -617,7 +634,8 @@
                         "header": "实体注册表",
                         "unavailable": "(不可用)",
                         "introduction": "Home Assistant 将会以唯一标识的形式记录发现的每个实体。这些实体被各自分配一个实体 ID，仅保留给对应实体。",
-                        "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。"
+                        "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。",
+                        "integrations_page": "集成页面"
                     },
                     "editor": {
                         "unavailable": "该实体暂不可用。",
@@ -866,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "原始配置编辑器"
+                    },
+                    "raw_editor": {
+                        "header": "编辑配置",
+                        "save": "保存",
+                        "unsaved_changes": "未保存的更改",
+                        "saved": "已保存"
                     }
                 },
                 "menu": {
@@ -1114,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "系统状态"
+        "system_health": "系统状态",
+        "person": "个人"
     },
     "attribute": {
         "weather": {
