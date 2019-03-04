@@ -20,7 +20,6 @@ import {
   deleteCloudhook,
   CloudWebhook,
 } from "../../../data/cloud";
-import { ERR_UNKNOWN_COMMAND } from "../../../data/websocket_api";
 
 declare global {
   // for fire event
@@ -196,15 +195,10 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    try {
-      this._localHooks = await fetchWebhooks(this.hass!);
-    } catch (err) {
-      if (err.code === ERR_UNKNOWN_COMMAND) {
-        this._localHooks = [];
-      } else {
-        throw err;
-      }
-    }
+    this._localHooks =
+      "webhook" in this.hass!.config.components
+        ? await fetchWebhooks(this.hass!)
+        : [];
   }
 
   private renderStyle() {
