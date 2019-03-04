@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -21,18 +22,16 @@ const cardConfigStruct = struct({
   aspect_ratio: "string?",
 });
 
+@customElement("hui-iframe-card-editor")
 export class HuiIframeCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: Config;
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
     this._config = config;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
   }
 
   get _title(): string {
@@ -110,5 +109,3 @@ declare global {
     "hui-iframe-card-editor": HuiIframeCardEditor;
   }
 }
-
-customElements.define("hui-iframe-card-editor", HuiIframeCardEditor);

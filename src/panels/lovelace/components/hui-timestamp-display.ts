@@ -1,9 +1,10 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 
 import { HomeAssistant } from "../../../types";
@@ -19,30 +20,32 @@ const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
 };
 const INTERVAL_FORMAT = ["relative", "total"];
 
+@customElement("hui-timestamp-display")
 class HuiTimestampDisplay extends LitElement {
-  public hass?: HomeAssistant;
-  public ts?: Date;
-  public format?: "relative" | "total" | "date" | "datetime" | "time";
-  private _relative?: string;
+  @property() public hass?: HomeAssistant;
+
+  @property() public ts?: Date;
+
+  @property() public format?:
+    | "relative"
+    | "total"
+    | "date"
+    | "datetime"
+    | "time";
+
+  @property() private _relative?: string;
+
   private _connected?: boolean;
+
   private _interval?: number;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      ts: {},
-      hass: {},
-      format: {},
-      _relative: {},
-    };
-  }
-
-  public connectedCallback() {
+  public connectedCallback(): void {
     super.connectedCallback();
     this._connected = true;
     this._startInterval();
   }
 
-  public disconnectedCallback() {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._connected = false;
     this._clearInterval();
@@ -65,18 +68,18 @@ class HuiTimestampDisplay extends LitElement {
       return html`
         ${this._relative}
       `;
-    } else if (format in FORMATS) {
+    }
+    if (format in FORMATS) {
       return html`
         ${FORMATS[format](this.ts, this.hass.language)}
       `;
-    } else {
-      return html`
-        Invalid format
-      `;
     }
+    return html`
+      Invalid format
+    `;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (!changedProperties.has("format") || !this._connected) {
       return;
@@ -89,11 +92,11 @@ class HuiTimestampDisplay extends LitElement {
     }
   }
 
-  private get _format() {
+  private get _format(): string {
     return this.format || "relative";
   }
 
-  private _startInterval() {
+  private _startInterval(): void {
     this._clearInterval();
     if (this._connected && INTERVAL_FORMAT.includes(this._format)) {
       this._updateRelative();
@@ -101,14 +104,14 @@ class HuiTimestampDisplay extends LitElement {
     }
   }
 
-  private _clearInterval() {
+  private _clearInterval(): void {
     if (this._interval) {
       clearInterval(this._interval);
       this._interval = undefined;
     }
   }
 
-  private _updateRelative() {
+  private _updateRelative(): void {
     if (this.ts && this.hass!.localize) {
       this._relative =
         this._format === "relative"
@@ -126,5 +129,3 @@ declare global {
     "hui-timestamp-display": HuiTimestampDisplay;
   }
 }
-
-customElements.define("hui-timestamp-display", HuiTimestampDisplay);

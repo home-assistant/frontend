@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -23,18 +24,16 @@ const cardConfigStruct = struct({
   name: "string?",
 });
 
+@customElement("hui-plant-status-card-editor")
 export class HuiPlantStatusCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: Config;
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
     this._config = config;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
   }
 
   get _entity(): string {
@@ -100,5 +99,3 @@ declare global {
     "hui-plant-status-card-editor": HuiPlantStatusCardEditor;
   }
 }
-
-customElements.define("hui-plant-status-card-editor", HuiPlantStatusCardEditor);

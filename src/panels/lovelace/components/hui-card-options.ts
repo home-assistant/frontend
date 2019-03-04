@@ -1,4 +1,12 @@
-import { html, LitElement, PropertyDeclarations } from "lit-element";
+import {
+  html,
+  LitElement,
+  customElement,
+  property,
+  css,
+  CSSResult,
+  TemplateResult,
+} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -12,63 +20,18 @@ import { Lovelace } from "../types";
 import { swapCard } from "../editor/config-util";
 import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
 
+@customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
   public cardConfig?: LovelaceCardConfig;
-  public hass?: HomeAssistant;
-  public lovelace?: Lovelace;
-  public path?: [number, number];
 
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, lovelace: {}, path: {} };
-  }
+  @property() public hass?: HomeAssistant;
 
-  protected render() {
+  @property() public lovelace?: Lovelace;
+
+  @property() public path?: [number, number];
+
+  protected render(): TemplateResult | void {
     return html`
-      <style>
-        div.options {
-          border-top: 1px solid #e8e8e8;
-          padding: 5px 8px;
-          background: var(--paper-card-background-color, white);
-          box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
-            rgba(0, 0, 0, 0.12) 0px 1px 5px -4px,
-            rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
-          display: flex;
-        }
-
-        div.options .primary-actions {
-          flex: 1;
-          margin: auto;
-        }
-
-        div.options .secondary-actions {
-          flex: 4;
-          text-align: right;
-        }
-
-        paper-icon-button {
-          color: var(--primary-text-color);
-        }
-
-        paper-icon-button.move-arrow[disabled] {
-          color: var(--disabled-text-color);
-        }
-
-        paper-menu-button {
-          color: var(--secondary-text-color);
-          padding: 0;
-        }
-
-        paper-item.header {
-          color: var(--primary-text-color);
-          text-transform: uppercase;
-          font-weight: 500;
-          font-size: 14px;
-        }
-
-        paper-item {
-          cursor: pointer;
-        }
-      </style>
       <slot></slot>
       <div class="options">
         <div class="primary-actions">
@@ -122,6 +85,54 @@ export class HuiCardOptions extends LitElement {
     `;
   }
 
+  static get styles(): CSSResult {
+    return css`
+      div.options {
+        border-top: 1px solid #e8e8e8;
+        padding: 5px 8px;
+        background: var(--paper-card-background-color, white);
+        box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
+          rgba(0, 0, 0, 0.12) 0px 1px 5px -4px,
+          rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
+        display: flex;
+      }
+
+      div.options .primary-actions {
+        flex: 1;
+        margin: auto;
+      }
+
+      div.options .secondary-actions {
+        flex: 4;
+        text-align: right;
+      }
+
+      paper-icon-button {
+        color: var(--primary-text-color);
+      }
+
+      paper-icon-button.move-arrow[disabled] {
+        color: var(--disabled-text-color);
+      }
+
+      paper-menu-button {
+        color: var(--secondary-text-color);
+        padding: 0;
+      }
+
+      paper-item.header {
+        color: var(--primary-text-color);
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      paper-item {
+        cursor: pointer;
+      }
+    `;
+  }
+
   private _editCard(): void {
     showEditCardDialog(this, {
       lovelace: this.lovelace!,
@@ -162,5 +173,3 @@ declare global {
     "hui-card-options": HuiCardOptions;
   }
 }
-
-customElements.define("hui-card-options", HuiCardOptions);

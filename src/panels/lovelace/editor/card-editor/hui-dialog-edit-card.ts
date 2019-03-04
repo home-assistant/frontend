@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 
 import { HomeAssistant } from "../../../../types";
@@ -23,18 +24,13 @@ declare global {
   }
 }
 
+@customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard extends LitElement {
-  protected hass?: HomeAssistant;
-  private _params?: EditCardDialogParams;
-  private _cardConfig?: LovelaceCardConfig;
+  @property() protected hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _params: {},
-      _cardConfig: {},
-    };
-  }
+  @property() private _params?: EditCardDialogParams;
+
+  @property() private _cardConfig?: LovelaceCardConfig;
 
   constructor() {
     super();
@@ -78,11 +74,11 @@ export class HuiDialogEditCard extends LitElement {
     `;
   }
 
-  private _cardPicked(cardConf: LovelaceCardConfig) {
+  private _cardPicked(cardConf: LovelaceCardConfig): void {
     this._cardConfig = cardConf;
   }
 
-  private _cancel() {
+  private _cancel(): void {
     this._params = undefined;
     this._cardConfig = undefined;
   }
@@ -93,5 +89,3 @@ declare global {
     "hui-dialog-edit-card": HuiDialogEditCard;
   }
 }
-
-customElements.define("hui-dialog-edit-card", HuiDialogEditCard);
