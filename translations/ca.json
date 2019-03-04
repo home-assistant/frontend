@@ -968,7 +968,7 @@
             },
             "alarm_control_panel": {
                 "code": "Codi",
-                "clear_code": "Supr.",
+                "clear_code": "Borrar",
                 "disarm": "Desactivar",
                 "arm_home": "Activar, a casa",
                 "arm_away": "Activar, fora",

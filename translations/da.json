@@ -270,6 +270,10 @@
             "active": "aktiv",
             "idle": "inaktiv",
             "paused": "pause"
+        },
+        "person": {
+            "home": "Hjemme",
+            "not_home": "Ude"
         }
     },
     "state_badge": {
@@ -365,7 +369,8 @@
                         "introduction": "Automatiserings editoren giver dig mulighed for at oprette og redigere automatiseringer. Læs venligst [instruktionerne] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "pick_automation": "Vælg automatisering for at redigere",
                         "no_automations": "Vi kunne ikke finde nogen redigerbare automatiseringer",
-                        "add_automation": "Tilføj automatisering"
+                        "add_automation": "Tilføj automatisering",
+                        "learn_more": "Lær om automatiseringer"
                     },
                     "editor": {
                         "introduction": "Brug automatiseringer til at vække dit hjem til live",
@@ -452,7 +457,8 @@
                                     "enter": "Ankommer",
                                     "leave": "Forlad"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær om udløsere"
                         },
                         "conditions": {
                             "header": "Betingelser",
@@ -497,7 +503,8 @@
                                     "entity": "Enhed med placering",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær om betingelser"
                         },
                         "actions": {
                             "header": "Handlinger",
@@ -530,7 +537,8 @@
                                     "event": "Hændelse:",
                                     "service_data": "Service data"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær om handlinger"
                         }
                     }
                 },
@@ -603,7 +611,8 @@
                     "picker": {
                         "header": "Område registrering",
                         "introduction": "Områder bruges til at organisere hvor enhederne er. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din grænseflade, tilladelser og integrationer med andre systemer.",
-                        "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene."
+                        "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
+                        "integrations_page": "Integrations side"
                     },
                     "no_areas": "Du ikke har ingen områder endnu!",
                     "create_area": "OPRET OMRÅDE",
@@ -621,7 +630,8 @@
                         "header": "Enheds registrering",
                         "unavailable": "(utilgængelig)",
                         "introduction": "Home Assistant opbevarer en registrering over hver unikke enhed det nogensinde har set. Hver af disse enheder vil have et registrerings ID tildelt som er forbeholdt netop denne enhed.",
-                        "introduction2": "Brug enhedsregistrering til at overskrive navnet, ændre enheds ID eller fjerne enheden fra Home Assistant. Bemærk at fjernelse af enhedens registrering ikke fjerner enheden. For at gøre det skal du følge linket herunder og fjerne det fra integrationssiden."
+                        "introduction2": "Brug enhedsregistrering til at overskrive navnet, ændre enheds ID eller fjerne enheden fra Home Assistant. Bemærk at fjernelse af enhedens registrering ikke fjerner enheden. For at gøre det skal du følge linket herunder og fjerne det fra integrationssiden.",
+                        "integrations_page": "Integrations side"
                     },
                     "editor": {
                         "unavailable": "Denne enhed er ikke tilgængelig i øjeblikket.",
@@ -870,6 +880,12 @@
                     },
                     "menu": {
                         "raw_editor": "Tekstbaseret redigering"
+                    },
+                    "raw_editor": {
+                        "header": "Rediger konfiguration",
+                        "save": "Gem",
+                        "unsaved_changes": "Ikke gemte ændringer",
+                        "saved": "Gemt"
                     }
                 },
                 "menu": {
@@ -1118,7 +1134,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "System sundhed"
+        "system_health": "System sundhed",
+        "person": "Person"
     },
     "attribute": {
         "weather": {

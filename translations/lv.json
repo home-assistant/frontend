@@ -352,7 +352,7 @@
                     "description": "Veidojiet un rediģējiet automatizācijas",
                     "picker": {
                         "header": "Automatizāciju Redaktors",
-                        "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, izlasiet [norādījumus] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
+                        "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, sekojiet [norādījumiem] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
                         "pick_automation": "Izvēlieties automatizāciju kuru rediģēt",
                         "no_automations": "Mēs nevarējām atrast rediģējamas automatizācijas",
                         "add_automation": "Pievienot automatizāciju"
@@ -538,7 +538,15 @@
                         "change_password": "Mainīt paroli",
                         "activate_user": "Aktivizēt lietotāju",
                         "deactivate_user": "Deaktivizēt lietotāju",
-                        "delete_user": "Dzēst lietotāju"
+                        "delete_user": "Dzēst lietotāju",
+                        "caption": "Skatīt lietotāju"
+                    },
+                    "add_user": {
+                        "caption": "Lietotāja pievienošana",
+                        "name": "Vārds",
+                        "username": "Lietotājvārds",
+                        "password": "Parole",
+                        "create": "Izveidot"
                     }
                 },
                 "cloud": {
@@ -760,25 +768,31 @@
                         "checked_items": "Atzīmētie vienumi",
                         "clear_items": "Notīrīt atzīmētos vienumus",
                         "add_item": "Pievienot vienumu"
+                    },
+                    "empty_state": {
+                        "title": "Laipni lūgti mājās",
+                        "no_devices": "Šī lapa ļauj jums kontrolēt savas ierīces, tomēr izskatās, ka vēl nav izveidotas ierīces. Lai sāktu darbu, dodieties uz integrācijas lapu.",
+                        "go_to_integrations_page": "Dodieties uz integrācijas lapu."
                     }
                 },
                 "editor": {
                     "edit_card": {
-                        "header": "Kartes Konfigurācija",
+                        "header": "Kartītes konfigurācija",
                         "save": "Saglabāt",
-                        "toggle_editor": "Pārslēgt Redaktoru",
-                        "pick_card": "Izvēlieties karti, kuru vēlaties pievienot.",
-                        "add": "Pievienot karti",
+                        "toggle_editor": "Pārslēgt redaktoru",
+                        "pick_card": "Izvēlieties kartīti, kuru vēlaties pievienot.",
+                        "add": "Pievienot kartīti",
                         "edit": "Rediģēt",
-                        "delete": "Dzēst"
+                        "delete": "Dzēst",
+                        "move": "Pārvietot"
                     },
                     "migrate": {
-                        "header": "Konfigurācija Nesaderīga",
+                        "header": "Nesaderīga konfigurācija",
                         "para_no_id": "Šim elementam nav ID. Lūdzu, pievienojiet ID šim elementam 'ui-lovelace.yaml' failā.",
-                        "para_migrate": "Home Assistant var automātiski pievienot ID visām kartēm un skatiem, nospiežot pogu \"Pārvietot konfigurāciju\".",
+                        "para_migrate": "Home Assistant var automātiski pievienot ID visām kartītēm un skatiem, nospiežot pogu \"Pārvietot konfigurāciju\".",
                         "migrate": "Pārvietot konfigurāciju"
                     },
-                    "header": "Rediģēt lietotāja interfeisu",
+                    "header": "Rediģēt lietotāja saskarni",
                     "edit_view": {
                         "header": "Skatīt konfigurāciju",
                         "add": "Pievienot skatu",
@@ -786,15 +800,27 @@
                         "delete": "Dzēst skatu"
                     },
                     "save_config": {
-                        "header": "Pārņemt kontroli pār savu Lovelace UI",
-                        "para": "Pēc noklusējuma Home Assistant uzturēs jūsu lietotāja interfeisu, atjauninot to, kad būs pieejami jauni objekti vai Lovelace komponenti. Ja jūs uzņematies kontroli, mēs jums vairs neveiksim izmaiņas automātiski jūsu vietā.",
-                        "para_sure": "Vai tiešām vēlaties kontrolēt savu lietotāja interfeisu?",
-                        "cancel": "Nekas",
+                        "header": "Pārņemt kontroli pār savu Lovelace lietotāja saskarni",
+                        "para": "Pēc noklusējuma Home Assistant uzturēs jūsu lietotāja saskarni, atjauninot to, kad būs pieejami jauni objekti vai Lovelace komponenti. Ja jūs uzņematies kontroli, mēs jums vairs neveiksim izmaiņas automātiski jūsu vietā.",
+                        "para_sure": "Vai tiešām vēlaties pārņemt kontroli pār lietotāja saskarni?",
+                        "cancel": "Atcelt",
                         "save": "Pārņemt kontroli"
+                    },
+                    "menu": {
+                        "raw_editor": "Konfigurācijas teksta redaktors"
+                    },
+                    "raw_editor": {
+                        "header": "Konfigurācijas redaktors",
+                        "save": "Saglabāt",
+                        "unsaved_changes": "Nesaglabātās izmaiņas",
+                        "saved": "Saglabāts"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfigurēt lietotāja interfeisu"
+                    "configure_ui": "Konfigurēt lietotāja saskarni",
+                    "unused_entities": "Neizmantotās vienības",
+                    "help": "Palīdzība",
+                    "refresh": "Atsvaidzināt"
                 }
             }
         },
@@ -890,7 +916,7 @@
                 "effect": "Efekts"
             },
             "media_player": {
-                "text_to_speak": "Teksts, ko teikt",
+                "text_to_speak": "Teksts, ko izrunāt",
                 "source": "Avots",
                 "sound_mode": "Skaņas režīms"
             },
@@ -963,7 +989,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Saglabāt",
-                "name": "Vārds",
+                "name": "Nosaukuma ignorēšana",
                 "entity_id": "Vienības ID"
             },
             "more_info_control": {

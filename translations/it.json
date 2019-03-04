@@ -270,6 +270,10 @@
             "active": "Attivo",
             "idle": "Inattivo",
             "paused": "In pausa"
+        },
+        "person": {
+            "home": "A casa",
+            "not_home": "Fuori Casa"
         }
     },
     "state_badge": {
@@ -292,6 +296,10 @@
         "device_tracker": {
             "home": "In Casa",
             "not_home": "Fuori"
+        },
+        "person": {
+            "home": "A Casa",
+            "not_home": "Fuori Casa"
         }
     },
     "ui": {
@@ -365,7 +373,8 @@
                         "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi [le istruzioni](https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assicurarti di aver configurato correttamente Home Assistant.",
                         "pick_automation": "Scegli l'automazione da modificare",
                         "no_automations": "Nessuna automazione modificabile trovata",
-                        "add_automation": "Aggiungi automazione"
+                        "add_automation": "Aggiungi automazione",
+                        "learn_more": "Per saperne di più sulle automazioni"
                     },
                     "editor": {
                         "introduction": "Usa le automazioni per rendere viva la tua casa",
@@ -452,7 +461,8 @@
                                     "enter": "Ingresso",
                                     "leave": "Uscita"
                                 }
-                            }
+                            },
+                            "learn_more": "Per saperne di più sui trigger"
                         },
                         "conditions": {
                             "header": "Condizioni",
@@ -497,7 +507,8 @@
                                     "entity": "Entità con posizione",
                                     "zone": "Zona"
                                 }
-                            }
+                            },
+                            "learn_more": "Per saperne di più sulle condizioni"
                         },
                         "actions": {
                             "header": "Azioni",
@@ -530,7 +541,8 @@
                                     "event": "Evento:",
                                     "service_data": "Dati servizio"
                                 }
-                            }
+                            },
+                            "learn_more": "Per saperne di più sulle azioni"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Registro di area",
                         "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
-                        "introduction2": "Per posizionare i dispositivi in un'area, utilizzare il collegamento seguente per accedere alla pagina delle integrazioni e quindi fare clic su un'integrazione configurata per accedere alle schede del dispositivo."
+                        "introduction2": "Per posizionare i dispositivi in un'area, utilizzare il collegamento seguente per accedere alla pagina delle integrazioni e quindi fare clic su un'integrazione configurata per accedere alle schede del dispositivo.",
+                        "integrations_page": "Integrazioni"
                     },
                     "no_areas": "Sembra che tu non abbia ancora delle aree!",
                     "create_area": "CREA AREA",
@@ -621,7 +634,8 @@
                         "header": "Registro delle entità",
                         "unavailable": "(non disponibile)",
                         "introduction": "Home Assistant mantiene un registro di tutte le entità che ha mai localizzato che possono essere identificate in modo univoco. A ciascuna di queste entità sarà assegnato un ID che sarà riservato solo a questa entità.",
-                        "introduction2": "Utilizzare il registro delle entità per sovrascrivere il nome, modificare l'entity ID o rimuovere la voce da Home Assistant. Nota, la rimozione della voce del registro entità non rimuoverà l'entità. Per farlo, segui il link sottostante e rimuovilo dalla pagina delle integrazioni."
+                        "introduction2": "Utilizzare il registro delle entità per sovrascrivere il nome, modificare l'entity ID o rimuovere la voce da Home Assistant. Nota, la rimozione della voce del registro entità non rimuoverà l'entità. Per farlo, segui il link sottostante e rimuovilo dalla pagina delle integrazioni.",
+                        "integrations_page": "Integrazioni"
                     },
                     "editor": {
                         "unavailable": "Questa entità non è attualmente disponibile.",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Editor di configurazione grezzo"
+                    },
+                    "raw_editor": {
+                        "header": "Modifica le impostazioni",
+                        "save": "Salva",
+                        "unsaved_changes": "Modifiche non salvate",
+                        "saved": "Salvato"
                     }
                 },
                 "menu": {
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Salute del sistema"
+        "system_health": "Salute del sistema",
+        "person": "Persona"
     },
     "attribute": {
         "weather": {
