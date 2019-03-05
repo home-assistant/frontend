@@ -512,7 +512,7 @@
                         },
                         "actions": {
                             "header": "Handlinger",
-                            "introduction": "Handlinger er det Home Assistant utfører når automatiseringen utløses.\n\n[Lær mer om handlinger.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "As acções são o que o Home Assistant fará quando uma automatização for despoletada.\n\n[Ler mais em :](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Legg til handling",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
