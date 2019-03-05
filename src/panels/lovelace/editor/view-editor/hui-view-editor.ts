@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -23,10 +24,11 @@ declare global {
   }
 }
 
+@customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
-  }
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: LovelaceViewConfig;
 
   get _path(): string {
     if (!this._config) {
@@ -62,9 +64,6 @@ export class HuiViewEditor extends LitElement {
     }
     return this._config.panel || false;
   }
-
-  public hass?: HomeAssistant;
-  private _config?: LovelaceViewConfig;
 
   set config(config: LovelaceViewConfig) {
     this._config = config;
@@ -142,5 +141,3 @@ declare global {
     "hui-view-editor": HuiViewEditor;
   }
 }
-
-customElements.define("hui-view-editor", HuiViewEditor);

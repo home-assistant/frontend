@@ -6,6 +6,7 @@ import codeMirrorCSS from "codemirror/lib/codemirror.css";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { customElement } from "lit-element";
 
 declare global {
   interface HASSDomEvents {
@@ -16,9 +17,12 @@ declare global {
   }
 }
 
+@customElement("hui-yaml-editor")
 export class HuiYamlEditor extends HTMLElement {
   public _hass?: HomeAssistant;
+
   public codemirror: CodeMirror;
+
   private _value: string;
 
   public constructor() {
@@ -108,7 +112,7 @@ export class HuiYamlEditor extends HTMLElement {
     fireEvent(this, "yaml-changed", { value: this.codemirror.getValue() });
   }
 
-  private setScrollBarDirection() {
+  private setScrollBarDirection(): void {
     if (!this.codemirror) {
       return;
     }
@@ -124,5 +128,3 @@ declare global {
     "hui-yaml-editor": HuiYamlEditor;
   }
 }
-
-window.customElements.define("hui-yaml-editor", HuiYamlEditor);
