@@ -74,6 +74,7 @@ module.exports = {
       new WorkboxPlugin.GenerateSW({
         swDest: "service_worker_es5.js",
         importWorkboxFrom: "local",
+        include: [],
       }),
   ].filter(Boolean),
   resolve: webpackBase.resolve,
