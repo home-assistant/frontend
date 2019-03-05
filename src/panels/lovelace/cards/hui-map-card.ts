@@ -115,15 +115,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     super.connectedCallback();
     this._connected = true;
     if (this.hasUpdated) {
+      this.loadMap();
       this._attachObserver();
     }
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._connected = false;
 
     if (this._leafletMap) {
       this._leafletMap.remove();
+      this._leafletMap = undefined;
+      this.Leaflet = undefined;
     }
 
     if (this._resizeObserver) {
@@ -283,7 +287,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             }),
             interactive: false,
             title,
-          }).addTo(map)
+          })
         );
 
         // create circle around it
@@ -292,7 +296,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             interactive: false,
             color: "#FF9800",
             radius,
-          }).addTo(map)
+          })
         );
 
         continue;
@@ -316,14 +320,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               <ha-entity-marker
                 entity-id="${entityId}"
                 entity-name="${entityName}"
-                entity-picture="${entityPicture || ""}
+                entity-picture="${entityPicture || ""}"
               ></ha-entity-marker>
             `,
             iconSize: [48, 48],
             className: "",
           }),
           title: computeStateName(stateObj),
-        }).addTo(map)
+        })
       );
 
       // create circle around if entity has accuracy
@@ -333,10 +337,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             interactive: false,
             color: "#0288D1",
             radius: gpsAccuracy,
-          }).addTo(map)
+          })
         );
       }
     }
+
+    this._mapItems.forEach((marker) => map.addLayer(marker));
   }
 
   private _attachObserver(): void {
