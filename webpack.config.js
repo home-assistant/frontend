@@ -76,7 +76,7 @@ function createConfig(isProdBuild, latestBuild) {
         },
       ],
     },
-    optimization: webpackBase.optimization,
+    optimization: webpackBase.optimization(latestBuild),
     plugins: [
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(!isProdBuild),

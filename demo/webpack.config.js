@@ -39,7 +39,7 @@ module.exports = {
       },
     ],
   },
-  optimization: webpackBase.optimization,
+  optimization: webpackBase.optimization(latestBuild),
   plugins: [
     new webpack.DefinePlugin({
       __DEV__: false,
