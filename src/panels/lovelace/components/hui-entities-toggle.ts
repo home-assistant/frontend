@@ -1,9 +1,12 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
 
@@ -11,20 +14,15 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
 import { HomeAssistant } from "../../../types";
 
+@customElement("hui-entities-toggle")
 class HuiEntitiesToggle extends LitElement {
-  public entities?: string[];
-  protected hass?: HomeAssistant;
-  private _toggleEntities?: string[];
+  @property() public entities?: string[];
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      entities: {},
-      _toggleEntities: {},
-    };
-  }
+  @property() protected hass?: HomeAssistant;
 
-  public updated(changedProperties: PropertyValues) {
+  @property() private _toggleEntities?: string[];
+
+  public updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has("entities")) {
       this._toggleEntities = this.entities!.filter(
@@ -41,7 +39,6 @@ class HuiEntitiesToggle extends LitElement {
     }
 
     return html`
-      ${this.renderStyle()}
       <paper-toggle-button
         ?checked="${this._toggleEntities!.some((entityId) => {
           const stateObj = this.hass!.states[entityId];
@@ -52,20 +49,18 @@ class HuiEntitiesToggle extends LitElement {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          width: 38px;
-          display: block;
-        }
-        paper-toggle-button {
-          cursor: pointer;
-          --paper-toggle-button-label-spacing: 0;
-          padding: 13px 5px;
-          margin: -4px -5px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        width: 38px;
+        display: block;
+      }
+      paper-toggle-button {
+        cursor: pointer;
+        --paper-toggle-button-label-spacing: 0;
+        padding: 13px 5px;
+        margin: -4px -5px;
+      }
     `;
   }
 
@@ -80,5 +75,3 @@ declare global {
     "hui-entities-toggle": HuiEntitiesToggle;
   }
 }
-
-customElements.define("hui-entities-toggle", HuiEntitiesToggle);

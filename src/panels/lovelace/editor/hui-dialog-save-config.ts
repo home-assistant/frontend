@@ -2,11 +2,11 @@ import {
   html,
   css,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   CSSResult,
+  customElement,
+  property,
 } from "lit-element";
-
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
@@ -15,25 +15,18 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@material/mwc-button";
 
 import { haStyleDialog } from "../../../resources/styles";
-
 import { HomeAssistant } from "../../../types";
-
 import { SaveDialogParams } from "./show-save-config-dialog";
 
+@customElement("hui-save-config")
 export class HuiSaveConfig extends LitElement {
-  public hass?: HomeAssistant;
-  private _params?: SaveDialogParams;
-  private _saving: boolean;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _params: {},
-      _saving: {},
-    };
-  }
+  @property() private _params?: SaveDialogParams;
 
-  protected constructor() {
+  @property() private _saving: boolean;
+
+  public constructor() {
     super();
     this._saving = false;
   }
@@ -145,5 +138,3 @@ declare global {
     "hui-dialog-save-config": HuiSaveConfig;
   }
 }
-
-customElements.define("hui-dialog-save-config", HuiSaveConfig);
