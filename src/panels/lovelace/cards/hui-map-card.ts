@@ -115,15 +115,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     super.connectedCallback();
     this._connected = true;
     if (this.hasUpdated) {
+      this.loadMap();
       this._attachObserver();
     }
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._connected = false;
 
     if (this._leafletMap) {
       this._leafletMap.remove();
+      this._leafletMap = undefined;
+      this.Leaflet = undefined;
     }
 
     if (this._resizeObserver) {
