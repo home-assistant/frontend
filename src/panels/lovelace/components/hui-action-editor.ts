@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -31,15 +32,15 @@ declare global {
   }
 }
 
+@customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
-  public config?: ActionConfig;
-  public label?: string;
-  public actions?: string[];
-  protected hass?: HomeAssistant;
+  @property() public config?: ActionConfig;
 
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, config: {}, label: {}, actions: {} };
-  }
+  @property() public label?: string;
+
+  @property() public actions?: string[];
+
+  @property() protected hass?: HomeAssistant;
 
   get _action(): string {
     return this.config!.action || "";
@@ -126,5 +127,3 @@ declare global {
     "hui-action-editor": HuiActionEditor;
   }
 }
-
-customElements.define("hui-action-editor", HuiActionEditor);

@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -18,18 +19,16 @@ const cardConfigStruct = struct({
   title: "string?",
 });
 
+@customElement("hui-shopping-list-card-editor")
 export class HuiShoppingListEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: Config;
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
     this._config = config;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
   }
 
   get _title(): string {
@@ -81,5 +80,3 @@ declare global {
     "hui-shopping-list-card-editor": HuiShoppingListEditor;
   }
 }
-
-customElements.define("hui-shopping-list-card-editor", HuiShoppingListEditor);

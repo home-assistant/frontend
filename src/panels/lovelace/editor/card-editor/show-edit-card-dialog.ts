@@ -17,7 +17,7 @@ export interface EditCardDialogParams {
   path: [number] | [number, number];
 }
 
-const registerEditCardDialog = (element: HTMLElement) =>
+const registerEditCardDialog = (element: HTMLElement): Event =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
@@ -28,7 +28,7 @@ const registerEditCardDialog = (element: HTMLElement) =>
 export const showEditCardDialog = (
   element: HTMLElement,
   editCardDialogParams: EditCardDialogParams
-) => {
+): void => {
   if (!registeredDialog) {
     registeredDialog = true;
     registerEditCardDialog(element);

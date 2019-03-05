@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-item/paper-item";
@@ -13,14 +16,9 @@ import { moveCard } from "../config-util";
 import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 
+@customElement("hui-dialog-move-card-view")
 export class HuiDialogMoveCardView extends LitElement {
-  private _params?: MoveCardViewDialogParams;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _params: {},
-    };
-  }
+  @property() private _params?: MoveCardViewDialogParams;
 
   public async showDialog(params: MoveCardViewDialogParams): Promise<void> {
     this._params = params;
@@ -32,29 +30,6 @@ export class HuiDialogMoveCardView extends LitElement {
       return html``;
     }
     return html`
-      <style>
-        paper-item {
-          margin: 8px;
-          cursor: pointer;
-        }
-        paper-item[active] {
-          color: var(--primary-color);
-        }
-        paper-item[active]:before {
-          border-radius: 4px;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          pointer-events: none;
-          content: "";
-          background-color: var(--primary-color);
-          opacity: 0.12;
-          transition: opacity 15ms linear;
-          will-change: opacity;
-        }
-      </style>
       <paper-dialog
         with-backdrop
         opened
@@ -72,6 +47,32 @@ export class HuiDialogMoveCardView extends LitElement {
           `;
         })}
       </paper-dialog>
+    `;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      paper-item {
+        margin: 8px;
+        cursor: pointer;
+      }
+      paper-item[active] {
+        color: var(--primary-color);
+      }
+      paper-item[active]:before {
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+        content: "";
+        background-color: var(--primary-color);
+        opacity: 0.12;
+        transition: opacity 15ms linear;
+        will-change: opacity;
+      }
     `;
   }
 
@@ -104,5 +105,3 @@ declare global {
     "hui-dialog-move-card-view": HuiDialogMoveCardView;
   }
 }
-
-customElements.define("hui-dialog-move-card-view", HuiDialogMoveCardView);

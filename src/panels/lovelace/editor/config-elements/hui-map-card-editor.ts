@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -35,19 +36,18 @@ const cardConfigStruct = struct({
   entities: [entitiesConfigStruct],
 });
 
+@customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: MapCardConfig;
-  private _configEntities?: EntityConfig[];
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: MapCardConfig;
+
+  @property() private _configEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {}, _configEntities: {} };
   }
 
   get _title(): string {
@@ -137,5 +137,3 @@ declare global {
     "hui-map-card-editor": HuiMapCardEditor;
   }
 }
-
-customElements.define("hui-map-card-editor", HuiMapCardEditor);

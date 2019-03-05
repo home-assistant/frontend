@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
@@ -26,18 +29,16 @@ const cardConfigStruct = struct({
   states: "array?",
 });
 
+@customElement("hui-alarm-panel-card-editor")
 export class HuiAlarmPanelCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: Config;
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
     this._config = config;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
   }
 
   get _entity(): string {
@@ -60,7 +61,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
 
     return html`
-      ${configElementStyle} ${this.renderStyle()}
+      ${configElementStyle}
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
@@ -107,23 +108,21 @@ export class HuiAlarmPanelCardEditor extends LitElement
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .states {
-          display: flex;
-          flex-direction: row;
-        }
-        .deleteState {
-          visibility: hidden;
-        }
-        .states:hover > .deleteState {
-          visibility: visible;
-        }
-        ha-icon {
-          padding-top: 12px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .states {
+        display: flex;
+        flex-direction: row;
+      }
+      .deleteState {
+        visibility: hidden;
+      }
+      .states:hover > .deleteState {
+        visibility: visible;
+      }
+      ha-icon {
+        padding-top: 12px;
+      }
     `;
   }
 
@@ -190,5 +189,3 @@ declare global {
     "hui-alarm-panel-card-editor": HuiAlarmPanelCardEditor;
   }
 }
-
-customElements.define("hui-alarm-panel-card-editor", HuiAlarmPanelCardEditor);
