@@ -265,6 +265,14 @@
             "on": "Päällä",
             "paused": "Pysäytetty",
             "returning": "Palaamassa telakkaan"
+        },
+        "timer": {
+            "active": "aktiivinen",
+            "paused": "Pysäytetty"
+        },
+        "person": {
+            "home": "Koti",
+            "not_home": "Poissa"
         }
     },
     "state_badge": {
@@ -285,6 +293,10 @@
             "armed_custom_bypass": "Viritetty"
         },
         "device_tracker": {
+            "home": "Kotona",
+            "not_home": "Poissa"
+        },
+        "person": {
             "home": "Kotona",
             "not_home": "Poissa"
         }
@@ -355,7 +367,8 @@
                         "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Kannattaa lukea [ohjeet](https:\/\/home-assistant.io\/docs\/automation\/editor\/) (englanniksi), jotta osaat varmasti kirjoittaa automaatiot oikein.",
                         "pick_automation": "Valitse automaatio, jota haluat muokata",
                         "no_automations": "Ei muokattavia automaatioita",
-                        "add_automation": "Lisää automaatio"
+                        "add_automation": "Lisää automaatio",
+                        "learn_more": "Lisätietoja automatisoinneista"
                     },
                     "editor": {
                         "introduction": "Käytä automaatioita herättääksesi kotisi eloon",
@@ -474,7 +487,8 @@
                                     "entity": "Kokonaisuus, jolla on sijainti",
                                     "zone": "Alue"
                                 }
-                            }
+                            },
+                            "learn_more": "Lisätietoja ehdoista"
                         },
                         "actions": {
                             "header": "Toiminnot",
@@ -507,7 +521,8 @@
                                     "event": "Tapahtuma",
                                     "service_data": "Palvelun data"
                                 }
-                            }
+                            },
+                            "learn_more": "Lisätietoja toiminnoista"
                         }
                     }
                 },
@@ -530,7 +545,15 @@
                         "change_password": "Vaihda salasana",
                         "activate_user": "Aktivoi käyttäjä",
                         "deactivate_user": "Passivoi käyttäjätunnus",
-                        "delete_user": "Poista käyttäjä"
+                        "delete_user": "Poista käyttäjä",
+                        "caption": "Näytä käyttäjä"
+                    },
+                    "add_user": {
+                        "caption": "Lisää käyttäjä",
+                        "name": "Nimi",
+                        "username": "Käyttäjätunnus",
+                        "password": "Salasana",
+                        "create": "Luo"
                     }
                 },
                 "cloud": {
@@ -561,6 +584,22 @@
                 "zha": {
                     "caption": "ZHA",
                     "description": "ZigBee kotiautomaation verkonhallinta"
+                },
+                "person": {
+                    "caption": "Henkilöt",
+                    "detail": {
+                        "name": "Nimi"
+                    }
+                },
+                "area_registry": {
+                    "picker": {
+                        "integrations_page": "Integraatiot"
+                    }
+                },
+                "entity_registry": {
+                    "picker": {
+                        "integrations_page": "Integraatiot"
+                    }
                 }
             },
             "profile": {
@@ -698,6 +737,14 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Käyttäjätunnus",
+                                        "password": "Salasana"
+                                    }
+                                }
+                            },
                             "abort": {
                                 "login_expired": "Istunto päättyi, ole hyvä ja kirjaudu uudelleen."
                             }
@@ -727,6 +774,9 @@
                         "checked_items": "Valitut",
                         "clear_items": "Tyhjää valitut",
                         "add_item": "Lisää"
+                    },
+                    "empty_state": {
+                        "title": "Tervetuloa kotiin"
                     }
                 },
                 "editor": {
@@ -737,7 +787,8 @@
                         "pick_card": "Valitse kortti jonka haluat lisätä",
                         "add": "Lisää kortti",
                         "edit": "Muokkaa",
-                        "delete": "Poista"
+                        "delete": "Poista",
+                        "move": "Siirrä"
                     },
                     "migrate": {
                         "header": "Epäkelvot asetukset",
@@ -755,13 +806,20 @@
                     "save_config": {
                         "header": "Hallitse Lovelace käyttöliittymääsi",
                         "para": "Oletuksena Home Assistant ylläpitää käyttöliittymääsi, päivittäen sitä uusien yksiköiden tai Lovelace komponenttien tullessa saataville. Jos muokkaat käyttöliittymääsi, emme enää tee muutoksia automaattisesti.",
-                        "para_sure": "Oletko varma että muokata käyttöliittymää?",
+                        "para_sure": "Oletko varma, että haluat ottaa haltuun käyttöliittymän?",
                         "cancel": "Antaa olla",
                         "save": "Ota hallintaan"
+                    },
+                    "raw_editor": {
+                        "header": "Muokkaa asetuksia",
+                        "save": "Tallenna",
+                        "unsaved_changes": "Tallentamattomat muutokset",
+                        "saved": "Tallennettu"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Määrittele käyttöliittymä"
+                    "configure_ui": "Määrittele käyttöliittymä",
+                    "refresh": "Päivitä"
                 }
             }
         },
@@ -930,16 +988,16 @@
             "more_info_settings": {
                 "save": "Tallenna",
                 "name": "Nimi",
-                "entity_id": "Kohde ID"
+                "entity_id": "Kohteen ID"
             },
             "more_info_control": {
                 "script": {
                     "last_action": "Edellinen toiminto"
                 },
                 "sun": {
-                    "elevation": "Korkeus",
-                    "rising": "Nousu",
-                    "setting": "Asetus"
+                    "elevation": "Korkeus merenpinnasta",
+                    "rising": "Auringonnousu",
+                    "setting": "Auringonlasku"
                 },
                 "updater": {
                     "title": "Päivitysohjeet"
@@ -994,7 +1052,8 @@
         "weblink": "Linkki",
         "zwave": "Z-Wave",
         "vacuum": "Imuri",
-        "zha": "ZHA"
+        "zha": "ZHA",
+        "person": "Henkilö"
     },
     "attribute": {
         "weather": {

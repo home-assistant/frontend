@@ -270,6 +270,10 @@
             "active": "actief",
             "idle": "inactief",
             "paused": "gepauzeerd"
+        },
+        "person": {
+            "home": "Thuis",
+            "not_home": "Afwezig"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Ingeschakeld"
         },
         "device_tracker": {
+            "home": "Thuis",
+            "not_home": "Afwezig"
+        },
+        "person": {
             "home": "Thuis",
             "not_home": "Afwezig"
         }
@@ -365,7 +373,8 @@
                         "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Lees [de instructies](https:\/\/home-assistant.io\/docs\/automation\/editor\/) om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
-                        "add_automation": "Automatisering toevoegen"
+                        "add_automation": "Automatisering toevoegen",
+                        "learn_more": "Meer informatie over automatiseringen"
                     },
                     "editor": {
                         "introduction": "Gebruik automatiseringen om je huis tot leven te brengen",
@@ -452,11 +461,12 @@
                                     "enter": "Invoeren",
                                     "leave": "Verlaten"
                                 }
-                            }
+                            },
+                            "learn_more": "Meer informatie over triggers"
                         },
                         "conditions": {
                             "header": "Voorwaarden",
-                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn erg verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat. \n\n [Meer informatie over voorwaarden.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat. \n\n [Meer informatie over voorwaarden.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Voorwaarde toevoegen",
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
@@ -497,7 +507,8 @@
                                     "entity": "Entiteit met locatie",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "Meer informatie over condities"
                         },
                         "actions": {
                             "header": "Acties",
@@ -530,7 +541,8 @@
                                     "event": "Gebeurtenis:",
                                     "service_data": "Service data"
                                 }
-                            }
+                            },
+                            "learn_more": "Meer informatie over acties"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Gebiedenregister",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om u te helpen bij het organiseren van uw interface, machtigingen en integraties met andere systemen.",
-                        "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan."
+                        "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
+                        "integrations_page": "Integratiespagina"
                     },
                     "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
                     "create_area": "MAAK GEBIED",
@@ -621,7 +634,8 @@
                         "header": "Entiteiten register",
                         "unavailable": "(niet beschikbaar)",
                         "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
-                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit de Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina."
+                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit de Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
+                        "integrations_page": "Integratiespagina"
                     },
                     "editor": {
                         "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
@@ -793,7 +807,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Twee-factor authenticatie code"
-                                    }
+                                    },
+                                    "description": "Open de **{mfa_module_name}** op je apparaat voor de twee-factor authenticatiecode en verifieer je identiteit:"
                                 }
                             },
                             "error": {
@@ -869,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Platte configuratie-editor"
+                    },
+                    "raw_editor": {
+                        "header": "Configuratie bewerken",
+                        "save": "Opslaan",
+                        "unsaved_changes": "Niet-opgeslagen wijzigingen",
+                        "saved": "Opgeslagen"
                     }
                 },
                 "menu": {
@@ -1117,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Systeemstatus"
+        "system_health": "Systeemstatus",
+        "person": "Persoon"
     },
     "attribute": {
         "weather": {

@@ -4,8 +4,11 @@ import { Map } from "leaflet";
 export type LeafletModuleType = typeof import("leaflet");
 
 export const setupLeafletMap = async (
-  mapElement
+  mapElement: HTMLElement
 ): Promise<[Map, LeafletModuleType]> => {
+  if (!mapElement.parentNode) {
+    throw new Error("Cannot setup Leaflet map on disconnected element");
+  }
   // tslint:disable-next-line
   const Leaflet = (await import(/* webpackChunkName: "leaflet" */ "leaflet")) as LeafletModuleType;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
