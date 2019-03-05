@@ -615,7 +615,8 @@
                     "picker": {
                         "header": "Bereichsregister",
                         "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um dich bei der Organisation deiner Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
-                        "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen."
+                        "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen.",
+                        "integrations_page": "Integrationsseite"
                     },
                     "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
                     "create_area": "BEREICH ERSTELLEN",
@@ -633,7 +634,8 @@
                         "header": "Entitätsregister",
                         "unavailable": "(nicht verfügbar)",
                         "introduction": "Der Home Assistant führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
-                        "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entitäts-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite."
+                        "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entitäts-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite.",
+                        "integrations_page": "Integrationsseite"
                     },
                     "editor": {
                         "unavailable": "Diese Entität ist derzeit nicht verfügbar.",

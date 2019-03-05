@@ -1078,8 +1078,8 @@
                 },
                 "sun": {
                     "elevation": "Elevació",
-                    "rising": "Sortint",
-                    "setting": "Configuració"
+                    "rising": "Sortida",
+                    "setting": "Posta"
                 },
                 "updater": {
                     "title": "Instruccions d'actualització"

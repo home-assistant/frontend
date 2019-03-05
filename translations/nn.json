@@ -270,6 +270,10 @@
             "active": "aktiv",
             "idle": "tomgang",
             "paused": "pausa"
+        },
+        "person": {
+            "home": "Heime",
+            "not_home": "Borte "
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Påslått"
         },
         "device_tracker": {
+            "home": "Heime",
+            "not_home": "Borte"
+        },
+        "person": {
             "home": "Heime",
             "not_home": "Borte"
         }
@@ -365,7 +373,8 @@
                         "introduction": "Automasjonsredigeringa tillet deg å lage og redigere automasjonar. Ver vennleg og les [instruksjonane](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å vere sikker på om du har konfigurert Home Assistant rett.",
                         "pick_automation": "Vel ein automasjon for å redigere",
                         "no_automations": "Vi klarte ikkje å finne nokon automasjonar som kunne redigerast",
-                        "add_automation": "Legg til automasjon"
+                        "add_automation": "Legg til automasjon",
+                        "learn_more": "Lær meir om automasjonar"
                     },
                     "editor": {
                         "introduction": "Bruk automasjonar til å gi liv til heimen din",
@@ -452,7 +461,8 @@
                                     "enter": "Gå inn",
                                     "leave": "Forlat"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær meir om utløysarar"
                         },
                         "conditions": {
                             "header": "Føresetnadar",
@@ -497,7 +507,8 @@
                                     "entity": "Eining med posisjon",
                                     "zone": "Sone"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær meir om føresetnader"
                         },
                         "actions": {
                             "header": "Handlingar",
@@ -530,7 +541,8 @@
                                     "event": "Hending",
                                     "service_data": "Tenestedata"
                                 }
-                            }
+                            },
+                            "learn_more": "Lær meir om handlingar"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Områderegister",
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
-                        "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet."
+                        "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet.",
+                        "integrations_page": "Integrasjonsside"
                     },
                     "no_areas": "Ser ut til at du ikkje har noko område endå!",
                     "create_area": "LAG OMRÅDE",
@@ -621,7 +634,8 @@
                         "header": "Oppføringsregisteret",
                         "unavailable": "(utilgjengeleg)",
                         "introduction": "Home Assistant har eit register over alle oppføringane den nokon gang har sett som kan unikt identifiserast. KVar av desse oppføringane har ein eigen oppføringsidentifikasjon som er reservert for akkuratt denne oppføringa.",
-                        "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida."
+                        "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida.",
+                        "integrations_page": "Integrasjonsside"
                     },
                     "editor": {
                         "unavailable": "Denne eininga er for augeblinken ikkje tilgjengeleg.",
@@ -870,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Rå konfigurasjonsredigerar"
+                    },
+                    "raw_editor": {
+                        "header": "Rediger konfigurasjon",
+                        "save": "Lagre",
+                        "unsaved_changes": "Ikkje lagra endringar",
+                        "saved": "Lagra"
                     }
                 },
                 "menu": {
@@ -1118,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Systemhelse"
+        "system_health": "Systemhelse",
+        "person": "Person"
     },
     "attribute": {
         "weather": {

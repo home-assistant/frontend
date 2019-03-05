@@ -270,6 +270,10 @@
             "active": "aktiven",
             "idle": "V pripravljenosti",
             "paused": "Na pavzi"
+        },
+        "person": {
+            "home": "Doma",
+            "not_home": "Odsoten"
         }
     },
     "state_badge": {
@@ -290,6 +294,10 @@
             "armed_custom_bypass": "Aktiven"
         },
         "device_tracker": {
+            "home": "Doma",
+            "not_home": "Odsoten"
+        },
+        "person": {
             "home": "Doma",
             "not_home": "Odsoten"
         }
@@ -365,7 +373,8 @@
                         "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), da preverite, ali ste pravilno nastavili Home Assistant-a.",
                         "pick_automation": "Izberite avtomatizacijo za urejanje",
                         "no_automations": "Ne moremo najti nobene avtomatizacije za urejanje",
-                        "add_automation": "Dodaj avtomatizacijo"
+                        "add_automation": "Dodaj avtomatizacijo",
+                        "learn_more": "Več o avtomatizacijah"
                     },
                     "editor": {
                         "introduction": "Uporabite avtomatizacije, da bo vaš dom \"živ\"",
@@ -452,7 +461,8 @@
                                     "enter": "Vnesite",
                                     "leave": "Odidi"
                                 }
-                            }
+                            },
+                            "learn_more": "Več o sprožilcih"
                         },
                         "conditions": {
                             "header": "Pogoji",
@@ -497,7 +507,8 @@
                                     "entity": "Subjekt z lokacijo",
                                     "zone": "Območje"
                                 }
-                            }
+                            },
+                            "learn_more": "Več o pogojih"
                         },
                         "actions": {
                             "header": "Akcije",
@@ -530,7 +541,8 @@
                                     "event": "Dogodek:",
                                     "service_data": "Podatki storitve"
                                 }
-                            }
+                            },
+                            "learn_more": "Več o akcijah"
                         }
                     }
                 },
@@ -601,7 +613,8 @@
                     "caption": "Register območij",
                     "description": "Pregled vseh območij v vašem domu.",
                     "picker": {
-                        "header": "Register območij"
+                        "header": "Register območij",
+                        "integrations_page": "Stran za integracije"
                     },
                     "no_areas": "Izgleda, da še nimate območij!",
                     "create_area": "USTVARITE OBMOČJE",
@@ -617,7 +630,8 @@
                     "description": "Pregled vseh znanih subjektov.",
                     "picker": {
                         "header": "Register subjekta",
-                        "unavailable": "(ni na voljo)"
+                        "unavailable": "(ni na voljo)",
+                        "integrations_page": "Stran za integracije"
                     },
                     "editor": {
                         "unavailable": "Ta entiteta trenutno ni na voljo.",
@@ -866,6 +880,12 @@
                     },
                     "menu": {
                         "raw_editor": "Urejevalnik konfiguracije"
+                    },
+                    "raw_editor": {
+                        "header": "Uredi Nastavitve",
+                        "save": "Shrani",
+                        "unsaved_changes": "Neshranjene spremembe",
+                        "saved": "Shranjeno"
                     }
                 },
                 "menu": {
@@ -1114,7 +1134,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Zdravje sistema"
+        "system_health": "Zdravje sistema",
+        "person": "Oseba"
     },
     "attribute": {
         "weather": {
