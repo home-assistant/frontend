@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -29,20 +32,19 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
+@customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: Config;
+
   private _useSeverity?: boolean;
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
-    this._useSeverity = config.severity ? true : false;
+    this._useSeverity = !!config.severity;
     this._config = config;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
   }
 
   get _name(): string {
@@ -79,7 +81,7 @@ export class HuiGaugeCardEditor extends LitElement
     }
 
     return html`
-      ${configElementStyle} ${this.renderStyle()}
+      ${configElementStyle}
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
@@ -161,24 +163,22 @@ export class HuiGaugeCardEditor extends LitElement
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .severity {
-          display: none;
-          width: 100%;
-          padding-left: 16px;
-          flex-direction: row;
-          flex-wrap: wrap;
-        }
-        .severity > * {
-          flex: 1 0 30%;
-          padding-right: 4px;
-        }
-        paper-toggle-button[checked] ~ .severity {
-          display: flex;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .severity {
+        display: none;
+        width: 100%;
+        padding-left: 16px;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .severity > * {
+        flex: 1 0 30%;
+        padding-right: 4px;
+      }
+      paper-toggle-button[checked] ~ .severity {
+        display: flex;
+      }
     `;
   }
 
@@ -243,5 +243,3 @@ declare global {
     "hui-gauge-card-editor": HuiGaugeCardEditor;
   }
 }
-
-customElements.define("hui-gauge-card-editor", HuiGaugeCardEditor);
