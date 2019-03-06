@@ -5,6 +5,7 @@ import {
   property,
   TemplateResult,
   CSSResult,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -13,6 +14,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 import { EditorTarget } from "../editor/types";
 
+@customElement("hui-input-list-editor")
 export class HuiInputListEditor extends LitElement {
   @property() protected value?: string[];
   @property() protected hass?: HomeAssistant;
@@ -111,5 +113,3 @@ declare global {
     "hui-input-list-editor": HuiInputListEditor;
   }
 }
-
-customElements.define("hui-input-list-editor", HuiInputListEditor);
