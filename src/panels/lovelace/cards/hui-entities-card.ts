@@ -51,7 +51,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   protected _hass?: HomeAssistant;
+
   protected _config?: EntitiesCardConfig;
+
   protected _configEntities?: EntitiesCardEntityConfig[];
 
   set hass(hass: HomeAssistant) {
@@ -174,9 +176,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     if (
-      ((!entityConf.tap_action ||
-        entityConf.tap_action.action === "more-info") &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))) ||
+      !entityConf.tap_action ||
       (entityConf.tap_action && entityConf.tap_action.action !== "none")
     ) {
       element.classList.add("state-card-dialog");

@@ -12,9 +12,9 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
+import { HassEntity } from "home-assistant-js-websocket";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import {
   SUPPORTS_PLAY,
@@ -22,6 +22,8 @@ import {
   OFF_STATES,
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
@@ -58,6 +60,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
 
     return html`
       <hui-generic-entity-row
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
         .hass="${this.hass}"
         .config="${this._config}"
         .showSecondary="false"
@@ -151,6 +156,14 @@ class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
     this.hass!.callService("media_player", "media_next_track", {
       entity_id: this._config!.entity,
     });
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 

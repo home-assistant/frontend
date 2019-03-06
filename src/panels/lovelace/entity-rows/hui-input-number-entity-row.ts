@@ -16,6 +16,8 @@ import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { setValue } from "../../../data/input_text";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements EntityRow {
@@ -68,7 +70,13 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
+        .hass="${this.hass}"
+        .config="${this._config}"
+      >
         <div>
           ${stateObj.attributes.mode === "slider"
             ? html`
@@ -151,6 +159,14 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     if (element.value !== stateObj.state) {
       setValue(this.hass!, stateObj.entity_id, element.value!);
     }
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
