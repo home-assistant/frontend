@@ -49,8 +49,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   @property() private _configEntities?: EntityConfig[];
 
-  @property() private _geolocationSources?: string[];
-
   public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
