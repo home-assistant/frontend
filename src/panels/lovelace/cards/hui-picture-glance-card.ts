@@ -189,9 +189,12 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       }
 
       .box {
+        /* start paper-font-common-nowrap style */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        /* end paper-font-common-nowrap style */
+
         position: absolute;
         left: 0;
         right: 0;

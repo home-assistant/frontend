@@ -153,7 +153,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         font-size: 24px;
         font-weight: 400;
         letter-spacing: -0.012em;
-        /* stop paper-font-headline style */
+        /* end paper-font-headline style */
 
         line-height: 40px;
         color: var(--primary-text-color);
@@ -163,9 +163,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       .header .name {
+        /* start paper-font-common-nowrap style */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        /* end paper-font-common-nowrap */
       }
 
       .state-card-dialog {

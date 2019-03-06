@@ -142,9 +142,12 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       }
 
       .footer {
+        /* start paper-font-common-nowrap style */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        /* end paper-font-common-nowrap style */
+
         position: absolute;
         left: 0;
         right: 0;

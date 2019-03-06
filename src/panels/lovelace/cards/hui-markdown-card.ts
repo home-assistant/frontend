@@ -65,11 +65,14 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       :host {
+        /* start paper-font-headline style */
         font-family: "Roboto", "Noto", sans-serif;
         -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
-        font-size: 14px;
+        text-rendering: optimizeLegibility;
+        font-size: 24px;
         font-weight: 400;
-        line-height: 20px;
+        letter-spacing: -0.012em;
+        /* end paper-font-headline style */
       }
       ha-markdown {
         display: block;
