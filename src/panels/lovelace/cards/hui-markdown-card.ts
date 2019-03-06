@@ -26,6 +26,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     await import(/* webpackChunkName: "hui-markdown-card-editor" */ "../editor/config-elements/hui-markdown-card-editor");
     return document.createElement("hui-markdown-card-editor");
   }
+
   public static getStubConfig(): object {
     return { content: " " };
   }
@@ -63,6 +64,13 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        font-family: "Roboto", "Noto", sans-serif;
+        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
       ha-markdown {
         display: block;
         padding: 0 16px 16px;
@@ -70,23 +78,18 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         -webkit-user-select: initial;
         -moz-user-select: initial;
       }
-
       .markdown.no-header {
         padding-top: 16px;
       }
-
       ha-markdown > *:first-child {
         margin-top: 0;
       }
-
       ha-markdown > *:last-child {
         margin-bottom: 0;
       }
-
       ha-markdown a {
         color: var(--primary-color);
       }
-
       ha-markdown img {
         max-width: 100%;
       }

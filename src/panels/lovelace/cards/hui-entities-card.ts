@@ -146,13 +146,26 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       .header {
-        /* overwriting line-height +8 because entity-toggle can be 40px height,
-            compensating this with reduced padding */
+        /* start paper-font-headline style */
+        font-family: "Roboto", "Noto", sans-serif;
+        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+        text-rendering: optimizeLegibility;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: -0.012em;
+        /* stop paper-font-headline style */
+
         line-height: 40px;
         color: var(--primary-text-color);
         padding: 4px 0 12px;
         display: flex;
         justify-content: space-between;
+      }
+
+      .header .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .state-card-dialog {
