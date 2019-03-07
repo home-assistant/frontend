@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   property,
+  customElement,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 
@@ -45,6 +46,7 @@ export const severityMap = {
   normal: "var(--label-badge-blue)",
 };
 
+@customElement("hui-gauge-card")
 class HuiGaugeCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-gauge-card-editor" */ "../editor/config-elements/hui-gauge-card-editor");
@@ -55,7 +57,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: Config;
+
   private _updated?: boolean;
 
   public getCardSize(): number {
@@ -306,5 +310,3 @@ declare global {
     "hui-gauge-card": HuiGaugeCard;
   }
 }
-
-customElements.define("hui-gauge-card", HuiGaugeCard);

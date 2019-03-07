@@ -4,6 +4,7 @@ import {
   PropertyValues,
   TemplateResult,
   property,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
@@ -45,6 +46,7 @@ export interface Config extends LovelaceCardConfig {
   theme?: string;
 }
 
+@customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-light-card-editor" */ "../editor/config-elements/hui-light-card-editor");
@@ -55,9 +57,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: Config;
+
   @property() private _roundSliderStyle?: TemplateResult;
+
   @property() private _jQuery?: any;
+
   private _brightnessTimout?: number;
 
   public getCardSize(): number {
@@ -183,6 +189,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         :host {
           display: block;
         }
+
         ha-card {
           position: relative;
           overflow: hidden;
@@ -193,6 +200,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           --brightness-font-size: 1.2rem;
           --rail-border-color: transparent;
         }
+
         #tooltip {
           position: absolute;
           top: 0;
@@ -202,6 +210,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           text-align: center;
           z-index: 15;
         }
+
         .icon-state {
           display: block;
           margin: auto;
@@ -209,40 +218,50 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           height: 100%;
           transform: translate(0, 25%);
         }
+
         #light {
           margin: 0 auto;
           padding-top: 16px;
           padding-bottom: 16px;
         }
+
         #light .rs-bar.rs-transition.rs-first,
         .rs-bar.rs-transition.rs-second {
           z-index: 20 !important;
         }
+
         #light .rs-range-color {
           background-color: var(--primary-color);
         }
+
         #light .rs-path-color {
           background-color: var(--disabled-text-color);
         }
+
         #light .rs-handle {
           background-color: var(--paper-card-background-color, white);
           padding: 7px;
           border: 2px solid var(--disabled-text-color);
         }
+
         #light .rs-handle.rs-focus {
           border-color: var(--primary-color);
         }
+
         #light .rs-handle:after {
           border-color: var(--primary-color);
           background-color: var(--primary-color);
         }
+
         #light .rs-border {
           border-color: var(--rail-border-color);
         }
+
         #light .rs-inner.rs-bg-color.rs-border,
         #light .rs-overlay.rs-transition.rs-bg-color {
           background-color: var(--paper-card-background-color, white);
         }
+
         .light-icon {
           margin: auto;
           width: 76px;
@@ -250,16 +269,20 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           color: var(--paper-item-icon-color, #44739e);
           cursor: pointer;
         }
+
         .light-icon[data-state="on"] {
           color: var(--paper-item-icon-active-color, #fdd835);
         }
+
         .light-icon[data-state="unavailable"] {
           color: var(--state-icon-unavailable-color);
         }
+
         .name {
           padding-top: 40px;
           font-size: var(--name-font-size);
         }
+
         .brightness {
           font-size: var(--brightness-font-size);
           position: absolute;
@@ -276,9 +299,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           text-shadow: var(--brightness-font-text-shadow);
           pointer-events: none;
         }
+
         .show_brightness {
           opacity: 1;
         }
+
         .more-info {
           position: absolute;
           cursor: pointer;
@@ -352,5 +377,3 @@ declare global {
     "hui-light-card": HuiLightCard;
   }
 }
-
-customElements.define("hui-light-card", HuiLightCard);
