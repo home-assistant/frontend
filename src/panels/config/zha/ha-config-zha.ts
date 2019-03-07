@@ -3,37 +3,37 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   html,
   LitElement,
-  PropertyDeclarations,
+  property,
+  PropertyValues,
   TemplateResult,
   CSSResult,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { HassEntity } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { Cluster } from "../../../data/zha";
+import { Cluster, ZHADevice, fetchBindableDevices } from "../../../data/zha";
 import "../../../layouts/ha-app-layout";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { ZHAClusterSelectedParams, ZHANodeSelectedParams } from "./types";
+import { ZHAClusterSelectedParams, ZHADeviceSelectedParams } from "./types";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 import "./zha-network";
 import "./zha-node";
+import "./zha-binding";
 
 export class HaConfigZha extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  private _selectedNode?: HassEntity;
-  private _selectedCluster?: Cluster;
+  @property() public hass?: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() private _selectedDevice?: ZHADevice;
+  @property() private _selectedCluster?: Cluster;
+  @property() private _bindableDevices: ZHADevice[] = [];
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _selectedCluster: {},
-      _selectedNode: {},
-    };
+  protected updated(changedProperties: PropertyValues): void {
+    if (changedProperties.has("_selectedDevice")) {
+      this._fetchBindableDevices();
+    }
+    super.update(changedProperties);
   }
 
   protected render(): TemplateResult | void {
@@ -57,23 +57,33 @@ export class HaConfigZha extends LitElement {
           .isWide="${this.isWide}"
           .hass="${this.hass}"
           @zha-cluster-selected="${this._onClusterSelected}"
-          @zha-node-selected="${this._onNodeSelected}"
+          @zha-node-selected="${this._onDeviceSelected}"
         ></zha-node>
         ${this._selectedCluster
           ? html`
               <zha-cluster-attributes
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
-                .selectedNode="${this._selectedNode}"
+                .selectedNode="${this._selectedDevice}"
                 .selectedCluster="${this._selectedCluster}"
               ></zha-cluster-attributes>
 
               <zha-cluster-commands
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
-                .selectedNode="${this._selectedNode}"
+                .selectedNode="${this._selectedDevice}"
                 .selectedCluster="${this._selectedCluster}"
               ></zha-cluster-commands>
+            `
+          : ""}
+        ${this._selectedDevice && this._bindableDevices.length > 0
+          ? html`
+              <zha-binding-control
+                .isWide="${this.isWide}"
+                .hass="${this.hass}"
+                .selectedDevice="${this._selectedDevice}"
+                .bindableDevices="${this._bindableDevices}"
+              ></zha-binding-control>
             `
           : ""}
       </ha-app-layout>
@@ -86,11 +96,22 @@ export class HaConfigZha extends LitElement {
     this._selectedCluster = selectedClusterEvent.detail.cluster;
   }
 
-  private _onNodeSelected(
-    selectedNodeEvent: HASSDomEvent<ZHANodeSelectedParams>
+  private _onDeviceSelected(
+    selectedNodeEvent: HASSDomEvent<ZHADeviceSelectedParams>
   ): void {
-    this._selectedNode = selectedNodeEvent.detail.node;
+    this._selectedDevice = selectedNodeEvent.detail.node;
     this._selectedCluster = undefined;
+  }
+
+  private async _fetchBindableDevices(): Promise<void> {
+    if (this._selectedDevice && this.hass) {
+      this._bindableDevices = (await fetchBindableDevices(
+        this.hass,
+        this._selectedDevice!.ieee
+      )).sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+    }
   }
 
   static get styles(): CSSResult[] {

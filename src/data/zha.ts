@@ -1,12 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 
-export interface ZHADeviceEntity extends HassEntity {
-  device_info?: {
-    identifiers: any[];
-  };
-}
-
 export interface ZHAEntityReference extends HassEntity {
   name: string;
 }
@@ -76,6 +70,37 @@ export const fetchAttributesForCluster = (
 export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
   hass.callWS({
     type: "zha/devices",
+  });
+
+export const fetchBindableDevices = (
+  hass: HomeAssistant,
+  ieeeAddress: string
+): Promise<ZHADevice[]> =>
+  hass.callWS({
+    type: "zha/devices/bindable",
+    ieee: ieeeAddress,
+  });
+
+export const bindDevices = (
+  hass: HomeAssistant,
+  sourceIEEE: string,
+  targetIEEE: string
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/devices/bind",
+    source_ieee: sourceIEEE,
+    target_ieee: targetIEEE,
+  });
+
+export const unbindDevices = (
+  hass: HomeAssistant,
+  sourceIEEE: string,
+  targetIEEE: string
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/devices/unbind",
+    source_ieee: sourceIEEE,
+    target_ieee: targetIEEE,
   });
 
 export const readAttributeValue = (
