@@ -121,9 +121,9 @@ export class CloudWebhooks extends LitElement {
               `
             : this._cloudHooks![entry.webhook_id]
             ? html`
-                <mwc-button @click="${this._handleManageButton}"
-                  >Manage</mwc-button
-                >
+                <mwc-button @click="${this._handleManageButton}">
+                  Manage
+                </mwc-button>
               `
             : html`
                 <paper-toggle-button
@@ -195,10 +195,9 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    this._localHooks =
-      "webhook" in this.hass!.config.components
-        ? await fetchWebhooks(this.hass!)
-        : [];
+    this._localHooks = this.hass!.config.components.includes("webhook")
+      ? await fetchWebhooks(this.hass!)
+      : [];
   }
 
   private renderStyle() {
