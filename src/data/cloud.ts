@@ -4,6 +4,7 @@ export interface CloudWebhook {
   webhook_id: string;
   cloudhook_id: string;
   cloudhook_url: string;
+  managed?: boolean;
 }
 
 export const createCloudhook = (hass: HomeAssistant, webhookId: string) =>
