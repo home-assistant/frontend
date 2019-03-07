@@ -1,9 +1,12 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 
 import "../../../components/ha-card";
@@ -36,6 +39,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+@customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor");
@@ -46,8 +50,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return { entities: [] };
   }
 
+  @property() protected _config?: EntitiesCardConfig;
+
   protected _hass?: HomeAssistant;
-  protected _config?: EntitiesCardConfig;
+
   protected _configEntities?: EntitiesCardEntityConfig[];
 
   set hass(hass: HomeAssistant) {
@@ -63,12 +69,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     if (entitiesToggle) {
       (entitiesToggle as any).hass = hass;
     }
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _config: {},
-    };
   }
 
   public getCardSize(): number {
@@ -100,7 +100,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     const { show_header_toggle, title } = this._config;
 
     return html`
-      ${this.renderStyle()}
       <ha-card>
         ${!title && !show_header_toggle
           ? html``
@@ -128,38 +127,52 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-card {
-          padding: 16px;
-        }
-        #states {
-          margin: -4px 0;
-        }
-        #states > * {
-          margin: 8px 0;
-        }
-        #states > div > * {
-          overflow: hidden;
-        }
-        .header {
-          @apply --paper-font-headline;
-          /* overwriting line-height +8 because entity-toggle can be 40px height,
-            compensating this with reduced padding */
-          line-height: 40px;
-          color: var(--primary-text-color);
-          padding: 4px 0 12px;
-          display: flex;
-          justify-content: space-between;
-        }
-        .header .name {
-          @apply --paper-font-common-nowrap;
-        }
-        .state-card-dialog {
-          cursor: pointer;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-card {
+        padding: 16px;
+      }
+
+      #states {
+        margin: -4px 0;
+      }
+
+      #states > * {
+        margin: 8px 0;
+      }
+
+      #states > div > * {
+        overflow: hidden;
+      }
+
+      .header {
+        /* start paper-font-headline style */
+        font-family: "Roboto", "Noto", sans-serif;
+        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+        text-rendering: optimizeLegibility;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: -0.012em;
+        /* end paper-font-headline style */
+
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 4px 0 12px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .header .name {
+        /* start paper-font-common-nowrap style */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* end paper-font-common-nowrap */
+      }
+
+      .state-card-dialog {
+        cursor: pointer;
+      }
     `;
   }
 
@@ -192,5 +205,3 @@ declare global {
     "hui-entities-card": HuiEntitiesCard;
   }
 }
-
-customElements.define("hui-entities-card", HuiEntitiesCard);
