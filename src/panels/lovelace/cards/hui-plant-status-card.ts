@@ -11,12 +11,13 @@ import {
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
+import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { LovelaceCardEditor, LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { repeat } from "lit-html/directives/repeat";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -26,7 +27,9 @@ const SENSORS = {
   battery: "hass:battery",
 };
 
-export interface PlantSensor {}
+export interface PlantAttributeTarget extends EventTarget {
+  value?: string;
+}
 
 export interface PlantStatusConfig extends LovelaceCardConfig {
   name?: string;
@@ -81,43 +84,45 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class$="[[computeImageClass(stateObj.attributes.entity_picture)]]"
+        class="${stateObj.attributes.entity_picture ? "has-plant-image" : ""}"
       >
         <div
           class="banner"
-          style="background-image:url([[stateObj.attributes.entity_picture]])"
+          style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
             ${this._config.title || computeStateName(stateObj)}
           </div>
         </div>
         <div class="content">
-          ${repeat(
-            this.computeAttributes(stateObj),
-            (item) => item.id,
-            (item, index) => html``
-          )}
-          <template
-            is="dom-repeat"
-            items="[[computeAttributes(stateObj.attributes)]]"
-          >
-            <div class="attributes" on-click="attributeClicked">
-              <div>
-                <ha-icon
-                  icon="[[computeIcon(item, stateObj.attributes.battery)]]"
-                ></ha-icon>
-              </div>
+          ${this.computeAttributes(stateObj).map(
+            (item) => html`
               <div
-                class$="[[computeAttributeClass(stateObj.attributes.problem, item)]]"
+                class="attributes"
+                @click="${this._handleMoreInfo}"
+                .value="${item}"
               >
-                [[computeValue(stateObj.attributes, item)]]
+                <div>
+                  <ha-icon
+                    icon="${this.computeIcon(
+                      item,
+                      stateObj.attributes.battery
+                    )}"
+                  ></ha-icon>
+                </div>
+                <div
+                  class="${stateObj.attributes.problem.indexOf(item) === -1
+                    ? ""
+                    : "problem"}"
+                >
+                  ${stateObj.attributes[item]}
+                </div>
+                <div class="uom">
+                  ${stateObj.attributes.unit_of_measurement_dict[item] || ""}
+                </div>
               </div>
-              <div class="uom">
-                [[computeUom(stateObj.attributes.unit_of_measurement_dict,
-                item)]]
-              </div>
-            </div>
-          </template>
+            `
+          )}
         </div>
       </ha-card>
     `;
@@ -139,7 +144,15 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       }
 
       .header {
-        @apply --paper-font-headline;
+        /* start paper-font-headline style */
+        font-family: "Roboto", "Noto", sans-serif;
+        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+        text-rendering: optimizeLegibility;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: -0.012em;
+        /* end paper-font-headline style */
+
         line-height: 40px;
         padding: 8px 16px;
       }
@@ -188,15 +201,11 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private computeTitle(stateObj) {
-    return (this._config && this._config.title) || computeStateName(stateObj);
+  private computeAttributes(stateObj: HassEntity): string[] {
+    return Object.keys(SENSORS).filter((key) => key in stateObj.attributes);
   }
 
-  private computeAttributes(data) {
-    return Object.keys(SENSORS).filter((key) => key in data);
-  }
-
-  private computeIcon(attr, batLvl) {
+  private computeIcon(attr: string, batLvl: number): string {
     const icon = SENSORS[attr];
     if (attr === "battery") {
       if (batLvl <= 5) {
@@ -209,26 +218,15 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     return icon;
   }
 
-  private computeValue(attributes, attr) {
-    return attributes[attr];
-  }
+  private _handleMoreInfo(ev: Event): void {
+    const target = ev.currentTarget! as PlantAttributeTarget;
+    const stateObj = this.hass!.states[this._config!.entity];
 
-  private computeUom(dict, attr) {
-    return dict[attr] || "";
-  }
-
-  private computeAttributeClass(problem, attr) {
-    return problem.indexOf(attr) === -1 ? "" : "problem";
-  }
-
-  private computeImageClass(entityPicture) {
-    return entityPicture ? "has-plant-image" : "";
-  }
-
-  private attributeClicked(ev) {
-    this.fire("hass-more-info", {
-      entityId: this.stateObj.attributes.sensors[ev.model.item],
-    });
+    if (target.value) {
+      fireEvent(this, "hass-more-info", {
+        entityId: stateObj.attributes.sensors[target.value],
+      });
+    }
   }
 }
 
