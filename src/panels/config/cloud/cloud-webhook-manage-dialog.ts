@@ -60,10 +60,17 @@ export class CloudWebhookManageDialog extends LitElement {
             @blur="${this._restoreLabel}"
           ></paper-input>
           <p>
-            If you no longer want to use this webhook, you can
-            <button class="link" @click="${this._disableWebhook}">
-              disable it</button
-            >.
+            ${cloudhook.managed
+              ? html`
+                  This webhook is managed by an integration and cannot be
+                  disabled.
+                `
+              : html`
+                  If you no longer want to use this webhook, you can
+                  <button class="link" @click="${this._disableWebhook}">
+                    disable it</button
+                  >.
+                `}
           </p>
         </div>
 
