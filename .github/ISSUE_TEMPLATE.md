@@ -13,6 +13,10 @@
 
 **Last working Home Assistant release (if known):**
 
+**UI (States or Lovelace UI?):**
+<!--
+- Frontend -> Developer tools -> Info
+-->
 
 **Browser and Operating System:**
 <!--
