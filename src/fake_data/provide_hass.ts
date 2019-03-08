@@ -7,7 +7,7 @@ import { demoPanels } from "./demo_panels";
 import { getEntity, Entity } from "./entity";
 import { HomeAssistant } from "../types";
 import { HassEntities } from "home-assistant-js-websocket";
-import { getActiveTranslation } from "../util/hass-translation";
+import { getLocalLanguage } from "../util/hass-translation";
 import { translationMetadata } from "../resources/translations-metadata";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
@@ -87,6 +87,8 @@ export const provideHass = (
     );
   });
 
+  const localLanguage = getLocalLanguage();
+
   const hassObj: MockHomeAssistant = {
     // Home Assistant properties
     auth: {} as any,
@@ -134,7 +136,8 @@ export const provideHass = (
     },
     panelUrl: "lovelace",
 
-    language: getActiveTranslation(),
+    language: localLanguage,
+    selectedLanguage: localLanguage,
     resources: null as any,
     localize: () => "",
 
