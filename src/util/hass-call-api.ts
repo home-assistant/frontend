@@ -1,24 +1,13 @@
 import { fetchWithAuth } from "./fetch-with-auth";
+import { Auth } from "home-assistant-js-websocket";
 
-/* eslint-disable no-throw-literal */
-
-export default async function hassCallApi(auth, method, path, parameters) {
-  const url = `${auth.data.hassUrl}/api/${path}`;
-
-  const init = {
-    method: method,
-    headers: {},
-  };
-
-  if (parameters) {
-    init.headers["Content-Type"] = "application/json;charset=UTF-8";
-    init.body = JSON.stringify(parameters);
-  }
-
+export const handleFetchPromise = async <T>(
+  fetchPromise: Promise<Response>
+): Promise<T> => {
   let response;
 
   try {
-    response = await fetchWithAuth(auth, url, init);
+    response = await fetchPromise;
   } catch (err) {
     throw {
       error: "Request error",
@@ -49,9 +38,31 @@ export default async function hassCallApi(auth, method, path, parameters) {
     throw {
       error: `Response error: ${response.status}`,
       status_code: response.status,
-      body: body,
+      body,
     };
   }
 
-  return body;
+  return (body as unknown) as T;
+};
+
+export default async function hassCallApi<T>(
+  auth: Auth,
+  method: string,
+  path: string,
+  parameters?: {}
+) {
+  const url = `${auth.data.hassUrl}/api/${path}`;
+
+  const init: RequestInit = {
+    method,
+    headers: {},
+  };
+
+  if (parameters) {
+    // @ts-ignore
+    init.headers["Content-Type"] = "application/json;charset=UTF-8";
+    init.body = JSON.stringify(parameters);
+  }
+
+  return handleFetchPromise<T>(fetchWithAuth(auth, url, init));
 }
