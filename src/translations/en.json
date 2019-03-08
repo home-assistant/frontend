@@ -1135,11 +1135,13 @@
           "data": {
             "name": "Name",
             "username": "Username",
-            "password": "Password"
+            "password": "Password",
+            "password_confirm": "Confirm Password"
           },
           "create_account": "Create Account",
           "error": {
-            "required_fields": "Fill in all required fields"
+            "required_fields": "Fill in all required fields",
+            "password_not_match": "Passwords don't match"
           }
         }
       }
