@@ -34,12 +34,12 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
           this._selectLanguage(language, false);
         }
       });
-      this._loadTranslations(this.hass!);
+      this._applyTranslations(this.hass!);
     }
 
     protected hassReconnected() {
       super.hassReconnected();
-      this._loadTranslations(this.hass!);
+      this._applyTranslations(this.hass!);
     }
 
     protected panelUrlChanged(newPanelUrl) {
@@ -64,10 +64,10 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
         saveFrontendUserData(this.hass, "language", { language });
       }
 
-      this._loadTranslations(this.hass);
+      this._applyTranslations(this.hass);
     }
 
-    private _loadTranslations(hass: HomeAssistant) {
+    private _applyTranslations(hass: HomeAssistant) {
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
       this._loadHassTranslations(hass.language);

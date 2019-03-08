@@ -87,6 +87,8 @@ export const provideHass = (
     );
   });
 
+  const localLanguage = getLocalLanguage();
+
   const hassObj: MockHomeAssistant = {
     // Home Assistant properties
     auth: {} as any,
@@ -134,8 +136,8 @@ export const provideHass = (
     },
     panelUrl: "lovelace",
 
-    language: getLocalLanguage(),
-    selectedLanguage: getLocalLanguage(),
+    language: localLanguage,
+    selectedLanguage: localLanguage,
     resources: null as any,
     localize: () => "",
 
