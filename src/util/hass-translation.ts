@@ -1,58 +1,89 @@
 import { translationMetadata } from "../resources/translations-metadata";
+import { fetchFrontendUserData } from "../data/frontend";
+import { HomeAssistant } from "../types";
 
-export function getActiveTranslation() {
-  // Perform case-insenstive comparison since browser isn't required to
-  // report languages with specific cases.
-  const lookup = {};
-  /* eslint-disable no-undef */
-  Object.keys(translationMetadata.translations).forEach((tr) => {
-    lookup[tr.toLowerCase()] = tr;
-  });
+const STORAGE = window.localStorage || {};
 
-  // Search for a matching translation from most specific to general
-  function languageGetTranslation(language) {
-    const lang = language.toLowerCase();
+// Chinese locales need map to Simplified or Traditional Chinese
+const LOCALE_LOOKUP = {
+  "zh-cn": "zh-Hans",
+  "zh-sg": "zh-Hans",
+  "zh-my": "zh-Hans",
+  "zh-tw": "zh-Hant",
+  "zh-hk": "zh-Hant",
+  "zh-mo": "zh-Hant",
+  zh: "zh-Hant", // all other Chinese locales map to Traditional Chinese
+};
 
-    if (lookup[lang]) {
-      return lookup[lang];
-    }
-    if (lang.split("-")[0] === "zh") {
-      return lang === "zh-cn" || lang === "zh-sg" ? "zh-Hans" : "zh-Hant";
-    }
-    return null;
+/**
+ * Search for a matching translation from most specific to general
+ */
+function findAvailableLanguage(language: string) {
+  // In most case, the language has the same format with our translation meta data
+  if (language in translationMetadata.translations) {
+    return language;
   }
 
-  let translation = null;
-  let selectedLanguage;
-  if (window.localStorage.selectedLanguage) {
+  // Perform case-insenstive comparison since browser isn't required to
+  // report languages with specific cases.
+  const langLower = language.toLowerCase();
+
+  if (langLower in LOCALE_LOOKUP) {
+    return LOCALE_LOOKUP[langLower];
+  }
+
+  for (const lang in Object.keys(translationMetadata.translations)) {
+    if (lang.toLowerCase() === langLower) {
+      return lang;
+    }
+  }
+}
+
+/**
+ * Get user selected language from backend
+ */
+export async function getUserLanguage(hass: HomeAssistant) {
+  const { language } = await fetchFrontendUserData(hass, "language");
+  if (language) {
+    const availableLanguage = findAvailableLanguage(language);
+    if (availableLanguage) {
+      return availableLanguage;
+    }
+  }
+  return null;
+}
+
+/**
+ * Get browser specific language
+ */
+export function getLocalLanguage() {
+  let language = null;
+  if (STORAGE.selectedLanguage) {
     try {
-      selectedLanguage = JSON.parse(window.localStorage.selectedLanguage);
+      language = findAvailableLanguage(JSON.parse(STORAGE.selectedLanguage));
+      if (language) {
+        return language;
+      }
     } catch (e) {
       // Ignore parsing error.
     }
   }
-  if (selectedLanguage) {
-    translation = languageGetTranslation(selectedLanguage);
-    if (translation) {
-      return translation;
-    }
-  }
   if (navigator.languages) {
     for (const locale of navigator.languages) {
-      translation = languageGetTranslation(locale);
-      if (translation) {
-        return translation;
+      language = findAvailableLanguage(locale);
+      if (language) {
+        return language;
       }
     }
   }
-  translation = languageGetTranslation(navigator.language);
-  if (translation) {
-    return translation;
+  language = findAvailableLanguage(navigator.language);
+  if (language) {
+    return language;
   }
-  if (navigator.language.includes("-")) {
-    translation = languageGetTranslation(navigator.language.split("-")[0]);
-    if (translation) {
-      return translation;
+  if (navigator.language && navigator.language.includes("-")) {
+    language = findAvailableLanguage(navigator.language.split("-")[0]);
+    if (language) {
+      return language;
     }
   }
 
@@ -64,43 +95,50 @@ export function getActiveTranslation() {
 // when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
 const translations = {};
 
-export function getTranslation(fragment?, translationInput?) {
-  const translation = translationInput || getActiveTranslation();
-  const metadata = translationMetadata.translations[translation];
+async function fetchTranslation(fingerprint) {
+  const response = await fetch(`/static/translations/${fingerprint}`, {
+    credentials: "same-origin",
+  });
+  if (!response.ok) {
+    throw new Error(
+      `Fail to fetch translation ${fingerprint}: HTTP response status is ${
+        response.status
+      }`
+    );
+  }
+  return response.json();
+}
+
+export async function getTranslation(
+  fragment: string | null,
+  language: string
+) {
+  const metadata = translationMetadata.translations[language];
   if (!metadata) {
-    if (translationInput !== "en") {
+    if (language !== "en") {
       return getTranslation(fragment, "en");
     }
-    return Promise.reject(new Error("Language en not found in metadata"));
+    throw new Error("Language en is not found in metadata");
   }
-  const translationFingerprint =
-    metadata.fingerprints[
-      fragment ? `${fragment}/${translation}` : translation
-    ];
+  const fingerprint =
+    metadata.fingerprints[fragment ? `${fragment}/${language}` : language];
 
-  // Create a promise to fetch translation from the server
-  if (!translations[translationFingerprint]) {
-    translations[translationFingerprint] = fetch(
-      `/static/translations/${translationFingerprint}`,
-      { credentials: "same-origin" }
-    )
-      .then((response) => response.json())
-      .then((data) => ({
-        language: translation,
-        data,
-      }))
+  // Fetch translation from the server
+  if (!translations[fingerprint]) {
+    translations[fingerprint] = fetchTranslation(fingerprint)
+      .then((data) => ({ language, data }))
       .catch((error) => {
-        delete translations[translationFingerprint];
-        if (translationInput !== "en") {
+        delete translations[fingerprint];
+        if (language !== "en") {
           // Couldn't load selected translation. Try a fall back to en before failing.
           return getTranslation(fragment, "en");
         }
         return Promise.reject(error);
       });
   }
-  return translations[translationFingerprint];
+  return translations[fingerprint];
 }
 
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.
-getTranslation();
+getTranslation(null, getLocalLanguage());

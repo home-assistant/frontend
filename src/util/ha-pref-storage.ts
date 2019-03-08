@@ -1,11 +1,12 @@
+import { HomeAssistant } from "../types";
+
 const STORED_STATE = ["dockedSidebar", "selectedTheme", "selectedLanguage"];
 const STORAGE = window.localStorage || {};
 
-export function storeState(hass) {
+export function storeState(hass: HomeAssistant) {
   try {
-    for (var i = 0; i < STORED_STATE.length; i++) {
-      var key = STORED_STATE[i];
-      var value = hass[key];
+    for (const key of STORED_STATE) {
+      const value = hass[key];
       STORAGE[key] = JSON.stringify(value === undefined ? null : value);
     }
   } catch (err) {
@@ -14,10 +15,9 @@ export function storeState(hass) {
 }
 
 export function getState() {
-  var state = {};
+  const state = {};
 
-  for (var i = 0; i < STORED_STATE.length; i++) {
-    var key = STORED_STATE[i];
+  for (const key of STORED_STATE) {
     if (key in STORAGE) {
       state[key] = JSON.parse(STORAGE[key]);
     }
@@ -28,5 +28,7 @@ export function getState() {
 
 export function clearState() {
   // STORAGE is an object if localStorage not available.
-  if (STORAGE.clear) STORAGE.clear();
+  if (STORAGE.clear) {
+    STORAGE.clear();
+  }
 }
