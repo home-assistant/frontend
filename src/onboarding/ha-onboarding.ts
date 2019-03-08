@@ -128,12 +128,12 @@ class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  private _handleValueChanged(ev: PolymerChangedEvent<string>) {
+  private _handleValueChanged(ev: PolymerChangedEvent<string>): void {
     const name = (ev.target as any).name;
     this[`_${name}`] = ev.detail.value;
   }
 
-  private _maybePopulateUsername() {
+  private _maybePopulateUsername(): void {
     if (this._username) {
       return;
     }
@@ -145,7 +145,7 @@ class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  private async _submitForm() {
+  private async _submitForm(): Promise<void> {
     if (!this._name || !this._username || !this._password) {
       this._errorMsg = "required_fields";
       return;
