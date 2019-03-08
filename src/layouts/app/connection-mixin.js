@@ -12,7 +12,7 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 import EventsMixin from "../../mixins/events-mixin";
 
 import { getState } from "../../util/ha-pref-storage";
-import { getActiveTranslation } from "../../util/hass-translation";
+import { getLocalLanguage } from "../../util/hass-translation";
 import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
 import { subscribePanels } from "../../data/ws-panels";
@@ -49,7 +49,7 @@ export default (superClass) =>
           user: null,
           panelUrl: this._panelUrl,
 
-          language: getActiveTranslation(),
+          language: getLocalLanguage(),
           // If resources are already loaded, don't discard them
           resources: (this.hass && this.hass.resources) || null,
           localize: () => "",
