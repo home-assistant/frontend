@@ -8,4 +8,5 @@ export interface LovelaceElementConfig {
 export interface LovelaceElement extends HTMLElement {
   hass?: HomeAssistant;
   setConfig(config: LovelaceElementConfig): void;
+  firstStyled?(): void;
 }
