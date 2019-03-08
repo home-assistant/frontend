@@ -22,6 +22,7 @@ class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
   @property() private _name = "";
   @property() private _username = "";
   @property() private _password = "";
+  @property() private _passwordConfirm = "";
   @property() private _loading = false;
   @property() private _errorMsg?: string = undefined;
 
@@ -90,8 +91,29 @@ class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
         )}"
       ></paper-input>
 
+      <paper-input
+        name="passwordConfirm"
+        label="${this.localize(
+          "ui.panel.page-onboarding.user.data.password_confirm"
+        )}"
+        value=${this._passwordConfirm}
+        @value-changed=${this._handleValueChanged}
+        required
+        type='password'
+        .invalid=${this._password !== "" &&
+          this._passwordConfirm !== "" &&
+          this._passwordConfirm !== this._password}
+        .errorMessage="${this.localize(
+          "ui.panel.page-onboarding.user.error.password_not_match"
+        )}"
+      ></paper-input>
+
       <p class="action">
-        <mwc-button raised @click="_submitForm" .disabled=${this._loading}>
+        <mwc-button
+          raised
+          @click=${this._submitForm}
+          .disabled=${this._loading}
+        >
           ${this.localize("ui.panel.page-onboarding.user.create_account")}
         </mwc-button>
       </p>
@@ -148,6 +170,11 @@ class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
   private async _submitForm(): Promise<void> {
     if (!this._name || !this._username || !this._password) {
       this._errorMsg = "required_fields";
+      return;
+    }
+
+    if (this._password !== this._passwordConfirm) {
+      this._errorMsg = "password_not_match";
       return;
     }
 
