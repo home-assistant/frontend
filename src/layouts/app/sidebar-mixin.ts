@@ -24,7 +24,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       super.firstUpdated(changedProps);
       this.addEventListener("hass-dock-sidebar", (ev) => {
         this._updateHass({ dockedSidebar: ev.detail.dock });
-        storeState(this.hass);
+        storeState(this.hass!);
       });
     }
   };
