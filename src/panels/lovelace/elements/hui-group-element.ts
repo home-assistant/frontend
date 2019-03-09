@@ -137,7 +137,7 @@ class HuiGroupElement extends HTMLElement implements LovelaceElement {
   private calcFactoredStyleSize(value: string, factor: string): string {
     return (
       (parseFloat(value) * 100.0) / parseFloat(factor) +
-      value.replace(/[0-9]/g, "")
+      value.replace(/[+-]?\d+(?:\.\d+)?/g, "")
     );
   }
 }
