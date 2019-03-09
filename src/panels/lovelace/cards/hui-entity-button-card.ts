@@ -44,8 +44,8 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(): object {
     return {
-      tap_action: { action: "more-info" },
-      hold_action: { action: "none" },
+      tap_action: { action: "toggle" },
+      hold_action: { action: "more-info" },
     };
   }
 
@@ -62,7 +62,12 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Entity");
     }
 
-    this._config = { theme: "default", ...config };
+    this._config = {
+      theme: "default",
+      tap_action: { action: "toggle" },
+      hold_action: { action: "more-info" },
+      ...config,
+    };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
