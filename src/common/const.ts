@@ -78,6 +78,7 @@ export const DOMAINS_TOGGLE = new Set([
   "light",
   "switch",
   "group",
+  "automation",
 ]);
 
 /** Temperature units. */
