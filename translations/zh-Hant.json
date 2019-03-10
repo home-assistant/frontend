@@ -421,7 +421,7 @@
                                     "value_template": "數值模板（選項）"
                                 },
                                 "sun": {
-                                    "label": "日出日落",
+                                    "label": "日出\/日落",
                                     "event": "事件：",
                                     "sunrise": "日出",
                                     "sunset": "日落",
@@ -485,7 +485,7 @@
                                     "value_template": "數值模板後（選項）"
                                 },
                                 "sun": {
-                                    "label": "日出日落",
+                                    "label": "日出\/日落",
                                     "before": "在...之前",
                                     "after": "在...之後",
                                     "before_offset": "偏移前（選項）",
@@ -883,7 +883,7 @@
                         "save": "自行編輯"
                     },
                     "menu": {
-                        "raw_editor": "文字設定編輯器"
+                        "raw_editor": "文字模式編輯器"
                     },
                     "raw_editor": {
                         "header": "編輯設定",
@@ -893,8 +893,8 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "設定 UI",
-                    "unused_entities": "未使用物件",
+                    "configure_ui": "介面設定",
+                    "unused_entities": "未顯示物件",
                     "help": "說明",
                     "refresh": "更新"
                 },
@@ -1128,9 +1128,9 @@
         "scene": "場景",
         "script": "腳本",
         "sensor": "傳感器",
-        "sun": "日出日落",
+        "sun": "太陽",
         "switch": "開關",
-        "updater": "更新器",
+        "updater": "更新版本",
         "weblink": "網站鏈接",
         "zwave": "Z-Wave",
         "vacuum": "吸塵器",
