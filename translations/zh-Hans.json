@@ -462,7 +462,7 @@
                                     "leave": "离开"
                                 }
                             },
-                            "learn_more": "详细了解触发"
+                            "learn_more": "详细了解触发条件"
                         },
                         "conditions": {
                             "header": "环境条件",
@@ -879,7 +879,7 @@
                         "header": "自行编辑您的 Lovelace UI",
                         "para": "默认情况下，Home Assistant 将维护您的用户界面，并在新的实体或 Lovelace 组件可用时更新它。如果您选择自行编辑，我们将不再自动为您进行更改。",
                         "para_sure": "您确定要自行编辑用户界面吗？",
-                        "cancel": "没关系",
+                        "cancel": "算了吧",
                         "save": "自行编辑"
                     },
                     "menu": {

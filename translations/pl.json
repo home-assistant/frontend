@@ -345,7 +345,7 @@
                                 "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
                                 "core": "Przeładuj rdzeń",
                                 "group": "Przeładuj grupy",
-                                "automation": "Przeładuj automatyzacje",
+                                "automation": "Przeładuj reguły automatyzacji",
                                 "script": "Przeładuj skrypty"
                             },
                             "server_management": {
