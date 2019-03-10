@@ -1,5 +1,3 @@
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   html,
   LitElement,
@@ -10,8 +8,8 @@ import {
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../layouts/hass-subpage";
 import { Cluster, ZHADevice, fetchBindableDevices } from "../../../data/zha";
-import "../../../layouts/ha-app-layout";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -38,16 +36,7 @@ export class HaConfigZha extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-app-layout>
-        <app-header slot="header">
-          <app-toolbar>
-            <ha-paper-icon-button-arrow-prev
-              @click="${this._onBackTapped}"
-            ></ha-paper-icon-button-arrow-prev>
-            <div main-title>Zigbee Home Automation</div>
-          </app-toolbar>
-        </app-header>
-
+      <hass-subpage header="Zigbee Home Automation">
         <zha-network
           .isWide="${this.isWide}"
           .hass="${this.hass}"
@@ -86,7 +75,7 @@ export class HaConfigZha extends LitElement {
               ></zha-binding-control>
             `
           : ""}
-      </ha-app-layout>
+      </hass-subpage>
     `;
   }
 
@@ -116,10 +105,6 @@ export class HaConfigZha extends LitElement {
 
   static get styles(): CSSResult[] {
     return [haStyle];
-  }
-
-  private _onBackTapped(): void {
-    history.back();
   }
 }
 

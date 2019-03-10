@@ -11,6 +11,7 @@ import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
+import { navigate } from "../../../common/navigate";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
@@ -30,6 +31,7 @@ export class ZHANetwork extends LitElement {
       hass: {},
       isWide: {},
       _showHelp: {},
+      _joinParams: {},
     };
   }
 
@@ -37,29 +39,30 @@ export class ZHANetwork extends LitElement {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
-            <span>Network Management</span>
-            <paper-icon-button class="toggle-help-icon" @click="${
-              this._onHelpTap
-            }" icon="hass:help-circle"></paper-icon-button>
+          <span>Network Management</span>
+          <paper-icon-button
+            class="toggle-help-icon"
+            @click="${this._onHelpTap}"
+            icon="hass:help-circle"
+          ></paper-icon-button>
         </div>
         <span slot="introduction">Commands that affect entire network</span>
 
         <paper-card class="content">
-            <div class="card-actions">
-            <ha-call-service-button .hass="${
-              this.hass
-            }" domain="zha" service="permit">Permit</ha-call-service-button>
-            ${
-              this._showHelp
-                ? html`
-                    <ha-service-description
-                      .hass="${this.hass}"
-                      domain="zha"
-                      service="permit"
-                    />
-                  `
-                : ""
-            }
+          <div class="card-actions">
+            <mwc-button @click=${this._onAddDevicesClick}>
+              Add Devices
+            </mwc-button>
+            ${this._showHelp
+              ? html`
+                  <ha-service-description
+                    .hass="${this.hass}"
+                    domain="zha"
+                    service="permit"
+                  />
+                `
+              : ""}
+          </div>
         </paper-card>
       </ha-config-section>
     `;
@@ -67,6 +70,10 @@ export class ZHANetwork extends LitElement {
 
   private _onHelpTap(): void {
     this._showHelp = !this._showHelp;
+  }
+
+  private _onAddDevicesClick() {
+    navigate(this, "add");
   }
 
   static get styles(): CSSResult[] {

@@ -70,12 +70,14 @@ export class ZHANode extends LitElement {
 
   public firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
-    if (this._nodes.length === 0) {
-      this._fetchDevices();
-    }
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._fetchDevices();
   }
 
   protected serviceCalled(ev): void {
