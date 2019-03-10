@@ -1,5 +1,12 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  LitElement,
+  customElement,
+  property,
+  TemplateResult,
+  html,
+  css,
+  CSSResult,
+} from "lit-element";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
@@ -8,37 +15,26 @@ import "@polymer/paper-listbox/paper-listbox";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
 
-import { HomeAssistant } from "../../../types";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { EditorTarget } from "../editor/types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { ImageEditorTarget } from "../editor/types";
 import { configElementStyle } from "../editor/config-elements/config-elements-style";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "value-changed": undefined;
-  }
-  // for add event listener
-  interface HTMLElementEventMap {
-    "value-changed": HASSDomEvent<undefined>;
-  }
-}
 
 export interface StateImage {
   key: string;
   value: string;
 }
 
+@customElement("hui-image-editor")
 export class HuiImageEditor extends LitElement {
-  public value?: string | { [key: string]: string };
-  public images?: string[];
-  public configValue?: string;
-  protected hass?: HomeAssistant;
+  @property() public value?: string | { [key: string]: string };
 
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, value: {}, images: {}, configValue: {} };
-  }
+  @property() public images?: string[];
+
+  @property() public configValue?: string;
+
+  @property() protected hass?: HomeAssistant;
 
   get _value(): string | { [key: string]: string } {
     return this.value || "";
@@ -48,7 +44,7 @@ export class HuiImageEditor extends LitElement {
     return this.configValue || "image";
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | undefined {
     if (!this.hass || !this.images) {
       return html``;
     }
@@ -57,8 +53,9 @@ export class HuiImageEditor extends LitElement {
     Object.keys(this._value).forEach((key) => {
       states.push({ key, value: this._value[key] });
     });
+
     return html`
-    ${configElementStyle} ${this.renderStyle()}
+    ${configElementStyle}
       <paper-dropdown-menu
         label=Image Type"
         .configValue="${"image_type"}"
@@ -104,44 +101,42 @@ export class HuiImageEditor extends LitElement {
         this._configValue === "state_image"
           ? html`
               <h3>State Images</h3>
-              ${
-                states.map((state, index) => {
-                  return html`
-                    <div class="state">
-                      <paper-input
-                        class="key"
-                        label="State"
-                        .value="${state.key}"
-                        .index="${index}"
-                        .key="${state.key}"
-                        .val="${state.value}"
-                        .configValue="${"key"}"
-                        @value-changed="${this._stateImageChanged}"
-                        no-label-float
-                      ></paper-input>
-                      <paper-input
-                        class="value"
-                        label="Image Url"
-                        .value="${state.value}"
-                        .index="${index}"
-                        .key="${state.key}"
-                        .val="${state.value}"
-                        .configValue="${"value"}"
-                        @value-changed="${this._stateImageChanged}"
-                        no-label-float
-                      ></paper-input>
-                      <ha-icon
-                        class="removeState"
-                        @click="${this._removeState}"
-                        icon="hass:delete"
-                        title="Remove State Image"
-                        .value="${state.key}"
-                      >
-                      </ha-icon>
-                    </div>
-                  `;
-                })
-              }
+              ${states.map((state, index) => {
+                return html`
+                  <div class="state">
+                    <paper-input
+                      class="key"
+                      label="State"
+                      .value="${state.key}"
+                      .index="${index}"
+                      .key="${state.key}"
+                      .val="${state.value}"
+                      .configValue="${"key"}"
+                      @value-changed="${this._stateImageChanged}"
+                      no-label-float
+                    ></paper-input>
+                    <paper-input
+                      class="value"
+                      label="Image Url"
+                      .value="${state.value}"
+                      .index="${index}"
+                      .key="${state.key}"
+                      .val="${state.value}"
+                      .configValue="${"value"}"
+                      @value-changed="${this._stateImageChanged}"
+                      no-label-float
+                    ></paper-input>
+                    <ha-icon
+                      class="removeState"
+                      @click="${this._removeState}"
+                      icon="hass:delete"
+                      title="Remove State Image"
+                      .value="${state.key}"
+                    >
+                    </ha-icon>
+                  </div>
+                `;
+              })}
               <div class="stateInput">
                 <paper-input
                   class="key"
@@ -168,47 +163,45 @@ export class HuiImageEditor extends LitElement {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .state > paper-input {
-          --paper-input-container-underline: {
-            display: none;
-          }
-          --paper-input-container-underline-focus: {
-            display: none;
-          }
-          --paper-input-container-underline-disabled: {
-            display: none;
-          }
-          position: relative;
-          top: 1px;
+  static get styles(): CSSResult {
+    return css`
+      .state > paper-input {
+        --paper-input-container-underline: {
+          display: none;
         }
-        .state {
-          display: flex;
+        --paper-input-container-underline-focus: {
+          display: none;
         }
-        .stateInput {
-          display: flex;
+        --paper-input-container-underline-disabled: {
+          display: none;
         }
-        .key {
-          flex: 2;
-          padding-right: 4px;
-        }
-        .value {
-          flex: 6;
-          padding-right: 4px;
-        }
-        .addState .removeState {
-          flex: 1;
-          cursor: pointer;
-        }
-        .addState {
-          padding-top: 27px;
-        }
-        .removeState {
-          padding-top: 8px;
-        }
-      </style>
+        position: relative;
+        top: 1px;
+      }
+      .state {
+        display: flex;
+      }
+      .stateInput {
+        display: flex;
+      }
+      .key {
+        flex: 2;
+        padding-right: 4px;
+      }
+      .value {
+        flex: 6;
+        padding-right: 4px;
+      }
+      .addState .removeState {
+        flex: 1;
+        cursor: pointer;
+      }
+      .addState {
+        padding-top: 27px;
+      }
+      .removeState {
+        padding-top: 8px;
+      }
     `;
   }
 
@@ -224,7 +217,7 @@ export class HuiImageEditor extends LitElement {
     if (!this.value) {
       return;
     }
-    const target = ev.target! as EditorTarget;
+    const target = ev.target! as ImageEditorTarget;
     delete this.value[target.key!];
     if (target.configValue === "key") {
       if (target.value === target.key) {
@@ -244,13 +237,13 @@ export class HuiImageEditor extends LitElement {
     if (!this.value) {
       return;
     }
-    const target = ev.target! as EditorTarget;
+    const target = ev.target! as ImageEditorTarget;
     delete this.value[target.value!];
     fireEvent(this, "value-changed");
   }
 
   private _typeChanged(ev: Event): void {
-    const target = ev.target! as EditorTarget;
+    const target = ev.target! as ImageEditorTarget;
     if (!this.hass || this.configValue === target.value) {
       return;
     }
@@ -263,7 +256,7 @@ export class HuiImageEditor extends LitElement {
     if (!this.hass) {
       return;
     }
-    const target = ev.target! as EditorTarget;
+    const target = ev.target! as ImageEditorTarget;
     if (this.configValue === "state_image") {
       if (
         this._keyInput().value === "" ||
@@ -292,5 +285,3 @@ declare global {
     "hui-image-editor": HuiImageEditor;
   }
 }
-
-customElements.define("hui-image-editor", HuiImageEditor);

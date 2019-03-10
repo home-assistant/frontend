@@ -1,5 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
@@ -9,11 +14,10 @@ import {
   EditorTarget,
   actionConfigStruct,
 } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-picture-entity-card";
+import { PictureEntityCardConfig } from "../../cards/hui-picture-entity-card";
 import { configElementStyle } from "./config-elements-style";
 import { ActionConfig } from "../../../../data/lovelace";
 
@@ -34,34 +38,20 @@ const cardConfigStruct = struct({
   show_state: "boolean?",
 });
 
-export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
+@customElement("hui-picture-entity-card-editor")
+export class HuiPictureEntityCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  public setConfig(config: Config): void {
+  @property() private _config?: PictureEntityCardConfig;
+
+  public setConfig(config: PictureEntityCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }
 
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
-  }
-
   get _entity(): string {
     return this._config!.entity || "";
-  }
-
-  get _image(): string {
-    return this._config!.image || "";
-  }
-
-  get _camera_image(): string {
-    return this._config!.camera_image || "";
-  }
-
-  get _state_image(): { [key: string]: string } {
-    return this._config!.state_image || {};
   }
 
   get _aspect_ratio(): string {
@@ -109,30 +99,30 @@ export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
     );
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | undefined {
     if (!this.hass) {
       return html``;
     }
+
     const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
     const images = ["image", "camera_image", "state_image"];
+
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <div class="side-by-side">
-          <ha-entity-picker
-            .hass="${this.hass}"
-            .value="${this._entity}"
-            .configValue=${"entity"}
-            @change="${this._valueChanged}"
-            allow-custom-entity
-          ></ha-entity-picker>
-          <paper-input
-            label="Aspect Ratio (Optional)"
-            .value="${this._aspect_ratio}"
-            .configValue="${"aspect_ratio"}"
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
-        </div>
+        <ha-entity-picker
+          .hass="${this.hass}"
+          .value="${this._entity}"
+          .configValue=${"entity"}
+          @change="${this._valueChanged}"
+          allow-custom-entity
+        ></ha-entity-picker>
+        <paper-input
+          label="Aspect Ratio (Optional)"
+          .value="${this._aspect_ratio}"
+          .configValue="${" aspect_ratio"}"
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
         <hui-image-editor
           .hass="${this.hass}"
           .images="${images}"
@@ -146,7 +136,7 @@ export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
             .hass="${this.hass}"
             .config="${this._tap_action}"
             .actions="${actions}"
-            .configValue="${"tap_action"}"
+            .configValue="${" tap_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
@@ -154,20 +144,20 @@ export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
             .hass="${this.hass}"
             .config="${this._hold_action}"
             .actions="${actions}"
-            .configValue="${"hold_action"}"
+            .configValue="${" hold_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
         </div>
         <div class="side-by-side">
           <paper-toggle-button
             ?checked="${this._show_name !== false}"
-            .configValue="${"show_name"}"
+            .configValue="${" show_name"}"
             @change="${this._valueChanged}"
             >Show Name?</paper-toggle-button
           >
           <paper-toggle-button
             ?checked="${this._show_state !== false}"
-            .configValue="${"show_state"}"
+            .configValue="${" show_state"}"
             @change="${this._valueChanged}"
             >Show State?</paper-toggle-button
           >
@@ -181,7 +171,10 @@ export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (this[`_${target.configValue}`] === target.config) {
+    if (
+      this[`_${target.configValue}`] === target.config ||
+      target.configValue === target.value
+    ) {
       return;
     }
     if (
@@ -199,15 +192,11 @@ export class HuiPictureEntityCardEditor extends hassLocalizeLitMixin(LitElement)
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]:
-            target.checked !== undefined
-              ? target.checked
-              : target.value
-              ? target.value
-              : target.config,
+          [target.configValue!]: target.value ? target.value : target.config,
         };
       }
     }
+
     fireEvent(this, "config-changed", { config: this._config });
   }
 }
@@ -217,8 +206,3 @@ declare global {
     "hui-picture-entity-card-editor": HuiPictureEntityCardEditor;
   }
 }
-
-customElements.define(
-  "hui-picture-entity-card-editor",
-  HuiPictureEntityCardEditor
-);

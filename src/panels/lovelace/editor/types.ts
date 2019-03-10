@@ -47,6 +47,13 @@ export interface EditorTarget extends EventTarget {
   val?: string;
 }
 
+export interface ImageEditorTarget extends EventTarget {
+  value?: string;
+  configValue?: string;
+  key?: string;
+  val?: string;
+}
+
 export interface CardPickTarget extends EventTarget {
   type: string;
 }

@@ -24,7 +24,7 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 
-export interface Config extends LovelaceCardConfig {
+export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
   image?: string;
@@ -39,15 +39,31 @@ export interface Config extends LovelaceCardConfig {
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(/* webpackChunkName: "hui-picture-entity-card-editor" */ "../editor/config-elements/hui-picture-entity-card-editor");
+    return document.createElement("hui-picture-entity-card-editor");
+  }
+
+  public static getStubConfig(): object {
+    return {
+      image:
+        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+      tap_action: { action: "more-info" },
+      hold_action: { action: "none" },
+      show_name: true,
+      show_state: true,
+    };
+  }
+
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: PictureEntityCardConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid Configuration: 'entity' required");
     }
