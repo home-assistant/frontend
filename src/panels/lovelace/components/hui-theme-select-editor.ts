@@ -23,8 +23,8 @@ declare global {
   }
 }
 
-@customElement("hui-theme-selection-editor")
-export class HuiThemeSelectionEditor extends LitElement {
+@customElement("hui-theme-select-editor")
+export class HuiThemeSelectEditor extends LitElement {
   @property() public value?: string;
 
   @property() public hass?: HomeAssistant;
@@ -74,6 +74,6 @@ export class HuiThemeSelectionEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-theme-select-editor": HuiThemeSelectionEditor;
+    "hui-theme-select-editor": HuiThemeSelectEditor;
   }
 }
