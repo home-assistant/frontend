@@ -13,7 +13,7 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-glance-card";
+import { Config } from "../../cards/hui-markdown-card";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
