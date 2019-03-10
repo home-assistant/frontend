@@ -268,6 +268,7 @@
         },
         "timer": {
             "active": "aktiivinen",
+            "idle": "Lepotilassa",
             "paused": "Pysäytetty"
         },
         "person": {
@@ -313,7 +314,8 @@
                 "period": "aikajakso"
             },
             "logbook": {
-                "showing_entries": "Näytetään kirjaukset ajalta"
+                "showing_entries": "Näytetään kirjaukset ajalta",
+                "period": "aikajakso"
             },
             "mailbox": {
                 "empty": "Sinulle ei ole yhtään viestiä",
@@ -357,7 +359,10 @@
                 },
                 "customize": {
                     "caption": "Muokkaus",
-                    "description": "Muokkaa laitteita"
+                    "description": "Muokkaa laitteita",
+                    "picker": {
+                        "header": "Räätälöinti"
+                    }
                 },
                 "automation": {
                     "caption": "Automaatiot",
@@ -437,12 +442,18 @@
                                     "enter": "Saapuminen alueelle",
                                     "leave": "Poistuminen alueelta"
                                 },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook-tunnus"
+                                },
                                 "time_pattern": {
+                                    "label": "Aikakuvio",
                                     "hours": "Tuntia",
                                     "minutes": "Minuuttia",
                                     "seconds": "Sekuntia"
                                 }
-                            }
+                            },
+                            "learn_more": "Lisätietoja triggereistä"
                         },
                         "conditions": {
                             "header": "Ehdot",
@@ -578,27 +589,40 @@
                         "hub": "Yhdistetty kautta",
                         "firmware": "Laiteohjelmisto: {version}",
                         "device_unavailable": "laite ei saatavissa",
-                        "entity_unavailable": "kohde ei saatavilla"
+                        "entity_unavailable": "kohde ei saatavilla",
+                        "no_area": "Ei aluetta"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
                     "description": "ZigBee kotiautomaation verkonhallinta"
                 },
-                "person": {
-                    "caption": "Henkilöt",
-                    "detail": {
-                        "name": "Nimi"
+                "entity_registry": {
+                    "description": "Yleiskuva kaikista tunnetuista entiteeteistä.",
+                    "editor": {
+                        "default_name": "Uusi alue"
+                    },
+                    "picker": {
+                        "integrations_page": "Integraatiot"
                     }
                 },
                 "area_registry": {
                     "picker": {
+                        "header": "Aluekisteri",
                         "integrations_page": "Integraatiot"
+                    },
+                    "editor": {
+                        "default_name": "Uusi alue"
                     }
                 },
-                "entity_registry": {
-                    "picker": {
-                        "integrations_page": "Integraatiot"
+                "person": {
+                    "caption": "Henkilöt",
+                    "description": "Hallitse henkilöitä, joita Home Assistant seuraa",
+                    "detail": {
+                        "name": "Nimi",
+                        "device_tracker_intro": "Valitse tälle henkilölle kuuluvat laitteet.",
+                        "device_tracker_picked": "Seuraa laitetta",
+                        "device_tracker_pick": "Valitse seurattava laite"
                     }
                 }
             },
@@ -776,7 +800,8 @@
                         "add_item": "Lisää"
                     },
                     "empty_state": {
-                        "title": "Tervetuloa kotiin"
+                        "title": "Tervetuloa kotiin",
+                        "go_to_integrations_page": "Siirry integraatiot-sivulle"
                     }
                 },
                 "editor": {
@@ -810,6 +835,9 @@
                         "cancel": "Antaa olla",
                         "save": "Ota hallintaan"
                     },
+                    "menu": {
+                        "raw_editor": "Raaka konfigurointieditori"
+                    },
                     "raw_editor": {
                         "header": "Muokkaa asetuksia",
                         "save": "Tallenna",
@@ -819,7 +847,13 @@
                 },
                 "menu": {
                     "configure_ui": "Määrittele käyttöliittymä",
+                    "unused_entities": "Käyttämättömät yksiköt",
+                    "help": "Apua",
                     "refresh": "Päivitä"
+                },
+                "warning": {
+                    "entity_not_found": "Yksikkö ei ole käytettävissä: {entity}",
+                    "entity_non_numeric": "Yksikkö ei ole numeerinen: {entity}"
                 }
             }
         },
@@ -892,7 +926,8 @@
                 "arm_home": "Viritä (kotona)",
                 "arm_away": "Viritä (poissa)",
                 "arm_night": "Viritä yöksi",
-                "armed_custom_bypass": "Mukautettu ohitus"
+                "armed_custom_bypass": "Mukautettu ohitus",
+                "arm_custom_bypass": "Mukautettu ohitus"
             },
             "automation": {
                 "last_triggered": "Viimeksi käynnistetty",
@@ -1053,6 +1088,10 @@
         "zwave": "Z-Wave",
         "vacuum": "Imuri",
         "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Järjestelmän kunto",
         "person": "Henkilö"
     },
     "attribute": {
@@ -1060,6 +1099,14 @@
             "humidity": "Kosteus",
             "visibility": "Näkyvyys",
             "wind_speed": "Tuulennopeus"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Pois päältä",
+                "on": "Päällä"
+            }
         }
     }
 }

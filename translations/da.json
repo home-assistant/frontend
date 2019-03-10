@@ -873,7 +873,7 @@
                     },
                     "save_config": {
                         "header": "Tage kontrol over din 2Lovelace\" UI",
-                        "para": "Som standard vil hjem assistenten fastholde din brugergrænseflade, opdaterer den når nye enheder eller \"Lovelace\" komponenter bliver tilgængelige. Hvis du tager kontrol så vil vi ikke længere foretage ændringer automatisk for dig.",
+                        "para": "Som standard vil Home Assistant vedligeholde din brugergrænseflade ved at opdatere den når nye enheder eller \"Lovelace\" komponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugergrænseflade?",
                         "cancel": "Glem det",
                         "save": "tag kontrol"

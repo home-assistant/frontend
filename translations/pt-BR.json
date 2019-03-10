@@ -265,6 +265,11 @@
             "on": "Ligado",
             "paused": "Pausado",
             "returning": "Retornando para base"
+        },
+        "timer": {
+            "active": "ativo",
+            "idle": "Em espera",
+            "paused": "Pausado"
         }
     },
     "state_badge": {
@@ -534,12 +539,14 @@
                         "change_password": "Mudar senha",
                         "activate_user": "Ativar usuário",
                         "deactivate_user": "Desativar usuário",
-                        "delete_user": "Excluir usuário"
+                        "delete_user": "Excluir usuário",
+                        "caption": "Visualizar usuário"
                     },
                     "add_user": {
                         "caption": "Adicionar Usuário",
                         "name": "Nome",
                         "username": "Usuário",
+                        "password": "Senha",
                         "create": "Criar"
                     }
                 },
@@ -566,6 +573,22 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo indisponível",
                         "entity_unavailable": "entidade indisponível"
+                    }
+                },
+                "entity_registry": {
+                    "editor": {
+                        "delete": "APAGAR",
+                        "update": "ATUALIZAR"
+                    },
+                    "picker": {
+                        "integrations_page": "Página de integrações"
+                    }
+                },
+                "person": {
+                    "caption": "Pessoas",
+                    "description": "Gerencie as pessoas que o Home Assistant acompanha.",
+                    "detail": {
+                        "name": "Nome"
                     }
                 }
             },
@@ -753,7 +776,8 @@
                         "pick_card": "Escolha o cartão que você deseja adicionar.",
                         "add": "Adicionar cartão",
                         "edit": "Editar",
-                        "delete": "Excluir"
+                        "delete": "Excluir",
+                        "move": "Mover"
                     },
                     "migrate": {
                         "header": "Configuração Incompatível",
@@ -776,6 +800,7 @@
                         "save": "Assuma o controle"
                     },
                     "raw_editor": {
+                        "header": "Editar Configuração",
                         "save": "Salvar",
                         "saved": "Salvo"
                     }
@@ -785,6 +810,9 @@
                     "unused_entities": "Entidades não utilizadas",
                     "help": "Ajuda",
                     "refresh": "Atualizar"
+                },
+                "warning": {
+                    "entity_not_found": "Entidade não disponível: {entity}"
                 }
             }
         },
@@ -1012,6 +1040,14 @@
             "humidity": "Umidade",
             "visibility": "Visibilidade",
             "wind_speed": "Velocidade do vento"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Desligado",
+                "on": "Ligado"
+            }
         }
     }
 }
