@@ -1153,7 +1153,7 @@
             "fan_mode": {
                 "off": "Apagado",
                 "on": "Encendido",
-                "auto": "Automatico"
+                "auto": "Automático"
             }
         }
     }
