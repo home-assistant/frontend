@@ -130,6 +130,7 @@ export const provideHass = (
     user: {
       credentials: [],
       id: "abcd",
+      is_admin: true,
       is_owner: true,
       mfa_modules: [],
       name: "Demo User",
