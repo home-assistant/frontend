@@ -1,38 +1,36 @@
 import { HomeAssistant } from "../types";
 
-export interface FrontendUserData {
-  language: string;
+declare global {
+  // tslint:disable-next-line
+  interface FrontendUserData {}
 }
 
-export const fetchFrontendUserData = async (
+export type ValidUserDataKey = keyof FrontendUserData;
+
+export const fetchFrontendUserData = async <
+  UserDataKey extends ValidUserDataKey
+>(
   hass: HomeAssistant,
-  key: string
-): Promise<FrontendUserData> => {
-  const result = await hass.callWS<{ value: FrontendUserData }>({
+  key: UserDataKey
+): Promise<FrontendUserData[UserDataKey] | null> => {
+  const result = await hass.callWS<{
+    value: FrontendUserData[UserDataKey] | null;
+  }>({
     type: "frontend/get_user_data",
     key,
   });
   return result.value;
 };
 
-export const saveFrontendUserData = async (
+export const saveFrontendUserData = async <
+  UserDataKey extends ValidUserDataKey
+>(
   hass: HomeAssistant,
-  key: string,
-  value: FrontendUserData
+  key: UserDataKey,
+  value: FrontendUserData[UserDataKey]
 ): Promise<void> =>
   hass.callWS<void>({
     type: "frontend/set_user_data",
     key,
     value,
   });
-
-export const getHassTranslations = async (
-  hass: HomeAssistant,
-  language: string
-): Promise<{}> => {
-  const result = await hass.callWS<{ resources: {} }>({
-    type: "frontend/get_translations",
-    language,
-  });
-  return result.resources;
-};
