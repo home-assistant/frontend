@@ -27,7 +27,7 @@ import {
   showPersonDetailDialog,
   loadPersonDetailDialog,
 } from "./show-dialog-person-detail";
-import { User, fetchUsers } from "../../../data/auth";
+import { User, fetchUsers } from "../../../data/user";
 
 class HaConfigPerson extends LitElement {
   public hass?: HomeAssistant;

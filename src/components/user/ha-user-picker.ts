@@ -15,7 +15,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { User, fetchUsers } from "../../data/auth";
+import { User, fetchUsers } from "../../data/user";
 import compare from "../../common/string/compare";
 
 class HaEntityPicker extends LitElement {
