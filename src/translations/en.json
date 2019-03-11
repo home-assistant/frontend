@@ -355,6 +355,11 @@
       "not_home": "[%key:state::person::not_home%]"
     }
   },
+  "groups": {
+    "system-admin": "Administrators",
+    "system-users": "Users",
+    "system-read-only": "Read-Only Users"
+  },
   "ui": {
     "auth_store": {
       "ask": "Do you want to save this login?",
