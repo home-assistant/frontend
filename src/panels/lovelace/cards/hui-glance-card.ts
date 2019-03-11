@@ -32,9 +32,10 @@ export interface ConfigEntity extends EntityConfig {
   hold_action?: ActionConfig;
 }
 
-export interface Config extends LovelaceCardConfig {
+export interface GlanceCardConfig extends LovelaceCardConfig {
   show_name?: boolean;
   show_state?: boolean;
+  show_icon?: boolean;
   title?: string;
   theme?: string;
   entities: ConfigEntity[];
@@ -47,13 +48,14 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     await import(/* webpackChunkName: "hui-glance-card-editor" */ "../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }
+
   public static getStubConfig(): object {
     return { entities: [] };
   }
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: GlanceCardConfig;
 
   private _configEntities?: ConfigEntity[];
 
@@ -64,7 +66,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     );
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: GlanceCardConfig): void {
     this._config = { theme: "default", ...config };
     const entities = processConfigEntities<ConfigEntity>(config.entities);
 
@@ -209,10 +211,14 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
               </div>
             `
           : ""}
-        <state-badge
-          .stateObj="${stateObj}"
-          .overrideIcon="${entityConf.icon}"
-        ></state-badge>
+        ${this._config!.show_icon !== false
+          ? html`
+              <state-badge
+                .stateObj="${stateObj}"
+                .overrideIcon="${entityConf.icon}"
+              ></state-badge>
+            `
+          : ""}
         ${this._config!.show_state !== false
           ? html`
               <div>
@@ -228,12 +234,12 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleTap(ev: MouseEvent) {
+  private _handleTap(ev: MouseEvent): void {
     const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     handleClick(this, this.hass!, config, false);
   }
 
-  private _handleHold(ev: MouseEvent) {
+  private _handleHold(ev: MouseEvent): void {
     const config = (ev.currentTarget as any).entityConf as ConfigEntity;
     handleClick(this, this.hass!, config, true);
   }
