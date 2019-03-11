@@ -1,6 +1,10 @@
 import { HomeAssistant } from "../types";
 import { Credential } from "./auth";
 
+export const SYSTEM_GROUP_ID_ADMIN = "system-admin";
+export const SYSTEM_GROUP_ID_USER = "system-users";
+export const SYSTEM_GROUP_ID_READ_ONLY = "system-read-only";
+
 export interface User {
   id: string;
   name: string;

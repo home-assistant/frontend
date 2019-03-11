@@ -16,7 +16,13 @@ import "../../../components/ha-card";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import { User, deleteUser, updateUser } from "../../../data/user";
+import {
+  User,
+  deleteUser,
+  updateUser,
+  SYSTEM_GROUP_ID_USER,
+  SYSTEM_GROUP_ID_ADMIN,
+} from "../../../data/user";
 
 declare global {
   interface HASSDomEvents {
@@ -24,7 +30,7 @@ declare global {
   }
 }
 
-const GROUPS = ["system-users", "system-admin"];
+const GROUPS = [SYSTEM_GROUP_ID_USER, SYSTEM_GROUP_ID_ADMIN];
 
 @customElement("ha-user-editor")
 class HaUserEditor extends LitElement {
@@ -71,6 +77,19 @@ class HaUserEditor extends LitElement {
                 </select>
               </td>
             </tr>
+            ${user.group_ids[0] === SYSTEM_GROUP_ID_USER
+              ? html`
+                  <tr>
+                    <td colspan="2" class="user-experiment">
+                      The users group is a work in progress. The user will be
+                      unable to administer the instance via the UI. We're still
+                      auditing all management API endpoints to ensure that they
+                      correctly limit access to administrators.
+                    </td>
+                  </tr>
+                `
+              : ""}
+
             <tr>
               <td>Active</td>
               <td>${user.is_active}</td>
@@ -82,6 +101,9 @@ class HaUserEditor extends LitElement {
           </table>
 
           <div class="card-actions">
+            <mwc-button @click=${this._handleRenameUser}>
+              ${hass.localize("ui.panel.config.users.editor.rename_user")}
+            </mwc-button>
             <mwc-button
               class="warning"
               @click=${this._deleteUser}
@@ -102,6 +124,23 @@ class HaUserEditor extends LitElement {
 
   private get _name() {
     return this.user && (this.user.name || "Unnamed user");
+  }
+
+  private async _handleRenameUser(ev): Promise<void> {
+    ev.currentTarget.blur();
+    const newName = prompt("New name?", this.user!.name);
+    if (newName === null || newName === this.user!.name) {
+      return;
+    }
+
+    try {
+      await updateUser(this.hass!, this.user!.id, {
+        name: newName,
+      });
+      fireEvent(this, "reload-users");
+    } catch (err) {
+      alert(`User rename failed: ${err.message}`);
+    }
   }
 
   private async _handleGroupChange(ev): Promise<void> {
@@ -156,6 +195,15 @@ class HaUserEditor extends LitElement {
         }
         hass-subpage ha-card:first-of-type {
           direction: ltr;
+        }
+        table {
+          width: 100%;
+        }
+        td {
+          vertical-align: top;
+        }
+        .user-experiment {
+          padding: 8px 0;
         }
       `,
     ];
