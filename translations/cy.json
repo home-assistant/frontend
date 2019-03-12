@@ -253,6 +253,15 @@
             "sunny": "Heulog",
             "windy": "Gwyntog",
             "windy-variant": "Gwyntog"
+        },
+        "timer": {
+            "active": "gweithredol",
+            "idle": "segur",
+            "paused": "wedi rhewi"
+        },
+        "person": {
+            "home": "Gartref",
+            "not_home": "I ffwrdd"
         }
     },
     "state_badge": {
@@ -275,6 +284,10 @@
         "device_tracker": {
             "home": "Adra",
             "not_home": "Allan"
+        },
+        "person": {
+            "home": "Gartref",
+            "not_home": "I ffwrdd"
         }
     },
     "ui": {
@@ -289,7 +302,8 @@
                 "period": "Cyfnod"
             },
             "logbook": {
-                "showing_entries": "Dangos endidau i"
+                "showing_entries": "Dangos endidau i",
+                "period": "Cyfnod"
             },
             "mailbox": {
                 "empty": "Nid oes gennych negeseuon",
@@ -333,7 +347,11 @@
                 },
                 "customize": {
                     "caption": "Addasu",
-                    "description": "Addasu eich endidau"
+                    "description": "Addasu eich endidau",
+                    "picker": {
+                        "header": "Addasu",
+                        "introduction": "Addasu nodweddion yr endid. Bydd ychwanegu\/golygu osodiadau bersonol i rym ar unwaith. Bydd addasiadau sydd wedi tynnu yn dod i rym pan fydd yr endid yn cael ei ddiweddaru."
+                    }
                 },
                 "automation": {
                     "caption": "Awtomeiddio",
@@ -343,7 +361,8 @@
                         "introduction": "Mae'r olygydd awtomeiddio yn caniatáu ichi greu a golygu awtomeiddiau. Darllenwch [y cyfarwyddiadau] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) i sicrhau bod chi wedi ffurfweddu'r Home Assistant yn gywir.",
                         "pick_automation": "Dewiswch awtomeiddiad i olygu",
                         "no_automations": "Doeddem ddim yn gallu darganfod unrhyw awtomeiddiau",
-                        "add_automation": "Ychwanegu awtomeiddiad"
+                        "add_automation": "Ychwanegu awtomeiddiad",
+                        "learn_more": "Dysgu mwy am awtomeiddio"
                     },
                     "editor": {
                         "introduction": "Defnyddiwch awtomeiddio i ddod â'ch cartref yn fyw",
@@ -410,8 +429,27 @@
                                     "event": "Digwyddiad",
                                     "enter": "Mewn",
                                     "leave": "Gadael"
+                                },
+                                "webhook": {
+                                    "label": "Gwefachiad",
+                                    "webhook_id": "Enw Gwefachiad"
+                                },
+                                "time_pattern": {
+                                    "label": "Patrwm Amser",
+                                    "hours": "Oriau",
+                                    "minutes": "Munudau",
+                                    "seconds": "Eiliadau"
+                                },
+                                "geo_location": {
+                                    "label": "Lleoliad deaddyrol",
+                                    "source": "Ffynhonnell",
+                                    "zone": "Parth",
+                                    "event": "Digwyddiad:",
+                                    "enter": "Mewn",
+                                    "leave": "Gadael"
                                 }
-                            }
+                            },
+                            "learn_more": "Dysgu mwy am sbardunau"
                         },
                         "conditions": {
                             "header": "Amodau",
@@ -456,7 +494,8 @@
                                     "entity": "Endid gyda lleoliad",
                                     "zone": "Ardal"
                                 }
-                            }
+                            },
+                            "learn_more": "Dysgu mwy am amodau"
                         },
                         "actions": {
                             "header": "Camau gweithredu",
@@ -489,7 +528,8 @@
                                     "event": "Digwyddiad",
                                     "service_data": "Data gwasanaeth"
                                 }
-                            }
+                            },
+                            "learn_more": "Dysgu mwy am gamau gweithredu"
                         }
                     }
                 },
@@ -500,6 +540,158 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Rheoli eich rhwydwaith Z-Wave"
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Rheoli rhwydwaith awtomatiaeth cartref Zigbee",
+                    "services": {
+                        "reconfigure": "Ad-drefnu ddyfais ZHA (gwella dyfais). Defnyddiwch hwn os ydych yn cael problemau gyda'r ddyfais. Os ydi'r ddyfais dan sylw wedi pweru á batri, plis gwnewch yn siwr bod o'n ddeffro a derbyn gorchmynion pan fyddwch yn defnyddio gwasanaeth hwn."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Gofrestrfa ardal",
+                    "description": "Trosolwg o bob ardal yn eich cartref.",
+                    "picker": {
+                        "header": "Gofrestrfa ardal",
+                        "introduction": "Defnyddir ardaloedd i drefnu lle mae dyfeisiau. Defnyddir y wybodaeth hon drwy gydol Home Assistant i helpu chi i drefnu eich rhyngwyneb, caniatadau ac integreiddio â systemau eraill.",
+                        "introduction2": "I osod dyfeisiau mewn ardal, defnyddiwch y ddolen isod i fynd i'r dudalen integreiddio ac yna cliciwch ar integreiddiau wedi'i ffurfweddu i gyrraedd y cardiau dyfais.",
+                        "integrations_page": "Tudalen rhyngwynebu"
+                    },
+                    "no_areas": "Edrych fel nad oes gennych ardaloedd eto!",
+                    "create_area": "CREU ARDAL",
+                    "editor": {
+                        "default_name": "Ardal Newydd",
+                        "delete": "DILEU",
+                        "update": "DIWEDDARIAD",
+                        "create": "CREU"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Gofrestrfa Endid",
+                    "description": "Trosolwg o holl endidau hysbys.",
+                    "picker": {
+                        "header": "Gofrestrfa Endid",
+                        "unavailable": "(ddim ar gael)",
+                        "introduction": "Mae Home Assistant yn cadw gofrestrfa pob endid a welodd erioed ble gellir eu nodi yn unigryw. Bydd pob un endid wedi neilltuo efo endid adnabod sy'n cael eu cadw ar gyfer yr endid hwnnw.",
+                        "introduction2": "Defnyddiwch y gofrestrfa endid i ddiystyru yr enw, newid ID endid neu gael gwared y cofnod Home Assistant. Noder, ni fydd dileu'r cofnod cofrestrfa endid yn dileu yr endid. I wneud hynny, dilynwch y ddolen isod a thynnu oddi ar y dudalen integreiddio.",
+                        "integrations_page": "Tudalen rhyngwynebu"
+                    },
+                    "editor": {
+                        "unavailable": "Endid yma ddim ar gael ar hyn o bryd.",
+                        "default_name": "Ardal Newydd",
+                        "delete": "DILEU",
+                        "update": "DIWEDDARIAD"
+                    }
+                },
+                "person": {
+                    "caption": "Pobl",
+                    "description": "Rheoli'r pobl mae Home Assistant yn tracio.",
+                    "detail": {
+                        "name": "Enw",
+                        "device_tracker_intro": "Dewiswch y dyfeisiau sy'n perthyn i'r person hwn.",
+                        "device_tracker_picked": "Tracio Dyfeis",
+                        "device_tracker_pick": "Dewiswch dyfeis i'w dracio"
+                    }
+                },
+                "integrations": {
+                    "config_entry": {
+                        "no_area": "Dim Ardal"
+                    }
+                },
+                "users": {
+                    "editor": {
+                        "caption": "Gweld defnyddiwr"
+                    },
+                    "add_user": {
+                        "caption": "Ychwanegu defnyddiwr",
+                        "name": "Enw",
+                        "username": "Enw Defnyddiwr",
+                        "password": "Cyfrinair",
+                        "create": "Creu"
+                    }
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "migrate": {
+                        "migrate": "Mudo ffurfweddiad"
+                    },
+                    "header": "Golygu rhyngwyneb defnyddiwr",
+                    "edit_view": {
+                        "header": "Gweld Ffurfweddiad",
+                        "add": "Ychwanegu golwg",
+                        "edit": "Golygu golwg",
+                        "delete": "Delete golwg"
+                    },
+                    "edit_card": {
+                        "pick_card": "Dewiswch y cerdyn rydych eisiau ychwanegu",
+                        "add": "Ychwanegu Cerdyn",
+                        "edit": "Golygu",
+                        "delete": "Dileu",
+                        "move": "Symud"
+                    },
+                    "save_config": {
+                        "header": "Cymerwch reolaeth ar eich rhyngwyneb defnyddiwr Lovelace",
+                        "para": "Gwneith Home Assistant gynnal eich rhyngwyneb defnyddiwr yn ddiofyn, a'i diweddaru pan fydd endidau neu gydrannau Lovelace newydd yn dod ar gael. Os ydych yn cymryd rheolaeth nawn ddim gwneud newidiadau awtomatig pellach i chi.",
+                        "para_sure": "A ydych yn siŵr bod chi eisiau rheoli eich rhyngwyneb defnyddiwr?",
+                        "cancel": "Dim ots",
+                        "save": "Cymerwch reolaeth"
+                    },
+                    "menu": {
+                        "raw_editor": "Golygydd ffurfweddu craidd"
+                    },
+                    "raw_editor": {
+                        "header": "Golygu ffurfweddu",
+                        "save": "Arbed",
+                        "unsaved_changes": "Newidiadau heb eu cadw",
+                        "saved": "Arbed"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "Ffurfweddu rhyngwyneb defnyddiwr",
+                    "unused_entities": "Endidau heb ei ddefnyddio",
+                    "help": "Help",
+                    "refresh": "Adnewyddu"
+                },
+                "cards": {
+                    "empty_state": {
+                        "title": "Croeso Gartref",
+                        "no_devices": "Mae'r dudalen hon yn eich galluogi i reoli'ch dyfeisiau, ond mae'n edrych fel nad oes gennych ddyfeisiau wedi eu sefydlu eto. Ewch i'r dudalen integreiddio i ddechrau.",
+                        "go_to_integrations_page": "Ewch i'r dudalen integreiddio."
+                    }
+                },
+                "warning": {
+                    "entity_not_found": "Endid ddim ar gael",
+                    "entity_non_numeric": "Endid di-rhifol: {endid}"
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Enw defnyddiwr",
+                                        "password": "Cyfrinair"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Cod dilysu dwy-ffactor"
+                                    },
+                                    "description": "Agorwch y **{mfa_module_name}** ar eich dyfeis i weld eich cod dilysu dwy-ffactor a chadarnhau eich hunaniaeth"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Defnyddiwr neu cyfrinair annilys",
+                                "invalid_code": "Dilysiad annilys "
+                            },
+                            "abort": {
+                                "login_expired": "Sesiwn wedi dod i ben, plis mewngofnodwch eto"
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -509,7 +701,8 @@
         },
         "common": {
             "loading": "Llwytho",
-            "cancel": "Canslo"
+            "cancel": "Canslo",
+            "save": "Arbed"
         },
         "duration": {
             "second": "Eiliad"
@@ -559,6 +752,9 @@
                     "wsw": "GDO"
                 },
                 "forecast": "Rhagolwg"
+            },
+            "alarm_control_panel": {
+                "arm_custom_bypass": "Ffordd osgoi personol"
             }
         },
         "components": {
@@ -569,6 +765,24 @@
             },
             "service-picker": {
                 "service": "Gwasanaeth"
+            }
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "name": "Gwrthwneud Enw"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Gweithrediad diwethaf"
+                },
+                "sun": {
+                    "elevation": "Uchder",
+                    "rising": "Cynyddu",
+                    "setting": "Gosod"
+                },
+                "updater": {
+                    "title": "Diweddaru Cyfarwyddiadau"
+                }
             }
         }
     },
@@ -607,13 +821,28 @@
         "switch": "Newid",
         "updater": "Diweddarwr",
         "weblink": "Cyswllt gwe",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Iechyd System",
+        "person": "Person"
     },
     "attribute": {
         "weather": {
             "humidity": "Lleithder",
             "visibility": "Gwelededd",
             "wind_speed": "Cyflymder gwynt"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Off",
+                "on": "Ar",
+                "auto": "Awto"
+            }
         }
     }
 }
