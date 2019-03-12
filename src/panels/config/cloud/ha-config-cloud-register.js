@@ -66,8 +66,10 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
               The trial will give you access to all the benefits of Home Assistant Cloud, including:
             </p>
             <ul>
+              <li>Control of Home Assistant away from home</li>
               <li>Integration with Google Assistant</li>
               <li>Integration with Amazon Alexa</li>
+              <li>Easy integration with webhook-based apps like OwnTracks</li>
             </ul>
             <p>
               This service is run by our partner <a href='https://www.nabucasa.com' target='_blank'>Nabu&nbsp;Casa,&nbsp;Inc</a>, a company founded by the founders of Home Assistant and Hass.io.

@@ -9,7 +9,7 @@ import NavigateMixin from "../../../mixins/navigate-mixin";
 import "./ha-config-user-picker";
 import "./ha-user-editor";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { fetchUsers } from "../../../data/auth";
+import { fetchUsers } from "../../../data/user";
 
 /*
  * @appliesMixin NavigateMixin

@@ -2,9 +2,10 @@ import {
   html,
   css,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   CSSResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
@@ -21,20 +22,17 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
 import { Lovelace } from "../../types";
 
+@customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {
-  public hass?: HomeAssistant;
-  private _lovelace?: Lovelace;
+  @property() public hass?: HomeAssistant;
+
+  @property() private _lovelace?: Lovelace;
+
   private _config?: LovelaceConfig;
+
   private _saving: boolean;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _lovelace: {},
-    };
-  }
-
-  protected constructor() {
+  public constructor() {
     super();
     this._saving = false;
   }
@@ -168,5 +166,3 @@ declare global {
     "hui-dialog-edit-lovelace": HuiDialogEditLovelace;
   }
 }
-
-customElements.define("hui-dialog-edit-lovelace", HuiDialogEditLovelace);

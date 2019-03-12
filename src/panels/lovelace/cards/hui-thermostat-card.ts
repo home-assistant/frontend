@@ -1,9 +1,10 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -52,6 +53,7 @@ export interface Config extends LovelaceCardConfig {
   name?: string;
 }
 
+@customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-thermostat-card-editor" */ "../editor/config-elements/hui-thermostat-card-editor");
@@ -62,22 +64,19 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return { entity: "" };
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
-  private _roundSliderStyle?: TemplateResult;
-  private _jQuery?: any;
-  private _broadCard?: boolean;
-  private _loaded?: boolean;
-  private _updated?: boolean;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      roundSliderStyle: {},
-      _jQuery: {},
-    };
-  }
+  @property() private _config?: Config;
+
+  @property() private _roundSliderStyle?: TemplateResult;
+
+  @property() private _jQuery?: any;
+
+  private _broadCard?: boolean;
+
+  private _loaded?: boolean;
+
+  private _updated?: boolean;
 
   public getCardSize(): number {
     return 4;
@@ -574,5 +573,3 @@ declare global {
     "hui-thermostat-card": HuiThermostatCard;
   }
 }
-
-customElements.define("hui-thermostat-card", HuiThermostatCard);

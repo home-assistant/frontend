@@ -12,12 +12,12 @@ import "../../../components/entity/ha-state-icon";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
-import { EntityFilter } from "./types";
 import computeStateName from "../../../common/entity/compute_state_name";
 import {
   FilterFunc,
   generateFilter,
 } from "../../../common/entity/entity_filter";
+import { EntityFilter } from "../../../data/cloud";
 
 export class CloudExposedEntities extends LitElement {
   public hass?: HomeAssistant;

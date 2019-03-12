@@ -22,7 +22,7 @@ export interface EditViewDialogParams {
   viewIndex?: number;
 }
 
-const registerEditViewDialog = (element: HTMLElement) =>
+const registerEditViewDialog = (element: HTMLElement): Event =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
@@ -33,7 +33,7 @@ const registerEditViewDialog = (element: HTMLElement) =>
 export const showEditViewDialog = (
   element: HTMLElement,
   editViewDialogParams: EditViewDialogParams
-) => {
+): void => {
   if (!registeredDialog) {
     registeredDialog = true;
     registerEditViewDialog(element);
