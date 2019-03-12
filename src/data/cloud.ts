@@ -1,5 +1,4 @@
 import { HomeAssistant } from "../types";
-import { Webhook } from "./webhook";
 
 export interface EntityFilter {
   include_domains: string[];
@@ -39,12 +38,6 @@ export type CloudStatus = CloudStatusBase | CloudStatusLoggedIn;
 
 export interface SubscriptionInfo {
   human_description: string;
-}
-
-export interface WebhookDialogParams {
-  webhook: Webhook;
-  cloudhook: CloudWebhook;
-  disableHook: () => void;
 }
 
 export interface CloudWebhook {
