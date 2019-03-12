@@ -10,6 +10,7 @@ type HLSModule = typeof import("hls.js");
 class MoreInfoCamera extends UpdatingElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
+  private _hlsPolyfillInstance?: Hls;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -100,6 +101,7 @@ class MoreInfoCamera extends UpdatingElement {
     url: string
   ) {
     const hls = new Hls();
+    this._hlsPolyfillInstance = hls;
     await new Promise((resolve) => {
       hls.on(Hls.Events.MEDIA_ATTACHED, resolve);
       hls.attachMedia(videoEl);
@@ -123,9 +125,14 @@ class MoreInfoCamera extends UpdatingElement {
   }
 
   private _teardownPlayback(): any {
+    if (this._hlsPolyfillInstance) {
+      this._hlsPolyfillInstance.destroy();
+      this._hlsPolyfillInstance = undefined;
+    }
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+    this.stateObj = undefined;
   }
 }
 
