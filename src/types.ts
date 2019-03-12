@@ -200,6 +200,15 @@ export type GroupEntity = HassEntityBase & {
   };
 };
 
+export type CameraEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    model_name: string;
+    access_token: string;
+    brand: string;
+    motion_detection: boolean;
+  };
+};
+
 export interface PanelInfo<T = unknown> {
   component_name: string;
   icon?: string;
