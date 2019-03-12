@@ -328,7 +328,7 @@
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
-                    "description": "Überprüfe deine Konfigurationsdatei und steuer den Server",
+                    "description": "Überprüfe deine Konfigurationsdatei und steuere den Server",
                     "section": {
                         "core": {
                             "header": "Einstellungen und Serversteuerung",

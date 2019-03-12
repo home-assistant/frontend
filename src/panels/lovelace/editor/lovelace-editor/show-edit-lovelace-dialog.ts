@@ -12,7 +12,7 @@ let registeredDialog = false;
 const dialogShowEvent = "show-edit-lovelace";
 const dialogTag = "hui-dialog-edit-lovelace";
 
-const registerEditLovelaceDialog = (element: HTMLElement) =>
+const registerEditLovelaceDialog = (element: HTMLElement): Event =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
@@ -23,7 +23,7 @@ const registerEditLovelaceDialog = (element: HTMLElement) =>
 export const showEditLovelaceDialog = (
   element: HTMLElement,
   lovelace: Lovelace
-) => {
+): void => {
   if (!registeredDialog) {
     registeredDialog = true;
     registerEditLovelaceDialog(element);

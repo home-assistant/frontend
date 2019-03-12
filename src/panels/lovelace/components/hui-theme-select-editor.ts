@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import "@material/mwc-button";
 
@@ -20,16 +23,11 @@ declare global {
   }
 }
 
-export class HuiThemeSelectionEditor extends LitElement {
-  public value?: string;
-  public hass?: HomeAssistant;
+@customElement("hui-theme-select-editor")
+export class HuiThemeSelectEditor extends LitElement {
+  @property() public value?: string;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      value: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
 
   protected render(): TemplateResult | void {
     const themes = ["Backend-selected", "default"].concat(
@@ -37,7 +35,6 @@ export class HuiThemeSelectionEditor extends LitElement {
     );
 
     return html`
-      ${this.renderStyle()}
       <paper-dropdown-menu
         label="Theme"
         dynamic-align
@@ -58,13 +55,11 @@ export class HuiThemeSelectionEditor extends LitElement {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-dropdown-menu {
-          width: 100%;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      paper-dropdown-menu {
+        width: 100%;
+      }
     `;
   }
 
@@ -79,8 +74,6 @@ export class HuiThemeSelectionEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-theme-select-editor": HuiThemeSelectionEditor;
+    "hui-theme-select-editor": HuiThemeSelectEditor;
   }
 }
-
-customElements.define("hui-theme-select-editor", HuiThemeSelectionEditor);

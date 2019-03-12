@@ -10,23 +10,15 @@ import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
 import "../../../components/ha-card";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-
 import { HomeAssistant, WebhookError } from "../../../types";
-import { WebhookDialogParams, CloudStatusLoggedIn } from "./types";
 import { Webhook, fetchWebhooks } from "../../../data/webhook";
 import {
   createCloudhook,
   deleteCloudhook,
   CloudWebhook,
+  CloudStatusLoggedIn,
 } from "../../../data/cloud";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "manage-cloud-webhook": WebhookDialogParams;
-  }
-}
+import { showManageCloudhookDialog } from "./show-cloud-webhook-manage-dialog";
 
 export class CloudWebhooks extends LitElement {
   public hass?: HomeAssistant;
@@ -138,14 +130,13 @@ export class CloudWebhooks extends LitElement {
   private _showDialog(webhookId: string) {
     const webhook = this._localHooks!.find(
       (ent) => ent.webhook_id === webhookId
-    );
+    )!;
     const cloudhook = this._cloudHooks![webhookId];
-    const params: WebhookDialogParams = {
-      webhook: webhook!,
+    showManageCloudhookDialog(this, {
+      webhook,
       cloudhook,
       disableHook: () => this._disableWebhook(webhookId),
-    };
-    fireEvent(this, "manage-cloud-webhook", params);
+    });
   }
 
   private _handleManageButton(ev: MouseEvent) {

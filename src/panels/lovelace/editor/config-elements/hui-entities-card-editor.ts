@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
@@ -44,10 +45,19 @@ const cardConfigStruct = struct({
   entities: [entitiesConfigStruct],
 });
 
+@customElement("hui-entities-card-editor")
 export class HuiEntitiesCardEditor extends LitElement
   implements LovelaceCardEditor {
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {}, _configEntities: {} };
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: EntitiesCardConfig;
+
+  @property() private _configEntities?: EntitiesCardEntityConfig[];
+
+  public setConfig(config: EntitiesCardConfig): void {
+    config = cardConfigStruct(config);
+    this._config = config;
+    this._configEntities = processEditorEntities(config.entities);
   }
 
   get _title(): string {
@@ -56,16 +66,6 @@ export class HuiEntitiesCardEditor extends LitElement
 
   get _theme(): string {
     return this._config!.theme || "Backend-selected";
-  }
-
-  public hass?: HomeAssistant;
-  private _config?: EntitiesCardConfig;
-  private _configEntities?: EntitiesCardEntityConfig[];
-
-  public setConfig(config: EntitiesCardConfig): void {
-    config = cardConfigStruct(config);
-    this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
   }
 
   protected render(): TemplateResult | void {
@@ -141,5 +141,3 @@ declare global {
     "hui-entities-card-editor": HuiEntitiesCardEditor;
   }
 }
-
-customElements.define("hui-entities-card-editor", HuiEntitiesCardEditor);

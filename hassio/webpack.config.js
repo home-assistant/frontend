@@ -1,11 +1,12 @@
 const CompressionPlugin = require("compression-webpack-plugin");
 const config = require("./config.js");
 const { babelLoaderConfig } = require("../config/babel.js");
-const { minimizer } = require("../config/babel.js");
+const webpackBase = require("../config/webpack.js");
 
 const isProdBuild = process.env.NODE_ENV === "production";
 const isCI = process.env.CI === "true";
 const chunkFilename = isProdBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
+const latestBuild = false;
 
 module.exports = {
   mode: isProdBuild ? "production" : "development",
@@ -15,7 +16,7 @@ module.exports = {
   },
   module: {
     rules: [
-      babelLoaderConfig({ latestBuild: false }),
+      babelLoaderConfig({ latestBuild }),
       {
         test: /\.(html)$/,
         use: {
@@ -27,9 +28,7 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    minimizer,
-  },
+  optimization: webpackBase.optimization(latestBuild),
   plugins: [
     isProdBuild &&
       !isCI &&
