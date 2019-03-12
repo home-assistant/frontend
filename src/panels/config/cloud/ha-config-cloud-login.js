@@ -74,8 +74,9 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
             <span slot="header">Home Assistant Cloud</span>
             <div slot="introduction">
               <p>
-                Home Assistant Cloud connects your local instance securely to
-                cloud-only services Amazon Alexa and Google Assistant.
+                Home Assistant Cloud allow you to remotely and securely control
+                your instance away from home. It also allows you to connect with
+                cloud-only services like Amazon Alexa and Google Assistant.
               </p>
               <p>
                 This service is run by our partner

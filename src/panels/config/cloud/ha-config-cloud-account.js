@@ -20,6 +20,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchSubscriptionInfo } from "./data";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
+import { connectCloudRemote, disconnectCloudRemote } from "../../../data/cloud";
 
 let registeredWebhookDialog = false;
 
@@ -66,6 +67,9 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           text-transform: capitalize;
           padding: 16px;
         }
+        a {
+          color: var(--primary-color);
+        }
       </style>
       <hass-subpage header="Home Assistant Cloud">
         <div class="content">
@@ -83,7 +87,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <div class="account-row">
                 <paper-item-body two-line="">
                   [[cloudStatus.email]]
-                  <div secondary="" class="wrap">
+                  <div secondary class="wrap">
                     [[_formatSubscription(_subscription)]]
                   </div>
                 </paper-item-body>
@@ -92,6 +96,25 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <div class="account-row">
                 <paper-item-body> Cloud connection status </paper-item-body>
                 <div class="status">[[cloudStatus.cloud]]</div>
+              </div>
+
+              <div class="account-row">
+                <paper-item-body two-line>
+                  Remote Access
+                  <div class="secondary">
+                    <a
+                      href="https://[[cloudStatus.remote_domain]]"
+                      target="_blank"
+                      >[[cloudStatus.remote_domain]]</a
+                    >
+                  </div>
+                </paper-item-body>
+                <div class="status">
+                  <paper-toggle-button
+                    checked="[[cloudStatus.remote_connected]]"
+                    on-change="_remoteChanged"
+                  ></paper-toggle-button>
+                </div>
               </div>
 
               <div class="card-actions">
@@ -170,6 +193,22 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           import(/* webpackChunkName: "cloud-webhook-manage-dialog" */ "./cloud-webhook-manage-dialog"),
       });
     }
+  }
+
+  async _remoteChanged(ev) {
+    const toggle = ev.target;
+
+    try {
+      this.cloudStatus = toggle.checked
+        ? await connectCloudRemote(this.hass)
+        : await disconnectCloudRemote(this.hass);
+    } catch (err) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  _computeRemoteConnected(connected) {
+    return connected ? "Connected" : "Not Connected";
   }
 
   async _fetchSubscriptionInfo() {
