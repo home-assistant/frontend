@@ -45,6 +45,7 @@ class MoreInfoCamera extends UpdatingElement {
     if (!this.stateObj) {
       return;
     }
+    // tslint:disable-next-line
     const Hls = ((await import("hls.js")) as any).default as HLSModule;
 
     if (Hls.isSupported()) {
