@@ -16,11 +16,10 @@ import formatDateTime from "../../../common/datetime/format_date_time";
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import { fireEvent } from "../../../common/dom/fire_event";
-
-import { fetchSubscriptionInfo } from "./data";
+import { fetchCloudSubscriptionInfo } from "../../../data/cloud";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
-import { connectCloudRemote, disconnectCloudRemote } from "../../../data/cloud";
+import "./cloud-remote-pref";
 
 let registeredWebhookDialog = false;
 
@@ -98,25 +97,6 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 <div class="status">[[cloudStatus.cloud]]</div>
               </div>
 
-              <div class="account-row">
-                <paper-item-body two-line>
-                  Remote Access
-                  <div class="secondary">
-                    <a
-                      href="https://[[cloudStatus.remote_domain]]"
-                      target="_blank"
-                      >[[cloudStatus.remote_domain]]</a
-                    >
-                  </div>
-                </paper-item-body>
-                <div class="status">
-                  <paper-toggle-button
-                    checked="[[cloudStatus.remote_connected]]"
-                    on-change="_remoteChanged"
-                  ></paper-toggle-button>
-                </div>
-              </div>
-
               <div class="card-actions">
                 <a href="https://account.nabucasa.com" target="_blank"
                   ><mwc-button>Manage Account</mwc-button></a
@@ -143,6 +123,11 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 >.
               </p>
             </div>
+
+            <cloud-remote-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+            ></cloud-remote-pref>
 
             <cloud-alexa-pref
               hass="[[hass]]"
@@ -195,24 +180,12 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
   }
 
-  async _remoteChanged(ev) {
-    const toggle = ev.target;
-
-    try {
-      this.cloudStatus = toggle.checked
-        ? await connectCloudRemote(this.hass)
-        : await disconnectCloudRemote(this.hass);
-    } catch (err) {
-      toggle.checked = !toggle.checked;
-    }
-  }
-
   _computeRemoteConnected(connected) {
     return connected ? "Connected" : "Not Connected";
   }
 
   async _fetchSubscriptionInfo() {
-    this._subscription = await fetchSubscriptionInfo(this.hass);
+    this._subscription = await fetchCloudSubscriptionInfo(this.hass);
     if (
       this._subscription.provider &&
       this.cloudStatus &&
