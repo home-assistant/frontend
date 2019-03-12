@@ -10,7 +10,6 @@ type HLSModule = typeof import("hls.js");
 class MoreInfoCamera extends UpdatingElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
-  private _mode: "loading" | "hls" | "mjpeg" = "loading";
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -45,17 +44,37 @@ class MoreInfoCamera extends UpdatingElement {
     if (!this.stateObj) {
       return;
     }
-    // tslint:disable-next-line
-    const Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
-      .default as HLSModule;
 
-    if (Hls.isSupported()) {
+    const videoEl = document.createElement("video");
+    videoEl.style.width = "100%";
+    videoEl.autoplay = true;
+    videoEl.controls = true;
+    videoEl.muted = true;
+
+    // tslint:disable-next-line
+    let Hls: HLSModule | undefined;
+
+    let hlsSupported =
+      videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+
+    if (!hlsSupported) {
+      Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
+        .default as HLSModule;
+      hlsSupported = Hls.isSupported();
+    }
+
+    if (hlsSupported) {
       try {
         const { url } = await fetchStreamUrl(
           this.hass!,
           this.stateObj.entity_id
         );
-        this._renderHLS(Hls, url);
+
+        if (Hls) {
+          this._renderHLSPolyfill(videoEl, Hls, url);
+        } else {
+          this._renderHLSNative(videoEl, url);
+        }
         return;
       } catch (err) {
         // Fails if entity doesn't support it. In that case we go
@@ -66,16 +85,20 @@ class MoreInfoCamera extends UpdatingElement {
     this._renderMJPEG();
   }
 
-  private async _renderHLS(
+  private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
+    videoEl.src = url;
+    await new Promise((resolve) =>
+      videoEl.addEventListener("loadedmetadata", resolve)
+    );
+    videoEl.play();
+  }
+
+  private async _renderHLSPolyfill(
+    videoEl: HTMLVideoElement,
     // tslint:disable-next-line
     Hls: HLSModule,
     url: string
   ) {
-    const videoEl = document.createElement("video");
-    videoEl.style.width = "100%";
-    videoEl.autoplay = true;
-    videoEl.controls = true;
-    videoEl.muted = true;
     const hls = new Hls();
     await new Promise((resolve) => {
       hls.on(Hls.Events.MEDIA_ATTACHED, resolve);
@@ -89,7 +112,6 @@ class MoreInfoCamera extends UpdatingElement {
   }
 
   private _renderMJPEG() {
-    this._mode = "mjpeg";
     const img = document.createElement("img");
     img.style.width = "100%";
     img.addEventListener("load", () => fireEvent(this, "iron-resize"));
@@ -101,10 +123,6 @@ class MoreInfoCamera extends UpdatingElement {
   }
 
   private _teardownPlayback(): any {
-    if (this._mode === "hls") {
-      // do something
-    }
-    this._mode = "loading";
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
