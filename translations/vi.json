@@ -115,6 +115,10 @@
             "window": {
                 "off": "Đóng",
                 "on": "Mở"
+            },
+            "lock": {
+                "off": "Đã khoá",
+                "on": "Mở khoá"
             }
         },
         "calendar": {
@@ -227,9 +231,13 @@
         "zwave": {
             "default": {
                 "initializing": "Khởi tạo",
-                "dead": "Chết",
+                "dead": "Đã tắt",
                 "sleeping": "Ngủ",
                 "ready": "Sẵn sàng"
+            },
+            "query_stage": {
+                "initializing": "Đang khởi tạo ({query_stage})",
+                "dead": "Đã tắt ({query_stage})"
             }
         },
         "weather": {
@@ -276,13 +284,22 @@
         "alarm_control_panel": {
             "armed": "VT",
             "disarmed": "Vô hiệu hoá",
+            "armed_home": "Đã kích hoạt",
+            "armed_away": "Đã kích hoạt",
+            "armed_night": "Đã kích hoạt",
             "pending": "Chờ",
             "arming": "Đang VT",
-            "disarming": "Giải giáp"
+            "disarming": "Giải giáp",
+            "triggered": "Kích hoạt",
+            "armed_custom_bypass": "Đã kích hoạt"
         },
         "device_tracker": {
             "home": "Ở nhà",
             "not_home": "Đi vắng"
+        },
+        "person": {
+            "home": "Ở nhà",
+            "not_home": "Ra ngoài"
         }
     },
     "ui": {
@@ -370,6 +387,7 @@
                             "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \n\n [Tìm hiểu thêm về Bộ khởi động] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Thêm Bộ khởi động",
                             "duplicate": "Bản sao",
+                            "delete": "Xoá",
                             "delete_confirm": "Chắc chắn bạn muốn xóa?",
                             "unsupported_platform": "Nền tảng không được hỗ trợ: {platform}",
                             "type_select": "Loại Bộ khởi động",
@@ -419,6 +437,8 @@
                                 "zone": {
                                     "label": "Khu vực",
                                     "entity": "Thực thể với vị trí",
+                                    "zone": "Vùng",
+                                    "event": "Sự kiện:",
                                     "enter": "Vào",
                                     "leave": "Ra"
                                 },
@@ -447,10 +467,18 @@
                             "header": "Điều kiện",
                             "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \n\n [Tìm hiểu thêm về điều kiện] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Thêm điều kiện",
+                            "duplicate": "Nhân đôi",
+                            "delete": "Xoá",
+                            "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "unsupported_condition": "Điều kiện không được hỗ trợ: {condition}",
                             "type_select": "Loại điều kiện",
                             "type": {
+                                "state": {
+                                    "label": "Trạng thái",
+                                    "state": "Trạng thái"
+                                },
                                 "numeric_state": {
+                                    "label": "Trạng thái dạng số",
                                     "above": "Ở trên",
                                     "below": "Bên dưới",
                                     "value_template": "Giá trị mẫu (không bắt buộc)"
@@ -475,6 +503,7 @@
                                 },
                                 "zone": {
                                     "label": "Vùng",
+                                    "entity": "Thực thể với vị trí",
                                     "zone": "Vùng"
                                 }
                             },
@@ -484,6 +513,9 @@
                             "header": "Hành động",
                             "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \n\n [Tìm hiểu thêm về các hành động.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Thêm hành động",
+                            "duplicate": "Nhân đôi",
+                            "delete": "Xoá",
+                            "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "unsupported_action": "Hành động không được hỗ trợ: {action}",
                             "type_select": "Loại hành động",
                             "type": {
@@ -492,7 +524,8 @@
                                     "service_data": "Dữ liệu dịch vụ"
                                 },
                                 "delay": {
-                                    "label": "Chậm trễ"
+                                    "label": "Chậm trễ",
+                                    "delay": "Hoãn"
                                 },
                                 "wait_template": {
                                     "label": "Chờ",
@@ -503,7 +536,9 @@
                                     "label": "Điều kiện"
                                 },
                                 "event": {
-                                    "label": "Kích hoạt Sự kiện"
+                                    "label": "Kích hoạt Sự kiện",
+                                    "event": "Sự kiện:",
+                                    "service_data": "Dữ liệu cho dịch vụ"
                                 }
                             },
                             "learn_more": "Tìm hiểu thêm về Hành động"
@@ -761,6 +796,24 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Tên người dùng",
+                                        "password": "Mật khẩu"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Mã xác nhận 2 bước"
+                                    },
+                                    "description": "Mở **{mfa_module_name}** trên thiết bị của bạn để tìm mã xác nhận 2 bước và xác nhận danh tính:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Tên đăng nhập hoặc mật khẩu không hợp lệ",
+                                "invalid_code": "Mã xác nhận không hợp lệ"
+                            },
                             "abort": {
                                 "login_expired": "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại."
                             }
@@ -801,6 +854,7 @@
                     "edit_card": {
                         "header": "Cấu hình Thẻ",
                         "save": "Lưu",
+                        "toggle_editor": "Đổi trình biên tập",
                         "pick_card": "Chọn Thẻ bạn muốn thêm.",
                         "add": "Thêm Thẻ",
                         "edit": "Chỉnh sửa",
@@ -809,6 +863,8 @@
                     },
                     "migrate": {
                         "header": "Cấu hình không tương thích",
+                        "para_no_id": "Phần tử này không có ID. Vui lòng thêm ID vào thành phần này trong 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant có thể tự động thêm ID vào tất cả các thẻ và chế độ xem của bạn bằng cách nhấn nút 'Tích hợp cấu hình'.",
                         "migrate": "Di chuyển cấu hình"
                     },
                     "header": "Chỉnh sửa giao diện",
@@ -1012,7 +1068,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Lưu",
-                "name": "Tên"
+                "name": "Tên",
+                "entity_id": "ID thực thể"
             },
             "more_info_control": {
                 "script": {
@@ -1088,6 +1145,15 @@
             "humidity": "Độ ẩm",
             "visibility": "Tầm nhìn",
             "wind_speed": "Tốc độ gió"
+        }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Tắt",
+                "on": "Bật",
+                "auto": "Tự động"
+            }
         }
     }
 }
