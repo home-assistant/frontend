@@ -1690,6 +1690,11 @@
     "@types/node" "*"
     "@types/vinyl" "*"
 
+"@types/hls.js@^0.12.2":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@types/hls.js/-/hls.js-0.12.2.tgz#e16293a2b1cf4e975fad55a65621764a539f9657"
+  integrity sha512-VXLfVlZYlKWfsdsU2lo7rzwrKBTJj+DFdPIUyF84uTePbYXd30Gx0K6g62kzOPvojgYF/bMLkk1VDXHDb1X+VA==
+
 "@types/html-minifier@^3.5.1":
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/@types/html-minifier/-/html-minifier-3.5.2.tgz#f897a13d847a774e9b6fd91497e9b0e0ead71c35"
@@ -5706,7 +5711,7 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
-eventemitter3@^3.0.0:
+eventemitter3@3.1.0, eventemitter3@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
   integrity sha512-ivIvhpq/Y0uSjcHDcOIccjmYjGLcP09MFGE7ysAwkAvkXfpZlC985pH2/ui64DKazbTW/4kN3yqozUxlXzI6cA==
@@ -7202,6 +7207,14 @@ he@1.2.x:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+
+hls.js@^0.12.3:
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-0.12.3.tgz#6743456fa443ed6050ab2888083e4b75c39b396f"
+  integrity sha512-tNvH/LIQzjLIXSI1AaAFYDLKxJKKKnE/rqCcFr76Ez6fVpMczWe65pI7qlYxFQC+urVhz9JokJYmeZod6d+5JA==
+  dependencies:
+    eventemitter3 "3.1.0"
+    url-toolkit "^2.1.6"
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
@@ -13633,6 +13646,11 @@ url-to-options@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/url-to-options/-/url-to-options-1.0.1.tgz#1505a03a289a48cbd7a434efbaeec5055f5633a9"
   integrity sha1-FQWgOiiaSMvXpDTvuu7FBV9WM6k=
+
+url-toolkit@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/url-toolkit/-/url-toolkit-2.1.6.tgz#6d03246499e519aad224c44044a4ae20544154f2"
+  integrity sha512-UaZ2+50am4HwrV2crR/JAf63Q4VvPYphe63WGeoJxeu8gmOm0qxPt+KsukfakPNrX9aymGNEkkaoICwn+OuvBw==
 
 url@^0.11.0:
   version "0.11.0"
