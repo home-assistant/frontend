@@ -18,3 +18,13 @@ export const deleteCloudhook = (hass: HomeAssistant, webhookId: string) =>
     type: "cloud/cloudhook/delete",
     webhook_id: webhookId,
   });
+
+export const connectCloudRemote = (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "cloud/remote/connect",
+  });
+
+export const disconnectCloudRemote = (hass: HomeAssistant) =>
+  hass.callWS({
+    type: "cloud/remote/disconnect",
+  });
