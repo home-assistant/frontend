@@ -5,6 +5,7 @@ import {
   css,
   CSSResult,
   property,
+  customElement,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -28,6 +29,7 @@ export interface Config extends LovelaceCardConfig {
   title?: string;
 }
 
+@customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-shopping-list-editor" */ "../editor/config-elements/hui-shopping-list-editor");
@@ -39,9 +41,13 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: Config;
+
   @property() private _uncheckedItems?: ShoppingListItem[];
+
   @property() private _checkedItems?: ShoppingListItem[];
+
   private _unsubEvents?: Promise<() => Promise<void>>;
 
   public getCardSize(): number {
@@ -178,61 +184,68 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      css`
-        .editRow,
-        .addRow {
-          display: flex;
-          flex-direction: row;
+  static get styles(): CSSResult {
+    return css`
+      .editRow,
+      .addRow {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .addButton {
+        padding: 9px 15px 11px 15px;
+        cursor: pointer;
+      }
+
+      paper-item-body {
+        width: 75%;
+      }
+
+      paper-checkbox {
+        padding: 11px 11px 11px 18px;
+      }
+
+      paper-input {
+        --paper-input-container-underline: {
+          display: none;
         }
-        .addButton {
-          padding: 9px 15px 11px 15px;
-          cursor: pointer;
+        --paper-input-container-underline-focus: {
+          display: none;
         }
-        paper-item-body {
-          width: 75%;
+        --paper-input-container-underline-disabled: {
+          display: none;
         }
-        paper-checkbox {
-          padding: 11px 11px 11px 18px;
-        }
-        paper-input {
-          --paper-input-container-underline: {
-            display: none;
-          }
-          --paper-input-container-underline-focus: {
-            display: none;
-          }
-          --paper-input-container-underline-disabled: {
-            display: none;
-          }
-          position: relative;
-          top: 1px;
-        }
-        .checked {
-          margin-left: 17px;
-          margin-bottom: 11px;
-          margin-top: 11px;
-        }
-        .label {
-          color: var(--primary-color);
-        }
-        .divider {
-          height: 1px;
-          background-color: var(--divider-color);
-          margin: 10px;
-        }
-        .clearall {
-          cursor: pointer;
-          margin-bottom: 3px;
-          float: right;
-          padding-right: 10px;
-        }
-        .addRow > ha-icon {
-          color: var(--secondary-text-color);
-        }
-      `,
-    ];
+        position: relative;
+        top: 1px;
+      }
+
+      .checked {
+        margin-left: 17px;
+        margin-bottom: 11px;
+        margin-top: 11px;
+      }
+
+      .label {
+        color: var(--primary-color);
+      }
+
+      .divider {
+        height: 1px;
+        background-color: var(--divider-color);
+        margin: 10px;
+      }
+
+      .clearall {
+        cursor: pointer;
+        margin-bottom: 3px;
+        float: right;
+        padding-right: 10px;
+      }
+
+      .addRow > ha-icon {
+        color: var(--secondary-text-color);
+      }
+    `;
   }
 
   private async _fetchData(): Promise<void> {
@@ -301,5 +314,3 @@ declare global {
     "hui-shopping-list-card": HuiShoppingListCard;
   }
 }
-
-customElements.define("hui-shopping-list-card", HuiShoppingListCard);

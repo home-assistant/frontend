@@ -139,7 +139,7 @@ class DialogEntityRegistryDetail extends LitElement {
       });
       this._params = undefined;
     } catch (err) {
-      this._error = err;
+      this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;
     }

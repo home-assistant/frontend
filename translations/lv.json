@@ -149,7 +149,7 @@
         },
         "configurator": {
             "configure": "Konfigurēt",
-            "configured": "Nokonfigurēts"
+            "configured": "Konfigurēts"
         },
         "cover": {
             "open": "Atvērts",
@@ -317,7 +317,7 @@
                     "description": "Veiciet konfigurācijas failu pārbaudi un pārvaldiet serveri",
                     "section": {
                         "core": {
-                            "header": "Konfigurācijas un Servera pārvaldība",
+                            "header": "Konfigurācijas un servera pārvaldība",
                             "introduction": "Izmaiņas konfigurācijā var būt nogurdinošs process. Mēs zinām. Šai sadaļai vajadzētu padarīt dzīvi mazliet vieglāku.",
                             "validation": {
                                 "heading": "Konfigurācijas pārbaude",
@@ -351,9 +351,9 @@
                     "caption": "Automatizācija",
                     "description": "Veidojiet un rediģējiet automatizācijas",
                     "picker": {
-                        "header": "Automatizāciju Redaktors",
+                        "header": "Automatizāciju redaktors",
                         "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, sekojiet [norādījumiem] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
-                        "pick_automation": "Izvēlieties automatizāciju kuru rediģēt",
+                        "pick_automation": "Izvēlieties automatizāciju rediģēšanai",
                         "no_automations": "Mēs nevarējām atrast rediģējamas automatizācijas",
                         "add_automation": "Pievienot automatizāciju"
                     },
@@ -597,10 +597,10 @@
                     "dropdown_label": "Valoda"
                 },
                 "themes": {
-                    "header": "Motīvs",
-                    "error_no_theme": "Nav pieejams neviens motīvs",
+                    "header": "Tēma",
+                    "error_no_theme": "Nav nevienas tēmas",
                     "link_promo": "Uzziniet par tēmām",
-                    "dropdown_label": "Motīvs"
+                    "dropdown_label": "Tēma"
                 },
                 "refresh_tokens": {
                     "header": "Atsvaidzināšanas pilnvaras",

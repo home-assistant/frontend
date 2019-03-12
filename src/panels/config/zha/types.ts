@@ -1,4 +1,4 @@
-import { ZHADeviceEntity, Cluster } from "../../../data/zha";
+import { ZHADevice, Cluster } from "../../../data/zha";
 
 export interface PickerTarget extends EventTarget {
   selected: number;
@@ -34,8 +34,8 @@ export interface IssueCommandServiceData {
   command_type: string;
 }
 
-export interface ZHANodeSelectedParams {
-  node: ZHADeviceEntity;
+export interface ZHADeviceSelectedParams {
+  node: ZHADevice;
 }
 
 export interface ZHAClusterSelectedParams {

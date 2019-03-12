@@ -2,9 +2,9 @@ import {
   html,
   css,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   CSSResult,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
@@ -15,14 +15,11 @@ import "./hui-card-picker";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 
+@customElement("hui-dialog-pick-card")
 export class HuiDialogPickCard extends LitElement {
   public hass?: HomeAssistant;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
   public closeDialog?: () => void;
-
-  static get properties(): PropertyDeclarations {
-    return {};
-  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -47,7 +44,7 @@ export class HuiDialogPickCard extends LitElement {
     `;
   }
 
-  private _openedChanged(ev) {
+  private _openedChanged(ev): void {
     if (!ev.detail.value) {
       this.closeDialog!();
     }
@@ -88,5 +85,3 @@ declare global {
     "hui-dialog-pick-card": HuiDialogPickCard;
   }
 }
-
-customElements.define("hui-dialog-pick-card", HuiDialogPickCard);

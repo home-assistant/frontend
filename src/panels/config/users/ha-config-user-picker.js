@@ -66,7 +66,7 @@ class HaUserPicker extends EventsMixin(
                 <paper-item-body two-line>
                   <div>[[_withDefault(user.name, 'Unnamed User')]]</div>
                   <div secondary="">
-                    [[user.id]]
+                    [[_computeGroup(localize, user)]]
                     <template is="dom-if" if="[[user.system_generated]]">
                       - System Generated
                     </template>
@@ -122,6 +122,10 @@ class HaUserPicker extends EventsMixin(
 
   _computeUrl(user) {
     return `/config/users/${user.id}`;
+  }
+
+  _computeGroup(localize, user) {
+    return localize(`groups.${user.group_ids[0]}`);
   }
 
   _computeRTL(hass) {

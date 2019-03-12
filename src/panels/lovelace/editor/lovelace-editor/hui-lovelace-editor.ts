@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -21,13 +22,11 @@ declare global {
   }
 }
 
+@customElement("hui-lovelace-editor")
 export class HuiLovelaceEditor extends LitElement {
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, config: {} };
-  }
+  @property() public hass?: HomeAssistant;
 
-  public hass?: HomeAssistant;
-  public config?: LovelaceConfig;
+  @property() public config?: LovelaceConfig;
 
   get _title(): string {
     if (!this.config) {
@@ -79,5 +78,3 @@ declare global {
     "hui-lovelace-editor": HuiLovelaceEditor;
   }
 }
-
-customElements.define("hui-lovelace-editor", HuiLovelaceEditor);

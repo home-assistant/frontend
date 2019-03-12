@@ -270,6 +270,10 @@
             "active": "activo",
             "idle": "inactivo",
             "paused": "pausado"
+        },
+        "person": {
+            "home": "En Casa",
+            "not_home": "Fuera de Casa"
         }
     },
     "state_badge": {
@@ -287,11 +291,15 @@
             "arming": "Activando",
             "disarming": "Desarmar",
             "triggered": "Activado",
-            "armed_custom_bypass": "Armada"
+            "armed_custom_bypass": "Protegido"
         },
         "device_tracker": {
             "home": "En Casa",
             "not_home": "Fuera de Casa"
+        },
+        "person": {
+            "home": "En casa",
+            "not_home": "Fuera de casa"
         }
     },
     "ui": {
@@ -362,10 +370,11 @@
                     "description": "Crear y editar automatizaciones",
                     "picker": {
                         "header": "Editor de automatización",
-                        "introduction": "El editor de automatización le permite crear y editar automatizaciones. Por favor lea [las instrucciones] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) para asegurarse de haber configurado correctamente Home Assistant.",
+                        "introduction": "El editor de automatización le permite crear y editar automatizaciones. Siga el enlace a continuación para leer las instrucciones y asegurarse de que haya configurado Home Assistant correctamente.",
                         "pick_automation": "Elija la automatización a editar",
                         "no_automations": "No pudimos encontrar ninguna automatización editable",
-                        "add_automation": "Agregar automatización"
+                        "add_automation": "Agregar automatización",
+                        "learn_more": "Más información sobre las automatizaciones"
                     },
                     "editor": {
                         "introduction": "Utilice automatizaciones para dar vida a su hogar",
@@ -375,7 +384,7 @@
                         "alias": "Nombre",
                         "triggers": {
                             "header": "Desencadenadores",
-                            "introduction": "Los desencadenadores son los que inician el procesamiento de una regla de automatización. Es posible especificar múltiples desencadenadores para la misma regla. Una vez que se inicia un desencadenador, Home Assistant validará las condiciones, si las hay, y llamará a la acción. \n\n [Obtenga más información sobre desencadenadores]. (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Los desencadenadores son los que inician el procesamiento de una regla de automatización. Es posible especificar múltiples activadores para la misma regla. Una vez que se inicia un activador, Home Assistant validará las condiciones, si las hay, y activará la acción.",
                             "add": "Agregar desencadenador",
                             "duplicate": "Duplicar",
                             "delete": "Eliminar",
@@ -452,11 +461,12 @@
                                     "enter": "Entrar",
                                     "leave": "Salir"
                                 }
-                            }
+                            },
+                            "learn_more": "Más información sobre los desencadenadores"
                         },
                         "conditions": {
                             "header": "Condiciones",
-                            "introduction": "Las condiciones son una parte opcional de una regla de automatización y se pueden usar para evitar que ocurra una acción cuando se activa. Las condiciones se ven muy similares a los desencadenadores, pero son muy diferentes. Un desencadenador observará los eventos que suceden en el sistema, mientras que una condición solo observa cómo se ve el sistema en este momento. Un desencadenador puede observar que se está encendiendo un interruptor. Una condición solo puede ver si un interruptor está actualmente encendido o apagado. \n\n [Obtenga más información sobre las condiciones.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Las condiciones son una parte opcional de una regla de automatización y se pueden usar para evitar que ocurra una acción cuando se activa. Las condiciones son muy similares a los desencadenantes pero son muy diferentes. Un activador mirará los eventos que suceden en el sistema, mientras que una condición solo mira cómo se ve el sistema en este momento. Un disparador puede observar que un interruptor se está activando. Una condición solo puede ver si un interruptor está actualmente activado o desactivado.",
                             "add": "Agregar condición",
                             "duplicate": "Duplicar",
                             "delete": "Eliminar",
@@ -497,11 +507,12 @@
                                     "entity": "Entidad con ubicación",
                                     "zone": "Zona"
                                 }
-                            }
+                            },
+                            "learn_more": "Más información sobre las condiciones"
                         },
                         "actions": {
                             "header": "Acciones",
-                            "introduction": "Las acciones son lo que Home Assistant hará cuando se active la automatización. \n\n [Obtenga más información sobre acciones.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Las acciones son lo que hará Home Assistant cuando se active la automatización.",
                             "add": "Agregar acción",
                             "duplicate": "Duplicar",
                             "delete": "Eliminar",
@@ -530,7 +541,8 @@
                                     "event": "Evento",
                                     "service_data": "Datos"
                                 }
-                            }
+                            },
+                            "learn_more": "Más información sobre las acciones"
                         }
                     }
                 },
@@ -603,7 +615,8 @@
                     "picker": {
                         "header": "Registro de áreas",
                         "introduction": "Las áreas se utilizan para organizar donde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarlo a organizar su interfaz, permisos e integraciones con otros sistemas.",
-                        "introduction2": "Para colocar dispositivos en un área, use el enlace a continuación para navegar a la página de integraciones y luego haga clic en una integración configurada para acceder a las tarjetas del dispositivo."
+                        "introduction2": "Para colocar dispositivos en un área, use el enlace a continuación para navegar a la página de integraciones y luego haga clic en una integración configurada para acceder a las tarjetas del dispositivo.",
+                        "integrations_page": "Página de integraciones"
                     },
                     "no_areas": "¡Parece que aún no tienes áreas!",
                     "create_area": "CREAR AREA",
@@ -621,7 +634,8 @@
                         "header": "Registro de entidades",
                         "unavailable": "(no disponible)",
                         "introduction": "Home Assistant mantiene un registro de todas las entidades que ha visto y que pueden identificarse de manera única. Cada una de estas entidades tendrá un ID de entidad asignado que se reservará solo para esta entidad.",
-                        "introduction2": "Utilice el registro de la entidad para reemplazar el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Tenga en cuenta que eliminar la entrada del registro de la entidad no eliminará la entidad. Para hacerlo, siga el enlace a continuación y elimínelo de la página de integraciones."
+                        "introduction2": "Utilice el registro de la entidad para reemplazar el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Tenga en cuenta que eliminar la entrada del registro de la entidad no eliminará la entidad. Para hacerlo, siga el enlace a continuación y elimínelo de la página de integraciones.",
+                        "integrations_page": "Página de integraciones"
                     },
                     "editor": {
                         "unavailable": "Esta entidad no está disponible actualmente.",
@@ -644,7 +658,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "Notificaciones Push",
-                    "description": "Enviar notificaciones a este dispositivo",
+                    "description": "Enviar notificaciones a este dispositivo.",
                     "error_load_platform": "Configurar notify.html5.",
                     "error_use_https": "Requiere SSL habilitado para la interfaz.",
                     "push_notifications": "Notificaciones Push",
@@ -789,6 +803,12 @@
                                         "username": "Nombre de usuario",
                                         "password": "Contraseña"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticación de dos factores"
+                                    },
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código de autenticación de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {
@@ -864,6 +884,12 @@
                     },
                     "menu": {
                         "raw_editor": "Editor de configuraciones en bruto"
+                    },
+                    "raw_editor": {
+                        "header": "Editar configuración",
+                        "save": "Guardar",
+                        "unsaved_changes": "Cambios no guardados",
+                        "saved": "Guardado"
                     }
                 },
                 "menu": {
@@ -1043,7 +1069,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Guardar",
-                "name": "Nombre",
+                "name": "Sustituir Nombre",
                 "entity_id": "ID de la entidad"
             },
             "more_info_control": {
@@ -1112,7 +1138,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Estado del sistema"
+        "system_health": "Estado del sistema",
+        "person": "Persona"
     },
     "attribute": {
         "weather": {

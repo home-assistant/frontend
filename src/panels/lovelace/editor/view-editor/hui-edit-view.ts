@@ -2,9 +2,10 @@ import {
   html,
   css,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   CSSResult,
+  customElement,
+  property,
 } from "lit-element";
 
 import "@polymer/paper-spinner/paper-spinner";
@@ -35,31 +36,27 @@ import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
 
+@customElement("hui-edit-view")
 export class HuiEditView extends LitElement {
-  public lovelace?: Lovelace;
-  public viewIndex?: number;
-  public hass?: HomeAssistant;
-  private _config?: LovelaceViewConfig;
-  private _badges?: EntityConfig[];
-  private _cards?: LovelaceCardConfig[];
-  private _saving: boolean;
+  @property() public lovelace?: Lovelace;
+
+  @property() public viewIndex?: number;
+
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: LovelaceViewConfig;
+
+  @property() private _badges?: EntityConfig[];
+
+  @property() private _cards?: LovelaceCardConfig[];
+
+  @property() private _saving: boolean;
+
+  @property() private _curTab?: string;
+
   private _curTabIndex: number;
-  private _curTab?: string;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      lovelace: {},
-      viewIndex: {},
-      _config: {},
-      _badges: {},
-      _cards: {},
-      _saving: {},
-      _curTab: {},
-    };
-  }
-
-  protected constructor() {
+  public constructor() {
     super();
     this._saving = false;
     this._curTabIndex = 0;
@@ -162,7 +159,7 @@ export class HuiEditView extends LitElement {
     `;
   }
 
-  private async _delete() {
+  private async _delete(): Promise<void> {
     if (this._cards && this._cards.length > 0) {
       alert(
         "You can't delete a view that has cards in it. Remove the cards first."
@@ -321,5 +318,3 @@ declare global {
     "hui-edit-view": HuiEditView;
   }
 }
-
-customElements.define("hui-edit-view", HuiEditView);

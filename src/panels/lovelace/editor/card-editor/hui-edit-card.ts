@@ -2,10 +2,11 @@ import {
   html,
   css,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
   CSSResult,
+  customElement,
+  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import yaml from "js-yaml";
@@ -49,36 +50,33 @@ declare global {
   }
 }
 
+@customElement("hui-edit-card")
 export class HuiEditCard extends LitElement {
-  public hass?: HomeAssistant;
-  public lovelace?: Lovelace;
-  public path?: [number] | [number, number];
-  public cardConfig?: LovelaceCardConfig;
-  public closeDialog?: () => void;
-  private _configElement?: LovelaceCardEditor | null;
-  private _uiEditor?: boolean;
-  private _configValue?: ConfigValue;
-  private _configState?: string;
-  private _loading?: boolean;
-  private _saving: boolean;
-  private _errorMsg?: TemplateResult;
-  private _cardType?: string;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      cardConfig: {},
-      viewIndex: {},
-      _cardIndex: {},
-      _configElement: {},
-      _configValue: {},
-      _configState: {},
-      _errorMsg: {},
-      _uiEditor: {},
-      _saving: {},
-      _loading: {},
-    };
-  }
+  @property() public cardConfig?: LovelaceCardConfig;
+
+  public lovelace?: Lovelace;
+
+  public path?: [number] | [number, number];
+
+  public closeDialog?: () => void;
+
+  @property() private _configElement?: LovelaceCardEditor | null;
+
+  @property() private _uiEditor?: boolean;
+
+  @property() private _configValue?: ConfigValue;
+
+  @property() private _configState?: string;
+
+  @property() private _loading?: boolean;
+
+  @property() private _saving: boolean;
+
+  @property() private _errorMsg?: TemplateResult;
+
+  private _cardType?: string;
 
   private get _dialog(): PaperDialogElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
@@ -88,7 +86,7 @@ export class HuiEditCard extends LitElement {
     return this.shadowRoot!.querySelector("hui-card-preview")!;
   }
 
-  protected constructor() {
+  public constructor() {
     super();
     this._saving = false;
   }
@@ -270,7 +268,7 @@ export class HuiEditCard extends LitElement {
     this._updatePreview(value);
   }
 
-  private async _updatePreview(config: LovelaceCardConfig) {
+  private async _updatePreview(config: LovelaceCardConfig): Promise<void> {
     await this.updateComplete;
 
     if (!this._previewEl) {
@@ -286,7 +284,7 @@ export class HuiEditCard extends LitElement {
     }
   }
 
-  private _setPreviewError(error: ConfigError) {
+  private _setPreviewError(error: ConfigError): void {
     if (!this._previewEl) {
       return;
     }
@@ -323,7 +321,7 @@ export class HuiEditCard extends LitElement {
     this._resizeDialog();
   }
 
-  private _isConfigValid() {
+  private _isConfigValid(): boolean {
     if (!this._configValue || !this._configValue.value) {
       return false;
     }
@@ -401,7 +399,7 @@ export class HuiEditCard extends LitElement {
     return this.path!.length === 1;
   }
 
-  private _openedChanged(ev) {
+  private _openedChanged(ev): void {
     if (!ev.detail.value) {
       this.closeDialog!();
     }
@@ -518,5 +516,3 @@ declare global {
     "hui-edit-card": HuiEditCard;
   }
 }
-
-customElements.define("hui-edit-card", HuiEditCard);

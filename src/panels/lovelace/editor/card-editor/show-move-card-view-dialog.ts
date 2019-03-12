@@ -15,7 +15,7 @@ export interface MoveCardViewDialogParams {
   lovelace: Lovelace;
 }
 
-const registerEditCardDialog = (element: HTMLElement) =>
+const registerEditCardDialog = (element: HTMLElement): Event =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent: "show-move-card-view",
     dialogTag: "hui-dialog-move-card-view",
@@ -26,7 +26,7 @@ const registerEditCardDialog = (element: HTMLElement) =>
 export const showMoveCardViewDialog = (
   element: HTMLElement,
   moveCardViewDialogParams: MoveCardViewDialogParams
-) => {
+): void => {
   if (!registeredDialog) {
     registeredDialog = true;
     registerEditCardDialog(element);

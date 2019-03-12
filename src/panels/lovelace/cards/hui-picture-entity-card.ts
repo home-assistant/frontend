@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -34,16 +37,11 @@ interface Config extends LovelaceCardConfig {
   show_state?: boolean;
 }
 
+@customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: Config;
 
   public getCardSize(): number {
     return 3;
@@ -109,7 +107,6 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card>
         <hui-image
           .hass="${this.hass}"
@@ -132,37 +129,44 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-card {
-          min-height: 75px;
-          overflow: hidden;
-          position: relative;
-        }
-        hui-image.clickable {
-          cursor: pointer;
-        }
-        .footer {
-          @apply --paper-font-common-nowrap;
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.3);
-          padding: 16px;
-          font-size: 16px;
-          line-height: 16px;
-          color: white;
-        }
-        .both {
-          display: flex;
-          justify-content: space-between;
-        }
-        .state {
-          text-align: right;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-card {
+        min-height: 75px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      hui-image.clickable {
+        cursor: pointer;
+      }
+
+      .footer {
+        /* start paper-font-common-nowrap style */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* end paper-font-common-nowrap style */
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 16px;
+        font-size: 16px;
+        line-height: 16px;
+        color: white;
+      }
+
+      .both {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .state {
+        text-align: right;
+      }
     `;
   }
 
@@ -180,5 +184,3 @@ declare global {
     "hui-picture-entity-card": HuiPictureEntityCard;
   }
 }
-
-customElements.define("hui-picture-entity-card", HuiPictureEntityCard);

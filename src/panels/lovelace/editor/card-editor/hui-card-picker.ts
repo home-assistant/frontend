@@ -1,4 +1,11 @@
-import { html, css, LitElement, TemplateResult, CSSResult } from "lit-element";
+import {
+  html,
+  css,
+  LitElement,
+  TemplateResult,
+  CSSResult,
+  customElement,
+} from "lit-element";
 import "@material/mwc-button";
 
 import { HomeAssistant } from "../../../../types";
@@ -33,8 +40,10 @@ const cards = [
   { name: "Weather Forecast", type: "weather-forecast" },
 ];
 
+@customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   public hass?: HomeAssistant;
+
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
   protected render(): TemplateResult | void {
@@ -97,5 +106,3 @@ declare global {
     "hui-card-picker": HuiCardPicker;
   }
 }
-
-customElements.define("hui-card-picker", HuiCardPicker);
