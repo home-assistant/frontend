@@ -265,6 +265,15 @@
             "on": "Ligado",
             "paused": "Pausado",
             "returning": "Retornando para base"
+        },
+        "timer": {
+            "active": "ativo",
+            "idle": "Em espera",
+            "paused": "Pausado"
+        },
+        "person": {
+            "home": "Home",
+            "not_home": "Ausente"
         }
     },
     "state_badge": {
@@ -346,7 +355,10 @@
                 },
                 "customize": {
                     "caption": "Customização",
-                    "description": "Personalizar suas entidades"
+                    "description": "Personalizar suas entidades",
+                    "picker": {
+                        "header": "Personalização"
+                    }
                 },
                 "automation": {
                     "caption": "Automação",
@@ -356,7 +368,8 @@
                         "introduction": "O editor de automação permite que você crie e edite automações. Por favor leia [as instruções](https:\/\/home-assistant.io\/docs\/automation\/editor\/) para certificar-se que configurou o Home Assistant corretamente.",
                         "pick_automation": "Escolha uma automação para editar",
                         "no_automations": "Não encontramos nenhuma automação editável",
-                        "add_automation": "Adicionar automação"
+                        "add_automation": "Adicionar automação",
+                        "learn_more": "Saiba mais sobre automações"
                     },
                     "editor": {
                         "introduction": "Use automações para trazer sua casa a vida",
@@ -430,10 +443,19 @@
                                     "webhook_id": "ID da Webhook"
                                 },
                                 "time_pattern": {
+                                    "label": "Padrão de hora",
                                     "hours": "Horas",
-                                    "minutes": "Minutos"
+                                    "minutes": "Minutos",
+                                    "seconds": "Segundos"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalização",
+                                    "source": "Origem",
+                                    "zone": "Zona",
+                                    "event": "Evento:"
                                 }
-                            }
+                            },
+                            "learn_more": "Saiba mais sobre gatilhos"
                         },
                         "conditions": {
                             "header": "Condições",
@@ -478,7 +500,8 @@
                                     "entity": "Entidade com localização",
                                     "zone": "Zona"
                                 }
-                            }
+                            },
+                            "learn_more": "Saiba mais sobre condições"
                         },
                         "actions": {
                             "header": "Ações",
@@ -511,7 +534,8 @@
                                     "event": "Evento:",
                                     "service_data": "Informações do serviço"
                                 }
-                            }
+                            },
+                            "learn_more": "Saiba mais sobre ações"
                         }
                     }
                 },
@@ -534,12 +558,14 @@
                         "change_password": "Mudar senha",
                         "activate_user": "Ativar usuário",
                         "deactivate_user": "Desativar usuário",
-                        "delete_user": "Excluir usuário"
+                        "delete_user": "Excluir usuário",
+                        "caption": "Visualizar usuário"
                     },
                     "add_user": {
                         "caption": "Adicionar Usuário",
                         "name": "Nome",
                         "username": "Usuário",
+                        "password": "Senha",
                         "create": "Criar"
                     }
                 },
@@ -566,6 +592,40 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo indisponível",
                         "entity_unavailable": "entidade indisponível"
+                    }
+                },
+                "area_registry": {
+                    "description": "Visão geral de todas as áreas de sua casa.",
+                    "no_areas": "Parece que você ainda não tem áreas!",
+                    "create_area": "CRIAR ÁREA",
+                    "editor": {
+                        "default_name": "Nova Área",
+                        "delete": "APAGAR",
+                        "update": "ATUALIZAR",
+                        "create": "CRIAR"
+                    },
+                    "picker": {
+                        "integrations_page": "Página de integrações"
+                    }
+                },
+                "entity_registry": {
+                    "picker": {
+                        "unavailable": "(indisponível)",
+                        "integrations_page": "Página de integrações"
+                    },
+                    "editor": {
+                        "unavailable": "Esta entidade não está disponível no momento.",
+                        "default_name": "Nova Área",
+                        "delete": "APAGAR",
+                        "update": "ATUALIZAR"
+                    }
+                },
+                "person": {
+                    "caption": "Pessoas",
+                    "description": "Gerencie as pessoas que o Home Assistant acompanha.",
+                    "detail": {
+                        "name": "Nome",
+                        "device_tracker_intro": "Selecione os dispositivos que pertencem a essa pessoa."
                     }
                 }
             },
@@ -742,6 +802,7 @@
                         "add_item": "Adicionar item"
                     },
                     "empty_state": {
+                        "no_devices": "Esta página permite que você controle seus dispositivos, no entanto, parece que você ainda não tem dispositivos configurados. Vá até a página de integrações para começar.",
                         "go_to_integrations_page": "Vá para a página de integrações."
                     }
                 },
@@ -751,9 +812,10 @@
                         "save": "Salvar",
                         "toggle_editor": "Alternar Editor",
                         "pick_card": "Escolha o cartão que você deseja adicionar.",
-                        "add": "Adicionar cartão",
+                        "add": "Adicionar Cartão",
                         "edit": "Editar",
-                        "delete": "Excluir"
+                        "delete": "Excluir",
+                        "move": "Mover"
                     },
                     "migrate": {
                         "header": "Configuração Incompatível",
@@ -776,7 +838,9 @@
                         "save": "Assuma o controle"
                     },
                     "raw_editor": {
+                        "header": "Editar Configuração",
                         "save": "Salvar",
+                        "unsaved_changes": "Alterações não salvas",
                         "saved": "Salvo"
                     }
                 },
@@ -785,6 +849,9 @@
                     "unused_entities": "Entidades não utilizadas",
                     "help": "Ajuda",
                     "refresh": "Atualizar"
+                },
+                "warning": {
+                    "entity_not_found": "Entidade não disponível: {entity}"
                 }
             }
         },
@@ -954,6 +1021,14 @@
                 "save": "Salvar",
                 "name": "Nome",
                 "entity_id": "ID da entidade"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Última Ação"
+                },
+                "updater": {
+                    "title": "Atualizar Instruções"
+                }
             }
         },
         "auth_store": {
@@ -1004,6 +1079,8 @@
         "weblink": "Weblink",
         "zwave": "",
         "vacuum": "Aspirando",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
         "system_health": "Integridade Do Sistema",
         "person": "Pessoa"
     },

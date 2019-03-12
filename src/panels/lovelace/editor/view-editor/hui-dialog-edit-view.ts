@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 
 import { HomeAssistant } from "../../../../types";
@@ -21,16 +22,11 @@ declare global {
   }
 }
 
+@customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
-  protected hass?: HomeAssistant;
-  private _params?: EditViewDialogParams;
+  @property() protected hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _params: {},
-    };
-  }
+  @property() private _params?: EditViewDialogParams;
 
   public async showDialog(params: EditViewDialogParams): Promise<void> {
     this._params = params;
@@ -58,5 +54,3 @@ declare global {
     "hui-dialog-edit-view": HuiDialogEditView;
   }
 }
-
-customElements.define("hui-dialog-edit-view", HuiDialogEditView);

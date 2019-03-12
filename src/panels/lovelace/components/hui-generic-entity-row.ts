@@ -6,6 +6,7 @@ import {
   CSSResult,
   PropertyValues,
   property,
+  TemplateResult,
 } from "lit-element";
 
 import { HomeAssistant } from "../../../types";
@@ -19,10 +20,12 @@ import "../components/hui-warning";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public config?: EntitiesCardEntityConfig;
+
   @property() public showSecondary: boolean = true;
 
-  protected render() {
+  protected render(): TemplateResult | void {
     if (!this.hass || !this.config) {
       return html``;
     }
@@ -73,7 +76,7 @@ class HuiGenericEntityRow extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (changedProps.has("hass")) {
       this.toggleAttribute("rtl", computeRTL(this.hass!));

@@ -16,10 +16,10 @@ import formatDateTime from "../../../common/datetime/format_date_time";
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import { fireEvent } from "../../../common/dom/fire_event";
-
-import { fetchSubscriptionInfo } from "./data";
+import { fetchCloudSubscriptionInfo } from "../../../data/cloud";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
+import "./cloud-remote-pref";
 
 let registeredWebhookDialog = false;
 
@@ -66,6 +66,9 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           text-transform: capitalize;
           padding: 16px;
         }
+        a {
+          color: var(--primary-color);
+        }
       </style>
       <hass-subpage header="Home Assistant Cloud">
         <div class="content">
@@ -83,7 +86,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               <div class="account-row">
                 <paper-item-body two-line="">
                   [[cloudStatus.email]]
-                  <div secondary="" class="wrap">
+                  <div secondary class="wrap">
                     [[_formatSubscription(_subscription)]]
                   </div>
                 </paper-item-body>
@@ -120,6 +123,11 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 >.
               </p>
             </div>
+
+            <cloud-remote-pref
+              hass="[[hass]]"
+              cloud-status="[[cloudStatus]]"
+            ></cloud-remote-pref>
 
             <cloud-alexa-pref
               hass="[[hass]]"
@@ -172,8 +180,12 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
   }
 
+  _computeRemoteConnected(connected) {
+    return connected ? "Connected" : "Not Connected";
+  }
+
   async _fetchSubscriptionInfo() {
-    this._subscription = await fetchSubscriptionInfo(this.hass);
+    this._subscription = await fetchCloudSubscriptionInfo(this.hass);
     if (
       this._subscription.provider &&
       this.cloudStatus &&

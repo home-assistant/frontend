@@ -853,6 +853,9 @@
                     },
                     "menu": {
                         "raw_editor": "Editor de configuração fonte."
+                    },
+                    "raw_editor": {
+                        "saved": "Salvou"
                     }
                 },
                 "menu": {

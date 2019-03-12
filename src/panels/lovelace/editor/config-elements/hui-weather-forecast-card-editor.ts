@@ -1,8 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 
 import { struct } from "../../common/structs/struct";
@@ -21,18 +22,16 @@ const cardConfigStruct = struct({
   name: "string?",
 });
 
+@customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: Config;
 
   public setConfig(config: Config): void {
     config = cardConfigStruct(config);
     this._config = config;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
   }
 
   get _entity(): string {
@@ -98,8 +97,3 @@ declare global {
     "hui-weather-forecast-card-editor": HuiWeatherForecastCardEditor;
   }
 }
-
-customElements.define(
-  "hui-weather-forecast-card-editor",
-  HuiWeatherForecastCardEditor
-);

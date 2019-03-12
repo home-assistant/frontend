@@ -687,7 +687,7 @@
                     "current_token_tooltip": "Kan ikke slette gjeldende oppdateringstoken"
                 },
                 "long_lived_access_tokens": {
-                    "header": "Varige tilgangstokener",
+                    "header": "Langvarige tilgangstokener",
                     "description": "Opprett langvarige tilgangstokener slik at skriptene dine kan samhandle med din Home Assistant instans. Hver token vil være gyldig i 10 år fra opprettelsen. Følgende langvarige tilgangstokener er for tiden aktive.",
                     "learn_auth_requests": "Lær hvordan du lager godkjente forespørsler.",
                     "created_at": "Opprettet den {date}",
@@ -713,7 +713,7 @@
                     "submit": "Send inn"
                 },
                 "mfa": {
-                    "header": "Multifaktorautentisering moduler",
+                    "header": "Flerfaktor autentiseringsmoduler",
                     "disable": "Deaktiver",
                     "enable": "Aktiver",
                     "confirm_disable": "Er du sikker på at du vil deaktivere {name}?"

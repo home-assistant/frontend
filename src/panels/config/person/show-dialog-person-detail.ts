@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { Person, PersonMutableParams } from "../../../data/person";
-import { User } from "../../../data/auth";
+import { User } from "../../../data/user";
 
 export interface PersonDetailDialogParams {
   entry?: Person;

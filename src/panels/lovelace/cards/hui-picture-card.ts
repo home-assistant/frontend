@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 
 import "../../../components/ha-card";
@@ -20,6 +23,7 @@ export interface Config extends LovelaceCardConfig {
   hold_action?: ActionConfig;
 }
 
+@customElement("hui-picture-card")
 export class HuiPictureCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-picture-card-editor" */ "../editor/config-elements/hui-picture-card-editor");
@@ -35,11 +39,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   }
 
   public hass?: HomeAssistant;
-  protected _config?: Config;
 
-  static get properties(): PropertyDeclarations {
-    return { _config: {} };
-  }
+  @property() protected _config?: Config;
 
   public getCardSize(): number {
     return 3;
@@ -59,7 +60,6 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card
         @ha-click="${this._handleTap}"
         @ha-hold="${this._handleHold}"
@@ -75,20 +75,20 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-card {
-          overflow: hidden;
-        }
-        ha-card.clickable {
-          cursor: pointer;
-        }
-        img {
-          display: block;
-          width: 100%;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-card {
+        overflow: hidden;
+      }
+
+      ha-card.clickable {
+        cursor: pointer;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+      }
     `;
   }
 
@@ -106,5 +106,3 @@ declare global {
     "hui-picture-card": HuiPictureCard;
   }
 }
-
-customElements.define("hui-picture-card", HuiPictureCard);

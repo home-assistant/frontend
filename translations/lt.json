@@ -7,7 +7,8 @@
         "history": "Istorija",
         "mailbox": "Pašto dėžutė",
         "shopping_list": "Pirkinių sąrašas",
-        "dev-mqtt": "MQTT"
+        "dev-mqtt": "MQTT",
+        "profile": "Vartotojo profilis"
     },
     "state": {
         "automation": {
@@ -93,6 +94,10 @@
                                 "zone": {
                                     "zone": "Vieta",
                                     "event": "Įvykis"
+                                },
+                                "geo_location": {
+                                    "source": "Šaltinis",
+                                    "event": "Įvykis:"
                                 }
                             }
                         },
@@ -153,16 +158,49 @@
                         "caption": "Pridėti vartotoją",
                         "name": "Vardas",
                         "username": "Vartotojo vardas",
-                        "password": "Slaptažodis"
+                        "password": "Slaptažodis",
+                        "create": "Sukurti"
+                    }
+                },
+                "area_registry": {
+                    "picker": {
+                        "integrations_page": "Integracijų puslapis"
+                    }
+                },
+                "entity_registry": {
+                    "picker": {
+                        "integrations_page": "Integracijų puslapis"
                     }
                 }
             },
             "profile": {
                 "push_notifications": {
                     "description": "Siųsti pranešimus į šį įrenginį."
+                },
+                "change_password": {
+                    "header": "Keisti slaptažodį",
+                    "current_password": "Dabartinis slaptažodis",
+                    "new_password": "Naujas slaptažodis"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Nutraukta",
+                    "close": "Uždaryti"
                 }
             },
             "lovelace": {
+                "editor": {
+                    "edit_card": {
+                        "save": "Išsaugoti",
+                        "edit": "Redaguoti",
+                        "delete": "Ištrinti"
+                    },
+                    "raw_editor": {
+                        "header": "Redaguoti konfigūraciją",
+                        "save": "Išsaugoti",
+                        "unsaved_changes": "Neišsaugoti pakeitimai",
+                        "saved": "Išsaugota"
+                    }
+                },
                 "cards": {
                     "empty_state": {
                         "go_to_integrations_page": "Į integracijų puslapį"
@@ -198,10 +236,15 @@
                     }
                 }
             }
+        },
+        "common": {
+            "save": "Išsaugoti"
         }
     },
     "domain": {
         "zwave": "Z-Wave",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
         "system_health": "Sistemos sveikata"
     }
 }

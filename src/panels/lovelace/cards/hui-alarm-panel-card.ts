@@ -6,6 +6,7 @@ import {
   CSSResult,
   css,
   property,
+  customElement,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -39,6 +40,7 @@ export interface Config extends LovelaceCardConfig {
   states?: string[];
 }
 
+@customElement("hui-alarm-panel-card")
 class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import(/* webpackChunkName: "hui-alarm-panel-card-editor" */ "../editor/config-elements/hui-alarm-panel-card-editor");
@@ -50,7 +52,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: Config;
+
   @property() private _code?: string;
 
   public getCardSize(): number {
@@ -205,98 +209,109 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     this._code = "";
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      css`
-        ha-card {
-          padding-bottom: 16px;
-          position: relative;
-          --alarm-color-disarmed: var(--label-badge-green);
-          --alarm-color-pending: var(--label-badge-yellow);
-          --alarm-color-triggered: var(--label-badge-red);
-          --alarm-color-armed: var(--label-badge-red);
-          --alarm-color-autoarm: rgba(0, 153, 255, 0.1);
-          --alarm-state-color: var(--alarm-color-armed);
-          --base-unit: 15px;
-          font-size: calc(var(--base-unit));
-        }
-        ha-label-badge {
+  static get styles(): CSSResult {
+    return css`
+      ha-card {
+        padding-bottom: 16px;
+        position: relative;
+        --alarm-color-disarmed: var(--label-badge-green);
+        --alarm-color-pending: var(--label-badge-yellow);
+        --alarm-color-triggered: var(--label-badge-red);
+        --alarm-color-armed: var(--label-badge-red);
+        --alarm-color-autoarm: rgba(0, 153, 255, 0.1);
+        --alarm-state-color: var(--alarm-color-armed);
+        --base-unit: 15px;
+        font-size: calc(var(--base-unit));
+      }
+
+      ha-label-badge {
+        --ha-label-badge-color: var(--alarm-state-color);
+        --label-badge-text-color: var(--alarm-state-color);
+        --label-badge-background-color: var(--paper-card-background-color);
+        color: var(--alarm-state-color);
+        position: absolute;
+        right: 12px;
+        top: 12px;
+      }
+
+      .disarmed {
+        --alarm-state-color: var(--alarm-color-disarmed);
+      }
+
+      .triggered {
+        --alarm-state-color: var(--alarm-color-triggered);
+        animation: pulse 1s infinite;
+      }
+
+      .arming {
+        --alarm-state-color: var(--alarm-color-pending);
+        animation: pulse 1s infinite;
+      }
+
+      .pending {
+        --alarm-state-color: var(--alarm-color-pending);
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
           --ha-label-badge-color: var(--alarm-state-color);
-          --label-badge-text-color: var(--alarm-state-color);
-          --label-badge-background-color: var(--paper-card-background-color);
-          color: var(--alarm-state-color);
-          position: absolute;
-          right: 12px;
-          top: 12px;
         }
-        .disarmed {
-          --alarm-state-color: var(--alarm-color-disarmed);
+        100% {
+          --ha-label-badge-color: rgba(255, 153, 0, 0.3);
         }
-        .triggered {
-          --alarm-state-color: var(--alarm-color-triggered);
-          animation: pulse 1s infinite;
-        }
-        .arming {
-          --alarm-state-color: var(--alarm-color-pending);
-          animation: pulse 1s infinite;
-        }
-        .pending {
-          --alarm-state-color: var(--alarm-color-pending);
-          animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-          0% {
-            --ha-label-badge-color: var(--alarm-state-color);
-          }
-          100% {
-            --ha-label-badge-color: rgba(255, 153, 0, 0.3);
-          }
-        }
-        paper-input {
-          margin: 0 auto 8px;
-          max-width: 150px;
-          font-size: calc(var(--base-unit));
-          text-align: center;
-        }
-        .state {
-          margin-left: 16px;
-          font-size: calc(var(--base-unit) * 0.9);
-          position: relative;
-          bottom: 16px;
-          color: var(--alarm-state-color);
-          animation: none;
-        }
-        #keypad {
-          display: flex;
-          justify-content: center;
-          flex-wrap: wrap;
-          margin: auto;
-          width: 300px;
-        }
-        #keypad mwc-button {
-          margin-bottom: 5%;
-          width: 30%;
-          padding: calc(var(--base-unit));
-          font-size: calc(var(--base-unit) * 1.1);
-          box-sizing: border-box;
-        }
-        .actions {
-          margin: 0 8px;
-          padding-top: 20px;
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          font-size: calc(var(--base-unit) * 1);
-        }
-        .actions mwc-button {
-          min-width: calc(var(--base-unit) * 9);
-          margin: 0 4px;
-        }
-        mwc-button#disarm {
-          color: var(--google-red-500);
-        }
-      `,
-    ];
+      }
+
+      paper-input {
+        margin: 0 auto 8px;
+        max-width: 150px;
+        font-size: calc(var(--base-unit));
+        text-align: center;
+      }
+
+      .state {
+        margin-left: 16px;
+        font-size: calc(var(--base-unit) * 0.9);
+        position: relative;
+        bottom: 16px;
+        color: var(--alarm-state-color);
+        animation: none;
+      }
+
+      #keypad {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: auto;
+        width: 300px;
+      }
+
+      #keypad mwc-button {
+        margin-bottom: 5%;
+        width: 30%;
+        padding: calc(var(--base-unit));
+        font-size: calc(var(--base-unit) * 1.1);
+        box-sizing: border-box;
+      }
+
+      .actions {
+        margin: 0 8px;
+        padding-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        font-size: calc(var(--base-unit) * 1);
+      }
+
+      .actions mwc-button {
+        min-width: calc(var(--base-unit) * 9);
+        margin: 0 4px;
+      }
+
+      mwc-button#disarm {
+        color: var(--google-red-500);
+      }
+    `;
   }
 }
 
@@ -305,5 +320,3 @@ declare global {
     "hui-alarm-panel-card": HuiAlarmPanelCard;
   }
 }
-
-customElements.define("hui-alarm-panel-card", HuiAlarmPanelCard);

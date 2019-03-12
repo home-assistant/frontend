@@ -10,10 +10,12 @@ export interface DeviceRegistryEntry {
   sw_version?: string;
   hub_device_id?: string;
   area_id?: string;
+  name_by_user?: string;
 }
 
 export interface DeviceRegistryEntryMutableParams {
-  area_id: string;
+  area_id?: string;
+  name_by_user?: string;
 }
 
 export const fetchDeviceRegistry = (hass: HomeAssistant) =>
