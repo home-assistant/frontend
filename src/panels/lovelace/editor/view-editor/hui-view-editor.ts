@@ -65,8 +65,15 @@ export class HuiViewEditor extends LitElement {
     return this._config.panel || false;
   }
 
+  get _hidden(): boolean {
+    if (!this._config) {
+      return false;
+    }
+    return this._config.hidden || false;
+  }
+
   set config(config: LovelaceViewConfig) {
-    this._config = config;
+    this._config = { hidden: false, ...config };
   }
 
   protected render(): TemplateResult | void {
@@ -101,12 +108,20 @@ export class HuiViewEditor extends LitElement {
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
-        <paper-toggle-button
-          ?checked="${this._panel !== false}"
-          .configValue="${"panel"}"
-          @change="${this._valueChanged}"
-          >Panel Mode?</paper-toggle-button
-        >
+        <div class="side-by-side">
+          <paper-toggle-button
+            ?checked="${this._panel !== false}"
+            .configValue="${"panel"}"
+            @change="${this._valueChanged}"
+            >Panel Mode?</paper-toggle-button
+          >
+          <paper-toggle-button
+            ?checked="${this._hidden !== false}"
+            .configValue="${"hidden"}"
+            @change="${this._valueChanged}"
+            >Hide Tab?</paper-toggle-button
+          >
+        </div>
       </div>
     `;
   }

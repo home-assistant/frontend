@@ -61,18 +61,29 @@ let loadedUnusedEntities = false;
 
 class HUIRoot extends LitElement {
   public narrow?: boolean;
+
   public showMenu?: boolean;
+
   public hass?: HomeAssistant;
+
   public lovelace?: Lovelace;
+
   public columns?: number;
+
   public route?: { path: string; prefix: string };
+
   private _routeData?: { view: string };
+
   private _curView?: number | "hass-unused-entities";
+
   private _notificationsOpen: boolean;
+
   private _persistentNotifications?: Notification[];
+
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
+
   private _unsubNotifications?: () => void;
 
   static get properties(): PropertyDeclarations {
@@ -248,47 +259,49 @@ class HUIRoot extends LitElement {
                     @iron-activate="${this._handleViewSelected}"
                     dir="${computeRTLDirection(this.hass!)}"
                   >
-                    ${this.lovelace!.config.views.map(
-                      (view) => html`
-                        <paper-tab>
-                          ${this._editMode
-                            ? html`
-                                <ha-paper-icon-button-arrow-prev
-                                  title="Move view left"
-                                  class="edit-icon view"
-                                  @click="${this._moveViewLeft}"
-                                  ?disabled="${this._curView === 0}"
-                                ></ha-paper-icon-button-arrow-prev>
-                              `
-                            : ""}
-                          ${view.icon
-                            ? html`
-                                <ha-icon
-                                  title="${view.title}"
-                                  .icon="${view.icon}"
-                                ></ha-icon>
-                              `
-                            : view.title || "Unnamed view"}
-                          ${this._editMode
-                            ? html`
-                                <ha-icon
-                                  title="Edit view"
-                                  class="edit-icon view"
-                                  icon="hass:pencil"
-                                  @click="${this._editView}"
-                                ></ha-icon>
-                                <ha-paper-icon-button-arrow-next
-                                  title="Move view right"
-                                  class="edit-icon view"
-                                  @click="${this._moveViewRight}"
-                                  ?disabled="${(this._curView! as number) +
-                                    1 ===
-                                    this.lovelace!.config.views.length}"
-                                ></ha-paper-icon-button-arrow-next>
-                              `
-                            : ""}
-                        </paper-tab>
-                      `
+                    ${this.lovelace!.config.views.map((view) =>
+                      view.hidden && !this._editMode
+                        ? ""
+                        : html`
+                            <paper-tab>
+                              ${this._editMode
+                                ? html`
+                                    <ha-paper-icon-button-arrow-prev
+                                      title="Move view left"
+                                      class="edit-icon view"
+                                      @click="${this._moveViewLeft}"
+                                      ?disabled="${this._curView === 0}"
+                                    ></ha-paper-icon-button-arrow-prev>
+                                  `
+                                : ""}
+                              ${view.icon
+                                ? html`
+                                    <ha-icon
+                                      title="${view.title}"
+                                      .icon="${view.icon}"
+                                    ></ha-icon>
+                                  `
+                                : view.title || "Unnamed view"}
+                              ${this._editMode
+                                ? html`
+                                    <ha-icon
+                                      title="Edit view"
+                                      class="edit-icon view"
+                                      icon="hass:pencil"
+                                      @click="${this._editView}"
+                                    ></ha-icon>
+                                    <ha-paper-icon-button-arrow-next
+                                      title="Move view right"
+                                      class="edit-icon view"
+                                      @click="${this._moveViewRight}"
+                                      ?disabled="${(this._curView! as number) +
+                                        1 ===
+                                        this.lovelace!.config.views.length}"
+                                    ></ha-paper-icon-button-arrow-next>
+                                  `
+                                : ""}
+                            </paper-tab>
+                          `
                     )}
                     ${this._editMode
                       ? html`
