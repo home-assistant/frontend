@@ -6,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import HassMediaPlayerEntity from "../util/hass-media-player-model";
+import { fetchMediaPlayerThumbnailWithCache } from "../data/media-player";
 
 import computeStateName from "../common/entity/compute_state_name";
 import EventsMixin from "../mixins/events-mixin";
@@ -271,10 +272,13 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
     // We have a new picture url
     try {
-      const { content_type: contentType, content } = await this.hass.callWS({
-        type: "media_player_thumbnail",
-        entity_id: playerObj.stateObj.entity_id,
-      });
+      const {
+        content_type: contentType,
+        content,
+      } = await fetchMediaPlayerThumbnailWithCache(
+        this.hass,
+        playerObj.stateObj.entity_id
+      );
       this._coverShowing = true;
       this._coverLoadError = false;
       this.$.cover.style.backgroundImage = `url(data:${contentType};base64,${content})`;

@@ -1,0 +1,237 @@
+{
+    "panel": {
+        "config": "Konfigurasie",
+        "states": "Oorsig",
+        "map": "Kaart",
+        "logbook": "Logboek",
+        "history": "Geskiedenis",
+        "mailbox": "Posbus",
+        "shopping_list": "Inkopielys",
+        "dev-services": "Services",
+        "dev-states": "States",
+        "dev-events": "Events",
+        "dev-templates": "Templates",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Af",
+            "on": "Op",
+            "unknown": "Onbekende",
+            "unavailable": "Nie beskikbaar nie"
+        },
+        "alarm_control_panel": {
+            "armed": "Gewapen",
+            "disarmed": "Ontwapen",
+            "armed_home": "Gewapende huis",
+            "armed_away": "Gewapen weg",
+            "armed_night": "Gewapende nag",
+            "pending": "Hangende",
+            "arming": "Bewapen",
+            "disarming": "Ontwapen",
+            "triggered": "Veroorsaak",
+            "armed_custom_bypass": "Gewapende pasgemaakte omseil"
+        },
+        "automation": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Af",
+                "on": "Op"
+            },
+            "moisture": {
+                "off": "Droë",
+                "on": "Nat"
+            },
+            "gas": {
+                "off": "Duidelike",
+                "on": "Opgespoor"
+            },
+            "motion": {
+                "off": "Duidelike",
+                "on": "Opgespoor"
+            },
+            "occupancy": {
+                "off": "Duidelike",
+                "on": "Opgespoor"
+            },
+            "smoke": {
+                "off": "Duidelike",
+                "on": "Opgespoor"
+            },
+            "sound": {
+                "off": "Duidelike",
+                "on": "Opgespoor"
+            },
+            "vibration": {
+                "off": "Duidelike",
+                "on": "Opgespoor"
+            },
+            "opening": {
+                "off": "Gesluit",
+                "on": "Oop"
+            },
+            "safety": {
+                "off": "Veilige",
+                "on": "Onveilige"
+            },
+            "presence": {
+                "off": "Weg",
+                "on": "Huis"
+            },
+            "battery": {
+                "off": "Normale",
+                "on": "Lae"
+            }
+        },
+        "calendar": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "camera": {
+            "recording": "Opname",
+            "streaming": "Stroming",
+            "idle": "Ledig"
+        },
+        "climate": {
+            "off": "Af",
+            "on": "Op",
+            "heat": "Hitte",
+            "cool": "Afkoel",
+            "idle": "Ledig",
+            "auto": "Outo",
+            "dry": "Droë",
+            "fan_only": "Slegs fan",
+            "eco": "Eko",
+            "electric": "Elektriese",
+            "performance": "Prestasie",
+            "high_demand": "Hoë aanvraag",
+            "heat_pump": "Hitte pomp",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Konfigureer",
+            "configured": "Gekonfigureer"
+        },
+        "cover": {
+            "open": "Oop",
+            "opening": "Opening",
+            "closed": "Gesluit",
+            "closing": "Sluit",
+            "stopped": "Gestop"
+        },
+        "device_tracker": {
+            "home": "Huis",
+            "not_home": "Weg"
+        },
+        "fan": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "group": {
+            "off": "Af",
+            "on": "Op",
+            "home": "Huis",
+            "not_home": "Weg",
+            "open": "Oop",
+            "opening": "Opening",
+            "closed": "Gesluit",
+            "closing": "Sluit",
+            "stopped": "Gestop",
+            "locked": "Gesluit",
+            "unlocked": "Ontsluit"
+        },
+        "input_boolean": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "light": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "lock": {
+            "locked": "Gesluit",
+            "unlocked": "Ontsluit"
+        },
+        "media_player": {
+            "off": "Af",
+            "on": "Op",
+            "playing": "Speel",
+            "paused": "Onderbreek",
+            "idle": "Ledig",
+            "standby": "Gereedheid"
+        },
+        "remote": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "scene": {
+            "scening": "Scening"
+        },
+        "script": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "sensor": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "sun": {
+            "above_horizon": "Bo horison",
+            "below_horizon": "Onder horison"
+        },
+        "switch": {
+            "off": "Af",
+            "on": "Op"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Inisialiseer",
+                "dead": "Dood",
+                "sleeping": "Slaap",
+                "ready": "Gereed"
+            },
+            "query_stage": {
+                "initializing": "Inisialiseer ({query_stage})",
+                "dead": "Dood ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Unk",
+            "unavailable": "Unavai"
+        },
+        "alarm_control_panel": {
+            "armed": "Armed",
+            "disarmed": "Disarm",
+            "armed_home": "Armed",
+            "armed_away": "Armed",
+            "armed_night": "Armed",
+            "pending": "Pend",
+            "arming": "Arming",
+            "disarming": "Disarm",
+            "triggered": "Trig",
+            "armed_custom_bypass": "Armed"
+        },
+        "device_tracker": {
+            "home": "Huis",
+            "not_home": "Weg"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Duidelik voltooide",
+                "add_item": "Voeg item"
+            }
+        },
+        "sidebar": {
+            "log_out": "Teken",
+            "developer_tools": "Ontwikkelaar gereedskap"
+        }
+    }
+}
