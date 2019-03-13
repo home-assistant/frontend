@@ -47,6 +47,16 @@ export class CloudRemotePref extends LitElement {
       remote_certificate,
     } = this.cloudStatus;
 
+    if (!remote_certificate) {
+      return html`
+        <paper-card heading="Remote Control">
+          <div class="preparing">
+            Remote access is being prepared. We will notify you when it's ready.
+          </div>
+        </paper-card>
+      `;
+    }
+
     return html`
       <paper-card heading="Remote Control">
         <paper-toggle-button
@@ -111,6 +121,12 @@ export class CloudRemotePref extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      paper-card {
+        display: block;
+      }
+      .preparing {
+        padding: 0 16px 16px;
+      }
       .data-row {
         display: flex;
       }
