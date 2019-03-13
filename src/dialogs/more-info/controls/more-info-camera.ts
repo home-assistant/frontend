@@ -46,6 +46,11 @@ class MoreInfoCamera extends UpdatingElement {
       return;
     }
 
+    if (!this.hass!.config.components.includes("stream")) {
+      this._renderMJPEG();
+      return;
+    }
+
     const videoEl = document.createElement("video");
     videoEl.style.width = "100%";
     videoEl.autoplay = true;
