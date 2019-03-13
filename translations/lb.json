@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Gestioun vum Zigbee Home Automation Reseau",
                     "services": {
-                        "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen"
+                        "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen",
+                        "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Lëscht vun de Beräicher",
                         "introduction": "Beräicher gi benotzt fir d'Organisatioun vum Standuert vun den Apparater. Dës Informatioun gëtt vum Home Assistant benotzt fir iech ze hëllefe fir den Interface, Berechtegungen an Integratioune mat aner Systemer ze geréieren.",
                         "introduction2": "Fir Apparater an e Beräich ze setzen, benotzt de Link ënne fir op d'Integratiouns Säit ze kommen a klickt do op eng konfiguréiert Integratioun fir d'Kaart vum Apparat unzeweisen.",
-                        "integrations_page": "Integratiouns Säit"
+                        "integrations_page": "Integratiouns Säit",
+                        "no_areas": "Et sinn nach keng Beräicher do!",
+                        "create_area": "Beräich erstellen"
                     },
                     "no_areas": "Et sinn nach keng Beräicher do!",
                     "create_area": "Beräich erstellen",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Numm",
                         "username": "Benotzernumm",
-                        "password": "Passwuert"
+                        "password": "Passwuert",
+                        "password_confirm": "Passwuert bestätegen"
                     },
                     "create_account": "Kont erstellen",
                     "error": {
-                        "required_fields": "Fëllt all néideg Felder aus"
+                        "required_fields": "Fëllt all néideg Felder aus",
+                        "password_not_match": "Passwierder stëmmen net iwwereneen"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Autmatesch"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administrateuren",
+        "system-users": "Benotzer",
+        "system-read-only": "Benotzer mat nëmmen Lies Rechter"
     }
 }
