@@ -1,0 +1,11 @@
+{
+    "panel": {
+        "config": "Konfigurazioa",
+        "states": "Orokorra",
+        "map": "Mapa",
+        "logbook": "Logbook",
+        "history": "Historia",
+        "mailbox": "Postontzia",
+        "shopping_list": "Erosketa zerrenda"
+    }
+}
