@@ -20,6 +20,7 @@ import stateIcon from "../../../common/entity/state_icon";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import computeDomain from "../../../common/entity/compute_domain";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
@@ -65,14 +66,25 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
     this._config = {
       theme: "default",
-      tap_action: {
-        action: DOMAINS_TOGGLE.has(config.entity.split(".", 1)[0])
-          ? "toggle"
-          : "more-info",
-      },
       hold_action: { action: "more-info" },
       ...config,
     };
+
+    if (DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
+      this._config = {
+        tap_action: {
+          action: "toggle",
+        },
+        ...this._config,
+      };
+    } else {
+      this._config = {
+        tap_action: {
+          action: "more-info",
+        },
+        ...this._config,
+      };
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
