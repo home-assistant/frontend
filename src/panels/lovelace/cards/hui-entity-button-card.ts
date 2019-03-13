@@ -25,6 +25,7 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
+import { DOMAINS_TOGGLE } from "../../../common/const";
 
 export interface Config extends LovelaceCardConfig {
   entity: string;
@@ -64,7 +65,11 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
     this._config = {
       theme: "default",
-      tap_action: { action: "toggle" },
+      tap_action: {
+        action: DOMAINS_TOGGLE.has(config.entity.split(".", 1)[0])
+          ? "toggle"
+          : "more-info",
+      },
       hold_action: { action: "more-info" },
       ...config,
     };
