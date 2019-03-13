@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation network management",
                     "services": {
-                        "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service."
+                        "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
+                        "updateDeviceName": "Set a custom name for this device in the device registry."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Area Registry",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
                         "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
-                        "integrations_page": "Integrations page"
+                        "integrations_page": "Integrations page",
+                        "no_areas": "Looks like you have no areas yet!",
+                        "create_area": "CREATE AREA"
                     },
                     "no_areas": "Looks like you have no areas yet!",
                     "create_area": "CREATE AREA",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Name",
                         "username": "Username",
-                        "password": "Password"
+                        "password": "Password",
+                        "password_confirm": "Confirm Password"
                     },
                     "create_account": "Create Account",
                     "error": {
-                        "required_fields": "Fill in all required fields"
+                        "required_fields": "Fill in all required fields",
+                        "password_not_match": "Passwords don't match"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administrators",
+        "system-users": "Users",
+        "system-read-only": "Read-Only Users"
     }
 }

@@ -133,8 +133,8 @@
         "climate": {
             "off": "Apagat",
             "on": "Encès",
-            "heat": "Calent",
-            "cool": "Fred",
+            "heat": "Escalfar",
+            "cool": "Refredar",
             "idle": "Inactiu",
             "auto": "Automàtic",
             "dry": "Assecar",
@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Gestiona la xarxa domòtica ZIgbee",
                     "services": {
-                        "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei."
+                        "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
+                        "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
                     }
                 },
                 "area_registry": {
@@ -616,9 +617,11 @@
                         "header": "Registre d'àrees",
                         "introduction": "Les àrees s'utilitzen per organitzar la situació dels dispositius. Aquesta informació serà utilitzada per Home Assistant per ajudar-te a organitzar millor la teva interfície, els permisos i les integracions amb d'altres sistemes.",
                         "introduction2": "Per col·locar dispositius en una àrea, utilitza l'enllaç de sota per anar a la pàgina d'integracions i, a continuació, fes clic a una integració configurada per accedir a les targetes del dispositiu.",
-                        "integrations_page": "Pàgina d'integracions"
+                        "integrations_page": "Pàgina d'integracions",
+                        "no_areas": "Sembla que encara no tens cap àrea!",
+                        "create_area": "CREAR ÀREA"
                     },
-                    "no_areas": "Sembla que encara no tens cap àrea, encara.",
+                    "no_areas": "Sembla que encara no tens cap àrea!.",
                     "create_area": "CREA ÀREA",
                     "editor": {
                         "default_name": "Àrea nova",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Nom",
                         "username": "Nom d'usuari",
-                        "password": "Contrasenya"
+                        "password": "Contrasenya",
+                        "password_confirm": "Confirma la contrasenya"
                     },
                     "create_account": "Crear un compte",
                     "error": {
-                        "required_fields": "Omple tots els camps obligatoris"
+                        "required_fields": "Omple tots els camps obligatoris",
+                        "password_not_match": "Les contrasenyes no coincideixen"
                     }
                 }
             },
@@ -1008,7 +1013,7 @@
                 "operation": "Funcionament",
                 "fan_mode": "Mode ventilació",
                 "swing_mode": "Mode oscil·lació",
-                "away_mode": "Mode fora",
+                "away_mode": "Mode absent",
                 "aux_heat": "Calefactor auxiliar"
             },
             "lock": {
@@ -1156,5 +1161,10 @@
                 "auto": "Automàtic"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administradors",
+        "system-users": "Usuaris",
+        "system-read-only": "Usuaris de només lectura"
     }
 }
