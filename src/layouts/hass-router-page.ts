@@ -48,7 +48,7 @@ export class HassRouterPage extends UpdatingElement {
 
     if (!changedProps.has("route")) {
       if (this.lastChild) {
-        this._updateEl(this.lastChild, changedProps);
+        this._updatePageEl(this.lastChild, changedProps);
       }
       return;
     }
@@ -67,7 +67,7 @@ export class HassRouterPage extends UpdatingElement {
 
     if (this._currentPage === newPage) {
       if (this.lastChild) {
-        this._updateEl(this.lastChild, changedProps);
+        this._updatePageEl(this.lastChild, changedProps);
       }
       return;
     }
@@ -78,7 +78,7 @@ export class HassRouterPage extends UpdatingElement {
 
     if (!routeOptions) {
       if (this.lastChild) {
-        this._updateEl(this.lastChild, changedProps);
+        this._updatePageEl(this.lastChild, changedProps);
       }
       return;
     }
@@ -136,7 +136,7 @@ export class HassRouterPage extends UpdatingElement {
     }
   }
 
-  protected _updateEl(_pageEl, _changedProps?: PropertyValues) {
+  protected _updatePageEl(_pageEl, _changedProps?: PropertyValues) {
     // default we do nothing
   }
 
@@ -151,7 +151,7 @@ export class HassRouterPage extends UpdatingElement {
 
     const panelEl =
       this._cache[page] || document.createElement(routeOptions.tag);
-    this._updateEl(panelEl);
+    this._updatePageEl(panelEl);
     this.appendChild(panelEl);
 
     if (routerOptions.cacheAll || routeOptions.cache) {

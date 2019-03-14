@@ -111,7 +111,7 @@ class PartialPanelResolver extends HassRouterPage {
   @property() public hass?: HomeAssistant;
   @property() public narrow?: boolean;
 
-  protected _updateEl(el) {
+  protected _updatePageEl(el) {
     const hass = this.hass!;
 
     if ("setProperties" in el) {
