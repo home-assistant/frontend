@@ -109,7 +109,6 @@ class PartialPanelResolver extends HassRouterPage {
   };
   @property() public hass?: HomeAssistant;
   @property() public narrow?: boolean;
-  @property() public showMenu?: boolean;
 
   protected _updateEl(el) {
     const hass = this.hass!;
@@ -119,14 +118,12 @@ class PartialPanelResolver extends HassRouterPage {
       (el as any).setProperties({
         hass: this.hass,
         narrow: this.narrow,
-        showMenu: this.showMenu,
         route: this.routeTail,
         panel: hass.panels[hass.panelUrl],
       });
     } else {
       el.hass = hass;
       el.narrow = this.narrow;
-      el.showMenu = this.showMenu;
       el.route = this.routeTail;
       el.panel = hass.panels[hass.panelUrl];
     }

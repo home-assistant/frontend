@@ -81,7 +81,6 @@ class HaPanelConfig extends HassRouterPage {
   };
 
   @property() public hass!: HomeAssistant;
-  @property() public showMenu: boolean = false;
   @property() public _wideSidebar: boolean = false;
   @property() public _wide: boolean = false;
   @property() private _cloudStatus?: CloudStatus;
@@ -122,8 +121,7 @@ class HaPanelConfig extends HassRouterPage {
   protected _updateEl(el) {
     el.route = this.route;
     el.hass = this.hass;
-    el.showMenu = this.showMenu;
-    el.isWide = this.showMenu ? this._wideSidebar : this._wide;
+    el.isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;
     el.cloudStatus = this._cloudStatus;
   }
 
