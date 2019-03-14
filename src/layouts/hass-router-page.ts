@@ -116,6 +116,10 @@ export class HassRouterPage extends UpdatingElement {
     }
 
     // Show a loading screen.
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+
     const loadingEl = document.createElement("hass-loading-screen");
     loadingEl.showMenu = this.showMenu;
     this.appendChild(loadingEl);
