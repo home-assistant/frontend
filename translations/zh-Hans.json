@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee 智能家居(ZHA) 网络管理",
                     "services": {
-                        "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。"
+                        "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
+                        "updateDeviceName": "在设备注册表中为此设备设置自定义名称。"
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "区域注册表",
                         "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
                         "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。",
-                        "integrations_page": "集成页面"
+                        "integrations_page": "集成页面",
+                        "no_areas": "看来你还没有建立区域！",
+                        "create_area": "创建区域"
                     },
                     "no_areas": "看来你还没有建立区域！",
                     "create_area": "创建区域",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "姓名",
                         "username": "用户名",
-                        "password": "密码"
+                        "password": "密码",
+                        "password_confirm": "确认密码"
                     },
                     "create_account": "创建帐户",
                     "error": {
-                        "required_fields": "请填写所有必填字段"
+                        "required_fields": "请填写所有必填字段",
+                        "password_not_match": "密码不匹配"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "自动"
             }
         }
+    },
+    "groups": {
+        "system-admin": "管理员",
+        "system-users": "用户",
+        "system-read-only": "只读用户"
     }
 }
