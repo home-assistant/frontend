@@ -28,7 +28,13 @@ function ePlatform(eid) {
  * @appliesMixin LocalizeMixin
  */
 class HaPanelSchedule extends LocalizeMixin(PolymerElement) {
-  switchStates = [{ value: true, label: "On" }, { value: false, label: "Off" }];
+  constructor() {
+    super();
+    this.switchStates = [
+      { value: true, label: "On" },
+      { value: false, label: "Off" },
+    ];
+  }
 
   isNumeric(entityId) {
     if (!entityId) return false;
@@ -398,7 +404,6 @@ class HaPanelSchedule extends LocalizeMixin(PolymerElement) {
     if (item[name] === value) return;
     this.set(`rules.${index}.${name}`, value);
     this.modified = true;
-    console.log(this.rules);
   }
 
   _dayClick(ev) {
