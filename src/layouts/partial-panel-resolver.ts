@@ -124,18 +124,13 @@ class PartialPanelResolver extends LitElement {
       return html`
         <hass-error-screen
           error="Error while loading this panel."
-          .narrow=${this.narrow}
-          .showMenu=${this.showMenu}
         ></hass-error-screen>
       `;
     }
 
     if (!this._panelEl) {
       return html`
-        <hass-loading-screen
-          .narrow=${this.narrow}
-          .showMenu=${this.showMenu}
-        ></hass-loading-screen>
+        <hass-loading-screen .showMenu=${this.showMenu}></hass-loading-screen>
       `;
     }
 

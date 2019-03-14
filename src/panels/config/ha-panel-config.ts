@@ -1,58 +1,85 @@
-import {
-  UpdatingElement,
-  property,
-  PropertyValues,
-  customElement,
-} from "lit-element";
+import { property, PropertyValues, customElement } from "lit-element";
 import "../../layouts/hass-loading-screen";
 import isComponentLoaded from "../../common/config/is_component_loaded";
-import { HomeAssistant, Route } from "../../types";
+import { HomeAssistant } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import { navigate } from "../../common/navigate";
-
-const extractPage = (path: string) => {
-  if (path === "") {
-    return "dashboard";
-  }
-  const subpathStart = path.indexOf("/", 1);
-  return subpathStart === -1
-    ? path.substr(1)
-    : path.substr(1, subpathStart - 1);
-};
-
-const PAGES = {
-  "area-registry": () =>
-    import(/* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry"),
-  automation: () =>
-    import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation"),
-  cloud: () =>
-    import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud"),
-  core: () =>
-    import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core"),
-  customize: () =>
-    import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize"),
-  dashboard: () =>
-    import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard"),
-  "entity-registry": () =>
-    import(/* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry"),
-  integrations: () =>
-    import(/* webpackChunkName: "panel-config-integrations" */ "./integrations/ha-config-integrations"),
-  person: () =>
-    import(/* webpackChunkName: "panel-config-person" */ "./person/ha-config-person"),
-  script: () =>
-    import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script"),
-  users: () =>
-    import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"),
-  zha: () =>
-    import(/* webpackChunkName: "panel-config-zha" */ "./zha/ha-config-zha"),
-  zwave: () =>
-    import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave"),
-};
+import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 
 @customElement("ha-panel-config")
-class HaPanelConfig extends UpdatingElement {
-  @property() public route!: Route;
+class HaPanelConfig extends HassRouterPage {
+  protected static routerOptions: RouterOptions = {
+    defaultPage: "dashboard",
+    cacheAll: true,
+    routes: {
+      area_registry: {
+        tag: "ha-config-area-registry",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry"),
+      },
+      automation: {
+        tag: "ha-config-automation",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation"),
+      },
+      cloud: {
+        tag: "ha-config-cloud",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud"),
+      },
+      core: {
+        tag: "ha-config-core",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core"),
+      },
+      customize: {
+        tag: "ha-config-customize",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize"),
+      },
+      dashboard: {
+        tag: "ha-config-dashboard",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard"),
+      },
+      entity_registry: {
+        tag: "ha-config-entity-registry",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry"),
+      },
+      integrations: {
+        tag: "ha-config-integrations",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-integrations" */ "./integrations/ha-config-integrations"),
+      },
+      person: {
+        tag: "ha-config-person",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-person" */ "./person/ha-config-person"),
+      },
+      script: {
+        tag: "ha-config-script",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script"),
+      },
+      users: {
+        tag: "ha-config-users",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"),
+      },
+      zha: {
+        tag: "ha-config-zha",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-zha" */ "./zha/ha-config-zha"),
+      },
+      zwave: {
+        tag: "ha-config-zwave",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave"),
+      },
+    },
+  };
+
   @property() public hass!: HomeAssistant;
   @property() public showMenu: boolean = false;
   @property() public _wideSidebar: boolean = false;
@@ -60,7 +87,6 @@ class HaPanelConfig extends UpdatingElement {
   @property() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
-  private _cache = {};
 
   public connectedCallback() {
     super.connectedCallback();
@@ -83,12 +109,6 @@ class HaPanelConfig extends UpdatingElement {
     }
   }
 
-  protected update() {
-    if (this.lastChild) {
-      this._updateEl(this.lastChild);
-    }
-  }
-
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     if (isComponentLoaded(this.hass, "cloud")) {
@@ -97,50 +117,9 @@ class HaPanelConfig extends UpdatingElement {
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
     );
-    Object.values(PAGES).forEach((load) => load());
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    if (!changedProps.has("route")) {
-      return;
-    }
-
-    const oldRoute = changedProps.get("route") as this["route"];
-    const route = this.route;
-    const newPath = route ? route.path : "";
-
-    if (newPath === "") {
-      navigate(this, "/config/dashboard", true);
-    }
-
-    const oldPage = oldRoute ? extractPage(oldRoute.path) : "";
-    const newPage = extractPage(newPath);
-
-    if (oldPage === newPage) {
-      return;
-    }
-
-    const panel = newPage.replace("_", "-");
-
-    let panelEl = this._cache[panel];
-
-    if (!panelEl) {
-      panelEl = this._cache[panel] = document.createElement(
-        `ha-config-${panel}`
-      );
-    }
-
-    if (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
-
-    this._updateEl(panelEl);
-    this.appendChild(panelEl);
-  }
-
-  private _updateEl(el) {
+  protected _updateEl(el) {
     el.route = this.route;
     el.hass = this.hass;
     el.showMenu = this.showMenu;
