@@ -184,16 +184,6 @@ class HaPanelDevService extends PolymerElement {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       domainService: {
         type: String,
         observer: "_domainServiceChanged",

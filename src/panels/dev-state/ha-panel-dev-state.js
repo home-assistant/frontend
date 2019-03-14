@@ -180,16 +180,6 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       _entityId: {
         type: String,
         value: "",

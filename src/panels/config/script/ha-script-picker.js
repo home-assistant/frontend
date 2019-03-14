@@ -124,15 +124,6 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       scripts: {
         type: Array,
       },

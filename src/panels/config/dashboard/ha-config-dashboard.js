@@ -111,8 +111,6 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
       hass: Object,
       isWide: Boolean,
       cloudStatus: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
     };
   }
 

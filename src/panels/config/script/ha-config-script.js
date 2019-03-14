@@ -32,8 +32,6 @@ class HaConfigScript extends PolymerElement {
       <template is="dom-if" if="[[!showEditor]]">
         <ha-script-picker
           hass="[[hass]]"
-          narrow="[[narrow]]"
-          show-menu="[[showMenu]]"
           scripts="[[scripts]]"
           is-wide="[[isWide]]"
         ></ha-script-picker>
@@ -53,8 +51,6 @@ class HaConfigScript extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       route: Object,
       isWide: Boolean,
       _routeData: Object,

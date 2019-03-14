@@ -161,16 +161,6 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       // ISO8601 formatted date string
       _currentDate: {
         type: String,

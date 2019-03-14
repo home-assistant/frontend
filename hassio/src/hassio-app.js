@@ -8,12 +8,7 @@ class HassioApp extends PolymerElement {
   static get template() {
     return html`
       <template is="dom-if" if="[[hass]]">
-        <hassio-main
-          hass="[[hass]]"
-          narrow="[[narrow]]"
-          show-menu="[[showMenu]]"
-          route="[[route]]"
-        ></hassio-main>
+        <hassio-main hass="[[hass]]" route="[[route]]"></hassio-main>
       </template>
     `;
   }
@@ -21,8 +16,6 @@ class HassioApp extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       route: Object,
       hassioPanel: {
         type: Object,

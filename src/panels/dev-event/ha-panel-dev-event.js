@@ -97,16 +97,6 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       eventType: {
         type: String,
         value: "",

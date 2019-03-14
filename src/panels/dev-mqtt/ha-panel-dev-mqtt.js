@@ -77,8 +77,6 @@ class HaPanelDevMqtt extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       topic: String,
       payload: String,
     };

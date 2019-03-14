@@ -122,16 +122,6 @@ class HaPanelDevTemplate extends PolymerElement {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       error: {
         type: Boolean,
         value: false,

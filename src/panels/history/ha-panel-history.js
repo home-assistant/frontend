@@ -120,15 +120,6 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       stateHistory: {
         type: Object,
         value: null,

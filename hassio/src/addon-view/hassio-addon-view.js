@@ -115,8 +115,6 @@ class HassioAddonView extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      showMenu: Boolean,
-      narrow: Boolean,
       route: Object,
       routeData: {
         type: Object,

@@ -69,7 +69,6 @@ class HomeAssistantMain extends LitElement {
           .narrow=${this._narrow}
           .hass=${hass}
           .route=${this.route}
-          .showMenu=${hass.dockedSidebar}
         ></partial-panel-resolver>
       </app-drawer-layout>
     `;

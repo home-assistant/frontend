@@ -103,8 +103,6 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      showMenu: Boolean,
-      narrow: Boolean,
       page: String,
       supervisorInfo: Object,
       hostInfo: Object,

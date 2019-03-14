@@ -142,8 +142,6 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       canListen: Boolean,
       items: {
         type: Array,

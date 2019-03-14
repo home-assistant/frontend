@@ -142,11 +142,6 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         reflectToAttribute: true,
       },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 

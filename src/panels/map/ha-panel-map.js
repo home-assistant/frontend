@@ -41,15 +41,6 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         type: Object,
         observer: "drawEntities",
       },
-
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 

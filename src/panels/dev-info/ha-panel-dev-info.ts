@@ -23,14 +23,10 @@ const OPT_IN_PANEL = "states";
 
 class HaPanelDevInfo extends LitElement {
   public hass?: HomeAssistant;
-  public narrow?: boolean;
-  public showMenu?: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
       hass: {},
-      narrow: {},
-      showMenu: {},
     };
   }
 

@@ -35,14 +35,6 @@ class HaPanelIframe extends PolymerElement {
       panel: {
         type: Object,
       },
-
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-      },
     };
   }
 }

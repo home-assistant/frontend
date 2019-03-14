@@ -118,7 +118,6 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return {
       hass: Object,
       narrow: Boolean,
-      showMenu: Boolean,
       _refreshTokens: Array,
     };
   }

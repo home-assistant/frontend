@@ -132,16 +132,6 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       platforms: {
         type: Array,
       },
