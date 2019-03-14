@@ -41,10 +41,7 @@ class HaPanelDevMqtt extends PolymerElement {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>MQTT</div>
           </app-toolbar>
         </app-header>
@@ -80,8 +77,6 @@ class HaPanelDevMqtt extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       topic: String,
       payload: String,
     };

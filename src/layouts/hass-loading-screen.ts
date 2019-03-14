@@ -4,7 +4,6 @@ import {
   LitElement,
   TemplateResult,
   html,
-  property,
   CSSResultArray,
   css,
   customElement,
@@ -14,19 +13,10 @@ import { haStyle } from "../resources/styles";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
-  @property({ type: Boolean })
-  public narrow?: boolean;
-
-  @property({ type: Boolean })
-  public showMenu?: boolean;
-
   protected render(): TemplateResult | void {
     return html`
       <app-toolbar>
-        <ha-menu-button
-          .narrow=${this.narrow}
-          .showMenu=${this.showMenu}
-        ></ha-menu-button>
+        <ha-menu-button></ha-menu-button>
       </app-toolbar>
       <div class="content">
         <paper-spinner-lite active></paper-spinner-lite>
