@@ -1,7 +1,6 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
   CSSResult,
@@ -64,6 +63,7 @@ class HUIRoot extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public lovelace?: Lovelace;
   @property() public columns?: number;
+  @property() public narrow?: boolean;
   @property() public route?: { path: string; prefix: string };
   @property() private _routeData?: { view: string };
   @property() private _curView?: number | "hass-unused-entities";
