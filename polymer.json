@@ -15,13 +15,11 @@
     "src/panels/logbook/ha-panel-logbook.js",
     "src/panels/map/ha-panel-map.js",
     "src/panels/shopping-list/ha-panel-shopping-list.js",
+    "src/panels/schedule/ha-panel-schedule.js",
     "src/panels/mailbox/ha-panel-mailbox.js",
     "hassio/src/entrypoint.js"
   ],
-  "sources": [
-    "src/**/*",
-    "!src/translations/*"
-  ],
+  "sources": ["src/**/*", "!src/translations/*"],
   "lint": {
     "rules": ["polymer-3"],
     "ignoreWarnings": ["could-not-resolve-reference", "could-not-load"],

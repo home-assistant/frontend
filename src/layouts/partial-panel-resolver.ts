@@ -49,6 +49,8 @@ const COMPONENTS = {
     import(/* webpackChunkName: "panel-profile" */ "../panels/profile/ha-panel-profile"),
   "shopping-list": () =>
     import(/* webpackChunkName: "panel-shopping-list" */ "../panels/shopping-list/ha-panel-shopping-list"),
+  schedule: () =>
+    import(/* webpackChunkName: "panel-schedule" */ "../panels/schedule/ha-panel-schedule"),
 };
 
 const getRoutes = (panels: Panels): RouterOptions => {
