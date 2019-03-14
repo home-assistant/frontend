@@ -47,6 +47,9 @@ export interface CloudWebhook {
   managed?: boolean;
 }
 
+export const fetchCloudStatus = (hass: HomeAssistant) =>
+  hass.callWS<CloudStatus>({ type: "cloud/status" });
+
 export const createCloudhook = (hass: HomeAssistant, webhookId: string) =>
   hass.callWS<CloudWebhook>({
     type: "cloud/cloudhook/create",

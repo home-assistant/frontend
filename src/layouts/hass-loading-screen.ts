@@ -7,21 +7,37 @@ import {
   CSSResultArray,
   css,
   customElement,
+  property,
 } from "lit-element";
 import "../components/ha-menu-button";
+import "../components/ha-paper-icon-button-arrow-prev";
 import { haStyle } from "../resources/styles";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
+  @property() public isRoot? = false;
+
   protected render(): TemplateResult | void {
     return html`
       <app-toolbar>
-        <ha-menu-button></ha-menu-button>
+        ${this.isRoot
+          ? html`
+              <ha-menu-button></ha-menu-button>
+            `
+          : html`
+              <ha-paper-icon-button-arrow-prev
+                @click=${this._handleBack}
+              ></ha-paper-icon-button-arrow-prev>
+            `}
       </app-toolbar>
       <div class="content">
         <paper-spinner-lite active></paper-spinner-lite>
       </div>
     `;
+  }
+
+  private _handleBack() {
+    history.back();
   }
 
   static get styles(): CSSResultArray {
