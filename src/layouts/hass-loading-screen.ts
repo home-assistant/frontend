@@ -23,10 +23,7 @@ class HassLoadingScreen extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <app-toolbar>
-        <ha-menu-button
-          .narrow=${this.narrow}
-          .showMenu=${this.showMenu}
-        ></ha-menu-button>
+        <ha-menu-button></ha-menu-button>
       </app-toolbar>
       <div class="content">
         <paper-spinner-lite active></paper-spinner-lite>

@@ -35,12 +35,9 @@ class HassioApp extends PolymerElement {
     super.ready();
     window.setProperties = this.setProperties.bind(this);
     this.addEventListener("location-changed", () => this._locationChanged());
-    this.addEventListener("hass-open-menu", () => this._menuEvent(true));
-    this.addEventListener("hass-close-menu", () => this._menuEvent(false));
-  }
-
-  _menuEvent(shouldOpen) {
-    this.hassioPanel.fire(shouldOpen ? "hass-open-menu" : "hass-close-menu");
+    this.addEventListener("hass-toggle-menu", (ev) =>
+      this.hassioPanel.fire("hass-toggle-menu", ev.detail)
+    );
   }
 
   _locationChanged() {

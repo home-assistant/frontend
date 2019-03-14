@@ -16,10 +16,7 @@ class HaPanelIframe extends PolymerElement {
         }
       </style>
       <app-toolbar>
-        <ha-menu-button
-          narrow="[[narrow]]"
-          show-menu="[[showMenu]]"
-        ></ha-menu-button>
+        <ha-menu-button></ha-menu-button>
         <div main-title>[[panel.title]]</div>
       </app-toolbar>
 

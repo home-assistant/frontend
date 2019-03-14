@@ -65,10 +65,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
       <ha-app-layout id="layout">
         <app-header effects="waterfall" condenses="" fixed="" slot="header">
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title="">
               [[computeTitle(views, defaultView, locationName)]]
             </div>
