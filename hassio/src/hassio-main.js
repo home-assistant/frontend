@@ -28,18 +28,13 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
       ></hassio-data>
 
       <template is="dom-if" if="[[!loaded]]">
-        <hass-loading-screen
-          narrow="[[narrow]]"
-          show-menu="[[showMenu]]"
-        ></hass-loading-screen>
+        <hass-loading-screen></hass-loading-screen>
       </template>
 
       <template is="dom-if" if="[[loaded]]">
         <template is="dom-if" if="[[!equalsAddon(routeData.page)]]">
           <hassio-pages-with-tabs
             hass="[[hass]]"
-            narrow="[[narrow]]"
-            show-menu="[[showMenu]]"
             page="[[routeData.page]]"
             supervisor-info="[[supervisorInfo]]"
             hass-info="[[hassInfo]]"
@@ -49,8 +44,6 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
         <template is="dom-if" if="[[equalsAddon(routeData.page)]]">
           <hassio-addon-view
             hass="[[hass]]"
-            narrow="[[narrow]]"
-            show-menu="[[showMenu]]"
             route="[[route]]"
           ></hassio-addon-view>
         </template>
@@ -61,8 +54,6 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       route: {
         type: Object,
         // Fake route object
