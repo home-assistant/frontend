@@ -130,15 +130,6 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       errors: {
         type: Object,
         value: null,

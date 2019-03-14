@@ -12,9 +12,6 @@ import { fireEvent } from "../common/dom/fire_event";
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
   @property({ type: Boolean })
-  public showMenu = false;
-
-  @property({ type: Boolean })
   public hassio = false;
 
   protected render(): TemplateResult | void {
@@ -33,7 +30,7 @@ class HaMenuButton extends LitElement {
   }
 
   private _toggleMenu(): void {
-    fireEvent(this, this.showMenu ? "hass-close-menu" : "hass-open-menu");
+    fireEvent(this, "hass-toggle-menu");
   }
 }
 

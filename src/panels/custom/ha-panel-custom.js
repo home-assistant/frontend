@@ -16,7 +16,6 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       narrow: Boolean,
-      showMenu: Boolean,
       route: Object,
       panel: {
         type: Object,
@@ -26,7 +25,7 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   static get observers() {
-    return ["_dataChanged(hass, narrow, showMenu, route)"];
+    return ["_dataChanged(hass, narrow, route)"];
   }
 
   constructor() {
@@ -74,7 +73,6 @@ It will have access to all data in Home Assistant.
             panel,
             hass: this.hass,
             narrow: this.narrow,
-            showMenu: this.showMenu,
             route: this.route,
           });
           this.appendChild(element);
@@ -109,16 +107,15 @@ It will have access to all data in Home Assistant.
     delete window.customPanel;
   }
 
-  _dataChanged(hass, narrow, showMenu, route) {
+  _dataChanged(hass, narrow, route) {
     if (!this._setProperties) return;
-    this._setProperties({ hass, narrow, showMenu, route });
+    this._setProperties({ hass, narrow, route });
   }
 
   registerIframe(initialize, setProperties) {
     initialize(this.panel, {
       hass: this.hass,
       narrow: this.narrow,
-      showMenu: this.showMenu,
       route: this.route,
     });
     this._setProperties = setProperties;
