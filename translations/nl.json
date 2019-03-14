@@ -616,7 +616,8 @@
                         "header": "Gebiedenregister",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om u te helpen bij het organiseren van uw interface, machtigingen en integraties met andere systemen.",
                         "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
-                        "integrations_page": "Integratiespagina"
+                        "integrations_page": "Integratiespagina",
+                        "create_area": "MAAK RUIMTE"
                     },
                     "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
                     "create_area": "MAAK GEBIED",
@@ -830,11 +831,13 @@
                     "data": {
                         "name": "Naam",
                         "username": "Gebruikersnaam",
-                        "password": "Wachtwoord"
+                        "password": "Wachtwoord",
+                        "password_confirm": "Bevestig wachtwoord"
                     },
                     "create_account": "Account aanmaken",
                     "error": {
-                        "required_fields": "Vul alle verplichte velden in"
+                        "required_fields": "Vul alle verplichte velden in",
+                        "password_not_match": "Wachtwoorden komen niet overeen"
                     }
                 }
             },
@@ -1156,5 +1159,8 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-users": "Gebruikers"
     }
 }
