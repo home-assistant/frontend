@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Gestion de réseau domotique ZigBee",
                     "services": {
-                        "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service."
+                        "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service.",
+                        "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Registre des pièces",
                         "introduction": "Les zones sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
                         "introduction2": "Pour placer des périphériques dans une zone, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique.",
-                        "integrations_page": "Page des intégrations"
+                        "integrations_page": "Page des intégrations",
+                        "no_areas": "Vous n'avez pas encore configuré de pièce !",
+                        "create_area": "CRÉER UNE PIÈCE"
                     },
                     "no_areas": "Vous n'avez pas encore configuré de pièce !",
                     "create_area": "CRÉER UNE PIÈCE",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Nom",
                         "username": "Nom d'utilisateur",
-                        "password": "Mot de passe"
+                        "password": "Mot de passe",
+                        "password_confirm": "Confirmez le mot de passe"
                     },
                     "create_account": "Créer un compte",
                     "error": {
-                        "required_fields": "Remplissez tous les champs requis"
+                        "required_fields": "Remplissez tous les champs requis",
+                        "password_not_match": "Les mots de passe ne correspondent pas"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administrateurs",
+        "system-users": "Utilisateurs",
+        "system-read-only": "Utilisateurs en lecture seule"
     }
 }
