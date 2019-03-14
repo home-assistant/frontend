@@ -7,6 +7,7 @@ import { HassRouterPage, RouterOptions } from "./hass-router-page";
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
   protected static routerOptions: RouterOptions = {
+    isRoot: true,
     showLoading: true,
     routes: {
       calendar: {

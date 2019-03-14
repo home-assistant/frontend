@@ -20,6 +20,7 @@ interface RouteOptions {
 }
 
 export interface RouterOptions {
+  isRoot?: boolean;
   defaultPage?: string;
   preloadAll?: boolean;
   cacheAll?: boolean;
@@ -28,6 +29,9 @@ export interface RouterOptions {
     [route: string]: RouteOptions;
   };
 }
+
+// Time to wait for code to load before we show loading screen.
+const LOADING_SCREEN_THRESHOLD = 400; // ms
 
 export class HassRouterPage extends UpdatingElement {
   protected static routerOptions: RouterOptions = { routes: {} };
@@ -108,12 +112,24 @@ export class HassRouterPage extends UpdatingElement {
       return;
     }
 
-    // Show a loading screen.
-    if (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
+    // We are only going to show the loading screen after some time.
+    // That way we won't have a double fast flash on fast connections.
+    let created = false;
 
-    this.appendChild(document.createElement("hass-loading-screen"));
+    setTimeout(() => {
+      if (created || this._currentPage !== newPage) {
+        return;
+      }
+
+      // Show a loading screen.
+      if (this.lastChild) {
+        this.removeChild(this.lastChild);
+      }
+
+      const loadingEl = document.createElement("hass-loading-screen");
+      loadingEl.isRoot = routerOptions.isRoot;
+      this.appendChild(loadingEl);
+    }, LOADING_SCREEN_THRESHOLD);
 
     loadProm.then(() => {
       // Check if we're still trying to show the same page.
@@ -121,6 +137,7 @@ export class HassRouterPage extends UpdatingElement {
         return;
       }
 
+      created = true;
       this._createPanel(routerOptions, newPage, routeOptions);
     });
   }
