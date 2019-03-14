@@ -38,32 +38,18 @@ export class HassRouterPage extends UpdatingElement {
   }
 
   private static _routerOptions: RouterOptions;
+
   @property() public route!: Route;
-  public showMenu?: boolean;
   private _currentPage = "";
   private _cache = {};
 
-  protected update() {
-    if (this.lastChild) {
-      this._updateEl(this.lastChild);
-    }
-  }
-
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-
-    const options = (this.constructor as typeof HassRouterPage)._routerOptions;
-
-    if (options.preloadAll) {
-      Object.values(options.routes).forEach((route) => route.load());
-      return;
-    }
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  protected update(changedProps: PropertyValues) {
+    super.update(changedProps);
 
     if (!changedProps.has("route")) {
+      if (this.lastChild) {
+        this._updateEl(this.lastChild, changedProps);
+      }
       return;
     }
 
@@ -78,7 +64,11 @@ export class HassRouterPage extends UpdatingElement {
     }
 
     const newPage = route ? extractPage(route.path, defaultPage) : "not_found";
+
     if (this._currentPage === newPage) {
+      if (this.lastChild) {
+        this._updateEl(this.lastChild, changedProps);
+      }
       return;
     }
 
@@ -87,6 +77,9 @@ export class HassRouterPage extends UpdatingElement {
     const routeOptions = routerOptions.routes[newPage];
 
     if (!routeOptions) {
+      if (this.lastChild) {
+        this._updateEl(this.lastChild, changedProps);
+      }
       return;
     }
 
@@ -120,9 +113,7 @@ export class HassRouterPage extends UpdatingElement {
       this.removeChild(this.lastChild);
     }
 
-    const loadingEl = document.createElement("hass-loading-screen");
-    loadingEl.showMenu = this.showMenu;
-    this.appendChild(loadingEl);
+    this.appendChild(document.createElement("hass-loading-screen"));
 
     loadProm.then(() => {
       // Check if we're still trying to show the same page.
@@ -134,7 +125,18 @@ export class HassRouterPage extends UpdatingElement {
     });
   }
 
-  protected _updateEl(_pageEl) {
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+
+    const options = (this.constructor as typeof HassRouterPage)._routerOptions;
+
+    if (options.preloadAll) {
+      Object.values(options.routes).forEach((route) => route.load());
+      return;
+    }
+  }
+
+  protected _updateEl(_pageEl, _changedProps?: PropertyValues) {
     // default we do nothing
   }
 

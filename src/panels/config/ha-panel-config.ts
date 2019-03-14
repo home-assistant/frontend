@@ -11,6 +11,7 @@ class HaPanelConfig extends HassRouterPage {
   protected static routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     cacheAll: true,
+    preloadAll: true,
     routes: {
       area_registry: {
         tag: "ha-config-area-registry",

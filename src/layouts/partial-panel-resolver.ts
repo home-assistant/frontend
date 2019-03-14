@@ -1,4 +1,5 @@
 import { property, customElement } from "lit-element";
+import { PolymerElement } from "@polymer/polymer";
 
 import { HomeAssistant } from "../types";
 import { HassRouterPage, RouterOptions } from "./hass-router-page";
@@ -115,7 +116,7 @@ class PartialPanelResolver extends HassRouterPage {
 
     if ("setProperties" in el) {
       // As long as we have Polymer panels
-      (el as any).setProperties({
+      (el as PolymerElement).setProperties({
         hass: this.hass,
         narrow: this.narrow,
         route: this.routeTail,
