@@ -1,8 +1,9 @@
-import { property } from "lit-element";
+import { property, customElement } from "lit-element";
 
 import { HomeAssistant } from "../types";
 import { HassRouterPage, RouterOptions } from "./hass-router-page";
 
+@customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
   protected static routerOptions: RouterOptions = {
     showLoading: true,
@@ -132,4 +133,8 @@ class PartialPanelResolver extends HassRouterPage {
   }
 }
 
-customElements.define("partial-panel-resolver", PartialPanelResolver);
+declare global {
+  interface HTMLElementTagNameMap {
+    "partial-panel-resolver": PartialPanelResolver;
+  }
+}
