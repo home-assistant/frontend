@@ -52,10 +52,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>Events</div>
           </app-toolbar>
         </app-header>
@@ -98,16 +95,6 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-      },
-
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
       },
 
       eventType: {

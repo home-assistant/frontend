@@ -15,6 +15,7 @@ import { mockTemplate } from "./stubs/template";
 import { mockEvents } from "./stubs/events";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { HomeAssistant } from "../../src/types";
+import { mockFrontend } from "./stubs/frontend";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _handleConnProm() {
@@ -35,6 +36,7 @@ class HaDemo extends HomeAssistantAppEl {
     mockTemplate(hass);
     mockEvents(hass);
     mockMediaPlayer(hass);
+    mockFrontend(hass);
     selectedDemoConfig.then((conf) => {
       hass.addEntities(conf.entities());
       if (conf.theme) {
