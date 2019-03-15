@@ -60,11 +60,7 @@ class HassioAddonView extends PolymerElement {
       <app-header-layout has-scrolling-region="">
         <app-header fixed="" slot="header">
           <app-toolbar>
-            <ha-menu-button
-              hassio
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button hassio></ha-menu-button>
             <paper-icon-button
               icon="hassio:arrow-left"
               on-click="backTapped"
@@ -119,8 +115,6 @@ class HassioAddonView extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      showMenu: Boolean,
-      narrow: Boolean,
       route: Object,
       routeData: {
         type: Object,
