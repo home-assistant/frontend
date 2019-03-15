@@ -21,7 +21,10 @@ import {
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../data/device_registry";
-import { AreaRegistryEntry } from "../../data/area_registry";
+import {
+  AreaRegistryEntry,
+  createAreaRegistryEntry,
+} from "../../data/area_registry";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -77,7 +80,10 @@ class StepFlowCreateEntry extends LitElement {
                               .device=${device.id}
                               @selected-item-changed=${this._handleAreaChanged}
                             >
-                              <paper-listbox slot="dropdown-content">
+                              <paper-listbox
+                                slot="dropdown-content"
+                                selected="0"
+                              >
                                 <paper-item>
                                   ${localize(
                                     "ui.panel.config.integrations.config_entry.no_area"
@@ -100,6 +106,14 @@ class StepFlowCreateEntry extends LitElement {
           }
         </div>
         <div class="buttons">
+          ${
+            this.devices.length > 0
+              ? html`
+                  <mwc-button @click="${this._addArea}">Add Area</mwc-button>
+                `
+              : ""
+          }
+
           <mwc-button @click="${this._flowDone}">Finish</mwc-button>
         </div>
       </paper-dialog>
@@ -110,9 +124,30 @@ class StepFlowCreateEntry extends LitElement {
     fireEvent(this, "flow-update", { step: undefined });
   }
 
+  private async _addArea() {
+    const name = prompt("Name of the new area?");
+    if (!name) {
+      return;
+    }
+    try {
+      const area = await createAreaRegistryEntry(this.hass, {
+        name,
+      });
+      this.areas = [...this.areas, area];
+    } catch (err) {
+      alert("Failed to create area.");
+    }
+  }
+
   private async _handleAreaChanged(ev: Event) {
     const dropdown = ev.currentTarget as any;
     const device = dropdown.device;
+
+    // Item first becomes null, then new item.
+    if (!dropdown.selectedItem) {
+      return;
+    }
+
     const area = dropdown.selectedItem.area;
     try {
       await updateDeviceRegistryEntry(this.hass, device, {
@@ -140,6 +175,9 @@ class StepFlowCreateEntry extends LitElement {
           margin: 4px;
           display: inline-block;
           width: 200px;
+        }
+        .buttons > *:last-child {
+          margin-left: auto;
         }
       `,
     ];
