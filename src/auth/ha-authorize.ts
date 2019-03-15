@@ -53,7 +53,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   protected render() {
     if (!this._authProviders) {
       return html`
-        <p>[[localize('ui.panel.page-authorize.initializing')]]</p>
+        <p>${this.localize("ui.panel.page-authorize.initializing")}</p>
       `;
     }
 
