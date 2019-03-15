@@ -8,12 +8,7 @@ class HassioApp extends PolymerElement {
   static get template() {
     return html`
       <template is="dom-if" if="[[hass]]">
-        <hassio-main
-          hass="[[hass]]"
-          narrow="[[narrow]]"
-          show-menu="[[showMenu]]"
-          route="[[route]]"
-        ></hassio-main>
+        <hassio-main hass="[[hass]]" route="[[route]]"></hassio-main>
       </template>
     `;
   }
@@ -21,8 +16,6 @@ class HassioApp extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       route: Object,
       hassioPanel: {
         type: Object,
@@ -35,12 +28,9 @@ class HassioApp extends PolymerElement {
     super.ready();
     window.setProperties = this.setProperties.bind(this);
     this.addEventListener("location-changed", () => this._locationChanged());
-    this.addEventListener("hass-open-menu", () => this._menuEvent(true));
-    this.addEventListener("hass-close-menu", () => this._menuEvent(false));
-  }
-
-  _menuEvent(shouldOpen) {
-    this.hassioPanel.fire(shouldOpen ? "hass-open-menu" : "hass-close-menu");
+    this.addEventListener("hass-toggle-menu", (ev) =>
+      this.hassioPanel.fire("hass-toggle-menu", ev.detail)
+    );
   }
 
   _locationChanged() {

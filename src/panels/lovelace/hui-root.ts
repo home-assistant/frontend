@@ -1,11 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
   CSSResult,
   css,
+  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
@@ -60,39 +60,22 @@ const JS_CACHE = {};
 let loadedUnusedEntities = false;
 
 class HUIRoot extends LitElement {
-  public narrow?: boolean;
-  public showMenu?: boolean;
-  public hass?: HomeAssistant;
-  public lovelace?: Lovelace;
-  public columns?: number;
-  public route?: { path: string; prefix: string };
-  private _routeData?: { view: string };
-  private _curView?: number | "hass-unused-entities";
-  private _notificationsOpen: boolean;
-  private _persistentNotifications?: Notification[];
+  @property() public hass?: HomeAssistant;
+  @property() public lovelace?: Lovelace;
+  @property() public columns?: number;
+  @property() public narrow?: boolean;
+  @property() public route?: { path: string; prefix: string };
+  @property() private _routeData?: { view: string };
+  @property() private _curView?: number | "hass-unused-entities";
+  @property() private _notificationsOpen = false;
+  @property() private _persistentNotifications?: Notification[];
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
   private _unsubNotifications?: () => void;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      narrow: {},
-      showMenu: {},
-      hass: {},
-      lovelace: {},
-      columns: {},
-      route: {},
-      _routeData: {},
-      _curView: {},
-      _notificationsOpen: {},
-      _persistentNotifications: {},
-    };
-  }
-
   constructor() {
     super();
-    this._notificationsOpen = false;
     // The view can trigger a re-render when it knows that certain
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
@@ -181,10 +164,7 @@ class HUIRoot extends LitElement {
               `
             : html`
                 <app-toolbar>
-                  <ha-menu-button
-                    .narrow="${this.narrow}"
-                    .showMenu="${this.showMenu}"
-                  ></ha-menu-button>
+                  <ha-menu-button></ha-menu-button>
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   <hui-notifications-button
                     .hass="${this.hass}"

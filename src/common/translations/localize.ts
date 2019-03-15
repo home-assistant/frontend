@@ -79,3 +79,25 @@ export const computeLocalize = (
     }
   };
 };
+
+/**
+ * Silly helper function that converts an object of placeholders to array so we
+ * can convert it back to an object again inside the localize func.
+ * @param localize
+ * @param key
+ * @param placeholders
+ */
+export const localizeKey = (
+  localize: LocalizeFunc,
+  key: string,
+  placeholders?: { [key: string]: string }
+) => {
+  const args: [string, ...string[]] = [key];
+  if (placeholders) {
+    Object.keys(placeholders).forEach((placeholderKey) => {
+      args.push(placeholderKey);
+      args.push(placeholders[placeholderKey]);
+    });
+  }
+  return localize(...args);
+};

@@ -370,7 +370,7 @@
                     "description": "Twórz i edytuj reguły automatyzacji",
                     "picker": {
                         "header": "Edytor automatyzacji",
-                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować reguły automatyzacji. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant'a.",
+                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować reguły automatyzacji. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie skonfigurować reguły automatyzacji w Home Assistant.",
                         "pick_automation": "Wybierz regułę automatyzacji do edycji",
                         "no_automations": "Nie znaleziono żadnych edytowalnych reguł automatyzacji",
                         "add_automation": "Dodaj regułę automatyzacji",
