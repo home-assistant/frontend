@@ -25,15 +25,31 @@ import {
   fetchConfigFlow,
   createConfigFlow,
   ConfigFlowStep,
-  handleConfigFlowStep,
   deleteConfigFlow,
-  FieldSchema,
-  ConfigFlowStepForm,
 } from "../../data/config_entries";
-import { PolymerChangedEvent, applyPolymerEvent } from "../../polymer-types";
+import { PolymerChangedEvent } from "../../polymer-types";
 import { HaConfigFlowParams } from "./show-dialog-config-flow";
 
+import "./step-flow-loading";
+import "./step-flow-form";
+import "./step-flow-abort";
+import "./step-flow-create-entry";
+import {
+  DeviceRegistryEntry,
+  fetchDeviceRegistry,
+} from "../../data/device_registry";
+import { AreaRegistryEntry, fetchAreaRegistry } from "../../data/area_registry";
+
 let instance = 0;
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "flow-update": {
+      step?: ConfigFlowStep;
+    };
+  }
+}
 
 @customElement("dialog-config-flow")
 class ConfigFlowDialog extends LitElement {
@@ -49,18 +65,15 @@ class ConfigFlowDialog extends LitElement {
   private _step?: ConfigFlowStep;
 
   @property()
-  private _stepData?: { [key: string]: any };
+  private _devices?: DeviceRegistryEntry[];
 
   @property()
-  private _errorMsg?: string;
+  private _areas?: AreaRegistryEntry[];
 
   public async showDialog(params: HaConfigFlowParams): Promise<void> {
     this._params = params;
     this._loading = true;
     this._instance = instance++;
-    this._step = undefined;
-    this._stepData = {};
-    this._errorMsg = undefined;
 
     const fetchStep = params.continueFlowId
       ? fetchConfigFlow(params.hass, params.continueFlowId)
@@ -93,201 +106,91 @@ class ConfigFlowDialog extends LitElement {
     if (!this._params) {
       return html``;
     }
-    const localize = this._params.hass.localize;
-
-    const step = this._step;
-    let headerContent: string | undefined;
-    let bodyContent: TemplateResult | undefined;
-    let buttonContent: TemplateResult | undefined;
-    let descriptionKey: string | undefined;
-
-    if (!step) {
-      bodyContent = html`
-        <div class="init-spinner">
-          <paper-spinner active></paper-spinner>
-        </div>
-      `;
-    } else if (step.type === "abort") {
-      descriptionKey = `component.${step.handler}.config.abort.${step.reason}`;
-      headerContent = "Aborted";
-      bodyContent = html``;
-      buttonContent = html`
-        <mwc-button @click="${this._flowDone}">Close</mwc-button>
-      `;
-    } else if (step.type === "create_entry") {
-      descriptionKey = `component.${
-        step.handler
-      }.config.create_entry.${step.description || "default"}`;
-      headerContent = "Success!";
-      bodyContent = html`
-        <p>Created config for ${step.title}</p>
-      `;
-      buttonContent = html`
-        <mwc-button @click="${this._flowDone}">Close</mwc-button>
-      `;
-    } else {
-      // form
-      descriptionKey = `component.${step.handler}.config.step.${
-        step.step_id
-      }.description`;
-      headerContent = localize(
-        `component.${step.handler}.config.step.${step.step_id}.title`
-      );
-      bodyContent = html`
-        <ha-form
-          .data=${this._stepData}
-          @data-changed=${this._stepDataChanged}
-          .schema=${step.data_schema}
-          .error=${step.errors}
-          .computeLabel=${this._labelCallback}
-          .computeError=${this._errorCallback}
-        ></ha-form>
-      `;
-
-      const allRequiredInfoFilledIn =
-        this._stepData &&
-        step.data_schema.every(
-          (field) =>
-            field.optional ||
-            !["", undefined].includes(this._stepData![field.name])
-        );
-
-      buttonContent = this._loading
-        ? html`
-            <div class="submit-spinner">
-              <paper-spinner active></paper-spinner>
-            </div>
-          `
-        : html`
-            <div>
-              <mwc-button
-                @click=${this._submitStep}
-                .disabled=${!allRequiredInfoFilledIn}
-              >
-                Submit
-              </mwc-button>
-
-              ${!allRequiredInfoFilledIn
-                ? html`
-                    <paper-tooltip position="left">
-                      Not all required fields are filled in.
-                    </paper-tooltip>
-                  `
-                : html``}
-            </div>
-          `;
-    }
-
-    let description: string | undefined;
-
-    if (step && descriptionKey) {
-      const args: [string, ...string[]] = [descriptionKey];
-      const placeholders = step.description_placeholders || {};
-      Object.keys(placeholders).forEach((key) => {
-        args.push(key);
-        args.push(placeholders[key]);
-      });
-      description = localize(...args);
-    }
 
     return html`
-      <paper-dialog
-        with-backdrop
-        .opened=${true}
-        @opened-changed=${this._openedChanged}
-      >
-        <h2>
-          ${headerContent}
-        </h2>
-        <paper-dialog-scrollable>
-          ${this._errorMsg
-            ? html`
-                <div class="error">${this._errorMsg}</div>
-              `
-            : ""}
-          ${description
-            ? html`
-                <ha-markdown .content=${description} allow-svg></ha-markdown>
-              `
-            : ""}
-          ${bodyContent}
-        </paper-dialog-scrollable>
-        <div class="buttons">
-          ${buttonContent}
-        </div>
+      <paper-dialog with-backdrop opened @opened-changed=${this._openedChanged}>
+        ${this._loading
+          ? html`
+              <step-flow-loading></step-flow-loading>
+            `
+          : this._step === undefined
+          ? // When we are going to next step, we render 1 round of empty
+            // to reset the element.
+            ""
+          : this._step.type === "form"
+          ? html`
+              <step-flow-form
+                .step=${this._step}
+                .hass=${this._params.hass}
+              ></step-flow-form>
+            `
+          : this._step.type === "abort"
+          ? html`
+              <step-flow-abort
+                .step=${this._step}
+                .hass=${this._params.hass}
+              ></step-flow-abort>
+            `
+          : this._devices === undefined || this._areas === undefined
+          ? // When it's a create entry result, we will fetch device & area registry
+            html`
+              <step-flow-loading></step-flow-loading>
+            `
+          : html`
+              <step-flow-create-entry
+                .step=${this._step}
+                .hass=${this._params.hass}
+                .devices=${this._devices}
+                .areas=${this._areas}
+              ></step-flow-create-entry>
+            `}
       </paper-dialog>
     `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
-        this._submitStep();
-      }
+    this.addEventListener("flow-update", (ev) => {
+      this._processStep((ev as any).detail.step);
     });
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (
+      changedProps.has("_step") &&
+      this._step &&
+      this._step.type === "create_entry"
+    ) {
+      this._fetchDevices(this._step.result);
+      this._fetchAreas();
+    }
   }
 
   private get _dialog(): PaperDialogElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
-  private async _submitStep(): Promise<void> {
-    this._loading = true;
-    this._errorMsg = undefined;
-
-    const curInstance = this._instance;
-    const stepData = this._stepData || {};
-
-    const toSendData = {};
-    Object.keys(stepData).forEach((key) => {
-      const value = stepData[key];
-      const isEmpty = [undefined, ""].includes(value);
-
-      if (!isEmpty) {
-        toSendData[key] = value;
-      }
-    });
-
-    try {
-      const step = await handleConfigFlowStep(
-        this._params!.hass,
-        this._step!.flow_id,
-        toSendData
-      );
-
-      if (curInstance !== this._instance) {
-        return;
-      }
-
-      this._processStep(step);
-    } catch (err) {
-      this._errorMsg =
-        (err && err.body && err.body.message) || "Unknown error occurred";
-    } finally {
-      this._loading = false;
-    }
+  private async _fetchDevices(configEntryId) {
+    // Wait 5 seconds to give integrations time to find devices
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    const devices = await fetchDeviceRegistry(this._params!.hass);
+    this._devices = devices.filter((device) =>
+      device.config_entries.includes(configEntryId)
+    );
   }
 
-  private _processStep(step: ConfigFlowStep): void {
-    this._step = step;
+  private async _fetchAreas() {
+    this._areas = await fetchAreaRegistry(this._params!.hass);
+  }
 
-    // We got a new form if there are no errors.
-    if (step.type === "form") {
-      if (!step.errors) {
-        step.errors = {};
-      }
-
-      if (Object.keys(step.errors).length === 0) {
-        const data = {};
-        step.data_schema.forEach((field) => {
-          if ("default" in field) {
-            data[field.name] = field.default;
-          }
-        });
-        this._stepData = data;
-      }
+  private async _processStep(step: ConfigFlowStep): Promise<void> {
+    if (step === undefined) {
+      this._flowDone();
+      return;
     }
+    this._step = undefined;
+    await this.updateComplete;
+    this._step = step;
   }
 
   private _flowDone(): void {
@@ -307,10 +210,9 @@ class ConfigFlowDialog extends LitElement {
       flowFinished,
     });
 
-    this._errorMsg = undefined;
     this._step = undefined;
-    this._stepData = {};
     this._params = undefined;
+    this._devices = undefined;
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
@@ -320,51 +222,17 @@ class ConfigFlowDialog extends LitElement {
     }
   }
 
-  private _stepDataChanged(ev: PolymerChangedEvent<any>): void {
-    this._stepData = applyPolymerEvent(ev, this._stepData);
-  }
-
-  private _labelCallback = (schema: FieldSchema): string => {
-    const step = this._step as ConfigFlowStepForm;
-
-    return this._params!.hass.localize(
-      `component.${step.handler}.config.step.${step.step_id}.data.${
-        schema.name
-      }`
-    );
-  };
-
-  private _errorCallback = (error: string) =>
-    this._params!.hass.localize(
-      `component.${this._step!.handler}.config.error.${error}`
-    );
-
   static get styles(): CSSResultArray {
     return [
       haStyleDialog,
       css`
-        .error {
-          color: red;
-        }
         paper-dialog {
           max-width: 500px;
         }
-        ha-markdown {
-          word-break: break-word;
-        }
-        ha-markdown a {
-          color: var(--primary-color);
-        }
-        ha-markdown img:first-child:last-child {
+        paper-dialog > * {
+          margin: 0;
           display: block;
-          margin: 0 auto;
-        }
-        .init-spinner {
-          padding: 10px 100px 34px;
-          text-align: center;
-        }
-        .submit-spinner {
-          margin-right: 16px;
+          padding: 0;
         }
       `,
     ];

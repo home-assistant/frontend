@@ -39,7 +39,7 @@ class StateBadge extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!changedProps.has("stateObj")) {
+    if (!changedProps.has("stateObj") || !this.stateObj) {
       return;
     }
     const stateObj = this.stateObj;
