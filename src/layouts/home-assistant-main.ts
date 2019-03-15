@@ -25,8 +25,7 @@ const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-open-menu": undefined;
-    "hass-close-menu": undefined;
+    "hass-toggle-menu": undefined;
   }
 }
 
@@ -70,7 +69,6 @@ class HomeAssistantMain extends LitElement {
           .narrow=${this._narrow}
           .hass=${hass}
           .route=${this.route}
-          .showMenu=${hass.dockedSidebar}
         ></partial-panel-resolver>
       </app-drawer-layout>
     `;
@@ -79,17 +77,20 @@ class HomeAssistantMain extends LitElement {
   protected firstUpdated() {
     import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 
-    this.addEventListener("hass-open-menu", () => {
-      if (this._narrow) {
-        this.drawer.open();
+    this.addEventListener("hass-toggle-menu", () => {
+      const shouldOpen = !this.drawer.opened;
+
+      if (shouldOpen) {
+        if (this._narrow) {
+          this.drawer.open();
+        } else {
+          fireEvent(this, "hass-dock-sidebar", { dock: true });
+        }
       } else {
-        fireEvent(this, "hass-dock-sidebar", { dock: true });
-      }
-    });
-    this.addEventListener("hass-close-menu", () => {
-      this.drawer.close();
-      if (this.hass!.dockedSidebar) {
-        fireEvent(this, "hass-dock-sidebar", { dock: false });
+        this.drawer.close();
+        if (this.hass!.dockedSidebar) {
+          fireEvent(this, "hass-dock-sidebar", { dock: false });
+        }
       }
     });
   }

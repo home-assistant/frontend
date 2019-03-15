@@ -225,7 +225,6 @@ export interface Route {
 export interface PanelElement extends HTMLElement {
   hass?: HomeAssistant;
   narrow?: boolean;
-  showMenu?: boolean;
   route?: Route | null;
   panel?: Panel;
 }

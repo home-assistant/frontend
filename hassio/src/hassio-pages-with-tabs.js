@@ -37,11 +37,7 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
       <app-header-layout id="layout" has-scrolling-region>
         <app-header fixed slot="header">
           <app-toolbar>
-            <ha-menu-button
-              hassio
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button hassio></ha-menu-button>
             <div main-title>Hass.io</div>
             <template is="dom-if" if="[[showRefreshButton(page)]]">
               <paper-icon-button
@@ -107,8 +103,6 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      showMenu: Boolean,
-      narrow: Boolean,
       page: String,
       supervisorInfo: Object,
       hostInfo: Object,
