@@ -2,11 +2,8 @@ import {
   LitElement,
   TemplateResult,
   html,
-  CSSResultArray,
-  css,
   customElement,
   property,
-  PropertyValues,
   CSSResult,
 } from "lit-element";
 import "@material/mwc-button";
