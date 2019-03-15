@@ -616,7 +616,8 @@
                         "header": "Område registrering",
                         "introduction": "Områder bruges til at organisere hvor enhederne er. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din grænseflade, tilladelser og integrationer med andre systemer.",
                         "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
-                        "integrations_page": "Integrations side"
+                        "integrations_page": "Integrations side",
+                        "create_area": "OPRET OMRÅDE"
                     },
                     "no_areas": "Du ikke har ingen områder endnu!",
                     "create_area": "OPRET OMRÅDE",
@@ -1156,5 +1157,9 @@
                 "auto": "Automatisk"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administratorer",
+        "system-users": "Brugere"
     }
 }
