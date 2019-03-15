@@ -31,7 +31,9 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
+  snow_name?: boolean;
   icon?: string;
+  show_icon?: boolean;
   theme?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -48,6 +50,8 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     return {
       tap_action: { action: "toggle" },
       hold_action: { action: "more-info" },
+      show_icon: true,
+      show_name: true,
     };
   }
 
@@ -68,6 +72,8 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       theme: "default",
       hold_action: { action: "more-info" },
       ...config,
+      show_icon: true,
+      show_name: true,
     };
 
     if (DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
@@ -126,18 +132,26 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       >
-        <ha-icon
-          data-domain="${computeStateDomain(stateObj)}"
-          data-state="${stateObj.state}"
-          .icon="${this._config.icon || stateIcon(stateObj)}"
-          style="${styleMap({
-            filter: this._computeBrightness(stateObj),
-            color: this._computeColor(stateObj),
-          })}"
-        ></ha-icon>
-        <span>
-          ${this._config.name || computeStateName(stateObj)}
-        </span>
+        ${this._config.show_icon
+          ? html`
+              <ha-icon
+                data-domain="${computeStateDomain(stateObj)}"
+                data-state="${stateObj.state}"
+                .icon="${this._config.icon || stateIcon(stateObj)}"
+                style="${styleMap({
+                  filter: this._computeBrightness(stateObj),
+                  color: this._computeColor(stateObj),
+                })}"
+              ></ha-icon>
+            `
+          : ""}
+        ${this._config.show_name
+          ? html`
+              <span>
+                ${this._config.name || computeStateName(stateObj)}
+              </span>
+            `
+          : ""}
         <mwc-ripple></mwc-ripple>
       </ha-card>
     `;
