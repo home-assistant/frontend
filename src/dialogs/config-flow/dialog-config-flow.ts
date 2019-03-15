@@ -34,6 +34,11 @@ import "./step-flow-loading";
 import "./step-flow-form";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
+import {
+  DeviceRegistryEntry,
+  fetchDeviceRegistry,
+} from "../../data/device_registry";
+import { AreaRegistryEntry, fetchAreaRegistry } from "../../data/area_registry";
 
 let instance = 0;
 
@@ -59,11 +64,16 @@ class ConfigFlowDialog extends LitElement {
   @property()
   private _step?: ConfigFlowStep;
 
+  @property()
+  private _devices?: DeviceRegistryEntry[];
+
+  @property()
+  private _areas?: AreaRegistryEntry[];
+
   public async showDialog(params: HaConfigFlowParams): Promise<void> {
     this._params = params;
     this._loading = true;
     this._instance = instance++;
-    this._step = undefined;
 
     const fetchStep = params.continueFlowId
       ? fetchConfigFlow(params.hass, params.continueFlowId)
@@ -121,10 +131,17 @@ class ConfigFlowDialog extends LitElement {
                 .hass=${this._params.hass}
               ></step-flow-abort>
             `
+          : this._devices === undefined || this._areas === undefined
+          ? // When it's a create entry result, we will fetch device & area registry
+            html`
+              <step-flow-loading></step-flow-loading>
+            `
           : html`
               <step-flow-create-entry
                 .step=${this._step}
                 .hass=${this._params.hass}
+                .devices=${this._devices}
+                .areas=${this._areas}
               ></step-flow-create-entry>
             `}
       </paper-dialog>
@@ -138,8 +155,32 @@ class ConfigFlowDialog extends LitElement {
     });
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (
+      changedProps.has("_step") &&
+      this._step &&
+      this._step.type === "create_entry"
+    ) {
+      this._fetchDevices(this._step.result);
+      this._fetchAreas();
+    }
+  }
+
   private get _dialog(): PaperDialogElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
+  }
+
+  private async _fetchDevices(configEntryId) {
+    // Wait 5 seconds to give integrations time to find devices
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    const devices = await fetchDeviceRegistry(this._params!.hass);
+    this._devices = devices.filter((device) =>
+      device.config_entries.includes(configEntryId)
+    );
+  }
+
+  private async _fetchAreas() {
+    this._areas = await fetchAreaRegistry(this._params!.hass);
   }
 
   private async _processStep(step: ConfigFlowStep): Promise<void> {
@@ -171,6 +212,7 @@ class ConfigFlowDialog extends LitElement {
 
     this._step = undefined;
     this._params = undefined;
+    this._devices = undefined;
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {

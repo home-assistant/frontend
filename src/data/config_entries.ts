@@ -22,7 +22,8 @@ export interface ConfigFlowStepCreateEntry {
   flow_id: string;
   handler: string;
   title: string;
-  data: any;
+  // Config entry ID
+  result: string;
   description: string;
   description_placeholders: { [key: string]: string };
 }

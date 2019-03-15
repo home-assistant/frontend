@@ -206,16 +206,7 @@ class StepFlowForm extends LitElement {
         .error {
           color: red;
         }
-        ha-markdown {
-          word-break: break-word;
-        }
-        ha-markdown a {
-          color: var(--primary-color);
-        }
-        ha-markdown img:first-child:last-child {
-          display: block;
-          margin: 0 auto;
-        }
+
         .submit-spinner {
           margin-right: 16px;
         }

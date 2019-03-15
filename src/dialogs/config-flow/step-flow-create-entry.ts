@@ -2,18 +2,26 @@ import {
   LitElement,
   TemplateResult,
   html,
-  css,
   customElement,
   property,
-  CSSResult,
+  CSSResultArray,
+  css,
 } from "lit-element";
 import "@material/mwc-button";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 
 import { ConfigFlowStepCreateEntry } from "../../data/config_entries";
 import { HomeAssistant } from "../../types";
 import { localizeKey } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configFlowContentStyles } from "./styles";
+import {
+  DeviceRegistryEntry,
+  updateDeviceRegistryEntry,
+} from "../../data/device_registry";
+import { AreaRegistryEntry } from "../../data/area_registry";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -21,7 +29,13 @@ class StepFlowCreateEntry extends LitElement {
   public hass!: HomeAssistant;
 
   @property()
-  private step!: ConfigFlowStepCreateEntry;
+  public step!: ConfigFlowStepCreateEntry;
+
+  @property()
+  public devices!: DeviceRegistryEntry[];
+
+  @property()
+  public areas!: AreaRegistryEntry[];
 
   protected render(): TemplateResult | void {
     const localize = this.hass.localize;
@@ -44,10 +58,49 @@ class StepFlowCreateEntry extends LitElement {
                 `
               : ""
           }
-          <p>Created config for ${step.title}</p>
+          <p>Created config for ${step.title}.</p>
+          ${
+            this.devices.length === 0
+              ? ""
+              : html`
+                  <p>We found the following devices:</p>
+                  <div class="devices">
+                    ${this.devices.map(
+                      (device) =>
+                        html`
+                          <div class="device">
+                            <b>${device.name}</b><br />
+                            ${device.model} (${device.manufacturer})
+
+                            <paper-dropdown-menu-light
+                              label="Area"
+                              .device=${device.id}
+                              @selected-item-changed=${this._handleAreaChanged}
+                            >
+                              <paper-listbox slot="dropdown-content">
+                                <paper-item>
+                                  ${localize(
+                                    "ui.panel.config.integrations.config_entry.no_area"
+                                  )}
+                                </paper-item>
+                                ${this.areas.map(
+                                  (area) => html`
+                                    <paper-item .area=${area.area_id}>
+                                      ${area.name}
+                                    </paper-item>
+                                  `
+                                )}
+                              </paper-listbox>
+                            </paper-dropdown-menu-light>
+                          </div>
+                        `
+                    )}
+                  </div>
+                `
+          }
         </div>
         <div class="buttons">
-          <mwc-button @click="${this._flowDone}">Close</mwc-button>
+          <mwc-button @click="${this._flowDone}">Finish</mwc-button>
         </div>
       </paper-dialog>
     `;
@@ -57,8 +110,39 @@ class StepFlowCreateEntry extends LitElement {
     fireEvent(this, "flow-update", { step: undefined });
   }
 
-  static get styles(): CSSResult {
-    return configFlowContentStyles;
+  private async _handleAreaChanged(ev: Event) {
+    const dropdown = ev.currentTarget as any;
+    const device = dropdown.device;
+    const area = dropdown.selectedItem.area;
+    try {
+      await updateDeviceRegistryEntry(this.hass, device, {
+        area_id: area,
+      });
+    } catch (err) {
+      alert(`Error saving area: ${err.message}`);
+      dropdown.value = null;
+    }
+  }
+
+  static get styles(): CSSResultArray {
+    return [
+      configFlowContentStyles,
+      css`
+        .devices {
+          display: flex;
+          flex-wrap: wrap;
+          margin: -4px;
+        }
+        .device {
+          border: 1px solid var(--divider-color);
+          padding: 5px;
+          border-radius: 4px;
+          margin: 4px;
+          display: inline-block;
+          width: 200px;
+        }
+      `,
+    ];
   }
 }
 
