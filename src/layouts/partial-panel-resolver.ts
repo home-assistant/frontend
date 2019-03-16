@@ -1,9 +1,4 @@
-import {
-  property,
-  customElement,
-  PropertyValues,
-  LitElement,
-} from "lit-element";
+import { property, customElement, PropertyValues } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
 
 import { HomeAssistant, Panels } from "../types";
