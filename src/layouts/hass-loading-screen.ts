@@ -15,12 +15,12 @@ import { haStyle } from "../resources/styles";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
-  @property() public isRoot? = false;
+  @property({ type: Boolean }) public rootnav? = false;
 
   protected render(): TemplateResult | void {
     return html`
       <app-toolbar>
-        ${this.isRoot
+        ${this.rootnav
           ? html`
               <ha-menu-button></ha-menu-button>
             `
