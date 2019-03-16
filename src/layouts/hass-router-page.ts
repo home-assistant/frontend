@@ -74,17 +74,17 @@ export class HassRouterPage extends UpdatingElement {
       return;
     }
 
-    this._currentPage = newPage;
-
     const routeOptions = routerOptions.routes[newPage];
 
     if (!routeOptions) {
+      this._currentPage = "";
       if (this.lastChild) {
         this.removeChild(this.lastChild);
       }
       return;
     }
 
+    this._currentPage = newPage;
     const loadProm = routeOptions.load();
 
     // Check when loading the page source failed.
