@@ -1,4 +1,3 @@
-import { fireEvent } from "../common/dom/fire_event";
 import applyThemesOnElement from "../common/dom/apply_themes_on_element";
 
 import { demoConfig } from "./demo_config";
