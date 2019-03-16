@@ -11,7 +11,7 @@ interface CloudStatusBase {
   cloud: "disconnected" | "connecting" | "connected";
 }
 
-interface CertificateInformation {
+export interface CertificateInformation {
   common_name: string;
   expire_date: string;
   fingerprint: string;
