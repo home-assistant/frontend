@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation hálózat menedzsment",
                     "services": {
-                        "reconfigure": "A ZHA készülék újratelepítése (eszköz rendbehozatala). Ezt a funkciót használd, ha problémáid vannak a készülékkel. Ha a kérdéses eszköz akkumulátoros, győződj meg róla, hogy nincs alvó állapotban és fogadja a parancsokat, amikor ezt a szolgáltatást használod."
+                        "reconfigure": "A ZHA készülék újratelepítése (eszköz rendbehozatala). Ezt a funkciót használd, ha problémáid vannak a készülékkel. Ha a kérdéses eszköz akkumulátoros, győződj meg róla, hogy nincs alvó állapotban és fogadja a parancsokat, amikor ezt a szolgáltatást használod.",
+                        "updateDeviceName": "Egyedi név beállítása ehhez az eszközhöz az eszköz nyilvántartásban"
                     }
                 },
                 "area_registry": {
@@ -616,9 +617,11 @@
                         "header": "Terület Nyilvántartás",
                         "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
                         "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez.",
-                        "integrations_page": "Integrációk oldal"
+                        "integrations_page": "Integrációk oldal",
+                        "no_areas": "Úgy tűnik, nem hoztál még létre egy területet sem!",
+                        "create_area": "TERÜLET LÉTREHOZÁSA"
                     },
-                    "no_areas": "Úgy tűnik nem hoztál létre még egy területet sem!",
+                    "no_areas": "Úgy tűnik, nem hoztál még létre egy területet sem!",
                     "create_area": "TERÜLET LÉTREHOZÁSA",
                     "editor": {
                         "default_name": "Új Terület",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Név",
                         "username": "Felhasználónév",
-                        "password": "Jelszó"
+                        "password": "Jelszó",
+                        "password_confirm": "Jelszó megerősítése"
                     },
                     "create_account": "Fiók Létrehozása",
                     "error": {
-                        "required_fields": "Töltsd ki az összes szükséges mezőt"
+                        "required_fields": "Töltsd ki az összes szükséges mezőt",
+                        "password_not_match": "A jelszavak nem egyeznek"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Automatikus"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Adminisztrátorok",
+        "system-users": "Felhasználók",
+        "system-read-only": "Csak olvasható felhasználók"
     }
 }
