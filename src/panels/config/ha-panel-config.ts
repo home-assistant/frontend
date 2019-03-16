@@ -8,7 +8,11 @@ import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 
 @customElement("ha-panel-config")
 class HaPanelConfig extends HassRouterPage {
-  protected static routerOptions: RouterOptions = {
+  @property() public hass!: HomeAssistant;
+  @property() public _wideSidebar: boolean = false;
+  @property() public _wide: boolean = false;
+
+  protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     cacheAll: true,
     preloadAll: true,
@@ -81,9 +85,6 @@ class HaPanelConfig extends HassRouterPage {
     },
   };
 
-  @property() public hass!: HomeAssistant;
-  @property() public _wideSidebar: boolean = false;
-  @property() public _wide: boolean = false;
   @property() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
@@ -119,7 +120,7 @@ class HaPanelConfig extends HassRouterPage {
     );
   }
 
-  protected _updatePageEl(el) {
+  protected updatePageEl(el) {
     el.route = this.route;
     el.hass = this.hass;
     el.isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;

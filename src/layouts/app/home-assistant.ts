@@ -54,7 +54,7 @@ export class HomeAssistantAppEl extends ext(HassBaseMixin(LitElement), [
       ></app-location>
       ${this._panelUrl === undefined || this._route === undefined
         ? ""
-        : hass && hass.states && hass.config && hass.panels && hass.services
+        : hass && hass.states && hass.config && hass.services
         ? html`
             <home-assistant-main
               .hass=${this.hass}
