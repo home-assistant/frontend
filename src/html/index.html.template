@@ -40,8 +40,8 @@
     </script>
   </head>
   <body>
+    <div id='ha-init-skeleton'></div>
     <home-assistant>
-      <div id='ha-init-skeleton'></div>
     </home-assistant>
     <% if (!latestBuild) { %>
       <script src="/static/custom-elements-es5-adapter.js"></script>
