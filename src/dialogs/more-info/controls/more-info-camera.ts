@@ -61,7 +61,7 @@ class MoreInfoCamera extends UpdatingElement {
     let Hls: HLSModule | undefined;
 
     let hlsSupported =
-      videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+      videoEl.canPlayType("application/vnd.apple.mpegurl") === "probably";
 
     if (!hlsSupported) {
       Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
