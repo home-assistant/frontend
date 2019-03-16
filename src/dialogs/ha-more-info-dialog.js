@@ -176,14 +176,16 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
       return;
     }
 
-    try {
-      const info = await this.hass.callWS({
-        type: "config/entity_registry/get",
-        entity_id: newVal.entity_id,
-      });
-      this._registryInfo = info;
-    } catch (err) {
-      this._registryInfo = null;
+    if (this.hass.user.is_admin) {
+      try {
+        const info = await this.hass.callWS({
+          type: "config/entity_registry/get",
+          entity_id: newVal.entity_id,
+        });
+        this._registryInfo = info;
+      } catch (err) {
+        this._registryInfo = null;
+      }
     }
   }
 
