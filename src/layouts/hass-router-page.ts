@@ -13,14 +13,13 @@ const extractPage = (path: string, defaultPage: string) => {
     : path.substr(1, subpathStart - 1);
 };
 
-interface RouteOptions {
+export interface RouteOptions {
   tag: string;
   load: () => Promise<unknown>;
   cache?: boolean;
 }
 
 export interface RouterOptions {
-  isRoot?: boolean;
   defaultPage?: string;
   preloadAll?: boolean;
   cacheAll?: boolean;
@@ -34,16 +33,17 @@ export interface RouterOptions {
 const LOADING_SCREEN_THRESHOLD = 400; // ms
 
 export class HassRouterPage extends UpdatingElement {
-  protected static routerOptions: RouterOptions = { routes: {} };
+  @property() public route?: Route;
 
-  protected static finalize() {
-    super.finalize();
-    this._routerOptions = this.routerOptions;
-  }
+  protected routerOptions!: RouterOptions;
 
-  private static _routerOptions: RouterOptions;
-
-  @property() public route!: Route;
+  /**
+   * Optional variable to define extra routes dynamically.
+   * It is preferred to use static routes.
+   */
+  protected extraRoutes?: {
+    [route: string]: RouteOptions;
+  };
   private _currentPage = "";
   private _cache = {};
 
@@ -52,15 +52,13 @@ export class HassRouterPage extends UpdatingElement {
 
     if (!changedProps.has("route")) {
       if (this.lastChild) {
-        this._updatePageEl(this.lastChild, changedProps);
+        this.updatePageEl(this.lastChild, changedProps);
       }
       return;
     }
 
     const route = this.route;
-
-    const routerOptions = (this.constructor as typeof HassRouterPage)
-      ._routerOptions;
+    const routerOptions = this.routerOptions || { routes: {} };
     const defaultPage = routerOptions.defaultPage || "";
 
     if (route && route.path === "") {
@@ -71,7 +69,7 @@ export class HassRouterPage extends UpdatingElement {
 
     if (this._currentPage === newPage) {
       if (this.lastChild) {
-        this._updatePageEl(this.lastChild, changedProps);
+        this.updatePageEl(this.lastChild, changedProps);
       }
       return;
     }
@@ -82,7 +80,7 @@ export class HassRouterPage extends UpdatingElement {
 
     if (!routeOptions) {
       if (this.lastChild) {
-        this._updatePageEl(this.lastChild, changedProps);
+        this.removeChild(this.lastChild);
       }
       return;
     }
@@ -125,10 +123,7 @@ export class HassRouterPage extends UpdatingElement {
       if (this.lastChild) {
         this.removeChild(this.lastChild);
       }
-
-      const loadingEl = document.createElement("hass-loading-screen");
-      loadingEl.isRoot = routerOptions.isRoot;
-      this.appendChild(loadingEl);
+      this.appendChild(this.createLoadingScreen());
     }, LOADING_SCREEN_THRESHOLD);
 
     loadProm.then(() => {
@@ -145,15 +140,35 @@ export class HassRouterPage extends UpdatingElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    const options = (this.constructor as typeof HassRouterPage)._routerOptions;
+    const options = this.routerOptions;
 
-    if (options.preloadAll) {
+    if (options && options.preloadAll) {
       Object.values(options.routes).forEach((route) => route.load());
       return;
     }
   }
 
-  protected _updatePageEl(_pageEl, _changedProps?: PropertyValues) {
+  protected createLoadingScreen() {
+    return document.createElement("hass-loading-screen");
+  }
+
+  // Rebuild the current panel.
+  protected async rebuild(): Promise<void> {
+    const oldRoute = this.route;
+
+    if (oldRoute === undefined) {
+      return;
+    }
+
+    this.route = undefined;
+    await this.updateComplete;
+    // Make sure that the parent didn't override this in the meanwhile.
+    if (this.route === undefined) {
+      this.route = oldRoute;
+    }
+  }
+
+  protected updatePageEl(_pageEl, _changedProps?: PropertyValues) {
     // default we do nothing
   }
 
@@ -168,7 +183,7 @@ export class HassRouterPage extends UpdatingElement {
 
     const panelEl =
       this._cache[page] || document.createElement(routeOptions.tag);
-    this._updatePageEl(panelEl);
+    this.updatePageEl(panelEl);
     this.appendChild(panelEl);
 
     if (routerOptions.cacheAll || routeOptions.cache) {
