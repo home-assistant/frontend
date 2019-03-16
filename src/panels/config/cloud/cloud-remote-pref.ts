@@ -13,7 +13,6 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import "@polymer/paper-item/paper-item-body";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
-import "../../../components/buttons/ha-call-api-button";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
@@ -22,7 +21,7 @@ import {
   disconnectCloudRemote,
   CloudStatusLoggedIn,
 } from "../../../data/cloud";
-import format_date_time from "../../../common/datetime/format_date_time";
+import { showCloudCertificateDialog } from "./show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -64,44 +63,34 @@ export class CloudRemotePref extends LitElement {
           @change="${this._toggleChanged}"
         ></paper-toggle-button>
         <div class="card-content">
-          Home Assistant Cloud provides you with a secure remote connection to
-          your instance while away from home. Your instance
+          Home Assistant Cloud provides a secure remote connection to your
+          instance while away from home. Your instance
           ${remote_connected ? "is" : "will be"} available at
           <a href="https://${remote_domain}" target="_blank">
             https://${remote_domain}</a
           >.
-          ${!remote_certificate
-            ? ""
-            : html`
-                <div class="data-row">
-                  <paper-item-body two-line>
-                    Certificate expiration date
-                    <div secondary>Will be automatically renewed</div>
-                  </paper-item-body>
-                  <div class="data-value">
-                    ${format_date_time(
-                      new Date(remote_certificate.expire_date),
-                      this.hass!.language
-                    )}
-                  </div>
-                </div>
-                <div class="data-row">
-                  <paper-item-body>
-                    Certificate fingerprint
-                  </paper-item-body>
-                  <div class="data-value">
-                    ${remote_certificate.fingerprint}
-                  </div>
-                </div>
-              `}
         </div>
         <div class="card-actions">
           <a href="https://www.nabucasa.com/config/remote/" target="_blank">
             <mwc-button>Learn how it works</mwc-button>
           </a>
+          ${remote_certificate
+            ? html`
+                <div class="spacer"></div>
+                <mwc-button @click=${this._openCertInfo}>
+                  Certificate Info
+                </mwc-button>
+              `
+            : ""}
         </div>
       </paper-card>
     `;
+  }
+
+  private _openCertInfo() {
+    showCloudCertificateDialog(this, {
+      certificateInfo: this.cloudStatus!.remote_certificate!,
+    });
   }
 
   private async _toggleChanged(ev) {
@@ -127,12 +116,6 @@ export class CloudRemotePref extends LitElement {
       .preparing {
         padding: 0 16px 16px;
       }
-      .data-row {
-        display: flex;
-      }
-      .data-value {
-        padding: 16px 0;
-      }
       a {
         color: var(--primary-color);
       }
@@ -141,17 +124,11 @@ export class CloudRemotePref extends LitElement {
         right: 8px;
         top: 16px;
       }
-      ha-call-api-button {
-        color: var(--primary-color);
-        font-weight: 500;
-      }
-      .unlock {
+      .card-actions {
         display: flex;
-        flex-direction: row;
-        padding-top: 16px;
       }
-      .unlock > div {
-        flex: 1;
+      .spacer {
+        flex-grow: 1;
       }
     `;
   }
