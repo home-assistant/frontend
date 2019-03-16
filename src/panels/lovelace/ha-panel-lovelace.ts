@@ -85,7 +85,7 @@ class LovelacePanel extends LitElement {
     }
 
     return html`
-      <hass-loading-screen></hass-loading-screen>
+      <hass-loading-screen rootnav></hass-loading-screen>
     `;
   }
 

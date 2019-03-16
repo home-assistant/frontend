@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee 홈 자동화 네트워크 관리",
                     "services": {
-                        "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태인지 확인해주세요."
+                        "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
+                        "updateDeviceName": "이 장치의 사용자 정의 이름을 장치 레지스트리에 설정합니다."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "영역 등록",
                         "introduction": "영역은 장치가있는 위치를 구성하는데 사용합니다. 이 정보는 Home Assistant 의 인터페이스 정리, 권한 및 다른 시스템과의 통합 구성에 도움을 줍니다.",
                         "introduction2": "특정 영역에 장치를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 장치를 클릭하여 영역을 설정 할 수 있습니다.",
-                        "integrations_page": "통합 구성요소 페이지"
+                        "integrations_page": "통합 구성요소 페이지",
+                        "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
+                        "create_area": "영역 만들기"
                     },
                     "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
                     "create_area": "영역 만들기",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "이름",
                         "username": "사용자 이름",
-                        "password": "비밀번호"
+                        "password": "비밀번호",
+                        "password_confirm": "비밀번호 확인"
                     },
                     "create_account": "계정 만들기",
                     "error": {
-                        "required_fields": "필수 입력란을 모두 채워주세요"
+                        "required_fields": "필수 입력란을 모두 채워주세요",
+                        "password_not_match": "비밀번호가 일치하지 않습니다"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "자동"
             }
         }
+    },
+    "groups": {
+        "system-admin": "관리자",
+        "system-users": "사용자",
+        "system-read-only": "읽기 전용 사용자"
     }
 }
