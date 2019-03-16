@@ -16,9 +16,5 @@ export function createStyledHuiElement(
     });
   }
 
-  if (element.firstStyled) {
-    element.firstStyled();
-  }
-
   return element;
 }

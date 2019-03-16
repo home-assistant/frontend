@@ -17,6 +17,20 @@ class HuiGroupElement extends HTMLElement implements LovelaceElement {
   private _visible: boolean = true;
   private _autoScale: boolean = false;
 
+  private _scaled: boolean = false;
+
+  constructor() {
+    super();
+
+    this.addEventListener("click", (ev) => {
+      if (ev.target !== this) {
+        ev.stopPropagation();
+        return;
+      }
+      this.toggleVisibility();
+    });
+  }
+
   public setConfig(config: Config): void {
     if (!config.elements || !Array.isArray(config.elements)) {
       throw new Error("Error in card configuration.");
@@ -45,72 +59,26 @@ class HuiGroupElement extends HTMLElement implements LovelaceElement {
     this.updateElements();
   }
 
-  public firstStyled() {
-    if (!this._config) {
-      return;
-    }
-
-    this._config!.elements.map((elementConfig: LovelaceElementConfig) => {
-      const element = createStyledHuiElement(elementConfig);
-
-      if (this._autoScale) {
-        // adjust element dimensions according to parent
-        if (this.style.width) {
-          if (element.style.left) {
-            element.style.left = this.calcFactoredStyleSize(
-              element.style.left,
-              this.style.width
-            );
-          }
-          if (element.style.width) {
-            element.style.width = this.calcFactoredStyleSize(
-              element.style.width,
-              this.style.width
-            );
-          }
-        }
-        if (this.style.height) {
-          if (element.style.top) {
-            element.style.top = this.calcFactoredStyleSize(
-              element.style.top,
-              this.style.height
-            );
-          }
-          if (element.style.height) {
-            element.style.height = this.calcFactoredStyleSize(
-              element.style.height,
-              this.style.height
-            );
-          }
-        }
-      }
-
-      this._elements.push(element);
-    });
-
-    this.updateElements();
-  }
-
   set hass(hass: HomeAssistant) {
     this._hass = hass;
 
     this.updateElements();
   }
 
-  protected connectedCallback() {
-    this.addEventListener("click", (ev) => {
-      if (ev.target !== this) {
-        ev.stopPropagation();
-        return;
-      }
-      this.toggleVisibility();
-    });
-  }
-
   private updateElements() {
     if (!this._hass || !this._config) {
       return;
     }
+
+    if (this._elements.length === 0) {
+      this._config!.elements.map((elementConfig: LovelaceElementConfig) => {
+        const element = createStyledHuiElement(elementConfig);
+
+        this._elements.push(element);
+      });
+    }
+
+    this.scaleElements();
 
     this._elements.map((el: LovelaceElement) => {
       if (this._visible) {
@@ -132,6 +100,50 @@ class HuiGroupElement extends HTMLElement implements LovelaceElement {
     this._visible = !this._visible;
 
     this.updateElements();
+  }
+
+  private scaleElements() {
+    if (this._scaled) {
+      return;
+    }
+
+    if (this._autoScale) {
+      this._elements.map((element) => {
+        // adjust element dimensions according to parent
+        if (this.style.width) {
+          if (element.style.left) {
+            element.style.left = this.calcFactoredStyleSize(
+              element.style.left,
+              this.style.width
+            );
+            this._scaled = true;
+          }
+          if (element.style.width) {
+            element.style.width = this.calcFactoredStyleSize(
+              element.style.width,
+              this.style.width
+            );
+            this._scaled = true;
+          }
+        }
+        if (this.style.height) {
+          if (element.style.top) {
+            element.style.top = this.calcFactoredStyleSize(
+              element.style.top,
+              this.style.height
+            );
+            this._scaled = true;
+          }
+          if (element.style.height) {
+            element.style.height = this.calcFactoredStyleSize(
+              element.style.height,
+              this.style.height
+            );
+            this._scaled = true;
+          }
+        }
+      });
+    }
   }
 
   private calcFactoredStyleSize(value: string, factor: string): string {
