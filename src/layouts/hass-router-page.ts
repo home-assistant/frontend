@@ -45,6 +45,7 @@ export class HassRouterPage extends UpdatingElement {
     [route: string]: RouteOptions;
   };
   private _currentPage = "";
+  private _currentLoadProm?: Promise<void>;
   private _cache = {};
 
   protected update(changedProps: PropertyValues) {
@@ -126,15 +127,21 @@ export class HassRouterPage extends UpdatingElement {
       this.appendChild(this.createLoadingScreen());
     }, LOADING_SCREEN_THRESHOLD);
 
-    loadProm.then(() => {
-      // Check if we're still trying to show the same page.
-      if (this._currentPage !== newPage) {
-        return;
-      }
+    this._currentLoadProm = loadProm.then(
+      () => {
+        this._currentLoadProm = undefined;
+        // Check if we're still trying to show the same page.
+        if (this._currentPage !== newPage) {
+          return;
+        }
 
-      created = true;
-      this._createPanel(routerOptions, newPage, routeOptions);
-    });
+        created = true;
+        this._createPanel(routerOptions, newPage, routeOptions);
+      },
+      () => {
+        this._currentLoadProm = undefined;
+      }
+    );
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -152,7 +159,11 @@ export class HassRouterPage extends UpdatingElement {
     return document.createElement("hass-loading-screen");
   }
 
-  // Rebuild the current panel.
+  /**
+   * Rebuild the current panel.
+   *
+   * Promise will resolve when rebuilding is done and DOM updated.
+   */
   protected async rebuild(): Promise<void> {
     const oldRoute = this.route;
 
@@ -166,6 +177,13 @@ export class HassRouterPage extends UpdatingElement {
     if (this.route === undefined) {
       this.route = oldRoute;
     }
+  }
+
+  /**
+   * Promise that resolves when the page has rendered.
+   */
+  protected get pageRendered(): Promise<void> {
+    return this.updateComplete.then(() => this._currentLoadProm);
   }
 
   protected updatePageEl(_pageEl, _changedProps?: PropertyValues) {

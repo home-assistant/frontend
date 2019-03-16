@@ -1,4 +1,9 @@
-import { property, customElement, PropertyValues } from "lit-element";
+import {
+  property,
+  customElement,
+  PropertyValues,
+  LitElement,
+} from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
 
 import { HomeAssistant, Panels } from "../types";
@@ -80,8 +85,7 @@ class PartialPanelResolver extends HassRouterPage {
     const oldHass = changedProps.get("hass") as this["hass"];
 
     if (!oldHass || oldHass.panels !== this.hass!.panels) {
-      this.routerOptions = getRoutes(this.hass!.panels);
-      this.rebuild();
+      this._updateRoutes();
     }
   }
 
@@ -107,6 +111,17 @@ class PartialPanelResolver extends HassRouterPage {
       el.narrow = this.narrow;
       el.route = this.routeTail;
       el.panel = hass.panels[hass.panelUrl];
+    }
+  }
+
+  private async _updateRoutes() {
+    this.routerOptions = getRoutes(this.hass!.panels);
+    await this.rebuild();
+    await this.pageRendered;
+
+    const initEl = document.getElementById("ha-init-skeleton");
+    if (initEl) {
+      initEl.parentElement!.removeChild(initEl);
     }
   }
 }
