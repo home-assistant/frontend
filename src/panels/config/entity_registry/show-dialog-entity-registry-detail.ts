@@ -6,7 +6,9 @@ import {
 
 export interface EntityRegistryDetailDialogParams {
   entry: EntityRegistryEntry;
+  matchingEntities: EntityRegistryEntry[];
   updateEntry: (
+    entityId: string,
     updates: Partial<EntityRegistryEntryUpdateParams>
   ) => Promise<unknown>;
   removeEntry: () => Promise<boolean>;

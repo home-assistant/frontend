@@ -123,16 +123,28 @@ class HaConfigEntityRegistry extends LitElement {
 
   private _openEditEntry(ev: MouseEvent): void {
     const entry = (ev.currentTarget! as any).entry;
+    const entryName = computeEntityRegistryName(this.hass!, entry);
+    const entityIdPattern = entry.entity_id.split(".").pop();
+
+    const matchingEntities = this._items.filter((e) => {
+      const en = computeEntityRegistryName(this.hass!, e);
+      return (e !== entry &&
+        en.indexOf(entryName) === 0 &&
+        e.entity_id.indexOf(entityIdPattern) !== -1
+      );
+    });
+
     showEntityRegistryDetailDialog(this, {
       entry,
-      updateEntry: async (updates) => {
+      matchingEntities,
+      updateEntry: async (entityId, updates) => {
         const updated = await updateEntityRegistryEntry(
           this.hass!,
-          entry.entity_id,
+          entityId,
           updates
         );
         this._items = this._items!.map((ent) =>
-          ent === entry ? updated : ent
+          ent.entity_id === entityId ? updated : ent
         );
       },
       removeEntry: async () => {
