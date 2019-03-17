@@ -214,11 +214,11 @@ export class HassRouterPage extends UpdatingElement {
     const dividerPos = route.path.indexOf("/", 1);
     return dividerPos === -1
       ? {
-          prefix: route.path,
+          prefix: route.prefix + route.path,
           path: "",
         }
       : {
-          prefix: route.path.substr(0, dividerPos),
+          prefix: route.prefix + route.path.substr(0, dividerPos),
           path: route.path.substr(dividerPos),
         };
   }

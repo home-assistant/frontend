@@ -18,13 +18,13 @@ class HaConfigAutomation extends PolymerElement {
       </style>
       <app-route
         route="[[route]]"
-        pattern="/automation/edit/:automation"
+        pattern="/edit/:automation"
         data="{{_routeData}}"
         active="{{_edittingAutomation}}"
       ></app-route>
       <app-route
         route="[[route]]"
-        pattern="/automation/new"
+        pattern="/new"
         active="{{_creatingNew}}"
       ></app-route>
 
