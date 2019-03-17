@@ -66,7 +66,7 @@ class HaConfigAreaRegistry extends LitElement {
                 "ui.panel.config.area_registry.picker.introduction2"
               )}
             </p>
-            <a href="/config/integrations">
+            <a href="/config/integrations/dashboard">
               ${this.hass.localize(
                 "ui.panel.config.area_registry.picker.integrations_page"
               )}
