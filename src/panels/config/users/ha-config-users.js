@@ -19,7 +19,7 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
     return html`
       <app-route
         route="[[route]]"
-        pattern="/users/:user"
+        pattern="/:user"
         data="{{_routeData}}"
       ></app-route>
 
@@ -72,8 +72,6 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   }
 
   _checkRoute(route) {
-    if (!route || route.path.substr(0, 6) !== "/users") return;
-
     // prevent list getting under toolbar
     fireEvent(this, "iron-resize");
 
@@ -81,8 +79,8 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
       this._debouncer,
       timeOut.after(0),
       () => {
-        if (route.path === "/users") {
-          this.navigate("/config/users/picker", true);
+        if (route.path === "") {
+          this.navigate(`${route.prefix}/picker`, true);
         }
       }
     );
