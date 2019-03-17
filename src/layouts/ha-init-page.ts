@@ -8,6 +8,7 @@ import {
   CSSResult,
   css,
 } from "lit-element";
+import { removeInitSkeleton } from "../util/init-skeleton";
 
 class HaInitPage extends LitElement {
   public error?: boolean;
@@ -33,6 +34,10 @@ class HaInitPage extends LitElement {
           : "Loading data"}
       </div>
     `;
+  }
+
+  protected firstUpdated() {
+    removeInitSkeleton();
   }
 
   private _retry() {

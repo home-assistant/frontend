@@ -52,7 +52,9 @@ export class HassRouterPage extends UpdatingElement {
     super.update(changedProps);
 
     if (!changedProps.has("route")) {
-      if (this.lastChild) {
+      // Do not update if we have a currentLoadProm, because that means
+      // that there is still an old panel shown and we're moving to a new one.
+      if (this.lastChild && !this._currentLoadProm) {
         this.updatePageEl(this.lastChild, changedProps);
       }
       return;
@@ -214,11 +216,11 @@ export class HassRouterPage extends UpdatingElement {
     const dividerPos = route.path.indexOf("/", 1);
     return dividerPos === -1
       ? {
-          prefix: route.path,
+          prefix: route.prefix + route.path,
           path: "",
         }
       : {
-          prefix: route.path.substr(0, dividerPos),
+          prefix: route.prefix + route.path.substr(0, dividerPos),
           path: route.path.substr(dividerPos),
         };
   }
