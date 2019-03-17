@@ -90,12 +90,12 @@ class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this._loadData();
     this.addEventListener("hass-reload-entries", () => this._loadData());
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this._loadData();
 
     this.hass.connection
       .subscribeEvents(() => {
