@@ -121,7 +121,7 @@ class HaPanelConfig extends HassRouterPage {
   }
 
   protected updatePageEl(el) {
-    el.route = this.route;
+    el.route = this.routeTail;
     el.hass = this.hass;
     el.isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;
     el.cloudStatus = this._cloudStatus;
