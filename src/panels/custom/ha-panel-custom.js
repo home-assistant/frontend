@@ -38,7 +38,7 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
     delete window.customPanel;
     this._setProperties = null;
     while (this.lastChild) {
-      this.remove(this.lastChild);
+      this.removeChild(this.lastChild);
     }
 
     const config = panel.config._panel_custom;
@@ -95,7 +95,7 @@ It will have access to all data in Home Assistant.
       }
     </style>
     <iframe></iframe>
-    `;
+    `.trim();
     const iframeDoc = this.querySelector("iframe").contentWindow.document;
     iframeDoc.open();
     iframeDoc.write(`<script src='${window.customPanelJS}'></script>`);
