@@ -11,12 +11,8 @@ import "./ha-config-cloud-login";
 import "./ha-config-cloud-register";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 
-const LOGGED_IN_URLS = ["/cloud/account"];
-const NOT_LOGGED_IN_URLS = [
-  "/cloud/login",
-  "/cloud/register",
-  "/cloud/forgot-password",
-];
+const LOGGED_IN_URLS = ["/account"];
+const NOT_LOGGED_IN_URLS = ["/login", "/register", "/forgot-password"];
 
 /*
  * @appliesMixin NavigateMixin
@@ -26,7 +22,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
     return html`
       <app-route
         route="[[route]]"
-        pattern="/cloud/:page"
+        pattern="/:page"
         data="{{_routeData}}"
         tail="{{_routeTail}}"
       ></app-route>
@@ -121,8 +117,6 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
   }
 
   _checkRoute(route) {
-    if (!route || route.path.substr(0, 6) !== "/cloud") return;
-
     this._debouncer = Debouncer.debounce(
       this._debouncer,
       timeOut.after(0),

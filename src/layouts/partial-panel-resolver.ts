@@ -7,6 +7,7 @@ import {
   RouterOptions,
   RouteOptions,
 } from "./hass-router-page";
+import { removeInitSkeleton } from "../util/init-skeleton";
 
 const CACHE_COMPONENTS = ["lovelace", "states"];
 const COMPONENTS = {
@@ -113,11 +114,7 @@ class PartialPanelResolver extends HassRouterPage {
     this.routerOptions = getRoutes(this.hass!.panels);
     await this.rebuild();
     await this.pageRendered;
-
-    const initEl = document.getElementById("ha-init-skeleton");
-    if (initEl) {
-      initEl.parentElement!.removeChild(initEl);
-    }
+    removeInitSkeleton();
   }
 }
 

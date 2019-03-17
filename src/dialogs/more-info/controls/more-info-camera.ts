@@ -58,15 +58,13 @@ class MoreInfoCamera extends UpdatingElement {
     videoEl.muted = true;
 
     // tslint:disable-next-line
-    let Hls: HLSModule | undefined;
-
-    let hlsSupported =
-      videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+    const Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
+      .default as HLSModule;
+    let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
-      Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
-        .default as HLSModule;
-      hlsSupported = Hls.isSupported();
+      hlsSupported =
+        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
     if (hlsSupported) {
@@ -76,7 +74,7 @@ class MoreInfoCamera extends UpdatingElement {
           this.stateObj.entity_id
         );
 
-        if (Hls) {
+        if (Hls.isSupported()) {
           this._renderHLSPolyfill(videoEl, Hls, url);
         } else {
           this._renderHLSNative(videoEl, url);
