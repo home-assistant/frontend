@@ -15,7 +15,7 @@ class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
     return html`
       <app-route
         route="[[route]]"
-        pattern="/integrations/:page"
+        pattern="/:page"
         data="{{_routeData}}"
         tail="{{_routeTail}}"
       ></app-route>
@@ -90,12 +90,12 @@ class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this._loadData();
     this.addEventListener("hass-reload-entries", () => this._loadData());
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this._loadData();
 
     this.hass.connection
       .subscribeEvents(() => {
