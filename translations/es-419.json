@@ -81,8 +81,8 @@
                 "on": "Inseguro"
             },
             "presence": {
-                "off": "Fuera de Casa",
-                "on": "Casa"
+                "off": "Fuera de casa",
+                "on": "En casa"
             },
             "battery": {
                 "off": "Normal",
@@ -169,7 +169,7 @@
         "group": {
             "off": "Apagado",
             "on": "Encendido",
-            "home": "En Casa",
+            "home": "En casa",
             "not_home": "Fuera de Casa",
             "open": "Abierto",
             "opening": "Abriendo",
@@ -272,8 +272,8 @@
             "paused": "pausado"
         },
         "person": {
-            "home": "En Casa",
-            "not_home": "Fuera de Casa"
+            "home": "En casa",
+            "not_home": "Fuera de casa"
         }
     },
     "state_badge": {
@@ -284,9 +284,9 @@
         "alarm_control_panel": {
             "armed": "Activado",
             "disarmed": "Desactivado",
-            "armed_home": "Activado",
-            "armed_away": "Activado",
-            "armed_night": "Activado",
+            "armed_home": "Activada",
+            "armed_away": "Activada",
+            "armed_night": "Activada",
             "pending": "Pendiente",
             "arming": "Activando",
             "disarming": "Desarmar",
@@ -294,8 +294,8 @@
             "armed_custom_bypass": "Protegido"
         },
         "device_tracker": {
-            "home": "En Casa",
-            "not_home": "Fuera de Casa"
+            "home": "En casa",
+            "not_home": "Fuera de casa"
         },
         "person": {
             "home": "En casa",
@@ -369,7 +369,7 @@
                     "caption": "Automatización",
                     "description": "Crear y editar automatizaciones",
                     "picker": {
-                        "header": "Editor de automatización",
+                        "header": "Editor de automatizaciones",
                         "introduction": "El editor de automatización le permite crear y editar automatizaciones. Siga el enlace a continuación para leer las instrucciones y asegurarse de que haya configurado Home Assistant correctamente.",
                         "pick_automation": "Elija la automatización a editar",
                         "no_automations": "No pudimos encontrar ninguna automatización editable",
@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Gestión de red de Zigbee Home Automation",
                     "services": {
-                        "reconfigure": "Reconfigure el dispositivo ZHA (dispositivo de curación). Use esto si tiene problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrese de que esté activado y acepte los comandos cuando utilice este servicio."
+                        "reconfigure": "Reconfigure el dispositivo ZHA (dispositivo de curación). Use esto si tiene problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrese de que esté activado y acepte los comandos cuando utilice este servicio.",
+                        "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Registro de áreas",
                         "introduction": "Las áreas se utilizan para organizar donde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarlo a organizar su interfaz, permisos e integraciones con otros sistemas.",
                         "introduction2": "Para colocar dispositivos en un área, use el enlace a continuación para navegar a la página de integraciones y luego haga clic en una integración configurada para acceder a las tarjetas del dispositivo.",
-                        "integrations_page": "Página de integraciones"
+                        "integrations_page": "Página de integraciones",
+                        "no_areas": "¡Parece que aún no tienes áreas!",
+                        "create_area": "CREAR AREA"
                     },
                     "no_areas": "¡Parece que aún no tienes áreas!",
                     "create_area": "CREAR AREA",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Nombre",
                         "username": "Nombre de usuario",
-                        "password": "Contraseña"
+                        "password": "Contraseña",
+                        "password_confirm": "Confirmar contraseña"
                     },
                     "create_account": "Crear una cuenta",
                     "error": {
-                        "required_fields": "Completar todos los campos requeridos"
+                        "required_fields": "Completar todos los campos requeridos",
+                        "password_not_match": "Las contraseñas no coinciden"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administradores",
+        "system-users": "Usuarios",
+        "system-read-only": "Usuarios de solo lectura"
     }
 }
