@@ -40,6 +40,25 @@ module.exports = {
         isProdBuild ? "production" : "development"
       ),
     }),
+    new CopyWebpackPlugin([
+      "public",
+      "../node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js",
+      { from: "../public", to: "static" },
+      { from: "../build-translations/output", to: "static/translations" },
+      {
+        from: "../node_modules/leaflet/dist/leaflet.css",
+        to: "static/images/leaflet/",
+      },
+      {
+        from: "../node_modules/@polymer/font-roboto-local/fonts",
+        to: "static/fonts",
+      },
+      {
+        from: "../node_modules/leaflet/dist/images",
+        to: "static/images/leaflet/",
+      },
+    ]),
+    ...webpackBase.plugins,
     isProdBuild &&
       !isCI &&
       new CompressionPlugin({
