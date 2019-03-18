@@ -115,7 +115,7 @@ export class ZHAClusterAttributes extends LitElement {
           </div>
           ${this.showHelp
             ? html`
-                <div style="color: grey; padding: 16px">
+                <div class="help-text">
                   Select an attribute to view or set its value
                 </div>
               `
@@ -152,6 +152,13 @@ export class ZHAClusterAttributes extends LitElement {
         <mwc-button @click="${this._onGetZigbeeAttributeClick}"
           >Get Zigbee Attribute</mwc-button
         >
+        ${this.showHelp
+          ? html`
+              <div class="help-text2">
+                Get the value for the selected attribute
+              </div>
+            `
+          : ""}
         <ha-call-service-button
           .hass="${this.hass}"
           domain="zha"
@@ -165,6 +172,7 @@ export class ZHAClusterAttributes extends LitElement {
                 .hass="${this.hass}"
                 domain="zha"
                 service="set_zigbee_cluster_attribute"
+                class="help-text2"
               ></ha-service-description>
             `
           : ""}
@@ -311,6 +319,16 @@ export class ZHAClusterAttributes extends LitElement {
 
         [hidden] {
           display: none;
+        }
+        .help-text {
+          color: grey;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 16px;
+        }
+        .help-text2 {
+          color: grey;
+          padding: 16px;
         }
       `,
     ];

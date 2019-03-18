@@ -90,7 +90,7 @@ export class ZHAClusters extends LitElement {
       </div>
       ${this.showHelp
         ? html`
-            <div class="helpText">
+            <div class="help-text">
               Select cluster to view attributes and commands
             </div>
           `
@@ -143,9 +143,11 @@ export class ZHAClusters extends LitElement {
           padding-right: 28px;
           padding-bottom: 10px;
         }
-        .helpText {
+        .help-text {
           color: grey;
-          padding: 16px;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 16px;
         }
       `,
     ];

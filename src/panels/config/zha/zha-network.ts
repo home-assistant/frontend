@@ -59,6 +59,7 @@ export class ZHANetwork extends LitElement {
                     .hass="${this.hass}"
                     domain="zha"
                     service="permit"
+                    class="help-text2"
                   />
                 `
               : ""}
@@ -108,6 +109,11 @@ export class ZHANetwork extends LitElement {
 
         [hidden] {
           display: none;
+        }
+
+        .help-text2 {
+          color: grey;
+          padding: 16px;
         }
       `,
     ];

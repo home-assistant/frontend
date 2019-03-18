@@ -8,6 +8,12 @@ export interface ItemSelectedEvent {
   target?: PickerTarget;
 }
 
+export interface ZHADeviceRemovedEvent {
+  detail?: {
+    device?: ZHADevice;
+  };
+}
+
 export interface ChangeEvent {
   detail?: {
     value?: any;

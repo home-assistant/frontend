@@ -42,7 +42,11 @@ class ZHAAddDevicesPage extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <hass-subpage header="Zigbee Home Automation - Add Devices">
+      <hass-subpage
+        header="${this.hass!.localize(
+          "ui.panel.config.zha.add_device_page.header"
+        )}"
+      >
         ${this._active
           ? html`
               <h2>
@@ -50,7 +54,9 @@ class ZHAAddDevicesPage extends LitElement {
                   ?active="${this._active}"
                   alt="Searching"
                 ></paper-spinner>
-                Searching for ZHA Zigbee devices...
+                ${this.hass!.localize(
+                  "ui.panel.config.zha.add_device_page.spinner"
+                )}
               </h2>
             `
           : html`
@@ -69,6 +75,7 @@ class ZHAAddDevicesPage extends LitElement {
                         .hass="${this.hass}"
                         domain="zha"
                         service="permit"
+                        class="help-text"
                       />
                     `
                   : ""}
@@ -79,25 +86,32 @@ class ZHAAddDevicesPage extends LitElement {
               <div class="error">${this._error}</div>
             `
           : ""}
+        <div class="content-header"></div>
+        <div class="content">
+          ${this._discoveredDevices.length < 1
+            ? html`
+                <h4>
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.add_device_page.discovery_text"
+                  )}
+                </h4>
+              `
+            : html`
+                ${this._discoveredDevices.map(
+                  (device) => html`
+                    <zha-device-card
+                      class="card"
+                      .hass="${this.hass}"
+                      .device="${device}"
+                      .narrow="${true}"
+                      .showHelp="${this._showHelp}"
+                    ></zha-device-card>
+                  `
+                )}
+              `}
+        </div>
         <ha-textarea class="events" value="${this._formattedEvents}">
         </ha-textarea>
-        <div class="content-header">
-          <h4>
-            Discovered devices:
-          </h4>
-        </div>
-        <div class="content">
-          ${this._discoveredDevices.map(
-            (device) => html`
-              <zha-device-card
-                class="card"
-                .hass="${this.hass}"
-                .device="${device}"
-                .narrow="${true}"
-              ></zha-device-card>
-            `
-          )}
-        </div>
       </hass-subpage>
     `;
   }
@@ -152,11 +166,13 @@ class ZHAAddDevicesPage extends LitElement {
           margin: 16px;
         }
         .content {
-          min-height: 325px;
+          border-top: 1px solid var(--light-primary-color);
+          min-height: 500px;
           display: flex;
           flex-wrap: wrap;
           padding: 4px;
           justify-content: center;
+          overflow: scroll;
         }
         .error {
           color: var(--google-red-500);
@@ -178,7 +194,6 @@ class ZHAAddDevicesPage extends LitElement {
           flex: 1 0 300px;
           min-width: 0;
           max-width: 600px;
-          max-height: 450px;
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
@@ -187,8 +202,8 @@ class ZHAAddDevicesPage extends LitElement {
           margin: 16px;
           border-top: 1px solid var(--light-primary-color);
           padding-top: 16px;
-          min-height: 275px;
-          max-height: 275px;
+          min-height: 200px;
+          max-height: 200px;
           overflow: scroll;
         }
         .toggle-help-icon {
@@ -208,6 +223,10 @@ class ZHAAddDevicesPage extends LitElement {
         .search-button {
           margin-top: 16px;
           margin-left: 16px;
+        }
+        .help-text {
+          color: grey;
+          padding: 16px;
         }
       `,
     ];

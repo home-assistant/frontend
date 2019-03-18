@@ -107,7 +107,7 @@ export class ZHAClusterCommands extends LitElement {
           </div>
           ${this._showHelp
             ? html`
-                <div class="helpText">Select a command to interact with</div>
+                <div class="help-text">Select a command to interact with</div>
               `
             : ""}
           ${this._selectedCommandIndex !== -1
@@ -135,6 +135,7 @@ export class ZHAClusterCommands extends LitElement {
                           .hass="${this.hass}"
                           domain="zha"
                           service="issue_zigbee_cluster_command"
+                          class="help-text2"
                         ></ha-service-description>
                       `
                     : ""}
@@ -242,7 +243,14 @@ export class ZHAClusterCommands extends LitElement {
           position: relative;
         }
 
-        .helpText {
+        .help-text {
+          color: grey;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 16px;
+        }
+
+        .help-text2 {
           color: grey;
           padding: 16px;
         }
