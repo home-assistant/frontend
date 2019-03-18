@@ -1,9 +1,11 @@
 import {
   html,
+  css,
   LitElement,
   TemplateResult,
   customElement,
   property,
+  CSSResult,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -16,8 +18,10 @@ import { MapCardConfig } from "../../cards/hui-map-card";
 import { configElementStyle } from "./config-elements-style";
 import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
+import { PolymerChangedEvent } from "../../../../polymer-types";
 
 import "../../components/hui-entity-editor";
+import "../../components/hui-input-list-editor";
 
 const entitiesConfigStruct = struct.union([
   {
@@ -34,6 +38,7 @@ const cardConfigStruct = struct({
   aspect_ratio: "string?",
   default_zoom: "number?",
   entities: [entitiesConfigStruct],
+  geo_location_sources: "array?",
 });
 
 @customElement("hui-map-card-editor")
@@ -60,6 +65,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   get _default_zoom(): number {
     return this._config!.default_zoom || NaN;
+  }
+
+  get _geo_location_sources(): string[] {
+    return this._config!.geo_location_sources || [];
   }
 
   protected render(): TemplateResult | void {
@@ -94,31 +103,53 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         <hui-entity-editor
           .hass="${this.hass}"
           .entities="${this._configEntities}"
-          @entities-changed="${this._valueChanged}"
+          @entities-changed="${this._entitiesValueChanged}"
         ></hui-entity-editor>
+        <h3>Geolocation Sources</h3>
+        <div class="geo_location_sources">
+          <hui-input-list-editor
+            inputLabel="Source"
+            .hass="${this.hass}"
+            .value="${this._geo_location_sources}"
+            .configValue="${"geo_location_sources"}"
+            @value-changed="${this._valueChanged}"
+          ></hui-input-list-editor>
+        </div>
       </div>
     `;
   }
 
-  private _valueChanged(ev: EntitiesEditorEvent): void {
+  private _entitiesValueChanged(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
-      return;
-    }
-    const target = ev.target! as EditorTarget;
-    if (target.configValue && this[`_${target.configValue}`] === target.value) {
       return;
     }
     if (ev.detail && ev.detail.entities) {
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
-    } else if (target.configValue) {
+      fireEvent(this, "config-changed", { config: this._config });
+    }
+  }
+
+  private _valueChanged(ev: PolymerChangedEvent<any>): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const target = ev.target! as EditorTarget;
+    if (
+      target.configValue &&
+      ev.detail &&
+      this[`_${target.configValue}`] === ev.detail.value
+    ) {
+      return;
+    }
+    if (target.configValue && ev.detail) {
       if (
-        target.value === "" ||
-        (target.type === "number" && isNaN(Number(target.value)))
+        ev.detail.value === "" ||
+        (target.type === "number" && isNaN(Number(ev.detail.value)))
       ) {
         delete this._config[target.configValue!];
       } else {
-        let value: any = target.value;
+        let value: any = ev.detail.value;
         if (target.type === "number") {
           value = Number(value);
         }
@@ -129,6 +160,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .geo_location_sources {
+        padding-left: 20px;
+      }
+    `;
   }
 }
 

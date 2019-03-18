@@ -44,6 +44,7 @@ class DialogAreaDetail extends LitElement {
     if (!this._params) {
       return html``;
     }
+    const entry = this._params.entry;
     const nameInvalid = this._name.trim() === "";
     return html`
       <paper-dialog
@@ -52,8 +53,8 @@ class DialogAreaDetail extends LitElement {
         @opened-changed="${this._openedChanged}"
       >
         <h2>
-          ${this._params.entry
-            ? this._params.entry.name
+          ${entry
+            ? entry.name
             : this.hass.localize(
                 "ui.panel.config.area_registry.editor.default_name"
               )}
@@ -65,17 +66,23 @@ class DialogAreaDetail extends LitElement {
               `
             : ""}
           <div class="form">
+            ${entry
+              ? html`
+                  <div>Area ID: ${entry.area_id}</div>
+                `
+              : ""}
+
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              .label=${this.hass.localize("ui.dialogs.more_info_settings.name")}
+              label="Name"
               error-message="Name is required"
               .invalid=${nameInvalid}
             ></paper-input>
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          ${this._params.entry
+          ${entry
             ? html`
                 <mwc-button
                   class="warning"
@@ -92,7 +99,7 @@ class DialogAreaDetail extends LitElement {
             @click="${this._updateEntry}"
             .disabled=${nameInvalid || this._submitting}
           >
-            ${this._params.entry
+            ${entry
               ? this.hass.localize(
                   "ui.panel.config.area_registry.editor.update"
                 )
@@ -123,7 +130,7 @@ class DialogAreaDetail extends LitElement {
       }
       this._params = undefined;
     } catch (err) {
-      this._error = err;
+      this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;
     }

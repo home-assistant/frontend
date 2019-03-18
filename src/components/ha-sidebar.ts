@@ -22,6 +22,7 @@ import { DEFAULT_PANEL } from "../common/const";
 const computeUrl = (urlPath) => `/${urlPath}`;
 
 const computePanels = (hass: HomeAssistant) => {
+  const isAdmin = hass.user.is_admin;
   const panels = hass.panels;
   const sortValue = {
     map: 1,
@@ -30,9 +31,9 @@ const computePanels = (hass: HomeAssistant) => {
   };
   const result: Panel[] = [];
 
-  Object.keys(panels).forEach((key) => {
-    if (panels[key].title) {
-      result.push(panels[key]);
+  Object.values(panels).forEach((panel) => {
+    if (panel.title && (panel.component_name !== "config" || isAdmin)) {
+      result.push(panel);
     }
   });
 
@@ -129,62 +130,66 @@ class HaSidebar extends LitElement {
           : html``}
       </paper-listbox>
 
-      <div>
-        <div class="divider"></div>
+      ${!hass.user.is_admin
+        ? ""
+        : html`
+            <div>
+              <div class="divider"></div>
 
-        <div class="subheader">
-          ${hass.localize("ui.sidebar.developer_tools")}
-        </div>
+              <div class="subheader">
+                ${hass.localize("ui.sidebar.developer_tools")}
+              </div>
 
-        <div class="dev-tools">
-          <a href="/dev-service" tabindex="-1">
-            <paper-icon-button
-              icon="hass:remote"
-              alt="${hass.localize("panel.dev-services")}"
-              title="${hass.localize("panel.dev-services")}"
-            ></paper-icon-button>
-          </a>
-          <a href="/dev-state" tabindex="-1">
-            <paper-icon-button
-              icon="hass:code-tags"
-              alt="${hass.localize("panel.dev-states")}"
-              title="${hass.localize("panel.dev-states")}"
-            ></paper-icon-button>
-          </a>
-          <a href="/dev-event" tabindex="-1">
-            <paper-icon-button
-              icon="hass:radio-tower"
-              alt="${hass.localize("panel.dev-events")}"
-              title="${hass.localize("panel.dev-events")}"
-            ></paper-icon-button>
-          </a>
-          <a href="/dev-template" tabindex="-1">
-            <paper-icon-button
-              icon="hass:file-xml"
-              alt="${hass.localize("panel.dev-templates")}"
-              title="${hass.localize("panel.dev-templates")}"
-            ></paper-icon-button>
-          </a>
-          ${isComponentLoaded(hass, "mqtt")
-            ? html`
-                <a href="/dev-mqtt" tabindex="-1">
+              <div class="dev-tools">
+                <a href="/dev-service" tabindex="-1">
                   <paper-icon-button
-                    icon="hass:altimeter"
-                    alt="${hass.localize("panel.dev-mqtt")}"
-                    title="${hass.localize("panel.dev-mqtt")}"
+                    icon="hass:remote"
+                    alt="${hass.localize("panel.dev-services")}"
+                    title="${hass.localize("panel.dev-services")}"
                   ></paper-icon-button>
                 </a>
-              `
-            : html``}
-          <a href="/dev-info" tabindex="-1">
-            <paper-icon-button
-              icon="hass:information-outline"
-              alt="${hass.localize("panel.dev-info")}"
-              title="${hass.localize("panel.dev-info")}"
-            ></paper-icon-button>
-          </a>
-        </div>
-      </div>
+                <a href="/dev-state" tabindex="-1">
+                  <paper-icon-button
+                    icon="hass:code-tags"
+                    alt="${hass.localize("panel.dev-states")}"
+                    title="${hass.localize("panel.dev-states")}"
+                  ></paper-icon-button>
+                </a>
+                <a href="/dev-event" tabindex="-1">
+                  <paper-icon-button
+                    icon="hass:radio-tower"
+                    alt="${hass.localize("panel.dev-events")}"
+                    title="${hass.localize("panel.dev-events")}"
+                  ></paper-icon-button>
+                </a>
+                <a href="/dev-template" tabindex="-1">
+                  <paper-icon-button
+                    icon="hass:file-xml"
+                    alt="${hass.localize("panel.dev-templates")}"
+                    title="${hass.localize("panel.dev-templates")}"
+                  ></paper-icon-button>
+                </a>
+                ${isComponentLoaded(hass, "mqtt")
+                  ? html`
+                      <a href="/dev-mqtt" tabindex="-1">
+                        <paper-icon-button
+                          icon="hass:altimeter"
+                          alt="${hass.localize("panel.dev-mqtt")}"
+                          title="${hass.localize("panel.dev-mqtt")}"
+                        ></paper-icon-button>
+                      </a>
+                    `
+                  : html``}
+                <a href="/dev-info" tabindex="-1">
+                  <paper-icon-button
+                    icon="hass:information-outline"
+                    alt="${hass.localize("panel.dev-info")}"
+                    title="${hass.localize("panel.dev-info")}"
+                  ></paper-icon-button>
+                </a>
+              </div>
+            </div>
+          `}
     `;
   }
 

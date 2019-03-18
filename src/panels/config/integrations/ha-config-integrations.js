@@ -10,12 +10,12 @@ import NavigateMixin from "../../../mixins/navigate-mixin";
 import compare from "../../../common/string/compare";
 import { fetchAreaRegistry } from "../../../data/area_registry";
 
-class HaConfigEntries extends NavigateMixin(PolymerElement) {
+class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
       <app-route
         route="[[route]]"
-        pattern="/integrations/:page"
+        pattern="/:page"
         data="{{_routeData}}"
         tail="{{_routeTail}}"
       ></app-route>
@@ -90,12 +90,12 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this._loadData();
     this.addEventListener("hass-reload-entries", () => this._loadData());
   }
 
   connectedCallback() {
     super.connectedCallback();
+    this._loadData();
 
     this.hass.connection
       .subscribeEvents(() => {
@@ -158,4 +158,4 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
   }
 }
 
-customElements.define("ha-config-entries", HaConfigEntries);
+customElements.define("ha-config-integrations", HaConfigIntegrations);

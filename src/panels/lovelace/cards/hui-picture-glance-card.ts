@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -39,18 +42,15 @@ interface Config extends LovelaceCardConfig {
   hold_action?: ActionConfig;
 }
 
+@customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
-  public hass?: HomeAssistant;
-  private _config?: Config;
-  private _entitiesDialog?: EntityConfig[];
-  private _entitiesToggle?: EntityConfig[];
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: Config;
+
+  private _entitiesDialog?: EntityConfig[];
+
+  private _entitiesToggle?: EntityConfig[];
 
   public getCardSize(): number {
     return 3;
@@ -91,7 +91,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card>
         <hui-image
           class="${classMap({
@@ -177,44 +176,52 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     toggleEntity(this.hass!, (ev.target as any).entity);
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-card {
-          position: relative;
-          min-height: 48px;
-          overflow: hidden;
-        }
-        hui-image.clickable {
-          cursor: pointer;
-        }
-        .box {
-          @apply --paper-font-common-nowrap;
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.3);
-          padding: 4px 8px;
-          font-size: 16px;
-          line-height: 40px;
-          color: white;
-          display: flex;
-          justify-content: space-between;
-        }
-        .box .title {
-          font-weight: 500;
-          margin-left: 8px;
-        }
-        ha-icon {
-          cursor: pointer;
-          padding: 8px;
-          color: #a9a9a9;
-        }
-        ha-icon.state-on {
-          color: white;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-card {
+        position: relative;
+        min-height: 48px;
+        overflow: hidden;
+      }
+
+      hui-image.clickable {
+        cursor: pointer;
+      }
+
+      .box {
+        /* start paper-font-common-nowrap style */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* end paper-font-common-nowrap style */
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 4px 8px;
+        font-size: 16px;
+        line-height: 40px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .box .title {
+        font-weight: 500;
+        margin-left: 8px;
+      }
+
+      ha-icon {
+        cursor: pointer;
+        padding: 8px;
+        color: #a9a9a9;
+      }
+
+      ha-icon.state-on {
+        color: white;
+      }
     `;
   }
 }
@@ -224,5 +231,3 @@ declare global {
     "hui-picture-glance-card": HuiPictureGlanceCard;
   }
 }
-
-customElements.define("hui-picture-glance-card", HuiPictureGlanceCard);

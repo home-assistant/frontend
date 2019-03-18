@@ -18,7 +18,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { SaveDialogParams } from "./show-save-config-dialog";
 
-@customElement("hui-save-config")
+@customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement {
   @property() public hass?: HomeAssistant;
 

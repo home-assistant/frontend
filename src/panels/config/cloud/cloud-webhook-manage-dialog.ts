@@ -17,8 +17,8 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 import { HomeAssistant } from "../../../types";
-import { WebhookDialogParams } from "./types";
 import { haStyle } from "../../../resources/styles";
+import { WebhookDialogParams } from "./show-cloud-webhook-manage-dialog";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
@@ -60,10 +60,17 @@ export class CloudWebhookManageDialog extends LitElement {
             @blur="${this._restoreLabel}"
           ></paper-input>
           <p>
-            If you no longer want to use this webhook, you can
-            <button class="link" @click="${this._disableWebhook}">
-              disable it</button
-            >.
+            ${cloudhook.managed
+              ? html`
+                  This webhook is managed by an integration and cannot be
+                  disabled.
+                `
+              : html`
+                  If you no longer want to use this webhook, you can
+                  <button class="link" @click="${this._disableWebhook}">
+                    disable it</button
+                  >.
+                `}
           </p>
         </div>
 

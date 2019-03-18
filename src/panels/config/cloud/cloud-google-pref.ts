@@ -3,6 +3,8 @@ import {
   LitElement,
   PropertyDeclarations,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
@@ -13,9 +15,8 @@ import "../../../components/buttons/ha-call-api-button";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
-import { updatePref } from "./data";
-import { CloudStatusLoggedIn } from "./types";
 import "./cloud-exposed-entities";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
 
 export class CloudGooglePref extends LitElement {
   public hass?: HomeAssistant;
@@ -36,7 +37,6 @@ export class CloudGooglePref extends LitElement {
     const { google_enabled, google_allow_unlock } = this.cloudStatus.prefs;
 
     return html`
-      ${this.renderStyle()}
       <paper-card heading="Google Assistant">
         <paper-toggle-button
           id="google_enabled"
@@ -58,7 +58,7 @@ export class CloudGooglePref extends LitElement {
             </li>
             <li>
               <a
-                href="https://www.home-assistant.io/cloud/google_assistant/"
+                href="https://www.nabucasa.com/config/google_assistant/"
                 target="_blank"
               >
                 Config documentation
@@ -103,37 +103,35 @@ export class CloudGooglePref extends LitElement {
   private async _toggleChanged(ev) {
     const toggle = ev.target as PaperToggleButtonElement;
     try {
-      await updatePref(this.hass!, { [toggle.id]: toggle.checked! });
+      await updateCloudPref(this.hass!, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       toggle.checked = !toggle.checked;
     }
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        a {
-          color: var(--primary-color);
-        }
-        paper-card > paper-toggle-button {
-          position: absolute;
-          right: 8px;
-          top: 16px;
-        }
-        ha-call-api-button {
-          color: var(--primary-color);
-          font-weight: 500;
-        }
-        .unlock {
-          display: flex;
-          flex-direction: row;
-          padding-top: 16px;
-        }
-        .unlock > div {
-          flex: 1;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      a {
+        color: var(--primary-color);
+      }
+      paper-card > paper-toggle-button {
+        position: absolute;
+        right: 8px;
+        top: 16px;
+      }
+      ha-call-api-button {
+        color: var(--primary-color);
+        font-weight: 500;
+      }
+      .unlock {
+        display: flex;
+        flex-direction: row;
+        padding-top: 16px;
+      }
+      .unlock > div {
+        flex: 1;
+      }
     `;
   }
 }

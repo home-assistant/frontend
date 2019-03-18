@@ -75,11 +75,6 @@ class HaConfigSection extends PolymerElement {
         type: Boolean,
       },
 
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       isWide: {
         type: Boolean,
         value: false,

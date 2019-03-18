@@ -1,11 +1,12 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
   CSSResult,
   css,
+  customElement,
+  property,
 } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
 import { styleMap } from "lit-html/directives/style-map";
@@ -19,11 +20,13 @@ import stateIcon from "../../../common/entity/state_icon";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import computeDomain from "../../../common/entity/compute_domain";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
+import { DOMAINS_TOGGLE } from "../../../common/const";
 
 export interface Config extends LovelaceCardConfig {
   entity: string;
@@ -34,6 +37,7 @@ export interface Config extends LovelaceCardConfig {
   hold_action?: ActionConfig;
 }
 
+@customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-entity-button-card-editor" */ "../editor/config-elements/hui-entity-button-card-editor");
@@ -42,20 +46,14 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(): object {
     return {
-      tap_action: { action: "more-info" },
-      hold_action: { action: "none" },
+      tap_action: { action: "toggle" },
+      hold_action: { action: "more-info" },
     };
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: Config;
 
   public getCardSize(): number {
     return 2;
@@ -66,7 +64,27 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Entity");
     }
 
-    this._config = { theme: "default", ...config };
+    this._config = {
+      theme: "default",
+      hold_action: { action: "more-info" },
+      ...config,
+    };
+
+    if (DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
+      this._config = {
+        tap_action: {
+          action: "toggle",
+        },
+        ...this._config,
+      };
+    } else {
+      this._config = {
+        tap_action: {
+          action: "more-info",
+        },
+        ...this._config,
+      };
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -147,11 +165,13 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         padding: 4% 0;
         font-size: 1.2rem;
       }
+
       ha-icon {
         width: 40%;
         height: auto;
         color: var(--paper-item-icon-color, #44739e);
       }
+
       ha-icon[data-domain="light"][data-state="on"],
       ha-icon[data-domain="switch"][data-state="on"],
       ha-icon[data-domain="binary_sensor"][data-state="on"],
@@ -159,6 +179,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       ha-icon[data-domain="sun"][data-state="above_horizon"] {
         color: var(--paper-item-icon-active-color, #fdd835);
       }
+
       ha-icon[data-state="unavailable"] {
         color: var(--state-icon-unavailable-color);
       }
@@ -198,5 +219,3 @@ declare global {
     "hui-entity-button-card": HuiEntityButtonCard;
   }
 }
-
-customElements.define("hui-entity-button-card", HuiEntityButtonCard);

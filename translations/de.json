@@ -328,7 +328,7 @@
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
-                    "description": "Überprüfe deine Konfigurationsdatei und steuer den Server",
+                    "description": "Überprüfe deine Konfigurationsdatei und steuere den Server",
                     "section": {
                         "core": {
                             "header": "Einstellungen und Serversteuerung",
@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation Netzwerkmanagement",
                     "services": {
-                        "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt."
+                        "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt.",
+                        "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Bereichsregister",
                         "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um dich bei der Organisation deiner Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
                         "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen.",
-                        "integrations_page": "Integrationsseite"
+                        "integrations_page": "Integrationsseite",
+                        "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
+                        "create_area": "BEREICH ERSTELLEN"
                     },
                     "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
                     "create_area": "BEREICH ERSTELLEN",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Name",
                         "username": "Benutzername",
-                        "password": "Passwort"
+                        "password": "Passwort",
+                        "password_confirm": "Passwort bestätigen"
                     },
                     "create_account": "Benutzerkonto anlegen",
                     "error": {
-                        "required_fields": "Fülle alle Pflichtfelder aus."
+                        "required_fields": "Fülle alle Pflichtfelder aus.",
+                        "password_not_match": "Passwörter stimmen nicht überein"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administratoren",
+        "system-users": "Benutzer",
+        "system-read-only": "Nur-Lesen Benutzer"
     }
 }

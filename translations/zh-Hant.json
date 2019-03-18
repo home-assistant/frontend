@@ -421,7 +421,7 @@
                                     "value_template": "數值模板（選項）"
                                 },
                                 "sun": {
-                                    "label": "日出日落",
+                                    "label": "日出\/日落",
                                     "event": "事件：",
                                     "sunrise": "日出",
                                     "sunset": "日落",
@@ -485,7 +485,7 @@
                                     "value_template": "數值模板後（選項）"
                                 },
                                 "sun": {
-                                    "label": "日出日落",
+                                    "label": "日出\/日落",
                                     "before": "在...之前",
                                     "after": "在...之後",
                                     "before_offset": "偏移前（選項）",
@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee 家庭自動化網路管理",
                     "services": {
-                        "reconfigure": "重新設定 ZHA Zibgee 裝置（健康裝置）。假如遇到裝置問題，請使用此選項。假如有問題的裝置為使用電池的裝置，請先確定裝置已喚醒並處於接受命令狀態。"
+                        "reconfigure": "重新設定 ZHA Zibgee 裝置（健康裝置）。假如遇到裝置問題，請使用此選項。假如有問題的裝置為使用電池的裝置，請先確定裝置已喚醒並處於接受命令狀態。",
+                        "updateDeviceName": "於物件 ID 中自訂此設備名稱。"
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "分區 ID",
                         "introduction": "分區主要用以管理裝置所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
                         "introduction2": "欲於分區中放置裝置，請使用下方連結至整合頁面，並點選設定整合以設定裝置卡片。",
-                        "integrations_page": "整合頁面"
+                        "integrations_page": "整合頁面",
+                        "no_areas": "看起來你還沒有建立分區！",
+                        "create_area": "建立分區"
                     },
                     "no_areas": "看起來你還沒有建立分區！",
                     "create_area": "建立分區",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "名字",
                         "username": "使用者名稱",
-                        "password": "使用者密碼"
+                        "password": "使用者密碼",
+                        "password_confirm": "確認密碼"
                     },
                     "create_account": "創建帳號",
                     "error": {
-                        "required_fields": "填寫所有所需欄位"
+                        "required_fields": "填寫所有所需欄位",
+                        "password_not_match": "密碼不相符"
                     }
                 }
             },
@@ -883,7 +888,7 @@
                         "save": "自行編輯"
                     },
                     "menu": {
-                        "raw_editor": "文字設定編輯器"
+                        "raw_editor": "文字模式編輯器"
                     },
                     "raw_editor": {
                         "header": "編輯設定",
@@ -893,8 +898,8 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "設定 UI",
-                    "unused_entities": "未使用物件",
+                    "configure_ui": "介面設定",
+                    "unused_entities": "未顯示物件",
                     "help": "說明",
                     "refresh": "更新"
                 },
@@ -1128,9 +1133,9 @@
         "scene": "場景",
         "script": "腳本",
         "sensor": "傳感器",
-        "sun": "日出日落",
+        "sun": "太陽",
         "switch": "開關",
-        "updater": "更新器",
+        "updater": "更新版本",
         "weblink": "網站鏈接",
         "zwave": "Z-Wave",
         "vacuum": "吸塵器",
@@ -1156,5 +1161,10 @@
                 "auto": "自動模式"
             }
         }
+    },
+    "groups": {
+        "system-admin": "管理員",
+        "system-users": "用戶",
+        "system-read-only": "唯讀用戶"
     }
 }

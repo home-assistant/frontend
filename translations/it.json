@@ -370,7 +370,7 @@
                     "description": "Crea e modifica automazioni",
                     "picker": {
                         "header": "Editor automazione",
-                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi [le istruzioni](https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assicurarti di aver configurato correttamente Home Assistant.",
+                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi le istruzioni (https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assicurarti di aver configurato correttamente Home Assistant.",
                         "pick_automation": "Scegli l'automazione da modificare",
                         "no_automations": "Nessuna automazione modificabile trovata",
                         "add_automation": "Aggiungi automazione",
@@ -593,7 +593,7 @@
                         "no_devices": "Questa integrazione non ha dispositivi.",
                         "no_device": "Entità senza dispositivi",
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
-                        "restart_confirm": "Riavvia Home Assistant per terminare la rimozione di questa integrazione",
+                        "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "manuf": "da {manufacturer}",
                         "hub": "Connesso tramite",
                         "firmware": "Firmware: {version}",

@@ -345,7 +345,7 @@
                                 "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
                                 "core": "Przeładuj rdzeń",
                                 "group": "Przeładuj grupy",
-                                "automation": "Przeładuj automatyzacje",
+                                "automation": "Przeładuj reguły automatyzacji",
                                 "script": "Przeładuj skrypty"
                             },
                             "server_management": {
@@ -370,7 +370,7 @@
                     "description": "Twórz i edytuj reguły automatyzacji",
                     "picker": {
                         "header": "Edytor automatyzacji",
-                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować reguły automatyzacji. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant'a.",
+                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować reguły automatyzacji. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie skonfigurować reguły automatyzacji w Home Assistant.",
                         "pick_automation": "Wybierz regułę automatyzacji do edycji",
                         "no_automations": "Nie znaleziono żadnych edytowalnych reguł automatyzacji",
                         "add_automation": "Dodaj regułę automatyzacji",
@@ -384,7 +384,7 @@
                         "alias": "Nazwa",
                         "triggers": {
                             "header": "Wyzwalacze",
-                            "introduction": "Wyzwalacze uruchamiają przetwarzanie reguły automatyzacji. Możliwe jest określenie wielu wyzwalaczy dla tej samej reguły. Po uruchomieniu wyzwalacza Home Assistant potwierdzi ewentualne warunki i wywoła akcję. \n\n[Dowiedz się więcej o wyzwalaczach.](Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Wyzwalacze uruchamiają przetwarzanie reguły automatyzacji. Możliwe jest stworzenie wielu wyzwalaczy dla tej samej reguły. Po uruchomieniu wyzwalacza Home Assistant sprawdzi ewentualne warunki i wywoła akcje.",
                             "add": "Dodaj wyzwalacz",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -399,8 +399,8 @@
                                 },
                                 "state": {
                                     "label": "Stan",
-                                    "from": "Od",
-                                    "to": "Do",
+                                    "from": "Z",
+                                    "to": "Na",
                                     "for": "Przez"
                                 },
                                 "homeassistant": {
@@ -466,7 +466,7 @@
                         },
                         "conditions": {
                             "header": "Warunki",
-                            "introduction": "Warunki są opcjonalną częścią reguły automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest włączony. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony. \n\n[Dowiedz się więcej o warunkach.](Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Warunki są opcjonalną częścią reguły automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest przełączany. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony. ",
                             "add": "Dodaj warunek",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -512,7 +512,7 @@
                         },
                         "actions": {
                             "header": "Akcje",
-                            "introduction": "Akcje są wykonywane przez Home Assistant'a po uruchomieniu automatyki. \n\n[Dowiedz się więcej o akcjach.](Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcje są wykonywane przez Home Assistant'a po uruchomieniu reguły automatyzacji.",
                             "add": "Dodaj akcję",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -599,29 +599,32 @@
                         "firmware": "Oprogramowanie: {version}",
                         "device_unavailable": "urządzenie niedostępne",
                         "entity_unavailable": "encja niedostępna",
-                        "no_area": "Brak lokalizacji"
+                        "no_area": "Brak obszaru"
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
                     "description": "Zarządzanie siecią automatyki domowej ZigBee",
                     "services": {
-                        "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tej usługi, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji."
+                        "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tej usługi, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",
+                        "updateDeviceName": "Ustaw niestandardową nazwę tego urządzenia w rejestrze urządzeń."
                     }
                 },
                 "area_registry": {
-                    "caption": "Rejestr lokalizacji",
-                    "description": "Przegląd wszystkich lokalizacji w twoim domu.",
+                    "caption": "Rejestr obszarów",
+                    "description": "Przegląd wszystkich obszarów w twoim domu.",
                     "picker": {
-                        "header": "Rejestr lokalizacji",
+                        "header": "Rejestr obszarów",
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
-                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij na skonfigurowaną integrację, aby dostać się do kart urządzeń.",
-                        "integrations_page": "Strona integracji"
+                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń.",
+                        "integrations_page": "Strona integracji",
+                        "no_areas": "Wygląda na to, że nie masz jeszcze lokalizacji!",
+                        "create_area": "UTWÓRZ OBSZAR"
                     },
-                    "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych lokalizacji!",
-                    "create_area": "STWÓRZ LOKALIZACJĘ",
+                    "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych obszarów!",
+                    "create_area": "STWÓRZ OBSZAR",
                     "editor": {
-                        "default_name": "Nowa lokalizacja",
+                        "default_name": "Nowy obszar",
                         "delete": "USUŃ",
                         "update": "UAKTUALNIJ",
                         "create": "STWÓRZ"
@@ -639,7 +642,7 @@
                     },
                     "editor": {
                         "unavailable": "Ta encja nie jest obecnie dostępna.",
-                        "default_name": "Nowa lokalizacja",
+                        "default_name": "Nowy obszar",
                         "delete": "USUŃ",
                         "update": "UAKTUALNIJ"
                     }
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Imię",
                         "username": "Nazwa użytkownika",
-                        "password": "Hasło"
+                        "password": "Hasło",
+                        "password_confirm": "Potwierdź hasło"
                     },
                     "create_account": "Utwórz konto",
                     "error": {
-                        "required_fields": "Wypełnij wszystkie wymagane pola"
+                        "required_fields": "Wypełnij wszystkie wymagane pola",
+                        "password_not_match": "Hasła nie są takie same"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administratorzy",
+        "system-users": "Użytkownicy",
+        "system-read-only": "Użytkownicy (tylko odczyt)"
     }
 }

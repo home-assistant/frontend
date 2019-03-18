@@ -1,4 +1,7 @@
 {
+  "af": {
+    "nativeName": "Afrikaans"
+  },
   "ar": {
     "nativeName": "العربية",
     "isRTL": true
@@ -38,6 +41,9 @@
   },
   "et": {
     "nativeName": "Eesti"
+  },
+  "eu": {
+    "nativeName": "Euskara"
   },
   "fa": {
     "nativeName": "فارسی"

@@ -1,8 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -17,22 +20,18 @@ export interface Config extends LovelaceCardConfig {
   title?: string;
 }
 
+@customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-markdown-card-editor" */ "../editor/config-elements/hui-markdown-card-editor");
     return document.createElement("hui-markdown-card-editor");
   }
+
   public static getStubConfig(): object {
     return { content: " " };
   }
 
-  private _config?: Config;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _config: {},
-    };
-  }
+  @property() private _config?: Config;
 
   public getCardSize(): number {
     return this._config!.content.split("\n").length;
@@ -52,7 +51,6 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card .header="${this._config.title}">
         <ha-markdown
           class="markdown ${classMap({
@@ -64,35 +62,39 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          @apply --paper-font-body1;
-        }
-        ha-markdown {
-          display: block;
-          padding: 0 16px 16px;
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
-        }
-        .markdown.no-header {
-          padding-top: 16px;
-        }
-        ha-markdown > *:first-child {
-          margin-top: 0;
-        }
-        ha-markdown > *:last-child {
-          margin-bottom: 0;
-        }
-        ha-markdown a {
-          color: var(--primary-color);
-        }
-        ha-markdown img {
-          max-width: 100%;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        /* start paper-font-body1 style */
+        font-family: "Roboto", "Noto", sans-serif;
+        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        /* end paper-font-body1 style */
+      }
+      ha-markdown {
+        display: block;
+        padding: 0 16px 16px;
+        -ms-user-select: initial;
+        -webkit-user-select: initial;
+        -moz-user-select: initial;
+      }
+      .markdown.no-header {
+        padding-top: 16px;
+      }
+      ha-markdown > *:first-child {
+        margin-top: 0;
+      }
+      ha-markdown > *:last-child {
+        margin-bottom: 0;
+      }
+      ha-markdown a {
+        color: var(--primary-color);
+      }
+      ha-markdown img {
+        max-width: 100%;
+      }
     `;
   }
 }
@@ -102,5 +104,3 @@ declare global {
     "hui-markdown-card": HuiMarkdownCard;
   }
 }
-
-customElements.define("hui-markdown-card", HuiMarkdownCard);

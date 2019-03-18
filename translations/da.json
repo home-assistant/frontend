@@ -296,6 +296,10 @@
         "device_tracker": {
             "home": "Hjemme",
             "not_home": "Ude"
+        },
+        "person": {
+            "home": "Hjemme",
+            "not_home": "Ikke hjemme"
         }
     },
     "ui": {
@@ -380,7 +384,7 @@
                         "alias": "Navn",
                         "triggers": {
                             "header": "Udløser",
-                            "introduction": "Udløsere er, hvad der begynder behandlingen af en automatiseringsregel. Det er muligt at angive flere udløsere for samme regel. Når en udløser starter, vil Home Assistant validere betingelserne, hvis nogen, og udføre handlingen. \n\n [Lær mere om udløsere.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Udløsere er, hvad der begynder behandlingen af en automatiseringsregel. Det er muligt at angive flere udløsere for samme regel. Når en udløser starter, vil Home Assistant validere eventuelle betingelser og udføre handlingen. \n\n [Lær mere om udløsere.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Tilføj udløser",
                             "duplicate": "Kopier",
                             "delete": "Slet",
@@ -462,7 +466,7 @@
                         },
                         "conditions": {
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del af en automatiseringsregel og kan bruges til at forhindre, at en handling sker, når den udløses. Betingelser ligner meget udløsere, men er meget forskellige. En udløser vil se på begivenheder der sker i systemet, mens en tilstand kun ser på, hvordan systemet ser ud lige nu. En udløser kan observere, at der er tændt for en kontakt. En tilstand kan kun se, om en switch er i øjeblikket til eller fra. \n\n [Lær mere om betingelser.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Betingelser er en valgfri del af en automatiseringsregel og kan bruges til at forhindre, at en handling sker, når den udløses. Betingelser ligner udløsere, men er meget forskellige. En udløser vil se på begivenheder der sker i systemet, mens en tilstand kun ser på, hvordan systemet ser ud lige nu. En udløser kan observere, at der er tændt for en kontakt. En tilstand kan kun se, om en kontakt i øjeblikket er til eller fra. \n\n [Lær mere om betingelser.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Tilføj betingelse",
                             "duplicate": "Kopier",
                             "delete": "Slet",
@@ -508,7 +512,7 @@
                         },
                         "actions": {
                             "header": "Handlinger",
-                            "introduction": "Handlingerne er, hvad Home Assistant skal gøre, når automatiseringen udløses. \n\n [Lær mere om handlinger.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Handlinger er, hvad Home Assistant skal gøre, når automatiseringen udløses. \n\n [Lær mere om handlinger.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Tilføj automatisering",
                             "duplicate": "Kopier",
                             "delete": "Slet",
@@ -612,7 +616,8 @@
                         "header": "Område registrering",
                         "introduction": "Områder bruges til at organisere hvor enhederne er. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din grænseflade, tilladelser og integrationer med andre systemer.",
                         "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
-                        "integrations_page": "Integrations side"
+                        "integrations_page": "Integrations side",
+                        "create_area": "OPRET OMRÅDE"
                     },
                     "no_areas": "Du ikke har ingen områder endnu!",
                     "create_area": "OPRET OMRÅDE",
@@ -873,7 +878,7 @@
                     },
                     "save_config": {
                         "header": "Tage kontrol over din 2Lovelace\" UI",
-                        "para": "Som standard vil hjem assistenten fastholde din brugergrænseflade, opdaterer den når nye enheder eller \"Lovelace\" komponenter bliver tilgængelige. Hvis du tager kontrol så vil vi ikke længere foretage ændringer automatisk for dig.",
+                        "para": "Som standard vil Home Assistant vedligeholde din brugergrænseflade ved at opdatere den når nye enheder eller \"Lovelace\" komponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugergrænseflade?",
                         "cancel": "Glem det",
                         "save": "tag kontrol"
@@ -1143,5 +1148,18 @@
             "visibility": "Sigtbarhed",
             "wind_speed": "Vindhastighed"
         }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Slukket",
+                "on": "Tændt",
+                "auto": "Automatisk"
+            }
+        }
+    },
+    "groups": {
+        "system-admin": "Administratorer",
+        "system-users": "Brugere"
     }
 }

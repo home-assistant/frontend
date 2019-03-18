@@ -39,7 +39,7 @@ class StateBadge extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!changedProps.has("stateObj")) {
+    if (!changedProps.has("stateObj") || !this.stateObj) {
       return;
     }
     const stateObj = this.stateObj;
@@ -53,7 +53,7 @@ class StateBadge extends LitElement {
     };
     if (stateObj) {
       // hide icon if we have entity picture
-      if (stateObj.attributes.entity_picture) {
+      if (stateObj.attributes.entity_picture && !this.overrideIcon) {
         hostStyle.backgroundImage =
           "url(" + stateObj.attributes.entity_picture + ")";
         iconStyle.display = "none";

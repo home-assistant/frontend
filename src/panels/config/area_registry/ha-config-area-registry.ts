@@ -66,7 +66,7 @@ class HaConfigAreaRegistry extends LitElement {
                 "ui.panel.config.area_registry.picker.introduction2"
               )}
             </p>
-            <a href="/config/integrations">
+            <a href="/config/integrations/dashboard">
               ${this.hass.localize(
                 "ui.panel.config.area_registry.picker.integrations_page"
               )}
@@ -86,11 +86,11 @@ class HaConfigAreaRegistry extends LitElement {
               ? html`
                   <div class="empty">
                     ${this.hass.localize(
-                      "ui.panel.config.area_registry.picker.no_areas"
+                      "ui.panel.config.area_registry.no_areas"
                     )}
                     <mwc-button @click=${this._createArea}>
                       ${this.hass.localize(
-                        "ui.panel.config.area_registry.picker.create_area"
+                        "ui.panel.config.area_registry.create_area"
                       )}
                     </mwc-button>
                   </div>
@@ -104,7 +104,7 @@ class HaConfigAreaRegistry extends LitElement {
         ?is-wide=${this.isWide}
         icon="hass:plus"
         title="${this.hass.localize(
-          "ui.panel.config.area_registry.picker.create_area"
+          "ui.panel.config.area_registry.create_area"
         )}"
         @click=${this._createArea}
         class="${classMap({

@@ -250,6 +250,15 @@
             "on": "مشغل",
             "paused": "موقّف مؤقتا",
             "returning": "العودة"
+        },
+        "timer": {
+            "active": "مفعل",
+            "idle": "خامل",
+            "paused": "موقّف مؤقتا"
+        },
+        "person": {
+            "home": "في المنزل",
+            "not_home": "خارج المنزل"
         }
     },
     "state_badge": {
@@ -270,6 +279,10 @@
             "armed_custom_bypass": "مفعّل"
         },
         "device_tracker": {
+            "home": "في المنزل",
+            "not_home": "خارج المنزل"
+        },
+        "person": {
             "home": "في المنزل",
             "not_home": "خارج المنزل"
         }
@@ -340,7 +353,8 @@
                         "introduction": "محرر المتحكم الآلي يسمح لك بإنشاء وتحرير المتحكمات الآلية. يرجى قراءة [الإرشادات] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) للتأكد من إعدادك Home Assistant بشكل صحيح.",
                         "pick_automation": "أختر متحكم آلي للتعديل",
                         "no_automations": "لم تعثر على أي متحكم آلي قابل للتعديل",
-                        "add_automation": "أضف متحكم آلي"
+                        "add_automation": "أضف متحكم آلي",
+                        "learn_more": "معرفة المزيد عن التحكم الآلي"
                     },
                     "editor": {
                         "introduction": "استخدم المتحكمات الآلية لتجعل منزلك ينبض بالحياة",
@@ -414,7 +428,8 @@
                                     "minutes": "الدقائق",
                                     "seconds": "ثواني"
                                 }
-                            }
+                            },
+                            "learn_more": "معرفة المزيد عن المشغلات"
                         },
                         "conditions": {
                             "header": "الشروط",
@@ -459,7 +474,8 @@
                                     "entity": "الجهاز في المنطقة",
                                     "zone": "المنطقة"
                                 }
-                            }
+                            },
+                            "learn_more": "معرفة المزيد عن الشروط"
                         },
                         "actions": {
                             "header": "الإجراءات",
@@ -492,7 +508,8 @@
                                     "event": "الحدث",
                                     "service_data": "بيانات الخدمة"
                                 }
-                            }
+                            },
+                            "learn_more": "معرفة المزيد عن الإجراءات"
                         }
                     }
                 },
@@ -515,7 +532,15 @@
                         "change_password": "تغيير كلمة السر",
                         "activate_user": "تفعيل المستخدم",
                         "deactivate_user": "إلغاء تنشيط المستخدم",
-                        "delete_user": "حذف المستخدم"
+                        "delete_user": "حذف المستخدم",
+                        "caption": "عرض المستخدم"
+                    },
+                    "add_user": {
+                        "caption": "أضف مستخدم",
+                        "name": "الاسم",
+                        "username": "اسم المستخدم",
+                        "password": "كلمه السر",
+                        "create": "إنشاء"
                     }
                 },
                 "cloud": {
@@ -540,7 +565,24 @@
                         "hub": "متصل من خلال",
                         "firmware": "نظام التشغيل {version}",
                         "device_unavailable": "الجهاز غير متوفر",
-                        "entity_unavailable": "العنصر غير متوفر"
+                        "entity_unavailable": "العنصر غير متوفر",
+                        "no_area": "لا توجد منطقة"
+                    }
+                },
+                "person": {
+                    "detail": {
+                        "device_tracker_pick": "اختر جهاز لتتبع"
+                    }
+                },
+                "area_registry": {
+                    "picker": {
+                        "no_areas": "يبدو أنه لا توجد أي مناطق معرفة!",
+                        "create_area": "إنشاء منطقة"
+                    }
+                },
+                "zha": {
+                    "services": {
+                        "updateDeviceName": "تعيين اسم مخصص لهذا الجهاز في سجل الأجهزة."
                     }
                 }
             },
@@ -599,7 +641,11 @@
             "page-onboarding": {
                 "user": {
                     "error": {
-                        "required_fields": "املأ جميع الحقول المطلوبة"
+                        "required_fields": "املأ جميع الحقول المطلوبة",
+                        "password_not_match": "كلمة السر غير مطابقة"
+                    },
+                    "data": {
+                        "password_confirm": "تأكيد كلمة السر"
                     }
                 }
             },
@@ -607,10 +653,36 @@
                 "editor": {
                     "edit_card": {
                         "edit": "تصحيح",
-                        "delete": "حذف"
+                        "delete": "حذف",
+                        "move": "نقل"
                     },
                     "save_config": {
                         "cancel": "لا يهم"
+                    },
+                    "raw_editor": {
+                        "header": "تعديل",
+                        "save": "حفظ",
+                        "unsaved_changes": "التغييرات غير محفوظة",
+                        "saved": "تم الحفظ"
+                    }
+                },
+                "warning": {
+                    "entity_not_found": "الجهاز غير متوفر: {entity}"
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "اسم المستخدم",
+                                        "password": "كلمة السر"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -681,6 +753,9 @@
                 "target_temperature": "درجة الحرارة المستهدفة",
                 "operation": "تشغيل",
                 "away_mode": "حالة خارج المنزل"
+            },
+            "alarm_control_panel": {
+                "arm_custom_bypass": "تجاوز مخصص"
             }
         },
         "components": {
@@ -750,7 +825,8 @@
         "updater": "تحديث",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "مكنسة كهرباء"
+        "vacuum": "مكنسة كهرباء",
+        "person": "شخص"
     },
     "attribute": {
         "weather": {
@@ -758,5 +834,19 @@
             "visibility": "الرؤية",
             "wind_speed": "سرعة الرياح"
         }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "مطفأ",
+                "on": "مفعل",
+                "auto": "آلي"
+            }
+        }
+    },
+    "groups": {
+        "system-admin": "مسؤولين",
+        "system-users": "مستخدمين",
+        "system-read-only": "مستخدمين للعرض فقط"
     }
 }

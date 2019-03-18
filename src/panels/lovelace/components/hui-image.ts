@@ -18,7 +18,7 @@ import { HomeAssistant } from "../../../types";
 import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
 import { b64toBlob } from "../../../common/file/b64-to-blob";
-import { fetchThumbnail } from "../../../data/camera";
+import { fetchThumbnailWithCache } from "../../../data/camera";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -179,10 +179,10 @@ class HuiImage extends LitElement {
       return;
     }
     try {
-      const { content_type: contentType, content } = await fetchThumbnail(
-        this.hass,
-        this.cameraImage
-      );
+      const {
+        content_type: contentType,
+        content,
+      } = await fetchThumbnailWithCache(this.hass, this.cameraImage);
       if (this._cameraImageSrc) {
         URL.revokeObjectURL(this._cameraImageSrc);
       }

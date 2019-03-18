@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Gestión de red de Zigbee Home Automation",
                     "services": {
-                        "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegurate de que está activo y aceptando comandos cuando uses este servicio."
+                        "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegurate de que está activo y aceptando comandos cuando uses este servicio.",
+                        "updateDeviceName": "Establezca un nombre personalizado para este dispositivo en el registro de dispositivos."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Registro de Área",
                         "introduction": "Las áreas se utilizan para organizar dónde están los dispositivos. Esta información se utilizará en Home Assistant para ayudarle a organizar su interfaz, permisos e integraciones con otros sistemas.",
                         "introduction2": "Para colocar dispositivos en un área, utilice el siguiente enlace para navegar a la página de integraciones y luego haga clic en una integración configurada para llegar a las tarjetas de dispositivos.",
-                        "integrations_page": "Integraciones"
+                        "integrations_page": "Integraciones",
+                        "no_areas": "¡Parece que aún no tienes áreas!",
+                        "create_area": "CREAR ÁREA"
                     },
                     "no_areas": "¡Parece que no tienes áreas!",
                     "create_area": "CREAR ÁREA",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Nombre",
                         "username": "Nombre de usuario",
-                        "password": "Contraseña"
+                        "password": "Contraseña",
+                        "password_confirm": "Confirmar Contraseña"
                     },
                     "create_account": "Crear una cuenta",
                     "error": {
-                        "required_fields": "Complete todos los campos requeridos"
+                        "required_fields": "Complete todos los campos requeridos",
+                        "password_not_match": "Las contraseñas no coinciden"
                     }
                 }
             },
@@ -1153,8 +1158,13 @@
             "fan_mode": {
                 "off": "Apagado",
                 "on": "Encendido",
-                "auto": "Automatico"
+                "auto": "Automático"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administradores",
+        "system-users": "Usuarios",
+        "system-read-only": "Usuarios de solo lectura"
     }
 }

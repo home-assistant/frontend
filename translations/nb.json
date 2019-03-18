@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "ZigBee Home Automation nettverksadministrasjon",
                     "services": {
-                        "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten."
+                        "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
+                        "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret."
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Områderegister",
                         "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
                         "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene.",
-                        "integrations_page": "Integrasjonsside"
+                        "integrations_page": "Integrasjonsside",
+                        "no_areas": "Det ser ikke ut som om du har noen områder enda!",
+                        "create_area": "Opprett område"
                     },
                     "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "create_area": "OPPRETT OMRÅDE",
@@ -687,7 +690,7 @@
                     "current_token_tooltip": "Kan ikke slette gjeldende oppdateringstoken"
                 },
                 "long_lived_access_tokens": {
-                    "header": "Varige tilgangstokener",
+                    "header": "Langvarige tilgangstokener",
                     "description": "Opprett langvarige tilgangstokener slik at skriptene dine kan samhandle med din Home Assistant instans. Hver token vil være gyldig i 10 år fra opprettelsen. Følgende langvarige tilgangstokener er for tiden aktive.",
                     "learn_auth_requests": "Lær hvordan du lager godkjente forespørsler.",
                     "created_at": "Opprettet den {date}",
@@ -713,7 +716,7 @@
                     "submit": "Send inn"
                 },
                 "mfa": {
-                    "header": "Multifaktorautentisering moduler",
+                    "header": "Flerfaktor autentiseringsmoduler",
                     "disable": "Deaktiver",
                     "enable": "Aktiver",
                     "confirm_disable": "Er du sikker på at du vil deaktivere {name}?"
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Navn",
                         "username": "Brukernavn",
-                        "password": "Passord"
+                        "password": "Passord",
+                        "password_confirm": "Bekreft passord"
                     },
                     "create_account": "Opprett konto",
                     "error": {
-                        "required_fields": "Fyll ut alle nødvendige felt"
+                        "required_fields": "Fyll ut alle nødvendige felt",
+                        "password_not_match": "Passordene er ikke like"
                     }
                 }
             },
@@ -1156,5 +1161,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administratorer",
+        "system-users": "Brukere",
+        "system-read-only": "Lesetilgang brukere"
     }
 }

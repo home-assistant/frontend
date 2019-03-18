@@ -57,6 +57,7 @@ export interface MFAModule {
 export interface CurrentUser {
   id: string;
   is_owner: boolean;
+  is_admin: boolean;
   name: string;
   credentials: Credential[];
   mfa_modules: MFAModule[];
@@ -117,8 +118,14 @@ export interface HomeAssistant {
   panelUrl: string;
 
   // i18n
+  // current effective language, in that order:
+  //   - backend saved user selected lanugage
+  //   - language in local appstorage
+  //   - browser language
+  //   - english (en)
   language: string;
-  selectedLanguage?: string;
+  // local stored language, keep that name for backward compability
+  selectedLanguage: string;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: {
@@ -193,6 +200,15 @@ export type GroupEntity = HassEntityBase & {
   };
 };
 
+export type CameraEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    model_name: string;
+    access_token: string;
+    brand: string;
+    motion_detection: boolean;
+  };
+};
+
 export interface PanelInfo<T = unknown> {
   component_name: string;
   icon?: string;
@@ -209,7 +225,6 @@ export interface Route {
 export interface PanelElement extends HTMLElement {
   hass?: HomeAssistant;
   narrow?: boolean;
-  showMenu?: boolean;
   route?: Route | null;
   panel?: Panel;
 }

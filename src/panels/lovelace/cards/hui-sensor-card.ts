@@ -2,9 +2,12 @@ import {
   html,
   svg,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 
@@ -145,6 +148,7 @@ export interface Config extends LovelaceCardConfig {
   hours_to_show?: number;
 }
 
+@customElement("hui-sensor-card")
 class HuiSensorCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(/* webpackChunkName: "hui-sensor-card-editor" */ "../editor/config-elements/hui-sensor-card-editor");
@@ -155,18 +159,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return {};
   }
 
-  public hass?: HomeAssistant;
-  private _config?: Config;
-  private _history?: any;
-  private _date?: Date;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-      _history: {},
-    };
-  }
+  @property() private _config?: Config;
+
+  @property() private _history?: any;
+
+  private _date?: Date;
 
   public setConfig(config: Config): void {
     if (!config.entity || config.entity.split(".")[0] !== "sensor") {
@@ -244,7 +243,6 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       graph = "";
     }
     return html`
-      ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
         <div class="flex">
           <div class="icon">
@@ -324,87 +322,95 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     this._date = new Date();
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          display: flex;
-          flex-direction: column;
-        }
-        ha-card {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-          padding: 16px;
-          position: relative;
-          cursor: pointer;
-        }
-        .flex {
-          display: flex;
-        }
-        .header {
-          align-items: center;
-          display: flex;
-          min-width: 0;
-          opacity: 0.8;
-          position: relative;
-        }
-        .name {
-          display: block;
-          display: -webkit-box;
-          font-size: 1.2rem;
-          font-weight: 500;
-          max-height: 1.4rem;
-          margin-top: 2px;
-          opacity: 0.8;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          word-wrap: break-word;
-          word-break: break-all;
-        }
-        .icon {
-          color: var(--paper-item-icon-color, #44739e);
-          display: inline-block;
-          flex: 0 0 40px;
-          line-height: 40px;
-          position: relative;
-          text-align: center;
-          width: 40px;
-        }
-        .info {
-          flex-wrap: wrap;
-          margin: 16px 0 16px 8px;
-        }
-        #value {
-          display: inline-block;
-          font-size: 2rem;
-          font-weight: 400;
-          line-height: 1em;
-          margin-right: 4px;
-        }
-        #measurement {
-          align-self: flex-end;
-          display: inline-block;
-          font-size: 1.3rem;
-          line-height: 1.2em;
-          margin-top: 0.1em;
-          opacity: 0.6;
-          vertical-align: bottom;
-        }
-        .graph {
-          align-self: flex-end;
-          margin: auto;
-          margin-bottom: 0px;
-          position: relative;
-          width: 100%;
-        }
-        .graph > div {
-          align-self: flex-end;
-          margin: auto 8px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      ha-card {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 16px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .header {
+        align-items: center;
+        display: flex;
+        min-width: 0;
+        opacity: 0.8;
+        position: relative;
+      }
+
+      .name {
+        display: block;
+        display: -webkit-box;
+        font-size: 1.2rem;
+        font-weight: 500;
+        max-height: 1.4rem;
+        margin-top: 2px;
+        opacity: 0.8;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        word-wrap: break-word;
+        word-break: break-all;
+      }
+
+      .icon {
+        color: var(--paper-item-icon-color, #44739e);
+        display: inline-block;
+        flex: 0 0 40px;
+        line-height: 40px;
+        position: relative;
+        text-align: center;
+        width: 40px;
+      }
+
+      .info {
+        flex-wrap: wrap;
+        margin: 16px 0 16px 8px;
+      }
+
+      #value {
+        display: inline-block;
+        font-size: 2rem;
+        font-weight: 400;
+        line-height: 1em;
+        margin-right: 4px;
+      }
+
+      #measurement {
+        align-self: flex-end;
+        display: inline-block;
+        font-size: 1.3rem;
+        line-height: 1.2em;
+        margin-top: 0.1em;
+        opacity: 0.6;
+        vertical-align: bottom;
+      }
+
+      .graph {
+        align-self: flex-end;
+        margin: auto;
+        margin-bottom: 0px;
+        position: relative;
+        width: 100%;
+      }
+
+      .graph > div {
+        align-self: flex-end;
+        margin: auto 8px;
+      }
     `;
   }
 }
@@ -414,5 +420,3 @@ declare global {
     "hui-sensor-card": HuiSensorCard;
   }
 }
-
-customElements.define("hui-sensor-card", HuiSensorCard);

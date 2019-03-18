@@ -16,7 +16,7 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config, ConfigEntity } from "../../cards/hui-glance-card";
+import { GlanceCardConfig, ConfigEntity } from "../../cards/hui-glance-card";
 import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/state-badge";
@@ -41,6 +41,7 @@ const cardConfigStruct = struct({
   columns: "number?",
   show_name: "boolean?",
   show_state: "boolean?",
+  show_icon: "boolean?",
   entities: [entitiesConfigStruct],
 });
 
@@ -49,11 +50,11 @@ export class HuiGlanceCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: GlanceCardConfig;
 
   @property() private _configEntities?: ConfigEntity[];
 
-  public setConfig(config: Config): void {
+  public setConfig(config: GlanceCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
@@ -69,6 +70,18 @@ export class HuiGlanceCardEditor extends LitElement
 
   get _columns(): number {
     return this._config!.columns || NaN;
+  }
+
+  get _show_name(): boolean {
+    return this._config!.show_name || true;
+  }
+
+  get _show_icon(): boolean {
+    return this._config!.show_icon || true;
+  }
+
+  get _show_state(): boolean {
+    return this._config!.show_state || true;
   }
 
   protected render(): TemplateResult | void {
@@ -102,16 +115,22 @@ export class HuiGlanceCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <paper-toggle-button
-            ?checked="${this._config!.show_name !== false}"
+            ?checked="${this._show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
-            >Show Entity's Name?</paper-toggle-button
+            >Show Name?</paper-toggle-button
           >
           <paper-toggle-button
-            ?checked="${this._config!.show_state !== false}"
+            ?checked="${this._show_icon !== false}"
+            .configValue="${"show_icon"}"
+            @change="${this._valueChanged}"
+            >Show Icon?</paper-toggle-button
+          >
+          <paper-toggle-button
+            ?checked="${this._show_state !== false}"
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
-            >Show Entity's State Text?</paper-toggle-button
+            >Show State?</paper-toggle-button
           >
         </div>
       </div>
