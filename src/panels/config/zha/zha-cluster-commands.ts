@@ -1,15 +1,23 @@
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
+
 import {
   Cluster,
   Command,
@@ -18,18 +26,12 @@ import {
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
+import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
   IssueCommandServiceData,
   ItemSelectedEvent,
 } from "./types";
-import { formatAsPaddedHex } from "./functions";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item";
 
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;

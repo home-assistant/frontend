@@ -1,11 +1,13 @@
-import { property, customElement } from "lit-element";
 import "../../../layouts/hass-loading-screen";
-import { HomeAssistant } from "../../../types";
+
+import { customElement, property } from "lit-element";
+
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
 
 @customElement("zha-config-panel")
 class ZHAConfigPanel extends HassRouterPage {

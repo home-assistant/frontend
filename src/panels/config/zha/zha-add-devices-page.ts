@@ -1,20 +1,24 @@
-import {
-  LitElement,
-  html,
-  css,
-  property,
-  CSSResult,
-  TemplateResult,
-  customElement,
-} from "lit-element";
-import "@polymer/paper-spinner/paper-spinner";
-import "../../../layouts/hass-subpage";
 import "../../../components/ha-service-description";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-textarea";
+import "../../../layouts/hass-subpage";
 import "./zha-device-card";
+import "@material/mwc-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-spinner/paper-spinner";
+
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+
+import { ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { ZHADevice } from "../../../data/zha";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {

@@ -1,28 +1,30 @@
-import {
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-  CSSResult,
-  customElement,
-  css,
-} from "lit-element";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "./zha-clusters";
+import "./zha-device-card";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
+import { fetchDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
 import { ItemSelectedEvent, ZHADeviceRemovedEvent } from "./types";
-import "./zha-clusters";
-import "./zha-device-card";
-import { fetchDevices, ZHADevice } from "../../../data/zha";
 
 declare global {
   // for fire event

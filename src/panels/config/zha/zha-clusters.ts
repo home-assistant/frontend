@@ -1,25 +1,27 @@
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
 import { Cluster, fetchClustersForZhaNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
-import { ItemSelectedEvent } from "./types";
 import { formatAsPaddedHex } from "./functions";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-item/paper-item";
+import { ItemSelectedEvent } from "./types";
 
 declare global {
   // for fire event

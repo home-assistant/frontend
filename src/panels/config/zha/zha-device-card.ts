@@ -1,37 +1,39 @@
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/entity/state-badge";
+import "@material/mwc-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-listbox/paper-listbox";
+
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
   property,
-  TemplateResult,
-  CSSResult,
   PropertyValues,
-  customElement,
-  css,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-card/paper-card";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "../../../components/buttons/ha-call-service-button";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { NodeServiceData, ChangeEvent, ItemSelectedEvent } from "./types";
+import compare from "../../../common/string/compare";
 import {
-  updateDeviceRegistryEntry,
+  AreaRegistryEntry,
+  fetchAreaRegistry,
+} from "../../../data/area_registry";
+import {
   DeviceRegistryEntryMutableParams,
+  updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import { reconfigureNode, ZHADevice } from "../../../data/zha";
-import "../../../components/entity/state-badge";
-import {
-  fetchAreaRegistry,
-  AreaRegistryEntry,
-} from "../../../data/area_registry";
-import compare from "../../../common/string/compare";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { ChangeEvent, ItemSelectedEvent, NodeServiceData } from "./types";
 
 declare global {
   // for fire event

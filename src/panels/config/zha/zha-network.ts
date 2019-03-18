@@ -1,20 +1,22 @@
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "@material/mwc-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-icon-button/paper-icon-button";
+
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
   PropertyDeclarations,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
-import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
+
 import { navigate } from "../../../common/navigate";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
 
 export class ZHANetwork extends LitElement {
   public hass?: HomeAssistant;

@@ -1,24 +1,26 @@
+import "../../../components/ha-paper-icon-button-arrow-prev";
+import "../../../layouts/hass-subpage";
+import "./zha-binding";
+import "./zha-cluster-attributes";
+import "./zha-cluster-commands";
+import "./zha-network";
+import "./zha-node";
+import "@polymer/paper-icon-button/paper-icon-button";
+
 import {
+  CSSResult,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
 } from "lit-element";
-import "@polymer/paper-icon-button/paper-icon-button";
+
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import "../../../layouts/hass-subpage";
-import { Cluster, ZHADevice, fetchBindableDevices } from "../../../data/zha";
-import "../../../components/ha-paper-icon-button-arrow-prev";
+import { Cluster, fetchBindableDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ZHAClusterSelectedParams, ZHADeviceSelectedParams } from "./types";
-import "./zha-cluster-attributes";
-import "./zha-cluster-commands";
-import "./zha-network";
-import "./zha-node";
-import "./zha-binding";
 
 export class HaConfigZha extends LitElement {
   @property() public hass?: HomeAssistant;
