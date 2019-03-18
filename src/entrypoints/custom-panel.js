@@ -56,7 +56,7 @@ function initialize(panel, properties) {
         const forwardEvent = (ev) =>
           window.parent.customPanel.fire(ev.type, ev.detail);
         root.addEventListener("hass-toggle-menu", forwardEvent);
-        root.addEventListener("location-changed", () =>
+        window.addEventListener("location-changed", () =>
           window.parent.customPanel.navigate(window.location.pathname)
         );
         setProperties(Object.assign({ panel }, properties));
