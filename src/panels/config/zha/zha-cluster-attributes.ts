@@ -29,6 +29,10 @@ import {
   SetAttributeServiceData,
 } from "./types";
 import { formatAsPaddedHex } from "./functions";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-input/paper-input";
 
 export class ZHAClusterAttributes extends LitElement {
   public hass?: HomeAssistant;

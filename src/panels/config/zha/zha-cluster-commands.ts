@@ -25,6 +25,11 @@ import {
   ItemSelectedEvent,
 } from "./types";
 import { formatAsPaddedHex } from "./functions";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item";
 
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;

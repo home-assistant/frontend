@@ -17,6 +17,9 @@ import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { ItemSelectedEvent } from "./types";
 import { formatAsPaddedHex } from "./functions";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
 
 declare global {
   // for fire event
