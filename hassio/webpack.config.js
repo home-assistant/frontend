@@ -33,8 +33,8 @@ module.exports = {
     new webpack.DefinePlugin({
       __DEV__: false,
       __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
-      __VERSION__: JSON.stringify("DEMO"),
-      __DEMO__: true,
+      __VERSION__: JSON.stringify("HASSIO"),
+      __DEMO__: false,
       __STATIC_PATH__: "/static/",
       "process.env.NODE_ENV": JSON.stringify(
         isProdBuild ? "production" : "development"
