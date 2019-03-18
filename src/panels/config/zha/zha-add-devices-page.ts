@@ -226,7 +226,7 @@ class ZHAAddDevicesPage extends LitElement {
         }
         .help-text {
           color: grey;
-          padding: 16px;
+          padding-left: 16px;
         }
       `,
     ];
