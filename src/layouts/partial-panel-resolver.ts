@@ -80,7 +80,10 @@ class PartialPanelResolver extends HassRouterPage {
 
     const oldHass = changedProps.get("hass") as this["hass"];
 
-    if (!oldHass || oldHass.panels !== this.hass!.panels) {
+    if (
+      this.hass!.panels &&
+      (!oldHass || oldHass.panels !== this.hass!.panels)
+    ) {
       this._updateRoutes();
     }
   }
