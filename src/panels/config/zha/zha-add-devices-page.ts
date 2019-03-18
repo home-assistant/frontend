@@ -9,6 +9,8 @@ import {
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 import "../../../layouts/hass-subpage";
+import "../../../components/ha-service-description";
+import "@polymer/paper-icon-button/paper-icon-button";
 import "./zha-device-card";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -21,20 +23,13 @@ class ZHAAddDevicesPage extends LitElement {
   @property() private _discoveredDevices: ZHADevice[] = [];
   @property() private _formattedEvents: string = "";
   @property() private _active: boolean = false;
+  @property() private _showHelp: boolean = false;
   private _addDevicesTimeoutHandle: any = undefined;
   private _subscribed?: Promise<() => Promise<void>>;
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._active = true;
-    this._subscribed = this.hass!.connection.subscribeMessage(
-      (message) => this._handleMessage(message),
-      { type: "zha/devices/add" }
-    );
-    this._addDevicesTimeoutHandle = setTimeout(
-      () => this._unsubscribe(),
-      60000
-    );
+    this._subscribe();
   }
 
   public disconnectedCallback(): void {
@@ -48,13 +43,37 @@ class ZHAAddDevicesPage extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <hass-subpage header="Zigbee Home Automation - Add Devices">
-        <h2>
-          <paper-spinner
-            ?active="${this._active}"
-            alt="Searching"
-          ></paper-spinner>
-          Searching for ZHA Zigbee devices...
-        </h2>
+        ${this._active
+          ? html`
+              <h2>
+                <paper-spinner
+                  ?active="${this._active}"
+                  alt="Searching"
+                ></paper-spinner>
+                Searching for ZHA Zigbee devices...
+              </h2>
+            `
+          : html`
+              <div class="card-actions">
+                <mwc-button @click=${this._subscribe} class="search-button">
+                  Search again
+                </mwc-button>
+                <paper-icon-button
+                  class="toggle-help-icon"
+                  @click="${this._onHelpTap}"
+                  icon="hass:help-circle"
+                ></paper-icon-button>
+                ${this._showHelp
+                  ? html`
+                      <ha-service-description
+                        .hass="${this.hass}"
+                        domain="zha"
+                        service="permit"
+                      />
+                    `
+                  : ""}
+              </div>
+            `}
         ${this._error
           ? html`
               <div class="error">${this._error}</div>
@@ -63,10 +82,12 @@ class ZHAAddDevicesPage extends LitElement {
         <div class="events">
           <ha-textarea value="${this._formattedEvents}"> </ha-textarea>
         </div>
-        <div class="content">
+        <div class="content-header">
           <h4>
             Discovered devices:
           </h4>
+        </div>
+        <div class="content">
           ${this._discoveredDevices.map(
             (device) => html`
               <zha-device-card
@@ -102,13 +123,35 @@ class ZHAAddDevicesPage extends LitElement {
     }
   }
 
+  private _subscribe(): void {
+    this._subscribed = this.hass!.connection.subscribeMessage(
+      (message) => this._handleMessage(message),
+      { type: "zha/devices/add" }
+    );
+    this._active = true;
+    this._addDevicesTimeoutHandle = setTimeout(
+      () => this._unsubscribe(),
+      60000
+    );
+  }
+
+  private _onHelpTap(): void {
+    this._showHelp = !this._showHelp;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
       css`
+        .content-header {
+          margin: 16px;
+        }
         .content {
           min-height: 325px;
-          margin: 16px;
+          display: flex;
+          flex-wrap: wrap;
+          padding: 4px;
+          justify-content: center;
         }
         .error {
           color: var(--google-red-500);
@@ -142,6 +185,24 @@ class ZHAAddDevicesPage extends LitElement {
           min-height: 275px;
           max-height: 275px;
           overflow: scroll;
+        }
+        .toggle-help-icon {
+          position: absolute;
+          margin-top: 16px;
+          margin-right: 16px;
+          top: -6px;
+          right: 0;
+          color: var(--primary-color);
+        }
+        ha-service-description {
+          margin-top: 16px;
+          margin-left: 16px;
+          display: block;
+          color: grey;
+        }
+        .search-button {
+          margin-top: 16px;
+          margin-left: 16px;
         }
       `,
     ];
