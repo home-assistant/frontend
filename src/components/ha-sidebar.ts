@@ -22,8 +22,11 @@ import { DEFAULT_PANEL } from "../common/const";
 const computeUrl = (urlPath) => `/${urlPath}`;
 
 const computePanels = (hass: HomeAssistant) => {
-  const isAdmin = hass.user.is_admin;
   const panels = hass.panels;
+  if (!panels) {
+    return [];
+  }
+  const isAdmin = hass.user.is_admin;
   const sortValue = {
     map: 1,
     logbook: 2,
