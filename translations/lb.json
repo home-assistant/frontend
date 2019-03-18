@@ -438,7 +438,7 @@
                                 "zone": {
                                     "label": "Zone",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Strefa",
+                                    "zone": "Zon",
                                     "event": "Evenement:",
                                     "enter": "Eran",
                                     "leave": "Verloossen"
@@ -479,7 +479,7 @@
                                     "state": "Zoustand"
                                 },
                                 "numeric_state": {
-                                    "label": "Stan (numeryczny)",
+                                    "label": "Numereschen Zoustand",
                                     "above": "Iwwert",
                                     "below": "Ënnert",
                                     "value_template": "Wäerte Modell (optional)"
@@ -503,9 +503,9 @@
                                     "before": "Virdrun"
                                 },
                                 "zone": {
-                                    "label": "Strefa",
+                                    "label": "Zon",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Strefa"
+                                    "zone": "Zon"
                                 }
                             },
                             "learn_more": "Méi iwwert Konditioune liesen"
@@ -526,7 +526,7 @@
                                 },
                                 "delay": {
                                     "label": "Delai",
-                                    "delay": "Opóźnienie"
+                                    "delay": "Délai"
                                 },
                                 "wait_template": {
                                     "label": "Waart",
