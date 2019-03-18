@@ -106,12 +106,12 @@ class HassioRepositoriesEditor extends PolymerElement {
   computeRemoveRepoData(repoList, url) {
     const list = repoList
       .filter((repo) => repo.url !== url)
-      .map((repo) => repo.url);
+      .map((repo) => repo.source);
     return { addons_repositories: list };
   }
 
   computeAddRepoData(repoList, url) {
-    const list = repoList ? repoList.map((repo) => repo.url) : [];
+    const list = repoList ? repoList.map((repo) => repo.source) : [];
     list.push(url);
     return { addons_repositories: list };
   }
