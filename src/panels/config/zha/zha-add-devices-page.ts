@@ -79,9 +79,8 @@ class ZHAAddDevicesPage extends LitElement {
               <div class="error">${this._error}</div>
             `
           : ""}
-        <div class="events">
-          <ha-textarea value="${this._formattedEvents}"> </ha-textarea>
-        </div>
+        <ha-textarea class="events" value="${this._formattedEvents}">
+        </ha-textarea>
         <div class="content-header">
           <h4>
             Discovered devices:
@@ -106,6 +105,12 @@ class ZHAAddDevicesPage extends LitElement {
   private _handleMessage(message: any): void {
     if (message.type === "log_output") {
       this._formattedEvents += message.log_entry.message + "\n";
+      if (this.shadowRoot) {
+        const textArea = this.shadowRoot.querySelector("ha-textarea");
+        if (textArea) {
+          textArea.scrollTop = textArea.scrollHeight;
+        }
+      }
     }
     if (message.type && message.type === "device_fully_initialized") {
       this._discoveredDevices.push(message.device_info);
