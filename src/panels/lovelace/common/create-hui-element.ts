@@ -1,6 +1,7 @@
 import deepClone from "deep-clone-simple";
 
 import "../elements/hui-conditional-element";
+import "../elements/hui-cover-element";
 import "../elements/hui-icon-element";
 import "../elements/hui-image-element";
 import "../elements/hui-service-button-element";
@@ -19,6 +20,7 @@ import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 const CUSTOM_TYPE_PREFIX = "custom:";
 const ELEMENT_TYPES = new Set([
   "conditional",
+  "cover",
   "icon",
   "image",
   "service-button",
