@@ -11,7 +11,7 @@ import {
   html,
   PropertyValues,
   TemplateResult,
-  PropertyDeclarations,
+  property,
 } from "lit-element";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfig } from "./common/generate-lovelace-config";
@@ -23,31 +23,27 @@ interface LovelacePanelConfig {
 let editorLoaded = false;
 
 class LovelacePanel extends LitElement {
-  public panel?: PanelInfo<LovelacePanelConfig>;
-  public hass?: HomeAssistant;
-  public narrow?: boolean;
-  public route?: Route;
-  private _columns?: number;
-  private _state?: "loading" | "loaded" | "error" | "yaml-editor";
-  private _errorMsg?: string;
-  private lovelace?: Lovelace;
-  private mqls?: MediaQueryList[];
+  @property() public panel?: PanelInfo<LovelacePanelConfig>;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      lovelace: {},
-      route: {},
-      _columns: {},
-      _state: {},
-      _errorMsg: {},
-      _config: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+
+  @property() public narrow?: boolean;
+
+  public route?: Route;
+
+  @property() private _columns?: number;
+
+  @property()
+  private _state?: "loading" | "loaded" | "error" | "yaml-editor" = "loading";
+
+  @property() private _errorMsg?: string;
+
+  private lovelace?: Lovelace;
+
+  private mqls?: MediaQueryList[];
 
   constructor() {
     super();
-    this._state = "loading";
     this._closeEditor = this._closeEditor.bind(this);
   }
 
@@ -61,6 +57,7 @@ class LovelacePanel extends LitElement {
           .lovelace="${this.lovelace}"
           .route="${this.route}"
           .columns="${this._columns}"
+          .narrow=${this.narrow}
           @config-refresh="${this._forceFetchConfig}"
         ></hui-root>
       `;
