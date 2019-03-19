@@ -29,7 +29,7 @@ class LovelacePanel extends LitElement {
 
   @property() public narrow?: boolean;
 
-  public route?: Route;
+  @property() public route?: Route;
 
   @property() private _columns?: number;
 
@@ -38,7 +38,7 @@ class LovelacePanel extends LitElement {
 
   @property() private _errorMsg?: string;
 
-  private lovelace?: Lovelace;
+  @property() private lovelace?: Lovelace;
 
   private mqls?: MediaQueryList[];
 
