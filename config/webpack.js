@@ -27,6 +27,11 @@ module.exports.plugins = [
     /@polymer\/font-roboto\/roboto\.js$/,
     path.resolve(__dirname, "../src/util/empty.js")
   ),
+  // Ignore mwc icons pointing at CDN.
+  new webpack.NormalModuleReplacementPlugin(
+    /@material\/mwc-icon\/mwc-icon-font\.js$/,
+    path.resolve(__dirname, "../src/util/empty.js")
+  ),
 ];
 
 module.exports.optimization = (latestBuild) => ({
