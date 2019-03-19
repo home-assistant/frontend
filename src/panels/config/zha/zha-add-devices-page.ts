@@ -175,7 +175,7 @@ class ZHAAddDevicesPage extends LitElement {
           display: flex;
           flex-wrap: wrap;
           padding: 4px;
-          justify-content: center;
+          justify-content: left;
           overflow: scroll;
         }
         .error {
