@@ -149,7 +149,7 @@ class ZHAAddDevicesPage extends LitElement {
   private _subscribe(): void {
     this._subscribed = this.hass!.connection.subscribeMessage(
       (message) => this._handleMessage(message),
-      { type: "zha/devices/add" }
+      { type: "zha/devices/permit" }
     );
     this._active = true;
     this._addDevicesTimeoutHandle = setTimeout(
