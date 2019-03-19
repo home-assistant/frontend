@@ -10,6 +10,7 @@ import "./hassio-pages-with-tabs";
 import applyThemesOnElement from "../../src/common/dom/apply_themes_on_element";
 import EventsMixin from "../../src/mixins/events-mixin";
 import NavigateMixin from "../../src/mixins/navigate-mixin";
+import { fireEvent } from "../../src/common/dom/fire_event";
 
 class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
   static get template() {
@@ -90,6 +91,15 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
         this.hass.dockedSidebar ? "hass-close-menu" : "hass-open-menu"
       );
     });
+    // Paulus - March 19, 2019
+    // We changed the navigate event to fire directly on the window, as that's
+    // where we are listening for it. However, the older panel_custom will
+    // listen on this element for navigation events, so we need to forward them.
+    window.addEventListener("location-changed", (ev) =>
+      fireEvent(this, ev.type, ev.detail, {
+        bubbles: false,
+      })
+    );
   }
 
   connectedCallback() {
