@@ -12,6 +12,7 @@ import { LovelaceCardConfig } from "../../../../data/lovelace";
 import "./hui-edit-card";
 import "./hui-dialog-pick-card";
 import { EditCardDialogParams } from "./show-edit-card-dialog";
+import { addCard, replaceCard } from "../config-util";
 
 declare global {
   // for fire event
@@ -32,20 +33,23 @@ export class HuiDialogEditCard extends LitElement {
 
   @property() private _cardConfig?: LovelaceCardConfig;
 
+  @property() private _newCard?: boolean;
+
   constructor() {
     super();
     this._cardPicked = this._cardPicked.bind(this);
     this._cancel = this._cancel.bind(this);
+    this._save = this._save.bind(this);
   }
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
-    this._cardConfig =
-      params.path.length === 2
-        ? (this._cardConfig = params.lovelace.config.views[
-            params.path[0]
-          ].cards![params.path[1]])
-        : undefined;
+    this._newCard = params.path.length !== 2;
+    this._cardConfig = !this._newCard
+      ? (this._cardConfig = params.lovelace.config.views[params.path[0]].cards![
+          (params as any).path[1]
+        ])
+      : undefined;
   }
 
   protected render(): TemplateResult | void {
@@ -66,9 +70,10 @@ export class HuiDialogEditCard extends LitElement {
       <hui-edit-card
         .hass="${this.hass}"
         .lovelace="${this._params.lovelace}"
-        .path="${this._params.path}"
         .cardConfig="${this._cardConfig}"
         .closeDialog="${this._cancel}"
+        .saveCard="${this._save}"
+        .newCard="${this._newCard}"
       >
       </hui-edit-card>
     `;
@@ -81,6 +86,19 @@ export class HuiDialogEditCard extends LitElement {
   private _cancel(): void {
     this._params = undefined;
     this._cardConfig = undefined;
+  }
+
+  private async _save(cardConf: LovelaceCardConfig): Promise<void> {
+    const lovelace = this._params!.lovelace;
+    await lovelace.saveConfig(
+      this._params!.path.length === 1
+        ? addCard(lovelace.config, this._params!.path as [number], cardConf)
+        : replaceCard(
+            lovelace.config,
+            this._params!.path as [number, number],
+            cardConf
+          )
+    );
   }
 }
 

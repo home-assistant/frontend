@@ -36,7 +36,6 @@ import { LovelaceCardEditor, Lovelace } from "../../types";
 import { ConfigValue, ConfigError } from "../types";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
-import { addCard, replaceCard } from "../config-util";
 import { afterNextRender } from "../../../../common/util/render-status";
 
 declare global {
@@ -58,9 +57,11 @@ export class HuiEditCard extends LitElement {
 
   public lovelace?: Lovelace;
 
-  public path?: [number] | [number, number];
-
   public closeDialog?: () => void;
+
+  public saveCard?: (cardConf: LovelaceCardConfig) => Promise<void>;
+
+  public newCard?: boolean;
 
   @property() private _configElement?: LovelaceCardEditor | null;
 
@@ -228,16 +229,7 @@ export class HuiEditCard extends LitElement {
         : this._configValue!.value!;
 
     try {
-      const lovelace = this.lovelace!;
-      await lovelace.saveConfig(
-        this._creatingCard
-          ? addCard(lovelace.config, this.path as [number], cardConf)
-          : replaceCard(
-              lovelace.config,
-              this.path as [number, number],
-              cardConf
-            )
-      );
+      await this.saveCard!(cardConf);
       this.closeDialog!();
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
@@ -333,7 +325,7 @@ export class HuiEditCard extends LitElement {
   }
 
   private _isConfigChanged(): boolean {
-    if (this._creatingCard) {
+    if (this.newCard) {
       return true;
     }
     const configValue =
@@ -393,10 +385,6 @@ export class HuiEditCard extends LitElement {
     await this.updateComplete;
     this._updatePreview(conf);
     return true;
-  }
-
-  private get _creatingCard(): boolean {
-    return this.path!.length === 1;
   }
 
   private _openedChanged(ev): void {
