@@ -104,6 +104,7 @@ export class CloudRemotePref extends LitElement {
       }
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
+      alert(err.message);
       toggle.checked = !toggle.checked;
     }
   }
