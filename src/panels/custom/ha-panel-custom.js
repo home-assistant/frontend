@@ -98,7 +98,9 @@ It will have access to all data in Home Assistant.
     `.trim();
     const iframeDoc = this.querySelector("iframe").contentWindow.document;
     iframeDoc.open();
-    iframeDoc.write(`<script src='${window.customPanelJS}'></script>`);
+    iframeDoc.write(
+      `<!doctype html><script src='${window.customPanelJS}'></script>`
+    );
     iframeDoc.close();
   }
 
