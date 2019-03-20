@@ -66,7 +66,6 @@ export class HUIView extends LitElement {
 
   constructor() {
     super();
-    console.log("CONSTRUCT HUI-VIEW");
     this._cards = [];
     this._badges = [];
   }
