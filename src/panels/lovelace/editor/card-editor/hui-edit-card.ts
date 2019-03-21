@@ -33,7 +33,7 @@ import "./hui-card-preview";
 // tslint:disable-next-line
 import { HuiCardPreview } from "./hui-card-preview";
 import { LovelaceCardEditor, Lovelace } from "../../types";
-import { ConfigValue, ConfigError } from "../types";
+import { ConfigError } from "../types";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { afterNextRender } from "../../../../common/util/render-status";
@@ -67,7 +67,7 @@ export class HuiEditCard extends LitElement {
 
   @property() private _uiEditor?: boolean;
 
-  @property() private _configValue?: ConfigValue;
+  @property() private _cardConfig?: LovelaceCardConfig;
 
   @property() private _configState?: string;
 
@@ -77,14 +77,26 @@ export class HuiEditCard extends LitElement {
 
   @property() private _errorMsg?: TemplateResult;
 
-  private _cardType?: string;
-
   private get _dialog(): PaperDialogElement {
     return this.shadowRoot!.querySelector("paper-dialog")!;
   }
 
   private get _previewEl(): HuiCardPreview {
     return this.shadowRoot!.querySelector("hui-card-preview")!;
+  }
+
+  // tslint:disable-next-line
+  private __cardYaml: string | undefined;
+
+  private get _cardYaml(): string | undefined {
+    if (!this.__cardYaml) {
+      this.__cardYaml = yaml.safeDump(this._cardConfig);
+    }
+    return this.__cardYaml;
+  }
+
+  private set _cardYaml(yml: string | undefined) {
+    this.__cardYaml = yml;
   }
 
   public constructor() {
@@ -99,7 +111,8 @@ export class HuiEditCard extends LitElement {
       return;
     }
 
-    this._configValue = { format: "yaml", value: undefined };
+    this._cardConfig = undefined;
+    this._cardYaml = undefined;
     this._configState = "OK";
     this._uiEditor = true;
     this._errorMsg = undefined;
@@ -120,7 +133,7 @@ export class HuiEditCard extends LitElement {
             : html`
                 <hui-yaml-editor
                   .hass="${this.hass}"
-                  .value="${this._configValue!.value}"
+                  .value="${this._cardYaml}"
                   @yaml-changed="${this._handleYamlChanged}"
                   @yaml-save="${this._save}"
                 ></hui-yaml-editor>
@@ -163,7 +176,7 @@ export class HuiEditCard extends LitElement {
               <div class="paper-dialog-buttons">
                 <mwc-button
                   class="toggle-button"
-                  ?hidden="${!this._configValue || !this._configValue.value}"
+                  ?hidden="${!this._cardConfig}"
                   ?disabled="${this._configElement === null ||
                     this._configState !== "OK"}"
                   @click="${this._toggleEditor}"
@@ -175,7 +188,7 @@ export class HuiEditCard extends LitElement {
                   >${this.hass!.localize("ui.common.cancel")}</mwc-button
                 >
                 <mwc-button
-                  ?hidden="${!this._configValue || !this._configValue.value}"
+                  ?hidden="${!this._cardConfig}"
                   ?disabled="${this._saving || this._configState !== "OK"}"
                   @click="${this._save}"
                 >
@@ -223,13 +236,9 @@ export class HuiEditCard extends LitElement {
 
     this._saving = true;
 
-    const cardConf: LovelaceCardConfig =
-      this._configValue!.format === "yaml"
-        ? yaml.safeLoad(this._configValue!.value!)
-        : this._configValue!.value!;
-
     try {
-      await this.saveCard!(cardConf);
+      await this.saveCard!(this._cardConfig!);
+      this._cardYaml = undefined;
       this.closeDialog!();
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
@@ -239,12 +248,9 @@ export class HuiEditCard extends LitElement {
   }
 
   private _handleYamlChanged(ev: CustomEvent): void {
-    this._configValue = { format: "yaml", value: ev.detail.value };
+    this._cardConfig = yaml.safeLoad(ev.detail.value);
     try {
-      const config = yaml.safeLoad(
-        this._configValue.value
-      ) as LovelaceCardConfig;
-      this._updatePreview(config);
+      this._updatePreview(this._cardConfig!);
       this._configState = "OK";
     } catch (err) {
       this._configState = "YAML_ERROR";
@@ -256,7 +262,7 @@ export class HuiEditCard extends LitElement {
   }
 
   private _handleUIConfigChanged(value: LovelaceCardConfig): void {
-    this._configValue = { format: "json", value };
+    this._cardConfig = value;
     this._updatePreview(value);
   }
 
@@ -286,35 +292,23 @@ export class HuiEditCard extends LitElement {
   }
 
   private async _toggleEditor(): Promise<void> {
-    if (this._uiEditor && this._configValue!.format === "json") {
-      this._configValue = {
-        format: "yaml",
-        value: yaml.safeDump(this._configValue!.value),
-      };
-      this._uiEditor = !this._uiEditor;
-    } else if (this._configElement && this._configValue!.format === "yaml") {
-      const yamlConfig = this._configValue!.value;
-      const cardConfig = yaml.safeLoad(yamlConfig) as LovelaceCardConfig;
-      this._uiEditor = !this._uiEditor;
-      if (cardConfig.type !== this._cardType) {
-        const succes = await this._loadConfigElement(cardConfig);
-        if (!succes) {
-          this._loadedDialog();
-        }
-        this._cardType = cardConfig.type;
+    this._cardYaml = undefined;
+    if (this._uiEditor) {
+      this._uiEditor = false;
+    } else if (this._configElement) {
+      const success = await this._loadConfigElement(this._cardConfig!);
+      if (!success) {
+        this._loadedDialog();
       } else {
-        this._configValue = {
-          format: "json",
-          value: cardConfig,
-        };
-        this._configElement.setConfig(cardConfig);
+        this._uiEditor = true;
+        this._configElement.setConfig(this._cardConfig!);
       }
     }
     this._resizeDialog();
   }
 
   private _isConfigValid(): boolean {
-    if (!this._configValue || !this._configValue.value) {
+    if (!this._cardConfig) {
       return false;
     }
     if (this._configState === "OK") {
@@ -328,11 +322,7 @@ export class HuiEditCard extends LitElement {
     if (this.newCard) {
       return true;
     }
-    const configValue =
-      this._configValue!.format === "yaml"
-        ? yaml.safeLoad(this._configValue!.value)
-        : this._configValue!.value;
-    return JSON.stringify(configValue) !== JSON.stringify(this.cardConfig);
+    return JSON.stringify(this._cardConfig) !== JSON.stringify(this.cardConfig);
   }
 
   private async _loadConfigElement(conf: LovelaceCardConfig): Promise<boolean> {
@@ -349,10 +339,11 @@ export class HuiEditCard extends LitElement {
     const elClass = customElements.get(tag);
     let configElement;
 
+    this._cardConfig = conf;
+
     if (elClass && elClass.getConfigElement) {
       configElement = await elClass.getConfigElement();
     } else {
-      this._configValue = { format: "yaml", value: yaml.safeDump(conf) };
       this._updatePreview(conf);
       this._uiEditor = false;
       this._configElement = null;
@@ -366,10 +357,6 @@ export class HuiEditCard extends LitElement {
         Your config is not supported by the UI editor:<br /><b>${err.message}</b
         ><br />Falling back to YAML editor.
       `;
-      this._configValue = {
-        format: "yaml",
-        value: yaml.safeDump(conf),
-      };
       this._updatePreview(conf);
       this._uiEditor = false;
       this._configElement = null;
@@ -380,7 +367,6 @@ export class HuiEditCard extends LitElement {
     configElement.addEventListener("config-changed", (ev) =>
       this._handleUIConfigChanged(ev.detail.config)
     );
-    this._configValue = { format: "json", value: conf };
     this._configElement = configElement;
     await this.updateComplete;
     this._updatePreview(conf);
