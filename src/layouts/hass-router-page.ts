@@ -2,6 +2,7 @@ import { UpdatingElement, property, PropertyValues } from "lit-element";
 import "./hass-error-screen";
 import { Route } from "../types";
 import { navigate } from "../common/navigate";
+import memoizeOne from "memoize-one";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {
@@ -47,6 +48,18 @@ export class HassRouterPage extends UpdatingElement {
   private _currentPage = "";
   private _currentLoadProm?: Promise<void>;
   private _cache = {};
+  private _computeTail = memoizeOne((route: Route) => {
+    const dividerPos = route.path.indexOf("/", 1);
+    return dividerPos === -1
+      ? {
+          prefix: route.prefix + route.path,
+          path: "",
+        }
+      : {
+          prefix: route.prefix + route.path.substr(0, dividerPos),
+          path: route.path.substr(dividerPos),
+        };
+  });
 
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
@@ -192,6 +205,10 @@ export class HassRouterPage extends UpdatingElement {
     // default we do nothing
   }
 
+  protected get routeTail(): Route {
+    return this._computeTail(this.route!);
+  }
+
   private _createPanel(
     routerOptions: RouterOptions,
     page: string,
@@ -209,19 +226,5 @@ export class HassRouterPage extends UpdatingElement {
     if (routerOptions.cacheAll || routeOptions.cache) {
       this._cache[page] = panelEl;
     }
-  }
-
-  protected get routeTail(): Route {
-    const route = this.route!;
-    const dividerPos = route.path.indexOf("/", 1);
-    return dividerPos === -1
-      ? {
-          prefix: route.prefix + route.path,
-          path: "",
-        }
-      : {
-          prefix: route.prefix + route.path.substr(0, dividerPos),
-          path: route.path.substr(dividerPos),
-        };
   }
 }
