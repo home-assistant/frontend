@@ -15,10 +15,13 @@ declare global {
   var __DEMO__: boolean;
   var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
+  var __STATIC_PATH__: string;
 }
 
 declare global {
   interface Window {
+    // Custom panel entry point url
+    customPanelJS: string;
     ShadyCSS: {
       nativeCss: boolean;
       nativeShadow: boolean;
