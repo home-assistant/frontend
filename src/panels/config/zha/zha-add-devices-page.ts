@@ -23,6 +23,7 @@ import { HomeAssistant } from "../../../types";
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
   @property() public hass!: HomeAssistant;
+  @property() public isWide?: boolean;
   @property() private _error?: string;
   @property() private _discoveredDevices: ZHADevice[] = [];
   @property() private _formattedEvents: string = "";
@@ -107,8 +108,10 @@ class ZHAAddDevicesPage extends LitElement {
                       class="card"
                       .hass="${this.hass}"
                       .device="${device}"
-                      .narrow="${true}"
+                      .narrow="${!this.isWide}"
                       .showHelp="${this._showHelp}"
+                      .showRemove="${!this._active}"
+                      .isJoinPage="${true}"
                     ></zha-device-card>
                   `
                 )}

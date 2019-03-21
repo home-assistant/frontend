@@ -50,7 +50,9 @@ class ZHADeviceCard extends LitElement {
   @property() public narrow?: boolean;
   @property() public device?: ZHADevice;
   @property() public showHelp: boolean = false;
-  @property() private _userSelectedName?: string;
+  @property() public showRemove: boolean = true;
+  @property() public isJoinPage?: boolean;
+  @property() private _userSelectedName?: string = "";
   @property() private _serviceData?: NodeServiceData;
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
@@ -88,15 +90,31 @@ class ZHADeviceCard extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <paper-card>
+      <paper-card heading="${this.isJoinPage ? this.device!.name : ""}">
+        ${this.isJoinPage
+          ? html`
+              <div class="info">
+                <div class="model">${this.device!.model}</div>
+                <div class="manuf">
+                  ${this.hass!.localize(
+                    "ui.panel.config.integrations.config_entry.manuf",
+                    "manufacturer",
+                    this.device!.manufacturer
+                  )}
+                </div>
+              </div>
+            `
+          : ""}
         <div class="card-content">
           <dl>
-            <dt class="label">IEEE:</dt>
-            <dd class="info">${this.device!.ieee}</dd>
-            <dt class="label">Quirk applied:</dt>
-            <dd class="info">${this.device!.quirk_applied}</dd>
-            <dt class="label">Quirk:</dt>
-            <dd class="info">${this.device!.quirk_class}</dd>
+            <dt>IEEE:</dt>
+            <dd class="zha-info">${this.device!.ieee}</dd>
+            ${this.device!.quirk_applied
+              ? html`
+                  <dt>Quirk:</dt>
+                  <dd class="zha-info">${this.device!.quirk_class}</dd>
+                `
+              : ""}
           </dl>
         </div>
 
@@ -111,10 +129,16 @@ class ZHADeviceCard extends LitElement {
                   .stateObj="${this.hass!.states[entity.entity_id]}"
                   slot="item-icon"
                 ></state-badge>
-                <paper-item-body>
-                  <div class="name">${entity.name}</div>
-                  <div class="secondary entity-id">${entity.entity_id}</div>
-                </paper-item-body>
+                ${!this.isJoinPage
+                  ? html`
+                      <paper-item-body>
+                        <div class="name">${entity.name}</div>
+                        <div class="secondary entity-id">
+                          ${entity.entity_id}
+                        </div>
+                      </paper-item-body>
+                    `
+                  : ""}
               </paper-icon-item>
             `
           )}
@@ -168,24 +192,29 @@ class ZHADeviceCard extends LitElement {
                 </div>
               `
             : ""}
-          <ha-call-service-button
-            .hass="${this.hass}"
-            domain="zha"
-            service="remove"
-            .serviceData="${this._serviceData}"
-            >Remove Device</ha-call-service-button
-          >
-          ${this.showHelp
+          ${this.showRemove
             ? html`
-                <div class="help-text">
-                  ${this.hass!.localize("ui.panel.config.zha.services.remove")}
-                </div>
+                <ha-call-service-button
+                  .hass="${this.hass}"
+                  domain="zha"
+                  service="remove"
+                  .serviceData="${this._serviceData}"
+                  >Remove Device</ha-call-service-button
+                >
+                ${this.showHelp
+                  ? html`
+                      <div class="help-text">
+                        ${this.hass!.localize(
+                          "ui.panel.config.zha.services.remove"
+                        )}
+                      </div>
+                    `
+                  : ""}
               `
             : ""}
           <mwc-button
             @click="${this._onUpdateDeviceNameClick}"
-            .disabled="${!this._userSelectedName ||
-              this._userSelectedName === ""}"
+            ?disabled=${this._userSelectedName === ""}
             >${this.hass!.localize(
               "ui.panel.config.zha.device_card.update_name_button"
             )}</mwc-button
@@ -267,6 +296,10 @@ class ZHADeviceCard extends LitElement {
         :host(:not([narrow])) .device-entities {
           max-height: 225px;
           overflow: auto;
+          display: flex;
+          flex-wrap: wrap;
+          padding: 4px;
+          justify-content: left;
         }
         paper-card {
           flex: 1 0 100%;
@@ -276,14 +309,25 @@ class ZHADeviceCard extends LitElement {
         .device {
           width: 30%;
         }
-        .label {
+        .device .name {
           font-weight: bold;
+        }
+        .device .manuf {
+          color: var(--secondary-text-color);
+        }
+        .extra-info {
+          margin-top: 8px;
+        }
+        .manuf,
+        .zha-info,
+        .entity-id {
+          color: var(--secondary-text-color);
         }
         .info {
-          color: var(--secondary-text-color);
-          font-weight: bold;
+          margin-left: 16px;
         }
         dl dt {
+          padding-left: 12px;
           float: left;
           width: 100px;
           text-align: left;

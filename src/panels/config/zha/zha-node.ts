@@ -109,6 +109,7 @@ export class ZHANode extends LitElement {
                   .narrow="${!this.isWide}"
                   .showHelp="${this._showHelp}"
                   @zha-device-removed="${this._onDeviceRemoved}"
+                  .isJoinPage="${false}"
                 ></zha-device-card>
               `
             : ""}
