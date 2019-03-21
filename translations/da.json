@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation opsætning",
                     "services": {
-                        "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service."
+                        "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service.",
+                        "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen"
                     }
                 },
                 "area_registry": {
@@ -617,6 +618,7 @@
                         "introduction": "Områder bruges til at organisere hvor enhederne er. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din grænseflade, tilladelser og integrationer med andre systemer.",
                         "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
                         "integrations_page": "Integrations side",
+                        "no_areas": "Du ikke har ingen områder endnu!",
                         "create_area": "OPRET OMRÅDE"
                     },
                     "no_areas": "Du ikke har ingen områder endnu!",
@@ -831,11 +833,13 @@
                     "data": {
                         "name": "Navn",
                         "username": "Brugernavn",
-                        "password": "Password"
+                        "password": "Password",
+                        "password_confirm": "Bekræft adgangskode"
                     },
                     "create_account": "Opret konto",
                     "error": {
-                        "required_fields": "Udfyld alle obligatoriske felter"
+                        "required_fields": "Udfyld alle obligatoriske felter",
+                        "password_not_match": "Adgangskoderne er ikke ens"
                     }
                 }
             },
@@ -1160,6 +1164,7 @@
     },
     "groups": {
         "system-admin": "Administratorer",
-        "system-users": "Brugere"
+        "system-users": "Brugere",
+        "system-read-only": "Read-Only-brugere"
     }
 }
