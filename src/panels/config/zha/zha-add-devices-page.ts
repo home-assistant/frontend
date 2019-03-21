@@ -95,11 +95,13 @@ class ZHAAddDevicesPage extends LitElement {
         <div class="content">
           ${this._discoveredDevices.length < 1
             ? html`
-                <h4>
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.add_device_page.discovery_text"
-                  )}
-                </h4>
+                <div class="discovery-text">
+                  <h4>
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.add_device_page.discovery_text"
+                    )}
+                  </h4>
+                </div>
               `
             : html`
                 ${this._discoveredDevices.map(
@@ -169,6 +171,7 @@ class ZHAAddDevicesPage extends LitElement {
     return [
       haStyle,
       css`
+        .discovery-text,
         .content-header {
           margin: 16px;
         }
@@ -196,8 +199,8 @@ class ZHAAddDevicesPage extends LitElement {
           margin-left: 16px;
         }
         .card {
-          margin-left: 28px;
-          margin-right: 0px;
+          margin-left: 16px;
+          margin-right: 16px;
           margin-bottom: 0px;
           margin-top: 10px;
         }
