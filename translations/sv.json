@@ -343,7 +343,7 @@
                             "reloading": {
                                 "heading": "Uppdatering av konfigurationen",
                                 "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"Uppdatera\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
-                                "core": "Uppdatera kärnan",
+                                "core": "Ladda om kärnan",
                                 "group": "Uppdatera grupper",
                                 "automation": "Uppdatera automationer",
                                 "script": "Uppdatera skript"
@@ -537,7 +537,7 @@
                                     "label": "Villkor"
                                 },
                                 "event": {
-                                    "label": "Brand händelse",
+                                    "label": "Utlös händelse",
                                     "event": "Händelse",
                                     "service_data": "Tjänstedata"
                                 }
@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation (ZHA) nätverkshantering",
                     "services": {
-                        "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion."
+                        "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion.",
+                        "updateDeviceName": "Ange ett anpassat namn för den här enheten i enhetsregistret"
                     }
                 },
                 "area_registry": {
@@ -616,7 +617,9 @@
                         "header": "Områdesregister",
                         "introduction": "Områden används för att organisera var enheter befinner sig. Denna information kommer att användas i hela Home Assistant för att hjälpa dig att organisera ditt gränssnitt, behörigheter och integreringar med andra system.",
                         "introduction2": "Om du vill placera enheter i ett område använder du länken nedan för att navigera till integrationssidan och klickar sedan på en konfigurerad integration för att komma till enhetskort.",
-                        "integrations_page": "Integrationssidan"
+                        "integrations_page": "Integrationssidan",
+                        "no_areas": "Det verkar som om du inte har några områden ännu",
+                        "create_area": "Skapa område"
                     },
                     "no_areas": "Det verkar som om du inte har några områden än!",
                     "create_area": "SKAPA OMRÅDE",
@@ -830,11 +833,13 @@
                     "data": {
                         "name": "Namn",
                         "username": "Användarnamn",
-                        "password": "Lösenord"
+                        "password": "Lösenord",
+                        "password_confirm": "Bekräfta lösenord"
                     },
                     "create_account": "Skapa konto",
                     "error": {
-                        "required_fields": "Fyll i alla fält som krävs"
+                        "required_fields": "Fyll i alla fält som krävs",
+                        "password_not_match": "Lösenorden överensstämmer inte"
                     }
                 }
             },
@@ -889,7 +894,7 @@
                         "header": "Ändra konfigurationen",
                         "save": "Spara",
                         "unsaved_changes": "Osparade ändringar",
-                        "saved": "Sparat"
+                        "saved": "Sparad"
                     }
                 },
                 "menu": {
@@ -1156,5 +1161,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administratörer",
+        "system-users": "Användare",
+        "system-read-only": "Användare med läsbehörighet"
     }
 }
