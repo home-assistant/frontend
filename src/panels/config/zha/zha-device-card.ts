@@ -33,7 +33,7 @@ import {
 import { reconfigureNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { ChangeEvent, ItemSelectedEvent, NodeServiceData } from "./types";
+import { ItemSelectedEvent, NodeServiceData } from "./types";
 
 declare global {
   // for fire event
@@ -50,9 +50,8 @@ class ZHADeviceCard extends LitElement {
   @property() public narrow?: boolean;
   @property() public device?: ZHADevice;
   @property() public showHelp: boolean = false;
-  @property() public showRemove: boolean = true;
+  @property() public showActions?: boolean;
   @property() public isJoinPage?: boolean;
-  @property() private _userSelectedName?: string = "";
   @property() private _serviceData?: NodeServiceData;
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
@@ -91,30 +90,34 @@ class ZHADeviceCard extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <paper-card heading="${this.isJoinPage ? this.device!.name : ""}">
-        ${this.isJoinPage
-          ? html`
-              <div class="info">
-                <div class="model">${this.device!.model}</div>
-                <div class="manuf">
-                  ${this.hass!.localize(
-                    "ui.panel.config.integrations.config_entry.manuf",
-                    "manufacturer",
-                    this.device!.manufacturer
-                  )}
+        ${
+          this.isJoinPage
+            ? html`
+                <div class="info">
+                  <div class="model">${this.device!.model}</div>
+                  <div class="manuf">
+                    ${this.hass!.localize(
+                      "ui.panel.config.integrations.config_entry.manuf",
+                      "manufacturer",
+                      this.device!.manufacturer
+                    )}
+                  </div>
                 </div>
-              </div>
-            `
-          : ""}
+              `
+            : ""
+        }
         <div class="card-content">
           <dl>
             <dt>IEEE:</dt>
             <dd class="zha-info">${this.device!.ieee}</dd>
-            ${this.device!.quirk_applied
-              ? html`
-                  <dt>Quirk:</dt>
-                  <dd class="zha-info">${this.device!.quirk_class}</dd>
-                `
-              : ""}
+            ${
+              this.device!.quirk_applied
+                ? html`
+                    <dt>Quirk:</dt>
+                    <dd class="zha-info">${this.device!.quirk_class}</dd>
+                  `
+                : ""
+            }
           </dl>
         </div>
 
@@ -146,8 +149,7 @@ class ZHADeviceCard extends LitElement {
         <div class="editable">
           <paper-input
             type="string"
-            .value="${this._userSelectedName}"
-            @value-changed="${this._onUserSelectedNameChanged}"
+            @change="${this._saveCustomName}"
             placeholder="${this.hass!.localize(
               "ui.panel.config.zha.device_card.device_name_placeholder"
             )}"
@@ -179,55 +181,43 @@ class ZHADeviceCard extends LitElement {
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <div class="card-actions">
-          <mwc-button @click="${this._onReconfigureNodeClick}"
-            >Reconfigure Device</mwc-button
-          >
-          ${this.showHelp
+        ${
+          this.showActions
             ? html`
-                <div class="help-text">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.services.reconfigure"
-                  )}
+                <div class="card-actions">
+                  <mwc-button @click="${this._onReconfigureNodeClick}"
+                    >Reconfigure Device</mwc-button
+                  >
+                  ${this.showHelp
+                    ? html`
+                        <div class="help-text">
+                          ${this.hass!.localize(
+                            "ui.panel.config.zha.services.reconfigure"
+                          )}
+                        </div>
+                      `
+                    : ""}
+
+                  <ha-call-service-button
+                    .hass="${this.hass}"
+                    domain="zha"
+                    service="remove"
+                    .serviceData="${this._serviceData}"
+                    >Remove Device</ha-call-service-button
+                  >
+                  ${this.showHelp
+                    ? html`
+                        <div class="help-text">
+                          ${this.hass!.localize(
+                            "ui.panel.config.zha.services.remove"
+                          )}
+                        </div>
+                      `
+                    : ""}
                 </div>
               `
-            : ""}
-          ${this.showRemove
-            ? html`
-                <ha-call-service-button
-                  .hass="${this.hass}"
-                  domain="zha"
-                  service="remove"
-                  .serviceData="${this._serviceData}"
-                  >Remove Device</ha-call-service-button
-                >
-                ${this.showHelp
-                  ? html`
-                      <div class="help-text">
-                        ${this.hass!.localize(
-                          "ui.panel.config.zha.services.remove"
-                        )}
-                      </div>
-                    `
-                  : ""}
-              `
-            : ""}
-          <mwc-button
-            @click="${this._onUpdateDeviceNameClick}"
-            ?disabled=${this._userSelectedName === ""}
-            >${this.hass!.localize(
-              "ui.panel.config.zha.device_card.update_name_button"
-            )}</mwc-button
-          >
-          ${this.showHelp
-            ? html`
-                <div class="help-text">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.services.updateDeviceName"
-                  )}
-                </div>
-              `
-            : ""}
+            : ""
+        }
         </div>
       </paper-card>
     `;
@@ -239,14 +229,10 @@ class ZHADeviceCard extends LitElement {
     }
   }
 
-  private _onUserSelectedNameChanged(value: ChangeEvent): void {
-    this._userSelectedName = value.detail!.value;
-  }
-
-  private async _onUpdateDeviceNameClick(): Promise<void> {
+  private async _saveCustomName(event): Promise<void> {
     if (this.hass) {
       const values: DeviceRegistryEntryMutableParams = {
-        name_by_user: this._userSelectedName,
+        name_by_user: event.target.value,
         area_id: this.device!.area_id ? this.device!.area_id : undefined,
       };
 
@@ -256,8 +242,7 @@ class ZHADeviceCard extends LitElement {
         values
       );
 
-      this.device!.user_given_name = this._userSelectedName!;
-      this._userSelectedName = "";
+      this.device!.user_given_name = event.target.value;
     }
   }
 
@@ -282,10 +267,7 @@ class ZHADeviceCard extends LitElement {
 
     await updateDeviceRegistryEntry(this.hass!, this.device.device_reg_id, {
       area_id: area ? area.area_id : undefined,
-      name_by_user:
-        this._userSelectedName || this._userSelectedName !== ""
-          ? this._userSelectedName
-          : undefined,
+      name_by_user: this.device!.user_given_name,
     });
   }
 
@@ -304,7 +286,7 @@ class ZHADeviceCard extends LitElement {
         paper-card {
           flex: 1 0 100%;
           padding-bottom: 10px;
-          min-width: 0;
+          min-width: 425px;
         }
         .device {
           width: 30%;
@@ -329,11 +311,10 @@ class ZHADeviceCard extends LitElement {
         dl dt {
           padding-left: 12px;
           float: left;
-          width: 100px;
+          width: 50px;
           text-align: left;
         }
         dt dd {
-          margin-left: 10px;
           text-align: left;
         }
         paper-icon-item {

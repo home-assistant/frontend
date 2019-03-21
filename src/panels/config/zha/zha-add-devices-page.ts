@@ -110,7 +110,7 @@ class ZHAAddDevicesPage extends LitElement {
                       .device="${device}"
                       .narrow="${!this.isWide}"
                       .showHelp="${this._showHelp}"
-                      .showRemove="${!this._active}"
+                      .showActions="${!this._active}"
                       .isJoinPage="${true}"
                     ></zha-device-card>
                   `
@@ -196,14 +196,10 @@ class ZHAAddDevicesPage extends LitElement {
           margin-left: 16px;
         }
         .card {
-          box-sizing: border-box;
-          display: flex;
-          flex: 1 0 300px;
-          min-width: 0;
-          max-width: 600px;
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
+          margin-left: 28px;
+          margin-right: 0px;
+          margin-bottom: 0px;
+          margin-top: 10px;
         }
         .events {
           margin: 16px;
