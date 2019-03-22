@@ -11,11 +11,6 @@ declare global {
   }
 }
 
-/*
- * Mixins are used by ifram to communicate with main frontend.
- * @appliesMixin EventsMixin
- * @appliesMixin NavigateMixin
- */
 export class HaPanelCustom extends UpdatingElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
@@ -57,7 +52,6 @@ export class HaPanelCustom extends UpdatingElement {
   }
 
   private _cleanupPanel() {
-    // Clean up
     delete window.customPanel;
     this._setProperties = undefined;
     while (this.lastChild) {
