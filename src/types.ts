@@ -137,7 +137,7 @@ export interface HomeAssistant {
 
   dockedSidebar: boolean;
   moreInfoEntityId: string;
-  user: CurrentUser;
+  user?: CurrentUser;
   callService: (
     domain: string,
     service: string,
