@@ -176,7 +176,6 @@ export class HuiEditCard extends LitElement {
               <div class="paper-dialog-buttons">
                 <mwc-button
                   class="toggle-button"
-                  ?hidden="${!this._cardConfig}"
                   ?disabled="${this._configElement === null ||
                     this._configState !== "OK"}"
                   @click="${this._toggleEditor}"
@@ -188,7 +187,6 @@ export class HuiEditCard extends LitElement {
                   >${this.hass!.localize("ui.common.cancel")}</mwc-button
                 >
                 <mwc-button
-                  ?hidden="${!this._cardConfig}"
                   ?disabled="${this._saving || this._configState !== "OK"}"
                   @click="${this._save}"
                 >
