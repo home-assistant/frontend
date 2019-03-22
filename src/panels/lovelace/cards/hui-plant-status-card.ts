@@ -91,7 +91,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${this._config.title || computeStateName(stateObj)}
+            ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
         <div class="content">
