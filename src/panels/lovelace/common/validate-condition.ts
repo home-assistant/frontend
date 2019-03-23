@@ -15,10 +15,7 @@ export function checkConditionsMet(
       ? hass!.states[c.entity].state
       : "unavailable";
 
-    if (c.state) {
-      return state === c.state;
-    }
-    return state !== c.state_not;
+    return c.state ? state === c.state : state !== c.state_not;
   });
 }
 
