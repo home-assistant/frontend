@@ -58,6 +58,11 @@ class HaPaperSlider extends PaperSliderClass {
         -webkit-transform: scale(1) translate(0, -10px);
         transform: scale(1) translate(0, -10px);
       }
+
+      :host([dir="rtl"]) .pin.expand > .slider-knob > .slider-knob-inner::after {
+        -webkit-transform: scale(1) translate(0, -17px) scaleX(-1) !important;
+        transform: scale(1) translate(0, -17px) scaleX(-1) !important;
+        }
     `;
     tpl.content.appendChild(styleEl);
     return tpl;
