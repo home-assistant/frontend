@@ -1,4 +1,4 @@
-export default function setCustomPanelProperties(root, properties) {
+export const setCustomPanelProperties = (root, properties) => {
   if ("setProperties" in root) {
     root.setProperties(properties);
   } else {
@@ -6,4 +6,4 @@ export default function setCustomPanelProperties(root, properties) {
       root[key] = properties[key];
     });
   }
-}
+};
