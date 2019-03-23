@@ -132,6 +132,10 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           height: 44px;
         }
 
+        .playback-controls {
+          direction: ltr;
+        }
+
         paper-icon-button {
           opacity: var(--dark-primary-opacity);
         }
@@ -186,7 +190,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           class="self-center secondary"
         ></paper-icon-button>
 
-        <div>
+        <div class="playback-controls">
           <paper-icon-button
             icon="hass:skip-previous"
             invisible$="[[!playerObj.supportsPreviousTrack]]"
