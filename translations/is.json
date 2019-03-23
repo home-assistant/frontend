@@ -1,0 +1,11 @@
+{
+    "panel": {
+        "config": "Stillingar",
+        "states": "Yfirlit",
+        "map": "Kort",
+        "logbook": "Logbók",
+        "history": "Saga",
+        "mailbox": "Pósthólf",
+        "shopping_list": "Innkaupalisti"
+    }
+}
