@@ -35,7 +35,7 @@ class ZHAConfigPanel extends HassRouterPage {
 
   private _listeners: Array<() => void> = [];
 
-  public connectedCallback() {
+  public connectedCallback(): void {
     super.connectedCallback();
     this._listeners.push(
       listenMediaQuery("(min-width: 1040px)", (matches) => {
@@ -49,14 +49,14 @@ class ZHAConfigPanel extends HassRouterPage {
     );
   }
 
-  public disconnectedCallback() {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
   }
 
-  protected updatePageEl(el) {
+  protected updatePageEl(el): void {
     el.route = this.routeTail;
     el.hass = this.hass;
     el.isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;
