@@ -11,13 +11,11 @@ export function checkConditionsMet(
   hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
-    if (!(c.entity in hass.states)) {
-      return false;
-    }
-    if (c.state) {
-      return hass.states[c.entity].state === c.state;
-    }
-    return hass!.states[c.entity].state !== c.state_not;
+    const state = hass.states[c.entity]
+      ? hass!.states[c.entity].state
+      : "unavailable";
+
+    return c.state ? state === c.state : state !== c.state_not;
   });
 }
 
