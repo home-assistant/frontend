@@ -7,7 +7,7 @@ import {
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
-import "../components/hui-warning";
+import "../components/hui-warning-element";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
@@ -40,13 +40,13 @@ export class HuiStateBadgeElement extends LitElement
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
+        <hui-warning-element
+          label="${this.hass.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
             this._config.entity
-          )}</hui-warning
-        >
+          )}"
+        ></hui-warning-element>
       `;
     }
 
