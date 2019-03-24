@@ -20,6 +20,7 @@ import "@polymer/paper-dialog/paper-dialog";
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "../../components/dialog/ha-dialog";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -79,7 +80,7 @@ export class HuiEditCard extends LitElement {
   private _cardType?: string;
 
   private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private get _previewEl(): HuiCardPreview {
@@ -133,7 +134,7 @@ export class HuiEditCard extends LitElement {
     }
 
     return html`
-      <paper-dialog
+      <ha-paper-dialog
         with-backdrop
         opened
         modal
@@ -187,7 +188,7 @@ export class HuiEditCard extends LitElement {
               </div>
             `
           : ""}
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
