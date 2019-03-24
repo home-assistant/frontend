@@ -24,6 +24,8 @@ import stateIcon from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-image";
+import "../components/hui-warning-element";
+
 import { handleClick } from "../common/handle-click";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleEntity } from "../common/entity/toggle-entity";
@@ -138,7 +140,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
-      return html``;
+      return html`
+        <hui-warning-element
+          label=${this.hass!.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            entityConf.entity
+          )}
+        ></hui-warning-element>
+      `;
     }
 
     return html`
