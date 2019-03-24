@@ -45,6 +45,9 @@ class HuiGenericEntityRow extends LitElement {
       `;
     }
 
+    console.log(stateObj);
+    console.log(this.config.secondary_info);
+
     return html`
       <state-badge
         .stateObj="${stateObj}"
@@ -58,15 +61,19 @@ class HuiGenericEntityRow extends LitElement {
               ? html`
                   <slot name="secondary"></slot>
                 `
-              : this.config.secondary_info === "entity-id"
-              ? stateObj.entity_id
-              : this.config.secondary_info === "last-changed"
-              ? html`
-                  <ha-relative-time
-                    .hass="${this.hass}"
-                    .datetime="${stateObj.last_changed}"
-                  ></ha-relative-time>
-                `
+              : this.config.secondary_info !== undefined
+              ? this.config.secondary_info === "last_changed"
+                ? html`
+                    <ha-relative-time
+                      .hass="${this.hass}"
+                      .datetime="${stateObj.last_changed}"
+                    ></ha-relative-time>
+                  `
+                : this.config.secondary_info!.startsWith("attributes")
+                ? stateObj.attributes[
+                    this.config.secondary_info!.split(".", 2)[1]
+                  ]
+                : stateObj[this.config.secondary_info!]
               : ""}
           </div>
         </div>

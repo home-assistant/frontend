@@ -25,7 +25,7 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
-  secondary_info?: "entity-id" | "last-changed";
+  secondary_info?: string;
   action_name?: string;
   service?: string;
   service_data?: object;
