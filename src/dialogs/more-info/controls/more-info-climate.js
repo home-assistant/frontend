@@ -17,6 +17,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 /*
  * @appliesMixin EventsMixin
@@ -84,6 +85,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
           width: 90px;
           font-size: 200%;
           margin: auto;
+          direction: ltr;
         }
 
         ha-climate-control.range-control-left,
@@ -181,6 +183,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 value="[[stateObj.attributes.humidity]]"
                 on-change="targetHumiditySliderChanged"
                 ignore-bar-touch=""
+                dir="[[rtl]]"
               >
               </ha-paper-slider>
             </div>
@@ -314,6 +317,12 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
       awayToggleChecked: Boolean,
       auxToggleChecked: Boolean,
       onToggleChecked: Boolean,
+
+      rtl: {
+        type: String,
+        value: "ltr",
+        computed: "_computeRTLDirection(hass)",
+      },
     };
   }
 
@@ -556,6 +565,10 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _localizeFanMode(localize, mode) {
     return localize(`state_attributes.climate.fan_mode.${mode}`) || mode;
+  }
+
+  _computeRTLDirection(hass) {
+    return computeRTLDirection(hass);
   }
 }
 

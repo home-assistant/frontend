@@ -29,18 +29,24 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
           font-weight: bold;
           text-transform: capitalize;
         }
+
+        .unit {
+          display: inline-block;
+          direction: ltr;
+        }
       </style>
 
       <div class="target">
         <template is="dom-if" if="[[_hasKnownState(stateObj.state)]]">
           <span class="state-label"> [[_localizeState(stateObj.state)]] </span>
         </template>
-        [[computeTarget(hass, stateObj)]]
+        <div class="unit">[[computeTarget(hass, stateObj)]]</div>
       </div>
 
       <template is="dom-if" if="[[currentStatus]]">
         <div class="current">
-          [[localize('ui.card.climate.currently')]]: [[currentStatus]]
+          [[localize('ui.card.climate.currently')]]:
+          <div class="unit">[[currentStatus]]</div>
         </div>
       </template>
     `;
