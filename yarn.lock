@@ -833,10 +833,10 @@
   dependencies:
     "@material/feature-targeting" "^0.44.1"
 
-"@mdi/svg@^3.0.39":
-  version "3.3.92"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-3.3.92.tgz#40a12670c46ed7673943b219e8410f90d0996e64"
-  integrity sha512-281S4dn6evXoT8b2yhTooYLiX53PBr7Z+A5snuoz6HspGrL6JSvedX2o7WhO6Cjt8aOi869HKNNZ/O7nUXrSsA==
+"@mdi/svg@3.5.95":
+  version "3.5.95"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-3.5.95.tgz#9e5c3dda43957bb436b75d5e0f3f7e57d8d2efb7"
+  integrity sha512-OOHqPi6s6nEeOOvo9uZgdfLyTHGDiIXiAXtvIrCBbnU4mZFSHpskQUw7Yqmp/tluYzI6neLN5Dwy/vTusDcsdA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
