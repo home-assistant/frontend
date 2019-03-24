@@ -25,7 +25,7 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import "../components/hui-warning";
+import "../components/hui-warning-element";
 
 export interface ConfigEntity extends EntityConfig {
   tap_action?: ActionConfig;
@@ -184,13 +184,13 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass!.localize(
+        <hui-warning-element
+          label=${this.hass!.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
             entityConf.entity
-          )}</hui-warning
-        >
+          )}
+        ></hui-warning-element>
       `;
     }
 
