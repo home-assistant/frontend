@@ -45,9 +45,6 @@ class HuiGenericEntityRow extends LitElement {
       `;
     }
 
-    console.log(stateObj);
-    console.log(this.config.secondary_info);
-
     return html`
       <state-badge
         .stateObj="${stateObj}"
