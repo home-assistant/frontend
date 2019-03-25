@@ -15,6 +15,7 @@ import secondsToDuration from "../../../common/datetime/seconds_to_duration";
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "./types";
 import { HassEntity } from "home-assistant-js-websocket";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {
@@ -65,18 +66,11 @@ class HuiTimerEntityRow extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config") || changedProps.has("_timeRemaining")) {
+    if (changedProps.has("_timeRemaining")) {
       return true;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
-    }
-    return true;
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {
