@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   customElement,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/ha-icon";
@@ -27,7 +28,7 @@ export interface Config extends LovelaceElementConfig {
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
-  @property() public hass?: HomeAssistant;
+  public hass?: HomeAssistant;
   @property() private _config?: Config;
 
   public setConfig(config: Config): void {

@@ -6,6 +6,7 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -60,6 +61,21 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     this._config = { show_name: true, show_state: true, ...config };
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
+    }
+    return true;
   }
 
   protected render(): TemplateResult | void {

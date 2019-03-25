@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   customElement,
+  PropertyValues,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -32,6 +33,21 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
+    }
+    return true;
   }
 
   protected render(): TemplateResult | void {

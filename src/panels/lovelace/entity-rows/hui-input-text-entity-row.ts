@@ -4,6 +4,7 @@ import {
   TemplateResult,
   property,
   customElement,
+  PropertyValues,
 } from "lit-element";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
@@ -25,6 +26,21 @@ class HuiInputTextEntityRow extends LitElement implements EntityRow {
       throw new Error("Configuration error");
     }
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
+    }
+    return true;
   }
 
   protected render(): TemplateResult | void {

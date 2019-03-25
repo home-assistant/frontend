@@ -6,6 +6,7 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -85,6 +86,36 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     });
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass && this._entitiesDialog) {
+      for (const entity of this._entitiesDialog) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+
+      if (oldHass && this._entitiesToggle) {
+        for (const entity of this._entitiesToggle) {
+          if (
+            oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+          ) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return false;
+    }
+    return true;
   }
 
   protected render(): TemplateResult | void {

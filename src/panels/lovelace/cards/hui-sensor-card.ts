@@ -272,6 +272,21 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     this._date = new Date();
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config") || changedProps.has("_history")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass) {
+      return (
+        oldHass.states[this._config!.entity] !==
+        this.hass!.states[this._config!.entity]
+      );
+    }
+    return true;
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (!this._config || this._config.graph !== "line" || !this.hass) {
