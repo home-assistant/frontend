@@ -332,7 +332,9 @@
   "state_badge": {
     "default": {
       "unknown": "Unk",
-      "unavailable": "Unavai"
+      "unavailable": "Unavai",
+      "error": "Error",
+      "entity_not_found": "Entity Not Found"
     },
     "alarm_control_panel": {
       "armed": "Armed",
