@@ -12,6 +12,7 @@ const haTabFixBehaviorImpl = {
 };
 
 // paper-dialog that uses the haTabFixBehaviorImpl behvaior
+// export class HaPaperDialog extends paperDialogClass {}
 export class HaPaperDialog extends mixinBehaviors(
   [haTabFixBehaviorImpl],
   paperDialogClass

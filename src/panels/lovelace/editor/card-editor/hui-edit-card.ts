@@ -15,12 +15,12 @@ import { haStyleDialog } from "../../../../resources/styles";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
+import "../../components/dialog/ha-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
+import { HaPaperDialog } from "../../components/dialog/ha-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../components/dialog/ha-dialog";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -79,7 +79,7 @@ export class HuiEditCard extends LitElement {
 
   private _cardType?: string;
 
-  private get _dialog(): PaperDialogElement {
+  private get _dialog(): HaPaperDialog {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
@@ -207,7 +207,7 @@ export class HuiEditCard extends LitElement {
 
   private async _resizeDialog(): Promise<void> {
     await this.updateComplete;
-    fireEvent(this._dialog, "iron-resize");
+    fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
   private async _save(): Promise<void> {
