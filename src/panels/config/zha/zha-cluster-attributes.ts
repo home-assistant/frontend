@@ -215,7 +215,7 @@ export class ZHAClusterAttributes extends LitElement {
       attribute: this._attributes[this._selectedAttributeIndex].id,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
-        : this.selectedNode!.manufacturer_code,
+        : undefined,
     };
   }
 
@@ -234,7 +234,7 @@ export class ZHAClusterAttributes extends LitElement {
       value: this._attributeValue,
       manufacturer: this._manufacturerCodeOverride
         ? parseInt(this._manufacturerCodeOverride as string, 10)
-        : this.selectedNode!.manufacturer_code,
+        : undefined,
     };
   }
 

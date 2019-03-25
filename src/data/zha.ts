@@ -43,7 +43,7 @@ export interface ReadAttributeServiceData {
   cluster_id: number;
   cluster_type: string;
   attribute: number;
-  manufacturer: number;
+  manufacturer?: number;
 }
 
 export const reconfigureNode = (

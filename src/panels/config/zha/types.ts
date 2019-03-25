@@ -28,7 +28,7 @@ export interface SetAttributeServiceData {
   cluster_type: string;
   attribute: number;
   value: any;
-  manufacturer: number;
+  manufacturer?: number;
 }
 
 export interface IssueCommandServiceData {
