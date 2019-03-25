@@ -17,4 +17,9 @@ export class HaPaperDialog extends mixinBehaviors(
   paperDialogClass
 ) {}
 
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-paper-dialog": HaPaperDialog;
+  }
+}
 customElements.define("ha-paper-dialog", HaPaperDialog);
