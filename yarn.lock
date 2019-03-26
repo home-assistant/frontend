@@ -1096,10 +1096,10 @@
   dependencies:
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-overlay-behavior@^3.0.0-pre.27":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@polymer/iron-overlay-behavior/-/iron-overlay-behavior-3.0.1.tgz#04746be26c7f0ac3b4e80ef363fcb478425dd677"
-  integrity sha512-7XDaPVmH90G/hiyWdwv0VG+E4B2xpiWGhql8ghHg7Ik1E4gNCZ7pdeTvjnawfycjrsod0ZezhKOFavYWAaXVxA==
+"@polymer/iron-overlay-behavior@^3.0.0-pre.27", "@polymer/iron-overlay-behavior@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-overlay-behavior/-/iron-overlay-behavior-3.0.2.tgz#6a12a3f4eab4721eb6978ed950be534c9c283983"
+  integrity sha512-j1qmt6mJHCwpe1mKOvqK5kcCUPQr5LSrlqpgRDbUuLgUfNJ/vGTipjrkBlfbEUagm5FEQdc1VLPLSQP6WVuP9g==
   dependencies:
     "@polymer/iron-a11y-keys-behavior" "^3.0.0-pre.26"
     "@polymer/iron-fit-behavior" "^3.0.0-pre.26"
