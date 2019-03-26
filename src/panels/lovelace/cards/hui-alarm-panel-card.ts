@@ -305,7 +305,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
       .actions mwc-button {
         min-width: calc(var(--base-unit) * 9);
-        margin: 0 4px;
+        margin: 0 4px 4px;
       }
 
       mwc-button#disarm {
