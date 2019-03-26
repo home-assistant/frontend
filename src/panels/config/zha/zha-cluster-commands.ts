@@ -1,15 +1,23 @@
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
+
 import {
   Cluster,
   Command,
@@ -18,13 +26,12 @@ import {
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
+import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
   IssueCommandServiceData,
   ItemSelectedEvent,
 } from "./types";
-import { formatAsPaddedHex } from "./functions";
 
 export class ZHAClusterCommands extends LitElement {
   public hass?: HomeAssistant;
@@ -107,7 +114,7 @@ export class ZHAClusterCommands extends LitElement {
           </div>
           ${this._showHelp
             ? html`
-                <div class="helpText">Select a command to interact with</div>
+                <div class="help-text">Select a command to interact with</div>
               `
             : ""}
           ${this._selectedCommandIndex !== -1
@@ -135,6 +142,7 @@ export class ZHAClusterCommands extends LitElement {
                           .hass="${this.hass}"
                           domain="zha"
                           service="issue_zigbee_cluster_command"
+                          class="help-text2"
                         ></ha-service-description>
                       `
                     : ""}
@@ -242,7 +250,14 @@ export class ZHAClusterCommands extends LitElement {
           position: relative;
         }
 
-        .helpText {
+        .help-text {
+          color: grey;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 16px;
+        }
+
+        .help-text2 {
           color: grey;
           padding: 16px;
         }
