@@ -44,12 +44,12 @@ export class HuiDialogEditCard extends LitElement {
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
-    this._newCard = params.path.length !== 2;
-    this._cardConfig = !this._newCard
-      ? (this._cardConfig = params.lovelace.config.views[params.path[0]].cards![
-          (params as any).path[1]
-        ])
-      : undefined;
+    const [view, card] = params.path;
+    this._newCard = card !== undefined ? false : true;
+    this._cardConfig =
+      card !== undefined
+        ? params.lovelace.config.views[view].cards![card]
+        : undefined;
   }
 
   protected render(): TemplateResult | void {
