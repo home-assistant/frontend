@@ -6,6 +6,7 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -23,6 +24,7 @@ import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 interface Config extends LovelaceCardConfig {
   entity: string;
@@ -60,6 +62,10 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     this._config = { show_name: true, show_state: true, ...config };
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {
