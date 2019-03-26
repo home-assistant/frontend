@@ -4,6 +4,7 @@ import {
   TemplateResult,
   customElement,
   property,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
@@ -12,6 +13,7 @@ import "../components/hui-warning-element";
 import computeStateName from "../../../common/entity/compute_state_name";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 export interface Config extends LovelaceElementConfig {
   entity: string;
@@ -29,6 +31,10 @@ export class HuiStateBadgeElement extends LitElement
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

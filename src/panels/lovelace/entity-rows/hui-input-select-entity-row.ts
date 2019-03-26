@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   customElement,
+  PropertyValues,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -19,6 +20,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setOption } from "../../../data/input-select";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
@@ -32,6 +34,10 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {
