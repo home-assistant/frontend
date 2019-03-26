@@ -6,6 +6,7 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/entity/state-badge";
@@ -17,6 +18,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { ActionConfig } from "../../../data/lovelace";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 export interface Config extends LovelaceElementConfig {
   entity: string;
@@ -35,6 +37,10 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

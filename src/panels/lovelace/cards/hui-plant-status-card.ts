@@ -6,6 +6,7 @@ import {
   CSSResult,
   property,
   customElement,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/ha-card";
@@ -18,6 +19,7 @@ import { LovelaceCardEditor, LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -61,6 +63,10 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

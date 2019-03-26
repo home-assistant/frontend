@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   customElement,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/ha-climate-state";
@@ -14,6 +15,7 @@ import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-climate-entity-row")
 class HuiClimateEntityRow extends LitElement implements EntityRow {
@@ -27,6 +29,10 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

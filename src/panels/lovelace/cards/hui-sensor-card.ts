@@ -16,6 +16,7 @@ import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchRecent } from "../../../data/history";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -270,6 +271,14 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     this._date = new Date();
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_history")) {
+      return true;
+    }
+
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {
