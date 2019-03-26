@@ -6,7 +6,6 @@ import {
   property,
   css,
   CSSResult,
-  PropertyValues,
 } from "lit-element";
 import "@material/mwc-button";
 

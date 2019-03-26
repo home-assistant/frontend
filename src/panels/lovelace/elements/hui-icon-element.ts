@@ -6,7 +6,6 @@ import {
   css,
   CSSResult,
   customElement,
-  PropertyValues,
 } from "lit-element";
 
 import "../../../components/ha-icon";

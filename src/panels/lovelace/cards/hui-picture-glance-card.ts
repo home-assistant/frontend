@@ -94,29 +94,31 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass && (this._entitiesDialog || this._entitiesToggle)) {
-      if (oldHass && this._entitiesDialog) {
-        for (const entity of this._entitiesDialog) {
-          if (
-            oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
-          ) {
-            return true;
-          }
-        }
-      }
-
-      if (oldHass && this._entitiesToggle) {
-        for (const entity of this._entitiesToggle) {
-          if (
-            oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
-          ) {
-            return true;
-          }
-        }
-      }
-      return false;
+    if (!oldHass) {
+      return true;
     }
-    return true;
+
+    if (this._entitiesDialog) {
+      for (const entity of this._entitiesDialog) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+    }
+
+    if (this._entitiesToggle) {
+      for (const entity of this._entitiesToggle) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   protected render(): TemplateResult | void {
