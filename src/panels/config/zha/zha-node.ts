@@ -1,32 +1,30 @@
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  TemplateResult,
-  CSSResult,
-  PropertyValues,
-  css,
-} from "lit-element";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "./zha-clusters";
+import "./zha-device-card";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
+import { fetchDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
-import { ItemSelectedEvent, NodeServiceData, ChangeEvent } from "./types";
-import "./zha-clusters";
-import "./zha-device-card";
-import {
-  updateDeviceRegistryEntry,
-  DeviceRegistryEntryMutableParams,
-} from "../../../data/device_registry";
-import { reconfigureNode, fetchDevices, ZHADevice } from "../../../data/zha";
+import { ItemSelectedEvent, ZHADeviceRemovedEvent } from "./types";
 
 declare global {
   // for fire event
@@ -37,60 +35,25 @@ declare global {
   }
 }
 
+@customElement("zha-node")
 export class ZHANode extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  private _showHelp: boolean;
-  private _selectedNodeIndex: number;
-  private _selectedNode?: ZHADevice;
-  private _serviceData?: {};
-  private _nodes: ZHADevice[];
-  private _userSelectedName?: string;
+  @property() public hass?: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() private _showHelp: boolean = false;
+  @property() private _selectedDeviceIndex: number = -1;
+  @property() private _selectedDevice?: ZHADevice;
+  @property() private _nodes: ZHADevice[] = [];
 
-  constructor() {
-    super();
-    this._showHelp = false;
-    this._selectedNodeIndex = -1;
-    this._nodes = [];
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _showHelp: {},
-      _selectedNodeIndex: {},
-      _selectedNode: {},
-      _entities: {},
-      _serviceData: {},
-      _nodes: {},
-      _userSelectedName: {},
-    };
-  }
-
-  public firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    if (this._nodes.length === 0) {
-      this._fetchDevices();
-    }
-    this.addEventListener("hass-service-called", (ev) =>
-      this.serviceCalled(ev)
-    );
-  }
-
-  protected serviceCalled(ev): void {
-    // Check if this is for us
-    if (ev.detail.success && ev.detail.service === "remove") {
-      this._selectedNodeIndex = -1;
-      this._fetchDevices();
-    }
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._fetchDevices();
   }
 
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">
-          <span>Node Management</span>
+          <span>Device Management</span>
           <paper-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
@@ -98,8 +61,8 @@ export class ZHANode extends LitElement {
           ></paper-icon-button>
         </div>
         <span slot="introduction">
-          Run ZHA commands that affect a single node. Pick a node to see a list
-          of available commands. <br /><br />Note: Sleepy (battery powered)
+          Run ZHA commands that affect a single device. Pick a device to see a
+          list of available commands. <br /><br />Note: Sleepy (battery powered)
           devices need to be awake when executing commands against them. You can
           generally wake a sleepy device by triggering it. <br /><br />Some
           devices such as Xiaomi sensors have a wake up button that you can
@@ -108,11 +71,15 @@ export class ZHANode extends LitElement {
         </span>
         <paper-card class="content">
           <div class="node-picker">
-            <paper-dropdown-menu label="Nodes" class="flex">
+            <paper-dropdown-menu
+              label="Devices"
+              class="flex"
+              id="zha-device-selector"
+            >
               <paper-listbox
                 slot="dropdown-content"
-                @iron-select="${this._selectedNodeChanged}"
-                .selected="${this._selectedNodeIndex}"
+                @iron-select="${this._selectedDeviceChanged}"
+                .selected="${this._selectedDeviceIndex}"
               >
                 ${this._nodes.map(
                   (entry) => html`
@@ -128,87 +95,28 @@ export class ZHANode extends LitElement {
           </div>
           ${this._showHelp
             ? html`
-                <div class="helpText">
-                  Select node to view per-node options
+                <div class="help-text">
+                  Select device to view per-device options
                 </div>
               `
             : ""}
-          ${this._selectedNodeIndex !== -1
+          ${this._selectedDeviceIndex !== -1
             ? html`
                 <zha-device-card
                   class="card"
                   .hass="${this.hass}"
-                  .device="${this._selectedNode}"
+                  .device="${this._selectedDevice}"
                   .narrow="${!this.isWide}"
+                  .showHelp="${this._showHelp}"
+                  .showActions="${true}"
+                  @zha-device-removed="${this._onDeviceRemoved}"
+                  .isJoinPage="${false}"
                 ></zha-device-card>
               `
             : ""}
-          ${this._selectedNodeIndex !== -1
-            ? html`
-                <div class="input-text">
-                  <paper-input
-                    type="string"
-                    .value="${this._userSelectedName}"
-                    @value-changed="${this._onUserSelectedNameChanged}"
-                    placeholder="User given name"
-                  ></paper-input>
-                </div>
-              `
-            : ""}
-          ${this._selectedNodeIndex !== -1 ? this._renderNodeActions() : ""}
-          ${this._selectedNode ? this._renderClusters() : ""}
+          ${this._selectedDevice ? this._renderClusters() : ""}
         </paper-card>
       </ha-config-section>
-    `;
-  }
-
-  private _renderNodeActions(): TemplateResult {
-    return html`
-      <div class="card-actions">
-        <mwc-button @click="${this._onReconfigureNodeClick}"
-          >Reconfigure Node</mwc-button
-        >
-        ${this._showHelp
-          ? html`
-              <div class="helpText">
-                ${this.hass!.localize(
-                  "ui.panel.config.zha.services.reconfigure"
-                )}
-              </div>
-            `
-          : ""}
-        <ha-call-service-button
-          .hass="${this.hass}"
-          domain="zha"
-          service="remove"
-          .serviceData="${this._serviceData}"
-          >Remove Node</ha-call-service-button
-        >
-        ${this._showHelp
-          ? html`
-              <ha-service-description
-                .hass="${this.hass}"
-                domain="zha"
-                service="remove"
-              />
-            `
-          : ""}
-        <mwc-button
-          @click="${this._onUpdateDeviceNameClick}"
-          .disabled="${!this._userSelectedName ||
-            this._userSelectedName === ""}"
-          >Update Name</mwc-button
-        >
-        ${this._showHelp
-          ? html`
-              <div class="helpText">
-                ${this.hass!.localize(
-                  "ui.panel.config.zha.services.updateDeviceName"
-                )}
-              </div>
-            `
-          : ""}
-      </div>
     `;
   }
 
@@ -216,7 +124,7 @@ export class ZHANode extends LitElement {
     return html`
       <zha-clusters
         .hass="${this.hass}"
-        .selectedDevice="${this._selectedNode}"
+        .selectedDevice="${this._selectedDevice}"
         .showHelp="${this._showHelp}"
       ></zha-clusters>
     `;
@@ -226,51 +134,23 @@ export class ZHANode extends LitElement {
     this._showHelp = !this._showHelp;
   }
 
-  private _selectedNodeChanged(event: ItemSelectedEvent): void {
-    this._selectedNodeIndex = event!.target!.selected;
-    this._selectedNode = this._nodes[this._selectedNodeIndex];
-    this._userSelectedName = "";
-    fireEvent(this, "zha-node-selected", { node: this._selectedNode });
-    this._serviceData = this._computeNodeServiceData();
-  }
-
-  private async _onReconfigureNodeClick(): Promise<void> {
-    if (this.hass) {
-      await reconfigureNode(this.hass, this._selectedNode!.ieee);
-    }
-  }
-
-  private _onUserSelectedNameChanged(value: ChangeEvent): void {
-    this._userSelectedName = value.detail!.value;
-  }
-
-  private async _onUpdateDeviceNameClick(): Promise<void> {
-    if (this.hass) {
-      const values: DeviceRegistryEntryMutableParams = {
-        name_by_user: this._userSelectedName,
-      };
-
-      await updateDeviceRegistryEntry(
-        this.hass,
-        this._selectedNode!.device_reg_id,
-        values
-      );
-
-      this._selectedNode!.user_given_name = this._userSelectedName!;
-      this._userSelectedName = "";
-    }
-  }
-
-  private _computeNodeServiceData(): NodeServiceData {
-    return {
-      ieee_address: this._selectedNode!.ieee,
-    };
+  private _selectedDeviceChanged(event: ItemSelectedEvent): void {
+    this._selectedDeviceIndex = event!.target!.selected;
+    this._selectedDevice = this._nodes[this._selectedDeviceIndex];
+    fireEvent(this, "zha-node-selected", { node: this._selectedDevice });
   }
 
   private async _fetchDevices() {
     this._nodes = (await fetchDevices(this.hass!)).sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
+  }
+
+  private _onDeviceRemoved(event: ZHADeviceRemovedEvent): void {
+    this._selectedDeviceIndex = -1;
+    this._nodes.splice(this._nodes.indexOf(event.detail!.device!), 1);
+    this._selectedDevice = undefined;
+    fireEvent(this, "zha-node-selected", { node: this._selectedDevice });
   }
 
   static get styles(): CSSResult[] {
@@ -298,13 +178,10 @@ export class ZHANode extends LitElement {
         }
 
         .help-text {
+          color: grey;
           padding-left: 28px;
           padding-right: 28px;
-        }
-
-        .helpText {
-          color: grey;
-          padding: 16px;
+          padding-bottom: 16px;
         }
 
         paper-card {
@@ -355,12 +232,6 @@ export class ZHANode extends LitElement {
           right: 0;
           color: var(--primary-color);
         }
-
-        .input-text {
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
-        }
       `,
     ];
   }
@@ -371,5 +242,3 @@ declare global {
     "zha-node": ZHANode;
   }
 }
-
-customElements.define("zha-node", ZHANode);
