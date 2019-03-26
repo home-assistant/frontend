@@ -6,6 +6,7 @@ import {
   customElement,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -16,6 +17,7 @@ import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { setValue } from "../../../data/input_text";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements EntityRow {
@@ -46,6 +48,10 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     if (this.isConnected && !this._loaded) {
       this._initialLoad();
     }
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {
