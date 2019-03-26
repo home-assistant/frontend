@@ -1,20 +1,26 @@
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-listbox/paper-listbox";
+
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
-  customElement,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import { ZHADevice, bindDevices, unbindDevices } from "../../../data/zha";
+
+import { bindDevices, unbindDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
 import { ItemSelectedEvent } from "./types";
 
 @customElement("zha-binding-control")
