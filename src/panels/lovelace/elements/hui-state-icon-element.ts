@@ -17,14 +17,7 @@ import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 import { LovelaceElement, StateIconElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { ActionConfig } from "../../../data/lovelace";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-
-export interface Config extends LovelaceElementConfig {
-  entity: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
 
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {

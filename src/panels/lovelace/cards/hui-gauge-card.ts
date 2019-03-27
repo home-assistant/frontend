@@ -13,14 +13,14 @@ import { styleMap } from "lit-html/directives/style-map";
 import "../../../components/ha-card";
 import "../components/hui-warning";
 
+import isValidEntityId from "../../../common/entity/valid_entity_id";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import computeStateName from "../../../common/entity/compute_state_name";
+
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-
-import isValidEntityId from "../../../common/entity/valid_entity_id";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-import computeStateName from "../../../common/entity/compute_state_name";
 import { GaugeCardConfig } from "./types";
 
 export const severityMap = {

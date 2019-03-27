@@ -24,19 +24,7 @@ import { LovelaceCard } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-
-interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  image?: string;
-  camera_image?: string;
-  state_image?: {};
-  aspect_ratio?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  show_name?: boolean;
-  show_state?: boolean;
-}
+import { PictureEntityCardConfig } from "./types";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {

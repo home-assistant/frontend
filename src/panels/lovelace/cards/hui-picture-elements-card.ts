@@ -9,7 +9,6 @@ import {
 } from "lit-element";
 
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
-
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";

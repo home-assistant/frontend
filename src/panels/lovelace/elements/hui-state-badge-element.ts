@@ -11,12 +11,9 @@ import "../../../components/entity/ha-state-label-badge";
 import "../components/hui-warning-element";
 
 import computeStateName from "../../../common/entity/compute_state_name";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
-import { HomeAssistant } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-
 import { LovelaceElement, StateBadgeElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement

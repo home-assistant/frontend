@@ -8,14 +8,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { styleMap } from "lit-html/directives/style-map";
-import { HomeAssistant, LightEntity } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
-import { toggleEntity } from "../common/entity/toggle-entity";
-
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
@@ -23,6 +15,14 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { styleMap } from "lit-html/directives/style-map";
+import { HomeAssistant, LightEntity } from "../../../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
+import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
 
 const lightConfig = {

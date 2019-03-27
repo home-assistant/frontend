@@ -19,7 +19,7 @@ import { HomeAssistant } from "../../../types";
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: IconElementConfig;
 
   public setConfig(config: IconElementConfig): void {
     if (!config.icon) {
