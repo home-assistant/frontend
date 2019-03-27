@@ -19,6 +19,7 @@ import { LovelaceCardEditor, LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
 
 const SENSORS = {
   moisture: "hass:water",
