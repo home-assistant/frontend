@@ -31,7 +31,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 export interface Config extends LovelaceCardConfig {
   entity: string;
   name?: string;
-  snow_name?: boolean;
+  show_name?: boolean;
   icon?: string;
   show_icon?: boolean;
   theme?: string;
@@ -71,9 +71,9 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     this._config = {
       theme: "default",
       hold_action: { action: "more-info" },
-      ...config,
       show_icon: true,
       show_name: true,
+      ...config,
     };
 
     if (DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
