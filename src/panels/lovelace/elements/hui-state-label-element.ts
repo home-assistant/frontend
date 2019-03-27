@@ -6,10 +6,11 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
-import "../components/hui-warning";
+import "../components/hui-warning-element";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { computeTooltip } from "../common/compute-tooltip";
@@ -18,6 +19,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { ActionConfig } from "../../../data/lovelace";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 interface Config extends LovelaceElementConfig {
   entity: string;
@@ -40,6 +42,10 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     this._config = config;
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
   protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
@@ -49,13 +55,13 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
+        <hui-warning-element
+          label=${this.hass.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
             this._config.entity
-          )}</hui-warning
-        >
+          )}
+        ></hui-warning-element>
       `;
     }
 

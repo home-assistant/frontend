@@ -4,6 +4,7 @@ import {
   TemplateResult,
   property,
   customElement,
+  PropertyValues,
 } from "lit-element";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
@@ -13,6 +14,7 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setValue } from "../../../data/input_text";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-input-text-entity-row")
 class HuiInputTextEntityRow extends LitElement implements EntityRow {
@@ -25,6 +27,10 @@ class HuiInputTextEntityRow extends LitElement implements EntityRow {
       throw new Error("Configuration error");
     }
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

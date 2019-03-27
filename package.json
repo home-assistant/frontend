@@ -19,7 +19,7 @@
   "dependencies": {
     "@material/mwc-button": "^0.4.0",
     "@material/mwc-ripple": "^0.4.0",
-    "@mdi/svg": "^3.0.39",
+    "@mdi/svg": "3.5.95",
     "@polymer/app-layout": "^3.0.1",
     "@polymer/app-localize-behavior": "^3.0.1",
     "@polymer/app-route": "^3.0.2",

@@ -6,6 +6,7 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -24,6 +25,8 @@ import stateIcon from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-image";
+import "../components/hui-warning-element";
+
 import { handleClick } from "../common/handle-click";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleEntity } from "../common/entity/toggle-entity";
@@ -85,6 +88,39 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass) {
+      return true;
+    }
+
+    if (this._entitiesDialog) {
+      for (const entity of this._entitiesDialog) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+    }
+
+    if (this._entitiesToggle) {
+      for (const entity of this._entitiesToggle) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
@@ -138,7 +174,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
-      return html``;
+      return html`
+        <hui-warning-element
+          label=${this.hass!.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            entityConf.entity
+          )}
+        ></hui-warning-element>
+      `;
     }
 
     return html`

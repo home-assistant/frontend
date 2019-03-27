@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   customElement,
+  PropertyValues,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -13,6 +14,7 @@ import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements EntityRow {
@@ -25,6 +27,10 @@ class HuiLockEntityRow extends LitElement implements EntityRow {
       throw new Error("Configuration error");
     }
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

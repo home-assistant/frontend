@@ -1,22 +1,27 @@
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
+import "../ha-config-section";
+import "@polymer/paper-card/paper-card";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
 import { Cluster, fetchClustersForZhaNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "../ha-config-section";
-import { ItemSelectedEvent } from "./types";
 import { formatAsPaddedHex } from "./functions";
+import { ItemSelectedEvent } from "./types";
 
 declare global {
   // for fire event
@@ -90,7 +95,7 @@ export class ZHAClusters extends LitElement {
       </div>
       ${this.showHelp
         ? html`
-            <div class="helpText">
+            <div class="help-text">
               Select cluster to view attributes and commands
             </div>
           `
@@ -143,9 +148,11 @@ export class ZHAClusters extends LitElement {
           padding-right: 28px;
           padding-bottom: 10px;
         }
-        .helpText {
+        .help-text {
           color: grey;
-          padding: 16px;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 16px;
         }
       `,
     ];

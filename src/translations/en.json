@@ -332,7 +332,9 @@
   "state_badge": {
     "default": {
       "unknown": "Unk",
-      "unavailable": "Unavai"
+      "unavailable": "Unavai",
+      "error": "Error",
+      "entity_not_found": "Entity Not Found"
     },
     "alarm_control_panel": {
       "armed": "Armed",
@@ -875,7 +877,18 @@
           "description": "Zigbee Home Automation network management",
           "services": {
             "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
-            "updateDeviceName": "Set a custom name for this device in the device registry."
+            "updateDeviceName": "Set a custom name for this device in the device registry.",
+            "remove": "Remove a device from the ZigBee network."
+          },
+          "device_card": {
+            "device_name_placeholder": "User given name",
+            "area_picker_label": "Area",
+            "update_name_button": "Update Name"
+          },
+          "add_device_page": {
+            "header": "Zigbee Home Automation - Add Devices",
+            "spinner": "Searching for ZHA Zigbee devices...",
+            "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode."
           }
         },
         "zwave": {
