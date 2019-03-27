@@ -1,14 +1,10 @@
 import { html, LitElement, TemplateResult } from "lit-element";
 
 import { createCardElement } from "../common/create-card-element";
-
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-
-interface Config extends LovelaceCardConfig {
-  cards: LovelaceCardConfig[];
-}
+import { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {
   static get properties() {
@@ -29,12 +25,12 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     }
   }
   protected _cards?: LovelaceCard[];
-  private _config?: Config;
+  private _config?: StackCardConfig;
   private _hass?: HomeAssistant;
 
   public abstract getCardSize(): number;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: StackCardConfig): void {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
       throw new Error("Card config incorrect");
     }

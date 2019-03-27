@@ -12,11 +12,10 @@ import { classMap } from "lit-html/directives/class-map";
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
-import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
+import { GlanceCardConfig, ConfigEntity } from "./types";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -26,21 +25,6 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning-element";
-
-export interface ConfigEntity extends EntityConfig {
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
-
-export interface GlanceCardConfig extends LovelaceCardConfig {
-  show_name?: boolean;
-  show_state?: boolean;
-  show_icon?: boolean;
-  title?: string;
-  theme?: string;
-  entities: ConfigEntity[];
-  columns?: number;
-}
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {

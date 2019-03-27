@@ -16,11 +16,11 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-alarm-panel-card";
 import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
+import { AlarmPanelCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -34,9 +34,9 @@ export class HuiAlarmPanelCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: AlarmPanelCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: AlarmPanelCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }

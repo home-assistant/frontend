@@ -26,6 +26,12 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
 
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { fetchRecent } from "../../../data/history";
+import { SensorCardConfig } from "./types";
+
 const midPoint = (
   _Ax: number,
   _Ay: number,
@@ -138,17 +144,6 @@ const coordinates = (
   return calcPoints(history, hours, width, detail, min, max);
 };
 
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  icon?: string;
-  graph?: string;
-  unit?: string;
-  detail?: number;
-  theme?: string;
-  hours_to_show?: number;
-}
-
 @customElement("hui-sensor-card")
 class HuiSensorCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -162,13 +157,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: SensorCardConfig;
 
   @property() private _history?: any;
 
   private _date?: Date;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: SensorCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "sensor") {
       throw new Error("Specify an entity from within the sensor domain.");
     }

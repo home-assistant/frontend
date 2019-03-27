@@ -15,17 +15,16 @@ import { LovelaceElement, LovelaceElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
-export interface Config extends LovelaceElementConfig {
-  entity: string;
-}
+import { LovelaceElement, StateBadgeElementConfig } from "./types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement
   implements LovelaceElement {
   @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: StateBadgeElementConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: StateBadgeElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }

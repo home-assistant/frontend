@@ -20,7 +20,6 @@ import computeStateName from "../../../common/entity/compute_state_name";
 
 import { longPress } from "../common/directives/long-press-directive";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -43,13 +42,13 @@ interface Config extends LovelaceCardConfig {
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: PictureEntityCardConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid Configuration: 'entity' required");
     }

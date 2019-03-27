@@ -6,15 +6,15 @@ import {
   property,
 } from "lit-element";
 
+import "../../../../components/entity/ha-entity-picker";
+
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-weather-forecast-card";
 import { configElementStyle } from "./config-elements-style";
-
-import "../../../../components/entity/ha-entity-picker";
+import { WeatherForecastCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -27,9 +27,9 @@ export class HuiWeatherForecastCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: WeatherForecastCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: WeatherForecastCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }
