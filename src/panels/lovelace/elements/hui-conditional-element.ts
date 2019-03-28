@@ -1,24 +1,21 @@
 import {
-  Condition,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../lovelace/common/validate-condition";
 import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
-
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import {
+  LovelaceElement,
+  LovelaceElementConfig,
+  ConditionalElementConfig,
+} from "./types";
 import { HomeAssistant } from "../../../types";
-
-interface Config extends LovelaceElementConfig {
-  conditions: Condition[];
-  elements: LovelaceElementConfig[];
-}
 
 class HuiConditionalElement extends HTMLElement implements LovelaceElement {
   public _hass?: HomeAssistant;
-  private _config?: Config;
+  private _config?: ConditionalElementConfig;
   private _elements: LovelaceElement[] = [];
 
-  public setConfig(config: Config): void {
+  public setConfig(config: ConditionalElementConfig): void {
     if (
       !config.conditions ||
       !Array.isArray(config.conditions) ||

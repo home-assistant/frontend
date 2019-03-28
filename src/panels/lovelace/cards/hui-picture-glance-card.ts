@@ -10,13 +10,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { DOMAINS_TOGGLE } from "../../../common/const";
-import { LovelaceCard } from "../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
-import { longPress } from "../common/directives/long-press-directive";
-import { processConfigEntities } from "../common/process-config-entities";
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 import computeDomain from "../../../common/entity/compute_domain";
@@ -27,29 +20,24 @@ import "../../../components/ha-icon";
 import "../components/hui-image";
 import "../components/hui-warning-element";
 
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { LovelaceCard } from "../types";
+import { EntityConfig } from "../entity-rows/types";
+import { HomeAssistant } from "../../../types";
+import { longPress } from "../common/directives/long-press-directive";
+import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleEntity } from "../common/entity/toggle-entity";
+import { PictureGlanceCardConfig } from "./types";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
-
-interface Config extends LovelaceCardConfig {
-  entities: EntityConfig[];
-  title?: string;
-  image?: string;
-  camera_image?: string;
-  state_image?: {};
-  aspect_ratio?: string;
-  entity?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: PictureGlanceCardConfig;
 
   private _entitiesDialog?: EntityConfig[];
 
@@ -59,7 +47,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     return 3;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: PictureGlanceCardConfig): void {
     if (
       !config ||
       !config.entities ||

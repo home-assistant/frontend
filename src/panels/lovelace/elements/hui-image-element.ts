@@ -13,28 +13,15 @@ import "../components/hui-image";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, ImageElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { ActionConfig } from "../../../data/lovelace";
-
-export interface Config extends LovelaceElementConfig {
-  entity?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  image?: string;
-  state_image?: string;
-  camera_image?: string;
-  filter?: string;
-  state_filter?: string;
-  aspect_ratio?: string;
-}
 
 @customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: ImageElementConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: ImageElementConfig): void {
     if (!config) {
       throw Error("Error in element configuration");
     }

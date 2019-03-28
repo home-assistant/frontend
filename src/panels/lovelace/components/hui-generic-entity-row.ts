@@ -9,14 +9,14 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import { HomeAssistant } from "../../../types";
-import { EntitiesCardEntityConfig } from "../cards/hui-entities-card";
-import { computeRTL } from "../../../common/util/compute_rtl";
-
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
+
+import { HomeAssistant } from "../../../types";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;

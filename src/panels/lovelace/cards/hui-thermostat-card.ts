@@ -19,10 +19,10 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, ClimateEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { UNIT_F } from "../../../common/const";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { ThermostatCardConfig } from "./types";
 
 const thermostatConfig = {
   radius: 150,
@@ -47,12 +47,6 @@ const modeIcons = {
   idle: "hass:power-sleep",
 };
 
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  theme?: string;
-  name?: string;
-}
-
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -66,7 +60,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: ThermostatCardConfig;
 
   @property() private _roundSliderStyle?: TemplateResult;
 
@@ -82,7 +76,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return 4;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: ThermostatCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "climate") {
       throw new Error("Specify an entity from within the climate domain.");
     }

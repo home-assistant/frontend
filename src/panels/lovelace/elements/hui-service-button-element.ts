@@ -10,20 +10,14 @@ import {
 
 import "../../../components/buttons/ha-call-service-button";
 
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, ServiceButtonElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-
-export interface Config extends LovelaceElementConfig {
-  title?: string;
-  service?: string;
-  service_data?: object;
-}
 
 @customElement("hui-service-button-element")
 export class HuiServiceButtonElement extends LitElement
   implements LovelaceElement {
   public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: ServiceButtonElementConfig;
   private _domain?: string;
   private _service?: string;
 
@@ -31,7 +25,7 @@ export class HuiServiceButtonElement extends LitElement
     return { _config: {} };
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: ServiceButtonElementConfig): void {
     if (!config || !config.service) {
       throw Error("Invalid Configuration: 'service' required");
     }

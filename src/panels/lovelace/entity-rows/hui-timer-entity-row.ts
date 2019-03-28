@@ -12,6 +12,7 @@ import "../components/hui-warning";
 
 import timerTimeRemaining from "../../../common/entity/timer_time_remaining";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
+
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "./types";
 import { HassEntity } from "home-assistant-js-websocket";

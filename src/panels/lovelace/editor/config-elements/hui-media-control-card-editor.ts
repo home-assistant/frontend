@@ -11,7 +11,7 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-media-control-card";
+import { MediaControlCardConfig } from "../../cards/hui-media-control-card";
 
 import "../../../../components/entity/ha-entity-picker";
 
@@ -25,9 +25,9 @@ export class HuiMediaControlCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: MediaControlCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: MediaControlCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }
