@@ -38,7 +38,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 export interface EntityButtonCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
-  snow_name?: boolean;
+  show_name?: boolean;
   icon?: string;
   show_icon?: boolean;
   theme?: string;
