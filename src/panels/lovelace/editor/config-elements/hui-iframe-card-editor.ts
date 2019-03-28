@@ -12,8 +12,8 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-iframe-card";
 import { configElementStyle } from "./config-elements-style";
+import { IframeCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -27,9 +27,9 @@ export class HuiIframeCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: IframeCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: IframeCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }

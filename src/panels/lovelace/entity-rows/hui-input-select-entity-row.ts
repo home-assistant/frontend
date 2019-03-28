@@ -17,6 +17,7 @@ import "../../../components/entity/state-badge";
 import "../components/hui-warning";
 
 import computeStateName from "../../../common/entity/compute_state_name";
+
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setOption } from "../../../data/input-select";

@@ -15,29 +15,14 @@ import "../components/hui-entities-toggle";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
-import { EntityConfig, EntityRow } from "../entity-rows/types";
+import { EntityRow } from "../entity-rows/types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../common/create-row-element";
+import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
+
 import computeDomain from "../../../common/entity/compute_domain";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
-
-export interface EntitiesCardEntityConfig extends EntityConfig {
-  type?: string;
-  secondary_info?: "entity-id" | "last-changed";
-  action_name?: string;
-  service?: string;
-  service_data?: object;
-  url?: string;
-}
-
-export interface EntitiesCardConfig extends LovelaceCardConfig {
-  show_header_toggle?: boolean;
-  title?: string;
-  entities: EntitiesCardEntityConfig[];
-  theme?: string;
-}
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {

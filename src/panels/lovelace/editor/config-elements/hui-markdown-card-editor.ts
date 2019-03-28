@@ -13,8 +13,8 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-markdown-card";
 import { configElementStyle } from "./config-elements-style";
+import { MarkdownCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -27,9 +27,9 @@ export class HuiMarkdownCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: MarkdownCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: MarkdownCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }
