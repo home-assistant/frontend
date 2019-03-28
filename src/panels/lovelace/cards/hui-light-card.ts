@@ -8,15 +8,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { styleMap } from "lit-html/directives/style-map";
-import { HomeAssistant, LightEntity } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
-import { toggleEntity } from "../common/entity/toggle-entity";
-
 import stateIcon from "../../../common/entity/state_icon";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
@@ -24,6 +15,15 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { styleMap } from "lit-html/directives/style-map";
+import { HomeAssistant, LightEntity } from "../../../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
+import { toggleEntity } from "../common/entity/toggle-entity";
+import { LightCardConfig } from "./types";
 
 const lightConfig = {
   radius: 80,
@@ -40,12 +40,6 @@ const lightConfig = {
   animation: false,
 };
 
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  theme?: string;
-}
-
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -58,7 +52,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: LightCardConfig;
 
   @property() private _roundSliderStyle?: TemplateResult;
 
@@ -70,7 +64,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return 2;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: LightCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "light") {
       throw new Error("Specify an entity from within the light domain.");
     }

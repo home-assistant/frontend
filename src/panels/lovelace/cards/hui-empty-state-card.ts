@@ -11,13 +11,8 @@ import {
 import "@polymer/paper-card/paper-card";
 
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-
-export interface Config extends LovelaceCardConfig {
-  content: string;
-  title?: string;
-}
+import { EmptyStateCardConfig } from "./types";
 
 @customElement("hui-empty-state-card")
 export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
@@ -27,7 +22,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
     return 2;
   }
 
-  public setConfig(_config: Config): void {
+  public setConfig(_config: EmptyStateCardConfig): void {
     // tslint:disable-next-line
   }
 

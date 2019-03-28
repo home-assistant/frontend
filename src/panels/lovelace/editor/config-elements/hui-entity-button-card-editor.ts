@@ -7,6 +7,10 @@ import {
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
+import "../../components/hui-action-editor";
+import "../../components/hui-theme-select-editor";
+import "../../components/hui-entity-editor";
+
 import { struct } from "../../common/structs/struct";
 import {
   EntitiesEditorEvent,
@@ -16,19 +20,17 @@ import {
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-entity-button-card";
 import { configElementStyle } from "./config-elements-style";
 import { ActionConfig } from "../../../../data/lovelace";
-
-import "../../components/hui-action-editor";
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
+import { EntityButtonCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
   entity: "string?",
   name: "string?",
+  show_name: "boolean?",
   icon: "string?",
+  show_icon: "boolean?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
   theme: "string?",
@@ -39,9 +41,9 @@ export class HuiEntityButtonCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: EntityButtonCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: EntityButtonCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }
@@ -54,8 +56,16 @@ export class HuiEntityButtonCardEditor extends LitElement
     return this._config!.name || "";
   }
 
+  get _show_name(): boolean {
+    return this._config!.show_name || true;
+  }
+
   get _icon(): string {
     return this._config!.icon || "";
+  }
+
+  get _show_icon(): boolean {
+    return this._config!.show_icon || true;
   }
 
   get _tap_action(): ActionConfig {
@@ -100,6 +110,20 @@ export class HuiEntityButtonCardEditor extends LitElement
             .configValue="${"icon"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
+        </div>
+        <div class="side-by-side">
+          <paper-toggle-button
+            ?checked="${this._config!.show_name !== false}"
+            .configValue="${"show_name"}"
+            @change="${this._valueChanged}"
+            >Show Name?</paper-toggle-button
+          >
+          <paper-toggle-button
+            ?checked="${this._config!.show_icon !== false}"
+            .configValue="${"show_icon"}"
+            @change="${this._valueChanged}"
+            >Show Icon?</paper-toggle-button
+          >
         </div>
         <hui-theme-select-editor
           .hass="${this.hass}"
@@ -147,7 +171,12 @@ export class HuiEntityButtonCardEditor extends LitElement
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value ? target.value : target.config,
+          [target.configValue!]:
+            target.checked !== undefined
+              ? target.checked
+              : target.value
+              ? target.value
+              : target.config,
         };
       }
     }

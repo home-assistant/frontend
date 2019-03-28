@@ -17,7 +17,7 @@ import { HomeAssistant } from "../../../types";
 
 @customElement("hui-call-service-row")
 class HuiCallServiceRow extends LitElement implements EntityRow {
-  @property() public hass?: HomeAssistant;
+  public hass?: HomeAssistant;
 
   @property() private _config?: CallServiceConfig;
 

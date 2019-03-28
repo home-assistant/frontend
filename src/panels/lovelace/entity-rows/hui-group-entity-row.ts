@@ -4,6 +4,7 @@ import {
   TemplateResult,
   property,
   customElement,
+  PropertyValues,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -11,9 +12,11 @@ import "../../../components/entity/ha-entity-toggle";
 import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
+
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-group-entity-row")
 class HuiGroupEntityRow extends LitElement implements EntityRow {
@@ -26,6 +29,10 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
       throw new Error("Configuration error");
     }
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

@@ -616,7 +616,8 @@
                         "header": "Områderegister",
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
                         "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet.",
-                        "integrations_page": "Integrasjonsside"
+                        "integrations_page": "Integrasjonsside",
+                        "no_areas": "Ser ut til at du ikkje har noko område endå!"
                     },
                     "no_areas": "Ser ut til at du ikkje har noko område endå!",
                     "create_area": "LAG OMRÅDE",
@@ -633,7 +634,7 @@
                     "picker": {
                         "header": "Oppføringsregisteret",
                         "unavailable": "(utilgjengeleg)",
-                        "introduction": "Home Assistant har eit register over alle oppføringane den nokon gang har sett som kan unikt identifiserast. KVar av desse oppføringane har ein eigen oppføringsidentifikasjon som er reservert for akkuratt denne oppføringa.",
+                        "introduction": "Home Assistant har eit register over alle oppføringane den nokon gang har sett som kan unikt identifiserast. Kvar av desse oppføringane har ein eigen oppføringsidentifikasjon som er reservert for akkuratt denne oppføringa.",
                         "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida.",
                         "integrations_page": "Integrasjonsside"
                     },
@@ -830,7 +831,8 @@
                     "data": {
                         "name": "Namn",
                         "username": "Brukarnamn",
-                        "password": "Passord"
+                        "password": "Passord",
+                        "password_confirm": "Stadfest passord"
                     },
                     "create_account": "Lag konto",
                     "error": {
@@ -1156,5 +1158,8 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Administratorer"
     }
 }

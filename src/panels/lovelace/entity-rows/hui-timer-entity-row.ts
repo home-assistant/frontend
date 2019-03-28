@@ -12,9 +12,11 @@ import "../components/hui-warning";
 
 import timerTimeRemaining from "../../../common/entity/timer_time_remaining";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
+
 import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "./types";
 import { HassEntity } from "home-assistant-js-websocket";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {
@@ -62,6 +64,14 @@ class HuiTimerEntityRow extends LitElement {
         <div>${this._computeDisplay(stateObj)}</div>
       </hui-generic-entity-row>
     `;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_timeRemaining")) {
+      return true;
+    }
+
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {

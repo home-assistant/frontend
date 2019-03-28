@@ -6,35 +6,34 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/entity/state-badge";
-import "../components/hui-warning";
+import "../components/hui-warning-element";
 
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, StateIconElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { ActionConfig } from "../../../data/lovelace";
-
-export interface Config extends LovelaceElementConfig {
-  entity: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: StateIconElementConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: StateIconElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {
@@ -46,13 +45,13 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
+        <hui-warning-element
+          label=${this.hass.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
             this._config.entity
-          )}</hui-warning
-        >
+          )}
+        ></hui-warning-element>
       `;
     }
 

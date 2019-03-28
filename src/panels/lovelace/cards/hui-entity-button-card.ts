@@ -21,21 +21,13 @@ import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeDomain from "../../../common/entity/compute_domain";
+
 import { HomeAssistant, LightEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  icon?: string;
-  theme?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
+import { EntityButtonCardConfig } from "./types";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -48,18 +40,20 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     return {
       tap_action: { action: "toggle" },
       hold_action: { action: "more-info" },
+      show_icon: true,
+      show_name: true,
     };
   }
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: EntityButtonCardConfig;
 
   public getCardSize(): number {
     return 2;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: EntityButtonCardConfig): void {
     if (!isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }
@@ -67,6 +61,8 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     this._config = {
       theme: "default",
       hold_action: { action: "more-info" },
+      show_icon: true,
+      show_name: true,
       ...config,
     };
 
@@ -126,18 +122,26 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
       >
-        <ha-icon
-          data-domain="${computeStateDomain(stateObj)}"
-          data-state="${stateObj.state}"
-          .icon="${this._config.icon || stateIcon(stateObj)}"
-          style="${styleMap({
-            filter: this._computeBrightness(stateObj),
-            color: this._computeColor(stateObj),
-          })}"
-        ></ha-icon>
-        <span>
-          ${this._config.name || computeStateName(stateObj)}
-        </span>
+        ${this._config.show_icon
+          ? html`
+              <ha-icon
+                data-domain="${computeStateDomain(stateObj)}"
+                data-state="${stateObj.state}"
+                .icon="${this._config.icon || stateIcon(stateObj)}"
+                style="${styleMap({
+                  filter: this._computeBrightness(stateObj),
+                  color: this._computeColor(stateObj),
+                })}"
+              ></ha-icon>
+            `
+          : ""}
+        ${this._config.show_name
+          ? html`
+              <span>
+                ${this._config.name || computeStateName(stateObj)}
+              </span>
+            `
+          : ""}
         <mwc-ripple></mwc-ripple>
       </ha-card>
     `;

@@ -13,24 +13,15 @@ import "../../../components/ha-icon";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, IconElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { ActionConfig } from "../../../data/lovelace";
-
-export interface Config extends LovelaceElementConfig {
-  entity?: string;
-  name?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  icon: string;
-}
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
-  @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  public hass?: HomeAssistant;
+  @property() private _config?: IconElementConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: IconElementConfig): void {
     if (!config.icon) {
       throw Error("Invalid Configuration: 'icon' required");
     }

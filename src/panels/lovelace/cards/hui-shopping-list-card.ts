@@ -16,7 +16,6 @@ import "../../../components/ha-icon";
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import {
   fetchItems,
   updateItem,
@@ -24,10 +23,7 @@ import {
   clearItems,
   addItem,
 } from "../../../data/shopping-list";
-
-export interface Config extends LovelaceCardConfig {
-  title?: string;
-}
+import { ShoppingListCardConfig } from "./types";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends LitElement implements LovelaceCard {
@@ -42,7 +38,7 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: ShoppingListCardConfig;
 
   @property() private _uncheckedItems?: ShoppingListItem[];
 
@@ -54,7 +50,7 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: ShoppingListCardConfig): void {
     this._config = config;
     this._uncheckedItems = [];
     this._checkedItems = [];

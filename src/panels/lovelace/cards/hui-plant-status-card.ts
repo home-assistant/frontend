@@ -6,18 +6,20 @@ import {
   CSSResult,
   property,
   customElement,
+  PropertyValues,
 } from "lit-element";
+import { HassEntity } from "home-assistant-js-websocket";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { LovelaceCardEditor, LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -26,15 +28,6 @@ const SENSORS = {
   conductivity: "hass:emoticon-poop",
   battery: "hass:battery",
 };
-
-export interface PlantAttributeTarget extends EventTarget {
-  value?: string;
-}
-
-export interface PlantStatusConfig extends LovelaceCardConfig {
-  name?: string;
-  entity: string;
-}
 
 @customElement("hui-plant-status-card")
 class HuiPlantStatusCard extends LitElement implements LovelaceCard {
@@ -49,18 +42,22 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: PlantStatusConfig;
+  @property() private _config?: PlantStatusCardConfig;
 
   public getCardSize(): number {
     return 3;
   }
 
-  public setConfig(config: PlantStatusConfig): void {
+  public setConfig(config: PlantStatusCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "plant") {
       throw new Error("Specify an entity from within the plant domain.");
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {
@@ -91,7 +88,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${this._config.title || computeStateName(stateObj)}
+            ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
         <div class="content">
