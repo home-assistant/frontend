@@ -661,8 +661,8 @@
                     }
                 },
                 "warning": {
-                    "entity_not_found": "Endid ddim ar gael",
-                    "entity_non_numeric": "Endid di-rhifol: {endid}"
+                    "entity_not_found": "Endid ddim ar gael: {entity}",
+                    "entity_non_numeric": "Endid di-rhifol: {entity}"
                 }
             },
             "page-authorize": {
