@@ -13,6 +13,7 @@ import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
+
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";

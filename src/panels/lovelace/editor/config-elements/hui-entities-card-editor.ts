@@ -10,23 +10,23 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
+import "../../../../components/entity/state-badge";
+import "../../components/hui-theme-select-editor";
+import "../../components/hui-entity-editor";
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon";
+
 import { processEditorEntities } from "../process-editor-entities";
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { configElementStyle } from "./config-elements-style";
 import {
   EntitiesCardConfig,
   EntitiesCardEntityConfig,
-} from "../../cards/hui-entities-card";
-import { configElementStyle } from "./config-elements-style";
-
-import "../../../../components/entity/state-badge";
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon";
+} from "../../cards/types";
 
 const entitiesConfigStruct = struct.union([
   {

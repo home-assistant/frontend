@@ -4,14 +4,7 @@ import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
-
-export interface EntityFilterCardConfig extends LovelaceCardConfig {
-  type: "entity-filter";
-  entities: Array<EntityConfig | string>;
-  state_filter: string[];
-  card: Partial<LovelaceCardConfig>;
-  show_empty?: boolean;
-}
+import { EntityFilterCardConfig } from "./types";
 
 class EntityFilterCard extends HTMLElement implements LovelaceCard {
   public isPanel?: boolean;

@@ -5,6 +5,7 @@ import {
   LovelaceViewConfig,
 } from "../../../data/lovelace";
 import { HassEntity, HassEntities } from "home-assistant-js-websocket";
+
 import extractViews from "../../../common/entity/extract_views";
 import getViewEntities from "../../../common/entity/get_view_entities";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -12,9 +13,10 @@ import splitByGroups from "../../../common/entity/split_by_groups";
 import computeObjectId from "../../../common/entity/compute_object_id";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeDomain from "../../../common/entity/compute_domain";
+
 import { EntityRowConfig, WeblinkConfig } from "../entity-rows/types";
-import { EntitiesCardConfig } from "../cards/hui-entities-card";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { EntitiesCardConfig } from "../cards/types";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
