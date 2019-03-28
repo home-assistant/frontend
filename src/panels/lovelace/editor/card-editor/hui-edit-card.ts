@@ -78,8 +78,6 @@ export class HuiEditCard extends LitElement {
 
   @property() private _errorMsg?: TemplateResult;
 
-  private _cardType?: string;
-
   private get _dialog(): HaPaperDialog {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
