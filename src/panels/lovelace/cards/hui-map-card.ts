@@ -21,20 +21,13 @@ import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import debounce from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import { HomeAssistant } from "../../../types";
 import computeDomain from "../../../common/entity/compute_domain";
+
+import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
-
-export interface MapCardConfig extends LovelaceCardConfig {
-  title: string;
-  aspect_ratio: string;
-  default_zoom?: number;
-  entities?: Array<EntityConfig | string>;
-  geo_location_sources?: string[];
-}
+import { MapCardConfig } from "./types";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {

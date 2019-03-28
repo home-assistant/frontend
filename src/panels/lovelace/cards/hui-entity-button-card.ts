@@ -21,23 +21,13 @@ import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeDomain from "../../../common/entity/compute_domain";
+
 import { HomeAssistant, LightEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  snow_name?: boolean;
-  icon?: string;
-  show_icon?: boolean;
-  theme?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
+import { EntityButtonCardConfig } from "./types";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -57,13 +47,13 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: EntityButtonCardConfig;
 
   public getCardSize(): number {
     return 2;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: EntityButtonCardConfig): void {
     if (!isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }

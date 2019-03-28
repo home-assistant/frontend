@@ -15,23 +15,16 @@ import "../components/hui-warning-element";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, StateIconElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { ActionConfig } from "../../../data/lovelace";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-
-export interface Config extends LovelaceElementConfig {
-  entity: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
 
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: StateIconElementConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: StateIconElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }
