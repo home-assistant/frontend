@@ -272,7 +272,7 @@
             "paused": "pausiert"
         },
         "person": {
-            "home": "Zuhause",
+            "home": "Zu Hause",
             "not_home": "Abwesend"
         }
     },
@@ -298,7 +298,7 @@
             "not_home": "Abwes."
         },
         "person": {
-            "home": "Zuhause",
+            "home": "Zu Hause",
             "not_home": "Abwesend"
         }
     },
