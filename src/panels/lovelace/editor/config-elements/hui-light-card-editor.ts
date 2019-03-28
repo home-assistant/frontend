@@ -7,16 +7,16 @@ import {
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
+import "../../components/hui-theme-select-editor";
+import "../../components/hui-entity-editor";
+
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-light-card";
 import { configElementStyle } from "./config-elements-style";
-
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
+import { LightCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -30,9 +30,9 @@ export class HuiLightCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: LightCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: LightCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }

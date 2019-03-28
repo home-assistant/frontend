@@ -13,31 +13,15 @@ import { styleMap } from "lit-html/directives/style-map";
 import "../../../components/ha-card";
 import "../components/hui-warning";
 
-import { LovelaceCardConfig } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-
 import isValidEntityId from "../../../common/entity/valid_entity_id";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 
-export interface SeverityConfig {
-  green?: number;
-  yellow?: number;
-  red?: number;
-}
-
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  unit?: string;
-  min?: number;
-  max?: number;
-  severity?: SeverityConfig;
-  theme?: string;
-}
+import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { GaugeCardConfig } from "./types";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -58,7 +42,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: GaugeCardConfig;
 
   private _updated?: boolean;
 
@@ -66,7 +50,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return 2;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: GaugeCardConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid card configuration");
     }
