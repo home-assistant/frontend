@@ -10,16 +10,16 @@ import {
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 
+import "../../components/hui-theme-select-editor";
+import "../../components/hui-entity-editor";
+
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config, SeverityConfig } from "../../cards/hui-gauge-card";
 import { configElementStyle } from "./config-elements-style";
-
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
+import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -37,11 +37,11 @@ export class HuiGaugeCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: GaugeCardConfig;
 
   private _useSeverity?: boolean;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: GaugeCardConfig): void {
     config = cardConfigStruct(config);
     this._useSeverity = !!config.severity;
     this._config = config;

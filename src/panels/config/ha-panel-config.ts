@@ -73,9 +73,9 @@ class HaPanelConfig extends HassRouterPage {
           import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"),
       },
       zha: {
-        tag: "ha-config-zha",
+        tag: "zha-config-panel",
         load: () =>
-          import(/* webpackChunkName: "panel-config-zha" */ "./zha/ha-config-zha"),
+          import(/* webpackChunkName: "panel-config-zha" */ "./zha/zha-config-panel"),
       },
       zwave: {
         tag: "ha-config-zwave",

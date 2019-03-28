@@ -26,19 +26,13 @@ const computePanels = (hass: HomeAssistant) => {
   if (!panels) {
     return [];
   }
-  const isAdmin = hass.user.is_admin;
+
   const sortValue = {
     map: 1,
     logbook: 2,
     history: 3,
   };
-  const result: Panel[] = [];
-
-  Object.values(panels).forEach((panel) => {
-    if (panel.title && (panel.component_name !== "config" || isAdmin)) {
-      result.push(panel);
-    }
-  });
+  const result: Panel[] = Object.values(panels).filter((panel) => panel.title);
 
   result.sort((a, b) => {
     const aBuiltIn = a.component_name in sortValue;
@@ -133,9 +127,8 @@ class HaSidebar extends LitElement {
           : html``}
       </paper-listbox>
 
-      ${!hass.user.is_admin
-        ? ""
-        : html`
+      ${hass.user && hass.user.is_admin
+        ? html`
             <div>
               <div class="divider"></div>
 
@@ -192,7 +185,8 @@ class HaSidebar extends LitElement {
                 </a>
               </div>
             </div>
-          `}
+          `
+        : ""}
     `;
   }
 

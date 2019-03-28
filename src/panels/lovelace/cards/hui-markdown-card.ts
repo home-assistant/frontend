@@ -13,12 +13,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-
-export interface Config extends LovelaceCardConfig {
-  content: string;
-  title?: string;
-}
+import { MarkdownCardConfig } from "./types";
 
 @customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
@@ -31,13 +26,13 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     return { content: " " };
   }
 
-  @property() private _config?: Config;
+  @property() private _config?: MarkdownCardConfig;
 
   public getCardSize(): number {
     return this._config!.content.split("\n").length;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: MarkdownCardConfig): void {
     if (!config.content) {
       throw new Error("Invalid Configuration: Content Required");
     }

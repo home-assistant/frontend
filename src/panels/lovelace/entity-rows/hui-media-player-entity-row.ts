@@ -6,6 +6,7 @@ import {
   CSSResult,
   property,
   customElement,
+  PropertyValues,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
@@ -22,6 +23,7 @@ import {
   OFF_STATES,
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
@@ -35,6 +37,10 @@ class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

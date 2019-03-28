@@ -180,9 +180,9 @@ class HaConfigPerson extends LitElement {
       },
       removeEntry: async () => {
         if (
-          !confirm(`Are you sure you want to delete this area?
+          !confirm(`Are you sure you want to delete this person?
 
-All devices in this area will become unassigned.`)
+All devices belonging to this person will become unassigned.`)
         ) {
           return false;
         }

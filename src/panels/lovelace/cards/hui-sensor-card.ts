@@ -11,12 +11,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { fetchRecent } from "../../../data/history";
-
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import computeStateName from "../../../common/entity/compute_state_name";
 import stateIcon from "../../../common/entity/state_icon";
@@ -24,6 +18,13 @@ import stateIcon from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
+
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { fetchRecent } from "../../../data/history";
+import { SensorCardConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 const midPoint = (
   _Ax: number,
@@ -137,17 +138,6 @@ const coordinates = (
   return calcPoints(history, hours, width, detail, min, max);
 };
 
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  icon?: string;
-  graph?: string;
-  unit?: string;
-  detail?: number;
-  theme?: string;
-  hours_to_show?: number;
-}
-
 @customElement("hui-sensor-card")
 class HuiSensorCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -161,13 +151,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: SensorCardConfig;
 
   @property() private _history?: any;
 
   private _date?: Date;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: SensorCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "sensor") {
       throw new Error("Specify an entity from within the sensor domain.");
     }
@@ -270,6 +260,14 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     this._date = new Date();
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_history")) {
+      return true;
+    }
+
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {

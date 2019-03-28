@@ -611,13 +611,13 @@
                     }
                 },
                 "area_registry": {
-                    "caption": "Område registrering",
+                    "caption": "Områderegistrering",
                     "description": "Oversigt over alle områder i dit hjem.",
                     "picker": {
-                        "header": "Område registrering",
+                        "header": "Områderegistrering",
                         "introduction": "Områder bruges til at organisere hvor enhederne er. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din grænseflade, tilladelser og integrationer med andre systemer.",
                         "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
-                        "integrations_page": "Integrations side",
+                        "integrations_page": "Integrationsside",
                         "no_areas": "Du ikke har ingen områder endnu!",
                         "create_area": "OPRET OMRÅDE"
                     },
@@ -631,14 +631,14 @@
                     }
                 },
                 "entity_registry": {
-                    "caption": "Enheds registrering",
+                    "caption": "Enhedsregistrering",
                     "description": "Oversigt over alle kendte enheder.",
                     "picker": {
-                        "header": "Enheds registrering",
+                        "header": "Enhedsregistrering",
                         "unavailable": "(utilgængelig)",
                         "introduction": "Home Assistant opbevarer en registrering over hver unikke enhed det nogensinde har set. Hver af disse enheder vil have et registrerings ID tildelt som er forbeholdt netop denne enhed.",
                         "introduction2": "Brug enhedsregistrering til at overskrive navnet, ændre enheds ID eller fjerne enheden fra Home Assistant. Bemærk at fjernelse af enhedens registrering ikke fjerner enheden. For at gøre det skal du følge linket herunder og fjerne det fra integrationssiden.",
-                        "integrations_page": "Integrations side"
+                        "integrations_page": "Integrationsside"
                     },
                     "editor": {
                         "unavailable": "Denne enhed er ikke tilgængelig i øjeblikket.",
@@ -1143,7 +1143,7 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "System sundhed",
+        "system_health": "Systemsundhed",
         "person": "Person"
     },
     "attribute": {

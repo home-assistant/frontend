@@ -7,6 +7,8 @@ import {
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
+import "../../components/hui-action-editor";
+
 import { struct } from "../../common/structs/struct";
 import {
   EntitiesEditorEvent,
@@ -16,11 +18,9 @@ import {
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-picture-card";
 import { configElementStyle } from "./config-elements-style";
 import { ActionConfig } from "../../../../data/lovelace";
-
-import "../../components/hui-action-editor";
+import { PictureCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -34,9 +34,9 @@ export class HuiPictureCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: PictureCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: PictureCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }

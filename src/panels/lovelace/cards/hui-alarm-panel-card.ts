@@ -10,17 +10,17 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
+import "../../../components/ha-card";
+import "../../../components/ha-label-badge";
+import "../components/hui-warning";
+
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
-
-import "../../../components/ha-card";
-import "../../../components/ha-label-badge";
-import "../components/hui-warning";
+import { AlarmPanelCardConfig } from "./types";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -33,12 +33,6 @@ const ICONS = {
 };
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
-
-export interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  states?: string[];
-}
 
 @customElement("hui-alarm-panel-card")
 class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
@@ -53,7 +47,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: AlarmPanelCardConfig;
 
   @property() private _code?: string;
 
@@ -69,7 +63,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       : 8;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: AlarmPanelCardConfig): void {
     if (
       !config ||
       !config.entity ||
@@ -305,7 +299,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
       .actions mwc-button {
         min-width: calc(var(--base-unit) * 9);
-        margin: 0 4px;
+        margin: 0 4px 4px;
       }
 
       mwc-button#disarm {
