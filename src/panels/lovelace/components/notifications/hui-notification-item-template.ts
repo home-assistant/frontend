@@ -12,13 +12,7 @@ import "../../../../components/ha-card";
 @customElement("hui-notification-item-template")
 export class HuiNotificationItemTemplate extends LitElement {
   protected render(): TemplateResult | void {
-    // @apply: https://github.com/Polymer/lit-element/issues/633#issuecomment-475983474
     return html`
-      <style>
-        ha-card .header {
-          @apply --paper-font-headline;
-        }
-      </style>
       <ha-card>
         <div class="header"><slot name="header"></slot></div>
         <div class="contents"><slot></slot></div>
@@ -34,6 +28,16 @@ export class HuiNotificationItemTemplate extends LitElement {
       }
 
       ha-card .header {
+        /* start paper-font-headline style */
+        font-family: "Roboto", "Noto", sans-serif;
+        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
+        text-rendering: optimizeLegibility;
+        font-size: 24px;
+        font-weight: 400;
+        letter-spacing: -0.012em;
+        line-height: 32px;
+        /* end paper-font-headline style */
+
         color: var(--primary-text-color);
         padding: 16px 16px 0;
       }
