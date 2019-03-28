@@ -15,9 +15,10 @@ import { haStyleDialog } from "../../../../resources/styles";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
+import "../../components/dialog/ha-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
+import { HaPaperDialog } from "../../components/dialog/ha-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../../types";
@@ -77,8 +78,8 @@ export class HuiEditCard extends LitElement {
 
   @property() private _errorMsg?: TemplateResult;
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private get _previewEl(): HuiCardPreview {
@@ -147,7 +148,7 @@ export class HuiEditCard extends LitElement {
     }
 
     return html`
-      <paper-dialog
+      <ha-paper-dialog
         with-backdrop
         opened
         modal
@@ -199,7 +200,7 @@ export class HuiEditCard extends LitElement {
               </div>
             `
           : ""}
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -218,7 +219,7 @@ export class HuiEditCard extends LitElement {
 
   private async _resizeDialog(): Promise<void> {
     await this.updateComplete;
-    fireEvent(this._dialog, "iron-resize");
+    fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
   private async _save(): Promise<void> {
