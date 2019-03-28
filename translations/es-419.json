@@ -213,8 +213,8 @@
             "scening": "Reproduciendo Escena"
         },
         "script": {
-            "off": "",
-            "on": ""
+            "off": "Apagado",
+            "on": "Encendido"
         },
         "sensor": {
             "off": "",

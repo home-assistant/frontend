@@ -561,11 +561,11 @@
                         "title": "Пользователи"
                     },
                     "editor": {
-                        "rename_user": "Изменить имя пользователя",
+                        "rename_user": "Изменить имя",
                         "change_password": "Изменить пароль",
-                        "activate_user": "Активировать пользователя",
-                        "deactivate_user": "Деактивировать пользователя",
-                        "delete_user": "Удалить пользователя",
+                        "activate_user": "Активировать",
+                        "deactivate_user": "Деактивировать",
+                        "delete_user": "Удалить",
                         "caption": "Просмотр пользователя"
                     },
                     "add_user": {
