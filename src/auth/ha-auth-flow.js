@@ -2,6 +2,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import "../components/ha-form";
+import "../components/ha-markdown";
 import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
 
 class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
@@ -121,6 +122,12 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
       const data = await response.json();
 
       if (response.ok) {
+        // allow auth provider bypass the login form
+        if (data.type === "create_entry") {
+          this._redirect(data.result);
+          return;
+        }
+
         this._updateStep(data);
       } else {
         this.setProperties({
@@ -136,6 +143,24 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
         _errorMsg: this.localize("ui.panel.page-authorize.form.unknown_error"),
       });
     }
+  }
+
+  _redirect(authCode) {
+    // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
+    let url = this.redirectUri;
+    if (!url.includes("?")) {
+      url += "?";
+    } else if (!url.endsWith("&")) {
+      url += "&";
+    }
+
+    url += `code=${encodeURIComponent(authCode)}`;
+
+    if (this.oauth2State) {
+      url += `&state=${encodeURIComponent(this.oauth2State)}`;
+    }
+
+    document.location = url;
   }
 
   _updateStep(step) {
@@ -229,21 +254,7 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
       const newStep = await response.json();
 
       if (newStep.type === "create_entry") {
-        // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-        let url = this.redirectUri;
-        if (!url.includes("?")) {
-          url += "?";
-        } else if (!url.endsWith("&")) {
-          url += "&";
-        }
-
-        url += `code=${encodeURIComponent(newStep.result)}`;
-
-        if (this.oauth2State) {
-          url += `&state=${encodeURIComponent(this.oauth2State)}`;
-        }
-
-        document.location = url;
+        this._redirect(newStep.result);
         return;
       }
       this._updateStep(newStep);

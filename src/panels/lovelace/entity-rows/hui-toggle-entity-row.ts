@@ -4,6 +4,7 @@ import {
   TemplateResult,
   customElement,
   property,
+  PropertyValues,
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
@@ -14,6 +15,7 @@ import computeStateDisplay from "../../../common/entity/compute_state_display";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-toggle-entity-row")
 class HuiToggleEntityRow extends LitElement implements EntityRow {
@@ -26,6 +28,10 @@ class HuiToggleEntityRow extends LitElement implements EntityRow {
       throw new Error("Configuration error");
     }
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {

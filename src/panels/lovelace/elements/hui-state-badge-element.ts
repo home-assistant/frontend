@@ -4,31 +4,33 @@ import {
   TemplateResult,
   customElement,
   property,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
-import "../components/hui-warning";
+import "../components/hui-warning-element";
 
 import computeStateName from "../../../common/entity/compute_state_name";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, StateBadgeElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-
-export interface Config extends LovelaceElementConfig {
-  entity: string;
-}
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement
   implements LovelaceElement {
   @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: StateBadgeElementConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: StateBadgeElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {
@@ -40,13 +42,13 @@ export class HuiStateBadgeElement extends LitElement
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
+        <hui-warning-element
+          label="${this.hass.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
             this._config.entity
-          )}</hui-warning
-        >
+          )}"
+        ></hui-warning-element>
       `;
     }
 

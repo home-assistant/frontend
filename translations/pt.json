@@ -265,6 +265,15 @@
             "on": "Ligado",
             "paused": "Em pausa",
             "returning": "A regressar ao cais"
+        },
+        "timer": {
+            "active": "ativo",
+            "idle": "Em espera",
+            "paused": "Em pausa"
+        },
+        "person": {
+            "home": "Casa",
+            "not_home": "Ausente"
         }
     },
     "state_badge": {
@@ -287,6 +296,10 @@
         "device_tracker": {
             "home": "Casa",
             "not_home": "Fora"
+        },
+        "person": {
+            "home": "Casa",
+            "not_home": "Ausente"
         }
     },
     "ui": {
@@ -319,10 +332,10 @@
                     "section": {
                         "core": {
                             "header": "Configuração e controlo do servidor",
-                            "introduction": "Alterar a configuração pode ser um processo repetitivo. Nós sabemos. Esta seção pretende tornar a sua vida um pouco mais fácil.",
+                            "introduction": "Alterar a configuração pode ser um processo repetitivo. Nós sabemos. Esta secção pretende tornar a sua vida um pouco mais fácil.",
                             "validation": {
                                 "heading": "Validar a configuração",
-                                "introduction": "Valide sua configuração caso tenha alterado recentemente a mesma e quiser certificar-se de que tudo é válido.",
+                                "introduction": "Valide a sua configuração caso tenha alterado recentemente a mesma e quiser certificar-se de que tudo é válido.",
                                 "check_config": "Verificar a configuração",
                                 "valid": "Configuração válida!",
                                 "invalid": "Configuração inválida"
@@ -360,7 +373,8 @@
                         "introduction": "O editor de automação permite criar e editar automações. Leia [as instruções] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) para se certificar de que configurou o Home Assistant corretamente.",
                         "pick_automation": "Escolha a automação a editar",
                         "no_automations": "Não foi possível encontrar nenhuma automação editável",
-                        "add_automation": "Acrescentar automação"
+                        "add_automation": "Acrescentar automação",
+                        "learn_more": "Saber mais sobre automações"
                     },
                     "editor": {
                         "introduction": "Crie automatizações para tornar a sua casa viva",
@@ -492,7 +506,8 @@
                                     "entity": "Entidade com localização",
                                     "zone": "Zona"
                                 }
-                            }
+                            },
+                            "learn_more": "Saber mais sobre condições"
                         },
                         "actions": {
                             "header": "Ações",
@@ -525,7 +540,8 @@
                                     "event": "Evento",
                                     "service_data": "Informação de Serviço"
                                 }
-                            }
+                            },
+                            "learn_more": "Saber mais sobre ações"
                         }
                     }
                 },
@@ -548,7 +564,15 @@
                         "change_password": "Alterar palavra-passe",
                         "activate_user": "Ativar utilizador",
                         "deactivate_user": "Desativar utilizador",
-                        "delete_user": "Apagar utilizador"
+                        "delete_user": "Apagar utilizador",
+                        "caption": "Ver utilizador"
+                    },
+                    "add_user": {
+                        "caption": "Adicionar Utilizador",
+                        "name": "Nome",
+                        "username": "Nome de Utilizador",
+                        "password": "Password",
+                        "create": "Criar"
                     }
                 },
                 "cloud": {
@@ -588,7 +612,9 @@
                     "caption": "Registo de áreas",
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "picker": {
-                        "header": "Registo de áreas"
+                        "header": "Registo de áreas",
+                        "integrations_page": "Página de Integrações",
+                        "create_area": "CRIAR ÁREA"
                     },
                     "no_areas": "Parece que ainda não tem áreas!",
                     "create_area": "CRIAR ÁREA",
@@ -604,7 +630,8 @@
                     "description": "Visão geral de todas as entidades conhecidas.",
                     "picker": {
                         "header": "Registo de Entidades",
-                        "unavailable": "(indisponível)"
+                        "unavailable": "(indisponível)",
+                        "integrations_page": "Página de Integrações"
                     },
                     "editor": {
                         "unavailable": "Esta entidade não está atualmente disponível.",
@@ -799,11 +826,13 @@
                     "data": {
                         "name": "Nome",
                         "username": "Utilizador",
-                        "password": "Palavra-passe"
+                        "password": "Palavra-passe",
+                        "password_confirm": "Confirme Password"
                     },
                     "create_account": "Criar conta",
                     "error": {
-                        "required_fields": "Preencha todos os campos obrigatórios"
+                        "required_fields": "Preencha todos os campos obrigatórios",
+                        "password_not_match": "Password não coincide"
                     }
                 }
             },
@@ -855,7 +884,10 @@
                         "raw_editor": "Editor de configuração fonte."
                     },
                     "raw_editor": {
-                        "saved": "Salvou"
+                        "header": "Editar configuração",
+                        "save": "Guardar",
+                        "unsaved_changes": "Alterações não gravadas",
+                        "saved": "Guardou"
                     }
                 },
                 "menu": {
@@ -1100,7 +1132,8 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Saúde do sistema"
+        "system_health": "Saúde do sistema",
+        "person": "Pessoa"
     },
     "attribute": {
         "weather": {
@@ -1108,5 +1141,18 @@
             "visibility": "Visibilidade",
             "wind_speed": "Vel. do vento"
         }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Off",
+                "on": "On",
+                "auto": "Auto"
+            }
+        }
+    },
+    "groups": {
+        "system-admin": "Administradores",
+        "system-users": "Utilizadores"
     }
 }

@@ -16,6 +16,7 @@ export interface ZHADevice {
   manufacturer_code: number;
   device_reg_id: string;
   user_given_name: string;
+  area_id: string;
 }
 
 export interface Attribute {
@@ -42,7 +43,7 @@ export interface ReadAttributeServiceData {
   cluster_id: number;
   cluster_type: string;
   attribute: number;
-  manufacturer: number;
+  manufacturer?: number;
 }
 
 export const reconfigureNode = (

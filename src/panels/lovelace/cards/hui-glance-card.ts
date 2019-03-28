@@ -10,14 +10,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
-import { longPress } from "../common/directives/long-press-directive";
-import { EntityConfig } from "../entity-rows/types";
-import { processConfigEntities } from "../common/process-config-entities";
-import { handleClick } from "../common/handle-click";
-
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
@@ -25,22 +17,14 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import "../components/hui-warning";
+import "../components/hui-warning-element";
 
-export interface ConfigEntity extends EntityConfig {
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
-
-export interface GlanceCardConfig extends LovelaceCardConfig {
-  show_name?: boolean;
-  show_state?: boolean;
-  show_icon?: boolean;
-  title?: string;
-  theme?: string;
-  entities: ConfigEntity[];
-  columns?: number;
-}
+import { HomeAssistant } from "../../../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { longPress } from "../common/directives/long-press-directive";
+import { processConfigEntities } from "../common/process-config-entities";
+import { handleClick } from "../common/handle-click";
+import { GlanceCardConfig, ConfigEntity } from "./types";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -184,13 +168,13 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass!.localize(
+        <hui-warning-element
+          label=${this.hass!.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
             entityConf.entity
-          )}</hui-warning
-        >
+          )}
+        ></hui-warning-element>
       `;
     }
 

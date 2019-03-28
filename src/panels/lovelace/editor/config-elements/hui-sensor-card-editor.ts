@@ -10,16 +10,16 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
+import "../../components/hui-theme-select-editor";
+import "../../../../components/entity/ha-entity-picker";
+
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-sensor-card";
 import { configElementStyle } from "./config-elements-style";
-
-import "../../components/hui-theme-select-editor";
-import "../../../../components/entity/ha-entity-picker";
+import { SensorCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -38,9 +38,9 @@ export class HuiSensorCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: SensorCardConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: SensorCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }

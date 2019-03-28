@@ -6,38 +6,35 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
-import "../components/hui-warning";
+import "../components/hui-warning-element";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, StateLabelElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { ActionConfig } from "../../../data/lovelace";
-
-interface Config extends LovelaceElementConfig {
-  entity: string;
-  prefix?: string;
-  suffix?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
-  @property() private _config?: Config;
+  @property() private _config?: StateLabelElementConfig;
 
-  public setConfig(config: Config): void {
+  public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected render(): TemplateResult | void {
@@ -49,13 +46,13 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
+        <hui-warning-element
+          label=${this.hass.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
             this._config.entity
-          )}</hui-warning
-        >
+          )}
+        ></hui-warning-element>
       `;
     }
 
