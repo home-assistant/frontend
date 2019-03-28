@@ -61,9 +61,9 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     this._config = {
       theme: "default",
       hold_action: { action: "more-info" },
-      ...config,
       show_icon: true,
       show_name: true,
+      ...config,
     };
 
     if (DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
