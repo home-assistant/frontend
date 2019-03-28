@@ -37,7 +37,9 @@ export default class MediaPlayerEntity {
   }
 
   get hasMediaControl() {
-    return ["playing", "paused", "unknown"].indexOf(this.stateObj.state) !== -1;
+    return (
+      ["playing", "paused", "unknown", "on"].indexOf(this.stateObj.state) !== -1
+    );
   }
 
   get volumeSliderValue() {
