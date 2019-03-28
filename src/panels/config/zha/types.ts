@@ -8,6 +8,12 @@ export interface ItemSelectedEvent {
   target?: PickerTarget;
 }
 
+export interface ZHADeviceRemovedEvent {
+  detail?: {
+    device?: ZHADevice;
+  };
+}
+
 export interface ChangeEvent {
   detail?: {
     value?: any;
@@ -22,7 +28,7 @@ export interface SetAttributeServiceData {
   cluster_type: string;
   attribute: number;
   value: any;
-  manufacturer: number;
+  manufacturer?: number;
 }
 
 export interface IssueCommandServiceData {

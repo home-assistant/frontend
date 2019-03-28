@@ -570,7 +570,7 @@
                     },
                     "add_user": {
                         "caption": "Dodaj użytkownika",
-                        "name": "Nazwa",
+                        "name": "Imię",
                         "username": "Nazwa użytkownika",
                         "password": "Hasło",
                         "create": "Utwórz"

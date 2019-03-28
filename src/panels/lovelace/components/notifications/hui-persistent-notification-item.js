@@ -87,6 +87,6 @@ export class HuiPersistentNotificationItem extends LocalizeMixin(
   }
 }
 customElements.define(
-  "hui-persistent_notification-notification-item",
+  "hui-persistent-notification-item",
   HuiPersistentNotificationItem
 );

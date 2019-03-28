@@ -96,6 +96,10 @@ export class HuiYamlEditor extends HTMLElement {
         tabSize: 2,
         autofocus: true,
         viewportMargin: Infinity,
+        extraKeys: {
+          Tab: "indentMore",
+          "Shift-Tab": "indentLess",
+        },
         gutters:
           this._hass && computeRTL(this._hass!)
             ? ["rtl-gutter", "CodeMirror-linenumbers"]

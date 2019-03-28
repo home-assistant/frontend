@@ -44,7 +44,7 @@ function createConfig(isProdBuild, latestBuild) {
     onboarding: "./src/entrypoints/onboarding.ts",
     core: "./src/entrypoints/core.ts",
     compatibility: "./src/entrypoints/compatibility.js",
-    "custom-panel": "./src/entrypoints/custom-panel.js",
+    "custom-panel": "./src/entrypoints/custom-panel.ts",
     "hass-icons": "./src/entrypoints/hass-icons.js",
   };
 
@@ -156,7 +156,7 @@ function createConfig(isProdBuild, latestBuild) {
         include: [
           /core.ts$/,
           /app.js$/,
-          /custom-panel.js$/,
+          /custom-panel.ts$/,
           /hass-icons.js$/,
           /\.chunk\.js$/,
         ],

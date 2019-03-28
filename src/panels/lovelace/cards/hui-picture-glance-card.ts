@@ -6,16 +6,10 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { DOMAINS_TOGGLE } from "../../../common/const";
-import { LovelaceCard } from "../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
-import { longPress } from "../common/directives/long-press-directive";
-import { processConfigEntities } from "../common/process-config-entities";
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 import computeDomain from "../../../common/entity/compute_domain";
@@ -24,29 +18,26 @@ import stateIcon from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-image";
+import "../components/hui-warning-element";
+
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { LovelaceCard } from "../types";
+import { EntityConfig } from "../entity-rows/types";
+import { HomeAssistant } from "../../../types";
+import { longPress } from "../common/directives/long-press-directive";
+import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleEntity } from "../common/entity/toggle-entity";
+import { PictureGlanceCardConfig } from "./types";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
-
-interface Config extends LovelaceCardConfig {
-  entities: EntityConfig[];
-  title?: string;
-  image?: string;
-  camera_image?: string;
-  state_image?: {};
-  aspect_ratio?: string;
-  entity?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-}
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: Config;
+  @property() private _config?: PictureGlanceCardConfig;
 
   private _entitiesDialog?: EntityConfig[];
 
@@ -56,7 +47,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     return 3;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: PictureGlanceCardConfig): void {
     if (
       !config ||
       !config.entities ||
@@ -83,6 +74,39 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     });
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass) {
+      return true;
+    }
+
+    if (this._entitiesDialog) {
+      for (const entity of this._entitiesDialog) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+    }
+
+    if (this._entitiesToggle) {
+      for (const entity of this._entitiesToggle) {
+        if (
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   protected render(): TemplateResult | void {
@@ -138,7 +162,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
-      return html``;
+      return html`
+        <hui-warning-element
+          label=${this.hass!.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            entityConf.entity
+          )}
+        ></hui-warning-element>
+      `;
     }
 
     return html`

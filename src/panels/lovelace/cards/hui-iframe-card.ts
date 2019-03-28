@@ -11,14 +11,8 @@ import {
 import "../../../components/ha-card";
 
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { styleMap } from "lit-html/directives/style-map";
-
-export interface Config extends LovelaceCardConfig {
-  aspect_ratio?: string;
-  title?: string;
-  url: string;
-}
+import { IframeCardConfig } from "./types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -30,7 +24,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     return { url: "https://www.home-assistant.io", aspect_ratio: "50%" };
   }
 
-  @property() protected _config?: Config;
+  @property() protected _config?: IframeCardConfig;
 
   public getCardSize(): number {
     if (!this._config) {
@@ -42,7 +36,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     return 1 + aspectRatio / 25;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: IframeCardConfig): void {
     if (!config.url) {
       throw new Error("URL required");
     }

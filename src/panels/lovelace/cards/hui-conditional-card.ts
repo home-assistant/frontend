@@ -1,22 +1,16 @@
 import { createCardElement } from "../common/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
 import {
-  Condition,
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../lovelace/common/validate-condition";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
-
-interface Config extends LovelaceCardConfig {
-  card: LovelaceCardConfig;
-  conditions: Condition[];
-}
+import { ConditionalCardConfig } from "./types";
 
 class HuiConditionalCard extends HTMLElement implements LovelaceCard {
   private _hass?: HomeAssistant;
-  private _config?: Config;
+  private _config?: ConditionalCardConfig;
   private _card?: LovelaceCard;
 
   public setConfig(config) {
