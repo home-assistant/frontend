@@ -2,6 +2,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import "../components/ha-form";
+import "../components/ha-markdown";
 import { localizeLiteMixin } from "../mixins/localize-lite-mixin";
 
 class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
