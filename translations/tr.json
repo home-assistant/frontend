@@ -102,11 +102,11 @@
             },
             "door": {
                 "off": "[%key:state::cover::kapalı%]",
-                "on": "[%key:state::cover::açık%]"
+                "on": "Açık"
             },
             "garage_door": {
                 "off": "[%key:state::cover::kapalı%]",
-                "on": "[%key:state::cover::açık%]"
+                "on": "Açık"
             },
             "heat": {
                 "off": "Normal",
@@ -114,7 +114,7 @@
             },
             "window": {
                 "off": "[%key:state::cover::kapalı%]",
-                "on": "[%key:state::cover::açık%]"
+                "on": "Açık"
             },
             "lock": {
                 "off": "Kilit kapalı",
@@ -690,7 +690,7 @@
         },
         "duration": {
             "day": "{count}{count, plural,\n  one { gün }\n  other { gün }\n}",
-            "week": "{say}{say, çoğul,\n  bir { hafta }\n  diğer { hafta }\n}",
+            "week": "{count}{count, plural,\n  one { hafta }\n  other { hafta }\n}",
             "second": "{count}{count, plural,\n  one { saniye }\n  other { saniye }\n}"
         },
         "login-form": {

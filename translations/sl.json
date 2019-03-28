@@ -466,7 +466,7 @@
                         },
                         "conditions": {
                             "header": "Pogoji",
-                            "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \n\n [Več o pogojih.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem, ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \n\n [Več o pogojih.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Dodaj pogoj",
                             "duplicate": "Podvoji",
                             "delete": "Izbriši",
@@ -606,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Upravljanje omrežja za avtomatizacijo doma Zigbee",
                     "services": {
-                        "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve."
+                        "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
+                        "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav."
                     }
                 },
                 "area_registry": {
@@ -614,7 +615,11 @@
                     "description": "Pregled vseh območij v vašem domu.",
                     "picker": {
                         "header": "Register območij",
-                        "integrations_page": "Stran za integracije"
+                        "introduction": "Področja se uporabljajo za organizacijo področja naprav. Te informacije bodo uporabljene v celotnem Home Assistant-u in vam bodo pomagale pri organizaciji vašega vmesnika, dovoljenj in integracij z drugimi sistemi.",
+                        "introduction2": "Če želite namestiti napravo na območje, uporabite spodnjo povezavo, da se pomaknete na stran za integracije, nato pa kliknite konfigurirano integracijo, da pridete do kartic naprave.",
+                        "integrations_page": "Stran za integracije",
+                        "no_areas": "Izgleda, da še nimate območij!",
+                        "create_area": "USTVARITE OBMOČJE"
                     },
                     "no_areas": "Izgleda, da še nimate območij!",
                     "create_area": "USTVARITE OBMOČJE",
@@ -631,6 +636,8 @@
                     "picker": {
                         "header": "Register subjekta",
                         "unavailable": "(ni na voljo)",
+                        "introduction": "Home Assistant vodi register vseh entitet, ki jih je kdajkoli videl in jih je mogoče enolično identificirati. Vsak od teh entitet ima dodeljen ID entitete, ki bo rezerviran samo za to entiteto.",
+                        "introduction2": "Z registrom entitet preglasite ime, spremenite ID entitete ali odstranite vnos iz Home Assistent-a. Opomba, odstranitev vnosa registra entitet ne bo odstranila entitete. Če želite to narediti, sledite spodnji povezavi in jo odstranite s strani za integracijo.",
                         "integrations_page": "Stran za integracije"
                     },
                     "editor": {
@@ -826,11 +833,13 @@
                     "data": {
                         "name": "Ime",
                         "username": "Uporabniško ime",
-                        "password": "Geslo"
+                        "password": "Geslo",
+                        "password_confirm": "Potrdi Geslo"
                     },
                     "create_account": "Ustvarite račun",
                     "error": {
-                        "required_fields": "Izpolnite vsa zahtevana polja"
+                        "required_fields": "Izpolnite vsa zahtevana polja",
+                        "password_not_match": "Gesli se ne ujemata"
                     }
                 }
             },
@@ -1065,7 +1074,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Shrani",
-                "name": "Ime",
+                "name": "Preglasitev imena",
                 "entity_id": "ID subjekta"
             },
             "more_info_control": {
@@ -1152,5 +1161,10 @@
                 "auto": "Samodejno"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Skrbniki",
+        "system-users": "Uporabniki",
+        "system-read-only": "Uporabniki \"samo za branje\""
     }
 }
