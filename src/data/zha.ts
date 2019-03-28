@@ -15,8 +15,8 @@ export interface ZHADevice {
   entities: ZHAEntityReference[];
   manufacturer_code: number;
   device_reg_id: string;
-  user_given_name: string;
-  area_id: string;
+  user_given_name?: string;
+  area_id?: string;
 }
 
 export interface Attribute {
