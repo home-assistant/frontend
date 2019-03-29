@@ -43,6 +43,7 @@ class MoreInfoContent extends UpdatingElement {
   }
 
   protected firstUpdated(): void {
+    this.style.position = "relative";
     this.style.display = "block";
   }
 
