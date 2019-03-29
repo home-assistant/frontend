@@ -1,7 +1,15 @@
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import { LitElement, html, PropertyDeclarations } from "lit-element";
+import {
+  LitElement,
+  html,
+  PropertyDeclarations,
+  PropertyValues,
+  CSSResult,
+  css,
+} from "lit-element";
 import "./ha-auth-flow";
 import { AuthProvider } from "../data/auth";
+import { registerServiceWorker } from "../util/register-service-worker";
 
 import(/* webpackChunkName: "pick-auth-provider" */ "../auth/ha-pick-auth-provider");
 
@@ -76,7 +84,6 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     );
 
     return html`
-      ${this.renderStyle()}
       <p>
         ${this.localize(
           "ui.panel.page-authorize.authorizing_client",
@@ -108,7 +115,24 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     `;
   }
 
-  public async firstUpdated() {
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this._fetchAuthProviders();
+
+    if (!this.redirectUri) {
+      return;
+    }
+
+    // If we are logging into the instance that is hosting this auth form
+    // we will register the service worker to start preloading.
+    const tempA = document.createElement("a");
+    tempA.href = this.redirectUri!;
+    if (tempA.host === location.host) {
+      registerServiceWorker(false);
+    }
+  }
+
+  private async _fetchAuthProviders() {
     // Fetch auth providers
     try {
       const response = await (window as any).providersPromise;
@@ -136,19 +160,17 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  protected renderStyle() {
-    return html`
-      <style>
-        ha-pick-auth-provider {
-          display: block;
-          margin-top: 48px;
-        }
-      </style>
-    `;
-  }
-
   private async _handleAuthProviderPick(ev) {
     this._authProvider = ev.detail;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-pick-auth-provider {
+        display: block;
+        margin-top: 48px;
+      }
+    `;
   }
 }
 customElements.define("ha-authorize", HaAuthorize);
