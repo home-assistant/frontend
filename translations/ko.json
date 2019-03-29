@@ -259,7 +259,7 @@
         "vacuum": {
             "cleaning": "청소중",
             "docked": "충전중",
-            "error": "작동 에러",
+            "error": "작동 오류",
             "idle": "대기중",
             "off": "꺼짐",
             "on": "켜짐",
@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "알수없음",
-            "unavailable": "사용불가"
+            "unavailable": "사용불가",
+            "error": "오류",
+            "entity_not_found": "구성요소를 찾을 수 없음"
         },
         "alarm_control_panel": {
             "armed": "경비중",
@@ -607,7 +609,18 @@
                     "description": "Zigbee 홈 자동화 네트워크 관리",
                     "services": {
                         "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
-                        "updateDeviceName": "이 장치의 사용자 정의 이름을 장치 레지스트리에 설정합니다."
+                        "updateDeviceName": "이 장치의 사용자 정의 이름을 장치 레지스트리에 설정합니다.",
+                        "remove": "ZigBee 네트워크에서 기기 제거"
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "사용자 지정 이름",
+                        "area_picker_label": "영역",
+                        "update_name_button": "이름 업데이트"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee 홈 자동화 - 기기 추가",
+                        "spinner": "ZHA Zigbee 기기를 찾고있습니다...",
+                        "discovery_text": "발견된 기기가 여기에 표시됩니다. 기기의 설명서를 참고하여 기기를 페어링 모드로 설정해주세요."
                     }
                 },
                 "area_registry": {

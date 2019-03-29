@@ -279,7 +279,8 @@
     "state_badge": {
         "default": {
             "unknown": "Ukendt",
-            "unavailable": "Utilgængelig"
+            "unavailable": "Utilgængelig",
+            "error": "Fejl"
         },
         "alarm_control_panel": {
             "armed": "Tilkoblet",
@@ -608,6 +609,12 @@
                     "services": {
                         "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service.",
                         "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen"
+                    },
+                    "device_card": {
+                        "area_picker_label": "Område"
+                    },
+                    "add_device_page": {
+                        "spinner": "Søger efter ZHA Zigbee-enheder..."
                     }
                 },
                 "area_registry": {
@@ -1084,7 +1091,7 @@
                 "sun": {
                     "elevation": "Elevation",
                     "rising": "Solopgang",
-                    "setting": "Indstilling"
+                    "setting": "Solnedgang"
                 },
                 "updater": {
                     "title": "Opdateringsvejledning"
