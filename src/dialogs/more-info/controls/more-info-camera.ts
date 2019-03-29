@@ -113,6 +113,8 @@ class MoreInfoCamera extends LitElement {
           this.hass!,
           this.stateObj.entity_id
         );
+        // Fetch in background while we set up the video.
+        this._fetchCameraPrefs();
 
         if (Hls.isSupported()) {
           this._renderHLSPolyfill(videoEl, Hls, url);
@@ -133,7 +135,6 @@ class MoreInfoCamera extends LitElement {
   }
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
-    this._fetchCameraPrefs();
     videoEl.src = url;
     this._videoRoot.appendChild(videoEl);
     await new Promise((resolve) =>
@@ -148,7 +149,6 @@ class MoreInfoCamera extends LitElement {
     Hls: HLSModule,
     url: string
   ) {
-    this._fetchCameraPrefs();
     const hls = new Hls();
     this._hlsPolyfillInstance = hls;
     await new Promise((resolve) => {
