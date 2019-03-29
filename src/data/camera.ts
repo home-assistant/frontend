@@ -1,6 +1,13 @@
 import { HomeAssistant, CameraEntity } from "../types";
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
 
+export const CAMERA_SUPPORT_ON_OFF = 1;
+export const CAMERA_SUPPORT_STREAM = 2;
+
+export interface CameraPreferences {
+  preload_stream: boolean;
+}
+
 export interface CameraThumbnail {
   content_type: string;
   content: string;
@@ -41,3 +48,22 @@ export const fetchStreamUrl = (
   }
   return hass.callWS<Stream>(data);
 };
+
+export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
+  hass.callWS<CameraPreferences>({
+    type: "camera/get_prefs",
+    entity_id: entityId,
+  });
+
+export const updateCameraPrefs = (
+  hass: HomeAssistant,
+  entityId: string,
+  prefs: {
+    preload_stream?: boolean;
+  }
+) =>
+  hass.callWS<CameraPreferences>({
+    type: "camera/update_prefs",
+    entity_id: entityId,
+    ...prefs,
+  });

@@ -1094,7 +1094,7 @@
         "auth_store": {
             "ask": "Wilt u de inloggegevens opslaan?",
             "decline": "Nee, bedankt",
-            "confirm": "Bewaar inloggegevens"
+            "confirm": "Login opslaan"
         },
         "notification_drawer": {
             "click_to_configure": "Klik op de knop om {entity} te configureren",
