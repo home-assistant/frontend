@@ -87,7 +87,8 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
     // open and close events. These events are a no-op in newer versions of
     // Home Assistant.
     this.addEventListener("hass-toggle-menu", () => {
-      window.parent.customPanel.fire(
+      fireEvent(
+        window.parent.customPanel,
         this.hass.dockedSidebar ? "hass-close-menu" : "hass-open-menu"
       );
     });
@@ -130,7 +131,7 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
     if (route.path === "" && route.prefix === "/hassio") {
       this.navigate("/hassio/dashboard", true);
     }
-    this.fire("iron-resize");
+    fireEvent(this, "iron-resize");
   }
 
   equalsAddon(page) {

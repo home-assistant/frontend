@@ -4,6 +4,7 @@ import { createCustomPanelElement } from "../../util/custom-panel/create-custom-
 import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
 import { HomeAssistant, Route, Panel } from "../../types";
 import { CustomPanelConfig } from "../../data/panel_custom";
+import { navigate } from "../../common/navigate";
 
 declare global {
   interface Window {
@@ -17,6 +18,12 @@ export class HaPanelCustom extends UpdatingElement {
   @property() public route!: Route;
   @property() public panel!: Panel;
   private _setProperties?: (props: {}) => void | undefined;
+
+  // Since navigate fires events on `window`, we need to expose this as a function
+  // to allow custom panels to forward their location changes to the main window
+  // instead of their iframe window.
+  public navigate = (path: string, replace?: boolean) =>
+    navigate(this, path, replace);
 
   public registerIframe(initialize, setProperties) {
     initialize(this.panel, {

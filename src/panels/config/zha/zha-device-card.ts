@@ -55,6 +55,7 @@ class ZHADeviceCard extends LitElement {
   @property() private _serviceData?: NodeServiceData;
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
+  @property() private _userGivenName?: string;
 
   public firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -71,9 +72,15 @@ class ZHADeviceCard extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("device")) {
-      this._selectedAreaIndex =
-        this._areas.findIndex((area) => area.area_id === this.device!.area_id) +
-        1;
+      if (!this._areas || !this.device || !this.device.area_id) {
+        this._selectedAreaIndex = 0;
+      } else {
+        this._selectedAreaIndex =
+          this._areas.findIndex(
+            (area) => area.area_id === this.device!.area_id
+          ) + 1;
+      }
+      this._userGivenName = this.device!.user_given_name;
     }
     super.update(changedProperties);
   }
@@ -150,6 +157,7 @@ class ZHADeviceCard extends LitElement {
           <paper-input
             type="string"
             @change="${this._saveCustomName}"
+            .value="${this._userGivenName}"
             placeholder="${this.hass!.localize(
               "ui.panel.config.zha.device_card.device_name_placeholder"
             )}"
@@ -265,10 +273,12 @@ class ZHADeviceCard extends LitElement {
       return;
     }
 
+    const newAreaId = area ? area.area_id : undefined;
     await updateDeviceRegistryEntry(this.hass!, this.device.device_reg_id, {
-      area_id: area ? area.area_id : undefined,
+      area_id: newAreaId,
       name_by_user: this.device!.user_given_name,
     });
+    this.device!.area_id = newAreaId;
   }
 
   static get styles(): CSSResult[] {
