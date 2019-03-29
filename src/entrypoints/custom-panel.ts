@@ -72,13 +72,14 @@ function initialize(panel: Panel, properties: {}) {
           }
         };
         panelEl!.addEventListener("hass-toggle-menu", forwardEvent);
-        window.addEventListener("location-changed", (ev: any) =>
-          navigate(
-            window.parent.customPanel,
-            window.location.pathname,
-            ev.detail ? ev.detail.replace : false
-          )
-        );
+        window.addEventListener("location-changed", (ev: any) => {
+          if (window.parent.customPanel) {
+            window.parent.customPanel.navigate(
+              window.location.pathname,
+              ev.detail ? ev.detail.replace : false
+            );
+          }
+        });
         setProperties({ panel, ...properties });
         document.body.appendChild(panelEl!);
       },
