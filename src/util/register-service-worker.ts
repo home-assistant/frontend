@@ -1,12 +1,20 @@
 const serviceWorkerUrl =
   __BUILD__ === "latest" ? "/service_worker.js" : "/service_worker_es5.js";
 
-export const registerServiceWorker = () => {
-  if (!("serviceWorker" in navigator)) return;
+export const registerServiceWorker = (notifyUpdate = true) => {
+  if (
+    !("serviceWorker" in navigator) ||
+    (location.protocol !== "https:" && location.hostname !== "localhost")
+  ) {
+    return;
+  }
 
   navigator.serviceWorker.register(serviceWorkerUrl).then((reg) => {
     reg.addEventListener("updatefound", () => {
       const installingWorker = reg.installing;
+      if (!installingWorker || !notifyUpdate) {
+        return;
+      }
       installingWorker.addEventListener("statechange", () => {
         if (
           installingWorker.state === "installed" &&
