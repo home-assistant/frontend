@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Unbek.",
-            "unavailable": "N.v."
+            "unavailable": "N.v.",
+            "error": "Fehler",
+            "entity_not_found": "Entität  nicht gefunden!"
         },
         "alarm_control_panel": {
             "armed": "Aktiv",
@@ -608,6 +610,14 @@
                     "services": {
                         "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt.",
                         "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest."
+                    },
+                    "device_card": {
+                        "area_picker_label": "Bereich"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Geräte hinzufügen",
+                        "spinner": "Suche nach ZHA Zigbee Geräten... ",
+                        "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus."
                     }
                 },
                 "area_registry": {
