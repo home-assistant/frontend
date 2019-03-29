@@ -3,7 +3,12 @@ import { property, UpdatingElement, PropertyValues } from "lit-element";
 import computeStateName from "../../../common/entity/compute_state_name";
 import { HomeAssistant, CameraEntity } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { fetchStreamUrl, computeMJPEGStreamUrl } from "../../../data/camera";
+import {
+  fetchStreamUrl,
+  computeMJPEGStreamUrl,
+  CAMERA_SUPPORT_STREAM,
+} from "../../../data/camera";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 type HLSModule = typeof import("hls.js");
 
@@ -46,7 +51,10 @@ class MoreInfoCamera extends UpdatingElement {
       return;
     }
 
-    if (!this.hass!.config.components.includes("stream")) {
+    if (
+      !this.hass!.config.components.includes("stream") ||
+      !supportsFeature(this.stateObj, CAMERA_SUPPORT_STREAM)
+    ) {
       this._renderMJPEG();
       return;
     }
@@ -81,8 +89,7 @@ class MoreInfoCamera extends UpdatingElement {
         }
         return;
       } catch (err) {
-        // Fails if entity doesn't support it. In that case we go
-        // for mjpeg.
+        // When an error happens, we will do nothing so we render mjpeg.
       }
     }
 

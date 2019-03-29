@@ -1,6 +1,9 @@
 import { HomeAssistant, CameraEntity } from "../types";
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
 
+export const CAMERA_SUPPORT_ON_OFF = 1;
+export const CAMERA_SUPPORT_STREAM = 2;
+
 export interface CameraThumbnail {
   content_type: string;
   content: string;
