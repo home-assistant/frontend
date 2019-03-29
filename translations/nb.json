@@ -257,14 +257,14 @@
             "windy-variant": "Vind"
         },
         "vacuum": {
-            "cleaning": "Rengjøring",
+            "cleaning": "Rengjør",
             "docked": "Dokket",
             "error": "Feil",
-            "idle": "Ledig",
+            "idle": "Inaktiv",
             "off": "Av",
             "on": "På",
             "paused": "Pauset",
-            "returning": "Returner til dokken"
+            "returning": "Returner til dokk"
         },
         "timer": {
             "active": "aktiv",
