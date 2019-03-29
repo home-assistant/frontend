@@ -3,7 +3,6 @@ import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 import { fireEvent } from "../common/dom/fire_event";
-import { navigate } from "../common/navigate";
 import { PolymerElement } from "@polymer/polymer";
 import { Panel } from "../types";
 import { CustomPanelConfig } from "../data/panel_custom";
