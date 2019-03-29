@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "niezn",
-            "unavailable": "niedos"
+            "unavailable": "niedos",
+            "error": "błąd",
+            "entity_not_found": "brak"
         },
         "alarm_control_panel": {
             "armed": "uzbr",
@@ -604,10 +606,21 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zarządzanie siecią automatyki domowej ZigBee",
+                    "description": "Zarządzanie siecią automatyki domowej Zigbee",
                     "services": {
                         "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tej usługi, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",
-                        "updateDeviceName": "Ustaw niestandardową nazwę tego urządzenia w rejestrze urządzeń."
+                        "updateDeviceName": "Ustaw niestandardową nazwę tego urządzenia w rejestrze urządzeń.",
+                        "remove": "Usuń urządzenie z sieci Zigbee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nazwa użytkownika",
+                        "area_picker_label": "Obszar",
+                        "update_name_button": "Aktualizuj nazwę"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Dodaj urządzenia",
+                        "spinner": "Wyszukiwanie urządzeń ZHA Zigbee...",
+                        "discovery_text": "Wykryte urządzenia pojawią się tutaj. Postępuj zgodnie z instrukcjami dla urządzeń, by wprowadzić je w tryb parowania."
                     }
                 },
                 "area_registry": {
