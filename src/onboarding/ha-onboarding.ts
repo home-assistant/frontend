@@ -14,6 +14,7 @@ import { genClientId } from "home-assistant-js-websocket";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { OnboardingStep, onboardUserStep } from "../data/onboarding";
 import { PolymerChangedEvent } from "../polymer-types";
+import { registerServiceWorker } from "../util/register-service-worker";
 
 @customElement("ha-onboarding")
 class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
@@ -122,14 +123,18 @@ class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
 `;
   }
 
-  protected async firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitForm();
       }
     });
+    this._fetchOnboardingSteps();
+    registerServiceWorker(false);
+  }
 
+  private async _fetchOnboardingSteps() {
     try {
       const response = await window.stepsPromise;
 
