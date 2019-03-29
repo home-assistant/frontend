@@ -461,7 +461,8 @@
                                     "enter": "Entrar",
                                     "leave": "Sair"
                                 }
-                            }
+                            },
+                            "learn_more": "Saber mais sobre gatilhos"
                         },
                         "conditions": {
                             "header": "Condições",
@@ -605,7 +606,8 @@
                     "caption": "ZHA",
                     "description": "Gestão de rede Zigbee Home Automation",
                     "services": {
-                        "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele está ativo e a aceitar comandos ao usar este serviço."
+                        "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele está ativo e a aceitar comandos ao usar este serviço.",
+                        "updateDeviceName": "Definir um nome personalizado para este dispositivo no registo do dispositivo."
                     }
                 },
                 "area_registry": {
@@ -613,7 +615,10 @@
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "picker": {
                         "header": "Registo de áreas",
+                        "introduction": "Áreas são usadas para organizar os dispositivos. Essas informações serão usadas no Home Assistant para ajudá-lo a organizar sua interface, permissões e integrações com outros sistemas.",
+                        "introduction2": "Para colocar dispositivos em uma área, use o link abaixo para navegar até a página de integrações e, em seguida, clique em uma integração configurada para acessar os cartões de dispositivos.",
                         "integrations_page": "Página de Integrações",
+                        "no_areas": "Parece que ainda não tem áreas!",
                         "create_area": "CRIAR ÁREA"
                     },
                     "no_areas": "Parece que ainda não tem áreas!",
@@ -631,6 +636,8 @@
                     "picker": {
                         "header": "Registo de Entidades",
                         "unavailable": "(indisponível)",
+                        "introduction": "O Home Assistant mantém um registro de todas as entidades que já viu e que podem ser identificadas exclusivamente. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
+                        "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Assistente Inicial. Observe que a remoção da entrada do registo de entidade não removerá a entidade. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
                         "integrations_page": "Página de Integrações"
                     },
                     "editor": {
@@ -895,6 +902,10 @@
                     "unused_entities": "Entidades não utilizadas",
                     "help": "Ajuda",
                     "refresh": "Atualizar"
+                },
+                "warning": {
+                    "entity_not_found": "Entidade indisponível",
+                    "entity_non_numeric": "Entidade é não numérica"
                 }
             }
         },
@@ -1153,6 +1164,7 @@
     },
     "groups": {
         "system-admin": "Administradores",
-        "system-users": "Utilizadores"
+        "system-users": "Utilizadores",
+        "system-read-only": "Utilizadores somente de leitura"
     }
 }
