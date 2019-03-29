@@ -1,4 +1,12 @@
-import { property, UpdatingElement, PropertyValues } from "lit-element";
+import {
+  property,
+  PropertyValues,
+  LitElement,
+  TemplateResult,
+  html,
+  CSSResult,
+  css,
+} from "lit-element";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 import { HomeAssistant, CameraEntity } from "../../../types";
@@ -7,19 +15,43 @@ import {
   fetchStreamUrl,
   computeMJPEGStreamUrl,
   CAMERA_SUPPORT_STREAM,
+  CameraPreferences,
+  fetchCameraPrefs,
+  updateCameraPrefs,
 } from "../../../data/camera";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "@polymer/paper-checkbox/paper-checkbox";
+// Not duplicate import, it's for typing
+// tslint:disable-next-line
+import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 
 type HLSModule = typeof import("hls.js");
 
-class MoreInfoCamera extends UpdatingElement {
+class MoreInfoCamera extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
+  @property() private _cameraPrefs?: CameraPreferences;
   private _hlsPolyfillInstance?: Hls;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._teardownPlayback();
+  }
+
+  protected render(): TemplateResult | void {
+    return html`
+      <div id="root"></div>
+      ${this._cameraPrefs
+        ? html`
+            <paper-checkbox
+              .checked=${this._cameraPrefs.preload_stream}
+              @change=${this._handleCheckboxChanged}
+            >
+              Preload stream
+            </paper-checkbox>
+          `
+        : undefined}
+    `;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -96,8 +128,14 @@ class MoreInfoCamera extends UpdatingElement {
     this._renderMJPEG();
   }
 
+  private get _videoRoot(): HTMLDivElement {
+    return this.shadowRoot!.getElementById("root")! as HTMLDivElement;
+  }
+
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
+    this._fetchCameraPrefs();
     videoEl.src = url;
+    this._videoRoot.appendChild(videoEl);
     await new Promise((resolve) =>
       videoEl.addEventListener("loadedmetadata", resolve)
     );
@@ -110,6 +148,7 @@ class MoreInfoCamera extends UpdatingElement {
     Hls: HLSModule,
     url: string
   ) {
+    this._fetchCameraPrefs();
     const hls = new Hls();
     this._hlsPolyfillInstance = hls;
     await new Promise((resolve) => {
@@ -117,7 +156,7 @@ class MoreInfoCamera extends UpdatingElement {
       hls.attachMedia(videoEl);
     });
     hls.loadSource(url);
-    this.appendChild(videoEl);
+    this._videoRoot.appendChild(videoEl);
     videoEl.addEventListener("loadeddata", () =>
       fireEvent(this, "iron-resize")
     );
@@ -131,7 +170,7 @@ class MoreInfoCamera extends UpdatingElement {
       ? "/demo/webcamp.jpg"
       : computeMJPEGStreamUrl(this.stateObj!);
     img.alt = computeStateName(this.stateObj!);
-    this.appendChild(img);
+    this._videoRoot.appendChild(img);
   }
 
   private _teardownPlayback(): any {
@@ -139,10 +178,47 @@ class MoreInfoCamera extends UpdatingElement {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
     }
-    while (this.lastChild) {
-      this.removeChild(this.lastChild);
+    const root = this._videoRoot;
+    while (root.lastChild) {
+      root.removeChild(root.lastChild);
     }
     this.stateObj = undefined;
+  }
+
+  private async _fetchCameraPrefs() {
+    this._cameraPrefs = await fetchCameraPrefs(
+      this.hass!,
+      this.stateObj!.entity_id
+    );
+  }
+
+  private async _handleCheckboxChanged(ev) {
+    const checkbox = ev.currentTarget as PaperCheckboxElement;
+    try {
+      this._cameraPrefs = await updateCameraPrefs(
+        this.hass!,
+        this.stateObj!.entity_id,
+        {
+          preload_stream: checkbox.checked!,
+        }
+      );
+    } catch (err) {
+      alert(err.message);
+      checkbox.checked = !checkbox.checked;
+    }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      paper-checkbox {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: var(--secondary-background-color);
+        padding: 5px;
+        border-bottom-left-radius: 6px;
+      }
+    `;
   }
 }
 
