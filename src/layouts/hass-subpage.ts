@@ -1,16 +1,13 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
 import {
   LitElement,
   property,
   TemplateResult,
   html,
   customElement,
+  css,
   CSSResult,
 } from "lit-element";
-import { haStyle } from "../resources/styles";
+import "../components/ha-paper-icon-button-arrow-prev";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {
@@ -19,19 +16,14 @@ class HassSubpage extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <app-header-layout has-scrolling-region>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-paper-icon-button-arrow-prev
-              @click=${this._backTapped}
-            ></ha-paper-icon-button-arrow-prev>
-            <div main-title>${this.header}</div>
-            <slot name="toolbar-icon"></slot>
-          </app-toolbar>
-        </app-header>
-
-        <slot></slot>
-      </app-header-layout>
+      <div class="toolbar">
+        <ha-paper-icon-button-arrow-prev
+          @click=${this._backTapped}
+        ></ha-paper-icon-button-arrow-prev>
+        <div main-title>${this.header}</div>
+        <slot name="toolbar-icon"></slot>
+      </div>
+      <div class="content"><slot></slot></div>
     `;
   }
 
@@ -40,7 +32,45 @@ class HassSubpage extends LitElement {
   }
 
   static get styles(): CSSResult {
-    return haStyle;
+    return css`
+      :host {
+        display: block;
+        height: 100%;
+        background-color: var(--primary-background-color);
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        font-size: 20px;
+        height: 64px;
+        padding: 0 16px;
+        pointer-events: none;
+        background-color: var(--primary-color);
+        font-weight: 400;
+        color: var(--text-primary-color, white);
+      }
+
+      ha-paper-icon-button-arrow-prev,
+      ::slotted([slot="toolbar-icon"]) {
+        pointer-events: auto;
+      }
+
+      [main-title] {
+        margin: 0 0 0 24px;
+        line-height: 20px;
+        flex-grow: 1;
+      }
+
+      .content {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 64px);
+        overflow-y: auto;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    `;
   }
 }
 
