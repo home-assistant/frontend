@@ -247,8 +247,8 @@ export class HuiEditCard extends LitElement {
   }
 
   private _handleYamlChanged(ev: CustomEvent): void {
-    this._cardConfig = yaml.safeLoad(ev.detail.value);
     try {
+      this._cardConfig = yaml.safeLoad(ev.detail.value);
       this._updatePreview(this._cardConfig!);
       this._configState = "OK";
     } catch (err) {
@@ -392,20 +392,20 @@ export class HuiEditCard extends LitElement {
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
-          paper-dialog {
+          ha-paper-dialog {
             max-height: 100%;
             height: 100%;
           }
         }
 
         @media all and (min-width: 660px) {
-          paper-dialog {
-            width: 650px;
+          ha-paper-dialog {
+            width: 845px;
           }
         }
 
-        paper-dialog {
-          max-width: 650px;
+        ha-paper-dialog {
+          max-width: 845px;
         }
 
         .center {
@@ -420,7 +420,8 @@ export class HuiEditCard extends LitElement {
         }
         .content hui-card-preview {
           margin-top: 16px;
-          margin: 0 10px;
+          margin: 0 auto;
+          max-width: 390px;
         }
         .content .element-editor {
           margin: 0 10px;
@@ -442,6 +443,7 @@ export class HuiEditCard extends LitElement {
             min-width: 0;
           }
           .content hui-card-preview {
+            padding-top: 0;
             margin: 0 10px;
             max-width: 490px;
           }
