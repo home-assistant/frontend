@@ -279,7 +279,8 @@
     "state_badge": {
         "default": {
             "unknown": "Desc",
-            "unavailable": "Indisp"
+            "unavailable": "Indisp",
+            "error": "Erro"
         },
         "alarm_control_panel": {
             "armed": "Armado",
@@ -608,6 +609,9 @@
                     "services": {
                         "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele está ativo e a aceitar comandos ao usar este serviço.",
                         "updateDeviceName": "Definir um nome personalizado para este dispositivo no registo do dispositivo."
+                    },
+                    "device_card": {
+                        "area_picker_label": "Área"
                     }
                 },
                 "area_registry": {
