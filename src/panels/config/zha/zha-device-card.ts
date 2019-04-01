@@ -228,7 +228,7 @@ class ZHADeviceCard extends LitElement {
                         <mwc-button @click=${this._onAddDevicesClick}>
                           Add Devices
                         </mwc-button>
-                        ${this._showHelp
+                        ${this.showHelp
                           ? html`
                               <ha-service-description
                                 .hass="${this.hass}"
