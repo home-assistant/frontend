@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Ukjent",
-            "unavailable": "Utilgj"
+            "unavailable": "Utilgj",
+            "error": "Feil",
+            "entity_not_found": "Enhet ikke funnet"
         },
         "alarm_control_panel": {
             "armed": "Påslått",
@@ -607,7 +609,15 @@
                     "description": "ZigBee Home Automation nettverksadministrasjon",
                     "services": {
                         "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
-                        "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret."
+                        "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
+                        "remove": "Fjern en enhet fra ZigBee-nettverket."
+                    },
+                    "device_card": {
+                        "area_picker_label": "Område",
+                        "update_name_button": "Oppdater navn"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Legg til enheter"
                     }
                 },
                 "area_registry": {
