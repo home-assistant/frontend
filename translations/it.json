@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Sconosciuto",
-            "unavailable": "Non Disponibile"
+            "unavailable": "Non Disponibile",
+            "error": "Errore",
+            "entity_not_found": "Entità non trovata!"
         },
         "alarm_control_panel": {
             "armed": "Attivo",
@@ -606,7 +608,19 @@
                     "caption": "ZHA",
                     "description": "Gestione rete Zigbee Home Automation",
                     "services": {
-                        "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di guarigione). Utilizzare questa opzione se si verificano problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia sveglio e che accetti i comandi quando si utilizza questo servizio."
+                        "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di guarigione). Utilizzare questa opzione se si verificano problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia sveglio e che accetti i comandi quando si utilizza questo servizio.",
+                        "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro del dispositivo.",
+                        "remove": "Rimuovi un dispositivo dalla rete ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nome assegnato dall'utente",
+                        "area_picker_label": "Area",
+                        "update_name_button": "Aggiorna nome"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Aggiungi dispositivi",
+                        "spinner": "Ricerca di dispositivi ZHA Zigbee ...",
+                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il \/ i dispositivo \/ i e posizionare il \/ i dispositivo \/ i in modalità accoppiamento."
                     }
                 },
                 "area_registry": {
@@ -616,7 +630,9 @@
                         "header": "Registro di area",
                         "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
                         "introduction2": "Per posizionare i dispositivi in un'area, utilizzare il collegamento seguente per accedere alla pagina delle integrazioni e quindi fare clic su un'integrazione configurata per accedere alle schede del dispositivo.",
-                        "integrations_page": "Integrazioni"
+                        "integrations_page": "Integrazioni",
+                        "no_areas": "Sembra che tu non abbia ancora delle aree!",
+                        "create_area": "CREA AREA"
                     },
                     "no_areas": "Sembra che tu non abbia ancora delle aree!",
                     "create_area": "CREA AREA",
@@ -830,11 +846,13 @@
                     "data": {
                         "name": "Nome",
                         "username": "Nome utente",
-                        "password": "Password"
+                        "password": "Password",
+                        "password_confirm": "Conferma la nuova password"
                     },
                     "create_account": "Crea un Account",
                     "error": {
-                        "required_fields": "Compila tutti i campi richiesti"
+                        "required_fields": "Compila tutti i campi richiesti",
+                        "password_not_match": "Le password non corrispondono"
                     }
                 }
             },
@@ -1156,5 +1174,10 @@
                 "auto": "Auto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Amministratori",
+        "system-users": "Utenti",
+        "system-read-only": "Utenti di sola lettura"
     }
 }

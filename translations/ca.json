@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Descon.",
-            "unavailable": "No disp."
+            "unavailable": "No disp.",
+            "error": "Error",
+            "entity_not_found": "Entitat no trobada"
         },
         "alarm_control_panel": {
             "armed": "Activad.",
@@ -604,10 +606,21 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Gestiona la xarxa domòtica ZIgbee",
+                    "description": "Gestiona la xarxa domòtica Zigbee",
                     "services": {
                         "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
-                        "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
+                        "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius.",
+                        "remove": "Treu un dispositiu de la xarxa ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nom donat per l'usuari",
+                        "area_picker_label": "Àrea",
+                        "update_name_button": "Actualitzar Nom"
+                    },
+                    "add_device_page": {
+                        "header": "Domòtica amb Zigbee - Afegir dispositius",
+                        "spinner": "S'estan cercant dispositius ZHA Zigbee...",
+                        "discovery_text": "Els dispositius descoberts apareixeran aquí. Segueix les instruccions del teu dispositiu\/s i posa el dispositiu\/s en mode d’emparellament."
                     }
                 },
                 "area_registry": {

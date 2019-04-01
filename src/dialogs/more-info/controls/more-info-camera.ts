@@ -183,6 +183,7 @@ class MoreInfoCamera extends LitElement {
       root.removeChild(root.lastChild);
     }
     this.stateObj = undefined;
+    this._cameraPrefs = undefined;
   }
 
   private async _fetchCameraPrefs() {
