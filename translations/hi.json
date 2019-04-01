@@ -99,7 +99,9 @@
     "state_badge": {
         "default": {
             "unknown": "अज्ञात",
-            "unavailable": "अनुपलब्ध"
+            "unavailable": "अनुपलब्ध",
+            "error": "Errore",
+            "entity_not_found": "Entità non trovata"
         },
         "alarm_control_panel": {
             "pending": "अपूर्ण"
@@ -157,6 +159,26 @@
                             }
                         }
                     }
+                },
+                "area_registry": {
+                    "picker": {
+                        "create_area": "Crea un area"
+                    }
+                },
+                "zha": {
+                    "services": {
+                        "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro del dispositivo."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nome assegnato dall'utente",
+                        "area_picker_label": "Area",
+                        "update_name_button": "Aggiorna Nome"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Aggiungi dispositivi",
+                        "spinner": "Ricerca di dispositivi ZHA Zigbee ...",
+                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il \/ i dispositivo \/ i e posizionare il \/ i dispositivo \/ i in modalità accoppiamento."
+                    }
                 }
             },
             "page-authorize": {
@@ -169,6 +191,16 @@
                                 }
                             }
                         }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "password_confirm": "Conferma la password"
+                    },
+                    "error": {
+                        "password_not_match": "Password non trovata"
                     }
                 }
             }
