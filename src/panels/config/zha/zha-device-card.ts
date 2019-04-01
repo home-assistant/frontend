@@ -34,6 +34,7 @@ import { reconfigureNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
+import { navigate } from "../../../common/navigate";
 
 declare global {
   // for fire event
@@ -222,6 +223,19 @@ class ZHADeviceCard extends LitElement {
                         </div>
                       `
                     : ""}
+                  <mwc-button @click=${this._onAddDevicesClick}>
+                    Add Devices
+                  </mwc-button>
+                  ${this._showHelp
+                    ? html`
+                        <ha-service-description
+                          .hass="${this.hass}"
+                          domain="zha"
+                          service="permit"
+                          class="help-text2"
+                        />
+                      `
+                    : ""}
                 </div>
               `
             : ""
@@ -279,6 +293,10 @@ class ZHADeviceCard extends LitElement {
       name_by_user: this.device!.user_given_name,
     });
     this.device!.area_id = newAreaId;
+  }
+
+  private _onAddDevicesClick() {
+    navigate(this, "add/" + this.device!.ieee);
   }
 
   static get styles(): CSSResult[] {
