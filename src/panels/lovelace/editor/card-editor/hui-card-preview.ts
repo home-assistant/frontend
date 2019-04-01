@@ -37,6 +37,14 @@ export class HuiCardPreview extends HTMLElement {
 
   set config(configValue: LovelaceCardConfig) {
     if (!configValue) {
+      this._cleanup();
+      return;
+    }
+
+    if (!configValue.type) {
+      this._createCard(
+        createErrorCardConfig("No card type found", configValue)
+      );
       return;
     }
 
@@ -59,10 +67,7 @@ export class HuiCardPreview extends HTMLElement {
   }
 
   private _createCard(configValue: LovelaceCardConfig): void {
-    if (this._element) {
-      this.removeChild(this._element);
-    }
-
+    this._cleanup();
     this._element = createCardElement(configValue);
 
     if (this._hass) {
@@ -70,6 +75,14 @@ export class HuiCardPreview extends HTMLElement {
     }
 
     this.appendChild(this._element!);
+  }
+
+  private _cleanup() {
+    if (!this._element) {
+      return;
+    }
+    this.removeChild(this._element);
+    this._element = undefined;
   }
 }
 
