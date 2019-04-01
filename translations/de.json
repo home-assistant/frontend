@@ -609,10 +609,13 @@
                     "description": "Zigbee Home Automation Netzwerkmanagement",
                     "services": {
                         "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt.",
-                        "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest."
+                        "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest.",
+                        "remove": "Entfernen Sie ein Gerät aus dem ZigBee-Netzwerk."
                     },
                     "device_card": {
-                        "area_picker_label": "Bereich"
+                        "device_name_placeholder": "Benutzername",
+                        "area_picker_label": "Bereich",
+                        "update_name_button": "Name aktualisieren"
                     },
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Geräte hinzufügen",
@@ -646,8 +649,8 @@
                     "picker": {
                         "header": "Entitätsregister",
                         "unavailable": "(nicht verfügbar)",
-                        "introduction": "Der Home Assistant führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
-                        "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entitäts-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite.",
+                        "introduction": "Der Home Assistent führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
+                        "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entität-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite.",
                         "integrations_page": "Integrationsseite"
                     },
                     "editor": {
@@ -694,7 +697,7 @@
                     "token_title": "Aktualisierungs-Token für {clientId}",
                     "created_at": "Erstellt am {date}",
                     "confirm_delete": "Möchtest du das Aktualisierungstoken für {name} wirklich löschen?",
-                    "delete_failed": "Fehler beim Löschen des Aktualisierungs-Token.",
+                    "delete_failed": "Fehler beim Löschen das Aktualisierungs-Token.",
                     "last_used": "Zuletzt verwendet am {date} in {location}",
                     "not_used": "Wurde noch nie benutzt",
                     "current_token_tooltip": "Aktueller Refresh-Token konnte nicht gelöscht werden"
@@ -1094,7 +1097,7 @@
                 "sun": {
                     "elevation": "Höhe",
                     "rising": "Aufgang",
-                    "setting": "Untergang"
+                    "setting": "Einstellung"
                 },
                 "updater": {
                     "title": "Update-Anweisungen"
