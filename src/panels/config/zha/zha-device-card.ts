@@ -223,17 +223,21 @@ class ZHADeviceCard extends LitElement {
                         </div>
                       `
                     : ""}
-                  <mwc-button @click=${this._onAddDevicesClick}>
-                    Add Devices
-                  </mwc-button>
-                  ${this._showHelp
+                  ${this.device!.power_source === "Mains"
                     ? html`
-                        <ha-service-description
-                          .hass="${this.hass}"
-                          domain="zha"
-                          service="permit"
-                          class="help-text2"
-                        />
+                        <mwc-button @click=${this._onAddDevicesClick}>
+                          Add Devices
+                        </mwc-button>
+                        ${this._showHelp
+                          ? html`
+                              <ha-service-description
+                                .hass="${this.hass}"
+                                domain="zha"
+                                service="permit"
+                                class="help-text2"
+                              />
+                            `
+                          : ""}
                       `
                     : ""}
                 </div>
