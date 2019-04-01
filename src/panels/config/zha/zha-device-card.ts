@@ -1,4 +1,5 @@
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
 import "../../../components/entity/state-badge";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
