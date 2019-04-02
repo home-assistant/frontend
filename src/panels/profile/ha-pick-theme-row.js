@@ -1,9 +1,10 @@
 import "@polymer/paper-card/paper-card";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+
+import "../../components/ha-paper-dropdown-menu";
 
 import EventsMixin from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
@@ -34,7 +35,7 @@ class HaPickThemeRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
             >[[localize('ui.panel.profile.themes.link_promo')]]</a
           >
         </span>
-        <paper-dropdown-menu
+        <ha-paper-dropdown-menu
           label="[[localize('ui.panel.profile.themes.dropdown_label')]]"
           dynamic-align
           disabled="[[!_hasThemes]]"
@@ -44,7 +45,7 @@ class HaPickThemeRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <paper-item>[[theme]]</paper-item>
             </template>
           </paper-listbox>
-        </paper-dropdown-menu>
+        </ha-paper-dropdown-menu>
       </ha-settings-row>
     `;
   }

@@ -1,5 +1,4 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -8,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/ha-attributes";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-labeled-slider";
+import "../../../components/ha-paper-dropdown-menu";
 
 import featureClassNames from "../../../common/entity/feature_class_names";
 import EventsMixin from "../../../mixins/events-mixin";
@@ -177,7 +177,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
         </div>
 
         <div class="control effect_list">
-          <paper-dropdown-menu
+          <ha-paper-dropdown-menu
             label-float=""
             dynamic-align=""
             label="[[localize('ui.card.light.effect')]]"
@@ -190,7 +190,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 <paper-item>[[item]]</paper-item>
               </template>
             </paper-listbox>
-          </paper-dropdown-menu>
+          </ha-paper-dropdown-menu>
         </div>
 
         <ha-attributes
