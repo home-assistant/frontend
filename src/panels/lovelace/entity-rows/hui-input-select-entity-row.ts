@@ -9,10 +9,10 @@ import {
   PropertyValues,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
+import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/entity/state-badge";
 import "../components/hui-warning";
 
@@ -62,7 +62,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
 
     return html`
       <state-badge .stateObj="${stateObj}"></state-badge>
-      <paper-dropdown-menu
+      <ha-paper-dropdown-menu
         selected-item-label="${stateObj.state}"
         @selected-item-label-changed="${this._selectedChanged}"
         label="${this._config.name || computeStateName(stateObj)}"
@@ -79,7 +79,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
               `
           )}
         </paper-listbox>
-      </paper-dropdown-menu>
+      </ha-paper-dropdown-menu>
     `;
   }
 
@@ -89,7 +89,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         display: flex;
         align-items: center;
       }
-      paper-dropdown-menu {
+      ha-paper-dropdown-menu {
         margin-left: 16px;
         flex: 1;
       }
