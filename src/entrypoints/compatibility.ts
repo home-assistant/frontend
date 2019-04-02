@@ -6,14 +6,12 @@ import objAssign from "es6-object-assign";
 objAssign.polyfill();
 
 if (Object.values === undefined) {
-  Object.values = function(target) {
-    return Object.keys(target).map(function(key) {
-      return target[key];
-    });
+  Object.values = (target) => {
+    return Object.keys(target).map((key) => target[key]);
   };
 }
 
-/* eslint-disable */
+/* tslint:disable */
 // https://github.com/uxitten/polyfill/blob/master/string.polyfill.js
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
 if (!String.prototype.padStart) {
@@ -31,4 +29,4 @@ if (!String.prototype.padStart) {
     }
   };
 }
-/* eslint-enable */
+/* tslint:enable */
