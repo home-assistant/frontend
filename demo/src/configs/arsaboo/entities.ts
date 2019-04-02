@@ -981,6 +981,7 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       state: "auto",
       attributes: {
         current_temperature: 66,
+        unit_of_measurement: "°F",
         min_temp: 45,
         max_temp: 95,
         temperature: null,
