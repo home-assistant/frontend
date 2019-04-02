@@ -160,7 +160,7 @@ function createConfig(isProdBuild, latestBuild) {
           /hass-icons.js$/,
           /\.chunk\.js$/,
         ],
-        templatedURLs: {
+        templatedUrls: {
           [`/static/translations/${
             translationMetadata["translations"]["en"]["fingerprints"]["en"]
           }`]: "build-translations/output/en.json",
