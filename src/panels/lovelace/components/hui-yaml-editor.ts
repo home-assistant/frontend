@@ -1,4 +1,3 @@
-// @ts-ignore
 import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
@@ -21,12 +20,14 @@ declare global {
 export class HuiYamlEditor extends HTMLElement {
   public _hass?: HomeAssistant;
 
+  // @ts-ignore
   public codemirror: CodeMirror;
 
   private _value: string;
 
   public constructor() {
     super();
+    // @ts-ignore
     CodeMirror.commands.save = (cm: CodeMirror) => {
       fireEvent(cm.getWrapperElement(), "yaml-save");
     };
@@ -89,22 +90,25 @@ export class HuiYamlEditor extends HTMLElement {
 
   public connectedCallback(): void {
     if (!this.codemirror) {
-      this.codemirror = CodeMirror(this.shadowRoot, {
-        value: this._value,
-        lineNumbers: true,
-        mode: "yaml",
-        tabSize: 2,
-        autofocus: true,
-        viewportMargin: Infinity,
-        extraKeys: {
-          Tab: "indentMore",
-          "Shift-Tab": "indentLess",
-        },
-        gutters:
-          this._hass && computeRTL(this._hass!)
-            ? ["rtl-gutter", "CodeMirror-linenumbers"]
-            : [],
-      });
+      this.codemirror = CodeMirror(
+        (this.shadowRoot as unknown) as HTMLElement,
+        {
+          value: this._value,
+          lineNumbers: true,
+          mode: "yaml",
+          tabSize: 2,
+          autofocus: true,
+          viewportMargin: Infinity,
+          extraKeys: {
+            Tab: "indentMore",
+            "Shift-Tab": "indentLess",
+          },
+          gutters:
+            this._hass && computeRTL(this._hass!)
+              ? ["rtl-gutter", "CodeMirror-linenumbers"]
+              : [],
+        }
+      );
       this.setScrollBarDirection();
       this.codemirror.on("changes", () => this._onChange());
     } else {

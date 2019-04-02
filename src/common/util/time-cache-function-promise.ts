@@ -10,11 +10,11 @@ export const timeCachePromiseFunc = async <T>(
   func: (
     hass: HomeAssistant,
     entityId: string,
-    ...args: Array<unknown>
+    ...args: unknown[]
   ) => Promise<T>,
   hass: HomeAssistant,
   entityId: string,
-  ...args: Array<unknown>
+  ...args: unknown[]
 ): Promise<T> => {
   let cache: ResultCache<T> | undefined = (hass as any)[cacheKey];
 
