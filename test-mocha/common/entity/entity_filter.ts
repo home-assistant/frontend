@@ -1,6 +1,6 @@
 import { generateFilter } from "../../../src/common/entity/entity_filter";
 
-import * as assert from "assert";
+import assert from "assert";
 
 describe("EntityFilter", () => {
   // case 1
