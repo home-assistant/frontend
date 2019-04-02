@@ -104,9 +104,15 @@ function genHassIcons() {
   fs.writeFileSync(HASS_OUTPUT_PATH, generateIconset("hass", iconNames));
 }
 
-gulp.task("gen-icons-mdi", () => genMDIIcons());
-gulp.task("gen-icons-hass", () => genHassIcons());
-gulp.task("gen-icons", ["gen-icons-hass", "gen-icons-mdi"], () => {});
+gulp.task("gen-icons-mdi", (done) => {
+  genMDIIcons();
+  done();
+});
+gulp.task("gen-icons-hass", (done) => {
+  genHassIcons();
+  done();
+});
+gulp.task("gen-icons", gulp.series("gen-icons-hass", "gen-icons-mdi"));
 
 module.exports = {
   findIcons,
