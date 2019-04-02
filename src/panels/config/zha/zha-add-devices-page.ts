@@ -168,7 +168,7 @@ class ZHAAddDevicesPage extends LitElement {
     this._active = true;
     this._addDevicesTimeoutHandle = setTimeout(
       () => this._unsubscribe(),
-      60000
+      75000
     );
   }
 
