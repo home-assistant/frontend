@@ -2,7 +2,6 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@polymer/polymer/polymer-legacy";
 import "@vaadin/vaadin-date-picker/vaadin-date-picker";
 
 import "../../../components/ha-relative-time";
