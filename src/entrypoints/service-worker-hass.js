@@ -6,13 +6,13 @@ function initRouting() {
   // Cache static content (including translations) on first access.
   workbox.routing.registerRoute(
     new RegExp(`${location.host}/(static|frontend_latest|frontend_es5)/.+`),
-    workbox.strategies.cacheFirst()
+    new workbox.strategies.CacheFirst()
   );
 
   // Get api from network.
   workbox.routing.registerRoute(
     new RegExp(`${location.host}/api/.*`),
-    workbox.strategies.networkOnly()
+    new workbox.strategies.NetworkOnly()
   );
 
   // Get manifest and service worker from network.
@@ -20,7 +20,7 @@ function initRouting() {
     new RegExp(
       `${location.host}/(service_worker.js|service_worker_es5.js|manifest.json)`
     ),
-    workbox.strategies.networkOnly()
+    new workbox.strategies.NetworkOnly()
   );
 
   // For rest of the files (on Home Assistant domain only) try both cache and network.
@@ -29,7 +29,7 @@ function initRouting() {
   // file.
   workbox.routing.registerRoute(
     new RegExp(`${location.host}/.*`),
-    workbox.strategies.staleWhileRevalidate()
+    new workbox.strategies.StaleWhileRevalidate()
   );
 }
 
@@ -146,6 +146,12 @@ function initPushNotifications() {
     notificationEventCallback("closed", event);
   });
 }
+
+self.addEventListener("install", (event) => {
+  // Delete all runtime caching, so that index.html has to be refetched.
+  const cacheName = workbox.core.cacheNames.runtime;
+  event.waitUntil(caches.delete(cacheName));
+});
 
 self.addEventListener("message", (message) => {
   if (message.data.type === "skipWaiting") {
