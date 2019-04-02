@@ -1,5 +1,4 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -10,6 +9,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-water_heater-control";
 import "../../../components/ha-paper-slider";
+import "../../../components/ha-paper-dropdown-menu";
 
 import featureClassNames from "../../../common/entity/feature_class_names";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -40,7 +40,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .container-operation_list iron-icon,
 
-        paper-dropdown-menu {
+        ha-paper-dropdown-menu {
           width: 100%;
         }
 
@@ -93,7 +93,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
           <div class="container-operation_list">
             <div class="controls">
-              <paper-dropdown-menu
+              <ha-paper-dropdown-menu
                 label-float=""
                 dynamic-align=""
                 label="[[localize('ui.card.water_heater.operation')]]"
@@ -112,7 +112,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     >
                   </template>
                 </paper-listbox>
-              </paper-dropdown-menu>
+              </ha-paper-dropdown-menu>
             </div>
           </div>
         </template>
