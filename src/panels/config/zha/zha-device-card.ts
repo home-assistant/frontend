@@ -1,4 +1,5 @@
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-service-description";
 import "../../../components/entity/state-badge";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
@@ -34,6 +35,7 @@ import { reconfigureNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
+import { navigate } from "../../../common/navigate";
 
 declare global {
   // for fire event
@@ -222,6 +224,23 @@ class ZHADeviceCard extends LitElement {
                         </div>
                       `
                     : ""}
+                  ${this.device!.power_source === "Mains"
+                    ? html`
+                        <mwc-button @click=${this._onAddDevicesClick}>
+                          Add Devices
+                        </mwc-button>
+                        ${this.showHelp
+                          ? html`
+                              <ha-service-description
+                                .hass="${this.hass}"
+                                domain="zha"
+                                service="permit"
+                                class="help-text2"
+                              />
+                            `
+                          : ""}
+                      `
+                    : ""}
                 </div>
               `
             : ""
@@ -279,6 +298,10 @@ class ZHADeviceCard extends LitElement {
       name_by_user: this.device!.user_given_name,
     });
     this.device!.area_id = newAreaId;
+  }
+
+  private _onAddDevicesClick() {
+    navigate(this, "add/" + this.device!.ieee);
   }
 
   static get styles(): CSSResult[] {
