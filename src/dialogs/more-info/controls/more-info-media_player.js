@@ -1,6 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -8,6 +7,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-paper-slider";
+import "../../../components/ha-paper-dropdown-menu";
 import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
@@ -50,7 +50,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin-top: 15px;
         }
 
-        paper-dropdown-menu.source-input {
+        ha-paper-dropdown-menu.source-input {
           margin-left: 10px;
         }
 
@@ -148,7 +148,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
           hidden$="[[computeHideSelectSource(playerObj)]]"
         >
           <iron-icon class="source-input" icon="hass:login-variant"></iron-icon>
-          <paper-dropdown-menu
+          <ha-paper-dropdown-menu
             class="flex source-input"
             dynamic-align=""
             label-float=""
@@ -159,13 +159,13 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 <paper-item>[[item]]</paper-item>
               </template>
             </paper-listbox>
-          </paper-dropdown-menu>
+          </ha-paper-dropdown-menu>
         </div>
         <!-- SOUND MODE PICKER -->
         <template is="dom-if" if="[[!computeHideSelectSoundMode(playerObj)]]">
           <div class="controls layout horizontal justified">
             <iron-icon class="source-input" icon="hass:music-note"></iron-icon>
-            <paper-dropdown-menu
+            <ha-paper-dropdown-menu
               class="flex source-input"
               dynamic-align
               label-float
@@ -180,7 +180,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   <paper-item item-name$="[[item]]">[[item]]</paper-item>
                 </template>
               </paper-listbox>
-            </paper-dropdown-menu>
+            </ha-paper-dropdown-menu>
           </div>
         </template>
         <!-- TTS -->
