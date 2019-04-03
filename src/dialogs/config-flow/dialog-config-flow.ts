@@ -12,14 +12,13 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-spinner/paper-spinner";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 
 import "../../components/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
 import "../../panels/lovelace/components/dialog/ha-dialog";
+// Not duplicate, is for typing
+// tslint:disable-next-line
 import { HaPaperDialog } from "../../panels/lovelace/components/dialog/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import {
