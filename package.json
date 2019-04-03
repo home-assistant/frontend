@@ -164,9 +164,7 @@
     "workbox-webpack-plugin": "^4.1.1"
   },
   "resolutions": {
-    "@polymer/polymer": "3.2.0",
-    "@webcomponents/webcomponentsjs": "^2.2.7",
-    "@webcomponents/shadycss": "^1.9.0"
+    "@webcomponents/webcomponentsjs": "^2.2.7"
   },
   "main": "src/home-assistant.js",
   "husky": {
