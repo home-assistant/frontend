@@ -8,7 +8,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import "../../lovelace/components/dialog/ha-dialog";
+import "../../panels/lovelace/components/dialog/ha-dialog";
 
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { PolymerChangedEvent } from "../../polymer-types";
