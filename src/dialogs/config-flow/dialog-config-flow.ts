@@ -12,7 +12,6 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-dialog/paper-dialog";
 // Not duplicate, is for typing
 // tslint:disable-next-line
 import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
@@ -20,6 +19,8 @@ import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import "../../components/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
+import "../../panels/lovelace/components/dialog/ha-dialog";
+import { HaPaperDialog } from "../../panels/lovelace/components/dialog/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import {
   fetchConfigFlow,
@@ -108,7 +109,11 @@ class ConfigFlowDialog extends LitElement {
     }
 
     return html`
-      <paper-dialog with-backdrop opened @opened-changed=${this._openedChanged}>
+      <ha-paper-dialog
+        with-backdrop
+        opened
+        @opened-changed=${this._openedChanged}
+      >
         ${this._loading
           ? html`
               <step-flow-loading></step-flow-loading>
@@ -144,7 +149,7 @@ class ConfigFlowDialog extends LitElement {
                 .areas=${this._areas}
               ></step-flow-create-entry>
             `}
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -166,8 +171,8 @@ class ConfigFlowDialog extends LitElement {
     }
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private async _fetchDevices(configEntryId) {
@@ -226,10 +231,10 @@ class ConfigFlowDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        paper-dialog {
+        ha-paper-dialog {
           max-width: 500px;
         }
-        paper-dialog > * {
+        ha-paper-dialog > * {
           margin: 0;
           display: block;
           padding: 0;

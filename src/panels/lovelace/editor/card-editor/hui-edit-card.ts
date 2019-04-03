@@ -428,7 +428,7 @@ export class HuiEditCard extends LitElement {
         }
 
         @media (min-width: 1200px) {
-          paper-dialog {
+          ha-paper-dialog {
             max-width: none;
             width: 1000px;
           }
