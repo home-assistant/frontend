@@ -15,17 +15,16 @@ export const handleClick = (
   },
   hold: boolean
 ): void => {
-  let actionConfig: ActionConfig | undefined;
+  let actionConfig: ActionConfig;
 
   if (hold && config.hold_action) {
     actionConfig = config.hold_action;
   } else if (!hold && config.tap_action) {
     actionConfig = config.tap_action;
-  }
-
-  if (!actionConfig) {
+  } else {
     actionConfig = {
       action: "more-info",
+      entity: config.entity!,
     };
   }
 

@@ -138,7 +138,7 @@ export class HuiEntityButtonCardEditor extends LitElement
             .config="${this._tap_action}"
             .actions="${actions}"
             .configValue="${"tap_action"}"
-            .entity="${this._entity}"
+            .fallbackEntity="${this._entity}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
@@ -147,7 +147,7 @@ export class HuiEntityButtonCardEditor extends LitElement
             .config="${this._hold_action}"
             .actions="${actions}"
             .configValue="${"hold_action"}"
-            .entity="${this._entity}"
+            .fallbackEntity="${this._entity}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
         </div>

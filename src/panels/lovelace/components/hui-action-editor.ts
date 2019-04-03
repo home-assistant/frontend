@@ -41,6 +41,8 @@ export class HuiActionEditor extends LitElement {
 
   @property() public actions?: string[];
 
+  @property() public fallbackEntity: string = "";
+
   @property() protected hass?: HomeAssistant;
 
   get _action(): string {
@@ -49,7 +51,7 @@ export class HuiActionEditor extends LitElement {
 
   get _entity(): string {
     const _config = this.config! as MoreInfoActionConfig;
-    return _config.entity || this.entity || "";
+    return _config.entity || this.fallbackEntity;
   }
 
   get _navigation_path(): string {
