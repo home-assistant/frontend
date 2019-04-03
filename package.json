@@ -166,8 +166,7 @@
   "resolutions": {
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.7",
-    "@webcomponents/shadycss": "^1.9.0",
-    "@polymer/iron-overlay-behavior": "^3.0.2"
+    "@webcomponents/shadycss": "^1.9.0"
   },
   "main": "src/home-assistant.js",
   "husky": {
