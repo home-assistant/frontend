@@ -9,7 +9,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { getSignedPath } from "../../../src/auth/data";
 
 import "../../../src/resources/ha-style";
-import "../../../src/panels/lovelace/components/dialog/ha-dialog";
+import "../../../src/components/dialog/ha-paper-dialog";
 
 class HassioSnapshot extends PolymerElement {
   static get template() {

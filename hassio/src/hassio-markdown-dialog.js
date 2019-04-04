@@ -6,7 +6,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../src/components/ha-markdown";
 import "../../src/resources/ha-style";
-import "../../src/panels/lovelace/components/dialog/ha-dialog";
+import "../../src/components/dialog/ha-paper-dialog";
 
 class HassioMarkdownDialog extends PolymerElement {
   static get template() {
