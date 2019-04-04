@@ -6,8 +6,9 @@ import {
   CSSResult,
   customElement,
 } from "lit-element";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+
+import "../../../../components/dialog/ha-paper-dialog";
 
 import { haStyleDialog } from "../../../../resources/styles";
 
@@ -23,7 +24,7 @@ export class HuiDialogPickCard extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <paper-dialog
+      <ha-paper-dialog
         with-backdrop
         opened
         @opened-changed="${this._openedChanged}"
@@ -40,7 +41,7 @@ export class HuiDialogPickCard extends LitElement {
         <div class="paper-dialog-buttons">
           <mwc-button @click="${this._skipPick}">MANUAL CARD</mwc-button>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -60,19 +61,19 @@ export class HuiDialogPickCard extends LitElement {
       css`
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
-          paper-dialog {
+          ha-paper-dialog {
             max-height: 100%;
             height: 100%;
           }
         }
 
         @media all and (min-width: 660px) {
-          paper-dialog {
+          ha-paper-dialog {
             width: 650px;
           }
         }
 
-        paper-dialog {
+        ha-paper-dialog {
           max-width: 650px;
         }
       `,

@@ -8,10 +8,10 @@ import {
 } from "lit-element";
 
 import "@material/mwc-button";
-import "@polymer/paper-dialog/paper-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
+import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 
 import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
@@ -39,7 +39,7 @@ class DialogCloudCertificate extends LitElement {
     const { certificateInfo } = this._params;
 
     return html`
-      <paper-dialog with-backdrop>
+      <ha-paper-dialog with-backdrop>
         <h2>Certificate Information</h2>
         <div>
           <p>
@@ -58,12 +58,12 @@ class DialogCloudCertificate extends LitElement {
         <div class="paper-dialog-buttons">
           <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private _closeDialog() {
@@ -74,7 +74,7 @@ class DialogCloudCertificate extends LitElement {
     return [
       haStyle,
       css`
-        paper-dialog {
+        ha-paper-dialog {
           width: 535px;
         }
       `,

@@ -52,71 +52,61 @@ class StepFlowCreateEntry extends LitElement {
     );
 
     return html`
-        <h2>Success!</h2>
-        <div class="content">
-          ${
-            description
-              ? html`
-                  <ha-markdown .content=${description} allow-svg></ha-markdown>
-                `
-              : ""
-          }
-          <p>Created config for ${step.title}.</p>
-          ${
-            this.devices.length === 0
-              ? ""
-              : html`
-                  <p>We found the following devices:</p>
-                  <div class="devices">
-                    ${this.devices.map(
-                      (device) =>
-                        html`
-                          <div class="device">
-                            <b>${device.name}</b><br />
-                            ${device.model} (${device.manufacturer})
+      <h2>Success!</h2>
+      <div class="content">
+        ${description
+          ? html`
+              <ha-markdown .content=${description} allow-svg></ha-markdown>
+            `
+          : ""}
+        <p>Created config for ${step.title}.</p>
+        ${this.devices.length === 0
+          ? ""
+          : html`
+              <p>We found the following devices:</p>
+              <div class="devices">
+                ${this.devices.map(
+                  (device) =>
+                    html`
+                      <div class="device">
+                        <b>${device.name}</b><br />
+                        ${device.model} (${device.manufacturer})
 
-                            <paper-dropdown-menu-light
-                              label="Area"
-                              .device=${device.id}
-                              @selected-item-changed=${this._handleAreaChanged}
-                            >
-                              <paper-listbox
-                                slot="dropdown-content"
-                                selected="0"
-                              >
-                                <paper-item>
-                                  ${localize(
-                                    "ui.panel.config.integrations.config_entry.no_area"
-                                  )}
+                        <paper-dropdown-menu-light
+                          label="Area"
+                          .device=${device.id}
+                          @selected-item-changed=${this._handleAreaChanged}
+                        >
+                          <paper-listbox slot="dropdown-content" selected="0">
+                            <paper-item>
+                              ${localize(
+                                "ui.panel.config.integrations.config_entry.no_area"
+                              )}
+                            </paper-item>
+                            ${this.areas.map(
+                              (area) => html`
+                                <paper-item .area=${area.area_id}>
+                                  ${area.name}
                                 </paper-item>
-                                ${this.areas.map(
-                                  (area) => html`
-                                    <paper-item .area=${area.area_id}>
-                                      ${area.name}
-                                    </paper-item>
-                                  `
-                                )}
-                              </paper-listbox>
-                            </paper-dropdown-menu-light>
-                          </div>
-                        `
-                    )}
-                  </div>
-                `
-          }
-        </div>
-        <div class="buttons">
-          ${
-            this.devices.length > 0
-              ? html`
-                  <mwc-button @click="${this._addArea}">Add Area</mwc-button>
-                `
-              : ""
-          }
+                              `
+                            )}
+                          </paper-listbox>
+                        </paper-dropdown-menu-light>
+                      </div>
+                    `
+                )}
+              </div>
+            `}
+      </div>
+      <div class="buttons">
+        ${this.devices.length > 0
+          ? html`
+              <mwc-button @click="${this._addArea}">Add Area</mwc-button>
+            `
+          : ""}
 
-          <mwc-button @click="${this._flowDone}">Finish</mwc-button>
-        </div>
-      </paper-dialog>
+        <mwc-button @click="${this._flowDone}">Finish</mwc-button>
+      </div>
     `;
   }
 
