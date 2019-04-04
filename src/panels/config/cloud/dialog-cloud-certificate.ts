@@ -8,10 +8,10 @@ import {
 } from "lit-element";
 
 import "@material/mwc-button";
-import "../../lovelace/components/dialog/ha-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HaPaperDialog } from "../../lovelace/components/dialog/ha-dialog";
+import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 
 import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";

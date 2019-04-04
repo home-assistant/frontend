@@ -9,7 +9,7 @@ import {
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 
-import "../../lovelace/components/dialog/ha-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";

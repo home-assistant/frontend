@@ -9,10 +9,10 @@ import {
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../lovelace/components/dialog/ha-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HaPaperDialog } from "../../lovelace/components/dialog/ha-dialog";
+import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 // tslint:disable-next-line
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 

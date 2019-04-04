@@ -2,7 +2,7 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../lovelace/components/dialog/ha-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 import "../../../resources/ha-style";
 
 import EventsMixin from "../../../mixins/events-mixin";

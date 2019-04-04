@@ -4,7 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../resources/ha-style";
-import "../lovelace/components/dialog/ha-dialog";
+import "../../components/dialog/ha-paper-dialog";
 
 import LocalizeMixin from "../../mixins/localize-mixin";
 

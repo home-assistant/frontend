@@ -12,9 +12,9 @@ import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import "@polymer/paper-icon-button/paper-icon-button.js";
-import "../../components/dialog/ha-dialog";
+import "../../../../components/dialog/ha-paper-dialog";
 // tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../components/dialog/ha-dialog";
+import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 

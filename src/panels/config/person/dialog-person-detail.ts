@@ -10,7 +10,7 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
 
-import "../../lovelace/components/dialog/ha-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";

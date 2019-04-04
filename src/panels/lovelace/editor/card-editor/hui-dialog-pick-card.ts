@@ -8,7 +8,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import "../../components/dialog/ha-dialog";
+import "../../../../components/dialog/ha-paper-dialog";
 
 import { haStyleDialog } from "../../../../resources/styles";
 

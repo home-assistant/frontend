@@ -4,7 +4,7 @@ import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../lovelace/components/dialog/ha-dialog";
+import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";

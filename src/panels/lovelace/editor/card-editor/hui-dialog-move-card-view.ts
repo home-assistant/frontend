@@ -8,9 +8,9 @@ import {
   CSSResult,
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
-import "../../components/dialog/ha-dialog";
+import "../../../../components/dialog/ha-paper-dialog";
 // tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../components/dialog/ha-dialog";
+import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 
 import { moveCard } from "../config-util";
 import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
