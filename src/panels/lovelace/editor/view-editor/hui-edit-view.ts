@@ -183,7 +183,7 @@ export class HuiEditView extends LitElement {
 
   private async _resizeDialog(): Promise<void> {
     await this.updateComplete;
-    fireEvent(this._dialog, "iron-resize");
+    fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
   private _closeDialog(): void {
