@@ -2,7 +2,6 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -10,12 +9,13 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { getSignedPath } from "../../../src/auth/data";
 
 import "../../../src/resources/ha-style";
+import "../../../src/components/dialog/ha-paper-dialog";
 
 class HassioSnapshot extends PolymerElement {
   static get template() {
     return html`
       <style include="ha-style-dialog">
-        paper-dialog {
+        ha-paper-dialog {
           min-width: 350px;
           font-size: 14px;
           border-radius: 2px;
@@ -29,7 +29,7 @@ class HassioSnapshot extends PolymerElement {
         app-toolbar [main-title] {
           margin-left: 16px;
         }
-        paper-dialog-scrollable {
+        ha-paper-dialog-scrollable {
           margin: 0;
         }
         paper-checkbox {
@@ -37,7 +37,7 @@ class HassioSnapshot extends PolymerElement {
           margin: 4px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          paper-dialog {
+          ha-paper-dialog {
             max-height: 100%;
             height: 100%;
           }
@@ -57,7 +57,7 @@ class HassioSnapshot extends PolymerElement {
           color: var(--google-red-500);
         }
       </style>
-      <paper-dialog
+      <ha-paper-dialog
         id="dialog"
         with-backdrop=""
         on-iron-overlay-closed="_dialogClosed"
@@ -132,7 +132,7 @@ class HassioSnapshot extends PolymerElement {
             >
           </template>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 

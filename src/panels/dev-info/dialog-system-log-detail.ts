@@ -6,8 +6,9 @@ import {
   CSSResult,
   TemplateResult,
 } from "lit-element";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+
+import "../../components/dialog/ha-paper-dialog";
 
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -34,7 +35,7 @@ class DialogSystemLogDetail extends LitElement {
     const item = this._params.item;
 
     return html`
-      <paper-dialog
+      <ha-paper-dialog
         with-backdrop
         opened
         @opened-changed="${this._openedChanged}"
@@ -53,7 +54,7 @@ class DialogSystemLogDetail extends LitElement {
               `
             : html``}
         </paper-dialog-scrollable>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -67,7 +68,7 @@ class DialogSystemLogDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        paper-dialog {
+        ha-paper-dialog {
           direction: ltr;
         }
       `,
