@@ -10,6 +10,7 @@ import "../../../src/components/ha-markdown";
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/resources/ha-style";
 import EventsMixin from "../../../src/mixins/events-mixin";
+import { createHassioSession } from "../../../src/data/hassio";
 
 import "../components/hassio-card-content";
 
@@ -381,6 +382,16 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 ><mwc-button>Open web UI</mwc-button></a
               >
             </template>
+            <template
+              is="dom-if"
+              if="[[computeShowIngressUI(addon.ingress, isRunning)]]"
+            >
+              <mwc-button
+                tabindex="-1"
+                class="right"
+                on-click="openIngress"
+              >Open web UI</mwc-button>
+            </template>
           </template>
           <template is="dom-if" if="[[!addon.version]]">
             <template is="dom-if" if="[[!addon.available]]">
@@ -450,6 +461,15 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
 
   computeShowWebUI(webui, isRunning) {
     return webui && isRunning;
+  }
+
+  computeShowIngressUI(ingress, isRunning) {
+    return ingress && isRunning;
+  }
+
+  async openIngress() {
+    await createHassioSession(this.hass);
+    window.open(this.addon.ingress_url);
   }
 
   computeStartOnBoot(state) {
