@@ -60,6 +60,11 @@ const PERMIS_DESC = {
     description:
       "An addon can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability.",
   },
+  ingress: {
+    title: "Ingress",
+    description:
+      "This add-on is using Ingress to embed its interface securely into Home Assistant.",
+  },
 };
 
 class HassioAddonInfo extends EventsMixin(PolymerElement) {
@@ -308,6 +313,15 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                   id="auth_api"
                   icon="hassio:key"
                   label="auth"
+                  description=""
+                ></ha-label-badge>
+              </template>
+              <template is="dom-if" if="[[addon.ingress]]">
+                <ha-label-badge
+                  on-click="showMoreInfo"
+                  id="ingress"
+                  icon="hassio:cursor-default-click-outline"
+                  label="ingress"
                   description=""
                 ></ha-label-badge>
               </template>
