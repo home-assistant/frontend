@@ -10,7 +10,7 @@ import "../../../src/components/ha-markdown";
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/resources/ha-style";
 import EventsMixin from "../../../src/mixins/events-mixin";
-import { createHassioSession } from "../../../src/data/hassio";
+import { navigate } from "../../../src/common/navigate";
 
 import "../components/hassio-card-content";
 
@@ -372,7 +372,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             </template>
             <template
               is="dom-if"
-              if="[[computeShowWebUI(addon.webui, isRunning)]]"
+              if="[[computeShowWebUI(addon.ingress, addon.webui, isRunning)]]"
             >
               <a
                 href="[[pathWebui(addon.webui)]]"
@@ -459,17 +459,16 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     return webui && webui.replace("[HOST]", document.location.hostname);
   }
 
-  computeShowWebUI(webui, isRunning) {
-    return webui && isRunning;
+  computeShowWebUI(ingress, webui, isRunning) {
+    return !ingress && webui && isRunning;
+  }
+
+  openIngress() {
+    navigate(this, `/hassio/ingress/${this.addon.slug}`);
   }
 
   computeShowIngressUI(ingress, isRunning) {
     return ingress && isRunning;
-  }
-
-  async openIngress() {
-    await createHassioSession(this.hass);
-    window.open(this.addon.ingress_url);
   }
 
   computeStartOnBoot(state) {
