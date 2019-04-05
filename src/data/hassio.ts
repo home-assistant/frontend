@@ -54,8 +54,8 @@ export interface HassioAddon {
   devicetree: boolean;
   docker_api: boolean;
   audio: boolean;
-  audio_input: null | "0,0";
-  audio_output: null | "0,0";
+  audio_input: null | string;
+  audio_output: null | string;
   services_role: string[];
   discovery: string[];
   ip_address: string;
