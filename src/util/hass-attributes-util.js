@@ -34,6 +34,7 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "temperature",
     "pressure",
     "power",
+    "signal_strength",
   ],
 };
 
