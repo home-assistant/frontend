@@ -4,9 +4,11 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../src/layouts/hass-loading-screen";
 import "./addon-view/hassio-addon-view";
+import "./ingress-view/hassio-ingress-view";
 import "./hassio-data";
 import "./hassio-pages-with-tabs";
 
+import "../../src/resources/ha-style";
 import applyThemesOnElement from "../../src/common/dom/apply_themes_on_element";
 import EventsMixin from "../../src/mixins/events-mixin";
 import NavigateMixin from "../../src/mixins/navigate-mixin";
@@ -33,7 +35,7 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
       </template>
 
       <template is="dom-if" if="[[loaded]]">
-        <template is="dom-if" if="[[!equalsAddon(routeData.page)]]">
+        <template is="dom-if" if="[[equalsDashboard(routeData.page)]]">
           <hassio-pages-with-tabs
             hass="[[hass]]"
             page="[[routeData.page]]"
@@ -47,6 +49,12 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
             hass="[[hass]]"
             route="[[route]]"
           ></hassio-addon-view>
+        </template>
+        <template is="dom-if" if="[[equalsIngress(routeData.page)]]">
+          <hassio-ingress-view
+            hass="[[hass]]"
+            route="[[route]]"
+          ></hassio-ingress-view>
         </template>
       </template>
     `;
@@ -136,6 +144,14 @@ class HassioMain extends EventsMixin(NavigateMixin(PolymerElement)) {
 
   equalsAddon(page) {
     return page && page === "addon";
+  }
+
+  equalsDashboard(page) {
+    return !page || !["addon", "ingress"].includes(page);
+  }
+
+  equalsIngress(page) {
+    return page && page === "ingress";
   }
 }
 
