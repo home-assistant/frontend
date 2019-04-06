@@ -60,7 +60,7 @@ class HassioIngressView extends LitElement {
     const oldRoute = changedProps.get("route") as this["route"] | undefined;
     const oldAddon = oldRoute ? extractAddon(oldRoute.path) : undefined;
 
-    if (addon !== oldAddon) {
+    if (addon && addon !== oldAddon) {
       this._createSession();
       this._fetchAddonInfo(addon);
     }
