@@ -7,6 +7,7 @@ import {
   css,
   CSSResult,
 } from "lit-element";
+import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";
 
 @customElement("hass-subpage")
@@ -14,12 +15,26 @@ class HassSubpage extends LitElement {
   @property()
   public header?: string;
 
+  @property({ type: Boolean })
+  public root = false;
+
+  @property({ type: Boolean })
+  public hassio = false;
+
   protected render(): TemplateResult | void {
     return html`
       <div class="toolbar">
-        <ha-paper-icon-button-arrow-prev
-          @click=${this._backTapped}
-        ></ha-paper-icon-button-arrow-prev>
+        ${this.root
+          ? html`
+              <ha-menu-button .hassio=${this.hassio}></ha-menu-button>
+            `
+          : html`
+              <ha-paper-icon-button-arrow-prev
+                .hassio=${this.hassio}
+                @click=${this._backTapped}
+              ></ha-paper-icon-button-arrow-prev>
+            `}
+
         <div main-title>${this.header}</div>
         <slot name="toolbar-icon"></slot>
       </div>
@@ -51,6 +66,7 @@ class HassSubpage extends LitElement {
         color: var(--text-primary-color, white);
       }
 
+      ha-menu-button,
       ha-paper-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
         pointer-events: auto;
