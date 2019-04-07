@@ -19,7 +19,7 @@ export interface RouteOptions {
   // HTML tag of the route page.
   tag: string;
   // Function to load the page.
-  load: () => Promise<unknown>;
+  load?: () => Promise<unknown>;
   cache?: boolean;
 }
 
@@ -48,13 +48,6 @@ export class HassRouterPage extends UpdatingElement {
 
   protected routerOptions!: RouterOptions;
 
-  /**
-   * Optional variable to define extra routes dynamically.
-   * It is preferred to use static routes.
-   */
-  protected extraRoutes?: {
-    [route: string]: RouteOptions;
-  };
   private _currentPage = "";
   private _currentLoadProm?: Promise<void>;
   private _cache = {};
@@ -91,13 +84,15 @@ export class HassRouterPage extends UpdatingElement {
     }
 
     const route = this.route;
-    const defaultPage = routerOptions.defaultPage || "";
+    const defaultPage = routerOptions.defaultPage;
 
-    if (route && route.path === "") {
+    if (route && route.path === "" && defaultPage !== undefined) {
       navigate(this, `${route.prefix}/${defaultPage}`, true);
     }
 
-    let newPage = route ? extractPage(route.path, defaultPage) : "not_found";
+    let newPage = route
+      ? extractPage(route.path, defaultPage || "")
+      : "not_found";
     let routeOptions = routerOptions.routes[newPage];
 
     // Handle redirects
@@ -122,7 +117,9 @@ export class HassRouterPage extends UpdatingElement {
     }
 
     this._currentPage = newPage;
-    const loadProm = routeOptions.load();
+    const loadProm = routeOptions.load
+      ? routeOptions.load()
+      : Promise.resolve();
 
     // Check when loading the page source failed.
     loadProm.catch(() => {
@@ -196,7 +193,7 @@ export class HassRouterPage extends UpdatingElement {
 
     if (options.preloadAll) {
       Object.values(options.routes).forEach(
-        (route) => typeof route === "object" && route.load()
+        (route) => typeof route === "object" && route.load && route.load()
       );
     }
 
