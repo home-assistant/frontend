@@ -31,7 +31,6 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     routes: {
       dashboard: {
         tag: "hassio-pages-with-tabs",
-        load: () => Promise.resolve(),
         cache: true,
       },
       snapshots: "dashboard",

@@ -19,7 +19,7 @@ export interface RouteOptions {
   // HTML tag of the route page.
   tag: string;
   // Function to load the page.
-  load: () => Promise<unknown>;
+  load?: () => Promise<unknown>;
   cache?: boolean;
 }
 
@@ -117,7 +117,7 @@ export class HassRouterPage extends UpdatingElement {
     }
 
     this._currentPage = newPage;
-    const loadProm = routeOptions.load();
+    const loadProm = (routeOptions.load || Promise.resolve)();
 
     // Check when loading the page source failed.
     loadProm.catch(() => {
@@ -191,7 +191,7 @@ export class HassRouterPage extends UpdatingElement {
 
     if (options.preloadAll) {
       Object.values(options.routes).forEach(
-        (route) => typeof route === "object" && route.load()
+        (route) => typeof route === "object" && route.load && route.load()
       );
     }
 

@@ -19,7 +19,6 @@ class HassioTabsRouter extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "hassio-dashboard",
-        load: () => Promise.resolve(),
       },
       snapshots: {
         tag: "hassio-snapshots",
