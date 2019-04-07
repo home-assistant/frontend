@@ -74,11 +74,6 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
       hass: Object,
       stateObj: Object,
 
-      _componentLoaded: {
-        type: Boolean,
-        computed: "_computeComponentLoaded(hass)",
-      },
-
       registryInfo: {
         type: Object,
         observer: "_registryInfoChanged",
@@ -93,10 +88,6 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _computeStateName(stateObj) {
     if (!stateObj) return "";
     return computeStateName(stateObj);
-  }
-
-  _computeComponentLoaded(hass) {
-    return isComponentLoaded(hass, "config.entity_registry");
   }
 
   _computeInvalid(entityId) {
