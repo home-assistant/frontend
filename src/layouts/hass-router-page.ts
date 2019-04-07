@@ -117,7 +117,9 @@ export class HassRouterPage extends UpdatingElement {
     }
 
     this._currentPage = newPage;
-    const loadProm = (routeOptions.load || Promise.resolve)();
+    const loadProm = routeOptions.load
+      ? routeOptions.load()
+      : Promise.resolve();
 
     // Check when loading the page source failed.
     loadProm.catch(() => {
