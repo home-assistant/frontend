@@ -12,7 +12,7 @@ import "../../../src/resources/ha-style";
 import EventsMixin from "../../../src/mixins/events-mixin";
 import { navigate } from "../../../src/common/navigate";
 
-import { showHassioMarkdownDialog } from "../dialogs/markdown/show-hassio-markdown-dialog";
+import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import "../components/hassio-card-content";
 
 const PERMIS_DESC = {

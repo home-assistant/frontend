@@ -6,7 +6,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../src/components/buttons/ha-call-api-button";
 import EventsMixin from "../../../src/mixins/events-mixin";
 
-import { showHassioMarkdownDialog } from "../dialogs/markdown/show-hassio-markdown-dialog";
+import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 
 class HassioHostInfo extends EventsMixin(PolymerElement) {
   static get template() {
