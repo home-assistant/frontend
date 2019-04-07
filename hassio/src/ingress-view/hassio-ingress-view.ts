@@ -17,14 +17,6 @@ import {
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 
-const extractAddon = (path: string) => {
-  path = path.substr("/ingress".length);
-  const subpathStart = path.indexOf("/", 1);
-  return subpathStart === -1
-    ? path.substr(1)
-    : path.substr(1, subpathStart - 1);
-};
-
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -55,10 +47,10 @@ class HassioIngressView extends LitElement {
       return;
     }
 
-    const addon = extractAddon(this.route.path);
+    const addon = this.route.path.substr(1);
 
     const oldRoute = changedProps.get("route") as this["route"] | undefined;
-    const oldAddon = oldRoute ? extractAddon(oldRoute.path) : undefined;
+    const oldAddon = oldRoute ? oldRoute.path.substr(1) : undefined;
 
     if (addon && addon !== oldAddon) {
       this._createSession();

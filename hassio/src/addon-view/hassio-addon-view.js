@@ -1,12 +1,10 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/app-route/app-route";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/components/ha-menu-button";
 import "../../../src/resources/ha-style";
 import "../hassio-markdown-dialog";
 import "./hassio-addon-audio";
@@ -51,16 +49,9 @@ class HassioAddonView extends PolymerElement {
           }
         }
       </style>
-      <app-route
-        route="[[route]]"
-        pattern="/addon/:slug"
-        data="{{routeData}}"
-        active="{{routeMatches}}"
-      ></app-route>
       <app-header-layout has-scrolling-region="">
         <app-header fixed="" slot="header">
           <app-toolbar>
-            <ha-menu-button hassio></ha-menu-button>
             <paper-icon-button
               icon="hassio:arrow-left"
               on-click="backTapped"
@@ -72,14 +63,14 @@ class HassioAddonView extends PolymerElement {
           <hassio-addon-info
             hass="[[hass]]"
             addon="[[addon]]"
-            addon-slug="[[routeData.slug]]"
+            addon-slug="[[addonSlug]]"
           ></hassio-addon-info>
 
           <template is="dom-if" if="[[addon.version]]">
             <hassio-addon-config
               hass="[[hass]]"
               addon="[[addon]]"
-              addon-slug="[[routeData.slug]]"
+              addon-slug="[[addonSlug]]"
             ></hassio-addon-config>
 
             <template is="dom-if" if="[[addon.audio]]">
@@ -93,13 +84,13 @@ class HassioAddonView extends PolymerElement {
               <hassio-addon-network
                 hass="[[hass]]"
                 addon="[[addon]]"
-                addon-slug="[[routeData.slug]]"
+                addon-slug="[[addonSlug]]"
               ></hassio-addon-network>
             </template>
 
             <hassio-addon-logs
               hass="[[hass]]"
-              addon-slug="[[routeData.slug]]"
+              addon-slug="[[addonSlug]]"
             ></hassio-addon-logs>
           </template>
         </div>
@@ -115,12 +106,14 @@ class HassioAddonView extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      route: Object,
-      routeData: {
+      route: {
         type: Object,
         observer: "routeDataChanged",
       },
-      routeMatches: Boolean,
+      addonSlug: {
+        type: String,
+        computed: "_computeSlug(route)",
+      },
       addon: Object,
 
       markdownTitle: String,
@@ -147,13 +140,13 @@ class HassioAddonView extends PolymerElement {
     if (path.substr(path.lastIndexOf("/") + 1) === "uninstall") {
       this.backTapped();
     } else {
-      this.routeDataChanged(this.routeData);
+      this.routeDataChanged(this.route);
     }
   }
 
   routeDataChanged(routeData) {
-    if (!this.routeMatches || !routeData || !routeData.slug) return;
-    this.hass.callApi("get", `hassio/addons/${routeData.slug}/info`).then(
+    const addon = routeData.path.substr(1);
+    this.hass.callApi("get", `hassio/addons/${addon}/info`).then(
       (info) => {
         this.addon = info.data;
       },
@@ -173,6 +166,10 @@ class HassioAddonView extends PolymerElement {
       markdownContent: ev.detail.content,
     });
     this.shadowRoot.querySelector("hassio-markdown-dialog").openDialog();
+  }
+
+  _computeSlug(route) {
+    return route.path.substr(1);
   }
 }
 

@@ -103,7 +103,11 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      page: String,
+      page: {
+        type: String,
+        computed: "_computePage(route)",
+      },
+      route: Object,
       supervisorInfo: Object,
       hostInfo: Object,
       hassInfo: Object,
@@ -155,6 +159,10 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
       markdownContent: ev.detail.content,
     });
     this.shadowRoot.querySelector("hassio-markdown-dialog").openDialog();
+  }
+
+  _computePage(route) {
+    return route.prefix.substr(route.prefix.indexOf("/", 1) + 1);
   }
 }
 
