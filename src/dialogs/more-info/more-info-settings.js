@@ -10,7 +10,6 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 
 import computeStateName from "../../common/entity/compute_state_name";
 import computeDomain from "../../common/entity/compute_domain";
-import isComponentLoaded from "../../common/config/is_component_loaded";
 import { updateEntityRegistryEntry } from "../../data/entity_registry";
 
 import "../../components/ha-paper-icon-button-arrow-prev";
