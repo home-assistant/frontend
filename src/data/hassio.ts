@@ -77,10 +77,22 @@ export const createHassioSession = async (hass: HomeAssistant) => {
   };path=/api/hassio_ingress/`;
 };
 
-export const fetchHassioAddonInfo = async (
-  hass: HomeAssistant,
-  addon: string
-) =>
+export const fetchHassioAddonInfo = (hass: HomeAssistant, addon: string) =>
   hass
     .callApi<HassioResponse<HassioAddon>>("GET", `hassio/addons/${addon}/info`)
+    .then(hassioApiResultExtractor);
+
+export const fetchHassioSupervisorInfo = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<any>>("GET", "hassio/supervisor/info")
+    .then(hassioApiResultExtractor);
+
+export const fetchHassioHostInfo = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<any>>("GET", "hassio/host/info")
+    .then(hassioApiResultExtractor);
+
+export const fetchHassioHomeAssistantInfo = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<any>>("GET", "hassio/homeassistant/info")
     .then(hassioApiResultExtractor);

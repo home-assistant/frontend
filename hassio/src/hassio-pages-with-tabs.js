@@ -11,8 +11,6 @@ import "../../src/components/ha-menu-button";
 import "../../src/resources/ha-style";
 import "./addon-store/hassio-addon-store";
 import "./dashboard/hassio-dashboard";
-import "./hassio-markdown-dialog";
-import "./snapshots/hassio-snapshot";
 import "./snapshots/hassio-snapshots";
 import "./system/hassio-system";
 
@@ -69,8 +67,6 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
           <hassio-snapshots
             hass="[[hass]]"
             installed-addons="[[supervisorInfo.addons]]"
-            snapshot-slug="{{snapshotSlug}}"
-            snapshot-deleted="{{snapshotDeleted}}"
           ></hassio-snapshots>
         </template>
         <template is="dom-if" if='[[equals(page, "store")]]'>
@@ -84,45 +80,21 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
           ></hassio-system>
         </template>
       </app-header-layout>
-
-      <hassio-markdown-dialog
-        title="[[markdownTitle]]"
-        content="[[markdownContent]]"
-      ></hassio-markdown-dialog>
-
-      <template is="dom-if" if='[[equals(page, "snapshots")]]'>
-        <hassio-snapshot
-          hass="[[hass]]"
-          snapshot-slug="{{snapshotSlug}}"
-          snapshot-deleted="{{snapshotDeleted}}"
-        ></hassio-snapshot>
-      </template>
     `;
   }
 
   static get properties() {
     return {
       hass: Object,
-      page: String,
+      page: {
+        type: String,
+        computed: "_computePage(route)",
+      },
+      route: Object,
       supervisorInfo: Object,
       hostInfo: Object,
       hassInfo: Object,
-      snapshotSlug: String,
-      snapshotDeleted: Boolean,
-
-      markdownTitle: String,
-      markdownContent: {
-        type: String,
-        value: "",
-      },
     };
-  }
-
-  ready() {
-    super.ready();
-    this.addEventListener("hassio-markdown-dialog", (ev) =>
-      this.openMarkdown(ev)
-    );
   }
 
   handlePageSelected(ev) {
@@ -149,12 +121,8 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
     }
   }
 
-  openMarkdown(ev) {
-    this.setProperties({
-      markdownTitle: ev.detail.title,
-      markdownContent: ev.detail.content,
-    });
-    this.shadowRoot.querySelector("hassio-markdown-dialog").openDialog();
+  _computePage(route) {
+    return route.prefix.substr(route.prefix.indexOf("/", 1) + 1);
   }
 }
 

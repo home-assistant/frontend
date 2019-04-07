@@ -14,7 +14,7 @@ export class HassBaseEl {
   protected hassDisconnected() {}
   protected hassChanged(_hass: HomeAssistant, _oldHass?: HomeAssistant) {}
   protected panelUrlChanged(_newPanelUrl: string) {}
-  protected provideHass(_el: HTMLElement) {}
+  public provideHass(_el: HTMLElement) {}
   protected _updateHass(_obj: Partial<HomeAssistant>) {}
 }
 
@@ -48,7 +48,7 @@ export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
       });
     }
 
-    protected provideHass(el) {
+    public provideHass(el) {
       this.__provideHass.push(el);
       el.hass = this.hass;
     }
