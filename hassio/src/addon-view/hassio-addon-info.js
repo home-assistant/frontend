@@ -12,6 +12,7 @@ import "../../../src/resources/ha-style";
 import EventsMixin from "../../../src/mixins/events-mixin";
 import { navigate } from "../../../src/common/navigate";
 
+import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import "../components/hassio-card-content";
 
 const PERMIS_DESC = {
@@ -517,7 +518,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
 
   showMoreInfo(e) {
     const id = e.target.getAttribute("id");
-    this.fire("hassio-markdown-dialog", {
+    showHassioMarkdownDialog(this, {
       title: PERMIS_DESC[id].title,
       content: PERMIS_DESC[id].description,
     });
@@ -528,7 +529,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
       .callApi("get", `hassio/addons/${this.addonSlug}/changelog`)
       .then((resp) => resp, () => "Error getting changelog")
       .then((content) => {
-        this.fire("hassio-markdown-dialog", {
+        showHassioMarkdownDialog(this, {
           title: "Changelog",
           content: content,
         });
