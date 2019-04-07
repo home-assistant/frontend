@@ -152,8 +152,10 @@ class HassioSnapshots extends EventsMixin(PolymerElement) {
         type: Array,
         value: [],
       },
+      supervisorInfo: Object,
       installedAddons: {
         type: Array,
+        computed: "_computeAddons(supervisorInfo)",
         observer: "_installedAddonsChanged",
       },
       addonList: Array,
@@ -304,6 +306,10 @@ class HassioSnapshots extends EventsMixin(PolymerElement) {
     this.hass.callApi("post", "hassio/snapshots/reload").then(() => {
       this._updateSnapshots();
     });
+  }
+
+  _computeAddons(supervisorInfo) {
+    return supervisorInfo.addons;
   }
 }
 

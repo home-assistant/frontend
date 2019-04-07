@@ -16,6 +16,8 @@ import {
 } from "../../src/data/hassio";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
+// Don't codesplit it, that way the dashboard always loads fast.
+import "./hassio-pages-with-tabs";
 
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
@@ -25,10 +27,10 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
     defaultPage: "dashboard",
     initialLoad: () => this._fetchData(),
+    showLoading: true,
     routes: {
       dashboard: {
         tag: "hassio-pages-with-tabs",
-        load: () => import("./hassio-pages-with-tabs"),
         cache: true,
       },
       snapshots: "dashboard",
@@ -82,6 +84,10 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   }
 
   protected updatePageEl(el) {
+    // the tabs page does its own routing so needs full route.
+    const route =
+      el.nodeName === "HASSIO-PAGES-WITH-TABS" ? this.route : this.routeTail;
+
     if ("setProperties" in el) {
       // As long as we have Polymer pages
       (el as PolymerElement).setProperties({
@@ -89,16 +95,14 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
         supervisorInfo: this._supervisorInfo,
         hostInfo: this._hostInfo,
         hassInfo: this._hassInfo,
-        // @ts-ignore not fighting TS today
-        route: this.routeTail,
+        route,
       });
     } else {
       el.hass = this.hass;
       el.supervisorInfo = this._supervisorInfo;
       el.hostInfo = this._hostInfo;
       el.hassInfo = this._hassInfo;
-      // @ts-ignore not fighting TS today
-      el.route = this.routeTail;
+      el.route = route;
     }
   }
 
