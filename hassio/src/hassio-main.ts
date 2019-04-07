@@ -14,9 +14,11 @@ import {
   fetchHassioHostInfo,
   fetchHassioHomeAssistantInfo,
 } from "../../src/data/hassio";
+import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
+import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 
 @customElement("hassio-main")
-class HassioMain extends HassRouterPage {
+class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   @property() public hass!: HomeAssistant;
 
   protected routerOptions: RouterOptions = {
@@ -43,9 +45,9 @@ class HassioMain extends HassRouterPage {
     },
   };
 
-  @property() private supervisorInfo: any;
-  @property() private hostInfo: any;
-  @property() private hassInfo: any;
+  @property() private _supervisorInfo: any;
+  @property() private _hostInfo: any;
+  @property() private _hassInfo: any;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -75,6 +77,8 @@ class HassioMain extends HassRouterPage {
         bubbles: false,
       })
     );
+
+    makeDialogManager(this, document.body);
   }
 
   protected updatePageEl(el) {
@@ -82,16 +86,18 @@ class HassioMain extends HassRouterPage {
       // As long as we have Polymer pages
       (el as PolymerElement).setProperties({
         hass: this.hass,
-        supervisorInfo: this.supervisorInfo,
-        hostInfo: this.hostInfo,
-        hassInfo: this.hassInfo,
+        supervisorInfo: this._supervisorInfo,
+        hostInfo: this._hostInfo,
+        hassInfo: this._hassInfo,
+        // @ts-ignore not fighting TS today
         route: this.routeTail,
       });
     } else {
       el.hass = this.hass;
-      el.supervisorInfo = this.supervisorInfo;
-      el.hostInfo = this.hostInfo;
-      el.hassInfo = this.hassInfo;
+      el.supervisorInfo = this._supervisorInfo;
+      el.hostInfo = this._hostInfo;
+      el.hassInfo = this._hassInfo;
+      // @ts-ignore not fighting TS today
       el.route = this.routeTail;
     }
   }
@@ -102,9 +108,9 @@ class HassioMain extends HassRouterPage {
       fetchHassioHostInfo(this.hass),
       fetchHassioHomeAssistantInfo(this.hass),
     ]);
-    this.supervisorInfo = supervisorInfo;
-    this.hostInfo = hostInfo;
-    this.hassInfo = hassInfo;
+    this._supervisorInfo = supervisorInfo;
+    this._hostInfo = hostInfo;
+    this._hassInfo = hassInfo;
   }
 
   private _apiCalled(ev) {
