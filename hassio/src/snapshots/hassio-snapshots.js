@@ -11,6 +11,8 @@ import "../components/hassio-card-content";
 import "../resources/hassio-style";
 import EventsMixin from "../../../src/mixins/events-mixin";
 
+import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
+
 class HassioSnapshots extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -287,18 +289,15 @@ class HassioSnapshots extends EventsMixin(PolymerElement) {
   }
 
   _snapshotClicked(ev) {
+    showHassioSnapshotDialog(this, {
+      slug: ev.model.snapshot.slug,
+      onDelete: () => this._updateSnapshots(),
+    });
     this.snapshotSlug = ev.model.snapshot.slug;
   }
 
   _fullSelected(type) {
     return type === "full";
-  }
-
-  _snapshotDeletedChanged(snapshotDeleted) {
-    if (snapshotDeleted) {
-      this._updateSnapshots();
-      this.snapshotDeleted = false;
-    }
   }
 
   refreshData() {
