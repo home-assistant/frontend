@@ -6,7 +6,6 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/resources/ha-style";
-import "../hassio-markdown-dialog";
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-info";
@@ -95,11 +94,6 @@ class HassioAddonView extends PolymerElement {
           </template>
         </div>
       </app-header-layout>
-
-      <hassio-markdown-dialog
-        title="[[markdownTitle]]"
-        content="[[markdownContent]]"
-      ></hassio-markdown-dialog>
     `;
   }
 
@@ -115,21 +109,12 @@ class HassioAddonView extends PolymerElement {
         computed: "_computeSlug(route)",
       },
       addon: Object,
-
-      markdownTitle: String,
-      markdownContent: {
-        type: String,
-        value: "",
-      },
     };
   }
 
   ready() {
     super.ready();
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
-    this.addEventListener("hassio-markdown-dialog", (ev) =>
-      this.openMarkdown(ev)
-    );
   }
 
   apiCalled(ev) {
@@ -158,14 +143,6 @@ class HassioAddonView extends PolymerElement {
 
   backTapped() {
     history.back();
-  }
-
-  openMarkdown(ev) {
-    this.setProperties({
-      markdownTitle: ev.detail.title,
-      markdownContent: ev.detail.content,
-    });
-    this.shadowRoot.querySelector("hassio-markdown-dialog").openDialog();
   }
 
   _computeSlug(route) {
