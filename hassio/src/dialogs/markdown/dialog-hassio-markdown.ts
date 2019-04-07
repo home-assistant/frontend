@@ -4,10 +4,13 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../src/components/ha-markdown";
-import "../../src/resources/ha-style";
-import "../../src/components/dialog/ha-paper-dialog";
+import "../../../../src/components/ha-markdown";
+import "../../../../src/resources/ha-style";
+import "../../../../src/components/dialog/ha-paper-dialog";
+import { customElement } from "lit-element";
+import { PaperDialogElement } from "@polymer/paper-dialog";
 
+@customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends PolymerElement {
   static get template() {
     return html`
@@ -72,8 +75,14 @@ class HassioMarkdownDialog extends PolymerElement {
     };
   }
 
-  openDialog() {
-    this.$.dialog.open();
+  public showDialog(params) {
+    this.setProperties(params);
+    (this.$.dialog as PaperDialogElement).open();
   }
 }
-customElements.define("hassio-markdown-dialog", HassioMarkdownDialog);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-hassio-markdown": HassioMarkdownDialog;
+  }
+}
