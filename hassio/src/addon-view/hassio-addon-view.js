@@ -5,7 +5,6 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../src/resources/ha-style";
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-info";
@@ -15,7 +14,7 @@ import "./hassio-addon-network";
 class HassioAddonView extends PolymerElement {
   static get template() {
     return html`
-      <style include="iron-flex ha-style">
+      <style>
         :host {
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
@@ -48,16 +47,7 @@ class HassioAddonView extends PolymerElement {
           }
         }
       </style>
-      <app-header-layout has-scrolling-region="">
-        <app-header fixed="" slot="header">
-          <app-toolbar>
-            <paper-icon-button
-              icon="hassio:arrow-left"
-              on-click="backTapped"
-            ></paper-icon-button>
-            <div main-title="">Hass.io: add-on details</div>
-          </app-toolbar>
-        </app-header>
+      <hass-subpage header="Hass.io: add-on details" hassio>
         <div class="content">
           <hassio-addon-info
             hass="[[hass]]"
@@ -93,7 +83,7 @@ class HassioAddonView extends PolymerElement {
             ></hassio-addon-logs>
           </template>
         </div>
-      </app-header-layout>
+      </hass-subpage>
     `;
   }
 
@@ -139,10 +129,6 @@ class HassioAddonView extends PolymerElement {
         this.addon = null;
       }
     );
-  }
-
-  backTapped() {
-    history.back();
   }
 
   _computeSlug(route) {

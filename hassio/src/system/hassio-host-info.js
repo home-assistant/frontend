@@ -11,7 +11,7 @@ import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio
 class HassioHostInfo extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-      <style include="iron-flex ha-style">
+      <style>
         paper-card {
           display: inline-block;
           width: 400px;
