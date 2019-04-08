@@ -7,13 +7,18 @@ import { PolymerElement } from "@polymer/polymer";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
+import {
+  HassioSupervisorInfo,
+  HassioHostInfo,
+  HassioHomeAssistantInfo,
+} from "../../src/data/hassio";
 
 @customElement("hassio-tabs-router")
 class HassioTabsRouter extends HassRouterPage {
   @property() public hass!: HomeAssistant;
-  @property() public supervisorInfo: any;
-  @property() public hostInfo: any;
-  @property() public hassInfo: any;
+  @property() public supervisorInfo: HassioSupervisorInfo;
+  @property() public hostInfo: HassioHostInfo;
+  @property() public hassInfo: HassioHomeAssistantInfo;
 
   protected routerOptions: RouterOptions = {
     routes: {

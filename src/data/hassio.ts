@@ -9,7 +9,22 @@ interface CreateSessionResponse {
   session: string;
 }
 
-export interface HassioAddon {
+export interface HassioAddonInfo {
+  name: string;
+  slug: string;
+  description: string;
+  repository: "core" | "local" | string;
+  version: string;
+  installed: string | undefined;
+  detached: boolean;
+  available: boolean;
+  build: boolean;
+  url: string | null;
+  icon: boolean;
+  logo: boolean;
+}
+
+export interface HassioAddonDetails {
   name: string;
   slug: string;
   description: string;
@@ -64,6 +79,29 @@ export interface HassioAddon {
   ingress_url: null | string;
 }
 
+export interface HassioAddonRepository {
+  slug: string;
+  name: string;
+  source: string;
+  url: string;
+  maintainer: string;
+}
+
+export interface HassioAddonsInfo {
+  addons: HassioAddonInfo[];
+  repositories: HassioAddonRepository[];
+}
+export interface HassioHassOSInfo {
+  version: string;
+  version_cli: string;
+  version_latest: string;
+  version_cli_latest: string;
+  board: "ova" | "rpi";
+}
+export type HassioHomeAssistantInfo = any;
+export type HassioSupervisorInfo = any;
+export type HassioHostInfo = any;
+
 const hassioApiResultExtractor = <T>(response: HassioResponse<T>) =>
   response.data;
 
@@ -77,22 +115,41 @@ export const createHassioSession = async (hass: HomeAssistant) => {
   };path=/api/hassio_ingress/`;
 };
 
+export const reloadHassioAddons = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<unknown>>("POST", `hassio/addons/reload`)
+    .then(hassioApiResultExtractor);
+
+export const fetchHassioAddonsInfo = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<HassioAddonsInfo>>("GET", `hassio/addons`)
+    .then(hassioApiResultExtractor);
+
 export const fetchHassioAddonInfo = (hass: HomeAssistant, addon: string) =>
   hass
-    .callApi<HassioResponse<HassioAddon>>("GET", `hassio/addons/${addon}/info`)
+    .callApi<HassioResponse<HassioAddonDetails>>(
+      "GET",
+      `hassio/addons/${addon}/info`
+    )
     .then(hassioApiResultExtractor);
 
 export const fetchHassioSupervisorInfo = (hass: HomeAssistant) =>
   hass
-    .callApi<HassioResponse<any>>("GET", "hassio/supervisor/info")
+    .callApi<HassioResponse<HassioSupervisorInfo>>(
+      "GET",
+      "hassio/supervisor/info"
+    )
     .then(hassioApiResultExtractor);
 
 export const fetchHassioHostInfo = (hass: HomeAssistant) =>
   hass
-    .callApi<HassioResponse<any>>("GET", "hassio/host/info")
+    .callApi<HassioResponse<HassioHostInfo>>("GET", "hassio/host/info")
     .then(hassioApiResultExtractor);
 
 export const fetchHassioHomeAssistantInfo = (hass: HomeAssistant) =>
   hass
-    .callApi<HassioResponse<any>>("GET", "hassio/homeassistant/info")
+    .callApi<HassioResponse<HassioHomeAssistantInfo>>(
+      "GET",
+      "hassio/homeassistant/info"
+    )
     .then(hassioApiResultExtractor);
