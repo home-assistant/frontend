@@ -1,5 +1,6 @@
 import { customElement, PropertyValues, property } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
+import "@polymer/paper-icon-button";
 
 import "../../src/resources/ha-style";
 import applyThemesOnElement from "../../src/common/dom/apply_themes_on_element";
@@ -18,6 +19,12 @@ import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-pages-with-tabs";
+
+// The register callback of the IronA11yKeysBehavior inside paper-icon-button
+// is not called, causing _keyBindings to be uninitiliazed for paper-icon-button,
+// causing an exception when added to DOM. When transpiled to ES5, this will
+// break the build.
+customElements.get("paper-icon-button").prototype._keyBindings = {};
 
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
