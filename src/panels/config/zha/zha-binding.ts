@@ -22,6 +22,7 @@ import { bindDevices, unbindDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
+import "@polymer/paper-item/paper-item";
 
 @customElement("zha-binding-control")
 export class ZHABindingControl extends LitElement {
@@ -64,7 +65,11 @@ export class ZHABindingControl extends LitElement {
               >
                 ${this.bindableDevices.map(
                   (device) => html`
-                    <paper-item>${device.name}</paper-item>
+                    <paper-item
+                      >${device.user_given_name
+                        ? device.user_given_name
+                        : device.name}</paper-item
+                    >
                   `
                 )}
               </paper-listbox>
