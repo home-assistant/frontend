@@ -122,7 +122,10 @@ export class HassRouterPage extends UpdatingElement {
       : Promise.resolve();
 
     // Check when loading the page source failed.
-    loadProm.catch(() => {
+    loadProm.catch((err) => {
+      // tslint:disable-next-line
+      console.error("Error loading page", newPage, err);
+
       // Verify that we're still trying to show the same page.
       if (this._currentPage !== newPage) {
         return;

@@ -14,6 +14,9 @@ import {
   fetchHassioSupervisorInfo,
   fetchHassioHostInfo,
   fetchHassioHomeAssistantInfo,
+  HassioSupervisorInfo,
+  HassioHostInfo,
+  HassioHomeAssistantInfo,
 } from "../../src/data/hassio";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
@@ -54,9 +57,9 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     },
   };
 
-  @property() private _supervisorInfo: any;
-  @property() private _hostInfo: any;
-  @property() private _hassInfo: any;
+  @property() private _supervisorInfo: HassioSupervisorInfo;
+  @property() private _hostInfo: HassioHostInfo;
+  @property() private _hassInfo: HassioHomeAssistantInfo;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
