@@ -11,7 +11,7 @@ import {
 import { HomeAssistant, Route } from "../../../src/types";
 import {
   createHassioSession,
-  HassioAddon,
+  HassioAddonDetails,
   fetchHassioAddonInfo,
 } from "../../../src/data/hassio";
 import "../../../src/layouts/hass-loading-screen";
@@ -20,24 +20,27 @@ import "../../../src/layouts/hass-subpage";
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public route!: Route & { slug: string };
-  @property() private _hasSession = false;
-  @property() private _addon?: HassioAddon;
+  @property() public route!: Route;
+  @property() private _addon?: HassioAddonDetails;
 
   protected render(): TemplateResult | void {
-    if (!this._hasSession || !this._addon) {
+    if (!this._addon) {
       return html`
         <hass-loading-screen rootnav></hass-loading-screen>
       `;
     }
-    return html`
-      <hass-subpage .header=${this._addon.name} hassio root>
-        <a .href=${this._addon.ingress_url} slot="toolbar-icon" target="_blank">
-          <paper-icon-button icon="hassio:open-in-new"></paper-icon-button>
-        </a>
-        <iframe src=${this._addon.ingress_url}></iframe>
-      </hass-subpage>
+
+    const iframe = html`
+      <iframe src=${this._addon.ingress_url}></iframe>
     `;
+
+    return location.search === "?kiosk"
+      ? iframe
+      : html`
+          <hass-subpage .header=${this._addon.name} hassio root>
+            ${iframe}
+          </hass-subpage>
+        `;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -53,32 +56,30 @@ class HassioIngressView extends LitElement {
     const oldAddon = oldRoute ? oldRoute.path.substr(1) : undefined;
 
     if (addon && addon !== oldAddon) {
-      this._createSession();
-      this._fetchAddonInfo(addon);
+      this._fetchData(addon);
     }
   }
 
-  private async _fetchAddonInfo(addonSlug: string) {
+  private async _fetchData(addonSlug: string) {
     try {
-      const addon = await fetchHassioAddonInfo(this.hass, addonSlug);
-      if (addon.ingress) {
-        this._addon = addon;
-      } else {
-        alert("This add-on does not support ingress.");
-        history.back();
+      const [addon] = await Promise.all([
+        fetchHassioAddonInfo(this.hass, addonSlug).catch(() => {
+          throw new Error("Failed to fetch add-on info");
+        }),
+        createHassioSession(this.hass).catch(() => {
+          throw new Error("Failed to create an ingress session");
+        }),
+      ]);
+
+      if (!addon.ingress) {
+        throw new Error("This add-on does not support ingress");
       }
-    } catch (err) {
-      alert("Failed to fetch add-on info");
-      history.back();
-    }
-  }
 
-  private async _createSession() {
-    try {
-      await createHassioSession(this.hass);
-      this._hasSession = true;
+      this._addon = addon;
     } catch (err) {
-      alert("Failed to generate a session");
+      // tslint:disable-next-line
+      console.error(err);
+      alert(err.message || "Unknown error starting ingress.");
       history.back();
     }
   }

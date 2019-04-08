@@ -168,12 +168,18 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
               icon="hassio:arrow-up-bold-circle"
               icon-class="update"
             ></hassio-card-content>
+            <template is="dom-if" if="[[!addon.available]]">
+              <p>This update is no longer compatible with your system.</p>
+            </template>
           </div>
           <div class="card-actions">
             <ha-call-api-button
               hass="[[hass]]"
               path="hassio/addons/[[addonSlug]]/update"
-              >Update</ha-call-api-button
+              disabled="[[!addon.available]]"
+              >
+              Update
+              </ha-call-api-button
             >
             <template is="dom-if" if="[[addon.changelog]]">
               <mwc-button on-click="openChangelog">Changelog</mwc-button>
