@@ -23,6 +23,11 @@ import scrollToTarget from "../../src/common/dom/scroll-to-target";
 import { haStyle } from "../../src/resources/styles";
 import { HomeAssistant, Route } from "../../src/types";
 import { navigate } from "../../src/common/navigate";
+import {
+  HassioSupervisorInfo,
+  HassioHostInfo,
+  HassioHomeAssistantInfo,
+} from "../../src/data/hassio";
 
 const HAS_REFRESH_BUTTON = ["store", "snapshots"];
 
@@ -30,9 +35,9 @@ const HAS_REFRESH_BUTTON = ["store", "snapshots"];
 class HassioPagesWithTabs extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public route!: Route;
-  @property() public supervisorInfo!: any;
-  @property() public hostInfo!: any;
-  @property() public hassInfo!: any;
+  @property() public supervisorInfo!: HassioSupervisorInfo;
+  @property() public hostInfo!: HassioHostInfo;
+  @property() public hassInfo!: HassioHomeAssistantInfo;
 
   protected render(): TemplateResult | void {
     const page = this._page;
