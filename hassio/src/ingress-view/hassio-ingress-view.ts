@@ -27,7 +27,7 @@ class HassioIngressView extends LitElement {
   protected render(): TemplateResult | void {
     if (!this._hasSession || !this._addon) {
       return html`
-        <hass-loading-screen></hass-loading-screen>
+        <hass-loading-screen rootnav></hass-loading-screen>
       `;
     }
     return html`
