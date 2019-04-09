@@ -1,3 +1,4 @@
+// @ts-ignore
 import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
@@ -20,14 +21,12 @@ declare global {
 export class HuiYamlEditor extends HTMLElement {
   public _hass?: HomeAssistant;
 
-  // @ts-ignore
-  public codemirror: CodeMirror;
+  public codemirror!: any;
 
   private _value: string;
 
   public constructor() {
     super();
-    // @ts-ignore
     CodeMirror.commands.save = (cm: CodeMirror) => {
       fireEvent(cm.getWrapperElement(), "yaml-save");
     };
