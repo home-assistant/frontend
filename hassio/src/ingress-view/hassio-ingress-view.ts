@@ -26,12 +26,12 @@ class HassioIngressView extends LitElement {
   protected render(): TemplateResult | void {
     if (!this._addon) {
       return html`
-        <hass-loading-screen rootnav></hass-loading-screen>
+        <hass-loading-screen></hass-loading-screen>
       `;
     }
 
     return html`
-      <hass-subpage .header=${this._addon.name} hassio root>
+      <hass-subpage .header=${this._addon.name} hassio>
         <iframe src=${this._addon.ingress_url}></iframe>
       </hass-subpage>
     `;
