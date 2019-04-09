@@ -11,18 +11,51 @@ import { getSignedPath } from "../../../../src/auth/data";
 import "../../../../src/resources/ha-style";
 import "../../../../src/components/dialog/ha-paper-dialog";
 import { customElement } from "lit-element";
-import { HomeAssistant } from "../../../../src/types";
 import { PaperDialogElement } from "@polymer/paper-dialog";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
+import { fetchHassioSnapshotInfo } from "../../../../src/data/hassio";
+
+const _computeFolders = (folders) => {
+  const list: Array<{ slug: string; name: string; checked: boolean }> = [];
+  if (folders.includes("homeassistant")) {
+    list.push({
+      slug: "homeassistant",
+      name: "Home Assistant configuration",
+      checked: true,
+    });
+  }
+  if (folders.includes("ssl")) {
+    list.push({ slug: "ssl", name: "SSL", checked: true });
+  }
+  if (folders.includes("share")) {
+    list.push({ slug: "share", name: "Share", checked: true });
+  }
+  if (folders.includes("addons/local")) {
+    list.push({ slug: "addons/local", name: "Local add-ons", checked: true });
+  }
+  return list;
+};
+
+const _computeAddons = (addons) => {
+  return addons.map((addon) => ({
+    slug: addon.slug,
+    name: addon.name,
+    version: addon.version,
+    checked: true,
+  }));
+};
 
 @customElement("dialog-hassio-snapshot")
 class HassioSnapshotDialog extends PolymerElement {
-  public hass!: HomeAssistant;
-  protected error?: string;
-  private snapshot?: any;
-  private dialogParams?: HassioSnapshotDialogParams;
-  private restoreHass!: boolean;
-  private snapshotPassword!: string;
+  // Commented out because it breaks Polymer! Kept around for when we migrate
+  // to Lit. Now just putting ts-ignore everywhere because we need this out.
+  // Sorry future developer.
+  // public hass!: HomeAssistant;
+  // protected error?: string;
+  // private snapshot?: any;
+  // private dialogParams?: HassioSnapshotDialogParams;
+  // private restoreHass!: boolean;
+  // private snapshotPassword!: string;
 
   static get template() {
     return html`
@@ -89,22 +122,18 @@ class HassioSnapshotDialog extends PolymerElement {
         <paper-checkbox checked="{{restoreHass}}">
           Home Assistant [[snapshot.homeassistant]]
         </paper-checkbox>
-        <template is="dom-if" if="[[snapshot.addons.length]]">
+        <template is="dom-if" if="[[_folders.length]]">
           <div>Folders:</div>
-          <template is="dom-repeat" items="[[snapshot.folders]]">
+          <template is="dom-repeat" items="[[_folders]]">
             <paper-checkbox checked="{{item.checked}}">
               [[item.name]]
             </paper-checkbox>
           </template>
         </template>
-        <template is="dom-if" if="[[snapshot.addons.length]]">
+        <template is="dom-if" if="[[_addons.length]]">
           <div>Add-ons:</div>
           <paper-dialog-scrollable>
-            <template
-              is="dom-repeat"
-              items="[[snapshot.addons]]"
-              sort="_sortAddons"
-            >
+            <template is="dom-repeat" items="[[_addons]]" sort="_sortAddons">
               <paper-checkbox checked="{{item.checked}}">
                 [[item.name]] <span class="details">([[item.version]])</span>
               </paper-checkbox>
@@ -151,7 +180,10 @@ class HassioSnapshotDialog extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
+      dialogParams: Object,
       snapshot: Object,
+      _folders: Object,
+      _addons: Object,
       restoreHass: {
         type: Boolean,
         value: true,
@@ -161,49 +193,16 @@ class HassioSnapshotDialog extends PolymerElement {
     };
   }
 
-  public showDialog(params: HassioSnapshotDialogParams) {
-    this.dialogParams = params;
-    this.hass.callApi("GET", `hassio/snapshots/${params.slug}/info`).then(
-      (info: any) => {
-        info.data.folders = this._computeFolders(info.data.folders);
-        info.data.addons = this._computeAddons(info.data.addons);
-        this.setProperties({ snapshot: info.data });
-        (this.$.dialog as PaperDialogElement).open();
-      },
-      () => {
-        this.dialogParams = undefined;
-      }
-    );
-  }
-
-  protected _computeFolders(folders) {
-    const list: Array<{ slug: string; name: string; checked: boolean }> = [];
-    if (folders.includes("homeassistant")) {
-      list.push({
-        slug: "homeassistant",
-        name: "Home Assistant configuration",
-        checked: true,
-      });
-    }
-    if (folders.includes("ssl")) {
-      list.push({ slug: "ssl", name: "SSL", checked: true });
-    }
-    if (folders.includes("share")) {
-      list.push({ slug: "share", name: "Share", checked: true });
-    }
-    if (folders.includes("addons/local")) {
-      list.push({ slug: "addons/local", name: "Local add-ons", checked: true });
-    }
-    return list;
-  }
-
-  protected _computeAddons(addons) {
-    return addons.map((addon) => ({
-      slug: addon.slug,
-      name: addon.name,
-      version: addon.version,
-      checked: true,
-    }));
+  public async showDialog(params: HassioSnapshotDialogParams) {
+    // @ts-ignore
+    const snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
+    this.setProperties({
+      dialogParams: params,
+      snapshot,
+      _folders: _computeFolders(snapshot.folders),
+      _addons: _computeAddons(snapshot.addons),
+    });
+    (this.$.dialog as PaperDialogElement).open();
   }
 
   protected _isFullSnapshot(type) {
@@ -214,26 +213,32 @@ class HassioSnapshotDialog extends PolymerElement {
     if (!confirm("Are you sure you want to restore this snapshot?")) {
       return;
     }
-    const addons = this.snapshot.addons
+    // @ts-ignore
+    const addons = this._addons
       .filter((addon) => addon.checked)
       .map((addon) => addon.slug);
-    const folders = this.snapshot.folders
+    // @ts-ignore
+    const folders = this._folders
       .filter((folder) => folder.checked)
       .map((folder) => folder.slug);
 
     const data = {
+      // @ts-ignore
       homeassistant: this.restoreHass,
       addons,
       folders,
     };
+    // @ts-ignore
     if (this.snapshot.protected) {
       // @ts-ignore
       data.password = this.snapshotPassword;
     }
 
+    // @ts-ignore
     this.hass
       .callApi(
         "POST",
+        // @ts-ignore
         `hassio/snapshots/${this.dialogParams!.slug}/restore/partial`,
         data
       )
@@ -243,6 +248,7 @@ class HassioSnapshotDialog extends PolymerElement {
           (this.$.dialog as PaperDialogElement).close();
         },
         (error) => {
+          // @ts-ignore
           this.error = error.body.message;
         }
       );
@@ -252,12 +258,19 @@ class HassioSnapshotDialog extends PolymerElement {
     if (!confirm("Are you sure you want to restore this snapshot?")) {
       return;
     }
+    // @ts-ignore
     const data = this.snapshot.protected
-      ? { password: this.snapshotPassword }
+      ? {
+          password:
+            // @ts-ignore
+            this.snapshotPassword,
+        }
       : undefined;
+    // @ts-ignore
     this.hass
       .callApi(
         "POST",
+        // @ts-ignore
         `hassio/snapshots/${this.dialogParams!.slug}/restore/full`,
         data
       )
@@ -267,6 +280,7 @@ class HassioSnapshotDialog extends PolymerElement {
           (this.$.dialog as PaperDialogElement).close();
         },
         (error) => {
+          // @ts-ignore
           this.error = error.body.message;
         }
       );
@@ -276,14 +290,18 @@ class HassioSnapshotDialog extends PolymerElement {
     if (!confirm("Are you sure you want to delete this snapshot?")) {
       return;
     }
+    // @ts-ignore
     this.hass
+      // @ts-ignore
       .callApi("POST", `hassio/snapshots/${this.dialogParams!.slug}/remove`)
       .then(
         () => {
           (this.$.dialog as PaperDialogElement).close();
+          // @ts-ignore
           this.dialogParams!.onDelete();
         },
         (error) => {
+          // @ts-ignore
           this.error = error.body.message;
         }
       );
@@ -293,13 +311,16 @@ class HassioSnapshotDialog extends PolymerElement {
     let signedPath;
     try {
       signedPath = await getSignedPath(
+        // @ts-ignore
         this.hass,
+        // @ts-ignore
         `/api/hassio/snapshots/${this.dialogParams!.slug}/download`
       );
     } catch (err) {
       alert(`Error: ${err.message}`);
       return;
     }
+    // @ts-ignore
     const name = this._computeName(this.snapshot).replace(/[^a-z0-9]+/gi, "_");
     const a = document.createElement("a");
     a.href = signedPath.path;
@@ -310,7 +331,7 @@ class HassioSnapshotDialog extends PolymerElement {
   }
 
   protected _computeName(snapshot) {
-    return snapshot.name || snapshot.slug;
+    return snapshot ? snapshot.name || snapshot.slug : "Unnamed snapshot";
   }
 
   protected _computeType(type) {
@@ -337,8 +358,12 @@ class HassioSnapshotDialog extends PolymerElement {
   }
 
   protected _dialogClosed() {
-    this.dialogParams = undefined;
-    this.snapshot = undefined;
+    this.setProperties({
+      dialogParams: undefined,
+      snapshot: undefined,
+      _addons: [],
+      _folders: [],
+    });
   }
 }
 
