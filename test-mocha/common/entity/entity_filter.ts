@@ -1,6 +1,6 @@
-import { generateFilter } from "../../../src/common/entity/entity_filter";
+import { assert } from "chai";
 
-import assert from "assert";
+import { generateFilter } from "../../../src/common/entity/entity_filter";
 
 describe("EntityFilter", () => {
   // case 1
