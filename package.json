@@ -157,7 +157,7 @@
     "uglifyjs-webpack-plugin": "^2.1.2",
     "wct-browser-legacy": "^1.0.2",
     "web-component-tester": "^6.9.2",
-    "webpack": "^4.29.6",
+    "webpack": "4.19.1",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1",
     "workbox-webpack-plugin": "^4.1.1"
