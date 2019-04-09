@@ -31,7 +31,10 @@ module.exports = {
       },
     ],
   },
-  optimization: webpackBase.optimization(latestBuild),
+  optimization: {
+    ...webpackBase.optimization(latestBuild),
+    concatenateModules: false,
+  },
   plugins: [
     new webpack.DefinePlugin({
       __DEV__: JSON.stringify(!isProdBuild),
