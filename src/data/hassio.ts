@@ -110,6 +110,19 @@ export interface HassioSnapshot {
   protected: boolean;
 }
 
+export interface HassioSnapshotDetail extends HassioSnapshot {
+  size: string;
+  homeassistant: string;
+  addons: Array<{
+    slug: "ADDON_SLUG";
+    name: "NAME";
+    version: "INSTALLED_VERSION";
+    size: "SIZE_IN_MB";
+  }>;
+  repositories: string[];
+  folders: string[];
+}
+
 export interface HassioFullSnapshotCreateParams {
   name: string;
   password?: string;
@@ -191,3 +204,14 @@ export const createHassioPartialSnapshot = (
   hass: HomeAssistant,
   data: HassioPartialSnapshotCreateParams
 ) => hass.callApi<unknown>("POST", "hassio/snapshots/new/partial", data);
+
+export const fetchHassioSnapshotInfo = (
+  hass: HomeAssistant,
+  snapshot: string
+) =>
+  hass
+    .callApi<HassioResponse<HassioSnapshotDetail>>(
+      "GET",
+      `hassio/snapshots/${snapshot}/info`
+    )
+    .then(hassioApiResultExtractor);

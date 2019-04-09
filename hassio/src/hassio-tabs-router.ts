@@ -7,6 +7,10 @@ import { PolymerElement } from "@polymer/polymer";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
+// Don't codesplit the others, because it breaks the UI when pushed to a Pi
+import "./snapshots/hassio-snapshots";
+import "./addon-store/hassio-addon-store";
+import "./system/hassio-system";
 import {
   HassioSupervisorInfo,
   HassioHostInfo,
@@ -27,15 +31,12 @@ class HassioTabsRouter extends HassRouterPage {
       },
       snapshots: {
         tag: "hassio-snapshots",
-        load: () => import("./snapshots/hassio-snapshots"),
       },
       store: {
         tag: "hassio-addon-store",
-        load: () => import("./addon-store/hassio-addon-store"),
       },
       system: {
         tag: "hassio-system",
-        load: () => import("./system/hassio-system"),
       },
     },
   };
