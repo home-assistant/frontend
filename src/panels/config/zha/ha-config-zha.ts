@@ -20,6 +20,7 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { Cluster, fetchBindableDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { sortZHADevices } from "./functions";
 import { ZHAClusterSelectedParams, ZHADeviceSelectedParams } from "./types";
 
 export class HaConfigZha extends LitElement {
@@ -99,9 +100,7 @@ export class HaConfigZha extends LitElement {
       this._bindableDevices = (await fetchBindableDevices(
         this.hass,
         this._selectedDevice!.ieee
-      )).sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      )).sort(sortZHADevices);
     }
   }
 
