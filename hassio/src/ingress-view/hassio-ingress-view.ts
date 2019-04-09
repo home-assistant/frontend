@@ -30,17 +30,11 @@ class HassioIngressView extends LitElement {
       `;
     }
 
-    const iframe = html`
-      <iframe src=${this._addon.ingress_url}></iframe>
+    return html`
+      <hass-subpage .header=${this._addon.name} hassio root>
+        <iframe src=${this._addon.ingress_url}></iframe>
+      </hass-subpage>
     `;
-
-    return location.search === "?kiosk"
-      ? iframe
-      : html`
-          <hass-subpage .header=${this._addon.name} hassio root>
-            ${iframe}
-          </hass-subpage>
-        `;
   }
 
   protected updated(changedProps: PropertyValues) {
