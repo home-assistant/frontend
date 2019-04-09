@@ -1587,13 +1587,6 @@
   resolved "https://registry.yarnpkg.com/@types/clone/-/clone-0.1.30.tgz#e7365648c1b42136a59c7d5040637b3b5c83b614"
   integrity sha1-5zZWSMG0ITalnH1QQGN7O1yDthQ=
 
-"@types/codemirror@^0.0.72":
-  version "0.0.72"
-  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.72.tgz#75e95e3b488717605d2591cd80c4d2ed88ff276e"
-  integrity sha512-dKtEP139Jxdrog/6zW8akX3LdhJ3V8NjYNCpIHdBVVo6ZiYpShPamtQoGpVhzrUzTOu5A6NlozOSiZipCEVCow==
-  dependencies:
-    "@types/tern" "*"
-
 "@types/compression@^0.0.33":
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/@types/compression/-/compression-0.0.33.tgz#95dc733a2339aa846381d7f1377792d2553dc27d"
@@ -1635,7 +1628,7 @@
   resolved "https://registry.yarnpkg.com/@types/escape-html/-/escape-html-0.0.20.tgz#cae698714dd61ebee5ab3f2aeb9a34ba1011735a"
   integrity sha512-6dhZJLbA7aOwkYB2GDGdIqJ20wmHnkDzaxV9PJXe7O02I2dSFTERzRB6JrX6cWKaS+VqhhY7cQUMCbO5kloFUw==
 
-"@types/estree@*", "@types/estree@0.0.39":
+"@types/estree@0.0.39":
   version "0.0.39"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
   integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
@@ -1775,10 +1768,10 @@
   dependencies:
     "@types/geojson" "*"
 
-"@types/memoize-one@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@types/memoize-one/-/memoize-one-4.1.1.tgz#41dd138a4335b5041f7d8fc038f9d593d88b3369"
-  integrity sha512-+9djKUUn8hOyktLCfCy4hLaIPgDNovaU36fsnZe9trFHr6ddlbIn2q0SEsnkCkNR+pBWEU440Molz/+Mpyf+gQ==
+"@types/memoize-one@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@types/memoize-one/-/memoize-one-4.1.0.tgz#62119f26055b3193ae43ca1882c5b29b88b71ece"
+  integrity sha512-cmSgi6JMX/yBwgpVm4GooNWIH+vEeJoa8FAa6ExOhpJbC0Juq32/uYKiKb3VPSqrEA0aOnjvwZanla3O1WZMbw==
 
 "@types/merge-stream@^1.0.28":
   version "1.1.2"
@@ -2024,13 +2017,6 @@
   integrity sha512-lxvpXBglH4QAg9Esk75fUeK8sP7Cz29Bx3wghmjJwDxihO+xN1UN3a3HtPQXIyr4O2mzjOCapbwJ/aF7hXIOMQ==
   dependencies:
     "@types/node" "*"
-
-"@types/tern@*":
-  version "0.23.1"
-  resolved "https://registry.yarnpkg.com/@types/tern/-/tern-0.23.1.tgz#ff988e6194a8f28c9e422791e8104318782ae026"
-  integrity sha512-trSPYFUkLnyftlouhC8Kuoofq7RsfI46SdPzTuYcS7VLj7i70WNCAWY9AV/vA5YLqDuEu7dYW1/QMjYDrUjbjA==
-  dependencies:
-    "@types/estree" "*"
 
 "@types/through@*":
   version "0.0.29"
