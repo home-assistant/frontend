@@ -31,11 +31,7 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    ...webpackBase.optimization(latestBuild),
-    // Try #4323432 to get hass.io to wrk on es5
-    concatenateModules: false,
-  },
+  optimization: webpackBase.optimization(latestBuild),
   plugins: [
     new webpack.DefinePlugin({
       __DEV__: JSON.stringify(!isProdBuild),
