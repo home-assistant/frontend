@@ -12,7 +12,6 @@ import "@polymer/app-layout/app-drawer/app-drawer";
 // Not a duplicate, it's for typing
 // tslint:disable-next-line
 import { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
-import "@polymer/app-route/app-route";
 import "@polymer/iron-media-query/iron-media-query";
 
 import "./partial-panel-resolver";
