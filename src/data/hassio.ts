@@ -102,6 +102,25 @@ export type HassioHomeAssistantInfo = any;
 export type HassioSupervisorInfo = any;
 export type HassioHostInfo = any;
 
+export interface HassioSnapshot {
+  slug: string;
+  date: string;
+  name: string;
+  type: "full" | "partial";
+  protected: boolean;
+}
+
+export interface HassioFullSnapshotCreateParams {
+  name: string;
+  password?: string;
+}
+export interface HassioPartialSnapshotCreateParams {
+  name: string;
+  folders: string[];
+  addons: string[];
+  password?: string;
+}
+
 const hassioApiResultExtractor = <T>(response: HassioResponse<T>) =>
   response.data;
 
@@ -116,9 +135,7 @@ export const createHassioSession = async (hass: HomeAssistant) => {
 };
 
 export const reloadHassioAddons = (hass: HomeAssistant) =>
-  hass
-    .callApi<HassioResponse<unknown>>("POST", `hassio/addons/reload`)
-    .then(hassioApiResultExtractor);
+  hass.callApi<unknown>("POST", `hassio/addons/reload`);
 
 export const fetchHassioAddonsInfo = (hass: HomeAssistant) =>
   hass
@@ -153,3 +170,24 @@ export const fetchHassioHomeAssistantInfo = (hass: HomeAssistant) =>
       "hassio/homeassistant/info"
     )
     .then(hassioApiResultExtractor);
+
+export const fetchHassioSnapshots = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<{ snapshots: HassioSnapshot[] }>>(
+      "GET",
+      "hassio/snapshots"
+    )
+    .then((resp) => resp.data.snapshots);
+
+export const reloadHassioSnapshots = (hass: HomeAssistant) =>
+  hass.callApi<unknown>("POST", `hassio/snapshots/reload`);
+
+export const createHassioFullSnapshot = (
+  hass: HomeAssistant,
+  data: HassioFullSnapshotCreateParams
+) => hass.callApi<unknown>("POST", "hassio/snapshots/new/full", data);
+
+export const createHassioPartialSnapshot = (
+  hass: HomeAssistant,
+  data: HassioPartialSnapshotCreateParams
+) => hass.callApi<unknown>("POST", "hassio/snapshots/new/partial", data);
