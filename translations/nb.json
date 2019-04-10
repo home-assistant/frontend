@@ -46,7 +46,7 @@
             },
             "moisture": {
                 "off": "Tørr",
-                "on": "Fukt"
+                "on": "Fuktig"
             },
             "gas": {
                 "off": "Klar",
@@ -114,7 +114,7 @@
             },
             "window": {
                 "off": "Lukket",
-                "on": "Åpen"
+                "on": "Åpent"
             },
             "lock": {
                 "off": "Låst",
@@ -307,9 +307,9 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Fjern fullført",
+                "clear_completed": "Fjerning fullført",
                 "add_item": "Legg til",
-                "microphone_tip": "Trykk på mikrofonen øverst til høyre og si “Add candy to my shopping list”"
+                "microphone_tip": "Aktiver mikrofonen øverst til høyre og si “Add candy to my shopping list”"
             },
             "history": {
                 "showing_entries": "Viser oppføringer for",
@@ -340,7 +340,7 @@
                                 "introduction": "Sjekk konfigurasjon din hvis du nylig har gjort noen endringer og ønsker å være sikker på at den er gyldig ved å kjøre en valideringstest",
                                 "check_config": "Sjekk konfigurasjonen",
                                 "valid": "Konfigurasjonen er gyldig!",
-                                "invalid": "Konfigurasjonen er ikke gyldig"
+                                "invalid": "Ugyldig konfigurasjon"
                             },
                             "reloading": {
                                 "heading": "Laster konfigurasjon på nytt",
@@ -352,7 +352,7 @@
                             },
                             "server_management": {
                                 "heading": "Serveradministrasjon",
-                                "introduction": "Kontroller din Home Assistant server...fra Home Assistant.",
+                                "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                                 "restart": "Start på nytt",
                                 "stop": "Stopp"
                             }
@@ -386,7 +386,7 @@
                         "alias": "Navn",
                         "triggers": {
                             "header": "Utløsere",
-                            "introduction": "Utløsere er det som starter en automatisering. Det er mulig å spesifisere flere utløsere for samme automatiseringen. Når en utløser starter, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Utløsere er det som starter en automatiseringsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Legg til utløser",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
@@ -461,20 +461,20 @@
                                     "zone": "Sone",
                                     "event": "Hendelse:",
                                     "enter": "Ankommer",
-                                    "leave": "Foralter"
+                                    "leave": "Forlater"
                                 }
                             },
                             "learn_more": "Lær mer om utløsere"
                         },
                         "conditions": {
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del av en automatisering og kan brukes til å forhindre at en handling skjer når den utløses. Betingelsene ser veldig ut som utløsere, men er veldig forskjellige. En utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av. \n\n[Lær mer om betingelser.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Betingelser er en valgfri del av en automatiseringsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av. \n\n[Lær mer om betingelser.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Legg til betingelse",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
                             "delete_confirm": "Er du sikker på at du ønsker å slette?",
                             "unsupported_condition": "Ikke-støttet tilstand: {condition}",
-                            "type_select": "Betingelse type",
+                            "type_select": "Type Betingelse",
                             "type": {
                                 "state": {
                                     "label": "Tilstand",
@@ -514,7 +514,7 @@
                         },
                         "actions": {
                             "header": "Handlinger",
-                            "introduction": "As acções são o que o Home Assistant fará quando uma automatização for despoletada.\n\n[Ler mais em :](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Handling(ene) er hva Home Assistant vil utføre når en automatisering utløses.",
                             "add": "Legg til handling",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
@@ -613,11 +613,14 @@
                         "remove": "Fjern en enhet fra ZigBee-nettverket."
                     },
                     "device_card": {
+                        "device_name_placeholder": "Brukerdefinert navn",
                         "area_picker_label": "Område",
                         "update_name_button": "Oppdater navn"
                     },
                     "add_device_page": {
-                        "header": "Zigbee Home Automation - Legg til enheter"
+                        "header": "ZigBee Home Automation - Legg til enheter",
+                        "spinner": "Søker etter ZHA Zigbee enheter...",
+                        "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i parringsmodus."
                     }
                 },
                 "area_registry": {
@@ -647,7 +650,7 @@
                         "header": "Enhetsregister",
                         "unavailable": "(utilgjengelig)",
                         "introduction": "Home Assistant beholder et register over hver enhet som den noensinne har sett som kan identifiseres unikt. Hver av disse enhetene vil ha en enhets ID tilknyttet som vil bli reservert for bare denne enheten.",
-                        "introduction2": "Bruk entitetsregisteret til å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
+                        "introduction2": "Bruk entitetsregisteret for å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
                         "integrations_page": "Integrasjonsside"
                     },
                     "editor": {
@@ -806,7 +809,7 @@
                                 }
                             },
                             "abort": {
-                                "not_whitelisted": "Datamaskinen din er ikke hvitlistet."
+                                "not_whitelisted": "Datamaskinen din er ikke hvitelistet."
                             }
                         },
                         "command_line": {
@@ -878,9 +881,9 @@
                         "move": "Flytt"
                     },
                     "migrate": {
-                        "header": "Konfigurasjon inkompatibel",
-                        "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID til dette elementet i 'ui-lovelace.yaml'.",
-                        "para_migrate": "Home Assistant kan legge til ID-er til alle dine kort og visninger automatisk for deg ved å trykke på 'Overfør konfigurasjon' knappen.",
+                        "header": "Inkompatibel Konfigurasjon",
+                        "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID på dette elementet i 'ui-lovelace.yaml'.",
+                        "para_migrate": "Home Assistant kan legge til ID-er på alle dine kort og visninger automatisk for deg ved å trykke på 'Overfør konfigurasjon' knappen.",
                         "migrate": "Overfør konfigurasjon"
                     },
                     "header": "Rediger brukergrensesnitt",
@@ -892,7 +895,7 @@
                     },
                     "save_config": {
                         "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
-                        "para": "Home Assistant hjelper som standard med å vedlikeholde brukergrensesnittet ditt, oppdaterer det når nye enheter eller Lovelace-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
+                        "para": "Som standard hjelper Home Assistant til med å vedlikeholde brukergrensesnittet ditt, oppdaterer det når nye enheter eller Lovelace-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
                         "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
                         "cancel": "Glem det",
                         "save": "Ta kontroll"
@@ -983,7 +986,7 @@
             },
             "alarm_control_panel": {
                 "code": "Kode",
-                "clear_code": "Klarer",
+                "clear_code": "Tøm",
                 "disarm": "Deaktiver",
                 "arm_home": "Armer hjemme",
                 "arm_away": "Armer borte",

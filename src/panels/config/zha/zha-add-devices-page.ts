@@ -18,23 +18,28 @@ import {
 
 import { ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
+  @property() public route?: Route;
   @property() private _error?: string;
   @property() private _discoveredDevices: ZHADevice[] = [];
   @property() private _formattedEvents: string = "";
   @property() private _active: boolean = false;
   @property() private _showHelp: boolean = false;
+  private _ieeeAddress?: string;
   private _addDevicesTimeoutHandle: any = undefined;
   private _subscribed?: Promise<() => Promise<void>>;
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._subscribe();
+    if (this.route && this.route.path && this.route.path !== "") {
+      this._ieeeAddress = this.route.path.substring(1);
+    }
+    this._subscribe(this._ieeeAddress);
   }
 
   public disconnectedCallback(): void {
@@ -151,15 +156,19 @@ class ZHAAddDevicesPage extends LitElement {
     }
   }
 
-  private _subscribe(): void {
+  private _subscribe(ieeeAddress: string | undefined): void {
+    const data: any = { type: "zha/devices/permit" };
+    if (ieeeAddress) {
+      data.ieee = ieeeAddress;
+    }
     this._subscribed = this.hass!.connection.subscribeMessage(
       (message) => this._handleMessage(message),
-      { type: "zha/devices/permit" }
+      data
     );
     this._active = true;
     this._addDevicesTimeoutHandle = setTimeout(
       () => this._unsubscribe(),
-      60000
+      75000
     );
   }
 

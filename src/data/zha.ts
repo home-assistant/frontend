@@ -16,6 +16,7 @@ export interface ZHADevice {
   manufacturer_code: number;
   device_reg_id: string;
   user_given_name?: string;
+  power_source?: string;
   area_id?: string;
 }
 

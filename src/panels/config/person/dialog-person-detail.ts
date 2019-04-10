@@ -6,10 +6,11 @@ import {
   TemplateResult,
   property,
 } from "lit-element";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
+
+import "../../../components/dialog/ha-paper-dialog";
 
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";
@@ -49,7 +50,7 @@ class DialogPersonDetail extends LitElement {
     }
     const nameInvalid = this._name.trim() === "";
     return html`
-      <paper-dialog
+      <ha-paper-dialog
         with-backdrop
         opened
         @opened-changed="${this._openedChanged}"
@@ -114,7 +115,7 @@ class DialogPersonDetail extends LitElement {
             ${this._params.entry ? "UPDATE" : "CREATE"}
           </mwc-button>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -175,7 +176,7 @@ class DialogPersonDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        paper-dialog {
+        ha-paper-dialog {
           min-width: 400px;
         }
         .form {

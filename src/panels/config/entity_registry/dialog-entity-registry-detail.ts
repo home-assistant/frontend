@@ -6,9 +6,10 @@ import {
   CSSResult,
   TemplateResult,
 } from "lit-element";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
+
+import "../../../components/dialog/ha-paper-dialog";
 
 import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -56,7 +57,7 @@ class DialogEntityRegistryDetail extends LitElement {
       computeDomain(this._params.entry.entity_id);
 
     return html`
-      <paper-dialog
+      <ha-paper-dialog
         with-backdrop
         opened
         @opened-changed="${this._openedChanged}"
@@ -116,7 +117,7 @@ class DialogEntityRegistryDetail extends LitElement {
             )}
           </mwc-button>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -166,7 +167,7 @@ class DialogEntityRegistryDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        paper-dialog {
+        ha-paper-dialog {
           min-width: 400px;
         }
         .form {

@@ -9,10 +9,16 @@ const paperIconButtonClass = customElements.get(
 ) as Constructor<PaperIconButtonElement>;
 
 export class HaPaperIconButtonArrowPrev extends paperIconButtonClass {
+  public hassio?: boolean;
+
   public connectedCallback() {
     this.icon =
       window.getComputedStyle(this).direction === "ltr"
-        ? "hass:arrow-left"
+        ? this.hassio
+          ? "hassio:arrow-left"
+          : "hass:arrow-left"
+        : this.hassio
+        ? "hassio:arrow-right"
         : "hass:arrow-right";
 
     // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
