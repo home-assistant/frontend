@@ -113,7 +113,7 @@ class HassioAddonView extends PolymerElement {
     if (!path) return;
 
     if (path.substr(path.lastIndexOf("/") + 1) === "uninstall") {
-      this.backTapped();
+      history.back();
     } else {
       this.routeDataChanged(this.route);
     }
