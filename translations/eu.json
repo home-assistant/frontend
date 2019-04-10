@@ -227,6 +227,10 @@
         "person": {
             "home": "Etxean",
             "not_home": "Kanpoan"
+        },
+        "default": {
+            "error": "Errorea",
+            "entity_not_found": "Ez da Entitatea Aurkitu"
         }
     },
     "ui": {
@@ -323,6 +327,7 @@
                                     "leave": "Utzi"
                                 },
                                 "time_pattern": {
+                                    "label": "Denbora Eredua",
                                     "hours": "Orduak",
                                     "minutes": "Minutuak",
                                     "seconds": "Segunduak"
@@ -432,10 +437,21 @@
                 "zha": {
                     "caption": "ZHA",
                     "services": {
-                        "updateDeviceName": "Gailu honentzako izen pertsonalizatua ezarri gailuen erregistroan."
+                        "updateDeviceName": "Gailu honentzako izen pertsonalizatua ezarri gailuen erregistroan.",
+                        "remove": "ZigBee saretik gailu guztiak kendu"
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Erabiltzaileak emandako izena",
+                        "area_picker_label": "Gunea",
+                        "update_name_button": "Izena Eguneratu"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Gailuak Gehitu",
+                        "spinner": "ZHA Zigbee gailuak bilatzen..."
                     }
                 },
                 "area_registry": {
+                    "caption": "Gune Erregistroa",
                     "picker": {
                         "header": "Gune Erregistroa",
                         "integrations_page": "Integrazioen orria",
@@ -451,7 +467,9 @@
                     }
                 },
                 "entity_registry": {
+                    "caption": "Entitate Erregistroa",
                     "picker": {
+                        "header": "Entitate Erregistroa",
                         "unavailable": "(ez dago eskuragarri)",
                         "integrations_page": "Integrazioak"
                     },
@@ -641,7 +659,13 @@
                 },
                 "menu": {
                     "configure_ui": "Erabiltzaile interfazea konfiguratu",
-                    "help": "Laguntza"
+                    "unused_entities": "Erabili gabeko entitateak",
+                    "help": "Laguntza",
+                    "refresh": "Freskatu"
+                },
+                "warning": {
+                    "entity_not_found": "Entitatea ez dago eskuragarri: {entity}",
+                    "entity_non_numeric": "Entitatea ez da zenbakizkoa: {entity}"
                 }
             },
             "logbook": {

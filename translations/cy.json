@@ -267,7 +267,9 @@
     "state_badge": {
         "default": {
             "unknown": "?",
-            "unavailable": "off"
+            "unavailable": "off",
+            "error": "Gwall",
+            "entity_not_found": "Heb ganfod endid"
         },
         "alarm_control_panel": {
             "armed": "Arfogi",
@@ -541,11 +543,32 @@
                     "caption": "Z-Wave",
                     "description": "Rheoli eich rhwydwaith Z-Wave"
                 },
+                "integrations": {
+                    "config_entry": {
+                        "hub": "Cysylltiad drwy",
+                        "firmware": "Cadarnwedd: {version}",
+                        "device_unavailable": "Dyfais ddim ar gael",
+                        "entity_unavailable": "endid ar gael",
+                        "no_area": "Dim Ardal"
+                    }
+                },
                 "zha": {
                     "caption": "ZHA",
                     "description": "Rheoli rhwydwaith awtomatiaeth cartref Zigbee",
                     "services": {
-                        "reconfigure": "Ad-drefnu ddyfais ZHA (gwella dyfais). Defnyddiwch hwn os ydych yn cael problemau gyda'r ddyfais. Os ydi'r ddyfais dan sylw wedi pweru á batri, plis gwnewch yn siwr bod o'n ddeffro a derbyn gorchmynion pan fyddwch yn defnyddio gwasanaeth hwn."
+                        "reconfigure": "Ad-drefnu ddyfais ZHA (gwella dyfais). Defnyddiwch hwn os ydych yn cael problemau gyda'r ddyfais. Os ydi'r ddyfais dan sylw wedi pweru á batri, plis gwnewch yn siwr bod o'n ddeffro a derbyn gorchmynion pan fyddwch yn defnyddio gwasanaeth hwn.",
+                        "updateDeviceName": "Gosod enw personol ar gyfer y ddyfais hon yn y gofrestrfa ddyfais.",
+                        "remove": "Tynnwch ddyfais o'r rhwydwaith ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Enw a roddwyd gan y defnyddiwr",
+                        "area_picker_label": "Ardal",
+                        "update_name_button": "Diweddaru Enw"
+                    },
+                    "add_device_page": {
+                        "header": "Awtomeiddiad Cartref Zigbee - Ychwanegwch Dyfeisiadau",
+                        "spinner": "Chwilio am ddyfeisiau ZHA Zigbee ...",
+                        "discovery_text": "Bydd dyfeisiau a ddarganfuwyd yn ymddangos yma. Dilynwch y cyfarwyddiadau ar gyfer eich dyfais \/ dyfaisiau a rhowch y ddyfais \/ dyfeisiau yn y modd paru."
                     }
                 },
                 "area_registry": {
@@ -555,7 +578,9 @@
                         "header": "Gofrestrfa ardal",
                         "introduction": "Defnyddir ardaloedd i drefnu lle mae dyfeisiau. Defnyddir y wybodaeth hon drwy gydol Home Assistant i helpu chi i drefnu eich rhyngwyneb, caniatadau ac integreiddio â systemau eraill.",
                         "introduction2": "I osod dyfeisiau mewn ardal, defnyddiwch y ddolen isod i fynd i'r dudalen integreiddio ac yna cliciwch ar integreiddiau wedi'i ffurfweddu i gyrraedd y cardiau dyfais.",
-                        "integrations_page": "Tudalen rhyngwynebu"
+                        "integrations_page": "Tudalen rhyngwynebu",
+                        "no_areas": "Edrych fel nad oes gennych ardaloedd eto!",
+                        "create_area": "CREU ARDAL"
                     },
                     "no_areas": "Edrych fel nad oes gennych ardaloedd eto!",
                     "create_area": "CREU ARDAL",
@@ -593,11 +618,6 @@
                         "device_tracker_pick": "Dewiswch dyfeis i'w dracio"
                     }
                 },
-                "integrations": {
-                    "config_entry": {
-                        "no_area": "Dim Ardal"
-                    }
-                },
                 "users": {
                     "editor": {
                         "caption": "Gweld defnyddiwr"
@@ -612,8 +632,33 @@
                 }
             },
             "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Eitemau wedi ticio",
+                        "clear_items": "Clirio eitemau wedi ticio",
+                        "add_item": "Ychwanegu eitem"
+                    },
+                    "empty_state": {
+                        "title": "Croeso Gartref",
+                        "no_devices": "Mae'r dudalen hon yn eich galluogi i reoli'ch dyfeisiau, ond mae'n edrych fel nad oes gennych ddyfeisiau wedi eu sefydlu eto. Ewch i'r dudalen integreiddio i ddechrau.",
+                        "go_to_integrations_page": "Ewch i'r dudalen integreiddio."
+                    }
+                },
                 "editor": {
+                    "edit_card": {
+                        "header": "Ffurfweddu Cerdyn",
+                        "save": "Arbed",
+                        "toggle_editor": "Toglo Golygydd",
+                        "pick_card": "Dewiswch y cerdyn rydych eisiau ychwanegu",
+                        "add": "Ychwanegu Cerdyn",
+                        "edit": "Golygu",
+                        "delete": "Dileu",
+                        "move": "Symud"
+                    },
                     "migrate": {
+                        "header": "Ffurfweddiad anghydnaws",
+                        "para_no_id": "Tydi'r elfen yma ddim efo ID. Plís ychwanegwch ID i'r elfen yma yn 'ui-lovelace.yaml'.",
+                        "para_migrate": "Gall Home Assistant ychwanegu IDs i bob un o'ch cardiau ac edrychiadau yn awtomatig i chi wrth bwyso'r botwm 'Mudo ffurfweddiad'.",
                         "migrate": "Mudo ffurfweddiad"
                     },
                     "header": "Golygu rhyngwyneb defnyddiwr",
@@ -622,13 +667,6 @@
                         "add": "Ychwanegu golwg",
                         "edit": "Golygu golwg",
                         "delete": "Delete golwg"
-                    },
-                    "edit_card": {
-                        "pick_card": "Dewiswch y cerdyn rydych eisiau ychwanegu",
-                        "add": "Ychwanegu Cerdyn",
-                        "edit": "Golygu",
-                        "delete": "Dileu",
-                        "move": "Symud"
                     },
                     "save_config": {
                         "header": "Cymerwch reolaeth ar eich rhyngwyneb defnyddiwr Lovelace",
@@ -652,13 +690,6 @@
                     "unused_entities": "Endidau heb ei ddefnyddio",
                     "help": "Help",
                     "refresh": "Adnewyddu"
-                },
-                "cards": {
-                    "empty_state": {
-                        "title": "Croeso Gartref",
-                        "no_devices": "Mae'r dudalen hon yn eich galluogi i reoli'ch dyfeisiau, ond mae'n edrych fel nad oes gennych ddyfeisiau wedi eu sefydlu eto. Ewch i'r dudalen integreiddio i ddechrau.",
-                        "go_to_integrations_page": "Ewch i'r dudalen integreiddio."
-                    }
                 },
                 "warning": {
                     "entity_not_found": "Endid ddim ar gael: {entity}",
@@ -691,6 +722,16 @@
                                 "login_expired": "Sesiwn wedi dod i ben, plis mewngofnodwch eto"
                             }
                         }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "password_confirm": "Cadarnhewch y Cyfrinair"
+                    },
+                    "error": {
+                        "password_not_match": "Cyfrineiriau ddim yn cyfateb"
                     }
                 }
             }
@@ -753,7 +794,16 @@
                 },
                 "forecast": "Rhagolwg"
             },
+            "water_heater": {
+                "currently": "Ar hyn o bryd",
+                "on_off": "Ar \/ i ffwrdd",
+                "target_temperature": "Tymheredd targed",
+                "operation": "Gweithredu",
+                "away_mode": "Dull i ffwrdd"
+            },
             "alarm_control_panel": {
+                "arm_night": "Larwm nos",
+                "armed_custom_bypass": "Ffordd osgoi personol",
                 "arm_custom_bypass": "Ffordd osgoi personol"
             }
         },
@@ -844,5 +894,10 @@
                 "auto": "Awto"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Gweinyddwyr",
+        "system-users": "Defnyddwyr",
+        "system-read-only": "Defnyddwyr Darllen yn Unig"
     }
 }
