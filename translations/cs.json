@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Neví se",
-            "unavailable": "Není"
+            "unavailable": "Není",
+            "error": "Chyba",
+            "entity_not_found": "Entita nenalezena"
         },
         "alarm_control_panel": {
             "armed": "Aktivní",
@@ -606,7 +608,17 @@
                     "caption": "ZHA",
                     "description": "Správa Zigbee Home Automation",
                     "services": {
-                        "reconfigure": "Překonfigurovat zařízení ZHA (opravit zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy."
+                        "reconfigure": "Překonfigurovat zařízení ZHA (opravit zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy.",
+                        "updateDeviceName": "V registru zařízení nastavte vlastní název tohoto zařízení.",
+                        "remove": "Odstranit zařízení ze sítě Zigbee."
+                    },
+                    "device_card": {
+                        "area_picker_label": "Oblast"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Přidat zařízení",
+                        "spinner": "Hledání zařízení ZHA Zigbee ...",
+                        "discovery_text": "Zde se objeví nalezená zařízení. Postupujte dle pokynů pro vaše zařízení a uveďte je do režimu párování."
                     }
                 },
                 "area_registry": {
@@ -616,7 +628,9 @@
                         "header": "Registr oblastí",
                         "introduction": "Oblasti se používají k uspořádání zařízení podle místa kde jsou. Tato informace bude použita k organizaci rozhraní, k nastavení oprávnění a v integraci s ostatnímy systémy.",
                         "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení.",
-                        "integrations_page": "Stránka integrací"
+                        "integrations_page": "Stránka integrací",
+                        "no_areas": "Vypadá to, že ještě nemáte žádné oblasti!",
+                        "create_area": "VYTVOŘIT OBLAST"
                     },
                     "no_areas": "Vypadá to, že ještě nemáte žádné oblasti!",
                     "create_area": "VYTVOŘIT OBLAST",
@@ -830,11 +844,13 @@
                     "data": {
                         "name": "Jméno",
                         "username": "Uživatelské jméno",
-                        "password": "Heslo"
+                        "password": "Heslo",
+                        "password_confirm": "Potvrzení hesla"
                     },
                     "create_account": "Vytvořit účet",
                     "error": {
-                        "required_fields": "Vyplňte všechna povinná pole"
+                        "required_fields": "Vyplňte všechna povinná pole",
+                        "password_not_match": "Hesla se neshodují"
                     }
                 }
             },
@@ -1156,5 +1172,9 @@
                 "auto": "Automaticky"
             }
         }
+    },
+    "groups": {
+        "system-admin": "Správci",
+        "system-users": "Uživatelé"
     }
 }

@@ -1066,7 +1066,7 @@
         },
         "notification_toast": {
             "entity_turned_on": "Ενεργοποιημένο στο {entity} .",
-            "entity_turned_off": "Απενεργοποίηση {entity} .",
+            "entity_turned_off": "Απενεργοποίηση {entity}.",
             "service_called": "Επιτυχής κλήση στην υπηρεσία {service}",
             "service_call_failed": "Απέτυχε η κλήση στην υπηρεσία {service}.",
             "connection_lost": "Η σύνδεση χάθηκε. Επανασύνδεση ..."
@@ -1138,7 +1138,7 @@
         "updater": "Επικαιροποιητής",
         "weblink": "Σύνδεσμος",
         "zwave": "Z-Wave",
-        "vacuum": "Εκκένωση ",
+        "vacuum": "Εκκένωση",
         "zha": "ΖΗΑ",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",

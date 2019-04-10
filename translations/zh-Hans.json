@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "未知",
-            "unavailable": "不可用"
+            "unavailable": "不可用",
+            "error": "错误",
+            "entity_not_found": "未找到实体"
         },
         "alarm_control_panel": {
             "armed": "警戒中",
@@ -607,7 +609,16 @@
                     "description": "Zigbee 智能家居(ZHA) 网络管理",
                     "services": {
                         "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
-                        "updateDeviceName": "在设备注册表中为此设备设置自定义名称。"
+                        "updateDeviceName": "在设备注册表中为此设备设置自定义名称。",
+                        "remove": "从 ZigBee 网络中删除设备。"
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "用户指定的名称"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee家庭自动化 - 添加设备",
+                        "spinner": "正在寻找ZHA Zigbee设备......",
+                        "discovery_text": "发现的设备将显示在此处。按照设备的说明进行操作，并将设备置于配对模式。"
                     }
                 },
                 "area_registry": {
