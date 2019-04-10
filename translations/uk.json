@@ -279,7 +279,8 @@
     "state_badge": {
         "default": {
             "unknown": "Невід",
-            "unavailable": "Недост"
+            "unavailable": "Недост",
+            "error": "Помилка"
         },
         "alarm_control_panel": {
             "armed": "Охорона",

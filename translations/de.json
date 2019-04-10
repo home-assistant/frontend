@@ -606,7 +606,7 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Zigbee Home Automation Netzwerkmanagement",
+                    "description": "ZigBee Home Automation Netzwerkmanagement",
                     "services": {
                         "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt.",
                         "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest.",
@@ -618,8 +618,8 @@
                         "update_name_button": "Name aktualisieren"
                     },
                     "add_device_page": {
-                        "header": "Zigbee Home Automation - Geräte hinzufügen",
-                        "spinner": "Suche nach ZHA Zigbee Geräten... ",
+                        "header": "ZigBee Home Automation - Geräte hinzufügen",
+                        "spinner": "Suche nach ZHA ZigBee Geräten... ",
                         "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus."
                     }
                 },

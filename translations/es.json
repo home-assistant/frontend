@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "?",
-            "unavailable": "N\/D"
+            "unavailable": "N\/D",
+            "error": "Error",
+            "entity_not_found": "Entidad no encontrada"
         },
         "alarm_control_panel": {
             "armed": "Armado",
@@ -374,7 +376,7 @@
                         "pick_automation": "Elija la automatización para editar",
                         "no_automations": "No pudimos encontrar ninguna automatización editable",
                         "add_automation": "Añadir automatización",
-                        "learn_more": "Aprende más sobre automatizaciones."
+                        "learn_more": "Aprende más sobre las automatizaciones"
                     },
                     "editor": {
                         "introduction": "Use automatizaciones para dar vida a su hogar.",
@@ -462,7 +464,7 @@
                                     "leave": "Salir"
                                 }
                             },
-                            "learn_more": "Aprenda más sobre los desencadenantes"
+                            "learn_more": "Aprende más sobre los disparadores"
                         },
                         "conditions": {
                             "header": "Condiciones",
@@ -508,7 +510,7 @@
                                     "zone": "Zona"
                                 }
                             },
-                            "learn_more": "Aprende más sobre las condiciones."
+                            "learn_more": "Aprende más sobre las condiciones"
                         },
                         "actions": {
                             "header": "Acciones",
@@ -607,7 +609,18 @@
                     "description": "Gestión de red de Zigbee Home Automation",
                     "services": {
                         "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegurate de que está activo y aceptando comandos cuando uses este servicio.",
-                        "updateDeviceName": "Establezca un nombre personalizado para este dispositivo en el registro de dispositivos."
+                        "updateDeviceName": "Establezca un nombre personalizado para este dispositivo en el registro de dispositivos.",
+                        "remove": "Eliminar un dispositivo de la red ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nombre dado por el usuario",
+                        "area_picker_label": "Área",
+                        "update_name_button": "Cambiar nombre"
+                    },
+                    "add_device_page": {
+                        "header": "Domótica Zigbee - Añadir dispositivos",
+                        "spinner": "Buscando dispositivos ZHA Zigbee....",
+                        "discovery_text": "Los dispositivos detectados aparecerán aquí. Ponlos en modo emparejamiento siguiendo sus instrucciones."
                     }
                 },
                 "area_registry": {
@@ -834,7 +847,7 @@
                         "name": "Nombre",
                         "username": "Nombre de usuario",
                         "password": "Contraseña",
-                        "password_confirm": "Confirmar Contraseña"
+                        "password_confirm": "Confirmar contraseña"
                     },
                     "create_account": "Crear una cuenta",
                     "error": {
@@ -1074,7 +1087,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Guardar",
-                "name": "Nombre",
+                "name": "Anulación de nombre",
                 "entity_id": "Identificación de la entidad"
             },
             "more_info_control": {

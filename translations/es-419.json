@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Desconocido",
-            "unavailable": "No Disponible"
+            "unavailable": "No Disponible",
+            "error": "Error",
+            "entity_not_found": "Entidad no encontrada"
         },
         "alarm_control_panel": {
             "armed": "Activado",
@@ -607,7 +609,18 @@
                     "description": "Gestión de red de Zigbee Home Automation",
                     "services": {
                         "reconfigure": "Reconfigure el dispositivo ZHA (dispositivo de curación). Use esto si tiene problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrese de que esté activado y acepte los comandos cuando utilice este servicio.",
-                        "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos."
+                        "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos.",
+                        "remove": "Eliminar un dispositivo de la red ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nombre de usuario",
+                        "area_picker_label": "Área",
+                        "update_name_button": "Actualizar Nombre"
+                    },
+                    "add_device_page": {
+                        "header": "Automatización del hogar Zigbee - Agregar dispositivos",
+                        "spinner": "Buscando dispositivos ZHA Zigbee ...",
+                        "discovery_text": "Los dispositivos descubiertos se mostrarán aquí. Siga las instrucciones para su(s) dispositivo(s) y coloque el(los) dispositivo(s) en modo de emparejamiento."
                     }
                 },
                 "area_registry": {

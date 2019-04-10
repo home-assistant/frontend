@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Ism",
-            "unavailable": "N.elér"
+            "unavailable": "N.elér",
+            "error": "Hiba",
+            "entity_not_found": "Entitás nem található"
         },
         "alarm_control_panel": {
             "armed": "Éles",
@@ -607,7 +609,18 @@
                     "description": "Zigbee Home Automation hálózat menedzsment",
                     "services": {
                         "reconfigure": "A ZHA készülék újratelepítése (eszköz rendbehozatala). Ezt a funkciót használd, ha problémáid vannak a készülékkel. Ha a kérdéses eszköz akkumulátoros, győződj meg róla, hogy nincs alvó állapotban és fogadja a parancsokat, amikor ezt a szolgáltatást használod.",
-                        "updateDeviceName": "Egyedi név beállítása ehhez az eszközhöz az eszköz nyilvántartásban"
+                        "updateDeviceName": "Egyedi név beállítása ehhez az eszközhöz az eszköz nyilvántartásban",
+                        "remove": "Eszköz eltávolítása a Zigbee hálózatból"
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Felhasználónév",
+                        "area_picker_label": "Terület",
+                        "update_name_button": "Név frissítése"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Eszközök hozzáadása",
+                        "spinner": "ZHA Zigbee eszközök keresése...",
+                        "discovery_text": "A felfedezett eszközök itt fognak megjelenni. A készülékek használati utasításai alapján állítsd őket párosítási módba."
                     }
                 },
                 "area_registry": {
