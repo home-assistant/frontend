@@ -37,6 +37,7 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
               <tr>
                 <th>Container</th>
                 <th>Host</th>
+                <th>Description</th>
               </tr>
               <template is="dom-repeat" items="[[config]]">
                 <tr>
@@ -47,6 +48,7 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
                       no-label-float=""
                     ></paper-input>
                   </td>
+                  <td>[[item.description]]</td>
                 </tr>
               </template>
             </tbody>
@@ -89,9 +91,11 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
     if (!addon) return;
 
     const network = addon.network || {};
+    const description = addon.network_description || {};
     const items = Object.keys(network).map((key) => ({
       container: key,
       host: network[key],
+      description: description[key],
     }));
     this.config = items.sort(function(el1, el2) {
       return el1.host - el2.host;

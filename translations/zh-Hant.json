@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "未知",
-            "unavailable": "不可用"
+            "unavailable": "不可用",
+            "error": "錯誤",
+            "entity_not_found": "找不到物件"
         },
         "alarm_control_panel": {
             "armed": "已警戒",
@@ -607,7 +609,18 @@
                     "description": "Zigbee 家庭自動化網路管理",
                     "services": {
                         "reconfigure": "重新設定 ZHA Zibgee 裝置（健康裝置）。假如遇到裝置問題，請使用此選項。假如有問題的裝置為使用電池的裝置，請先確定裝置已喚醒並處於接受命令狀態。",
-                        "updateDeviceName": "於物件 ID 中自訂此設備名稱。"
+                        "updateDeviceName": "於物件 ID 中自訂此設備名稱。",
+                        "remove": "自 Zigbee 網路移除裝置。"
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "使用者自訂名稱",
+                        "area_picker_label": "分區",
+                        "update_name_button": "更新名稱"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee 家庭自動化 - 新增裝置",
+                        "spinner": "正在搜尋 ZHA Zigbee 裝置...",
+                        "discovery_text": "所發現的裝置將會顯示於此。跟隨裝置的指示並將其設定為配對模式。"
                     }
                 },
                 "area_registry": {

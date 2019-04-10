@@ -44,7 +44,7 @@ function transformXMLtoPolymer(name, xml) {
 
 // Given an iconset name and icon names, generate a polymer iconset
 function generateIconset(name, iconNames) {
-  const iconDefs = iconNames
+  const iconDefs = Array.from(iconNames)
     .map((name) => {
       const iconDef = loadIcon(name);
       if (!iconDef) {
@@ -95,18 +95,27 @@ function findIcons(path, iconsetName) {
   }
   mapFiles(path, ".js", processFile);
   mapFiles(path, ".ts", processFile);
-  return Array.from(icons);
+  return icons;
 }
 
 function genHassIcons() {
-  const iconNames = findIcons("./src", "hass").concat(BUILT_IN_PANEL_ICONS);
-  fs.existsSync(OUTPUT_DIR) || fs.mkdirSync(OUTPUT_DIR);
+  const iconNames = findIcons("./src", "hass");
+  BUILT_IN_PANEL_ICONS.forEach((name) => iconNames.add(name));
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR);
+  }
   fs.writeFileSync(HASS_OUTPUT_PATH, generateIconset("hass", iconNames));
 }
 
-gulp.task("gen-icons-mdi", () => genMDIIcons());
-gulp.task("gen-icons-hass", () => genHassIcons());
-gulp.task("gen-icons", ["gen-icons-hass", "gen-icons-mdi"], () => {});
+gulp.task("gen-icons-mdi", (done) => {
+  genMDIIcons();
+  done();
+});
+gulp.task("gen-icons-hass", (done) => {
+  genHassIcons();
+  done();
+});
+gulp.task("gen-icons", gulp.series("gen-icons-hass", "gen-icons-mdi"));
 
 module.exports = {
   findIcons,

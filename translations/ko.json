@@ -592,10 +592,10 @@
                     "configure": "설정하기",
                     "none": "설정된 구성요소가 없습니다",
                     "config_entry": {
-                        "no_devices": "이 통합 구성요소는 설정해야 할 장치가 없습니다.",
-                        "no_device": "장치가 없는 구성요소",
+                        "no_devices": "이 통합 구성요소는 설정해야 할 기기가 없습니다.",
+                        "no_device": "기기가 없는 구성요소",
                         "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
-                        "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 를 재시작합니다",
+                        "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
                         "manuf": "{manufacturer} 제조",
                         "hub": "연결 경유 대상",
                         "firmware": "펌웨어: {version}",
@@ -608,9 +608,9 @@
                     "caption": "ZHA",
                     "description": "Zigbee 홈 자동화 네트워크 관리",
                     "services": {
-                        "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
-                        "updateDeviceName": "이 장치의 사용자 정의 이름을 장치 레지스트리에 설정합니다.",
-                        "remove": "ZigBee 네트워크에서 기기 제거"
+                        "reconfigure": "ZHA 기기를 다시 구성 합니다. (장치 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
+                        "updateDeviceName": "이 기기의 사용자 정의 이름을 장치 레지스트리에 설정합니다.",
+                        "remove": "Zigbee 네트워크에서 기기 제거"
                     },
                     "device_card": {
                         "device_name_placeholder": "사용자 지정 이름",
@@ -628,8 +628,8 @@
                     "description": "영역을 만들고 편집합니다",
                     "picker": {
                         "header": "영역 등록",
-                        "introduction": "영역은 장치가있는 위치를 구성하는데 사용합니다. 이 정보는 Home Assistant 의 인터페이스 정리, 권한 및 다른 시스템과의 통합 구성에 도움을 줍니다.",
-                        "introduction2": "특정 영역에 장치를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 장치를 클릭하여 영역을 설정 할 수 있습니다.",
+                        "introduction": "영역은 기기가있는 위치를 구성하는데 사용합니다. 이 정보는 Home Assistant 의 인터페이스 정리, 권한 및 다른 시스템과의 통합 구성에 도움을 줍니다.",
+                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정 할 수 있습니다.",
                         "integrations_page": "통합 구성요소 페이지",
                         "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
                         "create_area": "영역 만들기"
@@ -666,7 +666,7 @@
                     "detail": {
                         "name": "이름",
                         "device_tracker_intro": "이 구성원에게 속한 장치를 선택해주세요.",
-                        "device_tracker_picked": "추적 장치",
+                        "device_tracker_picked": "장치 추적 대상",
                         "device_tracker_pick": "추적 할 장치 선택"
                     }
                 }
@@ -865,7 +865,7 @@
                     },
                     "empty_state": {
                         "title": "집에 오신 것을 환영합니다",
-                        "no_devices": "이 페이지에서 장치를 제어 할 수 있지만, 장치가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
+                        "no_devices": "이 페이지에서 기기를 제어 할 수 있지만, 기기가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
                         "go_to_integrations_page": "통합 페이지로 이동하기."
                     }
                 },
@@ -1121,11 +1121,11 @@
         "binary_sensor": "이진센서",
         "calendar": "일정",
         "camera": "카메라",
-        "climate": "공조장치",
+        "climate": "공조기기",
         "configurator": "구성",
         "conversation": "대화",
         "cover": "여닫이",
-        "device_tracker": "추적장치",
+        "device_tracker": "추적 장치",
         "fan": "송풍기",
         "history_graph": "기록그래프",
         "group": "그룹",

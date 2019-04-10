@@ -10,7 +10,9 @@ import "../../../src/components/ha-markdown";
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/resources/ha-style";
 import EventsMixin from "../../../src/mixins/events-mixin";
+import { navigate } from "../../../src/common/navigate";
 
+import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import "../components/hassio-card-content";
 
 const PERMIS_DESC = {
@@ -58,6 +60,11 @@ const PERMIS_DESC = {
     title: "Home Assistant Authentication",
     description:
       "An addon can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability.",
+  },
+  ingress: {
+    title: "Ingress",
+    description:
+      "This add-on is using Ingress to embed its interface securely into Home Assistant.",
   },
 };
 
@@ -161,12 +168,18 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
               icon="hassio:arrow-up-bold-circle"
               icon-class="update"
             ></hassio-card-content>
+            <template is="dom-if" if="[[!addon.available]]">
+              <p>This update is no longer compatible with your system.</p>
+            </template>
           </div>
           <div class="card-actions">
             <ha-call-api-button
               hass="[[hass]]"
               path="hassio/addons/[[addonSlug]]/update"
-              >Update</ha-call-api-button
+              disabled="[[!addon.available]]"
+              >
+              Update
+              </ha-call-api-button
             >
             <template is="dom-if" if="[[addon.changelog]]">
               <mwc-button on-click="openChangelog">Changelog</mwc-button>
@@ -310,6 +323,15 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                   description=""
                 ></ha-label-badge>
               </template>
+              <template is="dom-if" if="[[addon.ingress]]">
+                <ha-label-badge
+                  on-click="showMoreInfo"
+                  id="ingress"
+                  icon="hassio:cursor-default-click-outline"
+                  label="ingress"
+                  description=""
+                ></ha-label-badge>
+              </template>
           </div>
           <template is="dom-if" if="[[addon.version]]">
             <div class="state">
@@ -371,7 +393,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             </template>
             <template
               is="dom-if"
-              if="[[computeShowWebUI(addon.webui, isRunning)]]"
+              if="[[computeShowWebUI(addon.ingress, addon.webui, isRunning)]]"
             >
               <a
                 href="[[pathWebui(addon.webui)]]"
@@ -380,6 +402,16 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 class="right"
                 ><mwc-button>Open web UI</mwc-button></a
               >
+            </template>
+            <template
+              is="dom-if"
+              if="[[computeShowIngressUI(addon.ingress, isRunning)]]"
+            >
+              <mwc-button
+                tabindex="-1"
+                class="right"
+                on-click="openIngress"
+              >Open web UI</mwc-button>
             </template>
           </template>
           <template is="dom-if" if="[[!addon.version]]">
@@ -448,8 +480,16 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     return webui && webui.replace("[HOST]", document.location.hostname);
   }
 
-  computeShowWebUI(webui, isRunning) {
-    return webui && isRunning;
+  computeShowWebUI(ingress, webui, isRunning) {
+    return !ingress && webui && isRunning;
+  }
+
+  openIngress() {
+    navigate(this, `/hassio/ingress/${this.addon.slug}`);
+  }
+
+  computeShowIngressUI(ingress, isRunning) {
+    return ingress && isRunning;
   }
 
   computeStartOnBoot(state) {
@@ -484,7 +524,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
 
   showMoreInfo(e) {
     const id = e.target.getAttribute("id");
-    this.fire("hassio-markdown-dialog", {
+    showHassioMarkdownDialog(this, {
       title: PERMIS_DESC[id].title,
       content: PERMIS_DESC[id].description,
     });
@@ -495,7 +535,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
       .callApi("get", `hassio/addons/${this.addonSlug}/changelog`)
       .then((resp) => resp, () => "Error getting changelog")
       .then((content) => {
-        this.fire("hassio-markdown-dialog", {
+        showHassioMarkdownDialog(this, {
           title: "Changelog",
           content: content,
         });

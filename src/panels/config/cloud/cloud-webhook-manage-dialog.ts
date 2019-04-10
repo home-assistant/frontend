@@ -9,10 +9,10 @@ import {
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
+import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 // tslint:disable-next-line
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
@@ -49,7 +49,7 @@ export class CloudWebhookManageDialog extends LitElement {
         ? "https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger"
         : `https://www.home-assistant.io/components/${webhook.domain}/`;
     return html`
-      <paper-dialog with-backdrop>
+      <ha-paper-dialog with-backdrop>
         <h2>Webhook for ${webhook.name}</h2>
         <div>
           <p>The webhook is available at the following url:</p>
@@ -80,12 +80,12 @@ export class CloudWebhookManageDialog extends LitElement {
           >
           <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private get _paperInput(): PaperInputElement {
@@ -127,7 +127,7 @@ export class CloudWebhookManageDialog extends LitElement {
     return [
       haStyle,
       css`
-        paper-dialog {
+        ha-paper-dialog {
           width: 650px;
         }
         paper-input {

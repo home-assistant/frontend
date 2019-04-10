@@ -10,14 +10,14 @@ import {
 import "./hui-configurator-notification-item";
 import "./hui-persistent-notification-item";
 
-import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../../../types";
+import { HassNotification } from "./types";
 
 @customElement("hui-notification-item")
 export class HuiNotificationItem extends LitElement {
   @property() public hass?: HomeAssistant;
 
-  @property() public notification?: HassEntity;
+  @property() public notification?: HassNotification;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (!this.hass || !this.notification || changedProps.has("notification")) {

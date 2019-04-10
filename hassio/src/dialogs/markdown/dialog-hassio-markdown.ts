@@ -1,18 +1,21 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../src/components/ha-markdown";
-import "../../src/resources/ha-style";
+import "../../../../src/components/ha-markdown";
+import "../../../../src/resources/ha-style";
+import "../../../../src/components/dialog/ha-paper-dialog";
+import { customElement } from "lit-element";
+import { PaperDialogElement } from "@polymer/paper-dialog";
 
+@customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends PolymerElement {
   static get template() {
     return html`
       <style include="ha-style-dialog">
-        paper-dialog {
+        ha-paper-dialog {
           min-width: 350px;
           font-size: 14px;
           border-radius: 2px;
@@ -31,10 +34,10 @@ class HassioMarkdownDialog extends PolymerElement {
           margin: 4px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          paper-dialog {
+          ha-paper-dialog {
             max-height: 100%;
           }
-          paper-dialog::before {
+          ha-paper-dialog::before {
             content: "";
             position: fixed;
             z-index: -1;
@@ -50,7 +53,7 @@ class HassioMarkdownDialog extends PolymerElement {
           }
         }
       </style>
-      <paper-dialog id="dialog" with-backdrop="">
+      <ha-paper-dialog id="dialog" with-backdrop="">
         <app-toolbar>
           <paper-icon-button
             icon="hassio:close"
@@ -61,7 +64,7 @@ class HassioMarkdownDialog extends PolymerElement {
         <paper-dialog-scrollable>
           <ha-markdown content="[[content]]"></ha-markdown>
         </paper-dialog-scrollable>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -72,8 +75,14 @@ class HassioMarkdownDialog extends PolymerElement {
     };
   }
 
-  openDialog() {
-    this.$.dialog.open();
+  public showDialog(params) {
+    this.setProperties(params);
+    (this.$.dialog as PaperDialogElement).open();
   }
 }
-customElements.define("hassio-markdown-dialog", HassioMarkdownDialog);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-hassio-markdown": HassioMarkdownDialog;
+  }
+}

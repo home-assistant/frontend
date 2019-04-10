@@ -4,7 +4,7 @@
     <title>Home Assistant</title>
     <link rel='preload' href='/static/fonts/roboto/Roboto-Light.ttf' as='font' crossorigin />
     <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
-    <%= require('raw-loader!./_header.html.template') %>
+    <%= require('raw-loader!./_header.html.template').default %>
     <style>
       .content {
         padding: 20px 16px;

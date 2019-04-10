@@ -4,7 +4,7 @@
     <link rel='preload' href='<%= coreJS %>' as='script'/>
     <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
     <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
-    <%= require('raw-loader!./_header.html.template') %>
+    <%= require('raw-loader!./_header.html.template').default %>
     <title>Home Assistant</title>
     <link rel='apple-touch-icon' sizes='180x180'
           href='/static/icons/favicon-apple-180x180.png'>

@@ -1,5 +1,4 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -10,6 +9,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-climate-control";
 import "../../../components/ha-paper-slider";
+import "../../../components/ha-paper-dropdown-menu";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
 import featureClassNames from "../../../common/entity/feature_class_names";
@@ -64,7 +64,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin: 22px 16px 0 0;
         }
 
-        paper-dropdown-menu {
+        ha-paper-dropdown-menu {
           width: 100%;
         }
 
@@ -193,7 +193,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
           <div class="container-operation_list">
             <div class="controls">
-              <paper-dropdown-menu
+              <ha-paper-dropdown-menu
                 label-float=""
                 dynamic-align=""
                 label="[[localize('ui.card.climate.operation')]]"
@@ -212,14 +212,14 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     >
                   </template>
                 </paper-listbox>
-              </paper-dropdown-menu>
+              </ha-paper-dropdown-menu>
             </div>
           </div>
         </template>
 
         <template is="dom-if" if="[[supportsFanMode(stateObj)]]">
           <div class="container-fan_list">
-            <paper-dropdown-menu
+            <ha-paper-dropdown-menu
               label-float=""
               dynamic-align=""
               label="[[localize('ui.card.climate.fan_mode')]]"
@@ -233,13 +233,13 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   <paper-item>[[_localizeFanMode(localize, item)]]</paper-item>
                 </template>
               </paper-listbox>
-            </paper-dropdown-menu>
+            </ha-paper-dropdown-menu>
           </div>
         </template>
 
         <template is="dom-if" if="[[supportsSwingMode(stateObj)]]">
           <div class="container-swing_list">
-            <paper-dropdown-menu
+            <ha-paper-dropdown-menu
               label-float=""
               dynamic-align=""
               label="[[localize('ui.card.climate.swing_mode')]]"
@@ -253,7 +253,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   <paper-item>[[item]]</paper-item>
                 </template>
               </paper-listbox>
-            </paper-dropdown-menu>
+            </ha-paper-dropdown-menu>
           </div>
         </template>
 

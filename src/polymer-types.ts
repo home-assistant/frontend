@@ -28,5 +28,9 @@ declare global {
     "hass-notification": {
       message: string;
     };
+    "hass-api-called": {
+      success: boolean;
+      response: unknown;
+    };
   }
 }

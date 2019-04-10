@@ -8,10 +8,9 @@ import {
   property,
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-dialog/paper-dialog";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
+import "../../../components/dialog/ha-paper-dialog";
+// tslint:disable-next-line:no-duplicate-imports
+import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
 
 import { haStyleDialog } from "../../../resources/styles";
@@ -37,13 +36,13 @@ export class HuiSaveConfig extends LitElement {
     this._dialog.open();
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   protected render(): TemplateResult | void {
     return html`
-      <paper-dialog with-backdrop>
+      <ha-paper-dialog with-backdrop>
         <h2>
           ${this.hass!.localize("ui.panel.lovelace.editor.save_config.header")}
         </h2>
@@ -73,7 +72,7 @@ export class HuiSaveConfig extends LitElement {
             )}</mwc-button
           >
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -104,17 +103,17 @@ export class HuiSaveConfig extends LitElement {
       css`
         @media all and (max-width: 450px), all and (max-height: 500px) {
           /* overrule the ha-style-dialog max-height on small screens */
-          paper-dialog {
+          ha-paper-dialog {
             max-height: 100%;
             height: 100%;
           }
         }
         @media all and (min-width: 660px) {
-          paper-dialog {
+          ha-paper-dialog {
             width: 650px;
           }
         }
-        paper-dialog {
+        ha-paper-dialog {
           max-width: 650px;
         }
         paper-spinner {

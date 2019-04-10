@@ -74,6 +74,8 @@ class PartialPanelResolver extends HassRouterPage {
   @property() public narrow?: boolean;
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
     if (!changedProps.has("hass")) {
       return;
     }

@@ -1,4 +1,3 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -9,7 +8,7 @@ import "./hassio-supervisor-log";
 class HassioSystem extends PolymerElement {
   static get template() {
     return html`
-      <style include="iron-flex ha-style">
+      <style>
         .content {
           margin: 4px;
           color: var(--primary-text-color);

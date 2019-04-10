@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Okänd",
-            "unavailable": "Otillgänglig"
+            "unavailable": "Otillgänglig",
+            "error": "Fel",
+            "entity_not_found": "Enheten hittades inte"
         },
         "alarm_control_panel": {
             "armed": "Tillkopplat",
@@ -466,7 +468,7 @@
                         },
                         "conditions": {
                             "header": "Villkor",
-                            "introduction": "Villkoren är en valfri del av en automatiseringsregel och kan användas för att förhindra att en åtgärd inträffar när den triggas. Villkoren liknar triggers men är väldigt olika. En trigger kommer att se på händelser som händer i systemet medan ett villkor bara tittar på hur systemet ser ut just nu. En trigger kan observera att en strömbrytare slås på. Ett villkor kan bara se om en strömbrytare är på eller av. \n\n [Lär dig mer om villkoren.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Villkor är en valfri del av en automatiseringsregel och kan användas för att förhindra att en åtgärd inträffar när den triggas. Villkoren liknar triggers men är väldigt olika. En trigger reagerar på händelser som händer i systemet medan ett villkor bara utvärderar hur systemet ser ut just nu. En trigger kan reagera på att en strömbrytare slås på. Ett villkor kan bara se om en strömbrytare är på eller av. \n\n [Lär dig mer om villkoren.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Lägg till villkor",
                             "duplicate": "Duplicera",
                             "delete": "Radera",
@@ -607,7 +609,18 @@
                     "description": "Zigbee Home Automation (ZHA) nätverkshantering",
                     "services": {
                         "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion.",
-                        "updateDeviceName": "Ange ett anpassat namn för den här enheten i enhetsregistret"
+                        "updateDeviceName": "Ange ett anpassat namn för den här enheten i enhetsregistret",
+                        "remove": "Ta bort en enhet från ZigBee-nätverket."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Användarnamn",
+                        "area_picker_label": "Plats",
+                        "update_name_button": "Uppdatera namn"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Lägg till enheter",
+                        "spinner": "Söker efter ZHA Zigbee-enheter ...",
+                        "discovery_text": "Upptäckta enheter kommer dyka upp här. Följ instruktionerna för dina enheter och sätt dem i parningsläge."
                     }
                 },
                 "area_registry": {
