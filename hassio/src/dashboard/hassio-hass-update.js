@@ -26,26 +26,13 @@ class HassioHassUpdate extends PolymerElement {
       <template is="dom-if" if="[[computeUpdateAvailable(hassInfo)]]">
         <div class="content">
           <div class="card-group">
-            <div class="title">Update available! 🎉</div>
-            <paper-card>
+            <paper-card heading="Update available! 🎉">
               <div class="card-content">
-                <hassio-card-content
-                  hass="[[hass]]"
-                  title="Home Assistant [[hassInfo.last_version]] is available"
-                  description="You are currently running version [[hassInfo.version]]"
-                  icon="hassio:home-assistant"
-                  icon-class="hassupdate"
-                ></hassio-card-content>
+                Home Assistant [[hassInfo.last_version]] is available and you
+                are currently running Home Assistant [[hassInfo.version]].
                 <template is="dom-if" if="[[error]]">
                   <div class="error">Error: [[error]]</div>
                 </template>
-                <p>
-                  <a
-                    href="https://www.home-assistant.io/latest-release-notes/"
-                    target="_blank"
-                    >Read the release notes</a
-                  >
-                </p>
               </div>
               <div class="card-actions">
                 <ha-call-api-button
@@ -54,7 +41,7 @@ class HassioHassUpdate extends PolymerElement {
                   >Update</ha-call-api-button
                 >
                 <a
-                  href="https://github.com/home-assistant/home-assistant/releases"
+                  href="https://www.home-assistant.io/latest-release-notes/"
                   target="_blank"
                   ><mwc-button>Release notes</mwc-button></a
                 >
