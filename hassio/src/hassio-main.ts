@@ -20,8 +20,6 @@ import {
 } from "../../src/data/hassio";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
-// Don't codesplit it, that way the dashboard always loads fast.
-import "./hassio-pages-with-tabs";
 
 // The register callback of the IronA11yKeysBehavior inside paper-icon-button
 // is not called, causing _keyBindings to be uninitiliazed for paper-icon-button,
@@ -42,6 +40,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       dashboard: {
         tag: "hassio-pages-with-tabs",
         cache: true,
+        load: () => import("./hassio-pages-with-tabs"),
       },
       snapshots: "dashboard",
       store: "dashboard",
