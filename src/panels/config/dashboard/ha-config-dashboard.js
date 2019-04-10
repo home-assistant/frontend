@@ -63,7 +63,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                     </template>
                     <template is="dom-if" if="[[!cloudStatus.logged_in]]">
                       <div secondary="">
-                        [[localize('ui.panel.config.cloud.description_not_login')]]
+                        [[localize('ui.panel.config.cloud.description_features')]]
                       </div>
                     </template>
                   </paper-item-body>

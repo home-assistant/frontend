@@ -10,14 +10,14 @@ import "@material/mwc-button";
 import "./hui-notification-item-template";
 
 import { HomeAssistant } from "../../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { HassNotification } from "./types";
 
 @customElement("hui-configurator-notification-item")
 export class HuiConfiguratorNotificationItem extends LitElement {
   @property() public hass?: HomeAssistant;
 
-  @property() public notification?: HassEntity;
+  @property() public notification?: HassNotification;
 
   protected render(): TemplateResult | void {
     if (!this.hass || !this.notification) {

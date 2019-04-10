@@ -1,5 +1,5 @@
 import "@polymer/paper-styles/paper-styles";
-import "@polymer/polymer/polymer-legacy";
+import "@polymer/polymer/lib/elements/custom-style";
 import { haStyle, haStyleDialog } from "./styles";
 
 const documentContainer = document.createElement("template");

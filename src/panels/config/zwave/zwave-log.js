@@ -2,8 +2,6 @@ import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import EventsMixin from "../../../mixins/events-mixin";

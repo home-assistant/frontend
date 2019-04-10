@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/dialog/ha-paper-dialog";
 import "../../../resources/ha-style";
 
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -18,14 +18,14 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
         .error {
           color: red;
         }
-        paper-dialog {
+        ha-paper-dialog {
           max-width: 500px;
         }
         .username {
           margin-top: -8px;
         }
       </style>
-      <paper-dialog
+      <ha-paper-dialog
         id="dialog"
         with-backdrop
         opened="{{_opened}}"
@@ -76,7 +76,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
             >
           </template>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 

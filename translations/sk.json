@@ -265,12 +265,18 @@
             "on": "Zapnutý",
             "paused": "Pozastavený",
             "returning": "Vracia sa do doku"
+        },
+        "person": {
+            "home": "Doma",
+            "not_home": "Preč"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Nezn",
-            "unavailable": "Nedost"
+            "unavailable": "Nedost",
+            "error": "Chyba",
+            "entity_not_found": "Entita nebola nájdená"
         },
         "alarm_control_panel": {
             "armed": "Zakód",
@@ -285,6 +291,10 @@
             "armed_custom_bypass": "Zakódovaný"
         },
         "device_tracker": {
+            "home": "Doma",
+            "not_home": "Preč"
+        },
+        "person": {
             "home": "Doma",
             "not_home": "Preč"
         }
@@ -359,7 +369,8 @@
                         "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
                         "pick_automation": "Vyberte automatizáciu, ktorú chcete upraviť",
                         "no_automations": "Nepodarilo sa nájsť žiadne editovateľné automatizácie",
-                        "add_automation": "Pridať automatizáciu"
+                        "add_automation": "Pridať automatizáciu",
+                        "learn_more": "Získajte viac informácií o automatizáciách"
                     },
                     "editor": {
                         "introduction": "Použite automatizácie, aby váš domov ožil",
@@ -445,7 +456,8 @@
                                     "event": "Udalosť:",
                                     "leave": "Opustiť"
                                 }
-                            }
+                            },
+                            "learn_more": "Získajte viac informácií o spúšťačoch"
                         },
                         "conditions": {
                             "header": "Podmienky",
@@ -490,11 +502,12 @@
                                     "entity": "Entita s umiestnením",
                                     "zone": "Zóna"
                                 }
-                            }
+                            },
+                            "learn_more": "Získajte viac informácií o podmienkach"
                         },
                         "actions": {
                             "header": "Akcie",
-                            "introduction": "Akcie, ktoré vykoná domáci asistent, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcie, ktoré vykoná Home Assistant, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Pridať akciu",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
@@ -523,7 +536,8 @@
                                     "event": "Udalosť:",
                                     "service_data": "Dáta služby"
                                 }
-                            }
+                            },
+                            "learn_more": "Získajte viac informácií o akciách"
                         }
                     }
                 },
@@ -546,7 +560,15 @@
                         "change_password": "Zmeniť heslo",
                         "activate_user": "Aktivovať používateľa",
                         "deactivate_user": "Deaktivovať používateľa",
-                        "delete_user": "Vymazať používateľa"
+                        "delete_user": "Vymazať používateľa",
+                        "caption": "Zobraziť používateľa"
+                    },
+                    "add_user": {
+                        "caption": "Pridať používateľa",
+                        "name": "Meno",
+                        "username": "Užívateľské meno",
+                        "password": "Heslo",
+                        "create": "Vytvoriť"
                     }
                 },
                 "cloud": {
@@ -577,13 +599,22 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Správa siete ZigBee Home Automation"
+                    "description": "Správa siete ZigBee Home Automation",
+                    "services": {
+                        "updateDeviceName": "Nastavte vlastný názov pre toto zariadenie v registri zariadenia."
+                    },
+                    "device_card": {
+                        "area_picker_label": "Oblasť"
+                    }
                 },
                 "area_registry": {
                     "caption": "Register oblastí",
                     "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
                     "picker": {
-                        "header": "Register oblastí"
+                        "header": "Register oblastí",
+                        "integrations_page": "Stránka Integrácie",
+                        "no_areas": "Vyzerá to, že ešte nemáte žiadne oblasti!",
+                        "create_area": "VYTVORIŤ OBLASŤ"
                     },
                     "no_areas": "Vyzerá to, že ešte nemáte žiadne oblasti!",
                     "create_area": "VYTVORIŤ OBLASŤ",
@@ -599,7 +630,8 @@
                     "description": "Prehľad všetkých známych entít.",
                     "picker": {
                         "header": "Register entít",
-                        "unavailable": "(nedostupné)"
+                        "unavailable": "(nedostupné)",
+                        "integrations_page": "Stránka Integrácie"
                     },
                     "editor": {
                         "unavailable": "Táto entita nie je momentálne k dispozícii.",
@@ -770,16 +802,16 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Dvojfaktorový autentifikačný kód"
+                                        "code": "2-faktorový autentifikačný kód"
                                     }
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nesprávne používateľske meno alebo heslo",
+                                "invalid_auth": "Nesprávne používateľské meno alebo heslo",
                                 "invalid_code": "Nesprávny autentifikačný kód"
                             },
                             "abort": {
-                                "login_expired": "Relácia vypršala, prihlásťe sa prosím znova"
+                                "login_expired": "Relácia vypršala, prihláste sa prosím znova"
                             }
                         }
                     }
@@ -793,11 +825,13 @@
                     "data": {
                         "name": "Meno",
                         "username": "Používateľské meno",
-                        "password": "Heslo"
+                        "password": "Heslo",
+                        "password_confirm": "Potvrďte nové heslo"
                     },
                     "create_account": "Vytvoriť účet",
                     "error": {
-                        "required_fields": "Vyplňte všetky povinné polia"
+                        "required_fields": "Vyplňte všetky povinné polia",
+                        "password_not_match": "Heslá sa nezhodujú"
                     }
                 }
             },
@@ -846,6 +880,12 @@
                     },
                     "menu": {
                         "raw_editor": "Raw editor konfigurácie"
+                    },
+                    "raw_editor": {
+                        "header": "Upraviť konfiguráciu",
+                        "save": "Uložiť",
+                        "unsaved_changes": "Neuložené zmeny",
+                        "saved": "Uložené"
                     }
                 },
                 "menu": {
@@ -853,6 +893,10 @@
                     "unused_entities": "Nepoužité entity",
                     "help": "Pomoc",
                     "refresh": "Obnoviť"
+                },
+                "warning": {
+                    "entity_not_found": "Entita nie je k dispozícií",
+                    "entity_non_numeric": "Entita je nečíselná: {entity}"
                 }
             }
         },
@@ -1020,7 +1064,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Uložiť",
-                "name": "Názov",
+                "name": "Prepísať názov",
                 "entity_id": "Entity ID"
             },
             "more_info_control": {
@@ -1088,7 +1132,8 @@
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace"
+        "lovelace": "Lovelace",
+        "person": "Osoba"
     },
     "attribute": {
         "weather": {
@@ -1096,5 +1141,9 @@
             "visibility": "Viditeľnosť",
             "wind_speed": "Rýchlosť vetra"
         }
+    },
+    "groups": {
+        "system-admin": "Správcovia",
+        "system-users": "Používatelia"
     }
 }

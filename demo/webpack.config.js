@@ -19,7 +19,7 @@ module.exports = {
   devtool: isProd ? "cheap-source-map" : "inline-source-map",
   entry: {
     main: "./src/entrypoint.ts",
-    compatibility: "../src/entrypoints/compatibility.js",
+    compatibility: "../src/entrypoints/compatibility.ts",
   },
   module: {
     rules: [

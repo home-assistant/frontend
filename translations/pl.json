@@ -86,7 +86,7 @@
             },
             "battery": {
                 "off": "naładowana",
-                "on": "rozładowana"
+                "on": "Rozładowana"
             },
             "problem": {
                 "off": "ok",
@@ -468,7 +468,7 @@
                         },
                         "conditions": {
                             "header": "Warunki",
-                            "introduction": "Warunki są opcjonalną częścią reguły automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest przełączany. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony. ",
+                            "introduction": "Warunki są opcjonalną częścią reguły automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest przełączany. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony.",
                             "add": "Dodaj warunek",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -635,12 +635,12 @@
                         "create_area": "UTWÓRZ OBSZAR"
                     },
                     "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych obszarów!",
-                    "create_area": "STWÓRZ OBSZAR",
+                    "create_area": "UTWÓRZ OBSZAR",
                     "editor": {
                         "default_name": "Nowy obszar",
                         "delete": "USUŃ",
                         "update": "UAKTUALNIJ",
-                        "create": "STWÓRZ"
+                        "create": "UTWÓRZ"
                     }
                 },
                 "entity_registry": {

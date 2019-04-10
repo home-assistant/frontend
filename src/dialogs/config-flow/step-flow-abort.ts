@@ -33,20 +33,17 @@ class StepFlowAbort extends LitElement {
     );
 
     return html`
-        <h2>Aborted</h2>
-        <div class="content">
-          ${
-            description
-              ? html`
-                  <ha-markdown .content=${description} allow-svg></ha-markdown>
-                `
-              : ""
-          }
-        </div>
-        <div class="buttons">
-          <mwc-button @click="${this._flowDone}">Close</mwc-button>
-        </div>
-      </paper-dialog>
+      <h2>Aborted</h2>
+      <div class="content">
+        ${description
+          ? html`
+              <ha-markdown .content=${description} allow-svg></ha-markdown>
+            `
+          : ""}
+      </div>
+      <div class="buttons">
+        <mwc-button @click="${this._flowDone}">Close</mwc-button>
+      </div>
     `;
   }
 

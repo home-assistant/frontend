@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Neznano",
-            "unavailable": "N\/A"
+            "unavailable": "N\/A",
+            "error": "Napaka",
+            "entity_not_found": "Subjekt ni bil najden"
         },
         "alarm_control_panel": {
             "armed": "Aktiven",
@@ -607,7 +609,18 @@
                     "description": "Upravljanje omrežja za avtomatizacijo doma Zigbee",
                     "services": {
                         "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
-                        "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav."
+                        "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav.",
+                        "remove": "Odstranite napravo iz omrežja ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
+                        "area_picker_label": "Območje",
+                        "update_name_button": "Posodobi ime"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Dodaj naprave",
+                        "spinner": "Iskanje ZHA Zigbee naprav...",
+                        "discovery_text": "Tukaj bodo prikazane odkrite naprave. Sledite navodilom za napravo in jo postavite v način seznanjanja."
                     }
                 },
                 "area_registry": {
@@ -1066,7 +1079,7 @@
         },
         "notification_toast": {
             "entity_turned_on": "Vklopljen je {entity} .",
-            "entity_turned_off": "Izklopljen {entity} .",
+            "entity_turned_off": "Izklopljen {entity}.",
             "service_called": "Storitev {service} klicana.",
             "service_call_failed": "Storitve ni bilo mogoče poklicati {service}.",
             "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave..."

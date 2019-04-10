@@ -81,8 +81,8 @@
                 "on": "Dangereux"
             },
             "presence": {
-                "off": "Absent",
-                "on": "Présent"
+                "off": "Absent.e",
+                "on": "Présent.e"
             },
             "battery": {
                 "off": "Normal",
@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Inconnu",
-            "unavailable": "Indisponible"
+            "unavailable": "Indisponible",
+            "error": "Erreur",
+            "entity_not_found": "Entité introuvable"
         },
         "alarm_control_panel": {
             "armed": "Activé",
@@ -479,7 +481,7 @@
                                     "state": "État"
                                 },
                                 "numeric_state": {
-                                    "label": "État numérique",
+                                    "label": "Valeur numérique",
                                     "above": "Dessus",
                                     "below": "Sous",
                                     "value_template": "Contenu du template (optionnel)"
@@ -607,7 +609,18 @@
                     "description": "Gestion de réseau domotique ZigBee",
                     "services": {
                         "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service.",
-                        "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques."
+                        "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques.",
+                        "remove": "Supprimer un appareil du réseau ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nom d'utilisateur",
+                        "area_picker_label": "Pièce",
+                        "update_name_button": "Mettre à jour le nom"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Ajout de périphériques",
+                        "spinner": "Recherche de périphériques ZHA Zigbee ...",
+                        "discovery_text": "Les appareils découverts apparaîtront ici. Suivez les instructions pour votre \/ vos appareil(s) et placez-le(s) en mode de couplage."
                     }
                 },
                 "area_registry": {
