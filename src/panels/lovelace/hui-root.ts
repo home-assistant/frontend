@@ -478,8 +478,8 @@ class HUIRoot extends LitElement {
 
   private _updateNotifications(
     states: HassEntities,
-    persistent: Array<unknown>
-  ): Array<unknown> {
+    persistent: unknown[]
+  ): unknown[] {
     const configurator = computeNotifications(states);
     return persistent.concat(configurator);
   }

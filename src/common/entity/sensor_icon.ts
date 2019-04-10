@@ -8,6 +8,8 @@ const fixedDeviceClassIcons = {
   illuminance: "hass:brightness-5",
   temperature: "hass:thermometer",
   pressure: "hass:gauge",
+  power: "hass:flash",
+  signal_strength: "hass:wifi",
 };
 
 export default function sensorIcon(state: HassEntity) {

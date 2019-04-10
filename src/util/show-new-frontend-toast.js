@@ -13,7 +13,7 @@ export default (installingWorker) => {
   );
   button.style.color = "var(--primary-color)";
   button.style.fontWeight = "bold";
-  button.innerHTML = "reload";
+  button.label = "reload";
   toast.appendChild(button);
 
   document.body.appendChild(toast);

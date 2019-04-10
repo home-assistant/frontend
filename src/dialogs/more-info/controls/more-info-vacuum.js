@@ -1,6 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -8,6 +7,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-attributes";
+import "../../../components/ha-paper-dropdown-menu";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 
 class MoreInfoVacuum extends PolymerElement {
@@ -104,7 +104,7 @@ class MoreInfoVacuum extends PolymerElement {
 
       <div hidden$="[[!supportsFanSpeed(stateObj)]]">
         <div class="horizontal justified layout">
-          <paper-dropdown-menu
+          <ha-paper-dropdown-menu
             label-float=""
             dynamic-align=""
             label="Fan speed"
@@ -117,7 +117,7 @@ class MoreInfoVacuum extends PolymerElement {
                 <paper-item>[[item]]</paper-item>
               </template>
             </paper-listbox>
-          </paper-dropdown-menu>
+          </ha-paper-dropdown-menu>
           <div
             style="justify-content: center; align-self: center; padding-top: 1.3em"
           >

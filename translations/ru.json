@@ -1062,7 +1062,7 @@
             },
             "relative_time": {
                 "past": "{time} назад",
-                "future": "{time} назад",
+                "future": "через {time}",
                 "never": "Никогда",
                 "duration": {
                     "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",

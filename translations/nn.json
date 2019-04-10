@@ -237,7 +237,7 @@
             },
             "query_stage": {
                 "initializing": "Initialiserer ({query_stage})",
-                "dead": "Død ({query_stage})"
+                "dead": "Dau ({query_stage})"
             }
         },
         "weather": {
@@ -279,7 +279,8 @@
     "state_badge": {
         "default": {
             "unknown": "Ukjent",
-            "unavailable": "Utilgjengeleg"
+            "unavailable": "Utilgjengeleg",
+            "error": "Feil"
         },
         "alarm_control_panel": {
             "armed": "Påslått",
@@ -314,7 +315,7 @@
                 "period": "Periode"
             },
             "logbook": {
-                "showing_entries": "Viser oppføringer for",
+                "showing_entries": "Visar oppføringar for",
                 "period": "Periode"
             },
             "mailbox": {
@@ -607,6 +608,12 @@
                     "description": "Zigbee heimeautomasjon nettverksadministrering",
                     "services": {
                         "reconfigure": "Konfigurer ZHA-eininga (heal device) på nytt. Bruk dette om du har problem med eininga. Dersom eining går på batteri, ver sikker på at den er vaken og tek i mot kommandar når du brukar denne tenesta."
+                    },
+                    "device_card": {
+                        "update_name_button": "Oppdater namn"
+                    },
+                    "add_device_page": {
+                        "spinner": "Leitar etter ZHA ZigBee apparat..."
                     }
                 },
                 "area_registry": {
@@ -836,7 +843,8 @@
                     },
                     "create_account": "Lag konto",
                     "error": {
-                        "required_fields": "Fyll ut dei nødvendige felta"
+                        "required_fields": "Fyll ut dei nødvendige felta",
+                        "password_not_match": "Passorda er ikkje eins"
                     }
                 }
             },
@@ -918,7 +926,7 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
             "week": "{count} {count, plural,\none {veke}\nother {veker}\n}",
-            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekundar}\n}",
             "minute": "{count} {count, plural,\none {minutt}\nother {minutt}\n}",
             "hour": "{count} {count, plural,\none {time}\nother {timar}\n}"
         },
@@ -1160,6 +1168,7 @@
         }
     },
     "groups": {
-        "system-admin": "Administratorer"
+        "system-admin": "Administratorer",
+        "system-users": "Brukarar"
     }
 }

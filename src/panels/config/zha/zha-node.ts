@@ -24,6 +24,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { sortZHADevices } from "./functions";
 import { ItemSelectedEvent, ZHADeviceRemovedEvent } from "./types";
 
 declare global {
@@ -141,9 +142,7 @@ export class ZHANode extends LitElement {
   }
 
   private async _fetchDevices() {
-    this._nodes = (await fetchDevices(this.hass!)).sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    });
+    this._nodes = (await fetchDevices(this.hass!)).sort(sortZHADevices);
   }
 
   private _onDeviceRemoved(event: ZHADeviceRemovedEvent): void {

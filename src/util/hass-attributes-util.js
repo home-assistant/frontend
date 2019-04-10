@@ -27,7 +27,15 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "window",
   ],
   cover: ["garage"],
-  sensor: ["battery", "humidity", "illuminance", "temperature", "pressure"],
+  sensor: [
+    "battery",
+    "humidity",
+    "illuminance",
+    "temperature",
+    "pressure",
+    "power",
+    "signal_strength",
+  ],
 };
 
 hassAttributeUtil.UNKNOWN_TYPE = "json";

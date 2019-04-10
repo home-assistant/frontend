@@ -15,10 +15,10 @@ import { haStyleDialog } from "../../../../resources/styles";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-dialog/paper-dialog";
-import "../../components/dialog/ha-dialog";
+import "../../../../components/dialog/ha-paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HaPaperDialog } from "../../components/dialog/ha-dialog";
+import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { HomeAssistant } from "../../../../types";
@@ -428,7 +428,7 @@ export class HuiEditCard extends LitElement {
         }
 
         @media (min-width: 1200px) {
-          paper-dialog {
+          ha-paper-dialog {
             max-width: none;
             width: 1000px;
           }

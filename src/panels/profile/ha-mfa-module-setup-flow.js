@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
@@ -25,7 +25,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .error {
           color: red;
         }
-        paper-dialog {
+        ha-paper-dialog {
           max-width: 500px;
         }
         ha-markdown img:first-child:last-child,
@@ -44,7 +44,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin-right: 16px;
         }
       </style>
-      <paper-dialog
+      <ha-paper-dialog
         id="dialog"
         with-backdrop=""
         opened="{{_opened}}"
@@ -129,7 +129,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </template>
           </template>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 

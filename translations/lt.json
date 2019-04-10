@@ -133,7 +133,9 @@
     "state_badge": {
         "default": {
             "unknown": "Nžn",
-            "unavailable": "Nežin"
+            "unavailable": "Nežin",
+            "error": "Klaida",
+            "entity_not_found": "Objektas nerastas"
         },
         "alarm_control_panel": {
             "armed": "Užrakinta",
@@ -257,7 +259,18 @@
                 "zha": {
                     "description": "„Zigbee Home Automation“ tinklo valdymas",
                     "services": {
-                        "updateDeviceName": "Nustatyti pasirinktinį pavadinimą šiam įrenginiu, prietaisų registre."
+                        "updateDeviceName": "Nustatyti pasirinktinį pavadinimą šiam įrenginiu, prietaisų registre.",
+                        "remove": "Pašalinkite įrenginį iš „ZigBee“ tinklo."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Vartotojo suteiktas vardas",
+                        "area_picker_label": "Sritis",
+                        "update_name_button": "Atnaujinti pavadinimą"
+                    },
+                    "add_device_page": {
+                        "header": "„Zigbee“ namų automatika - pridėti įrenginių",
+                        "spinner": "Ieškoma ZHA Zigbee įrenginių...",
+                        "discovery_text": "Čia bus rodomi atrasti įrenginiai. Vadovaukitės jūsų įtaiso instrukcijomis ir nustatykite jį suporavimo režimui."
                     }
                 },
                 "area_registry": {
@@ -284,6 +297,7 @@
                     "picker": {
                         "header": "Subjektų registras",
                         "unavailable": "(nepasiekiamas)",
+                        "introduction2": "Naudokite subjekto registrą, kad perrašytumėte pavadinimą, pakeiskite subjekto ID arba pašalintumėte įrašą iš namų asistento. Atminkite, kad pašalindami registro įrašą tai nepanaikins pačio subjekto. Norėdami tai padaryti, sekite toliau pateiktą nuorodą ir pašalinkite ją iš integracijos puslapio.",
                         "integrations_page": "Integracijų puslapis"
                     },
                     "editor": {

@@ -34,18 +34,27 @@ const generateJSPage = (entrypoint, latestBuild) => {
   });
 };
 
+// Create an object mapping browser urls to their paths during build
+const workBoxTranslationsTemplatedURLs = {};
+const englishFP = translationMetadata["translations"]["en"]["fingerprints"];
+Object.keys(englishFP).forEach((key) => {
+  workBoxTranslationsTemplatedURLs[
+    `/static/translations/${englishFP[key]}`
+  ] = `build-translations/output/${key}.json`;
+});
+
 function createConfig(isProdBuild, latestBuild) {
   const buildPath = latestBuild ? "hass_frontend/" : "hass_frontend_es5/";
   const publicPath = latestBuild ? "/frontend_latest/" : "/frontend_es5/";
 
   const entry = {
-    app: "./src/entrypoints/app.js",
-    authorize: "./src/entrypoints/authorize.js",
+    app: "./src/entrypoints/app.ts",
+    authorize: "./src/entrypoints/authorize.ts",
     onboarding: "./src/entrypoints/onboarding.ts",
     core: "./src/entrypoints/core.ts",
-    compatibility: "./src/entrypoints/compatibility.js",
+    compatibility: "./src/entrypoints/compatibility.ts",
     "custom-panel": "./src/entrypoints/custom-panel.ts",
-    "hass-icons": "./src/entrypoints/hass-icons.js",
+    "hass-icons": "./src/entrypoints/hass-icons.ts",
   };
 
   if (latestBuild) {
@@ -153,17 +162,9 @@ function createConfig(isProdBuild, latestBuild) {
         swSrc: "./src/entrypoints/service-worker-bootstrap.js",
         swDest: "service_worker.js",
         importWorkboxFrom: "local",
-        include: [
-          /core.ts$/,
-          /app.js$/,
-          /custom-panel.ts$/,
-          /hass-icons.js$/,
-          /\.chunk\.js$/,
-        ],
-        templatedUrls: {
-          [`/static/translations/${
-            translationMetadata["translations"]["en"]["fingerprints"]["en"]
-          }`]: "build-translations/output/en.json",
+        include: [/\.js$/],
+        templatedURLs: {
+          ...workBoxTranslationsTemplatedURLs,
           "/static/icons/favicon-192x192.png":
             "public/icons/favicon-192x192.png",
           "/static/fonts/roboto/Roboto-Light.ttf":
@@ -185,11 +186,11 @@ function createConfig(isProdBuild, latestBuild) {
           "service-worker-hass",
         ]);
         if (!isProdBuild || dontHash.has(chunk.name)) return `${chunk.name}.js`;
-        return `${chunk.name}-${chunk.hash.substr(0, 8)}.js`;
+        return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
       },
       chunkFilename:
         isProdBuild && !isStatsBuild
-          ? "[chunkhash].chunk.js"
+          ? "chunk.[chunkhash].js"
           : "[name].chunk.js",
       path: path.resolve(__dirname, buildPath),
       publicPath,
