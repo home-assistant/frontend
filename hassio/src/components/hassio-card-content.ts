@@ -17,7 +17,7 @@ class HassioCardContent extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public title!: string;
   @property() public description?: string;
-  @property() public available: boolean = true;
+  @property({ type: Boolean }) public available: boolean = true;
   @property() public datetime?: string;
   @property() public iconTitle?: string;
   @property() public iconClass?: string;
