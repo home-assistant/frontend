@@ -1,3 +1,5 @@
+import { PanelInfo } from "../types";
+
 export interface CustomPanelConfig {
   name: string;
   embed_iframe: boolean;
@@ -6,3 +8,7 @@ export interface CustomPanelConfig {
   module_url?: string;
   html_url?: string;
 }
+
+export type CustomPanelInfo<T = {}> = PanelInfo<
+  T & { _panel_custom: CustomPanelConfig }
+>;

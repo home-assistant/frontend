@@ -17,6 +17,9 @@ import {
   HassioSupervisorInfo,
   HassioHostInfo,
   HassioHomeAssistantInfo,
+  fetchHassioAddonInfo,
+  createHassioSession,
+  HassioPanelInfo,
 } from "../../src/data/hassio";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
@@ -32,6 +35,7 @@ customElements.get("paper-icon-button").prototype._keyBindings = {};
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   @property() public hass!: HomeAssistant;
+  @property() public panel!: HassioPanelInfo;
 
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
@@ -117,6 +121,11 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   }
 
   private async _fetchData() {
+    if (this.panel.config && this.panel.config.ingress) {
+      await this._redirectIngress(this.panel.config.ingress);
+      return;
+    }
+
     const [supervisorInfo, hostInfo, hassInfo] = await Promise.all([
       fetchHassioSupervisorInfo(this.hass),
       fetchHassioHostInfo(this.hass),
@@ -125,6 +134,28 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     this._supervisorInfo = supervisorInfo;
     this._hostInfo = hostInfo;
     this._hassInfo = hassInfo;
+  }
+
+  private async _redirectIngress(addonSlug: string) {
+    try {
+      const [addon] = await Promise.all([
+        fetchHassioAddonInfo(this.hass, addonSlug).catch(() => {
+          throw new Error("Failed to fetch add-on info");
+        }),
+        createHassioSession(this.hass).catch(() => {
+          throw new Error("Failed to create an ingress session");
+        }),
+      ]);
+      if (!addon.ingress_url) {
+        throw new Error("Add-on does not support Ingress");
+      }
+      location.assign(addon.ingress_url);
+      // await a promise that doesn't resolve, so we show the loading screen
+      // while we load the next page.
+      await new Promise(() => undefined);
+    } catch (err) {
+      alert(`Unable to open ingress connection `);
+    }
   }
 
   private _apiCalled(ev) {
