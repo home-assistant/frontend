@@ -19,6 +19,10 @@ class HaCameraStream extends LitElement {
   @property() public stateObj?: CameraEntity;
   private _hlsPolyfillInstance?: Hls;
 
+  public disconnectedCallback() {
+    this._teardownPlayback();
+  }
+
   protected render(): TemplateResult | void {
     return html`
       <video autoplay controls muted playsinline></video>
