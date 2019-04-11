@@ -78,16 +78,16 @@ export interface Themes {
   themes: { [key: string]: Theme };
 }
 
-export interface Panel {
+export interface PanelInfo<T = {} | null> {
   component_name: string;
-  config: { [key: string]: any } | null;
+  config: T;
   icon: string | null;
   title: string | null;
   url_path: string;
 }
 
 export interface Panels {
-  [name: string]: Panel;
+  [name: string]: PanelInfo;
 }
 
 export interface Translation {
@@ -212,14 +212,6 @@ export type CameraEntity = HassEntityBase & {
   };
 };
 
-export interface PanelInfo<T = unknown> {
-  component_name: string;
-  icon?: string;
-  title?: string;
-  url_path: string;
-  config: T;
-}
-
 export interface Route {
   prefix: string;
   path: string;
@@ -229,7 +221,7 @@ export interface PanelElement extends HTMLElement {
   hass?: HomeAssistant;
   narrow?: boolean;
   route?: Route | null;
-  panel?: Panel;
+  panel?: PanelInfo;
 }
 
 export interface LocalizeMixin {
