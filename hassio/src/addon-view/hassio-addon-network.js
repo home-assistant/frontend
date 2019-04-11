@@ -44,6 +44,7 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
                   <td>[[item.container]]</td>
                   <td>
                     <paper-input
+                      placeholder="disabled"
                       value="{{item.host}}"
                       no-label-float=""
                     ></paper-input>
