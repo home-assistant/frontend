@@ -2,8 +2,8 @@ import { property, PropertyValues, UpdatingElement } from "lit-element";
 import { loadCustomPanel } from "../../util/custom-panel/load-custom-panel";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
 import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
-import { HomeAssistant, Route, Panel } from "../../types";
-import { CustomPanelConfig } from "../../data/panel_custom";
+import { HomeAssistant, Route } from "../../types";
+import { CustomPanelInfo } from "../../data/panel_custom";
 import { navigate } from "../../common/navigate";
 
 declare global {
@@ -16,7 +16,7 @@ export class HaPanelCustom extends UpdatingElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
   @property() public route!: Route;
-  @property() public panel!: Panel;
+  @property() public panel!: CustomPanelInfo;
   private _setProperties?: (props: {}) => void | undefined;
 
   // Since navigate fires events on `window`, we need to expose this as a function
@@ -66,8 +66,8 @@ export class HaPanelCustom extends UpdatingElement {
     }
   }
 
-  private _createPanel(panel: Panel) {
-    const config = panel.config!._panel_custom as CustomPanelConfig;
+  private _createPanel(panel: CustomPanelInfo) {
+    const config = panel.config!._panel_custom;
 
     const tempA = document.createElement("a");
     tempA.href = config.html_url || config.js_url || config.module_url || "";

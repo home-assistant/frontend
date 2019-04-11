@@ -9,7 +9,7 @@ import {
   HassRouterPage,
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
-import { HomeAssistant, Panel } from "../../src/types";
+import { HomeAssistant } from "../../src/types";
 import {
   fetchHassioSupervisorInfo,
   fetchHassioHostInfo,
@@ -19,6 +19,7 @@ import {
   HassioHomeAssistantInfo,
   fetchHassioAddonInfo,
   createHassioSession,
+  HassioPanelInfo,
 } from "../../src/data/hassio";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
@@ -34,12 +35,7 @@ customElements.get("paper-icon-button").prototype._keyBindings = {};
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   @property() public hass!: HomeAssistant;
-  @property() public panel!: Panel<
-    | undefined
-    | {
-        ingress?: string;
-      }
-  >;
+  @property() public panel!: HassioPanelInfo;
 
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.

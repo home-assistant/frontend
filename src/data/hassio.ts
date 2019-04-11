@@ -1,4 +1,11 @@
-import { HomeAssistant } from "../types";
+import { HomeAssistant, PanelInfo } from "../types";
+
+export type HassioPanelInfo = PanelInfo<
+  | undefined
+  | {
+      ingress?: string;
+    }
+>;
 
 interface HassioResponse<T> {
   data: T;
