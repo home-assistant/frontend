@@ -68,7 +68,7 @@ class MoreInfoCamera extends LitElement {
             <ha-camera-stream
               .hass="${this.hass}"
               .stateObj="${this.stateObj}"
-            />
+            ></ha-camera-stream>
             ${this._cameraPrefs
               ? html`
                   <paper-checkbox
