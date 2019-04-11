@@ -15,7 +15,7 @@ import "./ha-icon";
 
 import "../components/user/ha-user-badge";
 import isComponentLoaded from "../common/config/is_component_loaded";
-import { HomeAssistant, Panel } from "../types";
+import { HomeAssistant, PanelInfo } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { DEFAULT_PANEL } from "../common/const";
 
@@ -32,7 +32,9 @@ const computePanels = (hass: HomeAssistant) => {
     logbook: 2,
     history: 3,
   };
-  const result: Panel[] = Object.values(panels).filter((panel) => panel.title);
+  const result: PanelInfo[] = Object.values(panels).filter(
+    (panel) => panel.title
+  );
 
   result.sort((a, b) => {
     const aBuiltIn = a.component_name in sortValue;
