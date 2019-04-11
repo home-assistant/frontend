@@ -78,9 +78,9 @@ export interface Themes {
   themes: { [key: string]: Theme };
 }
 
-export interface Panel {
+export interface Panel<T = null> {
   component_name: string;
-  config: { [key: string]: any } | null;
+  config: T;
   icon: string | null;
   title: string | null;
   url_path: string;
