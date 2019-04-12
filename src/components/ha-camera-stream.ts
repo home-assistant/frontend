@@ -93,6 +93,7 @@ class HaCameraStream extends UpdatingElement {
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
+    this.appendChild(videoEl);
     await new Promise((resolve) =>
       videoEl.addEventListener("loadedmetadata", resolve)
     );
