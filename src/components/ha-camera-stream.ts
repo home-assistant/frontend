@@ -1,32 +1,20 @@
-import {
-  css,
-  CSSResult,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { property, UpdatingElement, PropertyValues } from "lit-element";
 
+import computeStateName from "../common/entity/compute_state_name";
 import { HomeAssistant, CameraEntity } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
-import { fetchStreamUrl } from "../data/camera";
+import { fetchStreamUrl, computeMJPEGStreamUrl } from "../data/camera";
 
 type HLSModule = typeof import("hls.js");
 
-class HaCameraStream extends LitElement {
+class HaCameraStream extends UpdatingElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
   private _hlsPolyfillInstance?: Hls;
 
   public disconnectedCallback() {
+    super.disconnectedCallback();
     this._teardownPlayback();
-  }
-
-  protected render(): TemplateResult | void {
-    return html`
-      <video autoplay controls muted playsinline></video>
-    `;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -58,6 +46,19 @@ class HaCameraStream extends LitElement {
       return;
     }
 
+    if (!this.hass!.config.components.includes("stream")) {
+      this._renderMJPEG();
+      return;
+    }
+
+    const videoEl = document.createElement("video");
+    videoEl.style.width = "100%";
+    videoEl.autoplay = true;
+    videoEl.controls = true;
+    videoEl.muted = true;
+    // @ts-ignore
+    videoEl.playsinline = true;
+
     // tslint:disable-next-line
     const Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
       .default as HLSModule;
@@ -65,7 +66,7 @@ class HaCameraStream extends LitElement {
 
     if (!hlsSupported) {
       hlsSupported =
-        this._videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
     if (hlsSupported) {
@@ -76,24 +77,21 @@ class HaCameraStream extends LitElement {
         );
 
         if (Hls.isSupported()) {
-          this._renderHLSPolyfill(Hls, url);
+          this._renderHLSPolyfill(videoEl, Hls, url);
         } else {
-          this._renderHLSNative(url);
+          this._renderHLSNative(videoEl, url);
         }
         return;
       } catch (err) {
-        // When an error happens, we will do nothing so we render mjpeg.
-        // TODO: Actually do something
+        // Fails if entity doesn't support it. In that case we go
+        // for mjpeg.
       }
     }
+
+    this._renderMJPEG();
   }
 
-  private get _videoEl(): HTMLVideoElement {
-    return this.shadowRoot!.querySelector("video")! as HTMLVideoElement;
-  }
-
-  private async _renderHLSNative(url: string) {
-    const videoEl = this._videoEl;
+  private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
     await new Promise((resolve) =>
       videoEl.addEventListener("loadedmetadata", resolve)
@@ -102,39 +100,44 @@ class HaCameraStream extends LitElement {
   }
 
   private async _renderHLSPolyfill(
+    videoEl: HTMLVideoElement,
     // tslint:disable-next-line
     Hls: HLSModule,
     url: string
   ) {
     const hls = new Hls();
-    const videoEl = this._videoEl;
     this._hlsPolyfillInstance = hls;
     await new Promise((resolve) => {
       hls.on(Hls.Events.MEDIA_ATTACHED, resolve);
       hls.attachMedia(videoEl);
     });
     hls.loadSource(url);
+    this.appendChild(videoEl);
     videoEl.addEventListener("loadeddata", () =>
       fireEvent(this, "iron-resize")
     );
+  }
+
+  private _renderMJPEG() {
+    const img = document.createElement("img");
+    img.style.width = "100%";
+    img.addEventListener("load", () => fireEvent(this, "iron-resize"));
+    img.src = __DEMO__
+      ? "/demo/webcamp.jpg"
+      : computeMJPEGStreamUrl(this.stateObj!);
+    img.alt = computeStateName(this.stateObj!);
+    this.appendChild(img);
   }
 
   private _teardownPlayback(): any {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
-    } else {
-      this._videoEl.src = "";
+    }
+    while (this.lastChild) {
+      this.removeChild(this.lastChild);
     }
     this.stateObj = undefined;
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      video {
-        width: 100%;
-      }
-    `;
   }
 }
 
