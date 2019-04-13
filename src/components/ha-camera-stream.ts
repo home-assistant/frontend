@@ -10,15 +10,25 @@ type HLSModule = typeof import("hls.js");
 class HaCameraStream extends UpdatingElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
+  @property() public showControls: boolean = false;
   private _hlsPolyfillInstance?: Hls;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // @ts-ignore
+    if (!this._hasRequestedUpdate) {
+      this.requestUpdate();
+    }
+  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._teardownPlayback();
   }
 
-  protected updated(changedProps: PropertyValues) {
-    if (!changedProps.has("stateObj")) {
+  protected update(changedProps: PropertyValues) {
+    super.update(changedProps);
+    if (this.lastChild) {
       return;
     }
 
@@ -54,7 +64,7 @@ class HaCameraStream extends UpdatingElement {
     const videoEl = document.createElement("video");
     videoEl.style.width = "100%";
     videoEl.autoplay = true;
-    videoEl.controls = true;
+    videoEl.controls = this.showControls;
     videoEl.muted = true;
     // @ts-ignore
     videoEl.playsinline = true;
@@ -138,7 +148,6 @@ class HaCameraStream extends UpdatingElement {
     while (this.lastChild) {
       this.removeChild(this.lastChild);
     }
-    this.stateObj = undefined;
   }
 }
 

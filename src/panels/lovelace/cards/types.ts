@@ -129,6 +129,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
   camera_image?: string;
+  camera_view?: string;
   state_image?: {};
   aspect_ratio?: string;
   entity?: string;
@@ -140,6 +141,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   name?: string;
   image?: string;
   camera_image?: string;
+  camera_view?: string;
   state_image?: {};
   aspect_ratio?: string;
   tap_action?: ActionConfig;
@@ -153,6 +155,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
   camera_image?: string;
+  camera_view?: string;
   state_image?: {};
   aspect_ratio?: string;
   entity?: string;

@@ -27,6 +27,11 @@ class MoreInfoCamera extends LitElement {
   @property() public stateObj?: CameraEntity;
   @property() private _cameraPrefs?: CameraPreferences;
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.stateObj = undefined;
+  }
+
   protected render(): TemplateResult | void {
     if (!this.hass || !this.stateObj) {
       return html``;
@@ -36,6 +41,7 @@ class MoreInfoCamera extends LitElement {
       <ha-camera-stream
         .hass="${this.hass}"
         .stateObj="${this.stateObj}"
+        showControls="true"
       ></ha-camera-stream>
       ${this._cameraPrefs
         ? html`
