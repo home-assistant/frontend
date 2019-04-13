@@ -66,8 +66,7 @@ class HaCameraStream extends UpdatingElement {
     videoEl.autoplay = true;
     videoEl.controls = this.showControls;
     videoEl.muted = true;
-    // @ts-ignore
-    videoEl.playsinline = true;
+    videoEl.setAttribute("playsinline", "playsinline");
 
     // tslint:disable-next-line
     const Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
