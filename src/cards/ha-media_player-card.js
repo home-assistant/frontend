@@ -57,6 +57,10 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           padding-top: 100%;
         }
 
+        .banner.content-type-game:before {
+          padding-top: 100%;
+        }
+
         .banner.no-cover:before {
           padding-top: 88px;
         }
@@ -310,6 +314,8 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       cls += " no-cover";
     } else if (playerObj.stateObj.attributes.media_content_type === "music") {
       cls += " content-type-music";
+    } else if (playerObj.stateObj.attributes.media_content_type === "game") {
+      cls += " content-type-game";
     }
     return cls;
   }
