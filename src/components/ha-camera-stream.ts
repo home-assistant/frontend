@@ -3,14 +3,19 @@ import { property, UpdatingElement, PropertyValues } from "lit-element";
 import computeStateName from "../common/entity/compute_state_name";
 import { HomeAssistant, CameraEntity } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
-import { fetchStreamUrl, computeMJPEGStreamUrl } from "../data/camera";
+import {
+  CAMERA_SUPPORT_STREAM,
+  fetchStreamUrl,
+  computeMJPEGStreamUrl,
+} from "../data/camera";
+import { supportsFeature } from "../common/entity/supports-feature";
 
 type HLSModule = typeof import("hls.js");
 
 class HaCameraStream extends UpdatingElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
-  @property() public showControls: boolean = false;
+  @property({ type: Boolean }) public showControls = false;
   private _hlsPolyfillInstance?: Hls;
 
   public connectedCallback() {
@@ -52,11 +57,10 @@ class HaCameraStream extends UpdatingElement {
   }
 
   private async _startPlayback(): Promise<void> {
-    if (!this.stateObj) {
-      return;
-    }
-
-    if (!this.hass!.config.components.includes("stream")) {
+    if (
+      !this.hass!.config.components.includes("stream") ||
+      !supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
+    ) {
       this._renderMJPEG();
       return;
     }
@@ -82,7 +86,7 @@ class HaCameraStream extends UpdatingElement {
       try {
         const { url } = await fetchStreamUrl(
           this.hass!,
-          this.stateObj.entity_id
+          this.stateObj!.entity_id
         );
 
         if (Hls.isSupported()) {

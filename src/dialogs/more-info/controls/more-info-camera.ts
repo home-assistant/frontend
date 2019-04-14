@@ -41,7 +41,7 @@ class MoreInfoCamera extends LitElement {
       <ha-camera-stream
         .hass="${this.hass}"
         .stateObj="${this.stateObj}"
-        showControls="true"
+        showcontrols
       ></ha-camera-stream>
       ${this._cameraPrefs
         ? html`
@@ -72,9 +72,8 @@ class MoreInfoCamera extends LitElement {
 
     if (
       curEntityId &&
-      this.stateObj &&
       this.hass!.config.components.includes("stream") &&
-      supportsFeature(this.stateObj, CAMERA_SUPPORT_STREAM)
+      supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
     ) {
       // Fetch in background while we set up the video.
       this._fetchCameraPrefs();

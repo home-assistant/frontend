@@ -28,7 +28,7 @@ export interface StateSpecificConfig {
 }
 
 @customElement("hui-image")
-class HuiImage extends LitElement {
+export class HuiImage extends LitElement {
   @property() public hass?: HomeAssistant;
 
   @property() public entity?: string;
@@ -39,7 +39,7 @@ class HuiImage extends LitElement {
 
   @property() public cameraImage?: string;
 
-  @property() public cameraView?: string;
+  @property() public cameraView?: "live" | "auto";
 
   @property() public aspectRatio?: string;
 
@@ -216,8 +216,7 @@ class HuiImage extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      img,
-      video {
+      img {
         display: block;
         height: auto;
         transition: filter 0.2s linear;
