@@ -6,6 +6,7 @@ import {
   html,
   CSSResult,
   css,
+  customElement,
 } from "lit-element";
 
 import computeStateName from "../common/entity/compute_state_name";
@@ -20,6 +21,7 @@ import { supportsFeature } from "../common/entity/supports-feature";
 
 type HLSModule = typeof import("hls.js");
 
+@customElement("ha-camera-stream")
 class HaCameraStream extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
@@ -202,4 +204,8 @@ class HaCameraStream extends LitElement {
   }
 }
 
-customElements.define("ha-camera-stream", HaCameraStream);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-camera-stream": HaCameraStream;
+  }
+}

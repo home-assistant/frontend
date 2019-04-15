@@ -27,11 +27,6 @@ class MoreInfoCamera extends LitElement {
   @property() public stateObj?: CameraEntity;
   @property() private _cameraPrefs?: CameraPreferences;
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this.stateObj = undefined;
-  }
-
   protected render(): TemplateResult | void {
     if (!this.hass || !this.stateObj) {
       return html``;
