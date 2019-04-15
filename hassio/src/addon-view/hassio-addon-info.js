@@ -17,49 +17,49 @@ import "../components/hassio-card-content";
 
 const PERMIS_DESC = {
   rating: {
-    title: "Addon Security Rating",
+    title: "Add-on Security Rating",
     description:
-      "Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an addon requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk).",
+      "Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk).",
   },
   host_network: {
     title: "Host Network",
     description:
-      "Add-ons usually run in their own isolated network layer, which prevents them from accessing the network of the host operating system. In some cases, this network isolation can limit add-ons in providing their services and therefore, the isolation can be lifted by the add-on author, giving the addon full access to the network capabilities of the host machine. This gives the addon more networking capabilities but lowers the security, hence, the security rating of the add-on will be lowered when this option is used by the addon.",
+      "Add-ons usually run in their own isolated network layer, which prevents them from accessing the network of the host operating system. In some cases, this network isolation can limit add-ons in providing their services and therefore, the isolation can be lifted by the add-on author, giving the add-on full access to the network capabilities of the host machine. This gives the add-on more networking capabilities but lowers the security, hence, the security rating of the add-on will be lowered when this option is used by the add-on.",
   },
   homeassistant_api: {
     title: "Home Assistant API Access",
     description:
-      "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the addon as well, which enables an addon to interact with Home Assistant without the need for additional authentication tokens.",
+      "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the add-on as well, which enables an add-on to interact with Home Assistant without the need for additional authentication tokens.",
   },
   full_access: {
     title: "Full Hardware Access",
     description:
-      "This addon is given full access to the hardware of your system, by request of the addon author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the addon security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the addon manually. Only disable the protection mode if you know, need AND trust the source of this addon.",
+      "This add-on is given full access to the hardware of your system, by request of the add-on author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
   },
   hassio_api: {
     title: "Hass.io API Access",
     description:
-      "The addon was given access to the Hass.io API, by request of the addon author. By default, the addon can access general version information of your system. When the addon requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Hass.io system. This permission is indicated by this badge and will impact the security score of the addon negatively.",
+      "The add-on was given access to the Hass.io API, by request of the add-on author. By default, the add-on can access general version information of your system. When the add-on requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Hass.io system. This permission is indicated by this badge and will impact the security score of the addon negatively.",
   },
   docker_api: {
     title: "Full Docker Access",
     description:
-      "The addon author has requested the addon to have management access to the Docker instance running on your system. This mode gives the addon full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the addon security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the addon manually. Only disable the protection mode if you know, need AND trust the source of this addon.",
+      "The add-on author has requested the add-on to have management access to the Docker instance running on your system. This mode gives the add-on full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
   },
   host_pid: {
     title: "Host Processes Namespace",
     description:
-      "Usually, the processes the addon runs, are isolated from all other system processes. The addon author has requested the addon to have access to the system processes running on the host system instance, and allow the addon to spawn processes on the host system as well. This mode gives the addon full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the addon security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the addon manually. Only disable the protection mode if you know, need AND trust the source of this addon.",
+      "Usually, the processes the add-on runs, are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
   },
   apparmor: {
     title: "AppArmor",
     description:
-      "AppArmor ('Application Armor') is a Linux kernel security module that restricts addons capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAddon authors can provide their security profiles, optimized for the addon, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the addon.",
+      "AppArmor ('Application Armor') is a Linux kernel security module that restricts add-ons capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAdd-on authors can provide their security profiles, optimized for the add-on, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the add-on.",
   },
   auth_api: {
     title: "Home Assistant Authentication",
     description:
-      "An addon can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability.",
+      "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability.",
   },
   ingress: {
     title: "Ingress",
@@ -229,7 +229,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           <template is="dom-if" if="[[!addon.protected]]">
             <paper-card heading="Warning: Protection mode is disabled!" class="warning">
               <div class="card-content">
-                Protection mode on this addon is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this addon.
+                Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
               </div>
               <div class="card-actions">
                   <mwc-button on-click="protectionToggled">Enable Protection mode</mwc-button>
@@ -238,9 +238,9 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             </paper-card>
           </template>
           <div class="security">
-              <h3>Addon Security Rating</h3>
+              <h3>Add-on Security Rating</h3>
               <div class="description light-color">
-                Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an addon requires on your system, the lower the score, thus raising the possible security risks.
+                Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.
               </div>
               <ha-label-badge
                 class$="[[computeSecurityClassName(addon.rating)]]"
@@ -416,7 +416,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           </template>
           <template is="dom-if" if="[[!addon.version]]">
             <template is="dom-if" if="[[!addon.available]]">
-              <p class="warning">This addon is not available on your system.</p>
+              <p class="warning">This add-on is not available on your system.</p>
             </template>
             <ha-call-api-button
               disabled="[[!addon.available]]"
