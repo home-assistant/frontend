@@ -1,4 +1,12 @@
-import { property, UpdatingElement, PropertyValues } from "lit-element";
+import {
+  property,
+  PropertyValues,
+  LitElement,
+  TemplateResult,
+  html,
+  CSSResult,
+  css,
+} from "lit-element";
 
 import computeStateName from "../common/entity/compute_state_name";
 import { HomeAssistant, CameraEntity } from "../types";
@@ -12,101 +20,141 @@ import { supportsFeature } from "../common/entity/supports-feature";
 
 type HLSModule = typeof import("hls.js");
 
-class HaCameraStream extends UpdatingElement {
+class HaCameraStream extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
   @property({ type: Boolean }) public showControls = false;
+  @property() private _attached = false;
+  // We keep track if we should force MJPEG with a string
+  // that way it automatically resets if we change entity.
+  @property() private _forceMJPEG: string | undefined = undefined;
   private _hlsPolyfillInstance?: Hls;
 
   public connectedCallback() {
     super.connectedCallback();
-    // @ts-ignore
-    if (!this._hasRequestedUpdate) {
-      this.requestUpdate();
-    }
+    this._attached = true;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._teardownPlayback();
+    this._attached = false;
   }
 
-  protected update(changedProps: PropertyValues) {
-    super.update(changedProps);
-    if (this.lastChild) {
-      return;
+  protected render(): TemplateResult | void {
+    if (!this.stateObj || !this._attached) {
+      return html``;
     }
+
+    return html`
+      ${this._shouldRenderMJPEG
+        ? html`
+            <img
+              @load=${this._elementResized}
+              .src=${__DEMO__
+                ? "/demo/webcamp.jpg"
+                : computeMJPEGStreamUrl(this.stateObj)}
+              .alt=${computeStateName(this.stateObj)}
+            />
+          `
+        : html`
+            <video
+              autoplay
+              muted
+              playsinline
+              ?controls=${this.showControls}
+              @loadeddata=${this._elementResized}
+            ></video>
+          `}
+    `;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+
+    const stateObjChanged = changedProps.has("_attached");
+    const attachedChanged = changedProps.has("_attached");
 
     const oldState = changedProps.get("stateObj") as this["stateObj"];
     const oldEntityId = oldState ? oldState.entity_id : undefined;
     const curEntityId = this.stateObj ? this.stateObj.entity_id : undefined;
 
-    // Same entity, ignore.
-    if (curEntityId === oldEntityId) {
+    if (
+      (!stateObjChanged && !attachedChanged) ||
+      (stateObjChanged && oldEntityId === curEntityId)
+    ) {
       return;
     }
 
-    // Tear down if we have something and we need to build it up
-    if (oldEntityId) {
-      this._teardownPlayback();
+    // If we are no longer attached, destroy polyfill.
+    if (attachedChanged && !this._attached) {
+      this._destroyPolyfill();
+      return;
     }
 
+    // Nothing to do if we are render MJPEG.
+    if (this._shouldRenderMJPEG) {
+      return;
+    }
+
+    // Tear down existing polyfill, if available
+    this._destroyPolyfill();
+
     if (curEntityId) {
-      this._startPlayback();
+      this._startHls();
     }
   }
 
-  private async _startPlayback(): Promise<void> {
-    if (
+  private get _shouldRenderMJPEG() {
+    return (
+      this._forceMJPEG === this.stateObj!.entity_id ||
       !this.hass!.config.components.includes("stream") ||
       !supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
-    ) {
-      this._renderMJPEG();
-      return;
-    }
+    );
+  }
 
-    const videoEl = document.createElement("video");
-    videoEl.style.width = "100%";
-    videoEl.autoplay = true;
-    videoEl.controls = this.showControls;
-    videoEl.muted = true;
-    videoEl.setAttribute("playsinline", "playsinline");
+  private get _videoEl(): HTMLVideoElement {
+    return this.shadowRoot!.querySelector("video")!;
+  }
 
+  private async _startHls(): Promise<void> {
     // tslint:disable-next-line
     const Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
       .default as HLSModule;
     let hlsSupported = Hls.isSupported();
+    const videoEl = this._videoEl;
 
     if (!hlsSupported) {
       hlsSupported =
         videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
     }
 
-    if (hlsSupported) {
-      try {
-        const { url } = await fetchStreamUrl(
-          this.hass!,
-          this.stateObj!.entity_id
-        );
-
-        if (Hls.isSupported()) {
-          this._renderHLSPolyfill(videoEl, Hls, url);
-        } else {
-          this._renderHLSNative(videoEl, url);
-        }
-        return;
-      } catch (err) {
-        // Fails if entity doesn't support it. In that case we go
-        // for mjpeg.
-      }
+    if (!hlsSupported) {
+      this._forceMJPEG = this.stateObj!.entity_id;
+      return;
     }
 
-    this._renderMJPEG();
+    try {
+      const { url } = await fetchStreamUrl(
+        this.hass!,
+        this.stateObj!.entity_id
+      );
+
+      if (Hls.isSupported()) {
+        this._renderHLSPolyfill(videoEl, Hls, url);
+      } else {
+        this._renderHLSNative(videoEl, url);
+      }
+      return;
+    } catch (err) {
+      // Fails if we were unable to get a stream
+      // tslint:disable-next-line
+      console.error(err);
+      this._forceMJPEG = this.stateObj!.entity_id;
+    }
   }
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
-    this.appendChild(videoEl);
     await new Promise((resolve) =>
       videoEl.addEventListener("loadedmetadata", resolve)
     );
@@ -121,36 +169,36 @@ class HaCameraStream extends UpdatingElement {
   ) {
     const hls = new Hls();
     this._hlsPolyfillInstance = hls;
-    await new Promise((resolve) => {
-      hls.on(Hls.Events.MEDIA_ATTACHED, resolve);
-      hls.attachMedia(videoEl);
+    hls.attachMedia(videoEl);
+    hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+      hls.loadSource(url);
     });
-    hls.loadSource(url);
-    this.appendChild(videoEl);
-    videoEl.addEventListener("loadeddata", () =>
-      fireEvent(this, "iron-resize")
-    );
   }
 
-  private _renderMJPEG() {
-    const img = document.createElement("img");
-    img.style.width = "100%";
-    img.addEventListener("load", () => fireEvent(this, "iron-resize"));
-    img.src = __DEMO__
-      ? "/demo/webcamp.jpg"
-      : computeMJPEGStreamUrl(this.stateObj!);
-    img.alt = computeStateName(this.stateObj!);
-    this.appendChild(img);
+  private _elementResized() {
+    fireEvent(this, "iron-resize");
   }
 
-  private _teardownPlayback(): any {
+  private _destroyPolyfill(): void {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
     }
-    while (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host,
+      img,
+      video {
+        display: block;
+      }
+
+      img,
+      video {
+        width: 100%;
+      }
+    `;
   }
 }
 
