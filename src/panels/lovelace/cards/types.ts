@@ -2,6 +2,7 @@ import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { Condition } from "../common/validate-condition";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceElementConfig } from "../elements/types";
+import { HuiImage } from "../components/hui-image";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -129,6 +130,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
   camera_image?: string;
+  camera_view?: HuiImage["cameraView"];
   state_image?: {};
   aspect_ratio?: string;
   entity?: string;
@@ -140,6 +142,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   name?: string;
   image?: string;
   camera_image?: string;
+  camera_view?: HuiImage["cameraView"];
   state_image?: {};
   aspect_ratio?: string;
   tap_action?: ActionConfig;
@@ -153,6 +156,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string;
   camera_image?: string;
+  camera_view?: HuiImage["cameraView"];
   state_image?: {};
   aspect_ratio?: string;
   entity?: string;
