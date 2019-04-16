@@ -73,7 +73,7 @@ class HaCameraStream extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    const stateObjChanged = changedProps.has("_attached");
+    const stateObjChanged = changedProps.has("stateObj");
     const attachedChanged = changedProps.has("_attached");
 
     const oldState = changedProps.get("stateObj") as this["stateObj"];
