@@ -26,7 +26,17 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "vibration",
     "window",
   ],
-  cover: ["garage"],
+  cover: [
+    "awning",
+    "blind",
+    "curtain",
+    "damper",
+    "door",
+    "garage",
+    "shade",
+    "shutter",
+    "window",
+  ],
   sensor: [
     "battery",
     "humidity",
