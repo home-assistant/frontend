@@ -108,6 +108,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .cameraImage="${computeDomain(this._config.entity) === "camera"
             ? this._config.entity
             : this._config.camera_image}"
+          .cameraView="${this._config.camera_view}"
           .entity="${this._config.entity}"
           .aspectRatio="${this._config.aspect_ratio}"
           @ha-click="${this._handleTap}"

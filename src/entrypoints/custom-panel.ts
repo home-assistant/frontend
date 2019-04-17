@@ -4,8 +4,7 @@ import { createCustomPanelElement } from "../util/custom-panel/create-custom-pan
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerElement } from "@polymer/polymer";
-import { Panel } from "../types";
-import { CustomPanelConfig } from "../data/panel_custom";
+import { CustomPanelInfo } from "../data/panel_custom";
 
 declare global {
   interface Window {
@@ -39,12 +38,12 @@ function setProperties(properties) {
   setCustomPanelProperties(panelEl, properties);
 }
 
-function initialize(panel: Panel, properties: {}) {
+function initialize(panel: CustomPanelInfo, properties: {}) {
   const style = document.createElement("style");
   style.innerHTML = "body{margin:0}";
   document.head.appendChild(style);
 
-  const config = panel.config!._panel_custom as CustomPanelConfig;
+  const config = panel.config._panel_custom;
   let start: Promise<unknown> = Promise.resolve();
 
   if (!webComponentsSupported) {
