@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Ageloggt als {email}",
-                    "description_not_login": "Net ageloggt"
+                    "description_not_login": "Net ageloggt",
+                    "description_features": "Steiert vun ënnerwee aus, integréiert mam Alexa an Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integratiounen",

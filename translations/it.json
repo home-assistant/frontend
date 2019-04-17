@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Connesso come {email}",
-                    "description_not_login": "Accesso non effettuato"
+                    "description_not_login": "Accesso non effettuato",
+                    "description_features": "Controllo fuori casa, integrazione con Alexa e Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrazioni",
