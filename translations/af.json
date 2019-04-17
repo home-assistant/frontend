@@ -1,6 +1,6 @@
 {
     "panel": {
-        "config": "Konfigurasie",
+        "config": "Opstellings",
         "states": "Oorsig",
         "map": "Kaart",
         "logbook": "Logboek",
@@ -13,7 +13,8 @@
         "dev-templates": "Template",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
-        "calendar": "Kalender"
+        "calendar": "Kalender",
+        "profile": "Profiel"
     },
     "state": {
         "default": {
@@ -91,19 +92,28 @@
                 "off": "OK",
                 "on": "Probleem"
             },
+            "connectivity": {
+                "off": "Ontkoppel",
+                "on": "Gekoppel"
+            },
             "cold": {
+                "off": "Normaal",
                 "on": "Koud"
             },
             "door": {
+                "off": "Toe",
                 "on": "Oop"
             },
             "garage_door": {
+                "off": "Toe",
                 "on": "Oop"
             },
             "heat": {
+                "off": "Normaal",
                 "on": "Warm"
             },
             "window": {
+                "off": "Toe",
                 "on": "Oop"
             },
             "lock": {
@@ -138,8 +148,8 @@
             "manual": "Handmatig"
         },
         "configurator": {
-            "configure": "Konfigureer",
-            "configured": "Gekonfigureer"
+            "configure": "Stel op",
+            "configured": "Opgestel"
         },
         "cover": {
             "open": "Oop",
@@ -248,9 +258,13 @@
         },
         "vacuum": {
             "cleaning": "Skoonmaak",
-            "docked": "Vasgemeer",
+            "docked": "Vasgemeer by hawe",
+            "error": "Fout",
+            "idle": "Ledig",
+            "off": "Af",
             "on": "Aan",
-            "paused": "Onderbreek"
+            "paused": "Onderbreek",
+            "returning": "Oppad terug hawe toe"
         },
         "timer": {
             "active": "aktief",
@@ -265,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "?",
-            "unavailable": "Onbeskik"
+            "unavailable": "Onbeskik",
+            "error": "Fout",
+            "entity_not_found": "Entiteit nie gevind nie"
         },
         "alarm_control_panel": {
             "armed": "Gewapen",
@@ -295,24 +311,88 @@
                 "add_item": "Voeg item",
                 "microphone_tip": "Druk die mikrofoon regs bo en sê \"Add candy to my shopping list\""
             },
+            "history": {
+                "showing_entries": "Wys inskrywings vir",
+                "period": "Tydperk"
+            },
+            "logbook": {
+                "showing_entries": "Wys inskrywings vir",
+                "period": "Tydperk"
+            },
             "mailbox": {
+                "empty": "U het geen boodskappe nie",
+                "playback_title": "Boodskap terugspeel",
                 "delete_prompt": "Skrap hierdie boodskap?",
                 "delete_button": "Skrap"
             },
             "config": {
+                "header": "Stel Home Assistant op",
+                "introduction": "Hier is dit moontlik om u komponente en Home Assistant op te stel. Tans kan alles in verband met die gebruikerskoppelvlak nog nie hier opgestel word nie, maar ons werk daaraan.",
+                "core": {
+                    "caption": "Algemeen",
+                    "description": "Bevestig u opstellingslêer en beheer die bediener",
+                    "section": {
+                        "core": {
+                            "header": "Opstellings en bedienerbeheer",
+                            "introduction": "As u opstellings verander, kan dit 'n vermoeiende proses wees. Ons weet. Hierdie afdeling sal probeer om u lewe 'n bietjie makliker te maak.",
+                            "validation": {
+                                "heading": "Opstellings validering",
+                                "introduction": "Verifieer u opstellings as u onlangs 'n paar veranderinge aan u opstellings gemaak het en wil seker maak dat dit alles geldig is",
+                                "check_config": "Verifieer opstellings",
+                                "valid": "Opstellings geldig!",
+                                "invalid": "Opstellings ongeldig!"
+                            },
+                            "reloading": {
+                                "heading": "Opstellings herlaai tans",
+                                "introduction": "Sommige dele van Home Assistant kan herlaai sonder om te herbegin. Deur om herlaai te kliek, sal die huidige opstelling ontlaai en die nuwe een laai.",
+                                "core": "Herlaai kern",
+                                "group": "Herlaai groepe",
+                                "automation": "Herlaai outomatisasies",
+                                "script": "Herlaai skripte"
+                            },
+                            "server_management": {
+                                "heading": "Bediener bestuur",
+                                "introduction": "Beheer u Home Assistant-bediener ... met Home Assistant.",
+                                "restart": "Herbegin",
+                                "stop": "Staak"
+                            }
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Pasgemaakte Instellings",
+                    "description": "Pas u entiteite aan",
+                    "picker": {
+                        "header": "Pasgemaakte Instellings",
+                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde \/ gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werkin tree wanneer die entiteit opgedateer word."
+                    }
+                },
                 "automation": {
+                    "caption": "Outomatisering",
                     "description": "Skep en wysig outomatisasies",
                     "picker": {
-                        "introduction": "Die outomatiseringsredakteur stel jou in staat om outomatisasies te skep en te wysig. Volg die onderstaande skakel om die instruksies te lees om seker te maak dat u Home Assistant korrek opgestel het.",
+                        "header": "Outomatiseringsredakteur",
+                        "introduction": "Die outomatiseringsredakteur stel u in staat om outomatisasies te skep en te wysig. Volg die onderstaande skakel om die instruksies te lees om seker te maak dat u Home Assistant korrek opgestel het.",
+                        "pick_automation": "Kies outomatisasie om te redigeer",
+                        "no_automations": "Ons kon nie redigeerbare outomatisasies vind nie",
+                        "add_automation": "Voeg outomatisering by",
                         "learn_more": "Kom meer te wete oor outomatisasies"
                     },
                     "editor": {
+                        "introduction": "Gebruik outomatisasies om jou huis lewend te maak",
+                        "default_name": "Nuwe outomatisering",
                         "save": "Stoor",
+                        "unsaved_confirm": "U het ongestoorde veranderinge. Is u seker u wil die blad verlaat?",
                         "alias": "Naam",
                         "triggers": {
+                            "header": "Snellers",
+                            "introduction": "Snellers is wat die prosessering van 'n outomatiseringsreël afskop. Dit is moontlik om verskeie snellers vir dieselfde reël te spesifiseer. Sodra 'n sneller begin, sal Home Assistant die voorwaardes, indien enige, bevestig en die aksie roep.",
+                            "add": "Voeg sneller by",
                             "duplicate": "Dupliseer",
                             "delete": "Skrap",
-                            "delete_confirm": "Is jy seker jy wil dit skrap?",
+                            "delete_confirm": "Is u seker u wil dit skrap?",
+                            "unsupported_platform": "Ongesteunde platform: {platform}",
+                            "type_select": "Sneller tipe",
                             "type": {
                                 "event": {
                                     "label": "Gebeurtenis",
@@ -320,10 +400,21 @@
                                     "event_data": "Gebeurtenis data"
                                 },
                                 "state": {
-                                    "label": "Staat"
+                                    "label": "Staat",
+                                    "from": "Vanaf",
+                                    "to": "Tot en met",
+                                    "for": "Vir"
                                 },
                                 "homeassistant": {
-                                    "event": "Gebeurtenis:"
+                                    "label": "Home Assistant",
+                                    "event": "Gebeurtenis:",
+                                    "start": "Begin",
+                                    "shutdown": "Staak"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Onderwerp",
+                                    "payload": "Loonvrag (opsioneel)"
                                 },
                                 "numeric_state": {
                                     "label": "Numeriese toestand",
@@ -343,13 +434,16 @@
                                     "value_template": "Waarde templaat"
                                 },
                                 "time": {
-                                    "label": "Tyd"
+                                    "label": "Tyd",
+                                    "at": "Om"
                                 },
                                 "zone": {
                                     "label": "Sone",
                                     "entity": "Entiteit met plek",
                                     "zone": "Sone",
-                                    "event": "Gebeurtenis:"
+                                    "event": "Gebeurtenis:",
+                                    "enter": "Betree",
+                                    "leave": "Verlaat"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -374,10 +468,11 @@
                         },
                         "conditions": {
                             "header": "Voorwaardes",
+                            "introduction": "Voorwaardes is 'n opsionele deel van 'n outomatiseringsreël en kan gebruik word om te verhoed dat 'n aksie plaasvind wanneer dit geaktiveer word. Voorwaardes lyk baie soos snellers maar is baie anders. 'n Sneller sal kyk na gebeure wat in die stelsel gebeur terwyl 'n voorwaarde net kyk hoe die stelsel lyk. Byvoorbeeld: 'n Sneller kan sien dat 'n skakelaar aangeskakel word. 'n Voorwaarde kan net sien of 'n skakelaar tans aan of af is.",
                             "add": "Voeg voorwaarde by",
                             "duplicate": "Dupliseer",
                             "delete": "Skrap",
-                            "delete_confirm": "Is jy seker jy wil dit skrap?",
+                            "delete_confirm": "Is u seker u wil dit skrap?",
                             "unsupported_condition": "Ongesteunde voorwaarde: {condition}",
                             "type_select": "Voorwaarde tipe",
                             "type": {
@@ -423,7 +518,7 @@
                             "add": "Voeg aksie by",
                             "duplicate": "Dupliseer",
                             "delete": "Skrap",
-                            "delete_confirm": "Is jy seker jy wil dit skrap?",
+                            "delete_confirm": "Is u seker u wil dit skrap?",
                             "unsupported_action": "Ongesteunde aksie: {action}",
                             "type_select": "Aksie tipe",
                             "type": {
@@ -454,7 +549,12 @@
                     }
                 },
                 "script": {
+                    "caption": "Skrip",
                     "description": "Skep en wysig skripte"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Bestuur u Z-Wave netwerk"
                 },
                 "users": {
                     "caption": "Gebruikers",
@@ -478,9 +578,24 @@
                         "create": "Skep"
                     }
                 },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "Aangemeld as {email}",
+                    "description_not_login": "Nie aangemeld nie",
+                    "description_features": "Beheer terwyl weg van die huis af is, integreer met Alexa en Google Assistant."
+                },
                 "integrations": {
+                    "caption": "Integrasies",
+                    "description": "Bestuur gekoppelde toestelle en dienste",
+                    "discovered": "Ontdek",
+                    "configured": "Opgestel",
+                    "new": "Stel 'n nuwe integrasie op",
+                    "configure": "Stel op",
+                    "none": "Nog niks is opgestel nie",
                     "config_entry": {
-                        "delete_confirm": "Is jy seker jy wil hierdie integrasie skrap?",
+                        "no_devices": "Hierdie integrasie het geen toestelle nie.",
+                        "no_device": "Entiteite sonder toestelle",
+                        "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
                         "restart_confirm": "Herbegin Home Assistant om hierdie integrasie te voltooi",
                         "manuf": "deur {manufacturer}",
                         "hub": "Gekonnekteer via",
@@ -494,22 +609,33 @@
                     "caption": "ZHA",
                     "description": "Zigbee Home Automation netwerk bestuur",
                     "services": {
-                        "reconfigure": "Herkonfigureer ZHA-toestel (heal device). Gebruik dit as jy probleme ondervind met die toestel. As die betrokke toestel 'n battery aangedrewe toestel is, maak asseblief seker dat dit wakker is en bevele aanvaar wanneer u hierdie diens gebruik.",
-                        "updateDeviceName": "Stel 'n persoonlike naam vir hierdie toestel in die toestelregister"
+                        "reconfigure": "Stel ZHA-toestel weer op (heal device). Gebruik dit as u probleme ondervind met die toestel. As die betrokke toestel 'n battery aangedrewe toestel is, maak asseblief seker dat dit wakker is en bevele aanvaar wanneer u hierdie diens gebruik.",
+                        "updateDeviceName": "Stel 'n persoonlike naam vir hierdie toestel in die toestelregister",
+                        "remove": "Verwyder 'n toestel van die ZigBee-netwerk."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Gebruiker se naam",
+                        "area_picker_label": "Gebied",
+                        "update_name_button": "Verander Naam"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Voeg Toestelle By",
+                        "spinner": "Opsoek na ZHA Zigbee-toestelle...",
+                        "discovery_text": "Ontdekde toestelle sal hier verskyn. Volg die instruksies vir u toestel(e) en plaas die toestel(e) in die paringsmodus."
                     }
                 },
                 "area_registry": {
                     "caption": "Gebiedsregister",
-                    "description": "Oorsig van alle gebiede in jou huis.",
+                    "description": "Oorsig van alle gebiede in u huis.",
                     "picker": {
                         "header": "Gebiedsregister",
                         "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal deur die Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
-                        "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n gekonfigureerde integrasie om na die toestelkaarte toe te gaan.",
+                        "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n opgestelde integrasie om na die toestelkaarte toe te gaan.",
                         "integrations_page": "Integrasies bladsy",
-                        "no_areas": "Dit lyk asof jy nog geen gebiede het nie!",
+                        "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
                         "create_area": "SKEP GEBIED"
                     },
-                    "no_areas": "Dit lyk asof jy nog geen gebiede het nie!",
+                    "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
                     "create_area": "SKEP GEBIED",
                     "editor": {
                         "default_name": "Nuwe Gebied",
@@ -535,12 +661,6 @@
                         "update": "OPDATEER"
                     }
                 },
-                "customize": {
-                    "picker": {
-                        "header": "Pasgemaakte Instellings ",
-                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde \/ gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werkin tree wanneer die entiteit opgedateer word."
-                    }
-                },
                 "person": {
                     "caption": "Persone",
                     "description": "Bestuur die persone wat Home Assistant op spoor.",
@@ -552,9 +672,86 @@
                     }
                 }
             },
+            "profile": {
+                "push_notifications": {
+                    "header": "\"Push\" kennisgewings",
+                    "description": "Stuur kennisgewings na hierdie toestel.",
+                    "error_load_platform": "Stel notify.html5 op.",
+                    "error_use_https": "Vereis dat SSL gedeaktiveer is vir gebruikerskoopelvlak.",
+                    "push_notifications": "\"Push\" kennisgewings",
+                    "link_promo": "Kom meer te wete"
+                },
+                "language": {
+                    "header": "Taal",
+                    "link_promo": "Help om te vertaal",
+                    "dropdown_label": "Taal"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Geen temas beskikbaar nie.",
+                    "link_promo": "Kom meer te wete oor temas",
+                    "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Verfris-tekseenhede",
+                    "description": "Elke verfris-tekseenheid verteenwoordig 'n aanmeldingssessie. Verfris-tekseenhede sal outomaties verwyder word wanneer u op meld af klik. Die volgende verfris-tekseenhede is tans aktief vir u rekening.",
+                    "token_title": "Verfris-tekseenheid vir {clientId}",
+                    "created_at": "Geskep op {date}",
+                    "confirm_delete": "Is u seker u wil die verfris-tekseenheid vir {name} skrap?",
+                    "delete_failed": "Het misluk om die verfris-tekseenheid te skrap.",
+                    "last_used": "Laas gebruik op {date} vanaf {location}",
+                    "not_used": "Is nog nooit gebruik nie",
+                    "current_token_tooltip": "Nie in staat om huidige verfris-tekseenheid te skrap nie"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Langlewende-toegangs-tekseenhede",
+                    "description": "Skep langlewende-toegangs-tekseenhede om u skripte in staat te stel om met u Home Assistant-instansie te kommunikeer. Elke tekseenheid sal geldig wees vir 10 jaar vanaf die skepping. Die volgende langlewende-toegangs-tekseenheid is tans aktief.",
+                    "learn_auth_requests": "Leer hoe om geverifieerde versoeke te maak.",
+                    "created_at": "Geskep op {date}",
+                    "confirm_delete": "Is u seker u wil die toegangs-tekseenheid vir {name} skrap?",
+                    "delete_failed": "Het misluk om die toegangs-tekseenheid te skrap.",
+                    "create": "Skep Tekseenheid",
+                    "create_failed": "Het misluk om die toegangs-tekseenheid te maak.",
+                    "prompt_name": "Naam?",
+                    "prompt_copy_token": "Kopieer u toegangs-tekseenheid. Dit sal nie weer gewys word nie.",
+                    "empty_state": "U het nog geen langlewende-toegangs-tekseenhede nie.",
+                    "last_used": "Laas gebruik op {date} vanaf {location}",
+                    "not_used": "Is nog nooit gebruik nie"
+                },
+                "current_user": "U is tans aangemeld as {fullName} .",
+                "is_owner": "U is 'n eienaar.",
+                "logout": "Meld af",
+                "change_password": {
+                    "header": "Verander Wagwoord",
+                    "current_password": "Huidige Wagwoord",
+                    "new_password": "Nuwe Wagwoord",
+                    "confirm_new_password": "Bevestig Nuwe Wagwoord",
+                    "error_required": "Vereis",
+                    "submit": "Dien in"
+                },
+                "mfa": {
+                    "header": "Multi-faktor Verifikasie Modules",
+                    "disable": "Deaktiveer",
+                    "enable": "Aktiveer",
+                    "confirm_disable": "Is u seker u wil {name} deaktiveer?"
+                },
+                "mfa_setup": {
+                    "title_aborted": "Gestaak",
+                    "title_success": "Sukses!",
+                    "step_done": "Opstelling gedoen vir {step}",
+                    "close": "Toe",
+                    "submit": "Dien in"
+                }
+            },
             "page-authorize": {
+                "initializing": "Inisialiseer",
+                "authorizing_client": "U is op die punt om {clientId} toegang te gee tot u Home Assistant instansie.",
+                "logging_in_with": "Meld tans aan met **{authProviderName}**.",
+                "pick_auth_provider": "Of meld aan met",
+                "abort_intro": "Aanmelding gestaak",
                 "form": {
                     "working": "Wag asseblief",
+                    "unknown_error": "Iets het skeef geloop",
                     "providers": {
                         "homeassistant": {
                             "step": {
@@ -568,7 +765,7 @@
                                     "data": {
                                         "code": "Twee-faktor-Verifikasiekode"
                                     },
-                                    "description": "Maak die ** {mfa_module_name} ** op jou toestel oop om jou twee-faktor-verifikasiekode te sien en jou identiteit te verifieer:"
+                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
                                 }
                             },
                             "error": {
@@ -581,18 +778,39 @@
                         },
                         "legacy_api_password": {
                             "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API wagwoord"
+                                    },
+                                    "description": "Voer asseblief die API-wagwoord in u http-config in:"
+                                },
                                 "mfa": {
                                     "data": {
                                         "code": "Twee-faktor-Verifikasiekode"
                                     },
-                                    "description": "Maak die ** {mfa_module_name} ** op jou toestel oop om jou twee-faktor-verifikasiekode te sien en jou identiteit te verifieer:"
+                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
                                 }
                             },
                             "error": {
+                                "invalid_auth": "Ongeldige API wagwoord",
                                 "invalid_code": "Ongeldige verifikasiekode"
                             },
                             "abort": {
+                                "no_api_password_set": "U het nie 'n API-wagwoord opgestel nie.",
                                 "login_expired": "Sessie verstryk, teken asseblief weer aan."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Gebruiker"
+                                    },
+                                    "description": "Kies asseblief die gebruiker as wie U will aanmeld as:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "U rekenaar is nie op die witlys nie."
                             }
                         },
                         "command_line": {
@@ -607,7 +825,7 @@
                                     "data": {
                                         "code": "Twee-faktor-Verifikasiekode"
                                     },
-                                    "description": "Maak die ** {mfa_module_name} ** op jou toestel oop om jou twee-faktor-verifikasiekode te sien en jou identiteit te verifieer:"
+                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
                                 }
                             },
                             "error": {
@@ -622,7 +840,10 @@
                 }
             },
             "page-onboarding": {
+                "intro": "Is u gereed om u huis te ontwaak, u privaatheid te herwin en by 'n wêreldwye gemeenskap van peuters aan te sluit?",
                 "user": {
+                    "intro": "Kom ons begin deur 'n gebruikers rekening te skep.",
+                    "required_field": "Vereis",
                     "data": {
                         "name": "Naam",
                         "username": "Gebruikersnaam",
@@ -631,44 +852,9 @@
                     },
                     "create_account": "Skep Rekening",
                     "error": {
+                        "required_fields": "Vul al die vereiste velde in",
                         "password_not_match": "Wagwoorde stem nie ooreen nie"
                     }
-                }
-            },
-            "profile": {
-                "refresh_tokens": {
-                    "header": "Verfris-tekseenhede",
-                    "description": "Elke verfris-tekseenheid verteenwoordig 'n aanmeldingssessie. Verfris-tekseenhede sal outomaties verwyder word wanneer u op meld af klik. Die volgende verfris-tekseenhede is tans aktief vir u rekening.",
-                    "token_title": "Verfris-tekseenheid vir {clientId}",
-                    "created_at": "Geskep op {date}",
-                    "confirm_delete": "Is jy seker jy wil die verfris-tekseenheid vir {name} skrap?",
-                    "delete_failed": "Het misluk om die verfris-tekseenheid te skrap.",
-                    "last_used": "Laas gebruik op {date} vanaf {location}",
-                    "not_used": "Is nog nooit gebruik nie",
-                    "current_token_tooltip": "Nie in staat om huidige verfris-tekseenheid te skrap nie"
-                },
-                "long_lived_access_tokens": {
-                    "header": "Langlewende-toegangs-tekseenhede",
-                    "description": "Skep langlewende-toegangs-tekseenhede om jou skripte in staat te stel om met jou Home Assistant-instansie te kommunikeer. Elke tekseenheid sal geldig wees vir 10 jaar vanaf die skepping. Die volgende langlewende-toegangs-tekseenheid is tans aktief.",
-                    "learn_auth_requests": "Leer hoe om geverifieerde versoeke te maak.",
-                    "created_at": "Geskep op {date}",
-                    "confirm_delete": "Is jy seker jy wil die toegangs-tekseenheid vir {name} skrap?",
-                    "delete_failed": "Het misluk om die toegangs-tekseenheid te skrap.",
-                    "create": "Skep Tekseenheid",
-                    "create_failed": "Het misluk om die toegangs-tekseenheid te maak.",
-                    "prompt_name": "Naam?",
-                    "prompt_copy_token": "Kopieer jou toegangs-tekseenheid. Dit sal nie weer gewys word nie.",
-                    "empty_state": "Jy het nog geen langlewende-toegangs-tekseenhede nie.",
-                    "last_used": "Laas gebruik op {date} vanaf {location}",
-                    "not_used": "Is nog nooit gebruik nie"
-                },
-                "logout": "Meld af",
-                "change_password": {
-                    "header": "Verander Wagwoord",
-                    "current_password": "Huidige Wagwoord",
-                    "new_password": "Nuwe Wagwoord",
-                    "confirm_new_password": "Bevestig Nuwe Wagwoord",
-                    "submit": "Dien in"
                 }
             },
             "lovelace": {
@@ -680,53 +866,53 @@
                     },
                     "empty_state": {
                         "title": "Welkom tuis",
-                        "no_devices": "Hierdie bladsy laat jou toe om jou toestelle te beheer, maar dit lyk asof jy nog nie toestelle opgestel het nie. Gaan na die integrasies bladsy om te begin.",
+                        "no_devices": "Hierdie bladsy laat u toe om u toestelle te beheer, maar dit lyk asof u nog nie toestelle opgestel het nie. Gaan na die integrasies bladsy om te begin.",
                         "go_to_integrations_page": "Gaan na die integrasies bladsy."
                     }
                 },
                 "editor": {
                     "edit_card": {
-                        "header": "Kaartkonfigurasie",
+                        "header": "Kaart opstelling",
                         "save": "Stoor",
                         "toggle_editor": "Wissel redigeerder",
-                        "pick_card": "Kies die kaart wat jy wil byvoeg.",
+                        "pick_card": "Kies die kaart wat u wil byvoeg.",
                         "add": "Voeg Kaart by",
                         "edit": "Wysig",
                         "delete": "Skrap",
                         "move": "Skuif"
                     },
                     "migrate": {
-                        "header": "Konfigurasie Onversoenbaar",
+                        "header": "Opstellings Onversoenbaar",
                         "para_no_id": "Hierdie element het nie 'n ID nie. Voeg asseblief 'n ID by vir hierdie element in 'ui-lovelace.yaml'.",
-                        "para_migrate": "Druk die 'Migreer konfigurasie' knoppie as jy wil hê Home Assistant moet vir jou ID's by al jou kaarte en aansigte outomaties byvoeg.",
-                        "migrate": "Migreer konfigurasie"
+                        "para_migrate": "Druk die 'Migreer opstellings' knoppie as u wil hê Home Assistant moet vir u ID's by al u kaarte en aansigte outomaties byvoeg.",
+                        "migrate": "Migreer opstellings"
                     },
                     "header": "Wysig gebruikerskoppelvlak",
                     "edit_view": {
-                        "header": "Bekyk konfigurasie",
+                        "header": "Bekyk Opstellings",
                         "add": "Voeg aansig by",
                         "edit": "Wysig aansig",
                         "delete": "Skrap aansig"
                     },
                     "save_config": {
-                        "header": "Neem beheer van jou Lovelace gebruikerskoppelvlak",
+                        "header": "Neem beheer van u Lovelace gebruikerskoppelvlak",
                         "para": "Home Assistant sal outomaties u gebruikerskoppelvlak handhaaf, dit opdateer wanneer nuwe entiteite of Lovelace-komponente beskikbaar raak. Alhoewel, as u beheer neem, sal Home Assistant nie meer outomaties veranderings vir u doen nie.",
-                        "para_sure": "Is jy seker jy wil beheer neem oor jou gebruikerskoppelvlak?",
+                        "para_sure": "Is u seker u wil beheer neem oor u gebruikerskoppelvlak?",
                         "cancel": "Toemaar",
                         "save": "Neem beheer"
                     },
                     "menu": {
-                        "raw_editor": "Plat konfigurasie-redigeerder"
+                        "raw_editor": "Plat opstellings-redigeerder"
                     },
                     "raw_editor": {
-                        "header": "Wysig Konfigurasie",
+                        "header": "Wysig Opstellings",
                         "save": "Stoor",
                         "unsaved_changes": "Ongestoorde veranderinge",
                         "saved": "Gestoor"
                     }
                 },
                 "menu": {
-                    "configure_ui": "Konfigureer gebruikerskoppelvlak",
+                    "configure_ui": "Stel gebruikerskoppelvlak op",
                     "unused_entities": "Ongebruikte entiteite",
                     "help": "Help",
                     "refresh": "Verfris"
@@ -735,14 +921,16 @@
                     "entity_not_found": "Entiteit nie beskikbaar nie: {entity}",
                     "entity_non_numeric": "Entiteit is nie-numeriese: {entity}"
                 }
-            },
-            "logbook": {
-                "period": "Tydperk"
             }
         },
         "sidebar": {
             "log_out": "Meld af",
             "developer_tools": "Ontwikkelaar gereedskap"
+        },
+        "common": {
+            "loading": "Laai tans",
+            "cancel": "Kanselleer",
+            "save": "Stoor"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dag}\n  other {dae}\n}",
@@ -752,9 +940,17 @@
             "hour": "{count} {count, plural,\n  one {uur}\n  other {ure}\n}"
         },
         "login-form": {
-            "password": "Wagwoord"
+            "password": "Wagwoord",
+            "remember": "Onthou",
+            "log_in": "Meld aan"
         },
         "card": {
+            "camera": {
+                "not_available": "Beeld nie beskikbaar nie"
+            },
+            "persistent_notification": {
+                "dismiss": "Ontslaan"
+            },
             "scene": {
                 "activate": "Aktiveer"
             },
@@ -839,6 +1035,15 @@
                 "lock": "Sluit toe",
                 "unlock": "Sluit oop"
             },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Hervat stofsuig",
+                    "return_to_base": "Keer terug na die hawe",
+                    "start_cleaning": "Begin stofsuig",
+                    "turn_on": "Skakel aan",
+                    "turn_off": "Skakel af"
+                }
+            },
             "water_heater": {
                 "currently": "Tans",
                 "on_off": "Aan \/ af",
@@ -848,6 +1053,14 @@
             }
         },
         "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entiteit"
+                }
+            },
+            "service-picker": {
+                "service": "Diens"
+            },
             "relative_time": {
                 "past": "{time} gelede",
                 "future": "In {time}",
@@ -892,8 +1105,15 @@
                 }
             }
         },
-        "common": {
-            "save": "Stoor"
+        "auth_store": {
+            "ask": "Wil u hierdie aanmelding stoor?",
+            "decline": "Nee dankie",
+            "confirm": "Stoor aanmelding"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klik knoppie om {entity} op te stel",
+            "empty": "Geen kennisgewings",
+            "title": "Kennisgewings"
         }
     },
     "domain": {
@@ -919,6 +1139,12 @@
         "light": "Lig",
         "lock": "Slot",
         "mailbox": "Posbus",
+        "media_player": "Media-speler",
+        "notify": "Stel in kennis",
+        "plant": "Plant",
+        "proximity": "Nabyheid",
+        "remote": "Afgeleë",
+        "scene": "Toneel",
         "script": "Skrip",
         "sensor": "Sensor",
         "sun": "Son",
@@ -933,6 +1159,13 @@
         "lovelace": "Lovelace",
         "system_health": "Stelsel Gesondheid",
         "person": "Persoon"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Humiditeit",
+            "visibility": "Sigbaarheid",
+            "wind_speed": "Wind spoed"
+        }
     },
     "state_attributes": {
         "climate": {

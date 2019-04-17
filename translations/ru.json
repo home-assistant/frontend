@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Выполнен вход с учетной записью {email}",
-                    "description_not_login": "Вход не выполнен"
+                    "description_not_login": "Вход не выполнен",
+                    "description_features": "Управление вдали от дома, интеграция с Alexa и Google Assistant."
                 },
                 "integrations": {
                     "caption": "Интеграции",
