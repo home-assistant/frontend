@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "登入帳號：{email}",
-                    "description_not_login": "未登入"
+                    "description_not_login": "未登入",
+                    "description_features": "整合 Alexa 及 Google 助理，遠端控制智能家居。"
                 },
                 "integrations": {
                     "caption": "整合",

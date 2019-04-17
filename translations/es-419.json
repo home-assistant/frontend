@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Nube Home Assistant",
                     "description_login": "Ha iniciado sesión como {email}",
-                    "description_not_login": "No ha iniciado sesión"
+                    "description_not_login": "No ha iniciado sesión",
+                    "description_features": "Control fuera de casa, integre con Alexa y con Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integraciones",

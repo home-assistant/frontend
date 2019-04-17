@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Angemeldet als {email}",
-                    "description_not_login": "Nicht angemeldet"
+                    "description_not_login": "Nicht angemeldet",
+                    "description_features": "Fernsteuerung und Integration mit Alexa und Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrationen",
