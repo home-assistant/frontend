@@ -17,7 +17,7 @@ class HassioCardContent extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public title!: string;
   @property() public description?: string;
-  @property({ type: Boolean }) public available: boolean = true;
+  @property({ type: Boolean }) public available?: boolean;
   @property() public datetime?: string;
   @property() public iconTitle?: string;
   @property() public iconClass?: string;
@@ -33,7 +33,9 @@ class HassioCardContent extends LitElement {
       <div>
         <div class="title">${this.title}</div>
         <div class="addition">
-          ${this.description} ${this.available ? undefined : " (Not available"}
+          ${this.description}
+          ${/* treat as available when undefined */
+          this.available === false ? " (Not available)" : ""}
           ${this.datetime
             ? html`
                 <ha-relative-time

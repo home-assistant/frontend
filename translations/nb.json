@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Logget inn som {email}",
-                    "description_not_login": "Ikke pålogget"
+                    "description_not_login": "Ikke pålogget",
+                    "description_features": "Kontroller bortefra hjemmet, integrere med Alexa og Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrasjoner",

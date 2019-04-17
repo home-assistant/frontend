@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Chmura Home Assistant",
                     "description_login": "Zalogowany jako {email}",
-                    "description_not_login": "Nie zalogowany"
+                    "description_not_login": "Nie zalogowany",
+                    "description_features": "Sterowanie z spoza domu, integracja z Alexą i Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integracje",

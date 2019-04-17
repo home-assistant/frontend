@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Sessió iniciada com a {email}",
-                    "description_not_login": "No has iniciat sessió"
+                    "description_not_login": "No has iniciat sessió",
+                    "description_features": "Controla la casa des de fora, pots integrar Alexa i Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integracions",
@@ -849,7 +850,7 @@
                         "password": "Contrasenya",
                         "password_confirm": "Confirma la contrasenya"
                     },
-                    "create_account": "Crear un compte",
+                    "create_account": "Crear compte",
                     "error": {
                         "required_fields": "Omple tots els camps obligatoris",
                         "password_not_match": "Les contrasenyes no coincideixen"
@@ -865,7 +866,7 @@
                     },
                     "empty_state": {
                         "title": "Benvingut\/da a casa",
-                        "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per començar.",
+                        "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per a començar.",
                         "go_to_integrations_page": "Vés a la pàgina d'integracions."
                     }
                 },
