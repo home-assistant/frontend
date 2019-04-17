@@ -324,6 +324,9 @@
                         "deactivate_user": "ユーザーを無効化",
                         "delete_user": "ユーザーを削除"
                     }
+                },
+                "cloud": {
+                    "description_features": "自宅の外からコントロールするために、AlexaとGoogleアシスタントに統合します。"
                 }
             }
         },

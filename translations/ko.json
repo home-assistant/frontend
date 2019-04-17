@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "{email} 로 로그인 되어있습니다",
-                    "description_not_login": "로그인이 되어있지 않습니다"
+                    "description_not_login": "로그인이 되어있지 않습니다",
+                    "description_features": "Alexa 및 Google Assistant 를 통해 집 밖에서도 집을 관리합니다."
                 },
                 "integrations": {
                     "caption": "통합 구성요소",

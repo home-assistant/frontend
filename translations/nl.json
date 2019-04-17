@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistent Cloud",
                     "description_login": "Ingelogd als {email}",
-                    "description_not_login": "Niet ingelogd"
+                    "description_not_login": "Niet ingelogd",
+                    "description_features": "Bestuur weg van huis, verbind met Alexa en Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integraties",
