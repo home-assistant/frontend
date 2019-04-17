@@ -237,7 +237,7 @@
             },
             "query_stage": {
                 "initializing": "Αρχικοποίηση ({query_stage})",
-                "dead": "νεκρός ({query_stage})"
+                "dead": "Νεκρός ({query_stage})"
             }
         },
         "weather": {
@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Άγν",
-            "unavailable": "Μη Διαθ"
+            "unavailable": "Μη Διαθ",
+            "error": "Σφάλμα",
+            "entity_not_found": "Η οντότητα δεν βρέθηκε"
         },
         "alarm_control_panel": {
             "armed": "Οπλισμένο",
@@ -579,7 +581,8 @@
                 "cloud": {
                     "caption": "Σύννεφο Home Assistant",
                     "description_login": "Συνδεδεμένος ως {e-mail}",
-                    "description_not_login": "Μη συνδεδεμένος"
+                    "description_not_login": "Μη συνδεδεμένος",
+                    "description_features": "Έλεγχος εκτός σπιτιού, ενσωμάτωση με τα Alexa και Google Assistant"
                 },
                 "integrations": {
                     "caption": "Ενσωματώσεις",
@@ -607,7 +610,18 @@
                     "description": "Διαχείριση του δικτύου ZigBee Home Automation",
                     "services": {
                         "reconfigure": "Ρυθμίστε ξανά τη συσκευή ZHA (heal συσκευή). Χρησιμοποιήστε αυτήν την επιλογή εάν αντιμετωπίζετε ζητήματα με τη συσκευή. Εάν η συγκεκριμένη συσκευή τροφοδοτείται απο μπαταρία βεβαιωθείτε ότι είναι ενεργοποιημένη και δέχεται εντολές όταν χρησιμοποιείτε αυτή την υπηρεσία.",
-                        "updateDeviceName": "Ορίστε ένα προσαρμοσμένο όνομα γι αυτήν τη συσκευή στο μητρώο συσκευών."
+                        "updateDeviceName": "Ορίστε ένα προσαρμοσμένο όνομα γι αυτήν τη συσκευή στο μητρώο συσκευών.",
+                        "remove": "Καταργήστε μια συσκευή από το δίκτυο ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Όνομα χρήστη",
+                        "area_picker_label": "Περιοχή",
+                        "update_name_button": "Ενημέρωση ονόματος"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Προσθήκη Συσκευών",
+                        "spinner": "Αναζήτηση συσκευών ZHA Zigbee ...",
+                        "discovery_text": "Οι ανακαλυφθείσες συσκευές θα εμφανιστούν εδώ. Ακολουθήστε τις οδηγίες για τις συσκευές σας και τοποθετήστε τις συσκευές στη λειτουργία αντιστοίχισης."
                     }
                 },
                 "area_registry": {
