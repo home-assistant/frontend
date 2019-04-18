@@ -2,25 +2,6 @@
  * Utility function that enables haptic feedback
  */
 
-interface HapticPayload {
-  hapticType: string;
-}
-
-declare global {
-  interface Window {
-    externalApp?: {
-      handleHaptic(payload: string);
-    };
-    webkit?: {
-      messageHandlers: {
-        handleHaptic: {
-          postMessage(payload: HapticPayload);
-        };
-      };
-    };
-  }
-}
-
 export function forwardHaptic(hapticType: string) {
   const payload = { hapticType };
   if (window.externalApp) {

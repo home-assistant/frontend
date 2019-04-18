@@ -6,32 +6,9 @@ import { Auth } from "home-assistant-js-websocket";
 const CALLBACK_SET_TOKEN = "externalAuthSetToken";
 const CALLBACK_REVOKE_TOKEN = "externalAuthRevokeToken";
 
-interface BasePayload {
-  callback: string;
-}
-
 interface RefreshTokenResponse {
   access_token: string;
   expires_in: number;
-}
-
-declare global {
-  interface Window {
-    externalApp?: {
-      getExternalAuth(payload: string);
-      revokeExternalAuth(payload: string);
-    };
-    webkit?: {
-      messageHandlers: {
-        getExternalAuth: {
-          postMessage(payload: BasePayload);
-        };
-        revokeExternalAuth: {
-          postMessage(payload: BasePayload);
-        };
-      };
-    };
-  }
 }
 
 if (!window.externalApp && !window.webkit) {

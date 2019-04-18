@@ -22,6 +22,11 @@ declare global {
   interface Window {
     // Custom panel entry point url
     customPanelJS: string;
+    externalApp?: {
+      getExternalAuth(payload: string);
+      handleHaptic(payload: string);
+      revokeExternalAuth(payload: string);
+    };
     ShadyCSS: {
       nativeCss: boolean;
       nativeShadow: boolean;
@@ -30,6 +35,19 @@ declare global {
       styleSubtree(element, overrideProperties);
       styleDocument(overrideProperties);
       getComputedStyleValue(element, propertyName);
+    };
+    webkit?: {
+      messageHandlers: {
+        getExternalAuth: {
+          postMessage(payload: ExternalAuthPayload);
+        };
+        handleHaptic: {
+          postMessage(payload: HapticPayload);
+        };
+        revokeExternalAuth: {
+          postMessage(payload: ExternalAuthPayload);
+        };
+      };
     };
   }
   // for fire event
@@ -49,6 +67,14 @@ export interface WebhookError {
 export interface Credential {
   auth_provider_type: string;
   auth_provider_id: string;
+}
+
+export interface ExternalAuthPayload {
+  callback: string;
+}
+
+export interface HapticPayload {
+  hapticType: string;
 }
 
 export interface MFAModule {
