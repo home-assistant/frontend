@@ -202,7 +202,7 @@ class LovelacePanel extends LitElement {
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-        const { config, mode } = this.lovelace!;
+        const { config: previousConfig, mode: previousMode } = this.lovelace!;
         try {
           // Optimistic update
           this._updateLovelace({
@@ -215,8 +215,8 @@ class LovelacePanel extends LitElement {
           console.error(err);
           // Rollback the optimistic update
           this._updateLovelace({
-            config,
-            mode,
+            config: previousConfig,
+            mode: previousMode,
           });
           throw err;
         }
