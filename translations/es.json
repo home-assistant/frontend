@@ -32,12 +32,12 @@
             "pending": "Pendiente",
             "arming": "Armando",
             "disarming": "Desarmando",
-            "triggered": "Disparado",
+            "triggered": "Disparada",
             "armed_custom_bypass": "Armada Zona Específica"
         },
         "automation": {
-            "off": "Apagado",
-            "on": "Encendido"
+            "off": "Apagada",
+            "on": "Encendida"
         },
         "binary_sensor": {
             "default": {
@@ -53,7 +53,7 @@
                 "on": "Detectado"
             },
             "motion": {
-                "off": "No detectado",
+                "off": "Sin movimiento",
                 "on": "Detectado"
             },
             "occupancy": {
@@ -102,11 +102,11 @@
             },
             "door": {
                 "off": "Cerrada",
-                "on": "Abierto"
+                "on": "Abierta"
             },
             "garage_door": {
                 "off": "Cerrada",
-                "on": "Abierto"
+                "on": "Abierta"
             },
             "heat": {
                 "off": "Normal",
@@ -114,7 +114,7 @@
             },
             "window": {
                 "off": "Cerrada",
-                "on": "Abierto"
+                "on": "Abierta"
             },
             "lock": {
                 "off": "Bloqueado",
@@ -178,7 +178,7 @@
             "stopped": "Parado",
             "locked": "Bloqueado",
             "unlocked": "Desbloqueado",
-            "ok": "Ok",
+            "ok": "OK",
             "problem": "Problema"
         },
         "input_boolean": {
@@ -202,7 +202,7 @@
             "standby": "Apagado"
         },
         "plant": {
-            "ok": "Ok",
+            "ok": "OK",
             "problem": "Problema"
         },
         "remote": {
@@ -286,13 +286,13 @@
         "alarm_control_panel": {
             "armed": "Armado",
             "disarmed": "Desarmar",
-            "armed_home": "Armado",
-            "armed_away": "Armado",
-            "armed_night": "Armado",
+            "armed_home": "Activada",
+            "armed_away": "Activada",
+            "armed_night": "Activada",
             "pending": "Pendiente",
             "arming": "Armando",
             "disarming": "Desarmar",
-            "triggered": "Disparada",
+            "triggered": "Activada",
             "armed_custom_bypass": "Armada"
         },
         "device_tracker": {
@@ -309,7 +309,7 @@
             "shopping-list": {
                 "clear_completed": "Borrado completado",
                 "add_item": "Añadir artículo",
-                "microphone_tip": "Toque el micrófono en la esquina superior derecha y diga \"Add candy to my shopping list\""
+                "microphone_tip": "Pulsa el micrófono en la parte superior derecha y di \"Añadir caramelos a mi lista de la compra\"."
             },
             "history": {
                 "showing_entries": "Mostrando entradas del",
@@ -327,24 +327,24 @@
             },
             "config": {
                 "header": "Configurar Home Assistant",
-                "introduction": "Aquí es posible configurar sus componentes y Home Assistant. Todavía no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
                 "core": {
                     "caption": "Configuración general",
-                    "description": "Valide su archivo de configuración y controle el servidor",
+                    "description": "Valida tu archivo de configuración y controla el servidor",
                     "section": {
                         "core": {
                             "header": "Configuración y control del servidor",
-                            "introduction": "Cambiar su configuración puede ser un proceso tedioso. Lo sabemos. Esta sección intentará hacer su vida un poco más fácil.",
+                            "introduction": "Cambiar tu configuración puede ser un proceso tedioso. Lo sabemos. Esta sección tratará de hacer tu vida un poco más fácil.",
                             "validation": {
                                 "heading": "Validación de la configuración",
-                                "introduction": "Valide su configuración si ha realizado cambios y quiere asegurarse de que sean válidos",
+                                "introduction": "Valida tu configuración si has realizado cambios recientemente y quieres asegurarte de que son correctos",
                                 "check_config": "Verificar la configuración",
                                 "valid": "¡Configuración valida!",
                                 "invalid": "Configuración no válida"
                             },
                             "reloading": {
                                 "heading": "Recargando la configuración",
-                                "introduction": "Algunas partes de Home Assistant pueden volver a cargarse sin necesidad de reiniciar. Pulsar la recarga descargará su configuración actual y cargará la nueva.",
+                                "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración actual y se cargará la nueva.",
                                 "core": "Recargar núcleo",
                                 "group": "Recargar grupos",
                                 "automation": "Recargar automatizaciones",
@@ -352,7 +352,7 @@
                             },
                             "server_management": {
                                 "heading": "Gestión del servidor",
-                                "introduction": "Controle su servidor de Home Assistant... desde Home Assistant",
+                                "introduction": "Controla tu servidor de Home Assistant ... desde Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Detener"
                             }
@@ -371,28 +371,28 @@
                     "caption": "Automatización",
                     "description": "Crear y editar automatizaciones",
                     "picker": {
-                        "header": "Editor de automatizaciones",
-                        "introduction": "El editor de automatización le permite crear y editar automatizaciones. Lea [las instrucciones] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) para asegurarse de haber configurado correctamente Home Assistant.",
+                        "header": "Editor de automatización",
+                        "introduction": "El editor de automatización te permite crear y editar automatizaciones. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado correctamente Home Assistant.",
                         "pick_automation": "Elija la automatización para editar",
                         "no_automations": "No pudimos encontrar ninguna automatización editable",
                         "add_automation": "Añadir automatización",
                         "learn_more": "Aprende más sobre las automatizaciones"
                     },
                     "editor": {
-                        "introduction": "Use automatizaciones para dar vida a su hogar.",
+                        "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
                         "default_name": "Nueva automatizacón",
                         "save": "Guardar",
-                        "unsaved_confirm": "Tiene cambios sin guardar, ¿está seguro de querer salir?",
+                        "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
                         "alias": "Nombre",
                         "triggers": {
-                            "header": "Disparadores",
-                            "introduction": "Los disparadores son los que inician el procesamiento de una regla de automatización. Es posible especificar múltiples disparadores para la misma regla. Una vez que se inicia un disparador, Home Assistant validará las condiciones, si las hay, y llamará a la acción. \n\n [Obtenga más información sobre los disparadores]. (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
-                            "add": "Añadir disparador",
+                            "header": "Desencadenantes",
+                            "introduction": "Los desencadenantes son los que inician el funcionamiento de una regla de automatización. Es posible especificar varios desencadenantes para la misma regla. Una vez que se inicia un desencadenante, Home Assistant comprobará las condiciones, si las hubiere, y ejecutará la acción.",
+                            "add": "Añadir desencadenante",
                             "duplicate": "Duplicar",
-                            "delete": "Borrar",
-                            "delete_confirm": "¿Está seguro de que desea borrar?",
+                            "delete": "Eliminar",
+                            "delete_confirm": "¿Seguro que quieres eliminarlo?",
                             "unsupported_platform": "Plataforma no admitida: {platform}",
-                            "type_select": "Tipo de disparador",
+                            "type_select": "Tipo de desencadenante",
                             "type": {
                                 "event": {
                                     "label": "Evento",
@@ -420,18 +420,18 @@
                                     "label": "Estado numérico",
                                     "above": "Por encima de",
                                     "below": "Por debajo de",
-                                    "value_template": "Plantilla del valor (opcional)"
+                                    "value_template": "Valor de la plantilla (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
                                     "event": "Evento:",
                                     "sunrise": "Amanecer",
                                     "sunset": "Puesta de sol",
-                                    "offset": "Desplazamiento (opcional)"
+                                    "offset": "Desfase (opcional)"
                                 },
                                 "template": {
                                     "label": "Plantilla",
-                                    "value_template": "Plantilla del valor"
+                                    "value_template": "Valor de la plantilla"
                                 },
                                 "time": {
                                     "label": "Hora",
@@ -464,14 +464,14 @@
                                     "leave": "Salir"
                                 }
                             },
-                            "learn_more": "Aprende más sobre los disparadores"
+                            "learn_more": "Aprende más sobre los desencadenantes"
                         },
                         "conditions": {
                             "header": "Condiciones",
-                            "introduction": "Las condiciones son una parte opcional de una regla de automatización y se pueden usar para evitar que ocurra una acción cuando se activa. Las condiciones parecen muy similares a los disparadores, pero son muy diferentes. Un disparador observará los eventos que suceden en el sistema, mientras que una condición solo observa cómo se ve el sistema en el momento. Un disparador puede observar que se está encendiendo un interruptor. Una condición solo puede ver si un interruptor está actualmente encendido o apagado. \n\n [Obtenga más información sobre las condiciones.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Las condiciones son una parte opcional de una regla de automatización y se pueden utilizar para evitar que se produzca una acción cuando se desencadena la automatización. Las condiciones se parecen mucho a los desencadenantes, pero son muy diferentes. Un desencadenante analizará los eventos que ocurren en el sistema en cualquier momento, mientras que una condición solo analiza cómo está el sistema en un momento en concreto. Un desencadenante puede detectar que se está activando un interruptor. Una condición solo puede detectar si un interruptor está encendido o apagado.",
                             "add": "Añadir condición",
                             "duplicate": "Duplicar",
-                            "delete": "Borrar",
+                            "delete": "Eliminar",
                             "delete_confirm": "¿Seguro que quieres eliminarlo?",
                             "unsupported_condition": "Condición no admitida: {condition}",
                             "type_select": "Tipo de condición",
@@ -484,7 +484,7 @@
                                     "label": "Estado numérico",
                                     "above": "Por encima de",
                                     "below": "Por debajo de",
-                                    "value_template": "Plantilla del valor (opcional)"
+                                    "value_template": "Valor de la plantilla (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -514,11 +514,11 @@
                         },
                         "actions": {
                             "header": "Acciones",
-                            "introduction": "Las acciones son lo que Home Assistant hará cuando la automatización sea disparada.\n\n [Obtenga más información sobre acciones.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Las acciones son lo que hará Home Assistant cuando se desencadene la automatización.",
                             "add": "Añadir acción",
                             "duplicate": "Duplicar",
-                            "delete": "Borrar",
-                            "delete_confirm": "¿Está seguro de querer borrar?",
+                            "delete": "Eliminar",
+                            "delete_confirm": "¿Seguro que quieres eliminarlo?",
                             "unsupported_action": "Acción no admitida : {action}",
                             "type_select": "Tipo de acción",
                             "type": {
@@ -554,7 +554,7 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Administre su red Z-Wave"
+                    "description": "Gestiona tu red Z-Wave"
                 },
                 "users": {
                     "caption": "Usuarios",
@@ -629,7 +629,7 @@
                     "description": "Visión general de todas las áreas de tu casa.",
                     "picker": {
                         "header": "Registro de Área",
-                        "introduction": "Las áreas se utilizan para organizar dónde están los dispositivos. Esta información se utilizará en Home Assistant para ayudarle a organizar su interfaz, permisos e integraciones con otros sistemas.",
+                        "introduction": "Las áreas se utilizan para organizar dónde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarte a organizar tu interfaz, permisos e integraciones con otros sistemas.",
                         "introduction2": "Para colocar dispositivos en un área, utilice el siguiente enlace para navegar a la página de integraciones y luego haga clic en una integración configurada para llegar a las tarjetas de dispositivos.",
                         "integrations_page": "Integraciones",
                         "no_areas": "¡Parece que aún no tienes áreas!",
@@ -694,10 +694,10 @@
                 },
                 "refresh_tokens": {
                     "header": "Actualizar tokens",
-                    "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente cuando haga clic en Cerrar sesión. Los siguientes tokens de actualización están actualmente activos para su cuenta.",
+                    "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente al cerrar la sesión. Los siguientes tokens de actualización están actualmente activos para tu cuenta.",
                     "token_title": "Actualizar token para {clientId}",
                     "created_at": "Creado el {date}",
-                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {name}?",
+                    "confirm_delete": "¿Estás seguro de que quieres eliminar el token de actualización para {name}?",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "last_used": "Último uso el {date} desde {location}",
                     "not_used": "Nunca ha sido usado",
@@ -708,12 +708,12 @@
                     "description": "Crea tokens de acceso de larga duración para permitir que tus scripts interactúen con tu Home Assistant. Cada token será válido por 10 años desde la creación. Los siguientes tokens de acceso de larga duración están actualmente activos.",
                     "learn_auth_requests": "Aprenda a realizar solicitudes autenticadas.",
                     "created_at": "Creado el {date}",
-                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {name}?",
+                    "confirm_delete": "¿Estás seguro de que quieres eliminar el token de acceso para {name}?",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "create": "Crear Token",
                     "create_failed": "No se ha podido crear el token de acceso.",
                     "prompt_name": "¿Nombre?",
-                    "prompt_copy_token": "Copie su token de acceso. No se volverá a mostrar.",
+                    "prompt_copy_token": "Copia tu token de acceso. No se mostrará de nuevo.",
                     "empty_state": "Aún no tienes tokens de acceso de larga duración.",
                     "last_used": "Último uso el {date} desde {location}",
                     "not_used": "Nunca ha sido usado"
@@ -745,7 +745,7 @@
             },
             "page-authorize": {
                 "initializing": "Inicializando",
-                "authorizing_client": "Está por dar acceso a {clientId} a su instancia de Home Assistant.",
+                "authorizing_client": "Estás a punto de dar acceso a {clientId} a tu instancia de Home Assistant.",
                 "logging_in_with": "Iniciando sesión con **{authProviderName}**.",
                 "pick_auth_provider": "O inicia sesión con",
                 "abort_intro": "Inicio de sesión cancelado",
@@ -765,7 +765,7 @@
                                     "data": {
                                         "code": "Código de autenticado de dos factores"
                                     },
-                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código autenticado de dos factores y verificar su identidad:"
+                                    "description": "Abre el **{mfa_module_name}** en tu dispositivo para ver tu código de autenticación de dos factores y verificar tu identidad:"
                                 }
                             },
                             "error": {
@@ -782,7 +782,7 @@
                                     "data": {
                                         "password": "Contraseña de API"
                                     },
-                                    "description": "Por favor, introduzca la contraseña de la API en su configuración http:"
+                                    "description": "Introduce la contraseña de la API en tu configuración http:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -806,11 +806,11 @@
                                     "data": {
                                         "user": "Usuario"
                                     },
-                                    "description": "Por favor, seleccione el usuario con el que desea iniciar sesión:"
+                                    "description": "Elige el usuario con el que quieres iniciar sesión:"
                                 }
                             },
                             "abort": {
-                                "not_whitelisted": "Tu computadora no está en la lista de autorizados."
+                                "not_whitelisted": "Tu equipo no está en la lista de autorizados."
                             }
                         },
                         "command_line": {
@@ -884,7 +884,7 @@
                     "migrate": {
                         "header": "Configuración incompatible",
                         "para_no_id": "Este elemento no tiene un ID. Por favor agregue uno  este elemento en 'ui-lovelace.yaml'.",
-                        "para_migrate": "Home Assistant puede agregar ID a todas sus tarjetas y vistas automáticamente por usted presionando el botón 'Migrar configuración'.",
+                        "para_migrate": "Home Assistant puede añadir ID's a todas tus tarjetas y vistas automáticamente pulsando el botón 'Migrar configuración'.",
                         "migrate": "Migrar configuración"
                     },
                     "header": "Editar la interfaz de usuario",
@@ -895,9 +895,9 @@
                         "delete": "Borrar vista"
                     },
                     "save_config": {
-                        "header": "Tomar el control de la interfaz de usuario de Lovelace",
-                        "para": "Por defecto, Home Assistant mantendrá su interfaz de usuario y la actualizará cuando haya nuevas entidades o componentes de Lovelace disponibles. Si usted toma el control, ya no haremos cambios automáticamente para usted.",
-                        "para_sure": "¿Está seguro de que desea tomar el control de su interfaz de usuario?",
+                        "header": "Tomar el control de la interfaz de usuario Lovelace",
+                        "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario y la actualizará cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
+                        "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
                         "cancel": "No importa",
                         "save": "Tomar el control"
                     },
