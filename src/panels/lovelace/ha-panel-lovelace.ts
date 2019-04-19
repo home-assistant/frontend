@@ -124,8 +124,17 @@ class LovelacePanel extends LitElement {
       this.lovelace.language !== this.hass.language
     ) {
       // language has been changed, rebuild UI
-      this._fetchConfig(false);
+      this._setLovelaceConfig(this.lovelace.config, this.lovelace.mode);
+    } else if (this.lovelace && this.lovelace.mode === "generated") {
+      // When lovelace is generated, we re-generate each time a user goes
+      // to the states panel to make sure new entities are shown.
+      this._regenerateConfig();
     }
+  }
+
+  private async _regenerateConfig() {
+    const conf = await generateLovelaceConfig(this.hass!, this.hass!.localize);
+    this._setLovelaceConfig(conf, "generated");
   }
 
   private _closeEditor() {
@@ -148,12 +157,12 @@ class LovelacePanel extends LitElement {
     this._fetchConfig(true);
   }
 
-  private async _fetchConfig(force) {
+  private async _fetchConfig(forceDiskRefresh) {
     let conf: LovelaceConfig;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
 
     try {
-      conf = await fetchConfig(this.hass!, force);
+      conf = await fetchConfig(this.hass!, forceDiskRefresh);
     } catch (err) {
       if (err.code !== "config_not_found") {
         // tslint:disable-next-line
@@ -167,10 +176,14 @@ class LovelacePanel extends LitElement {
     }
 
     this._state = "loaded";
+    this._setLovelaceConfig(conf, confMode);
+  }
+
+  private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
     this.lovelace = {
-      config: conf,
+      config,
+      mode,
       editMode: this.lovelace ? this.lovelace.editMode : false,
-      mode: confMode,
       language: this.hass!.language,
       enableFullEditMode: () => {
         if (!editorLoaded) {
@@ -189,7 +202,7 @@ class LovelacePanel extends LitElement {
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-        const { config, mode } = this.lovelace!;
+        const { config: previousConfig, mode: previousMode } = this.lovelace!;
         try {
           // Optimistic update
           this._updateLovelace({
@@ -202,8 +215,8 @@ class LovelacePanel extends LitElement {
           console.error(err);
           // Rollback the optimistic update
           this._updateLovelace({
-            config,
-            mode,
+            config: previousConfig,
+            mode: previousMode,
           });
           throw err;
         }
