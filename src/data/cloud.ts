@@ -17,18 +17,20 @@ export interface CertificateInformation {
   fingerprint: string;
 }
 
+interface CloudPreferences {
+  google_enabled: boolean;
+  alexa_enabled: boolean;
+  google_secure_devices_pin: string | undefined;
+  cloudhooks: { [webhookId: string]: CloudWebhook };
+}
+
 export type CloudStatusLoggedIn = CloudStatusBase & {
   email: string;
   google_entities: EntityFilter;
   google_domains: string[];
   alexa_entities: EntityFilter;
   alexa_domains: string[];
-  prefs: {
-    google_enabled: boolean;
-    alexa_enabled: boolean;
-    google_allow_unlock: boolean;
-    cloudhooks: { [webhookId: string]: CloudWebhook };
-  };
+  prefs: CloudPreferences;
   remote_domain: string | undefined;
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
@@ -78,9 +80,9 @@ export const fetchCloudSubscriptionInfo = (hass: HomeAssistant) =>
 export const updateCloudPref = (
   hass: HomeAssistant,
   prefs: {
-    google_enabled?: boolean;
-    alexa_enabled?: boolean;
-    google_allow_unlock?: boolean;
+    google_enabled?: CloudPreferences["google_enabled"];
+    alexa_enabled?: CloudPreferences["alexa_enabled"];
+    google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
   }
 ) =>
   hass.callWS({
