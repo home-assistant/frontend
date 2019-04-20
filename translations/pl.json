@@ -714,7 +714,7 @@
                     "create_failed": "Nie udało się utworzyć tokena.",
                     "prompt_name": "Nazwa?",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
-                    "empty_state": "Nie masz jeszcze żadnych żadnych tokenów.",
+                    "empty_state": "Nie masz jeszcze żadnych tokenów.",
                     "last_used": "Ostatnio używany {date} z {location}",
                     "not_used": "Nigdy nie był używany"
                 },
@@ -1170,9 +1170,9 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "off": "Wył.",
-                "on": "Wł.",
-                "auto": "Auto"
+                "off": "wyłączony",
+                "on": "włączony",
+                "auto": "automatyczny"
             }
         }
     },
