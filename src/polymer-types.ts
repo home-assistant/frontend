@@ -32,5 +32,6 @@ declare global {
       success: boolean;
       response: unknown;
     };
+    "open-external-app-configuration": undefined;
   }
 }
