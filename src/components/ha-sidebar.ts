@@ -117,6 +117,17 @@ class HaSidebar extends LitElement {
             </a>
           `
         )}
+        <a href="#external-app-configuration" tabindex="-1">
+          <paper-icon-item @click=${this._handleExternalAppConfiguration}>
+            <ha-icon
+              slot="item-icon"
+              icon="hass:cellphone-settings-variant"
+            ></ha-icon>
+            <span class="item-text"
+              >${hass.localize("ui.sidebar.external_app_configuration")}</span
+            >
+          </paper-icon-item>
+        </a>
         ${!hass.user
           ? html`
               <paper-icon-item @click=${this._handleLogOut} class="logout">
@@ -212,6 +223,10 @@ class HaSidebar extends LitElement {
 
   private _handleLogOut() {
     fireEvent(this, "hass-logout");
+  }
+
+  private _handleExternalAppConfiguration() {
+    fireEvent(this, "open-external-app-configuration");
   }
 
   static get styles(): CSSResult {
