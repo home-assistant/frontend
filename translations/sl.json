@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Prijavljen kot {email}",
-                    "description_not_login": "Niste prijavljeni"
+                    "description_not_login": "Niste prijavljeni",
+                    "description_features": "Imejte nadzor nad domom tudi, ko vas ni doma, povežite z Alexo in Google Asistentom."
                 },
                 "integrations": {
                     "caption": "Integracije",
