@@ -98,7 +98,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
   }
 
   private _selectedChanged(ev): void {
-    forwardHaptic(document, "light");
+    forwardHaptic(this, "light");
     // Selected Option will transition to '' before transitioning to new value
     const stateObj = this.hass!.states[this._config!.entity];
     if (

@@ -32,5 +32,8 @@ declare global {
       success: boolean;
       response: unknown;
     };
+    haptic: {
+      hapticType: string;
+    };
   }
 }

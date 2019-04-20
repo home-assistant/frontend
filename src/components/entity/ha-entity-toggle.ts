@@ -90,7 +90,7 @@ class HaEntityToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic(document, "light");
+    forwardHaptic(this, "light");
     const stateDomain = computeStateDomain(this.stateObj);
     let serviceDomain;
     let service;

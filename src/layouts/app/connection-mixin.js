@@ -76,7 +76,7 @@ export default (superClass) =>
                   err
                 );
               }
-              forwardHaptic(document, "error");
+              forwardHaptic(this, "error");
               const message =
                 this.hass.localize(
                   "ui.notification_toast.service_call_failed",

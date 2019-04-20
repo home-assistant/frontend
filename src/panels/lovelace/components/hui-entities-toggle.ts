@@ -66,7 +66,7 @@ class HuiEntitiesToggle extends LitElement {
   }
 
   private _callService(ev: MouseEvent): void {
-    forwardHaptic(document, "light");
+    forwardHaptic(this, "light");
     const turnOn = (ev.target as PaperToggleButtonElement).checked;
     turnOnOffEntities(this.hass!, this._toggleEntities!, turnOn!);
   }
