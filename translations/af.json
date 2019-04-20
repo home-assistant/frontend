@@ -232,7 +232,7 @@
             "default": {
                 "initializing": "Inisialiseer",
                 "dead": "Dood",
-                "sleeping": "Slaap",
+                "sleeping": "Aan die slaap",
                 "ready": "Gereed"
             },
             "query_stage": {
