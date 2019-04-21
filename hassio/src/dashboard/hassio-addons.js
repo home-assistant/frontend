@@ -4,8 +4,8 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/hassio-card-content";
 import "../resources/hassio-style";
-import NavigateMixin from "../../../src/mixins/navigate-mixin";
 import Fuse from "fuse.js";
+import NavigateMixin from "../../../src/mixins/navigate-mixin";
 
 class HassioAddons extends NavigateMixin(PolymerElement) {
   static get template() {
