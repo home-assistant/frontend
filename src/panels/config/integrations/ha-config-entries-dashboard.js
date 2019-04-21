@@ -64,7 +64,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
               <template is="dom-repeat" items="[[progress]]">
                 <div class="config-entry-row">
                   <paper-item-body>
-                    [[_computeIntegrationTitle(localize, item.handler)]]
+                    [[_computeActiveFlowTitle(localize, item)]]
                   </paper-item-body>
                   <mwc-button on-click="_continueFlow"
                     >[[localize('ui.panel.config.integrations.configure')]]</mwc-button
@@ -188,6 +188,23 @@ class HaConfigManagerDashboard extends LocalizeMixin(
 
   _computeIntegrationTitle(localize, integration) {
     return localize(`component.${integration}.config.title`);
+  }
+
+  _computeActiveFlowTitle(localize, integration) {
+    const placeholders = integration.context.title_placeholders || {};
+    const placeholderKeys = Object.keys(placeholders);
+    if (placeholderKeys.length === 0) {
+      return localize(`component.${integration.handler}.config.title`);
+    }
+    const args = [];
+    placeholderKeys.forEach((key) => {
+      args.push(key);
+      args.push(placeholders[key]);
+    });
+    return localize(
+      `component.${integration.handler}.config.flow_title`,
+      ...args
+    );
   }
 
   _computeConfigEntryEntities(hass, configEntry, entities) {
