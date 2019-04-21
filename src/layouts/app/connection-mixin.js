@@ -16,6 +16,7 @@ import { getLocalLanguage } from "../../util/hass-translation";
 import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
 import { subscribePanels } from "../../data/ws-panels";
+import { fireEvent } from "../../common/dom/fire_event";
 
 export default (superClass) =>
   class extends EventsMixin(LocalizeMixin(superClass)) {
@@ -126,10 +127,14 @@ export default (superClass) =>
 
       const conn = this.hass.connection;
 
+      fireEvent(document, "connected");
+
       conn.addEventListener("ready", () => this.hassReconnected());
       conn.addEventListener("disconnected", () => this.hassDisconnected());
       // If we reconnect after losing connection and auth is no longer valid.
       conn.addEventListener("reconnect-error", (_conn, err) => {
+        fireEvent(document, "auth-invalid");
+
         if (err === ERR_INVALID_AUTH) location.reload();
       });
 
@@ -142,10 +147,12 @@ export default (superClass) =>
     hassReconnected() {
       super.hassReconnected();
       this._updateHass({ connected: true });
+      fireEvent(document, "connected");
     }
 
     hassDisconnected() {
       super.hassDisconnected();
       this._updateHass({ connected: false });
+      fireEvent(document, "disconnected");
     }
   };

@@ -33,5 +33,8 @@ declare global {
       response: unknown;
     };
     "open-external-app-configuration": undefined;
+    "auth-invalid": undefined;
+    connected: undefined;
+    disconnected: undefined;
   }
 }
