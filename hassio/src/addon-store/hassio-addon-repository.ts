@@ -7,7 +7,7 @@ import {
   CSSResultArray,
 } from "lit-element";
 import "@polymer/paper-card/paper-card";
-import Fuse from "fuse.js";
+import * as Fuse from "fuse.js";
 
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";

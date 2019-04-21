@@ -1,13 +1,7 @@
 import "./hassio-addon-repository";
 import "./hassio-repositories-editor";
 import { TemplateResult, html } from "lit-html";
-import {
-  LitElement,
-  CSSResult,
-  css,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { LitElement, property, PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioAddonRepository,
