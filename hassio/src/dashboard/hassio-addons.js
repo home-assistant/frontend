@@ -5,6 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/hassio-card-content";
 import "../resources/hassio-style";
 import NavigateMixin from "../../../src/mixins/navigate-mixin";
+import Fuse from "fuse.js";
 
 class HassioAddons extends NavigateMixin(PolymerElement) {
   static get template() {
@@ -27,9 +28,8 @@ class HassioAddons extends NavigateMixin(PolymerElement) {
         </template>
         <template
           is="dom-repeat"
-          items="[[addons]]"
+          items="[[fuzzySearchAndSort(addons, filter)]]"
           as="addon"
-          sort="sortAddons"
         >
           <paper-card on-click="addonTapped">
             <div class="card-content">
@@ -56,8 +56,21 @@ class HassioAddons extends NavigateMixin(PolymerElement) {
     };
   }
 
-  sortAddons(a, b) {
-    return a.name < b.name ? -1 : 1;
+  fuzzySearchAndSort(addons, filter) {
+    if (!filter) {
+      return addons.sort((a, b) =>
+        a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+      );
+    }
+
+    const options = {
+      keys: ["name", "description", "slug"],
+      caseSensitive: false,
+      minMatchCharLength: 2,
+      threshold: 0.2,
+    };
+    const fuse = new Fuse(addons, options);
+    return fuse.search(filter);
   }
 
   computeIcon(addon) {

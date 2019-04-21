@@ -5,7 +5,7 @@ documentContainer.setAttribute("style", "display: none;");
 
 export const hassioStyle = css`
   .card-group {
-    margin-top: 24px;
+    margin: 12px 0;
   }
   .card-group .title {
     color: var(--primary-text-color);
