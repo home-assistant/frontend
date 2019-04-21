@@ -191,7 +191,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
   }
 
   _computeActiveFlowTitle(localize, integration) {
-    const placeholders = integration.context.placeholders || {};
+    const placeholders = integration.context.title_placeholders || {};
     const placeholderKeys = Object.keys(placeholders);
     if (placeholderKeys.length === 0) {
       return localize(`component.${integration.handler}.config.title`);
