@@ -16,6 +16,7 @@ import { getLocalLanguage } from "../../util/hass-translation";
 import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
 import { subscribePanels } from "../../data/ws-panels";
+import { forwardHaptic } from "../../util/haptics";
 
 export default (superClass) =>
   class extends EventsMixin(LocalizeMixin(superClass)) {
@@ -75,6 +76,7 @@ export default (superClass) =>
                   err
                 );
               }
+              forwardHaptic(this, "error");
               const message =
                 this.hass.localize(
                   "ui.notification_toast.service_call_failed",
