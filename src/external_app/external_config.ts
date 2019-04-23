@@ -1,7 +1,7 @@
 import { ExternalMessaging } from "./external_messaging";
 
 export interface ExternalConfig {
-  sidebarSettings: boolean;
+  hasSettingsScreen: boolean;
 }
 
 export const getExternalConfig = (
