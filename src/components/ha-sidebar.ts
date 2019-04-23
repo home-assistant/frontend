@@ -18,6 +18,10 @@ import isComponentLoaded from "../common/config/is_component_loaded";
 import { HomeAssistant, PanelInfo } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { DEFAULT_PANEL } from "../common/const";
+import {
+  getExternalConfig,
+  ExternalConfig,
+} from "../external_app/external_config";
 
 const computeUrl = (urlPath) => `/${urlPath}`;
 
@@ -69,6 +73,7 @@ class HaSidebar extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
+  @property() private _externalConfig?: ExternalConfig;
 
   protected render() {
     const hass = this.hass;
@@ -117,6 +122,11 @@ class HaSidebar extends LitElement {
             </a>
           `
         )}
+        ${this._externalConfig && this._externalConfig.hasSettingsScreen
+          ? html`
+              <p>We have external config with settings screen!</p>
+            `
+          : ""}
         ${!hass.user
           ? html`
               <paper-icon-item @click=${this._handleLogOut} class="logout">
@@ -208,6 +218,15 @@ class HaSidebar extends LitElement {
       hass.user !== oldHass.user ||
       hass.localize !== oldHass.localize
     );
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    if (this.hass && this.hass.auth.external) {
+      getExternalConfig(this.hass.auth.external).then((conf) => {
+        this._externalConfig = conf;
+      });
+    }
   }
 
   private _handleLogOut() {
