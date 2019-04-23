@@ -530,7 +530,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/security`, data);
     this.set("addon.protected", !this.addon.protected);
   }
-  
+
   panelToggled() {
     const data = { ingress_panel: !this.addon.ingress_panel };
     this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/options`, data);
