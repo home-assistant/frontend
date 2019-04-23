@@ -40,15 +40,30 @@ export class ExternalMessaging {
     window[CALLBACK_RECEIVE_MESSAGE] = (msg) => this.receiveMessage(msg);
   }
 
+  /**
+   * Send message to external app that expects a response.
+   * @param msg message to send
+   */
   public sendMessage<T>(msg: InternalMessage): Promise<T> {
     const msgId = ++this.msgId;
     msg.msgId = msgId;
 
-    this._sendExternal(msg);
+    this.fireMessage(msg);
 
     return new Promise<T>((resolve, reject) => {
       this.commands[msgId] = { resolve, reject };
     });
+  }
+
+  /**
+   * Send message to external app without expecting a response.
+   * @param msg message to send
+   */
+  public fireMessage(msg: InternalMessage) {
+    if (!msg.msgId) {
+      msg.msgId = ++this.msgId;
+    }
+    this._sendExternal(msg);
   }
 
   public receiveMessage(msg: ExternalMessage) {

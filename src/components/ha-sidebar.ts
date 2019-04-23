@@ -251,7 +251,7 @@ class HaSidebar extends LitElement {
 
   private _handleExternalAppConfiguration(ev: Event) {
     ev.preventDefault();
-    this.hass!.auth.external!.sendMessage({
+    this.hass!.auth.external!.fireMessage({
       type: "config_screen/show",
     });
   }
