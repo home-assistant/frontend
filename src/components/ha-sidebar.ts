@@ -124,7 +124,23 @@ class HaSidebar extends LitElement {
         )}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
-              <p>We have external config with settings screen!</p>
+              <a
+                href="#external-app-configuration"
+                tabindex="-1"
+                @click=${this._handleExternalAppConfiguration}
+              >
+                <paper-icon-item>
+                  <ha-icon
+                    slot="item-icon"
+                    icon="hass:cellphone-settings-variant"
+                  ></ha-icon>
+                  <span class="item-text"
+                    >${hass.localize(
+                      "ui.sidebar.external_app_configuration"
+                    )}</span
+                  >
+                </paper-icon-item>
+              </a>
             `
           : ""}
         ${!hass.user
@@ -233,6 +249,13 @@ class HaSidebar extends LitElement {
     fireEvent(this, "hass-logout");
   }
 
+  private _handleExternalAppConfiguration(ev: Event) {
+    ev.preventDefault();
+    this.hass!.auth.external!.sendMessage({
+      type: "config_screen/show",
+    });
+  }
+
   static get styles(): CSSResult {
     return css`
       :host {
@@ -278,7 +301,7 @@ class HaSidebar extends LitElement {
         --paper-item-min-height: 40px;
       }
 
-      a ha-icon {
+      ha-icon[slot="item-icon"] {
         color: var(--sidebar-icon-color);
       }
 
