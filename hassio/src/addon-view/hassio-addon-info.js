@@ -355,6 +355,15 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 checked="[[addon.protected]]"
               ></paper-toggle-button>
             </div>
+            <template is="dom-if" if="[[addon.ingress]]">
+              <div class="state">
+                <div>Show in Panel</div>
+                <paper-toggle-button
+                  on-change="panelToggled"
+                  checked="[[addon.ingress_panel]]"
+                ></paper-toggle-button>
+              </div>
+            </template>
           </template>
         </div>
         <div class="card-actions">
@@ -520,6 +529,11 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     const data = { protected: !this.addon.protected };
     this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/security`, data);
     this.set("addon.protected", !this.addon.protected);
+  }
+
+  panelToggled() {
+    const data = { ingress_panel: !this.addon.ingress_panel };
+    this.hass.callApi("POST", `hassio/addons/${this.addonSlug}/options`, data);
   }
 
   showMoreInfo(e) {
