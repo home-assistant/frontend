@@ -45,7 +45,6 @@ if (!window.externalApp && !window.webkit) {
   );
 }
 
-// tslint:disable-next-line: max-classes-per-file
 export default class ExternalAuth extends Auth {
   public external = new ExternalMessaging();
 
@@ -59,6 +58,7 @@ export default class ExternalAuth extends Auth {
       // This will trigger connection to do a refresh right away
       expires: 0,
     });
+    this.external.attach();
   }
 
   public async refreshAccessToken() {
