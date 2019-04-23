@@ -357,7 +357,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             </div>
             <template is="dom-if" if="[[addon.ingress]]">
               <div class="state">
-                <div>Panel</div>
+                <div>Show in Panel</div>
                 <paper-toggle-button
                   on-change="panelToggled"
                   checked="[[addon.ingress_panel]]"
