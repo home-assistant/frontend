@@ -22,7 +22,6 @@ const BUILT_IN_PANEL_ICONS = [
   "mailbox", // Mailbox
   "tooltip-account", // Map
   "cart", // Shopping List
-  "cellphone-settings-variant", // External App Configuration
 ];
 
 // Given an icon name, load the SVG file
