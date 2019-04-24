@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Inloggad som {email}",
-                    "description_not_login": "Inte inloggad"
+                    "description_not_login": "Inte inloggad",
+                    "description_features": "Styra även när du inte är hemma, integrera med Alexa och Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrationer",
@@ -649,7 +650,7 @@
                     "picker": {
                         "header": "Enhetsregister",
                         "unavailable": "(ej tillgänglig)",
-                        "introduction": "Home Assistanthar ett enhetsregister som innehåller varje enhet som någonsin har setts vars identifieras kan vara unikt. Var och en av dessa enheter kommer att ha ett ID-nummer som är reserverat för bara den enheten.",
+                        "introduction": "Home Assistant har ett enhetsregister som innehåller varje enhet som någonsin har setts vars identifieras kan vara unikt. Var och en av dessa enheter kommer att ha ett ID-nummer som är reserverat för bara den enheten.",
                         "introduction2": "Använd enhetsregistret för att skriva över namnet, ändra ID eller ta bort posten ifrån Home Assistant. Obs! Att ta bort posten ifrån entity registry (enhetsregister) kommer inte att ta bort enheten. För att göra det, följ länken nedan och ta bort det från integreringssidan.",
                         "integrations_page": "Integrationssida"
                     },
@@ -860,7 +861,7 @@
                 "cards": {
                     "shopping-list": {
                         "checked_items": "Markerade objekt",
-                        "clear_items": "Rensa avbockade objekt",
+                        "clear_items": "Rensa markerade objekt",
                         "add_item": "Lägg till objekt"
                     },
                     "empty_state": {
@@ -881,7 +882,7 @@
                         "move": "Flytta"
                     },
                     "migrate": {
-                        "header": "Konfigurationen är inte giltig",
+                        "header": "Ogiltig konfiguration",
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\".",
                         "para_migrate": "Home Assistant kan automatiskt lägga till ID till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
                         "migrate": "Migrera konfigurationen"
@@ -894,7 +895,7 @@
                         "delete": "Radera vy"
                     },
                     "save_config": {
-                        "header": "Ta kontroll över ditt Lovelace användargränssnitt",
+                        "header": "Ta kontroll över Lovelace UI",
                         "para": "Home Assistant kommer som standard att behålla ditt användargränssnitt, uppdatera det när nya enheter eller Lovelace-komponenter blir tillgängliga. Om du tar kontroll kommer vi inte längre göra ändringar automatiskt för dig.",
                         "para_sure": "Är du säker på att du vill ta kontroll över ditt användargränssnitt?",
                         "cancel": "Glöm det",
