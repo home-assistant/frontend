@@ -9,7 +9,7 @@ export const externalForwardConnectionEvents = (bus: ExternalMessaging) => {
   );
 };
 
-export const externalForwardHaptics = (bus) =>
-  document.addEventListener("haptic", (ev) => {
-    bus.fireMessage({ type: "haptic", result: { hapticType: ev.detail } });
-  });
+export const externalForwardHaptics = (bus: ExternalMessaging) =>
+  document.addEventListener("haptic", (ev) =>
+    bus.fireMessage({ type: "haptic", payload: { hapticType: ev.detail } })
+  );
