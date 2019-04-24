@@ -6,13 +6,13 @@ import { ActionConfig } from "../../../data/lovelace";
 interface Config extends LovelaceElementConfig {
   entity?: string;
   title?: string;
-  noTitle?: boolean;
+  hide_title?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
 }
 
 export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
-  if (config.noTitle) {
+  if (config.hide_title) {
     return "";
   }
 
