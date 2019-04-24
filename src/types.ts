@@ -10,6 +10,7 @@ import {
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { ExternalMessaging } from "./external_app/external_messaging";
+import { HASSDomEvent } from "./common/dom/fire_event";
 
 declare global {
   var __DEV__: boolean;
@@ -17,9 +18,7 @@ declare global {
   var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
   var __STATIC_PATH__: string;
-}
 
-declare global {
   interface Window {
     // Custom panel entry point url
     customPanelJS: string;
@@ -39,8 +38,15 @@ declare global {
       value: unknown;
     };
     change: undefined;
+    "connection-status": ConnectionStatus;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    "connection-status": HASSDomEvent<ConnectionStatus>;
   }
 }
+
+type ConnectionStatus = "connected" | "auth-invalid" | "disconnected";
 
 export interface WebhookError {
   code: number;
