@@ -8,3 +8,8 @@ export const externalForwardConnectionEvents = (bus: ExternalMessaging) => {
     })
   );
 };
+
+export const externalForwardHaptics = (bus: ExternalMessaging) =>
+  document.addEventListener("haptic", (ev) =>
+    bus.fireMessage({ type: "haptic", payload: { hapticType: ev.detail } })
+  );
