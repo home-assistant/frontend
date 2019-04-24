@@ -10,7 +10,7 @@ interface CommandInFlight {
 export interface InternalMessage {
   id?: number;
   type: string;
-  result?: unknown;
+  payload?: unknown;
 }
 
 interface ExternalError {

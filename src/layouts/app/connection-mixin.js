@@ -129,7 +129,7 @@ export default (superClass) =>
 
       const conn = this.hass.connection;
 
-      fireEvent(document, "connected");
+      fireEvent(document, "connection-status", "connected");
 
       conn.addEventListener("ready", () => this.hassReconnected());
       conn.addEventListener("disconnected", () => this.hassDisconnected());
@@ -137,7 +137,7 @@ export default (superClass) =>
       conn.addEventListener("reconnect-error", (_conn, err) => {
         if (err === ERR_INVALID_AUTH) {
           location.reload();
-          fireEvent(document, "auth-invalid");
+          fireEvent(document, "connection-status", "auth-invalid");
         }
       });
 
@@ -150,12 +150,12 @@ export default (superClass) =>
     hassReconnected() {
       super.hassReconnected();
       this._updateHass({ connected: true });
-      fireEvent(document, "connected");
+      fireEvent(document, "connection-status", "connected");
     }
 
     hassDisconnected() {
       super.hassDisconnected();
       this._updateHass({ connected: false });
-      fireEvent(document, "disconnected");
+      fireEvent(document, "connection-status", "disconnected");
     }
   };
