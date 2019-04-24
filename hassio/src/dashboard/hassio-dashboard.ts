@@ -28,7 +28,6 @@ class HassioDashboard extends LitElement {
           .hass=${this.hass}
           .hassInfo=${this.hassInfo}
         ></hassio-hass-update>
-
         <hassio-addons
           .hass=${this.hass}
           .addons=${this.supervisorInfo.addons}
