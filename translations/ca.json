@@ -307,7 +307,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Suprimir completats",
+                "clear_completed": "Elimina els completats",
                 "add_item": "Afegir article",
                 "microphone_tip": "Clica el micròfon a la part superior dreta i digues \"Add candy to my shopping list\""
             },
@@ -322,8 +322,8 @@
             "mailbox": {
                 "empty": "No tens missatges",
                 "playback_title": "Reproducció de missatges",
-                "delete_prompt": "Vols suprimir aquest missatge?",
-                "delete_button": "Suprimir"
+                "delete_prompt": "Vols eliminar aquest missatge?",
+                "delete_button": "Elimina"
             },
             "config": {
                 "header": "Configuració de Home Assistant",
@@ -389,8 +389,8 @@
                             "introduction": "Els activadors són les regles que fan que es dispari un automatisme. Pots definir més d'un activador per a cada automatisme. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.\n\n[Més informació sobre activadors](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Afegir activador",
                             "duplicate": "Duplicar",
-                            "delete": "Suprimir",
-                            "delete_confirm": "Segur que vols suprimir-ho?",
+                            "delete": "Elimina",
+                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "unsupported_platform": "Plataforma {platform} no suportada.",
                             "type_select": "Tipus d'activador",
                             "type": {
@@ -471,8 +471,8 @@
                             "introduction": "Les condicions són una part opcional d'un automatisme i es poden utilitzar per permetre o evitar que es produeixi l'acció quan s'activa l'automatisme. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.\n\n[Més informació sobre les condicions](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/).",
                             "add": "Afegir condició",
                             "duplicate": "Duplicar",
-                            "delete": "Suprimir",
-                            "delete_confirm": "Segur que vols suprimir-ho?",
+                            "delete": "Elimina",
+                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "unsupported_condition": "Condició {condition} no suportada.",
                             "type_select": "Tipus de condició",
                             "type": {
@@ -517,8 +517,8 @@
                             "introduction": "Les accions són allò que farà Home Assistant quan s'activi l'automatisme i es compleixin totes les condicions (si n'hi ha).\n\n[Més informació sobre les accions](https:\/\/home-assistant.io\/docs\/automation\/action\/).",
                             "add": "Afegir acció",
                             "duplicate": "Duplicar",
-                            "delete": "Suprimir",
-                            "delete_confirm": "Segur que vols suprimir-ho?",
+                            "delete": "Elimina",
+                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "unsupported_action": "Acció {action} no suportada.",
                             "type_select": "Tipus d'acció",
                             "type": {
@@ -595,7 +595,7 @@
                     "config_entry": {
                         "no_devices": "Aquesta integració no té dispositius.",
                         "no_device": "Entitats sense dispositius",
-                        "delete_confirm": "Estas segur que vols suprimir aquesta integració?",
+                        "delete_confirm": "Estas segur que vols eliminar aquesta integració?",
                         "restart_confirm": "Reinicia el Home Assistant per acabar d'eliminar aquesta integració",
                         "manuf": "de {manufacturer}",
                         "hub": "Connectat a través de",
@@ -639,7 +639,7 @@
                     "create_area": "CREA ÀREA",
                     "editor": {
                         "default_name": "Àrea nova",
-                        "delete": "SUPRIMIR",
+                        "delete": "ELIMINA",
                         "update": "ACTUALITZAR",
                         "create": "CREAR"
                     }
@@ -657,7 +657,7 @@
                     "editor": {
                         "unavailable": "Aquesta entitat no està disponible actualment.",
                         "default_name": "Àrea nova",
-                        "delete": "SUPRIMIR",
+                        "delete": "ELIMINA",
                         "update": "ACTUALITZAR"
                     }
                 },
@@ -697,19 +697,19 @@
                     "description": "Cada testimoni d'autenticació d'actualització representa un inici de sessió diferent. Els testimonis d'autenticació d'actualització s'eliminaran automàticament quan tanquis la sessió. A sota hi ha una llista de testimonis d'autenticació d'actualització que estan actius actualment al teu compte.",
                     "token_title": "Refresca el testimoni d'autenticació del {clientId}",
                     "created_at": "Creat el {date}",
-                    "confirm_delete": "Estas segur que vols suprimir el testimoni d'autenticació d'actualització per {name}?",
-                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització.",
+                    "confirm_delete": "Estas segur que vols eliminar el testimoni d'autenticació d'actualització per {name}?",
+                    "delete_failed": "No s'ha pogut eliminar el testimoni d'autenticació d'actualització.",
                     "last_used": "Darrer ús el {date} des de {location}",
                     "not_used": "Mai no s'ha utilitzat",
-                    "current_token_tooltip": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització."
+                    "current_token_tooltip": "No s'ha pogut eliminar el testimoni d'autenticació d'actualització."
                 },
                 "long_lived_access_tokens": {
                     "header": "Testimonis d'autenticació d'accés de llarga durada",
                     "description": "Crea testimonis d'autenticació d'accés de llarga durada per permetre als teus programes (scripts) interactuar amb la instància de Home Assistant. Cada testimoni d'autenticació serà vàlid durant deu anys després de la seva creació. Els següents testimonis d'autenticació d'accés de llarga durada estan actius actualment.",
                     "learn_auth_requests": "Aprèn a fer sol·licituds autenticades.",
                     "created_at": "Creat el {date}",
-                    "confirm_delete": "Estàs segur que vols suprimir el testimoni d'autenticació d'accés per {name}?",
-                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'accés.",
+                    "confirm_delete": "Estàs segur que vols eliminar el testimoni d'autenticació d'accés per {name}?",
+                    "delete_failed": "No s'ha pogut eliminar el testimoni d'autenticació d'accés.",
                     "create": "Crea un testimoni d'autenticació",
                     "create_failed": "No s'ha pogut crear el testimoni d'autenticació d'accés.",
                     "prompt_name": "Nom?",
@@ -727,7 +727,7 @@
                     "new_password": "Contrasenya nova",
                     "confirm_new_password": "Confirmar contrasenya nova",
                     "error_required": "Obligatori",
-                    "submit": "Enviar"
+                    "submit": "Envia"
                 },
                 "mfa": {
                     "header": "Mòduls d'autenticació amb múltiples passos",
@@ -740,7 +740,7 @@
                     "title_success": "Èxit!",
                     "step_done": "Configuració feta per a {step}",
                     "close": "Tanca",
-                    "submit": "Enviar"
+                    "submit": "Envia"
                 }
             },
             "page-authorize": {
@@ -878,8 +878,8 @@
                         "pick_card": "Tria la targeta que vols afegir.",
                         "add": "Afegir targeta",
                         "edit": "Editar",
-                        "delete": "Suprimir",
-                        "move": "Moure"
+                        "delete": "Elimina",
+                        "move": "Mou"
                     },
                     "migrate": {
                         "header": "Configuració incompatible",
@@ -892,7 +892,7 @@
                         "header": "Configuració de la visualització",
                         "add": "Afegeix visualització",
                         "edit": "Editar visualització",
-                        "delete": "Suprimir visualització"
+                        "delete": "Eliminar visualització"
                     },
                     "save_config": {
                         "header": "Pren el control de la interfície d'usuari Lovelace",
@@ -929,7 +929,7 @@
         },
         "common": {
             "loading": "Carregant",
-            "cancel": "Cancel·lar",
+            "cancel": "Cancel·la",
             "save": "Desar"
         },
         "duration": {
