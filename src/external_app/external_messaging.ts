@@ -67,6 +67,11 @@ export class ExternalMessaging {
   }
 
   public receiveMessage(msg: ExternalMessage) {
+    if (__DEV__) {
+      // tslint:disable-next-line: no-console
+      console.log("Receiving message from external app", msg);
+    }
+
     const pendingCmd = this.commands[msg.id];
 
     if (!pendingCmd) {
@@ -85,6 +90,10 @@ export class ExternalMessaging {
   }
 
   protected _sendExternal(msg: InternalMessage) {
+    if (__DEV__) {
+      // tslint:disable-next-line: no-console
+      console.log("Sending message to external app", msg);
+    }
     if (window.externalApp) {
       window.externalApp.externalBus(JSON.stringify(msg));
     } else {
