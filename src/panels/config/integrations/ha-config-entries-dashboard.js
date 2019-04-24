@@ -1,6 +1,7 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button";
+import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-card/paper-card";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item";
@@ -13,6 +14,7 @@ import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
 import "../../../components/ha-icon-next";
 
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../ha-config-section";
 import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -49,6 +51,28 @@ class HaConfigManagerDashboard extends LocalizeMixin(
         .configured a {
           color: var(--primary-text-color);
           text-decoration: none;
+        }
+        paper-fab {
+          position: fixed;
+          bottom: 16px;
+          right: 16px;
+          z-index: 1;
+        }
+
+        paper-fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
+
+        paper-fab[rtl] {
+          right: auto;
+          left: 16px;
+        }
+
+        paper-fab[rtl][is-wide] {
+          bottom: 24px;
+          right: auto;
+          left: 24px;
         }
       </style>
 
@@ -119,23 +143,13 @@ class HaConfigManagerDashboard extends LocalizeMixin(
           </paper-card>
         </ha-config-section>
 
-        <ha-config-section>
-          <span slot="header"
-            >[[localize('ui.panel.config.integrations.new')]]</span
-          >
-          <paper-card>
-            <template is="dom-repeat" items="[[handlers]]">
-              <div class="config-entry-row">
-                <paper-item-body>
-                  [[_computeIntegrationTitle(localize, item)]]
-                </paper-item-body>
-                <mwc-button on-click="_createFlow"
-                  >[[localize('ui.panel.config.integrations.configure')]]</mwc-button
-                >
-              </div>
-            </template>
-          </paper-card>
-        </ha-config-section>
+        <paper-fab
+          icon="hass:plus"
+          title="[[localize('ui.panel.config.integrations.new')]]"
+          on-click="_createFlow"
+          is-wide$="[[isWide]]"
+          rtl$="[[rtl]]"
+        ></paper-fab>
       </hass-subpage>
     `;
   }
@@ -162,6 +176,12 @@ class HaConfigManagerDashboard extends LocalizeMixin(
       progress: Array,
 
       handlers: Array,
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -170,17 +190,14 @@ class HaConfigManagerDashboard extends LocalizeMixin(
     loadConfigFlowDialog();
   }
 
-  _createFlow(ev) {
+  _createFlow() {
     showConfigFlowDialog(this, {
-      hass: this.hass,
-      newFlowForHandler: ev.model.item,
       dialogClosedCallback: () => this.fire("hass-reload-entries"),
     });
   }
 
   _continueFlow(ev) {
     showConfigFlowDialog(this, {
-      hass: this.hass,
       continueFlowId: ev.model.item.flow_id,
       dialogClosedCallback: () => this.fire("hass-reload-entries"),
     });
@@ -229,6 +246,10 @@ class HaConfigManagerDashboard extends LocalizeMixin(
 
   _handleMoreInfo(ev) {
     this.fire("hass-more-info", { entityId: ev.model.item.entity_id });
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 
