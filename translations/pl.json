@@ -441,7 +441,7 @@
                                     "label": "Strefa",
                                     "entity": "Encja z lokalizacją",
                                     "zone": "Strefa",
-                                    "event": "Zdarzenie",
+                                    "event": "Zdarzenie:",
                                     "enter": "Wprowadź",
                                     "leave": "Opuść"
                                 },
@@ -1088,7 +1088,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Zapisz",
-                "name": "Nazwa",
+                "name": "Nadpisanie nazwy",
                 "entity_id": "Identyfikator encji"
             },
             "more_info_control": {
