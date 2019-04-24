@@ -924,6 +924,7 @@
             }
         },
         "sidebar": {
+            "external_app_configuration": "App Configuration",
             "log_out": "Log out",
             "developer_tools": "Developer tools"
         },
