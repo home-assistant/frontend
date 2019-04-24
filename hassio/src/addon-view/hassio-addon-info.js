@@ -110,7 +110,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           display: block;
         }
         .state div {
-          width: 150px;
+          width: 180px;
           display: inline-block;
         }
         paper-toggle-button {
@@ -311,7 +311,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                   id="apparmor"
                   icon="hassio:shield"
                   label="apparmor"
-                  description="[[addon.apparmor]]"
+                  description=""
                 ></ha-label-badge>
               </template>
               <template is="dom-if" if="[[addon.auth_api]]">
@@ -357,7 +357,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             </div>
             <template is="dom-if" if="[[addon.ingress]]">
               <div class="state">
-                <div>Show in Panel</div>
+                <div>Show in Sidebar</div>
                 <paper-toggle-button
                   on-change="panelToggled"
                   checked="[[addon.ingress_panel]]"
