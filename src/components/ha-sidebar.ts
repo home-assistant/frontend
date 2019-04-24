@@ -219,6 +219,9 @@ class HaSidebar extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_externalConfig")) {
+      return true;
+    }
     if (!this.hass || !changedProps.has("hass")) {
       return false;
     }
