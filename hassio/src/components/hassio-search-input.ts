@@ -1,6 +1,12 @@
 import { TemplateResult, html } from "lit-html";
-import { LitElement, CSSResult, css, property } from "lit-element";
-import { fireEvent } from "../../../../src/common/dom/fire_event";
+import {
+  css,
+  CSSResult,
+  customElement,
+  LitElement,
+  property,
+} from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
