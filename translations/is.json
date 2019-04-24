@@ -202,7 +202,8 @@
             "not_home": "Fjarverandi"
         },
         "default": {
-            "error": "Villa"
+            "error": "Villa",
+            "entity_not_found": "Eining fannst ekki"
         }
     },
     "ui": {
@@ -327,6 +328,7 @@
                                 },
                                 "geo_location": {
                                     "source": "Uppruni",
+                                    "zone": "Öryggissvæði",
                                     "event": "Viðburður:",
                                     "enter": "Koma",
                                     "leave": "Brottför"
@@ -425,7 +427,8 @@
                 "cloud": {
                     "caption": "Home Assistant skýið",
                     "description_login": "Innskráð(ur) sem {email}",
-                    "description_not_login": "Ekki skráð(ur) inn"
+                    "description_not_login": "Ekki skráð(ur) inn",
+                    "description_features": "Stjórna heimili að heiman með Alexa og Google Assistant."
                 },
                 "integrations": {
                     "caption": "Samþættingar",
@@ -444,7 +447,8 @@
                         "hub": "Tengt gegnum",
                         "firmware": "Fastbúnaðarútgáfa: {version}",
                         "device_unavailable": "Tæki ekki tiltækt",
-                        "entity_unavailable": "Eining ekki tiltæk"
+                        "entity_unavailable": "Eining ekki tiltæk",
+                        "no_area": "Ekkert svæði"
                     }
                 },
                 "zha": {
@@ -456,6 +460,7 @@
                     },
                     "device_card": {
                         "device_name_placeholder": "Nafn notanda",
+                        "area_picker_label": "Svæði",
                         "update_name_button": "Uppfæra nafn"
                     },
                     "add_device_page": {
@@ -465,14 +470,20 @@
                     }
                 },
                 "area_registry": {
+                    "caption": "Svæðaskrá",
                     "description": "Yfirlit yfir öll svæði á heimilinu þínu.",
+                    "no_areas": "Það virðist sem að þú hafir engin svæði ennþá!",
+                    "create_area": "BÚA TIL SVÆÐI",
                     "editor": {
+                        "default_name": "Nýtt svæði",
                         "delete": "EYÐA",
                         "update": "UPPFÆRA",
                         "create": "STOFNA"
                     },
                     "picker": {
-                        "integrations_page": "Samþættingar síða"
+                        "integrations_page": "Samþættingar síða",
+                        "no_areas": "Það virðist sem að þú hafir engin svæði ennþá!",
+                        "create_area": "BÚA TIL SVÆÐI"
                     }
                 },
                 "entity_registry": {
@@ -485,6 +496,7 @@
                     },
                     "editor": {
                         "unavailable": "Þessi eining er ekki tiltæk eins og er.",
+                        "default_name": "Nýtt svæði",
                         "delete": "EYÐA",
                         "update": "UPPFÆRA"
                     }

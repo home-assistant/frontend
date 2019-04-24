@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Přihlášen jako {email}",
-                    "description_not_login": "Nepřihlášen"
+                    "description_not_login": "Nepřihlášen",
+                    "description_features": "Ovládejte vzdáleně, integrace a Alexou a Google Asistent"
                 },
                 "integrations": {
                     "caption": "Integrace",
@@ -613,7 +614,9 @@
                         "remove": "Odstranit zařízení ze sítě Zigbee."
                     },
                     "device_card": {
-                        "area_picker_label": "Oblast"
+                        "device_name_placeholder": "Zvolené jméno",
+                        "area_picker_label": "Oblast",
+                        "update_name_button": "Aktualizovat název"
                     },
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Přidat zařízení",
@@ -1175,6 +1178,7 @@
     },
     "groups": {
         "system-admin": "Správci",
-        "system-users": "Uživatelé"
+        "system-users": "Uživatelé",
+        "system-read-only": "Uživatelé jen pro čtení"
     }
 }
