@@ -27,12 +27,12 @@ describe("ExternalMessaging", () => {
 
     assert.equal(bus.mockSent.length, 1);
     assert.deepEqual(bus.mockSent[0], {
-      msgId: 1,
+      id: 1,
       type: "config/get",
     });
 
     bus.receiveMessage({
-      msgId: 1,
+      id: 1,
       type: "result",
       success: true,
       result: {
@@ -52,7 +52,7 @@ describe("ExternalMessaging", () => {
     });
 
     bus.receiveMessage({
-      msgId: 1,
+      id: 1,
       type: "result",
       success: false,
       error: {

@@ -6,7 +6,7 @@ interface CommandInFlight {
 }
 
 export interface InternalMessage {
-  msgId?: number;
+  id?: number;
   type: string;
 }
 
@@ -16,14 +16,14 @@ interface ExternalError {
 }
 
 interface ExternalMessageResult {
-  msgId: number;
+  id: number;
   type: "result";
   success: true;
   result: unknown;
 }
 
 interface ExternalMessageResultError {
-  msgId: number;
+  id: number;
   type: "result";
   success: false;
   error: ExternalError;
@@ -46,7 +46,7 @@ export class ExternalMessaging {
    */
   public sendMessage<T>(msg: InternalMessage): Promise<T> {
     const msgId = ++this.msgId;
-    msg.msgId = msgId;
+    msg.id = msgId;
 
     this.fireMessage(msg);
 
@@ -60,18 +60,18 @@ export class ExternalMessaging {
    * @param msg message to send
    */
   public fireMessage(msg: InternalMessage) {
-    if (!msg.msgId) {
-      msg.msgId = ++this.msgId;
+    if (!msg.id) {
+      msg.id = ++this.msgId;
     }
     this._sendExternal(msg);
   }
 
   public receiveMessage(msg: ExternalMessage) {
-    const pendingCmd = this.commands[msg.msgId];
+    const pendingCmd = this.commands[msg.id];
 
     if (!pendingCmd) {
       // tslint:disable-next-line: no-console
-      console.warn(`Received unknown msg ID`, msg.msgId);
+      console.warn(`Received unknown msg ID`, msg.id);
       return;
     }
 
