@@ -5,6 +5,9 @@ import {
   InternalMessage,
 } from "../../src/external_app/external_messaging";
 
+// @ts-ignore
+global.__DEV__ = true;
+
 class MockExternalMessaging extends ExternalMessaging {
   public mockSent: InternalMessage[] = [];
 
