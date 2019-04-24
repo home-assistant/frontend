@@ -1,5 +1,6 @@
 import { TemplateResult, html } from "lit-html";
 import { LitElement, CSSResult, css, property } from "lit-element";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
@@ -11,25 +12,34 @@ class HassioSearchInput extends LitElement {
     return html`
       <div class="search-container">
         <iron-icon icon="hassio:magnify"></iron-icon>
+
         <paper-input
           no-label-float
           label="Search"
           .value=${this.filter}
-          @value-changed=${(e) => this._filterChanged(e.target.value)}
+          @value-changed=${this._filterInputChanged}
         ></paper-input>
-        <mwc-button @click=${() => this._filterChanged("")}>Clear</mwc-button>
+        <iron-icon icon="magnify" slot="prefix"></iron-icon>
+        <paper-icon-button slot="suffix" onclick=${
+          this._clearSearch
+        } icon="clear" alt="Clear" title="Clear">
+        </paper-icon-button>
+      </paper-input>
+
       </div>
     `;
   }
 
   private async _filterChanged(value) {
-    this.dispatchEvent(
-      new CustomEvent("filter-changed", {
-        detail: {
-          value: String(value),
-        },
-      })
-    );
+    fireEvent(this, "filter-changed", { value: String(value) });
+  }
+
+  private async _filterInputChanged(e) {
+    this._filterChanged(e.target.value);
+  }
+
+  private async _clearSearch() {
+    this._filterChanged("");
   }
 
   static get styles(): CSSResult {
