@@ -5,6 +5,7 @@ import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
 
+@customElement("hassio-search-input")
 class HassioSearchInput extends LitElement {
   @property() private filter?: string;
 
@@ -64,4 +65,8 @@ class HassioSearchInput extends LitElement {
   }
 }
 
-customElements.define("hassio-search-input", HassioSearchInput);
+declare global {
+  interface HTMLElementTagNameMap {
+    "hassio-search-input": HassioSearchInput;
+  }
+}
