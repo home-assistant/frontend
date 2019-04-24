@@ -1,4 +1,7 @@
-import { externalForwardConnectionEvents } from "./external_events_forwarder";
+import {
+  externalForwardConnectionEvents,
+  externalForwardHaptics,
+} from "./external_events_forwarder";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -41,6 +44,7 @@ export class ExternalMessaging {
 
   public attach() {
     externalForwardConnectionEvents(this);
+    externalForwardHaptics(this);
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
   }
 
