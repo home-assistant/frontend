@@ -9,6 +9,7 @@ import {
   HassServices,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
+import { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
   var __DEV__: boolean;
@@ -109,7 +110,7 @@ export interface Resources {
 }
 
 export interface HomeAssistant {
-  auth: Auth;
+  auth: Auth & { external?: ExternalMessaging };
   connection: Connection;
   connected: boolean;
   states: HassEntities;
