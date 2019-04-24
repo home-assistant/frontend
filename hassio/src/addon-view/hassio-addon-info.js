@@ -110,7 +110,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           display: block;
         }
         .state div {
-          width: 150px;
+          width: 180px;
           display: inline-block;
         }
         paper-toggle-button {
