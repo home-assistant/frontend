@@ -2,7 +2,7 @@
  * Utility function that enables haptic feedback
  */
 
-import { fireEvent } from "../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
 
 // Allowed types are from iOS HIG.
 // https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/feedback/#haptics
@@ -20,6 +20,10 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     haptic: HapticType;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    haptic: HASSDomEvent<HapticType>;
   }
 }
 
