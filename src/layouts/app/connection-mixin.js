@@ -136,8 +136,8 @@ export default (superClass) =>
       // If we reconnect after losing connection and auth is no longer valid.
       conn.addEventListener("reconnect-error", (_conn, err) => {
         if (err === ERR_INVALID_AUTH) {
-          location.reload();
           fireEvent(document, "connection-status", "auth-invalid");
+          location.reload();
         }
       });
 
