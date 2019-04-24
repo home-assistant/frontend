@@ -1,4 +1,4 @@
-const CALLBACK_RECEIVE_MESSAGE = "externalReceiveMessage";
+const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
   resolve: (data: any) => void;
@@ -37,7 +37,7 @@ export class ExternalMessaging {
   public msgId = 0;
 
   public attach() {
-    window[CALLBACK_RECEIVE_MESSAGE] = (msg) => this.receiveMessage(msg);
+    window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
   }
 
   /**
@@ -86,9 +86,9 @@ export class ExternalMessaging {
 
   protected _sendExternal(msg: InternalMessage) {
     if (window.externalApp) {
-      window.externalApp.sendMessageToExternal(JSON.stringify(msg));
+      window.externalApp.externalBus(JSON.stringify(msg));
     } else {
-      window.webkit!.messageHandlers.sendMessageToExternal.postMessage(msg);
+      window.webkit!.messageHandlers.externalBus.postMessage(msg);
     }
   }
 }
