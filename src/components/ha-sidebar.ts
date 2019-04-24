@@ -18,6 +18,10 @@ import isComponentLoaded from "../common/config/is_component_loaded";
 import { HomeAssistant, PanelInfo } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { DEFAULT_PANEL } from "../common/const";
+import {
+  getExternalConfig,
+  ExternalConfig,
+} from "../external_app/external_config";
 
 const computeUrl = (urlPath) => `/${urlPath}`;
 
@@ -69,6 +73,7 @@ class HaSidebar extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
+  @property() private _externalConfig?: ExternalConfig;
 
   protected render() {
     const hass = this.hass;
@@ -117,6 +122,27 @@ class HaSidebar extends LitElement {
             </a>
           `
         )}
+        ${this._externalConfig && this._externalConfig.hasSettingsScreen
+          ? html`
+              <a
+                href="#external-app-configuration"
+                tabindex="-1"
+                @click=${this._handleExternalAppConfiguration}
+              >
+                <paper-icon-item>
+                  <ha-icon
+                    slot="item-icon"
+                    icon="hass:cellphone-settings-variant"
+                  ></ha-icon>
+                  <span class="item-text"
+                    >${hass.localize(
+                      "ui.sidebar.external_app_configuration"
+                    )}</span
+                  >
+                </paper-icon-item>
+              </a>
+            `
+          : ""}
         ${!hass.user
           ? html`
               <paper-icon-item @click=${this._handleLogOut} class="logout">
@@ -193,6 +219,9 @@ class HaSidebar extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_externalConfig")) {
+      return true;
+    }
     if (!this.hass || !changedProps.has("hass")) {
       return false;
     }
@@ -210,8 +239,24 @@ class HaSidebar extends LitElement {
     );
   }
 
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    if (this.hass && this.hass.auth.external) {
+      getExternalConfig(this.hass.auth.external).then((conf) => {
+        this._externalConfig = conf;
+      });
+    }
+  }
+
   private _handleLogOut() {
     fireEvent(this, "hass-logout");
+  }
+
+  private _handleExternalAppConfiguration(ev: Event) {
+    ev.preventDefault();
+    this.hass!.auth.external!.fireMessage({
+      type: "config_screen/show",
+    });
   }
 
   static get styles(): CSSResult {
@@ -259,7 +304,7 @@ class HaSidebar extends LitElement {
         --paper-item-min-height: 40px;
       }
 
-      a ha-icon {
+      ha-icon[slot="item-icon"] {
         color: var(--sidebar-icon-color);
       }
 
