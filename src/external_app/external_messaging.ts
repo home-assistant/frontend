@@ -1,3 +1,5 @@
+import { externalForwardConnectionEvents } from "./external_events_forwarder";
+
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
 interface CommandInFlight {
@@ -8,6 +10,7 @@ interface CommandInFlight {
 export interface InternalMessage {
   id?: number;
   type: string;
+  payload?: unknown;
 }
 
 interface ExternalError {
@@ -37,6 +40,7 @@ export class ExternalMessaging {
   public msgId = 0;
 
   public attach() {
+    externalForwardConnectionEvents(this);
     window[CALLBACK_EXTERNAL_BUS] = (msg) => this.receiveMessage(msg);
   }
 

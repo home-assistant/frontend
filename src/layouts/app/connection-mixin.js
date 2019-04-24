@@ -17,6 +17,7 @@ import { fetchWithAuth } from "../../util/fetch-with-auth";
 import hassCallApi from "../../util/hass-call-api";
 import { subscribePanels } from "../../data/ws-panels";
 import { forwardHaptic } from "../../util/haptics";
+import { fireEvent } from "../../common/dom/fire_event";
 
 export default (superClass) =>
   class extends EventsMixin(LocalizeMixin(superClass)) {
@@ -128,11 +129,16 @@ export default (superClass) =>
 
       const conn = this.hass.connection;
 
+      fireEvent(document, "connection-status", "connected");
+
       conn.addEventListener("ready", () => this.hassReconnected());
       conn.addEventListener("disconnected", () => this.hassDisconnected());
       // If we reconnect after losing connection and auth is no longer valid.
       conn.addEventListener("reconnect-error", (_conn, err) => {
-        if (err === ERR_INVALID_AUTH) location.reload();
+        if (err === ERR_INVALID_AUTH) {
+          fireEvent(document, "connection-status", "auth-invalid");
+          location.reload();
+        }
       });
 
       subscribeEntities(conn, (states) => this._updateHass({ states }));
@@ -144,10 +150,12 @@ export default (superClass) =>
     hassReconnected() {
       super.hassReconnected();
       this._updateHass({ connected: true });
+      fireEvent(document, "connection-status", "connected");
     }
 
     hassDisconnected() {
       super.hassDisconnected();
       this._updateHass({ connected: false });
+      fireEvent(document, "connection-status", "disconnected");
     }
   };
