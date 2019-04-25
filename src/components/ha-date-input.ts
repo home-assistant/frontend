@@ -7,6 +7,8 @@ import {
   customElement,
 } from "lit-element";
 
+import "@polymer/paper-input/paper-input";
+// tslint:disable-next-line:no-duplicate-imports
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 @customElement("ha-date-input")
