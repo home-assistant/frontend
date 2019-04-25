@@ -10,11 +10,11 @@ import {
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 @customElement("ha-date-input")
-class HaDateInput extends LitElement {
+export class HaDateInput extends LitElement {
   @property() public year?: string;
   @property() public month?: string;
   @property() public day?: string;
-  @property() public disabled?: boolean = false;
+  @property({ type: Boolean }) public disabled = false;
 
   static get styles() {
     return css`
@@ -52,39 +52,39 @@ class HaDateInput extends LitElement {
         <paper-input
           id="year"
           type="number"
-          value="${this.year}"
-          @change="${this._formatYear}"
+          .value=${this.year}
+          @change=${this._formatYear}
           maxlength="4"
           max="9999"
           min="0"
-          ?disabled="${this.disabled}"
-          no-label-float=""
+          .disabled=${this.disabled}
+          no-label-float
         >
           <span suffix="" slot="suffix">-</span>
         </paper-input>
         <paper-input
           id="month"
           type="number"
-          value="${this.month}"
-          @change="${this._formatMonth}"
+          .value=${this.month}
+          @change=${this._formatMonth}
           maxlength="2"
           max="12"
           min="1"
-          ?disabled="${this.disabled}"
-          no-label-float=""
+          .disabled=${this.disabled}
+          no-label-float
         >
           <span suffix="" slot="suffix">-</span>
         </paper-input>
         <paper-input
           id="day"
           type="number"
-          value="${this.day}"
-          @change="${this._formatDay}"
+          .value=${this.day}
+          @change=${this._formatDay}
           maxlength="2"
           max="31"
           min="1"
-          ?disabled="${this.disabled}"
-          no-label-float=""
+          .disabled=${this.disabled}
+          no-label-float
         >
         </paper-input>
       </div>
@@ -92,22 +92,22 @@ class HaDateInput extends LitElement {
   }
 
   private _formatYear() {
-    const yearElement = this.shadowRoot!.querySelector(
-      "#year"
+    const yearElement = this.shadowRoot!.getElementById(
+      "year"
     ) as PaperInputElement;
     this.year = yearElement.value!;
   }
 
   private _formatMonth() {
-    const monthElement = this.shadowRoot!.querySelector(
-      "#month"
+    const monthElement = this.shadowRoot!.getElementById(
+      "month"
     ) as PaperInputElement;
     this.month = ("0" + monthElement.value!).slice(-2);
   }
 
   private _formatDay() {
-    const dayElement = this.shadowRoot!.querySelector(
-      "#day"
+    const dayElement = this.shadowRoot!.getElementById(
+      "day"
     ) as PaperInputElement;
     this.day = ("0" + dayElement.value!).slice(-2);
   }

@@ -1,15 +1,11 @@
 import { HomeAssistant } from "../types";
 
-export const setValue = (
+export const setInputDateTimeValue = (
   hass: HomeAssistant,
-  entity: string,
-  time: string | null = null,
-  date: string | null = null
+  entityId: string,
+  time: string | undefined = undefined,
+  date: string | undefined = undefined
 ) => {
-  const param = {
-    entity_id: entity,
-    ...(time !== null && { time }),
-    ...(date !== null && { date }),
-  };
-  hass.callService(entity.split(".", 1)[0], "set_datetime", param);
+  const param = { entity_id: entityId, time, date };
+  hass.callService(entityId.split(".", 1)[0], "set_datetime", param);
 };
