@@ -89,7 +89,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         ${!title && !show_header_toggle
           ? html``
           : html`
-              <div class="header">
+              <div class="header" slot="header">
                 <div class="name">${title}</div>
                 ${show_header_toggle === false
                   ? html``
@@ -114,12 +114,8 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      ha-card {
-        padding: 16px;
-      }
-
       #states {
-        margin: -4px 0;
+        padding: 12px 16px;
       }
 
       #states > * {
@@ -131,28 +127,16 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       .header {
-        /* start paper-font-headline style */
-        font-family: "Roboto", "Noto", sans-serif;
-        -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
-        text-rendering: optimizeLegibility;
-        font-size: 24px;
-        font-weight: 400;
-        letter-spacing: -0.012em;
-        /* end paper-font-headline style */
-
-        line-height: 40px;
-        color: var(--primary-text-color);
-        padding: 4px 0 12px;
+        margin-bottom: -8px;
+        padding-bottom: 0px;
         display: flex;
         justify-content: space-between;
       }
 
       .header .name {
-        /* start paper-font-common-nowrap style */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        /* end paper-font-common-nowrap */
       }
 
       .state-card-dialog {
