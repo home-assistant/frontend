@@ -61,9 +61,6 @@ class HassioSearchInput extends LitElement {
         flex: 1 1 auto;
         margin-right: 16px;
       }
-      paper-icon-button {
-        padding: 8px;
-      }
       .search-container {
         display: inline-flex;
         width: calc(100% - 24px);
