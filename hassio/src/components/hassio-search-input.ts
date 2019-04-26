@@ -18,21 +18,27 @@ class HassioSearchInput extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <div class="search-container">
-        <iron-icon icon="hassio:magnify"></iron-icon>
-
         <paper-input
-          no-label-float
           label="Search"
           .value=${this.filter}
           @value-changed=${this._filterInputChanged}
-        ></paper-input>
-        <iron-icon icon="magnify" slot="prefix"></iron-icon>
-        <paper-icon-button slot="suffix" onclick=${
-          this._clearSearch
-        } icon="clear" alt="Clear" title="Clear">
-        </paper-icon-button>
-      </paper-input>
-
+        >
+          <iron-icon
+            icon="hassio:magnify"
+            slot="prefix"
+            class="prefix"
+          ></iron-icon>
+          ${this.filter &&
+            html`
+              <paper-icon-button
+                slot="suffix"
+                @click=${this._clearSearch}
+                icon="hassio:close"
+                alt="Clear"
+                title="Clear"
+              ></paper-icon-button>
+            `}
+        </paper-input>
       </div>
     `;
   }
@@ -51,21 +57,21 @@ class HassioSearchInput extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      iron-icon {
-        display: inline-block;
-        margin-right: 16px;
-        color: var(--primary-text-color);
-      }
       paper-input {
-        display: inline-block;
         flex: 1 1 auto;
         margin-right: 16px;
       }
+      paper-icon-button {
+        padding: 8px;
+      }
       .search-container {
         display: inline-flex;
-        width: calc(100% - 48px);
-        padding: 8px 16px;
+        width: calc(100% - 24px);
+        padding: 2px 16px;
         align-items: center;
+      }
+      .prefix {
+        margin: 8px;
       }
     `;
   }
