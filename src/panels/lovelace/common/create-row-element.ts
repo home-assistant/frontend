@@ -10,6 +10,7 @@ import {
 import "../entity-rows/hui-climate-entity-row";
 import "../entity-rows/hui-cover-entity-row";
 import "../entity-rows/hui-group-entity-row";
+import "../entity-rows/hui-input-datetime-entity-row";
 import "../entity-rows/hui-input-number-entity-row";
 import "../entity-rows/hui-input-select-entity-row";
 import "../entity-rows/hui-input-text-entity-row";
@@ -58,6 +59,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   // Temporary. Once climate is rewritten,
   // water heater should get it's own row.
   water_heater: "climate",
+  input_datetime: "input-datetime",
 };
 const TIMEOUT = 2000;
 
