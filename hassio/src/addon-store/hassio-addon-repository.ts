@@ -31,8 +31,12 @@ class HassioAddonRepositoryEl extends LitElement {
 
     if (this.filter && addons.length < 1) {
       return html`
-        <div class="description">
-          No results found in ${repo.name}
+        <div class="card-group">
+          <div class="title">
+            <div class="description">
+              No results found in "${repo.name}"
+            </div>
+          </div>
         </div>
       `;
     }
