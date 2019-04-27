@@ -45,10 +45,10 @@ if (!window.externalApp && !window.webkit) {
   );
 }
 
-export default class ExternalAuth extends Auth {
-  public external = new ExternalMessaging();
+class ExternalAuth extends Auth {
+  public external?: ExternalMessaging;
 
-  constructor(hassUrl) {
+  constructor(hassUrl: string) {
     super({
       hassUrl,
       clientId: "",
@@ -58,7 +58,6 @@ export default class ExternalAuth extends Auth {
       // This will trigger connection to do a refresh right away
       expires: 0,
     });
-    this.external.attach();
   }
 
   public async refreshAccessToken() {
@@ -100,3 +99,15 @@ export default class ExternalAuth extends Auth {
     });
   }
 }
+
+export const createExternalAuth = (hassUrl: string) => {
+  const auth = new ExternalAuth(hassUrl);
+  if (
+    (window.externalApp && window.externalApp.externalBus) ||
+    (window.webkit && window.webkit.messageHandlers.externalBus)
+  ) {
+    auth.external = new ExternalMessaging();
+    auth.external.attach();
+  }
+  return auth;
+};
