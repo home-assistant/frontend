@@ -606,7 +606,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
 
   _computeHA92plus(hass) {
     const [major, minor] = hass.config.version.split(".", 2);
-    return major === "0" && Number(minor) >= 92;
+    return Number(major) > 0 || (major === "0" && Number(minor) >= 92);
   }
 }
 customElements.define("hassio-addon-info", HassioAddonInfo);
