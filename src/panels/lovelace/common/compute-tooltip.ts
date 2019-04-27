@@ -64,23 +64,31 @@ function computeActionTooltip(
   switch (config.action) {
     case "navigate":
       tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.navigate_to"
-      )} ${config.navigation_path}`;
+        "ui.panel.lovelace.cards.picture-elements.navigate_to",
+        "location",
+        config.navigation_path
+      )}`;
       break;
     case "toggle":
       tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.toggle"
-      )} ${state}`;
+        "ui.panel.lovelace.cards.picture-elements.toggle",
+        "name",
+        state
+      )}`;
       break;
     case "call-service":
       tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.call_service"
-      )} ${config.service}`;
+        "ui.panel.lovelace.cards.picture-elements.call_service",
+        "name",
+        config.service
+      )}`;
       break;
     case "more-info":
       tooltip += `${hass.localize(
-        "ui.panel.lovelace.cards.picture-elements.more_info"
-      )} ${state}`;
+        "ui.panel.lovelace.cards.picture-elements.more_info",
+        "name",
+        state
+      )}`;
       break;
   }
 

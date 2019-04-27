@@ -920,10 +920,10 @@
           "picture-elements": {
             "hold": "Hold:",
             "tap": "Tap:",
-            "navigate_to": "Navigate to",
-            "toggle": "Toggle",
-            "call_service": "Call service",
-            "more_info": "Show more-info:"
+            "navigate_to": "Navigate to {location}",
+            "toggle": "Toggle {name}",
+            "call_service": "Call service {name}",
+            "more_info": "Show more-info: {name}"
           }
         },
         "menu": {
