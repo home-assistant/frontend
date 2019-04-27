@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-export const setOption = (
+export const setInputSelectOption = (
   hass: HomeAssistant,
   entity: string,
   option: string
