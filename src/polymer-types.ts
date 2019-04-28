@@ -18,6 +18,12 @@ export interface PolymerChangedEvent<T> extends Event {
   };
 }
 
+export interface PolymerIronSelectEvent<T> extends Event {
+  detail: {
+    item: T;
+  };
+}
+
 declare global {
   // for fire event
   interface HASSDomEvents {
