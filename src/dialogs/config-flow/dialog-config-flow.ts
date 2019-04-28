@@ -23,13 +23,14 @@ import { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import {
   fetchConfigFlow,
-  createConfigFlow,
   ConfigFlowStep,
   deleteConfigFlow,
+  getConfigFlowHandlers,
 } from "../../data/config_entries";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HaConfigFlowParams } from "./show-dialog-config-flow";
 
+import "./step-flow-pick-handler";
 import "./step-flow-loading";
 import "./step-flow-form";
 import "./step-flow-abort";
@@ -39,6 +40,7 @@ import {
   fetchDeviceRegistry,
 } from "../../data/device_registry";
 import { AreaRegistryEntry, fetchAreaRegistry } from "../../data/area_registry";
+import { HomeAssistant } from "../../types";
 
 let instance = 0;
 
@@ -47,12 +49,15 @@ declare global {
   interface HASSDomEvents {
     "flow-update": {
       step?: ConfigFlowStep;
+      stepPromise?: Promise<ConfigFlowStep>;
     };
   }
 }
 
 @customElement("dialog-config-flow")
 class ConfigFlowDialog extends LitElement {
+  public hass!: HomeAssistant;
+
   @property()
   private _params?: HaConfigFlowParams;
 
@@ -62,7 +67,11 @@ class ConfigFlowDialog extends LitElement {
   private _instance = instance;
 
   @property()
-  private _step?: ConfigFlowStep;
+  private _step:
+    | ConfigFlowStep
+    | undefined
+    // Null means we need to pick a config flow
+    | null;
 
   @property()
   private _devices?: DeviceRegistryEntry[];
@@ -70,25 +79,35 @@ class ConfigFlowDialog extends LitElement {
   @property()
   private _areas?: AreaRegistryEntry[];
 
+  @property()
+  private _handlers?: string[];
+
   public async showDialog(params: HaConfigFlowParams): Promise<void> {
     this._params = params;
-    this._loading = true;
     this._instance = instance++;
 
-    const fetchStep = params.continueFlowId
-      ? fetchConfigFlow(params.hass, params.continueFlowId)
-      : params.newFlowForHandler
-      ? createConfigFlow(params.hass, params.newFlowForHandler)
-      : undefined;
+    // Create a new config flow. Show picker
+    if (!params.continueFlowId) {
+      this._step = null;
 
-    if (!fetchStep) {
-      throw new Error(`Pass in either continueFlowId or newFlorForHandler`);
+      // We only load the handlers once
+      if (this._handlers === undefined) {
+        this._loading = true;
+        this.updateComplete.then(() => this._scheduleCenterDialog());
+        try {
+          this._handlers = await getConfigFlowHandlers(this.hass);
+        } finally {
+          this._loading = false;
+        }
+      }
+      await this.updateComplete;
+      this._scheduleCenterDialog();
+      return;
     }
 
+    this._loading = true;
     const curInstance = this._instance;
-
-    await this.updateComplete;
-    const step = await fetchStep;
+    const step = await fetchConfigFlow(this.hass, params.continueFlowId);
 
     // Happens if second showDialog called
     if (curInstance !== this._instance) {
@@ -99,7 +118,7 @@ class ConfigFlowDialog extends LitElement {
     this._loading = false;
     // When the flow changes, center the dialog.
     // Don't do it on each step or else the dialog keeps bouncing.
-    setTimeout(() => this._dialog.center(), 0);
+    this._scheduleCenterDialog();
   }
 
   protected render(): TemplateResult | void {
@@ -113,7 +132,7 @@ class ConfigFlowDialog extends LitElement {
         opened
         @opened-changed=${this._openedChanged}
       >
-        ${this._loading
+        ${this._loading || (this._step === null && this._handlers === undefined)
           ? html`
               <step-flow-loading></step-flow-loading>
             `
@@ -121,18 +140,26 @@ class ConfigFlowDialog extends LitElement {
           ? // When we are going to next step, we render 1 round of empty
             // to reset the element.
             ""
+          : this._step === null
+          ? // Show handler picker
+            html`
+              <step-flow-pick-handler
+                .hass=${this.hass}
+                .handlers=${this._handlers}
+              ></step-flow-pick-handler>
+            `
           : this._step.type === "form"
           ? html`
               <step-flow-form
                 .step=${this._step}
-                .hass=${this._params.hass}
+                .hass=${this.hass}
               ></step-flow-form>
             `
           : this._step.type === "abort"
           ? html`
               <step-flow-abort
                 .step=${this._step}
-                .hass=${this._params.hass}
+                .hass=${this.hass}
               ></step-flow-abort>
             `
           : this._devices === undefined || this._areas === undefined
@@ -143,7 +170,7 @@ class ConfigFlowDialog extends LitElement {
           : html`
               <step-flow-create-entry
                 .step=${this._step}
-                .hass=${this._params.hass}
+                .hass=${this.hass}
                 .devices=${this._devices}
                 .areas=${this._areas}
               ></step-flow-create-entry>
@@ -155,7 +182,8 @@ class ConfigFlowDialog extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.addEventListener("flow-update", (ev) => {
-      this._processStep((ev as any).detail.step);
+      const { step, stepPromise } = (ev as any).detail;
+      this._processStep(step || stepPromise);
     });
   }
 
@@ -170,6 +198,10 @@ class ConfigFlowDialog extends LitElement {
     }
   }
 
+  private _scheduleCenterDialog() {
+    setTimeout(() => this._dialog.center(), 0);
+  }
+
   private get _dialog(): HaPaperDialog {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
@@ -177,17 +209,29 @@ class ConfigFlowDialog extends LitElement {
   private async _fetchDevices(configEntryId) {
     // Wait 5 seconds to give integrations time to find devices
     await new Promise((resolve) => setTimeout(resolve, 5000));
-    const devices = await fetchDeviceRegistry(this._params!.hass);
+    const devices = await fetchDeviceRegistry(this.hass);
     this._devices = devices.filter((device) =>
       device.config_entries.includes(configEntryId)
     );
   }
 
   private async _fetchAreas() {
-    this._areas = await fetchAreaRegistry(this._params!.hass);
+    this._areas = await fetchAreaRegistry(this.hass);
   }
 
-  private async _processStep(step: ConfigFlowStep): Promise<void> {
+  private async _processStep(
+    step: ConfigFlowStep | undefined | Promise<ConfigFlowStep>
+  ): Promise<void> {
+    if (step instanceof Promise) {
+      this._loading = true;
+      try {
+        this._step = await step;
+      } finally {
+        this._loading = false;
+      }
+      return;
+    }
+
     if (step === undefined) {
       this._flowDone();
       return;
@@ -206,8 +250,8 @@ class ConfigFlowDialog extends LitElement {
     );
 
     // If we created this flow, delete it now.
-    if (this._step && !flowFinished && this._params.newFlowForHandler) {
-      deleteConfigFlow(this._params.hass, this._step.flow_id);
+    if (this._step && !flowFinished && !this._params.continueFlowId) {
+      deleteConfigFlow(this.hass, this._step.flow_id);
     }
 
     this._params.dialogClosedCallback({
@@ -221,8 +265,14 @@ class ConfigFlowDialog extends LitElement {
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     // Closed dialog by clicking on the overlay
-    if (this._step && !ev.detail.value) {
-      this._flowDone();
+    if (!ev.detail.value) {
+      if (this._step) {
+        this._flowDone();
+      } else if (this._step === null) {
+        // Flow aborted during picking flow
+        this._step = undefined;
+        this._params = undefined;
+      }
     }
   }
 

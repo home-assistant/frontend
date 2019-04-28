@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Felhő",
                     "description_login": "Bejelentkezve mint {email}",
-                    "description_not_login": "Nincs bejelentkezve"
+                    "description_not_login": "Nincs bejelentkezve",
+                    "description_features": "Távoli vezérlés, Alexa és Google Assistant integráció"
                 },
                 "integrations": {
                     "caption": "Integrációk",

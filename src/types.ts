@@ -219,6 +219,12 @@ export type CameraEntity = HassEntityBase & {
   };
 };
 
+export type InputSelectEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    options: string[];
+  };
+};
+
 export interface Route {
   prefix: string;
   path: string;
