@@ -101,13 +101,24 @@
             "gas": "Gas",
             "manual": "Handvirkt"
         },
+        "cover": {
+            "open": "Opin",
+            "opening": "Opna",
+            "closed": "Lokað",
+            "closing": "Loka"
+        },
         "device_tracker": {
             "home": "Heima",
             "not_home": "Fjarverandi"
         },
         "group": {
+            "off": "Óvirkur",
+            "on": "Virkur",
             "home": "Heima",
             "not_home": "Fjarverandi",
+            "open": "Opin",
+            "opening": "Opna",
+            "closed": "Lokuð",
             "closing": "Loka",
             "stopped": "Stöðvað",
             "locked": "Læst",
@@ -172,6 +183,7 @@
             "rainy": "Rigning",
             "snowy": "Snjókoma",
             "snowy-rainy": "Slydda",
+            "sunny": "Sólskin",
             "windy": "Vindasamt",
             "windy-variant": "Vindasamt"
         },
@@ -229,12 +241,16 @@
             },
             "config": {
                 "header": "Stilla af Home Assistant",
+                "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistang. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
                 "core": {
                     "caption": "Almennt",
                     "description": "Staðfesta að stillingarskráin þín sé rétt og stjórnun á miðlara",
                     "section": {
                         "core": {
+                            "header": "Stillingar og stjórnun þjóns",
+                            "introduction": "Að breyta stillingum getur verið þreytandi ferli og við vitum það. Þetta svæði mun reyna að létta þér lífið hvað það varðar.",
                             "validation": {
+                                "heading": "Staðfesta stillingar",
                                 "check_config": "Athuga stillingar",
                                 "valid": "Stillingar í lagi!",
                                 "invalid": "Stillingar ógildar"
@@ -243,7 +259,8 @@
                                 "heading": "Endurhleðsla stillinga",
                                 "core": "Endurhlaða inn kjarna",
                                 "group": "Endurhlaða inn hópum",
-                                "automation": "Endurhlaða inn sjálfvirkni"
+                                "automation": "Endurhlaða inn sjálfvirkni",
+                                "script": "Endurhlaða inn skriftum"
                             },
                             "server_management": {
                                 "heading": "Stjórnun miðlara",
@@ -256,6 +273,7 @@
                 },
                 "customize": {
                     "caption": "Séraðlögun",
+                    "description": "Séraðlögun fyrir einingarnar þínar",
                     "picker": {
                         "header": "Séraðlögun"
                     }
@@ -265,6 +283,7 @@
                     "description": "Stofna og breyta sjálfvirkni",
                     "picker": {
                         "pick_automation": "Veldu sjálfvirkni sem á að breyta",
+                        "no_automations": "Við fundum ekki neinar sjálfvirkni-skilgreiningar sem hægt er að breyta",
                         "add_automation": "Bæta við sjálfvirkni",
                         "learn_more": "Læra meira um sjálfvirkni"
                     },
@@ -299,6 +318,10 @@
                                 },
                                 "mqtt": {
                                     "label": "MQTT"
+                                },
+                                "numeric_state": {
+                                    "above": "Yfir",
+                                    "below": "Undir"
                                 },
                                 "sun": {
                                     "label": "Sól",
@@ -347,6 +370,10 @@
                                 "state": {
                                     "label": "Staða",
                                     "state": "Staða"
+                                },
+                                "numeric_state": {
+                                    "above": "Yfir",
+                                    "below": "Undir"
                                 },
                                 "sun": {
                                     "label": "Sól",
@@ -656,6 +683,7 @@
                 }
             },
             "page-onboarding": {
+                "intro": "Ertu tilbúinn að vekja heimilið þitt, endurheimta friðhelgi þína og gerast þáttakandi í  samfélagi grúskara á heimsvísu?",
                 "user": {
                     "intro": "Hefjumst handa með því að byrja á að stona notanda aðgang.",
                     "required_field": "Skilyrt",
@@ -896,6 +924,7 @@
             "confirm": "Vista innskráningu"
         },
         "notification_drawer": {
+            "click_to_configure": "Smelltu á hnappinn til að stilla {entity}",
             "empty": "Engar tilkynningar",
             "title": "Tilkynningar"
         }
@@ -904,11 +933,16 @@
         "automation": "Sjálfvirkni",
         "calendar": "Dagatal",
         "camera": "Myndavél",
+        "climate": "Loftslag",
         "configurator": "Stillingarálfur",
         "conversation": "Samtal",
         "cover": "Gluggatjöld",
         "fan": "Vifta",
         "group": "Hópur",
+        "input_datetime": "Innsláttar dagsetning\/tími",
+        "input_select": "Innsláttarval",
+        "input_number": "Innsláttarnúmer",
+        "input_text": "Innsláttartexti",
         "light": "Ljós",
         "lock": "Lás",
         "mailbox": "Pósthólf",
@@ -917,6 +951,7 @@
         "plant": "Planta",
         "proximity": "Nálægð",
         "scene": "Sena",
+        "script": "Skrifta",
         "sensor": "Skynjari",
         "sun": "Sól",
         "switch": "Rofi",
