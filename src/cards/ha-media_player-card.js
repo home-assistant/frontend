@@ -279,6 +279,14 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
 
     // We have a new picture url
+    // If entity picture is non-relative, we use that url directly.
+    if (picture.substr(0, 1) !== "/") {
+      this._coverShowing = true;
+      this._coverLoadError = false;
+      this.$.cover.style.backgroundImage = `url(${picture})`;
+      return;
+    }
+
     try {
       const {
         content_type: contentType,
