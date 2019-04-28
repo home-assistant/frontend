@@ -17,8 +17,7 @@ import {
 import { HomeAssistant, CameraEntity } from "../../../types";
 import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
-import { b64toBlob } from "../../../common/file/b64-to-blob";
-import { fetchThumbnailWithCache } from "../../../data/camera";
+import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -197,21 +196,20 @@ export class HuiImage extends LitElement {
     if (!this.hass || !this.cameraImage) {
       return;
     }
-    try {
-      const {
-        content_type: contentType,
-        content,
-      } = await fetchThumbnailWithCache(this.hass, this.cameraImage);
-      if (this._cameraImageSrc) {
-        URL.revokeObjectURL(this._cameraImageSrc);
-      }
-      this._cameraImageSrc = URL.createObjectURL(
-        b64toBlob(content, contentType)
-      );
-      this._onImageLoad();
-    } catch (err) {
+
+    const cameraState = this.hass.states[this.cameraImage] as
+      | CameraEntity
+      | undefined;
+
+    if (!cameraState) {
       this._onImageError();
+      return;
     }
+
+    this._cameraImageSrc = await fetchThumbnailUrlWithCache(
+      this.hass,
+      this.cameraImage
+    );
   }
 
   static get styles(): CSSResult {
