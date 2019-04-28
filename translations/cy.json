@@ -629,6 +629,9 @@
                         "password": "Cyfrinair",
                         "create": "Creu"
                     }
+                },
+                "cloud": {
+                    "description_features": "Rheolaeth oddi cartref, integreiddio gyda Alexa a Google Assistant."
                 }
             },
             "lovelace": {
