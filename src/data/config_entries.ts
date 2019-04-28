@@ -6,6 +6,12 @@ export interface FieldSchema {
   optional: boolean;
 }
 
+export interface ConfigFlowProgress {
+  flow_id: string;
+  handler: string;
+  context: { [key: string]: any };
+}
+
 export interface ConfigFlowStepForm {
   type: "form";
   flow_id: string;
@@ -62,3 +68,9 @@ export const handleConfigFlowStep = (
 
 export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);
+
+export const getConfigFlowsInProgress = (hass: HomeAssistant) =>
+  hass.callApi<ConfigFlowProgress[]>("GET", "config/config_entries/flow");
+
+export const getConfigFlowHandlers = (hass: HomeAssistant) =>
+  hass.callApi<string[]>("GET", "config/config_entries/flow_handlers");

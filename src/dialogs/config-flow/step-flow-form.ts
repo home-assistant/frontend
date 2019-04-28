@@ -167,6 +167,8 @@ class StepFlowForm extends LitElement {
         toSendData
       );
 
+      // make sure we're still showing the same step as when we
+      // fired off request.
       if (!this.step || flowId !== this.step.flow_id) {
         return;
       }

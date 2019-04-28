@@ -1,10 +1,7 @@
-import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 
 export interface HaConfigFlowParams {
-  hass: HomeAssistant;
   continueFlowId?: string;
-  newFlowForHandler?: string;
   dialogClosedCallback: (params: { flowFinished: boolean }) => void;
 }
 

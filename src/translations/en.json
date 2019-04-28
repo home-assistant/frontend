@@ -916,6 +916,14 @@
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
             "add_item": "Add item"
+          },
+          "picture-elements": {
+            "hold": "Hold:",
+            "tap": "Tap:",
+            "navigate_to": "Navigate to {location}",
+            "toggle": "Toggle {name}",
+            "call_service": "Call service {name}",
+            "more_info": "Show more-info: {name}"
           }
         },
         "menu": {
