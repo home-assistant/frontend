@@ -1,6 +1,7 @@
 import "@polymer/iron-icon/iron-icon";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
+import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -109,9 +110,17 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           margin: 16px 0;
           display: block;
         }
+        .state {
+          display: flex;
+          margin: 8px 0;
+        }
         .state div {
           width: 180px;
           display: inline-block;
+        }
+        .state iron-icon {
+          width: 16px;
+          color: var(--secondary-text-color);
         }
         paper-toggle-button {
           display: inline;
@@ -156,6 +165,9 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           margin-right: 4px;
           --iron-icon-height: 45px;
         }
+        .protection-enable mwc-button {
+          --mdc-theme-primary: white;
+        }
       </style>
 
       <template is="dom-if" if="[[computeUpdateAvailable(addon)]]">
@@ -184,6 +196,18 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             <template is="dom-if" if="[[addon.changelog]]">
               <mwc-button on-click="openChangelog">Changelog</mwc-button>
             </template>
+          </div>
+        </paper-card>
+      </template>
+
+      <template is="dom-if" if="[[!addon.protected]]">
+        <paper-card heading="Warning: Protection mode is disabled!" class="warning">
+          <div class="card-content">
+            Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
+          </div>
+          <div class="card-actions protection-enable">
+              <mwc-button on-click="protectionToggled">Enable Protection mode</mwc-button>
+            </div>
           </div>
         </paper-card>
       </template>
@@ -226,22 +250,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
               <img src="/api/hassio/addons/[[addonSlug]]/logo" />
             </a>
           </template>
-          <template is="dom-if" if="[[!addon.protected]]">
-            <paper-card heading="Warning: Protection mode is disabled!" class="warning">
-              <div class="card-content">
-                Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
-              </div>
-              <div class="card-actions">
-                  <mwc-button on-click="protectionToggled">Enable Protection mode</mwc-button>
-                </div>
-              </div>
-            </paper-card>
-          </template>
           <div class="security">
-              <h3>Add-on Security Rating</h3>
-              <div class="description light-color">
-                Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.
-              </div>
               <ha-label-badge
                 class$="[[computeSecurityClassName(addon.rating)]]"
                 on-click="showMoreInfo"
@@ -348,22 +357,32 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 checked="[[addon.auto_update]]"
               ></paper-toggle-button>
             </div>
+            <template is="dom-if" if="[[addon.ingress]]">
+              <div class="state">
+                <div>Show in sidebar</div>
+                <paper-toggle-button
+                  on-change="panelToggled"
+                  checked="[[addon.ingress_panel]]"
+                  disabled="[[_computeCannotIngressSidebar(hass, addon)]]"
+                ></paper-toggle-button>
+                <template is="dom-if" if="[[_computeCannotIngressSidebar(hass, addon)]]">
+                  <span>This option requires Home Assistant 0.92 or later.</span>
+                </template>
+              </div>
+            </template>
             <div class="state">
-              <div>Protection mode</div>
+              <div>
+                Protection mode
+                <span>
+                  <iron-icon icon="hassio:information"></iron-icon>
+                  <paper-tooltip>Grant the add-on elevated system access.</paper-tooltip>
+                </span>
+              </div>
               <paper-toggle-button
                 on-change="protectionToggled"
                 checked="[[addon.protected]]"
               ></paper-toggle-button>
             </div>
-            <template is="dom-if" if="[[addon.ingress]]">
-              <div class="state">
-                <div>Show in Sidebar</div>
-                <paper-toggle-button
-                  on-change="panelToggled"
-                  checked="[[addon.ingress_panel]]"
-                ></paper-toggle-button>
-              </div>
-            </template>
           </template>
         </div>
         <div class="card-actions">
@@ -579,6 +598,15 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
       .then(() => {
         this.fire("hass-api-called", eventData);
       });
+  }
+
+  _computeCannotIngressSidebar(hass, addon) {
+    return !addon.ingress || !this._computeHA92plus(hass);
+  }
+
+  _computeHA92plus(hass) {
+    const [major, minor] = hass.config.version.split(".", 2);
+    return Number(major) > 0 || (major === "0" && Number(minor) >= 92);
   }
 }
 customElements.define("hassio-addon-info", HassioAddonInfo);
