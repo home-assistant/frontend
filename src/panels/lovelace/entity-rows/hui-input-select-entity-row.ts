@@ -8,7 +8,6 @@ import {
   customElement,
   PropertyValues,
 } from "lit-element";
-import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
