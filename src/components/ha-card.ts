@@ -28,19 +28,22 @@ class HaCard extends LitElement {
         display: block;
         transition: all 0.3s ease-out;
       }
-      .header:not(:empty) {
-        font-size: 24px;
+      .header:not(:empty),
+      .header::slotted(*) {
+        color: var(--ha-card-header-color, --primary-text-color);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, 24px);
         letter-spacing: -0.012em;
         line-height: 32px;
-        opacity: 0.87;
         padding: 24px 16px 16px;
+        display: block;
       }
     `;
   }
 
   protected render(): TemplateResult {
     return html`
-      <div class="header">${this.header}</div>
+      <slot class="header" name="header">${this.header}</slot>
       <slot></slot>
     `;
   }
