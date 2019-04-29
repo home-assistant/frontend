@@ -6,7 +6,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { getSignedPath } from "../../../../src/auth/data";
+import { getSignedPath } from "../../../../src/data/auth";
 
 import "../../../../src/resources/ha-style";
 import "../../../../src/components/dialog/ha-paper-dialog";

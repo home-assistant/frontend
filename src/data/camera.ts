@@ -1,5 +1,6 @@
 import { HomeAssistant, CameraEntity } from "../types";
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
+import { getSignedPath } from "./auth";
 
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
@@ -22,16 +23,29 @@ export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
     entity.attributes.access_token
   }`;
 
-export const fetchThumbnailWithCache = (
+export const fetchThumbnailUrlWithCache = (
   hass: HomeAssistant,
   entityId: string
-) => timeCachePromiseFunc("_cameraTmb", 9000, fetchThumbnail, hass, entityId);
+) =>
+  timeCachePromiseFunc(
+    "_cameraTmbUrl",
+    9000,
+    fetchThumbnailUrl,
+    hass,
+    entityId
+  );
 
-export const fetchThumbnail = (hass: HomeAssistant, entityId: string) =>
-  hass.callWS<CameraThumbnail>({
+export const fetchThumbnailUrl = (hass: HomeAssistant, entityId: string) =>
+  getSignedPath(hass, `/api/camera_proxy/${entityId}`).then(({ path }) => path);
+
+export const fetchThumbnail = (hass: HomeAssistant, entityId: string) => {
+  // tslint:disable-next-line: no-console
+  console.warn("This method has been deprecated.");
+  return hass.callWS<CameraThumbnail>({
     type: "camera_thumbnail",
     entity_id: entityId,
   });
+};
 
 export const fetchStreamUrl = (
   hass: HomeAssistant,
