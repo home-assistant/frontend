@@ -154,9 +154,13 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             label-float=""
             label="[[localize('ui.card.media_player.source')]]"
           >
-            <paper-listbox slot="dropdown-content" selected="{{sourceIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              attr-for-selected="item-name"
+              selected="{{SourceInput}}"
+            >
               <template is="dom-repeat" items="[[playerObj.sourceList]]">
-                <paper-item>[[item]]</paper-item>
+                <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
             </paper-listbox>
           </ha-paper-dropdown-menu>
@@ -214,9 +218,9 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "playerObjChanged",
       },
 
-      sourceIndex: {
-        type: Number,
-        value: 0,
+      SourceInput: {
+        type: String,
+        value: "",
         observer: "handleSourceChanged",
       },
 
@@ -249,7 +253,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   playerObjChanged(newVal, oldVal) {
     if (newVal && newVal.sourceList !== undefined) {
-      this.sourceIndex = newVal.sourceList.indexOf(newVal.source);
+      this.SourceInput = newVal.source;
     }
 
     if (newVal && newVal.soundModeList !== undefined) {
@@ -342,26 +346,16 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playerObj.nextTrack();
   }
 
-  handleSourceChanged(sourceIndex, sourceIndexOld) {
+  handleSourceChanged(newVal, oldVal) {
     // Selected Option will transition to '' before transitioning to new value
     if (
-      !this.playerObj ||
-      !this.playerObj.supportsSelectSource ||
-      this.playerObj.sourceList === undefined ||
-      sourceIndex < 0 ||
-      sourceIndex >= this.playerObj.sourceList ||
-      sourceIndexOld === undefined
+      oldVal &&
+      newVal &&
+      newVal !== this.playerObj.source &&
+      this.playerObj.supportsSelectSource
     ) {
-      return;
+      this.playerObj.selectSource(newVal);
     }
-
-    const sourceInput = this.playerObj.sourceList[sourceIndex];
-
-    if (sourceInput === this.playerObj.source) {
-      return;
-    }
-
-    this.playerObj.selectSource(sourceInput);
   }
 
   handleSoundModeChanged(newVal, oldVal) {
