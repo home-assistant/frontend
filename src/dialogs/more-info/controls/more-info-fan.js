@@ -51,7 +51,8 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
           >
             <paper-listbox
               slot="dropdown-content"
-              selected="{{speed}}"
+              selected="[[stateObj.attributes.speed]]"
+              on-selected-changed="speedChanged"
               attr-for-selected="item-name"
             >
               <template
@@ -112,12 +113,6 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      speed: {
-        type: String,
-        value: "",
-        observer: "speedChanged",
-      },
-
       oscillationToggleChecked: {
         type: Boolean,
       },
@@ -128,7 +123,6 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         oscillationToggleChecked: newVal.attributes.oscillating,
-        speed: newVal.attributes.speed,
       });
     }
 
@@ -146,13 +140,16 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     );
   }
 
-  speedChanged(speed) {
-    if (speed && speed !== this.stateObj.attributes.speed) {
-      this.hass.callService("fan", "turn_on", {
-        entity_id: this.stateObj.entity_id,
-        speed: speed,
-      });
-    }
+  speedChanged(ev) {
+    var oldVal = this.stateObj.attributes.speed;
+    var newVal = ev.detail.value;
+
+    if (!newVal || oldVal === newVal) return;
+
+    this.hass.callService("fan", "turn_on", {
+      entity_id: this.stateObj.entity_id,
+      speed: newVal,
+    });
   }
 
   oscillationToggleChanged(ev) {
