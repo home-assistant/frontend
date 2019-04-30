@@ -100,14 +100,14 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  selected="{{operationIndex}}"
+                  selected="{{operationMode}}"
+                  attr-for-selected="item-name"
                 >
                   <template
                     is="dom-repeat"
                     items="[[stateObj.attributes.operation_list]]"
-                    on-dom-change="handleOperationListUpdate"
                   >
-                    <paper-item
+                    <paper-item item-name$="[[item]]"
                       >[[_localizeOperationMode(localize, item)]]</paper-item
                     >
                   </template>
@@ -146,9 +146,9 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      operationIndex: {
-        type: Number,
-        value: -1,
+      operationMode: {
+        type: String,
+        value: "",
         observer: "handleOperationmodeChanged",
       },
       awayToggleChecked: Boolean,
@@ -159,6 +159,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         awayToggleChecked: newVal.attributes.away_mode === "on",
+        operationMode: newVal.attributes.operation_mode,
       });
     }
 
@@ -169,16 +170,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         () => {
           this.fire("iron-resize");
         }
-      );
-    }
-  }
-
-  handleOperationListUpdate() {
-    // force polymer to recognize selected item change (to update actual label)
-    this.operationIndex = -1;
-    if (this.stateObj.attributes.operation_list) {
-      this.operationIndex = this.stateObj.attributes.operation_list.indexOf(
-        this.stateObj.attributes.operation_mode
       );
     }
   }
@@ -239,17 +230,16 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.callServiceHelper("set_away_mode", { away_mode: newVal });
   }
 
-  handleOperationmodeChanged(operationIndex) {
+  handleOperationmodeChanged(operationMode) {
     // Selected Option will transition to '' before transitioning to new value
-    if (operationIndex === "" || operationIndex === -1) return;
-    const operationInput = this.stateObj.attributes.operation_list[
-      operationIndex
-    ];
-    if (operationInput === this.stateObj.attributes.operation_mode) return;
-
-    this.callServiceHelper("set_operation_mode", {
-      operation_mode: operationInput,
-    });
+    if (
+      operationMode &&
+      operationMode !== this.stateObj.attributes.operation_mode
+    ) {
+      this.callServiceHelper("set_operation_mode", {
+        operation_mode: operationMode,
+      });
+    }
   }
 
   callServiceHelper(service, data) {
