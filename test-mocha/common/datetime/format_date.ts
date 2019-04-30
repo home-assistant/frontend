@@ -8,10 +8,4 @@ describe("formatDate", () => {
   it("Formats English dates", () => {
     assert.strictEqual(formatDate(dateObj, "en"), "November 18, 2017");
   });
-
-  // Node only contains intl support for english formats. This test at least ensures
-  // the fallback to a different locale
-  it("Formats other dates", () => {
-    assert.strictEqual(formatDate(dateObj, "fr"), "2017 M11 18");
-  });
 });
