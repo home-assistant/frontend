@@ -49,12 +49,16 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
             dynamic-align=""
             label="[[localize('ui.card.fan.speed')]]"
           >
-            <paper-listbox slot="dropdown-content" selected="{{speedIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              selected="{{speed}}"
+              attr-for-selected="item-name"
+            >
               <template
                 is="dom-repeat"
                 items="[[stateObj.attributes.speed_list]]"
               >
-                <paper-item>[[item]]</paper-item>
+                <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
             </paper-listbox>
           </ha-paper-dropdown-menu>
@@ -108,9 +112,9 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      speedIndex: {
-        type: Number,
-        value: -1,
+      speed: {
+        type: String,
+        value: "",
         observer: "speedChanged",
       },
 
@@ -124,9 +128,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         oscillationToggleChecked: newVal.attributes.oscillating,
-        speedIndex: newVal.attributes.speed_list
-          ? newVal.attributes.speed_list.indexOf(newVal.attributes.speed)
-          : -1,
+        speed: newVal.attributes.speed,
       });
     }
 
@@ -144,18 +146,13 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     );
   }
 
-  speedChanged(speedIndex) {
-    var speedInput;
-    // Selected Option will transition to '' before transitioning to new value
-    if (speedIndex === "" || speedIndex === -1) return;
-
-    speedInput = this.stateObj.attributes.speed_list[speedIndex];
-    if (speedInput === this.stateObj.attributes.speed) return;
-
-    this.hass.callService("fan", "turn_on", {
-      entity_id: this.stateObj.entity_id,
-      speed: speedInput,
-    });
+  speedChanged(speed) {
+    if (speed && speed !== this.stateObj.attributes.speed) {
+      this.hass.callService("fan", "turn_on", {
+        entity_id: this.stateObj.entity_id,
+        speed: speed,
+      });
+    }
   }
 
   oscillationToggleChanged(ev) {
