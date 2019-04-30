@@ -7,6 +7,7 @@ import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-attributes";
 import "../../../components/ha-climate-control";
 import "../../../components/ha-paper-slider";
 import "../../../components/ha-paper-dropdown-menu";
@@ -282,6 +283,11 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </div>
           </div>
         </template>
+
+        <ha-attributes
+          state-obj="[[stateObj]]"
+          extra-filters="swing_list,swing_mode,fan_list,fan_mode,temperature,min_temp,max_temp,aux_heat,away_mode,operation,operation_list,humidity,min_humidity,max_humidity,target_temp_low,target_temp_high,target_temp_step,current_temperature,current_humidity"
+        ></ha-attributes>
       </div>
     `;
   }
