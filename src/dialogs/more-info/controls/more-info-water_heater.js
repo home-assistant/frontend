@@ -7,6 +7,7 @@ import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-attributes";
 import "../../../components/ha-water_heater-control";
 import "../../../components/ha-paper-slider";
 import "../../../components/ha-paper-dropdown-menu";
@@ -131,6 +132,11 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </div>
           </div>
         </template>
+
+        <ha-attributes
+          state-obj="[[stateObj]]"
+          extra-filters="operation_mode,operation_list,temperature,min_temp,max_temp"
+        ></ha-attributes>
       </div>
     `;
   }
