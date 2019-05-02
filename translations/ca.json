@@ -868,6 +868,14 @@
                         "title": "Benvingut\/da a casa",
                         "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per a començar.",
                         "go_to_integrations_page": "Vés a la pàgina d'integracions."
+                    },
+                    "picture-elements": {
+                        "hold": "Manté:",
+                        "tap": "Tocar:",
+                        "navigate_to": "Navega a {location}",
+                        "toggle": "Commuta {name}",
+                        "call_service": "Cridar servei {name}",
+                        "more_info": "Mostra més informació: {name}"
                     }
                 },
                 "editor": {

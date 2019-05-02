@@ -100,14 +100,15 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  selected="{{operationIndex}}"
+                  selected="[[stateObj.attributes.operation_mode]]"
+                  attr-for-selected="item-name"
+                  on-selected-changed="handleOperationmodeChanged"
                 >
                   <template
                     is="dom-repeat"
                     items="[[stateObj.attributes.operation_list]]"
-                    on-dom-change="handleOperationListUpdate"
                   >
-                    <paper-item
+                    <paper-item item-name$="[[item]]"
                       >[[_localizeOperationMode(localize, item)]]</paper-item
                     >
                   </template>
@@ -146,11 +147,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      operationIndex: {
-        type: Number,
-        value: -1,
-        observer: "handleOperationmodeChanged",
-      },
       awayToggleChecked: Boolean,
     };
   }
@@ -169,16 +165,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         () => {
           this.fire("iron-resize");
         }
-      );
-    }
-  }
-
-  handleOperationListUpdate() {
-    // force polymer to recognize selected item change (to update actual label)
-    this.operationIndex = -1;
-    if (this.stateObj.attributes.operation_list) {
-      this.operationIndex = this.stateObj.attributes.operation_list.indexOf(
-        this.stateObj.attributes.operation_mode
       );
     }
   }
@@ -239,16 +225,12 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.callServiceHelper("set_away_mode", { away_mode: newVal });
   }
 
-  handleOperationmodeChanged(operationIndex) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (operationIndex === "" || operationIndex === -1) return;
-    const operationInput = this.stateObj.attributes.operation_list[
-      operationIndex
-    ];
-    if (operationInput === this.stateObj.attributes.operation_mode) return;
-
+  handleOperationmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.operation_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
     this.callServiceHelper("set_operation_mode", {
-      operation_mode: operationInput,
+      operation_mode: newVal,
     });
   }
 

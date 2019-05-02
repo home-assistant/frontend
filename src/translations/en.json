@@ -549,6 +549,7 @@
     },
     "sidebar": {
       "developer_tools": "Developer tools",
+      "external_app_configuration": "App Configuration",
       "log_out": "Log out"
     },
     "panel": {

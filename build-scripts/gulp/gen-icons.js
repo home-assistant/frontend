@@ -1,7 +1,6 @@
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
-const config = require("../config");
 
 const ICON_PACKAGE_PATH = path.resolve(
   __dirname,
@@ -38,12 +37,12 @@ function loadIcon(name) {
 function transformXMLtoPolymer(name, xml) {
   const start = xml.indexOf("><path") + 1;
   const end = xml.length - start - 6;
-  const path = xml.substr(start, end);
-  return `<g id="${name}">${path}</g>`;
+  const pth = xml.substr(start, end);
+  return `<g id="${name}">${pth}</g>`;
 }
 
 // Given an iconset name and icon names, generate a polymer iconset
-function generateIconset(name, iconNames) {
+function generateIconset(iconsetName, iconNames) {
   const iconDefs = Array.from(iconNames)
     .map((name) => {
       const iconDef = loadIcon(name);
@@ -53,7 +52,7 @@ function generateIconset(name, iconNames) {
       return transformXMLtoPolymer(name, iconDef);
     })
     .join("");
-  return `<ha-iconset-svg name="${name}" size="24"><svg><defs>${iconDefs}</defs></svg></ha-iconset-svg>`;
+  return `<ha-iconset-svg name="${iconsetName}" size="24"><svg><defs>${iconDefs}</defs></svg></ha-iconset-svg>`;
 }
 
 // Generate the full MDI iconset
@@ -62,7 +61,9 @@ function genMDIIcons() {
     fs.readFileSync(path.resolve(ICON_PACKAGE_PATH, META_PATH), "UTF-8")
   );
   const iconNames = meta.map((iconInfo) => iconInfo.name);
-  fs.existsSync(OUTPUT_DIR) || fs.mkdirSync(OUTPUT_DIR);
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR);
+  }
   fs.writeFileSync(MDI_OUTPUT_PATH, generateIconset("mdi", iconNames));
 }
 
@@ -81,7 +82,7 @@ function mapFiles(startPath, filter, mapFunc) {
 }
 
 // Find all icons used by the project.
-function findIcons(path, iconsetName) {
+function findIcons(searchPath, iconsetName) {
   const iconRegex = new RegExp(`${iconsetName}:[\\w-]+`, "g");
   const icons = new Set();
   function processFile(filename) {
@@ -93,8 +94,8 @@ function findIcons(path, iconsetName) {
       icons.add(match[0].substr(iconsetName.length + 1));
     }
   }
-  mapFiles(path, ".js", processFile);
-  mapFiles(path, ".ts", processFile);
+  mapFiles(searchPath, ".js", processFile);
+  mapFiles(searchPath, ".ts", processFile);
   return icons;
 }
 
