@@ -133,25 +133,26 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
             return zopfli.gzip(input, compressionOptions, callback);
           },
         }),
-      new WorkboxPlugin.InjectManifest({
-        swSrc: "./src/entrypoints/service-worker-hass.js",
-        swDest: "service_worker.js",
-        importWorkboxFrom: "local",
-        include: [/\.js$/],
-        templatedURLs: {
-          ...workBoxTranslationsTemplatedURLs,
-          "/static/icons/favicon-192x192.png":
-            "public/icons/favicon-192x192.png",
-          "/static/fonts/roboto/Roboto-Light.ttf":
-            "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf",
-          "/static/fonts/roboto/Roboto-Medium.ttf":
-            "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf",
-          "/static/fonts/roboto/Roboto-Regular.ttf":
-            "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf",
-          "/static/fonts/roboto/Roboto-Bold.ttf":
-            "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf",
-        },
-      }),
+      latestBuild &&
+        new WorkboxPlugin.InjectManifest({
+          swSrc: "./src/entrypoints/service-worker-hass.js",
+          swDest: "service_worker.js",
+          importWorkboxFrom: "local",
+          include: [/\.js$/],
+          templatedURLs: {
+            ...workBoxTranslationsTemplatedURLs,
+            "/static/icons/favicon-192x192.png":
+              "public/icons/favicon-192x192.png",
+            "/static/fonts/roboto/Roboto-Light.ttf":
+              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf",
+            "/static/fonts/roboto/Roboto-Medium.ttf":
+              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf",
+            "/static/fonts/roboto/Roboto-Regular.ttf":
+              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf",
+            "/static/fonts/roboto/Roboto-Bold.ttf":
+              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf",
+          },
+        }),
     ].filter(Boolean),
     output: {
       filename: ({ chunk }) => {
