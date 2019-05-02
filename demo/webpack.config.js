@@ -2,8 +2,8 @@ const path = require("path");
 const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
-const { babelLoaderConfig } = require("../config/babel.js");
-const webpackBase = require("../config/webpack.js");
+const { babelLoaderConfig } = require("../build-scripts/babel.js");
+const webpackBase = require("../build-scripts/webpack.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const isStatsBuild = process.env.STATS === "1";
@@ -72,7 +72,7 @@ module.exports = {
     ...webpackBase.plugins,
     isProd &&
       new WorkboxPlugin.GenerateSW({
-        swDest: "service_worker_es5.js",
+        swDest: "service_worker.js",
         importWorkboxFrom: "local",
         include: [],
       }),
