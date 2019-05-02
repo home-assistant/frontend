@@ -868,6 +868,14 @@
                         "title": "집에 오신 것을 환영합니다",
                         "no_devices": "이 페이지에서 기기를 제어 할 수 있지만, 기기가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
                         "go_to_integrations_page": "통합 페이지로 이동하기."
+                    },
+                    "picture-elements": {
+                        "hold": "누르고 있기:",
+                        "tap": "탭:",
+                        "navigate_to": "{location} 으로 이동",
+                        "toggle": "{name} 토글",
+                        "call_service": "{name} 서비스 호출",
+                        "more_info": "추가 정보 표시: {name}"
                     }
                 },
                 "editor": {
