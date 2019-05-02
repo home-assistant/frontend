@@ -868,6 +868,12 @@
                         "title": "Velkommen hjem",
                         "no_devices": "Denne siden lar deg styre enhetene dine, men det ser ut til at du ikke har konfigurert noen enheter ennå. Gå til integrasjonssiden for å komme i gang.",
                         "go_to_integrations_page": "Gå til integrasjonssiden."
+                    },
+                    "picture-elements": {
+                        "hold": "Hold:",
+                        "tap": "Trykk:",
+                        "navigate_to": "Naviger til {location}",
+                        "more_info": "Vis mer info: {name}"
                     }
                 },
                 "editor": {

@@ -154,9 +154,14 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             label-float=""
             label="[[localize('ui.card.media_player.source')]]"
           >
-            <paper-listbox slot="dropdown-content" selected="{{sourceIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              attr-for-selected="item-name"
+              selected="[[playerObj.source]]"
+              on-selected-changed="handleSourceChanged"
+            >
               <template is="dom-repeat" items="[[playerObj.sourceList]]">
-                <paper-item>[[item]]</paper-item>
+                <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
             </paper-listbox>
           </ha-paper-dropdown-menu>
@@ -174,7 +179,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <paper-listbox
                 slot="dropdown-content"
                 attr-for-selected="item-name"
-                selected="{{SoundModeInput}}"
+                selected="[[playerObj.soundMode]]"
+                on-selected-changed="handleSoundModeChanged"
               >
                 <template is="dom-repeat" items="[[playerObj.soundModeList]]">
                   <paper-item item-name$="[[item]]">[[item]]</paper-item>
@@ -214,18 +220,6 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "playerObjChanged",
       },
 
-      sourceIndex: {
-        type: Number,
-        value: 0,
-        observer: "handleSourceChanged",
-      },
-
-      SoundModeInput: {
-        type: String,
-        value: "",
-        observer: "handleSoundModeChanged",
-      },
-
       ttsLoaded: {
         type: Boolean,
         computed: "computeTTSLoaded(hass)",
@@ -248,14 +242,6 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   playerObjChanged(newVal, oldVal) {
-    if (newVal && newVal.sourceList !== undefined) {
-      this.sourceIndex = newVal.sourceList.indexOf(newVal.source);
-    }
-
-    if (newVal && newVal.soundModeList !== undefined) {
-      this.SoundModeInput = newVal.soundMode;
-    }
-
     if (oldVal) {
       setTimeout(() => {
         this.fire("iron-resize");
@@ -342,36 +328,26 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playerObj.nextTrack();
   }
 
-  handleSourceChanged(sourceIndex, sourceIndexOld) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (
-      !this.playerObj ||
-      !this.playerObj.supportsSelectSource ||
-      this.playerObj.sourceList === undefined ||
-      sourceIndex < 0 ||
-      sourceIndex >= this.playerObj.sourceList ||
-      sourceIndexOld === undefined
-    ) {
-      return;
-    }
+  handleSourceChanged(ev) {
+    if (!this.playerObj) return;
 
-    const sourceInput = this.playerObj.sourceList[sourceIndex];
+    var oldVal = this.playerObj.source;
+    var newVal = ev.detail.value;
 
-    if (sourceInput === this.playerObj.source) {
-      return;
-    }
+    if (!newVal || oldVal === newVal) return;
 
-    this.playerObj.selectSource(sourceInput);
+    this.playerObj.selectSource(newVal);
   }
 
-  handleSoundModeChanged(newVal, oldVal) {
-    if (
-      oldVal &&
-      newVal !== this.playerObj.soundMode &&
-      this.playerObj.supportsSelectSoundMode
-    ) {
-      this.playerObj.selectSoundMode(newVal);
-    }
+  handleSoundModeChanged(ev) {
+    if (!this.playerObj) return;
+
+    var oldVal = this.playerObj.soundMode;
+    var newVal = ev.detail.value;
+
+    if (!newVal || oldVal === newVal) return;
+
+    this.playerObj.selectSoundMode(newVal);
   }
 
   handleVolumeTap() {

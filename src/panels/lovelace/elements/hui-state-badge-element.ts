@@ -56,7 +56,11 @@ export class HuiStateBadgeElement extends LitElement
       <ha-state-label-badge
         .hass="${this.hass}"
         .state="${stateObj}"
-        .title="${computeStateName(stateObj)}"
+        .title="${this._config.title === undefined
+          ? computeStateName(stateObj)
+          : this._config.title === null
+          ? ""
+          : this._config.title}"
       ></ha-state-label-badge>
     `;
   }
