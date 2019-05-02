@@ -3,8 +3,8 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 
 const config = require("./config.js");
-const { babelLoaderConfig } = require("../config/babel.js");
-const webpackBase = require("../config/webpack.js");
+const { babelLoaderConfig } = require("../build-scripts/babel.js");
+const webpackBase = require("../build-scripts/webpack.js");
 
 const isProdBuild = process.env.NODE_ENV === "production";
 const isCI = process.env.CI === "true";

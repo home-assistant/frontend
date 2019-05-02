@@ -4,7 +4,6 @@ node_modules/*
 npm-debug.log
 .DS_Store
 hass_frontend/*
-hass_frontend_es5/*
 .reify-cache
 demo/hademo-icons.html
 
