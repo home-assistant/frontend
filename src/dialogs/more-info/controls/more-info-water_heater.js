@@ -100,7 +100,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  selected="{{operationMode}}"
+                  selected="[[stateObj.attributes.operation_mode]]"
                   attr-for-selected="item-name"
                   on-selected-changed="handleOperationmodeChanged"
                 >
@@ -155,7 +155,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         awayToggleChecked: newVal.attributes.away_mode === "on",
-        operationMode: newVal.attributes.operation_mode,
       });
     }
 
