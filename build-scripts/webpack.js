@@ -170,7 +170,7 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       path: latestBuild ? paths.output : paths.output_es5,
       publicPath,
     },
-    resolve: resolve,
+    resolve,
   };
 };
 
