@@ -925,7 +925,8 @@
         },
         "sidebar": {
             "log_out": "Log out",
-            "developer_tools": "Developer tools"
+            "developer_tools": "Developer tools",
+            "external_app_configuration": "App Configuration"
         },
         "common": {
             "loading": "Loading",
