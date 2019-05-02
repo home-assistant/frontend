@@ -200,8 +200,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  selected="{{operationMode}}"
+                  selected="[[stateObj.attributes.operation_mode]]"
                   attr-for-selected="item-name"
+                  on-selected-changed="handleOperationmodeChanged"
                 >
                   <template
                     is="dom-repeat"
@@ -226,8 +227,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
             >
               <paper-listbox
                 slot="dropdown-content"
-                selected="{{fanMode}}"
+                selected="[[stateObj.attributes.fan_mode]]"
                 attr-for-selected="item-name"
+                on-selected-changed="handleFanmodeChanged"
               >
                 <template
                   is="dom-repeat"
@@ -251,8 +253,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
             >
               <paper-listbox
                 slot="dropdown-content"
-                selected="{{swingMode}}"
+                selected="[[stateObj.attributes.swing_mode]]"
                 attr-for-selected="item-name"
+                on-selected-changed="handleSwingmodeChanged"
               >
                 <template
                   is="dom-repeat"
@@ -305,23 +308,6 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      operationMode: {
-        type: String,
-        value: "",
-        observer: "handleOperationmodeChanged",
-      },
-
-      fanMode: {
-        type: String,
-        value: "",
-        observer: "handleFanmodeChanged",
-      },
-
-      swingMode: {
-        type: String,
-        value: "",
-        observer: "handleSwingmodeChanged",
-      },
       awayToggleChecked: Boolean,
       auxToggleChecked: Boolean,
       onToggleChecked: Boolean,
@@ -340,9 +326,6 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         awayToggleChecked: newVal.attributes.away_mode === "on",
         auxToggleChecked: newVal.attributes.aux_heat === "on",
         onToggleChecked: newVal.state !== "off",
-        operationMode: newVal.attributes.operation_mode,
-        fanMode: newVal.attributes.fan_mode,
-        swingMode: newVal.attributes.swing_mode,
       });
     }
 
@@ -498,30 +481,27 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.callServiceHelper(newVal ? "turn_on" : "turn_off", {});
   }
 
-  handleFanmodeChanged(fanMode) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (fanMode && fanMode !== this.stateObj.attributes.fan_mode) {
-      this.callServiceHelper("set_fan_mode", { fan_mode: fanMode });
-    }
+  handleFanmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.fan_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
+    this.callServiceHelper("set_fan_mode", { fan_mode: newVal });
   }
 
-  handleOperationmodeChanged(operationMode) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (
-      operationMode &&
-      operationMode !== this.stateObj.attributes.operation_mode
-    ) {
-      this.callServiceHelper("set_operation_mode", {
-        operation_mode: operationMode,
-      });
-    }
+  handleOperationmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.operation_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
+    this.callServiceHelper("set_operation_mode", {
+      operation_mode: newVal,
+    });
   }
 
-  handleSwingmodeChanged(swingMode) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (swingMode && swingMode !== this.stateObj.attributes.swing_mode) {
-      this.callServiceHelper("set_swing_mode", { swing_mode: swingMode });
-    }
+  handleSwingmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.swing_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
+    this.callServiceHelper("set_swing_mode", { swing_mode: newVal });
   }
 
   callServiceHelper(service, data) {
