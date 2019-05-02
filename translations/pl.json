@@ -582,7 +582,7 @@
                     "caption": "Chmura Home Assistant",
                     "description_login": "Zalogowany jako {email}",
                     "description_not_login": "Nie zalogowany",
-                    "description_features": "Sterowanie z spoza domu, integracja z Alexą i Google Assistant."
+                    "description_features": "Sterowanie spoza domu, integracja z Alexą i Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integracje",
@@ -602,7 +602,7 @@
                         "firmware": "Oprogramowanie: {version}",
                         "device_unavailable": "urządzenie niedostępne",
                         "entity_unavailable": "encja niedostępna",
-                        "no_area": "Brak obszaru"
+                        "no_area": "brak"
                     }
                 },
                 "zha": {
@@ -868,6 +868,14 @@
                         "title": "Witaj w domu",
                         "no_devices": "Ta strona pozwala kontrolować urządzenia, ale wygląda na to, że nie masz jeszcze żadnych skonfigurowanych. Przejdź na stronę integracji, aby rozpocząć.",
                         "go_to_integrations_page": "Przejdź do strony integracji."
+                    },
+                    "picture-elements": {
+                        "hold": "Przytrzymanie:",
+                        "tap": "Dotknięcie:",
+                        "navigate_to": "Przejdź do {location}",
+                        "toggle": "Przełącz {nazwa}",
+                        "call_service": "Wywołaj usługę {nazwa}",
+                        "more_info": "Pokaż więcej informacji: {nazwa}"
                     }
                 },
                 "editor": {
