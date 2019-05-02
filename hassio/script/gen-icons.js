@@ -4,7 +4,7 @@ const {
   findIcons,
   generateIconset,
   genMDIIcons,
-} = require("../../gulp/tasks/gen-icons.js");
+} = require("../../build-scripts/gulp/gen-icons.js");
 
 function genHassioIcons() {
   const iconNames = findIcons("./src", "hassio");
