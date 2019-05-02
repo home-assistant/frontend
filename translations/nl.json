@@ -868,6 +868,11 @@
                         "title": "Welkom thuis",
                         "no_devices": "Op deze pagina kun je je apparaten bedienen, maar het lijkt er op dat je nog geen apparaten hebt ingesteld. Ga naar de integraties pagina om te beginnen.",
                         "go_to_integrations_page": "Ga naar de integraties pagina."
+                    },
+                    "picture-elements": {
+                        "navigate_to": "Navigeer naar {location}",
+                        "toggle": "Omschakelen {name}",
+                        "more_info": "Meer informatie weergeven: {name}"
                     }
                 },
                 "editor": {
@@ -1132,7 +1137,7 @@
         "group": "Groep",
         "image_processing": "Beeldverwerking",
         "input_boolean": "Boolean invoer",
-        "input_datetime": "Invoer datum en tijd",
+        "input_datetime": "Voer datum en tijd in",
         "input_select": "Invoer selectie",
         "input_number": "Numerieke invoer",
         "input_text": "Tekstinvoer",

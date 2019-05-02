@@ -11,10 +11,4 @@ describe("formatDateTime", () => {
       "November 18, 2017, 11:12 AM"
     );
   });
-
-  // Node only contains intl support for english formats. This test at least ensures
-  // the fallback to a different locale
-  it("Formats other date times", () => {
-    assert.strictEqual(formatDateTime(dateObj, "fr"), "2017 M11 18 11:12");
-  });
 });

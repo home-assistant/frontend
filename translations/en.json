@@ -868,6 +868,14 @@
                         "title": "Welcome Home",
                         "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
                         "go_to_integrations_page": "Go to the integrations page."
+                    },
+                    "picture-elements": {
+                        "hold": "Hold:",
+                        "tap": "Tap:",
+                        "navigate_to": "Navigate to {location}",
+                        "toggle": "Toggle {name}",
+                        "call_service": "Call service {name}",
+                        "more_info": "Show more-info: {name}"
                     }
                 },
                 "editor": {
@@ -925,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "Log out",
-            "developer_tools": "Developer tools"
+            "developer_tools": "Developer tools",
+            "external_app_configuration": "App Configuration"
         },
         "common": {
             "loading": "Loading",

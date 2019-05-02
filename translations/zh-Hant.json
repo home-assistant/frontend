@@ -868,6 +868,14 @@
                         "title": "歡迎回家",
                         "no_devices": "此頁面允許進行控制所擁有的裝置。看起來您尚未設定任何裝置，從設定中的整合頁面開始吧。",
                         "go_to_integrations_page": "轉至整合頁面。"
+                    },
+                    "picture-elements": {
+                        "hold": "按住：",
+                        "tap": "點擊：",
+                        "navigate_to": "導航至 {location}",
+                        "toggle": "切換 {name}",
+                        "call_service": "執行服務 {name}",
+                        "more_info": "顯示更多資訊：{name}"
                     }
                 },
                 "editor": {
