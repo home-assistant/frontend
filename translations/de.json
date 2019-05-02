@@ -868,6 +868,14 @@
                         "title": "Willkommen zu Hause",
                         "no_devices": "Auf dieser Seite kannst du deine Geräte steuern, es sieht jedoch so aus, als hättest du noch keine eingerichtet. Gehe zur Integrationsseite, um damit zu beginnen.",
                         "go_to_integrations_page": "Gehe zur Integrationsseite."
+                    },
+                    "picture-elements": {
+                        "hold": "Halten:",
+                        "tap": "Tippe auf:",
+                        "navigate_to": "Navigiere zu {location}",
+                        "toggle": "{name} umschalten",
+                        "call_service": "Dienst  {name} ausführen",
+                        "more_info": "Zeige weitere Informationen: {name}"
                     }
                 },
                 "editor": {

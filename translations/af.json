@@ -769,7 +769,7 @@
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Ongeldige Gebruikersnaam of wagwoord",
+                                "invalid_auth": "Ongeldige gebruikersnaam of wagwoord",
                                 "invalid_code": "Ongeldige verifikasiekode"
                             },
                             "abort": {
@@ -868,6 +868,14 @@
                         "title": "Welkom tuis",
                         "no_devices": "Hierdie bladsy laat u toe om u toestelle te beheer, maar dit lyk asof u nog nie toestelle opgestel het nie. Gaan na die integrasies bladsy om te begin.",
                         "go_to_integrations_page": "Gaan na die integrasies bladsy."
+                    },
+                    "picture-elements": {
+                        "hold": "Hou:",
+                        "tap": "Tik:",
+                        "navigate_to": "Navigeer na {location}",
+                        "toggle": "Wissel {name}",
+                        "call_service": "Call diens {name}",
+                        "more_info": "Wys meer inligting: {name}"
                     }
                 },
                 "editor": {
@@ -884,7 +892,7 @@
                     "migrate": {
                         "header": "Opstellings Onversoenbaar",
                         "para_no_id": "Hierdie element het nie 'n ID nie. Voeg asseblief 'n ID by vir hierdie element in 'ui-lovelace.yaml'.",
-                        "para_migrate": "Druk die 'Migreer opstellings' knoppie as u wil hê Home Assistant moet vir u ID's by al u kaarte en aansigte outomaties byvoeg.",
+                        "para_migrate": "Druk die 'Migreer konfigurasie' knoppie as u wil hê Home Assistant moet vir u ID's by al u kaarte en aansigte outomaties byvoeg.",
                         "migrate": "Migreer opstellings"
                     },
                     "header": "Wysig gebruikerskoppelvlak",
