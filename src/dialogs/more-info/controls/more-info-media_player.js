@@ -157,7 +157,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="item-name"
-              selected="{{SourceInput}}"
+              selected="[[playerObj.source]]"
+              on-selected-changed="handleSourceChanged"
             >
               <template is="dom-repeat" items="[[playerObj.sourceList]]">
                 <paper-item item-name$="[[item]]">[[item]]</paper-item>
@@ -178,7 +179,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <paper-listbox
                 slot="dropdown-content"
                 attr-for-selected="item-name"
-                selected="{{SoundModeInput}}"
+                selected="[[playerObj.soundMode]]"
+                on-selected-changed="handleSoundModeChanged"
               >
                 <template is="dom-repeat" items="[[playerObj.soundModeList]]">
                   <paper-item item-name$="[[item]]">[[item]]</paper-item>
@@ -218,18 +220,6 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "playerObjChanged",
       },
 
-      SourceInput: {
-        type: String,
-        value: "",
-        observer: "handleSourceChanged",
-      },
-
-      SoundModeInput: {
-        type: String,
-        value: "",
-        observer: "handleSoundModeChanged",
-      },
-
       ttsLoaded: {
         type: Boolean,
         computed: "computeTTSLoaded(hass)",
@@ -252,14 +242,6 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   playerObjChanged(newVal, oldVal) {
-    if (newVal && newVal.sourceList !== undefined) {
-      this.SourceInput = newVal.source;
-    }
-
-    if (newVal && newVal.soundModeList !== undefined) {
-      this.SoundModeInput = newVal.soundMode;
-    }
-
     if (oldVal) {
       setTimeout(() => {
         this.fire("iron-resize");
@@ -346,26 +328,26 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playerObj.nextTrack();
   }
 
-  handleSourceChanged(newVal, oldVal) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (
-      oldVal &&
-      newVal &&
-      newVal !== this.playerObj.source &&
-      this.playerObj.supportsSelectSource
-    ) {
-      this.playerObj.selectSource(newVal);
-    }
+  handleSourceChanged(ev) {
+    if (!this.playerObj) return;
+
+    var oldVal = this.playerObj.source;
+    var newVal = ev.detail.value;
+
+    if (!newVal || oldVal === newVal) return;
+
+    this.playerObj.selectSource(newVal);
   }
 
-  handleSoundModeChanged(newVal, oldVal) {
-    if (
-      oldVal &&
-      newVal !== this.playerObj.soundMode &&
-      this.playerObj.supportsSelectSoundMode
-    ) {
-      this.playerObj.selectSoundMode(newVal);
-    }
+  handleSoundModeChanged(ev) {
+    if (!this.playerObj) return;
+
+    var oldVal = this.playerObj.soundMode;
+    var newVal = ev.detail.value;
+
+    if (!newVal || oldVal === newVal) return;
+
+    this.playerObj.selectSoundMode(newVal);
   }
 
   handleVolumeTap() {
