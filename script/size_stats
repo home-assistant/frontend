@@ -7,5 +7,5 @@ set -e
 cd "$(dirname "$0")/.."
 
 STATS=1 NODE_ENV=production webpack --profile --json > compilation-stats.json
-npx webpack-bundle-analyzer compilation-stats.json hass_frontend
+npx webpack-bundle-analyzer compilation-stats.json hass_frontend/frontend_latest
 rm compilation-stats.json

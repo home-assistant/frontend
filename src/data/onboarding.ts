@@ -9,7 +9,10 @@ interface UserStepResponse {
   auth_code: string;
 }
 
-export const onboardUserStep = async (params: {
+export const fetchOnboardingOverview = () =>
+  fetch("/api/onboarding", { credentials: "same-origin" });
+
+export const onboardUserStep = (params: {
   client_id: string;
   name: string;
   username: string;

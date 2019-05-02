@@ -868,6 +868,14 @@
                         "title": "Wëllkomm Doheem",
                         "no_devices": "Dës Säit erlaabt et iech är Apparater ze kontrolléiere, awer wéi et schéngt sinn nach keng Apparater ageriicht. Gitt op d'Integratioun's Säit fir unzefänken.",
                         "go_to_integrations_page": "Zur Integratiouns Säit goen"
+                    },
+                    "picture-elements": {
+                        "hold": "Gedréckt halen:",
+                        "tap": "Tippen:",
+                        "navigate_to": "Navigéieren zu {location}",
+                        "toggle": "{name} ëmschalten",
+                        "call_service": "Service {name} opruffen",
+                        "more_info": "méi Informatiounen: {name}"
                     }
                 },
                 "editor": {

@@ -287,7 +287,7 @@ export const generateLovelaceConfig = (
 
   // User has no entities
   if (views.length === 1 && views[0].cards!.length === 0) {
-    import("../cards/hui-empty-state-card");
+    import(/* webpackChunkName: "hui-empty-state-card" */ "../cards/hui-empty-state-card");
     views[0].cards!.push({
       type: "custom:hui-empty-state-card",
     });

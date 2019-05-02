@@ -8,7 +8,7 @@ import {
   css,
 } from "lit-element";
 import "./ha-auth-flow";
-import { AuthProvider } from "../data/auth";
+import { AuthProvider, fetchAuthProviders } from "../data/auth";
 import { registerServiceWorker } from "../util/register-service-worker";
 
 import(/* webpackChunkName: "pick-auth-provider" */ "../auth/ha-pick-auth-provider");
@@ -135,7 +135,9 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   private async _fetchAuthProviders() {
     // Fetch auth providers
     try {
-      const response = await (window as any).providersPromise;
+      // We prefetch this data on page load in authorize.html.template for modern builds
+      const response = await ((window as any).providersPromise ||
+        fetchAuthProviders());
       const authProviders = await response.json();
 
       // Forward to main screen which will redirect to right onboarding page.
