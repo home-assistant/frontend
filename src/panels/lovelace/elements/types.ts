@@ -45,6 +45,7 @@ export interface ServiceButtonElementConfig extends LovelaceElementConfig {
 
 export interface StateBadgeElementConfig extends LovelaceElementConfig {
   entity: string;
+  title?: string;
 }
 
 export interface StateIconElementConfig extends LovelaceElementConfig {
