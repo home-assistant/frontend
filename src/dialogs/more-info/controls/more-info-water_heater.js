@@ -102,6 +102,7 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   slot="dropdown-content"
                   selected="{{operationMode}}"
                   attr-for-selected="item-name"
+                  on-selected-changed="handleOperationmodeChanged"
                 >
                   <template
                     is="dom-repeat"
@@ -146,11 +147,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      operationMode: {
-        type: String,
-        value: "",
-        observer: "handleOperationmodeChanged",
-      },
       awayToggleChecked: Boolean,
     };
   }
@@ -230,16 +226,13 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.callServiceHelper("set_away_mode", { away_mode: newVal });
   }
 
-  handleOperationmodeChanged(operationMode) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (
-      operationMode &&
-      operationMode !== this.stateObj.attributes.operation_mode
-    ) {
-      this.callServiceHelper("set_operation_mode", {
-        operation_mode: operationMode,
-      });
-    }
+  handleOperationmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.operation_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
+    this.callServiceHelper("set_operation_mode", {
+      operation_mode: newVal,
+    });
   }
 
   callServiceHelper(service, data) {
