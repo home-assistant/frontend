@@ -37,8 +37,13 @@ class HaCard extends LitElement {
         font-size: var(--ha-card-header-font-size, 24px);
         letter-spacing: -0.012em;
         line-height: 32px;
-        padding: 24px 16px 0 16px;
+        padding: 24px 16px 8px 16px;
         display: block;
+      }
+
+      :host ::slotted(.card-content:not(:first-child)),
+      :host slot:not(:first-child)::slotted(.card-content) {
+        padding-top: 0px;
       }
 
       :host ::slotted(.card-content) {
