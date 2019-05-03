@@ -16,7 +16,7 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-demo",
-    gulp.parallel("gen-icons", "build-translations"),
+    gulp.parallel("gen-icons", "gen-icons-demo", "build-translations"),
     "copy-static-demo",
     "webpack-dev-server-demo"
   )
@@ -29,7 +29,7 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-demo",
-    gulp.parallel("gen-icons", "build-translations"),
+    gulp.parallel("gen-icons", "gen-icons-demo", "build-translations"),
     "copy-static-demo",
     "webpack-prod-demo"
   )
