@@ -15,7 +15,7 @@ function initRouting() {
 
   // Get api from network.
   workbox.routing.registerRoute(
-    new RegExp(`${location.host}/api/.*`),
+    new RegExp(`${location.host}/(api|auth)/.*`),
     new workbox.strategies.NetworkOnly()
   );
 
