@@ -9,7 +9,6 @@ import {
 
 class HaCard extends LitElement {
   @property() public header?: string;
-  @property() public heading?: string;
 
   static get styles(): CSSResult {
     return css`
@@ -31,13 +30,8 @@ class HaCard extends LitElement {
         position: relative;
       }
 
-      :host ::slotted(*) {
-        display: block;
-      }
-
-      #header-slot:not(:empty), /* This matches if header/heading is set*/
-      #header-slot::slotted(*),
-      #default-slot::slotted(.card-header) {
+      :host .card-header,
+      :host ::slotted(.card-header) {
         color: var(--ha-card-header-color, --primary-text-color);
         font-family: var(--ha-card-header-font-family, inherit);
         font-size: var(--ha-card-header-font-size, 24px);
@@ -47,27 +41,25 @@ class HaCard extends LitElement {
         display: block;
       }
 
-      #content-slot::slotted(*),
-      #default-slot::slotted(.card-content) {
+      :host ::slotted(.card-content) {
         padding: 16px;
-        position: relative;
       }
 
-      #actions-slot::slotted(*),
-      #default-slot::slotted(.card-actions) {
+      :host ::slotted(.card-actions) {
         border-top: 1px solid #e8e8e8;
         padding: 5px 16px;
-        position: relative;
       }
     `;
   }
 
   protected render(): TemplateResult {
     return html`
-      <slot id="header-slot" name="header">${this.header}${this.heading}</slot>
-      <slot id="default-slot"></slot>
-      <slot id="content-slot" name="content"></slot>
-      <slot id="actions-slot" name="actions"></slot>
+      ${this.header
+        ? html`
+            <div class="card-header">${this.header}</div>
+          `
+        : html``}
+      <slot></slot>
     `;
   }
 }
