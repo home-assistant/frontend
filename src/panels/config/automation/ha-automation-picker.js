@@ -85,7 +85,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
               <a
                 href="https://home-assistant.io/docs/automation/editor/"
                 target="_blank"
-          >
+              >
                 [[localize('ui.panel.config.automation.picker.learn_more')]]
               </a>
             </p>
