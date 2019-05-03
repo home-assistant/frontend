@@ -72,10 +72,11 @@ export default class Automation extends Component {
                 "ui.panel.config.automation.editor.triggers.introduction"
               )}
             </p>
-            <a href="https://home-assistant.io/docs/automation/trigger/"
+            <a
+              href="https://home-assistant.io/docs/automation/trigger/"
               target="_blank"
-              >
-                {localize(
+            >
+              {localize(
                 "ui.panel.config.automation.editor.triggers.learn_more"
               )}
             </a>
@@ -98,10 +99,11 @@ export default class Automation extends Component {
                 "ui.panel.config.automation.editor.conditions.introduction"
               )}
             </p>
-            <a href="https://home-assistant.io/docs/scripts/conditions/"
+            <a
+              href="https://home-assistant.io/docs/scripts/conditions/"
               target="_blank"
-              >
-                {localize(
+            >
+              {localize(
                 "ui.panel.config.automation.editor.conditions.learn_more"
               )}
             </a>
@@ -124,10 +126,11 @@ export default class Automation extends Component {
                 "ui.panel.config.automation.editor.actions.introduction"
               )}
             </p>
-            <a href="https://home-assistant.io/docs/automation/action/"
+            <a
+              href="https://home-assistant.io/docs/automation/action/"
               target="_blank"
-              >
-                {localize("ui.panel.config.automation.editor.actions.learn_more")}
+            >
+              {localize("ui.panel.config.automation.editor.actions.learn_more")}
             </a>
           </span>
           <Script
