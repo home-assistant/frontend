@@ -132,6 +132,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
   }
 
   async _createUser() {
+    ev.preventDefault();
     if (!this._name || !this._username || !this._password) return;
 
     this._loading = true;
