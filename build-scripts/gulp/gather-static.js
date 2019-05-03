@@ -5,17 +5,20 @@ const path = require("path");
 const fs = require("fs-extra");
 const zopfli = require("gulp-zopfli-green");
 const merge = require("merge-stream");
-const config = require("../paths");
+const paths = require("../paths");
 
 const npmPath = (...parts) =>
-  path.resolve(config.polymer_dir, "node_modules", ...parts);
-const polyPath = (...parts) => path.resolve(config.polymer_dir, ...parts);
+  path.resolve(paths.polymer_dir, "node_modules", ...parts);
+const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
 
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
 
+const genStaticPath = (staticDir) => (...parts) =>
+  path.resolve(staticDir, ...parts);
+
 function copyTranslations(staticDir) {
-  const staticPath = (...parts) => path.resolve(staticDir, ...parts);
+  const staticPath = genStaticPath(staticDir);
 
   // Translation output
   fs.copySync(
@@ -23,9 +26,6 @@ function copyTranslations(staticDir) {
     staticPath("translations")
   );
 }
-
-const genStaticPath = (staticDir) => (...parts) =>
-  path.resolve(staticDir, ...parts);
 
 function copyPolyfills(staticDir) {
   const staticPath = genStaticPath(staticDir);
@@ -70,16 +70,16 @@ function compressStatic(staticDir) {
 }
 
 gulp.task("copy-static", (done) => {
-  const staticDir = config.root;
-  const staticPath = genStaticPath(staticDir);
+  const staticDir = paths.static;
+  const staticPath = genStaticPath(paths.static);
   // Basic static files
-  fs.copySync(polyPath("public"), config.root);
+  fs.copySync(polyPath("public"), paths.root);
 
   copyPolyfills(staticDir);
   copyFonts(staticDir);
   copyTranslations(staticDir);
 
-  // External dependency assets
+  // Panel assets
   copyFileDir(
     npmPath("react-big-calendar/lib/css/react-big-calendar.css"),
     staticPath("panels/calendar/")
@@ -95,17 +95,16 @@ gulp.task("copy-static", (done) => {
   done();
 });
 
-gulp.task("compress-static", () => compressStatic(config.root));
+gulp.task("compress-static", () => compressStatic(paths.root));
 
 gulp.task("copy-static-demo", (done) => {
   // Copy app static files
-  fs.copySync(polyPath("public"), config.demo_build_dir);
+  fs.copySync(polyPath("public"), paths.demo_root);
   // Copy demo static files
-  fs.copySync(path.resolve(config.demo_dir, "public"), config.demo_build_dir);
+  fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_root);
 
-  const staticDir = path.resolve(config.demo_build_dir, "static");
-  copyPolyfills(staticDir);
-  copyFonts(staticDir);
-  copyTranslations(staticDir);
+  copyPolyfills(paths.demo_static);
+  copyFonts(paths.demo_static);
+  copyTranslations(paths.demo_static);
   done();
 });

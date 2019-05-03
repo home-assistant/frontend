@@ -95,8 +95,6 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     ] = `build-translations/output/${key}.json`;
   });
 
-  const publicPath = latestBuild ? "/frontend_latest/" : "/frontend_es5/";
-
   const entry = {
     app: "./src/entrypoints/app.ts",
     authorize: "./src/entrypoints/authorize.ts",
@@ -170,16 +168,13 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       },
       chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
       path: latestBuild ? paths.output : paths.output_es5,
-      publicPath,
+      publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
     },
     resolve,
   };
 };
 
 const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
-  const buildPath = paths.demo_build_dir;
-  const publicPath = "/";
-
   return {
     mode: genMode(isProdBuild),
     devtool: genDevTool(isProdBuild),
@@ -208,8 +203,11 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     output: {
       filename: "[name].js",
       chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
-      path: buildPath,
-      publicPath,
+      path: path.resolve(
+        paths.demo_root,
+        latestBuild ? "frontend_latest" : "frontend_es5"
+      ),
+      publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
     },
   };
 };
