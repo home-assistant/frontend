@@ -73,6 +73,11 @@ gulp.task("webpack-dev-server-demo", () => {
       latestBuild: false,
       isStatsBuild: false,
     }),
+    createDemoConfig({
+      isProdBuild: false,
+      latestBuild: true,
+      isStatsBuild: false,
+    }),
   ]);
 
   new WebpackDevServer(compiler, {
@@ -97,6 +102,11 @@ gulp.task(
           createDemoConfig({
             isProdBuild: true,
             latestBuild: false,
+            isStatsBuild: false,
+          }),
+          createDemoConfig({
+            isProdBuild: true,
+            latestBuild: true,
             isStatsBuild: false,
           }),
         ],
