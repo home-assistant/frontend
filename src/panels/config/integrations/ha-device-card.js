@@ -1,12 +1,12 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../layouts/hass-subpage";
 
 import EventsMixin from "../../../mixins/events-mixin";
@@ -33,7 +33,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           max-height: 225px;
           overflow: auto;
         }
-        paper-card {
+        ha-card {
           flex: 1 0 100%;
           padding-bottom: 10px;
           min-width: 0;
@@ -61,7 +61,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           color: var(--secondary-text-color);
         }
       </style>
-      <paper-card heading="[[device.name]]">
+      <ha-card header="[[device.name]]">
         <div class="card-content">
           <!--
             <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1>
@@ -125,7 +125,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </paper-icon-item>
           </template>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
