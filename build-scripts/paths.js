@@ -7,4 +7,6 @@ module.exports = {
   static: path.resolve(__dirname, "../hass_frontend/static"),
   output: path.resolve(__dirname, "../hass_frontend/frontend_latest"),
   output_es5: path.resolve(__dirname, "../hass_frontend/frontend_es5"),
+  demo_dir: path.resolve(__dirname, "../demo"),
+  demo_build_dir: path.resolve(__dirname, "../demo/dist"),
 };
