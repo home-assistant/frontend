@@ -17,6 +17,12 @@ if (!version) {
 }
 version = version[0];
 
+const genMode = (isProdBuild) => (isProdBuild ? "production" : "development");
+const genDevTool = (isProdBuild) =>
+  isProdBuild ? "cheap-source-map" : "inline-cheap-module-source-map";
+const genChunkFilename = (isProdBuild, isStatsBuild) =>
+  isProdBuild && !isStatsBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
+
 const resolve = {
   extensions: [".ts", ".js", ".json", ".tsx"],
   alias: {
@@ -26,6 +32,20 @@ const resolve = {
     "create-react-class": "preact-compat/lib/create-react-class",
     // Not necessary unless you consume a module requiring `react-dom-factories`
     "react-dom-factories": "preact-compat/lib/react-dom-factories",
+  },
+};
+
+const cssLoader = {
+  test: /\.css$/,
+  use: "raw-loader",
+};
+const htmlLoader = {
+  test: /\.(html)$/,
+  use: {
+    loader: "html-loader",
+    options: {
+      exportAsEs6Default: true,
+    },
   },
 };
 
@@ -75,8 +95,6 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     ] = `build-translations/output/${key}.json`;
   });
 
-  const publicPath = latestBuild ? "/frontend_latest/" : "/frontend_es5/";
-
   const entry = {
     app: "./src/entrypoints/app.ts",
     authorize: "./src/entrypoints/authorize.ts",
@@ -88,28 +106,11 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
   };
 
   return {
-    mode: isProdBuild ? "production" : "development",
-    devtool: isProdBuild
-      ? "cheap-source-map "
-      : "inline-cheap-module-source-map",
+    mode: genMode(isProdBuild),
+    devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules: [
-        babelLoaderConfig({ latestBuild }),
-        {
-          test: /\.css$/,
-          use: "raw-loader",
-        },
-        {
-          test: /\.(html)$/,
-          use: {
-            loader: "html-loader",
-            options: {
-              exportAsEs6Default: true,
-            },
-          },
-        },
-      ],
+      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
     },
     optimization: optimization(latestBuild),
     plugins: [
@@ -165,14 +166,49 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
         if (!isProdBuild || dontHash.has(chunk.name)) return `${chunk.name}.js`;
         return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
       },
-      chunkFilename:
-        isProdBuild && !isStatsBuild
-          ? "chunk.[chunkhash].js"
-          : "[name].chunk.js",
+      chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
       path: latestBuild ? paths.output : paths.output_es5,
-      publicPath,
+      publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
     },
     resolve,
+  };
+};
+
+const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
+  return {
+    mode: genMode(isProdBuild),
+    devtool: genDevTool(isProdBuild),
+    entry: {
+      main: "./demo/src/entrypoint.ts",
+      compatibility: "./src/entrypoints/compatibility.ts",
+    },
+    module: {
+      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
+    },
+    optimization: optimization(latestBuild),
+    plugins: [
+      new webpack.DefinePlugin({
+        __DEV__: !isProdBuild,
+        __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
+        __VERSION__: JSON.stringify("DEMO"),
+        __DEMO__: true,
+        __STATIC_PATH__: "/static/",
+        "process.env.NODE_ENV": JSON.stringify(
+          isProdBuild ? "production" : "development"
+        ),
+      }),
+      ...plugins,
+    ].filter(Boolean),
+    resolve,
+    output: {
+      filename: "[name].js",
+      chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
+      path: path.resolve(
+        paths.demo_root,
+        latestBuild ? "frontend_latest" : "frontend_es5"
+      ),
+      publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+    },
   };
 };
 
@@ -181,4 +217,5 @@ module.exports = {
   plugins,
   optimization,
   createAppConfig,
+  createDemoConfig,
 };
