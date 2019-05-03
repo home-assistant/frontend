@@ -5,17 +5,21 @@ const path = require("path");
 const fs = require("fs-extra");
 const zopfli = require("gulp-zopfli-green");
 const merge = require("merge-stream");
-const config = require("../paths");
+const paths = require("../paths");
 
 const npmPath = (...parts) =>
-  path.resolve(config.polymer_dir, "node_modules", ...parts);
-const polyPath = (...parts) => path.resolve(config.polymer_dir, ...parts);
-const staticPath = (...parts) => path.resolve(config.root, "static", ...parts);
+  path.resolve(paths.polymer_dir, "node_modules", ...parts);
+const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
 
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
 
-function copyTranslations() {
+const genStaticPath = (staticDir) => (...parts) =>
+  path.resolve(staticDir, ...parts);
+
+function copyTranslations(staticDir) {
+  const staticPath = genStaticPath(staticDir);
+
   // Translation output
   fs.copySync(
     polyPath("build-translations/output"),
@@ -23,9 +27,8 @@ function copyTranslations() {
   );
 }
 
-function copyStatic() {
-  // Basic static files
-  fs.copySync(polyPath("public"), config.root);
+function copyPolyfills(staticDir) {
+  const staticPath = genStaticPath(staticDir);
 
   // Web Component polyfills and adapters
   copyFileDir(
@@ -40,31 +43,16 @@ function copyStatic() {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
-
-  // Local fonts
-  fs.copySync(npmPath("@polymer/font-roboto-local/fonts"), staticPath("fonts"));
-
-  // External dependency assets
-  copyFileDir(
-    npmPath("react-big-calendar/lib/css/react-big-calendar.css"),
-    staticPath("panels/calendar/")
-  );
-  copyFileDir(
-    npmPath("leaflet/dist/leaflet.css"),
-    staticPath("images/leaflet/")
-  );
-  fs.copySync(
-    npmPath("leaflet/dist/images"),
-    staticPath("images/leaflet/images/")
-  );
 }
 
-gulp.task("copy-static", (done) => {
-  copyStatic();
-  done();
-});
+function copyFonts(staticDir) {
+  const staticPath = genStaticPath(staticDir);
+  // Local fonts
+  fs.copySync(npmPath("@polymer/font-roboto-local/fonts"), staticPath("fonts"));
+}
 
-gulp.task("compress-static", () => {
+function compressStatic(staticDir) {
+  const staticPath = genStaticPath(staticDir);
   const fonts = gulp
     .src(staticPath("fonts/**/*.ttf"))
     .pipe(zopfli())
@@ -79,9 +67,44 @@ gulp.task("compress-static", () => {
     .pipe(gulp.dest(staticPath("translations")));
 
   return merge(fonts, polyfills, translations);
+}
+
+gulp.task("copy-static", (done) => {
+  const staticDir = paths.static;
+  const staticPath = genStaticPath(paths.static);
+  // Basic static files
+  fs.copySync(polyPath("public"), paths.root);
+
+  copyPolyfills(staticDir);
+  copyFonts(staticDir);
+  copyTranslations(staticDir);
+
+  // Panel assets
+  copyFileDir(
+    npmPath("react-big-calendar/lib/css/react-big-calendar.css"),
+    staticPath("panels/calendar/")
+  );
+  copyFileDir(
+    npmPath("leaflet/dist/leaflet.css"),
+    staticPath("images/leaflet/")
+  );
+  fs.copySync(
+    npmPath("leaflet/dist/images"),
+    staticPath("images/leaflet/images/")
+  );
+  done();
 });
 
-gulp.task("copy-translations", (done) => {
-  copyTranslations();
+gulp.task("compress-static", () => compressStatic(paths.root));
+
+gulp.task("copy-static-demo", (done) => {
+  // Copy app static files
+  fs.copySync(polyPath("public"), paths.demo_root);
+  // Copy demo static files
+  fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_root);
+
+  copyPolyfills(paths.demo_static);
+  copyFonts(paths.demo_static);
+  copyTranslations(paths.demo_static);
   done();
 });
