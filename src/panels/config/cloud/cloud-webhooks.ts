@@ -51,19 +51,17 @@ export class CloudWebhooks extends LitElement {
     return html`
       ${this.renderStyle()}
       <ha-card header="Webhooks">
-        <div class="body">
+        <div class="card-content">
           Anything that is configured to be triggered by a webhook can be given
           a publicly accessible URL to allow you to send data back to Home
           Assistant from anywhere, without exposing your instance to the
-          internet.
-        </div>
+          internet. ${this._renderBody()}
 
-        ${this._renderBody()}
-
-        <div class="footer">
-          <a href="https://www.nabucasa.com/config/webhooks" target="_blank">
-            Learn more about creating webhook-powered automations.
-          </a>
+          <div class="footer">
+            <a href="https://www.nabucasa.com/config/webhooks" target="_blank">
+              Learn more about creating webhook-powered automations.
+            </a>
+          </div>
         </div>
       </ha-card>
     `;
@@ -194,15 +192,12 @@ export class CloudWebhooks extends LitElement {
   private renderStyle() {
     return html`
       <style>
-        .body {
-          padding: 0 16px 8px;
-        }
         .body-text {
-          padding: 0 16px;
+          padding: 8px 0;
         }
         .webhook {
           display: flex;
-          padding: 4px 16px;
+          padding: 4px 0;
         }
         .progress {
           margin-right: 16px;
@@ -211,7 +206,7 @@ export class CloudWebhooks extends LitElement {
           justify-content: center;
         }
         .footer {
-          padding: 16px;
+          padding-top: 16px;
         }
         .body-text a,
         .footer a {
