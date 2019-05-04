@@ -3,12 +3,14 @@ import {
   // @ts-ignore
   property,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
+import { Auth, Connection } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../types";
 
 /* tslint:disable */
 
 export class HassBaseEl {
   protected hass?: HomeAssistant;
+  protected initializeHass(_auth: Auth, _conn: Connection) {}
   protected hassConnected() {}
   protected hassReconnected() {}
   protected hassDisconnected() {}

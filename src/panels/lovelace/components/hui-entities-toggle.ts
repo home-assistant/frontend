@@ -13,7 +13,7 @@ import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-tog
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
 import { HomeAssistant } from "../../../types";
-import { forwardHaptic } from "../../../util/haptics";
+import { forwardHaptic } from "../../../data/haptics";
 
 @customElement("hui-entities-toggle")
 class HuiEntitiesToggle extends LitElement {
@@ -66,7 +66,7 @@ class HuiEntitiesToggle extends LitElement {
   }
 
   private _callService(ev: MouseEvent): void {
-    forwardHaptic(this, "light");
+    forwardHaptic("light");
     const turnOn = (ev.target as PaperToggleButtonElement).checked;
     turnOnOffEntities(this.hass!, this._toggleEntities!, turnOn!);
   }

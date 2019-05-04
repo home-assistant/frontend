@@ -1,6 +1,6 @@
-import { clearState } from "../../util/ha-pref-storage";
-import { askWrite } from "../../common/auth/token_storage";
-import { subscribeUser, userCollection } from "../../data/ws-user";
+import { clearState } from "../util/ha-pref-storage";
+import { askWrite } from "../common/auth/token_storage";
+import { subscribeUser, userCollection } from "../data/ws-user";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 
@@ -30,7 +30,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       if (askWrite()) {
         this.updateComplete
           .then(() =>
-            import(/* webpackChunkName: "ha-store-auth-card" */ "../../dialogs/ha-store-auth-card")
+            import(/* webpackChunkName: "ha-store-auth-card" */ "../dialogs/ha-store-auth-card")
           )
           .then(() => {
             const el = document.createElement("ha-store-auth-card");

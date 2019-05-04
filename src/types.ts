@@ -10,7 +10,6 @@ import {
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { ExternalMessaging } from "./external_app/external_messaging";
-import { HASSDomEvent } from "./common/dom/fire_event";
 
 declare global {
   var __DEV__: boolean;
@@ -38,15 +37,8 @@ declare global {
       value: unknown;
     };
     change: undefined;
-    "connection-status": ConnectionStatus;
-  }
-
-  interface GlobalEventHandlersEventMap {
-    "connection-status": HASSDomEvent<ConnectionStatus>;
   }
 }
-
-type ConnectionStatus = "connected" | "auth-invalid" | "disconnected";
 
 export interface WebhookError {
   code: number;
@@ -103,6 +95,13 @@ export interface Translation {
   fingerprints: { [fragment: string]: string };
 }
 
+export interface TranslationMetadata {
+  fragments: string[];
+  translations: {
+    [lang: string]: Translation;
+  };
+}
+
 export interface Notification {
   notification_id: string;
   message: string;
@@ -135,18 +134,13 @@ export interface HomeAssistant {
   //   - english (en)
   language: string;
   // local stored language, keep that name for backward compability
-  selectedLanguage: string;
+  selectedLanguage: string | null;
   resources: Resources;
   localize: LocalizeFunc;
-  translationMetadata: {
-    fragments: string[];
-    translations: {
-      [lang: string]: Translation;
-    };
-  };
+  translationMetadata: TranslationMetadata;
 
   dockedSidebar: boolean;
-  moreInfoEntityId: string;
+  moreInfoEntityId: string | null;
   user?: CurrentUser;
   callService: (
     domain: string,
@@ -162,7 +156,7 @@ export interface HomeAssistant {
     path: string,
     init?: { [key: string]: any }
   ) => Promise<Response>;
-  sendWS: (msg: MessageBase) => Promise<void>;
+  sendWS: (msg: MessageBase) => void;
   callWS: <T>(msg: MessageBase) => Promise<T>;
 }
 

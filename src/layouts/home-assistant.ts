@@ -1,45 +1,20 @@
 import "@polymer/app-route/app-location";
 import { html, LitElement, PropertyValues, css, property } from "lit-element";
 
-import "../home-assistant-main";
-import "../ha-init-page";
-import "../../resources/ha-style";
-import { registerServiceWorker } from "../../util/register-service-worker";
-import { DEFAULT_PANEL } from "../../common/const";
+import "./home-assistant-main";
+import "./ha-init-page";
+import "../resources/ha-style";
+import { registerServiceWorker } from "../util/register-service-worker";
+import { DEFAULT_PANEL } from "../common/const";
 
-import HassBaseMixin from "./hass-base-mixin";
-import AuthMixin from "./auth-mixin";
-import TranslationsMixin from "./translations-mixin";
-import ThemesMixin from "./themes-mixin";
-import MoreInfoMixin from "./more-info-mixin";
-import SidebarMixin from "./sidebar-mixin";
-import { dialogManagerMixin } from "./dialog-manager-mixin";
-import ConnectionMixin from "./connection-mixin";
-import NotificationMixin from "./notification-mixin";
-import DisconnectToastMixin from "./disconnect-toast-mixin";
-import { urlSyncMixin } from "./url-sync-mixin";
-
-import { Route, HomeAssistant } from "../../types";
-import { navigate } from "../../common/navigate";
+import { Route, HomeAssistant } from "../types";
+import { navigate } from "../common/navigate";
+import { HassElement } from "../state/hass-element";
 
 (LitElement.prototype as any).html = html;
 (LitElement.prototype as any).css = css;
 
-const ext = <T>(baseClass: T, mixins): T =>
-  mixins.reduceRight((base, mixin) => mixin(base), baseClass);
-
-export class HomeAssistantAppEl extends ext(HassBaseMixin(LitElement), [
-  AuthMixin,
-  ThemesMixin,
-  TranslationsMixin,
-  MoreInfoMixin,
-  SidebarMixin,
-  DisconnectToastMixin,
-  ConnectionMixin,
-  NotificationMixin,
-  dialogManagerMixin,
-  urlSyncMixin,
-]) {
+export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
   @property() private _error?: boolean;
   @property() private _panelUrl?: string;
@@ -69,6 +44,7 @@ export class HomeAssistantAppEl extends ext(HassBaseMixin(LitElement), [
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
+    this._initialize();
     setTimeout(registerServiceWorker, 1000);
     /* polyfill for paper-dropdown */
     import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min");
@@ -83,6 +59,16 @@ export class HomeAssistantAppEl extends ext(HassBaseMixin(LitElement), [
       this.hassChanged(this.hass!, changedProps.get("hass") as
         | HomeAssistant
         | undefined);
+    }
+  }
+
+  protected async _initialize() {
+    try {
+      const { auth, conn } = await window.hassConnection;
+      this.initializeHass(auth, conn);
+    } catch (err) {
+      this._error = true;
+      return;
     }
   }
 
