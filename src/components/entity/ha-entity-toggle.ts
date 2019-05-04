@@ -14,7 +14,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
-import { forwardHaptic } from "../../util/haptics";
+import { forwardHaptic } from "../../data/haptics";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined && !STATES_OFF.includes(stateObj.state);
@@ -90,7 +90,7 @@ class HaEntityToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic(this, "light");
+    forwardHaptic("light");
     const stateDomain = computeStateDomain(this.stateObj);
     let serviceDomain;
     let service;

@@ -1,6 +1,6 @@
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent } from "../common/dom/fire_event";
 
 /* tslint:disable:no-console */
 const DEBUG = false;
