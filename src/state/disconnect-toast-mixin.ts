@@ -1,7 +1,7 @@
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { HaToast } from "../../components/ha-toast";
-import { computeRTL } from "../../common/util/compute_rtl";
+import { HaToast } from "../components/ha-toast";
+import { computeRTL } from "../common/util/compute_rtl";
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
@@ -10,7 +10,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
-      import(/* webpackChunkName: "ha-toast" */ "../../components/ha-toast");
+      import(/* webpackChunkName: "ha-toast" */ "../components/ha-toast");
     }
 
     protected hassReconnected() {

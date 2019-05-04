@@ -1,5 +1,5 @@
 /**
- * Utility function that enables haptic feedback
+ * Broadcast haptic feedback requests
  */
 
 import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
@@ -27,6 +27,6 @@ declare global {
   }
 }
 
-export const forwardHaptic = (el: HTMLElement, hapticType: HapticType) => {
-  fireEvent(el, "haptic", hapticType);
+export const forwardHaptic = (hapticType: HapticType) => {
+  fireEvent(window, "haptic", hapticType);
 };

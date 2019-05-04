@@ -1,7 +1,7 @@
-import { storeState } from "../../util/ha-pref-storage";
+import { storeState } from "../util/ha-pref-storage";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { HASSDomEvent } from "../../common/dom/fire_event";
+import { HASSDomEvent } from "../common/dom/fire_event";
 
 interface DockSidebarParams {
   dock: boolean;
