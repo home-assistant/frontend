@@ -11,7 +11,7 @@ import "../resources/roboto";
 // properly into iron-meta, which is used to transfer iconsets to iron-icon.
 import "../components/ha-iconset-svg";
 
-import "../layouts/app/home-assistant";
+import "../layouts/home-assistant";
 
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */

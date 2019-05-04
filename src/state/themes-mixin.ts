@@ -1,9 +1,9 @@
-import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
-import { storeState } from "../../util/ha-pref-storage";
-import { subscribeThemes } from "../../data/ws-themes";
+import applyThemesOnElement from "../common/dom/apply_themes_on_element";
+import { storeState } from "../util/ha-pref-storage";
+import { subscribeThemes } from "../data/ws-themes";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { HASSDomEvent } from "../../common/dom/fire_event";
+import { HASSDomEvent } from "../common/dom/fire_event";
 
 declare global {
   // for add event listener
