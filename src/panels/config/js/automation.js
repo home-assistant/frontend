@@ -1,8 +1,8 @@
 import { h, Component } from "preact";
 
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import "../ha-config-section";
+import "../../../components/ha-card";
 
 import Trigger from "./trigger/index";
 import Condition from "./condition/index";
@@ -50,7 +50,7 @@ export default class Automation extends Component {
           <span slot="introduction">
             {localize("ui.panel.config.automation.editor.introduction")}
           </span>
-          <paper-card>
+          <ha-card>
             <div class="card-content">
               <paper-input
                 label={localize("ui.panel.config.automation.editor.alias")}
@@ -59,7 +59,7 @@ export default class Automation extends Component {
                 onvalue-changed={this.onChange}
               />
             </div>
-          </paper-card>
+          </ha-card>
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
