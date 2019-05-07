@@ -40,7 +40,7 @@ gulp.task(
     gulp.parallel(
       "webpack-prod-app",
       // Do not compress static files in CI, it's SLOW.
-      ...(process.env.CI === true ? [] : ["compress-static"])
+      ...(process.env.CI === "true" ? [] : ["compress-static"])
     ),
     gulp.parallel(
       "gen-pages-prod",
