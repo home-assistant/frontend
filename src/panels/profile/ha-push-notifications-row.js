@@ -1,6 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-label/iron-label";
-import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
