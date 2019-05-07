@@ -2,12 +2,12 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-icon-next";
 
@@ -25,11 +25,11 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
+      ha-card {
+        overflow: hidden;
+      }
       .content {
         padding-bottom: 32px;
-      }
-      paper-card {
-        display: block;
       }
       a {
         text-decoration: none;
@@ -51,7 +51,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
           <span slot="introduction">[[localize('ui.panel.config.introduction')]]</span>
 
           <template is="dom-if" if="[[computeIsLoaded(hass, 'cloud')]]">
-            <paper-card>
+            <ha-card>
               <a href='/config/cloud' tabindex="-1">
                 <paper-item>
                   <paper-item-body two-line="">
@@ -69,11 +69,11 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                   </paper-item-body>
                   <ha-icon-next></ha-icon-next>
                 </paper-item>
-              </paper-card>
+              </ha-card>
             </a>
           </template>
 
-          <paper-card>
+          <ha-card>
             <a href='/config/integrations/dashboard' tabindex="-1">
               <paper-item>
                 <paper-item-body two-line>
@@ -97,7 +97,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                 <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
-          </paper-card>
+          </ha-card>
 
           <ha-config-navigation hass="[[hass]]"></ha-config-navigation>
         </ha-config-section>
