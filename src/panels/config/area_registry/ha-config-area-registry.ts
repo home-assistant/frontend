@@ -8,7 +8,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-fab/paper-fab";
 
 import { HomeAssistant } from "../../../types";
@@ -19,6 +18,7 @@ import {
   deleteAreaRegistryEntry,
   createAreaRegistryEntry,
 } from "../../../data/area_registry";
+import "../../../components/ha-card";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
 import compare from "../../../common/string/compare";
@@ -72,7 +72,7 @@ class HaConfigAreaRegistry extends LitElement {
               )}
             </a>
           </span>
-          <paper-card>
+          <ha-card>
             ${this._items.map((entry) => {
               return html`
                 <paper-item @click=${this._openEditEntry} .entry=${entry}>
@@ -96,7 +96,7 @@ class HaConfigAreaRegistry extends LitElement {
                   </div>
                 `
               : html``}
-          </paper-card>
+          </ha-card>
         </ha-config-section>
       </hass-subpage>
 
@@ -178,10 +178,10 @@ All devices in this area will become unassigned.`)
       a {
         color: var(--primary-color);
       }
-      paper-card {
-        display: block;
+      ha-card {
         max-width: 600px;
         margin: 16px auto;
+        overflow: hidden;
       }
       .empty {
         text-align: center;

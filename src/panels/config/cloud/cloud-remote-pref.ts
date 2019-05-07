@@ -8,11 +8,12 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 import "@polymer/paper-item/paper-item-body";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
+
+import "../../../components/ha-card";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
@@ -48,16 +49,16 @@ export class CloudRemotePref extends LitElement {
 
     if (!remote_certificate) {
       return html`
-        <paper-card heading="Remote Control">
+        <ha-card header="Remote Control">
           <div class="preparing">
             Remote access is being prepared. We will notify you when it's ready.
           </div>
-        </paper-card>
+        </ha-card>
       `;
     }
 
     return html`
-      <paper-card heading="Remote Control">
+      <ha-card header="Remote Control">
         <paper-toggle-button
           .checked="${remote_connected}"
           @change="${this._toggleChanged}"
@@ -83,7 +84,7 @@ export class CloudRemotePref extends LitElement {
               `
             : ""}
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -111,19 +112,17 @@ export class CloudRemotePref extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-card {
-        display: block;
-      }
       .preparing {
         padding: 0 16px 16px;
       }
       a {
         color: var(--primary-color);
       }
-      paper-card > paper-toggle-button {
+      ha-card > paper-toggle-button {
+        margin: -4px 0;
         position: absolute;
         right: 8px;
-        top: 16px;
+        top: 32px;
       }
       .card-actions {
         display: flex;

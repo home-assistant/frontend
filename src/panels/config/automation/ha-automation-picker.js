@@ -1,6 +1,5 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
@@ -8,6 +7,7 @@ import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
@@ -30,6 +30,10 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       <style include="ha-style">
         :host {
           display: block;
+        }
+
+        ha-card {
+          overflow: hidden;
         }
 
         paper-item {
@@ -91,7 +95,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             </p>
           </div>
 
-          <paper-card
+          <ha-card
             heading="[[localize('ui.panel.config.automation.picker.pick_automation')]]"
           >
             <template is="dom-if" if="[[!automations.length]]">
@@ -110,7 +114,7 @@ class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
                 <ha-icon-next></ha-icon-next>
               </paper-item>
             </template>
-          </paper-card>
+          </ha-card>
         </ha-config-section>
 
         <paper-fab
