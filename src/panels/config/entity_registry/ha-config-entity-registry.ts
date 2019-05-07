@@ -8,7 +8,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-card/paper-card";
 
 import { HomeAssistant } from "../../../types";
 import {
@@ -20,6 +19,7 @@ import {
 } from "../../../data/entity_registry";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
+import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import compare from "../../../common/string/compare";
 import domainIcon from "../../../common/entity/domain_icon";
@@ -77,7 +77,7 @@ class HaConfigEntityRegistry extends LitElement {
               )}
             </a>
           </span>
-          <paper-card>
+          <ha-card>
             ${this._items.map((entry) => {
               const state = this.hass!.states[entry.entity_id];
               return html`
@@ -103,7 +103,7 @@ class HaConfigEntityRegistry extends LitElement {
                 </paper-icon-item>
               `;
             })}
-          </paper-card>
+          </ha-card>
         </ha-config-section>
       </hass-subpage>
     `;
@@ -162,9 +162,9 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
       a {
         color: var(--primary-color);
       }
-      paper-card {
-        display: block;
+      ha-card {
         direction: ltr;
+        overflow: hidden;
       }
       paper-icon-item {
         cursor: pointer;

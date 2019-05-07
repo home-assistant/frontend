@@ -2,13 +2,13 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button";
 import "@polymer/paper-fab/paper-fab";
-import "@polymer/paper-card/paper-card";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/entity/ha-state-icon";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
@@ -34,12 +34,12 @@ class HaConfigManagerDashboard extends LocalizeMixin(
   static get template() {
     return html`
       <style include="iron-flex ha-style">
+        ha-card {
+          overflow: hidden;
+        }
         mwc-button {
           top: 3px;
           margin-right: -0.57em;
-        }
-        paper-card:last-child {
-          margin-top: 12px;
         }
         .config-entry-row {
           display: flex;
@@ -84,7 +84,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
             <span slot="header"
               >[[localize('ui.panel.config.integrations.discovered')]]</span
             >
-            <paper-card>
+            <ha-card>
               <template is="dom-repeat" items="[[progress]]">
                 <div class="config-entry-row">
                   <paper-item-body>
@@ -95,7 +95,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                   >
                 </div>
               </template>
-            </paper-card>
+            </ha-card>
           </ha-config-section>
         </template>
 
@@ -103,7 +103,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
           <span slot="header"
             >[[localize('ui.panel.config.integrations.configured')]]</span
           >
-          <paper-card>
+          <ha-card>
             <template is="dom-if" if="[[!entries.length]]">
               <div class="config-entry-row">
                 <paper-item-body two-line>
@@ -140,7 +140,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                 </paper-item>
               </a>
             </template>
-          </paper-card>
+          </ha-card>
         </ha-config-section>
 
         <paper-fab
