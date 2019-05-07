@@ -95,7 +95,7 @@ gulp.task("copy-static", (done) => {
   done();
 });
 
-gulp.task("compress-static", () => compressStatic(paths.root));
+gulp.task("compress-static", () => compressStatic(paths.static));
 
 gulp.task("copy-static-demo", (done) => {
   // Copy app static files
