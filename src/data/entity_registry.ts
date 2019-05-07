@@ -1,5 +1,7 @@
+import { createCollection } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import computeStateName from "../common/entity/compute_state_name";
+import { debounce } from "../common/util/debounce";
 
 export interface EntityRegistryEntry {
   entity_id: string;
@@ -26,11 +28,6 @@ export const computeEntityRegistryName = (
   return state ? computeStateName(state) : null;
 };
 
-export const fetchEntityRegistry = (
-  hass: HomeAssistant
-): Promise<EntityRegistryEntry[]> =>
-  hass.callWS<EntityRegistryEntry[]>({ type: "config/entity_registry/list" });
-
 export const updateEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string,
@@ -50,3 +47,33 @@ export const removeEntityRegistryEntry = (
     type: "config/entity_registry/remove",
     entity_id: entityId,
   });
+
+const fetchEntityRegistry = (conn) =>
+  conn.sendMessagePromise({
+    type: "config/entity_registry/list",
+  });
+
+const subscribeEntityRegistryUpdates = (conn, store) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchEntityRegistry(conn).then((entities) =>
+          store.setState(entities, true)
+        ),
+      500,
+      true
+    ),
+    "entity_registry_updated"
+  );
+
+export const subscribeEntityRegistry = (
+  hass: HomeAssistant,
+  onChange: (entities: EntityRegistryEntry[]) => void
+) =>
+  createCollection<EntityRegistryEntry[]>(
+    "_er",
+    fetchEntityRegistry,
+    subscribeEntityRegistryUpdates,
+    hass.connection,
+    onChange
+  );

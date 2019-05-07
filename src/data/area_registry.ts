@@ -1,4 +1,7 @@
+import { createCollection } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
+import { compare } from "../common/string/compare";
+import { debounce } from "../common/util/debounce";
 
 export interface AreaRegistryEntry {
   area_id: string;
@@ -8,9 +11,6 @@ export interface AreaRegistryEntry {
 export interface AreaRegistryEntryMutableParams {
   name: string;
 }
-
-export const fetchAreaRegistry = (hass: HomeAssistant) =>
-  hass.callWS<AreaRegistryEntry[]>({ type: "config/area_registry/list" });
 
 export const createAreaRegistryEntry = (
   hass: HomeAssistant,
@@ -37,3 +37,33 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
     type: "config/area_registry/delete",
     area_id: areaId,
   });
+
+const fetchAreaRegistry = (conn) =>
+  conn
+    .sendMessagePromise({
+      type: "config/area_registry/list",
+    })
+    .then((areas) => areas.sort((ent1, ent2) => compare(ent1.name, ent2.name)));
+
+const subscribeAreaRegistryUpdates = (conn, store) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchAreaRegistry(conn).then((areas) => store.setState(areas, true)),
+      500,
+      true
+    ),
+    "area_registry_updated"
+  );
+
+export const subscribeAreaRegistry = (
+  hass: HomeAssistant,
+  onChange: (areas: AreaRegistryEntry[]) => void
+) =>
+  createCollection<AreaRegistryEntry[]>(
+    "_ar",
+    fetchAreaRegistry,
+    subscribeAreaRegistryUpdates,
+    hass.connection,
+    onChange
+  );

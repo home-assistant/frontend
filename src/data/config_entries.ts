@@ -1,4 +1,6 @@
 import { HomeAssistant } from "../types";
+import { createCollection } from "home-assistant-js-websocket";
+import { debounce } from "../common/util/debounce";
 
 export interface FieldSchema {
   name: string;
@@ -74,3 +76,33 @@ export const getConfigFlowsInProgress = (hass: HomeAssistant) =>
 
 export const getConfigFlowHandlers = (hass: HomeAssistant) =>
   hass.callApi<string[]>("GET", "config/config_entries/flow_handlers");
+
+const fetchConfigFlowInProgress = (conn) =>
+  conn.sendMessagePromise({
+    type: "config/entity_registry/list",
+  });
+
+const subscribeConfigFlowInProgressUpdates = (conn, store) =>
+  debounce(
+    conn.subscribeEvents(
+      () =>
+        fetchConfigFlowInProgress(conn).then((flows) =>
+          store.setState(flows, true)
+        ),
+      500,
+      true
+    ),
+    "config_entry_discovered"
+  );
+
+export const subscribeConfigFlowInProgress = (
+  hass: HomeAssistant,
+  onChange: (flows: ConfigFlowProgress[]) => void
+) =>
+  createCollection<ConfigFlowProgress[]>(
+    "_configFlowProgress",
+    fetchConfigFlowInProgress,
+    subscribeConfigFlowInProgressUpdates,
+    hass.connection,
+    onChange
+  );
