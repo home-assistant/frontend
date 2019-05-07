@@ -1,6 +1,17 @@
 import { HomeAssistant } from "../types";
 import { createCollection } from "home-assistant-js-websocket";
 import { debounce } from "../common/util/debounce";
+import { LocalizeFunc } from "../common/translations/localize";
+
+export interface ConfigEntry {
+  entry_id: string;
+  domain: string;
+  title: string;
+  source: string;
+  state: string;
+  connection_class: string;
+  supports_options: boolean;
+}
 
 export interface FieldSchema {
   name: string;
@@ -11,7 +22,10 @@ export interface FieldSchema {
 export interface ConfigFlowProgress {
   flow_id: string;
   handler: string;
-  context: { [key: string]: any };
+  context: {
+    title_placeholders: { [key: string]: string };
+    [key: string]: any;
+  };
 }
 
 export interface ConfigFlowStepForm {
@@ -106,3 +120,23 @@ export const subscribeConfigFlowInProgress = (
     hass.connection,
     onChange
   );
+
+export const getConfigEntries = (hass: HomeAssistant) =>
+  hass.callApi<ConfigEntry[]>("GET", "config/config_entries/entry");
+
+export const localizeConfigFlowTitle = (
+  localize: LocalizeFunc,
+  flow: ConfigFlowProgress
+) => {
+  const placeholders = flow.context.title_placeholders || {};
+  const placeholderKeys = Object.keys(placeholders);
+  if (placeholderKeys.length === 0) {
+    return localize(`component.${flow.handler}.config.title`);
+  }
+  const args: string[] = [];
+  placeholderKeys.forEach((key) => {
+    args.push(key);
+    args.push(placeholders[key]);
+  });
+  return localize(`component.${flow.handler}.config.flow_title`, ...args);
+};

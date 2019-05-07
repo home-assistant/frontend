@@ -19,6 +19,7 @@ import { fireEvent } from "../common/dom/fire_event";
 @customElement("onboarding-create-user")
 class OnboardingCreateUser extends LitElement {
   @property() public localize!: LocalizeFunc;
+  @property() public language!: string;
 
   @property() private _name = "";
   @property() private _username = "";
@@ -173,6 +174,7 @@ class OnboardingCreateUser extends LitElement {
         name: this._name,
         username: this._username,
         password: this._password,
+        language: this.language,
       });
 
       fireEvent(this, "onboarding-step", {

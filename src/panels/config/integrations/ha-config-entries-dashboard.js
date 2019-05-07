@@ -23,6 +23,7 @@ import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { localizeConfigFlowTitle } from "../../../data/config_entries";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -207,21 +208,8 @@ class HaConfigManagerDashboard extends LocalizeMixin(
     return localize(`component.${integration}.config.title`);
   }
 
-  _computeActiveFlowTitle(localize, integration) {
-    const placeholders = integration.context.title_placeholders || {};
-    const placeholderKeys = Object.keys(placeholders);
-    if (placeholderKeys.length === 0) {
-      return localize(`component.${integration.handler}.config.title`);
-    }
-    const args = [];
-    placeholderKeys.forEach((key) => {
-      args.push(key);
-      args.push(placeholders[key]);
-    });
-    return localize(
-      `component.${integration.handler}.config.flow_title`,
-      ...args
-    );
+  _computeActiveFlowTitle(localize, flow) {
+    return localizeConfigFlowTitle(localize, flow);
   }
 
   _computeConfigEntryEntities(hass, configEntry, entities) {

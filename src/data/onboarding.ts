@@ -2,11 +2,12 @@ import { handleFetchPromise } from "../util/hass-call-api";
 
 export interface OnboardingUserStepResponse {
   auth_code: string;
+  auth_code_2: string;
 }
 
 export interface OnboardingResponses {
   user: OnboardingUserStepResponse;
-  bla: number;
+  integration: undefined;
 }
 
 export type ValidOnboardingStep = keyof OnboardingResponses;
@@ -24,6 +25,7 @@ export const onboardUserStep = (params: {
   name: string;
   username: string;
   password: string;
+  language: string;
 }) =>
   handleFetchPromise<OnboardingUserStepResponse>(
     fetch("/api/onboarding/users", {

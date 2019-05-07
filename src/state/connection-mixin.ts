@@ -107,6 +107,7 @@ export const connectionMixin = (
           return resp;
         },
         ...getState(),
+        ...this._pendingHass,
       };
 
       this.hassConnected();

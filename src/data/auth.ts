@@ -14,6 +14,8 @@ export interface SignedPath {
   path: string;
 }
 
+export const hassUrl = `${location.protocol}//${location.host}`;
+
 export const getSignedPath = (
   hass: HomeAssistant,
   path: string
