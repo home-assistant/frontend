@@ -8,7 +8,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "./hui-notification-item";
 import "../../../../components/ha-paper-icon-button-next";
 
-import EventsMixin from "../../../../mixins/events-mixin";
+import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 

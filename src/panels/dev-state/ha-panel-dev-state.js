@@ -11,7 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

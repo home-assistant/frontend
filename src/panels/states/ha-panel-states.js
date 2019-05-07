@@ -22,7 +22,7 @@ import computeStateName from "../../common/entity/compute_state_name";
 import computeStateDomain from "../../common/entity/compute_state_domain";
 import computeLocationName from "../../common/config/location_name";
 import NavigateMixin from "../../mixins/navigate-mixin";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const ALWAYS_SHOW_DOMAIN = ["persistent_notification", "configurator"];

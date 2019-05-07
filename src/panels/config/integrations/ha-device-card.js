@@ -9,7 +9,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/ha-card";
 import "../../../layouts/hass-subpage";
 
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
