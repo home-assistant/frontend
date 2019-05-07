@@ -13,7 +13,7 @@ import EventsMixin from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
-import compare from "../../../common/string/compare";
+import { compare } from "../../../common/string/compare";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
 
 function computeEntityName(hass, entity) {

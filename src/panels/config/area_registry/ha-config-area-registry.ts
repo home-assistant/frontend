@@ -21,7 +21,7 @@ import {
 import "../../../components/ha-card";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
-import compare from "../../../common/string/compare";
+import { compare } from "../../../common/string/compare";
 import "../ha-config-section";
 import {
   showAreaRegistryDetailDialog,
