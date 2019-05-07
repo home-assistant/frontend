@@ -380,7 +380,7 @@
                     },
                     "editor": {
                         "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
-                        "default_name": "Nueva automatizacón",
+                        "default_name": "Nueva automatización",
                         "save": "Guardar",
                         "unsaved_confirm": "Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?",
                         "alias": "Nombre",
