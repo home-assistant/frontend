@@ -39,15 +39,12 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         .content {
           padding-bottom: 20px;
         }
-        paper-card {
-          display: block;
-        }
         .triggers,
         .script {
           margin-top: -16px;
         }
-        .triggers paper-card,
-        .script paper-card {
+        .triggers ha-card,
+        .script ha-card {
           margin-top: 16px;
         }
         .add-card mwc-button {
