@@ -61,35 +61,39 @@ class OnboardingIntegrations extends LitElement {
       return html``;
     }
     // Render discovered and existing entries together sorted by localized title.
-    const entries = this._entries.map((entry) => {
-      const title = this.hass.localize(
-        `component.${entry.domain}.config.title`
-      );
-      return [
-        title,
-        html`
-          <integration-badge
-            .title=${title}
-            icon="hass:check"
-          ></integration-badge>
-        `,
-      ];
-    });
-    const discovered = this._discovered.map((flow) => {
-      const title = localizeConfigFlowTitle(this.hass.localize, flow);
-      return [
-        title,
-        html`
-          <button .flowId=${flow.flow_id} @click=${this._continueFlow}>
+    const entries: Array<[string, TemplateResult]> = this._entries.map(
+      (entry) => {
+        const title = this.hass.localize(
+          `component.${entry.domain}.config.title`
+        );
+        return [
+          title,
+          html`
             <integration-badge
-              clickable
               .title=${title}
-              icon="hass:plus"
+              icon="hass:check"
             ></integration-badge>
-          </button>
-        `,
-      ];
-    });
+          `,
+        ];
+      }
+    );
+    const discovered: Array<[string, TemplateResult]> = this._discovered.map(
+      (flow) => {
+        const title = localizeConfigFlowTitle(this.hass.localize, flow);
+        return [
+          title,
+          html`
+            <button .flowId=${flow.flow_id} @click=${this._continueFlow}>
+              <integration-badge
+                clickable
+                .title=${title}
+                icon="hass:plus"
+              ></integration-badge>
+            </button>
+          `,
+        ];
+      }
+    );
     const content = [...entries, ...discovered]
       .sort((a, b) => compare(a[0], b[0]))
       .map((item) => item[1]);
