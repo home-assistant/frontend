@@ -21,7 +21,7 @@ import {
   ConfigFlowProgress,
   localizeConfigFlowTitle,
 } from "../data/config_entries";
-import compare from "../common/string/compare";
+import { compare } from "../common/string/compare";
 import "./integration-badge";
 import { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
