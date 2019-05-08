@@ -5,7 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/resources/ha-style";
-import EventsMixin from "../../../src/mixins/events-mixin";
+import { EventsMixin } from "../../../src/mixins/events-mixin";
 
 class HassioAddonNetwork extends EventsMixin(PolymerElement) {
   static get template() {

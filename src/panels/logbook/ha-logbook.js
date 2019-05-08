@@ -5,7 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import formatTime from "../../common/datetime/format_time";
 import formatDate from "../../common/datetime/format_date";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import domainIcon from "../../common/entity/domain_icon";
 import { computeRTL } from "../../common/util/compute_rtl";
 

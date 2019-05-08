@@ -13,7 +13,7 @@ import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
 
 import "../ha-config-section";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import "../../../components/ha-icon-next";
 /*

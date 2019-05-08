@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 
 let loaded = null;
 

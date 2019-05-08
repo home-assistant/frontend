@@ -10,7 +10,7 @@ import "../../../components/ha-card";
 
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 import { computeRTL } from "../../../common/util/compute_rtl";
 
