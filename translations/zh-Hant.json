@@ -933,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "登出",
-            "developer_tools": "開發工具"
+            "developer_tools": "開發工具",
+            "external_app_configuration": "App 設定"
         },
         "common": {
             "loading": "讀取中",

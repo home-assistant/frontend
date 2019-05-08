@@ -594,7 +594,7 @@
                     "none": "Még semmi sincs beállítva",
                     "config_entry": {
                         "no_devices": "Ez az integráció nem rendelkezik eszközökkel.",
-                        "no_device": "Entitások eszközök nélkül",
+                        "no_device": "Eszköz nélküli entitások",
                         "delete_confirm": "Biztosan törölni szeretnéd ezt az integrációt?",
                         "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
                         "manuf": "{manufacturer} által",
