@@ -8,3 +8,6 @@ export const compare = (a: string, b: string) => {
 
   return 0;
 };
+
+export const caseInsensitiveCompare = (a: string, b: string) =>
+  compare(a.toLowerCase(), b.toLowerCase());
