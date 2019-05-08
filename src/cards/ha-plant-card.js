@@ -5,7 +5,7 @@ import "../components/ha-card";
 import "../components/ha-icon";
 
 import computeStateName from "../common/entity/compute_state_name";
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 
 class HaPlantCard extends EventsMixin(PolymerElement) {
   static get template() {

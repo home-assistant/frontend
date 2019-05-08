@@ -6,7 +6,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/ha-card";
 import "../../../layouts/hass-subpage";
 
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixIn from "../../../mixins/localize-mixin";
 import "../../../components/entity/state-badge";
 import { computeEntityRegistryName } from "../../../data/entity_registry";

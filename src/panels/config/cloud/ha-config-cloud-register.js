@@ -7,7 +7,7 @@ import "../../../components/buttons/ha-progress-button";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
 import "../ha-config-section";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

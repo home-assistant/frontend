@@ -16,7 +16,7 @@ import "../../../components/ha-icon-next";
 
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../ha-config-section";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
 import {

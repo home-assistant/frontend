@@ -29,7 +29,7 @@ import "./zwave-node-protection";
 import sortByName from "../../../common/entity/states_sort_by_name";
 import computeStateName from "../../../common/entity/compute_state_name";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
