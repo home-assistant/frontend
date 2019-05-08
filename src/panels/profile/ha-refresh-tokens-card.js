@@ -3,7 +3,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import formatDateTime from "../../common/datetime/format_date_time";
 

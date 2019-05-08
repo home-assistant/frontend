@@ -5,7 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
 
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 
 class HaComboBox extends EventsMixin(PolymerElement) {
   static get template() {

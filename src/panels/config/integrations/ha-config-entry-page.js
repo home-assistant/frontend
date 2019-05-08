@@ -8,7 +8,7 @@ import { compare } from "../../../common/string/compare";
 
 import "./ha-device-card";
 import "./ha-ce-entities-card";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 
