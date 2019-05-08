@@ -31,7 +31,7 @@ import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
 import { loadModule, loadCSS, loadJS } from "../../common/dom/load_resource";
 import { subscribeNotifications } from "../../data/ws-notifications";
-import debounce from "../../common/util/debounce";
+import { debounce } from "../../common/util/debounce";
 import { HomeAssistant } from "../../types";
 import { LovelaceConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
