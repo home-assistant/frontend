@@ -22,10 +22,9 @@ import {
 } from "lit-element";
 
 import { fireEvent } from "../../../common/dom/fire_event";
-import { compare } from "../../../common/string/compare";
 import {
   AreaRegistryEntry,
-  fetchAreaRegistry,
+  subscribeAreaRegistry,
 } from "../../../data/area_registry";
 import {
   DeviceRegistryEntryMutableParams,
@@ -36,6 +35,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
 import { navigate } from "../../../common/navigate";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 declare global {
   // for fire event
@@ -48,7 +48,7 @@ declare global {
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public narrow?: boolean;
   @property() public device?: ZHADevice;
   @property() public showHelp: boolean = false;
@@ -58,8 +58,16 @@ class ZHADeviceCard extends LitElement {
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
   @property() private _userGivenName?: string;
+  private _unsubAreas?: UnsubscribeFunc;
 
-  public firstUpdated(changedProperties: PropertyValues): void {
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubAreas) {
+      this._unsubAreas();
+    }
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
@@ -67,9 +75,6 @@ class ZHADeviceCard extends LitElement {
     this._serviceData = {
       ieee_address: this.device!.ieee,
     };
-    fetchAreaRegistry(this.hass!).then((areas) => {
-      this._areas = areas.sort((a, b) => compare(a.name, b.name));
-    });
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -83,6 +88,11 @@ class ZHADeviceCard extends LitElement {
           ) + 1;
       }
       this._userGivenName = this.device!.user_given_name;
+    }
+    if (!this._unsubAreas) {
+      this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+        this._areas = areas;
+      });
     }
     super.update(changedProperties);
   }
