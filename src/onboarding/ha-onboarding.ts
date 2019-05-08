@@ -1,146 +1,95 @@
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-button";
 import {
-  LitElement,
-  CSSResult,
-  css,
   html,
   PropertyValues,
-  property,
   customElement,
   TemplateResult,
+  property,
 } from "lit-element";
-import { genClientId } from "home-assistant-js-websocket";
+import {
+  getAuth,
+  createConnection,
+  genClientId,
+  Auth,
+} from "home-assistant-js-websocket";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import { OnboardingStep, onboardUserStep } from "../data/onboarding";
-import { PolymerChangedEvent } from "../polymer-types";
+import {
+  OnboardingStep,
+  ValidOnboardingStep,
+  OnboardingResponses,
+  fetchOnboardingOverview,
+} from "../data/onboarding";
 import { registerServiceWorker } from "../util/register-service-worker";
+import { HASSDomEvent } from "../common/dom/fire_event";
+import "./onboarding-create-user";
+import "./onboarding-loading";
+import { hassUrl } from "../data/auth";
+import { HassElement } from "../state/hass-element";
+
+interface OnboardingEvent<T extends ValidOnboardingStep> {
+  type: T;
+  result: OnboardingResponses[T];
+}
+
+declare global {
+  interface HASSDomEvents {
+    "onboarding-step": OnboardingEvent<ValidOnboardingStep>;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    "onboarding-step": HASSDomEvent<OnboardingEvent<ValidOnboardingStep>>;
+  }
+}
 
 @customElement("ha-onboarding")
-class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
+class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   public translationFragment = "page-onboarding";
 
-  @property() private _name = "";
-  @property() private _username = "";
-  @property() private _password = "";
-  @property() private _passwordConfirm = "";
   @property() private _loading = false;
-  @property() private _errorMsg?: string = undefined;
+  @property() private _steps?: OnboardingStep[];
 
   protected render(): TemplateResult | void {
-    return html`
-    <p>
-      ${this.localize("ui.panel.page-onboarding.intro")}
-    </p>
+    const step = this._curStep()!;
 
-    <p>
-      ${this.localize("ui.panel.page-onboarding.user.intro")}
-    </p>
-
-    ${
-      this._errorMsg
-        ? html`
-            <p class="error">
-              ${this.localize(
-                `ui.panel.page-onboarding.user.error.${this._errorMsg}`
-              ) || this._errorMsg}
-            </p>
-          `
-        : ""
+    if (this._loading || !step) {
+      return html`
+        <onboarding-loading></onboarding-loading>
+      `;
+    } else if (step.step === "user") {
+      return html`
+        <onboarding-create-user
+          .localize=${this.localize}
+          .language=${this.language}
+        ></onboarding-create-user>
+      `;
+    } else if (step.step === "integration") {
+      return html`
+        <onboarding-integrations
+          .hass=${this.hass}
+          .onboardingLocalize=${this.localize}
+        ></onboarding-integrations>
+      `;
     }
-
-
-    <form>
-      <paper-input
-        autofocus
-        name="name"
-        label="${this.localize("ui.panel.page-onboarding.user.data.name")}"
-        .value=${this._name}
-        @value-changed=${this._handleValueChanged}
-        required
-        auto-validate
-        autocapitalize='on'
-        .errorMessage="${this.localize(
-          "ui.panel.page-onboarding.user.required_field"
-        )}"
-        @blur=${this._maybePopulateUsername}
-      ></paper-input>
-
-      <paper-input
-        name="username"
-        label="${this.localize("ui.panel.page-onboarding.user.data.username")}"
-        value=${this._username}
-        @value-changed=${this._handleValueChanged}
-        required
-        auto-validate
-        autocapitalize='none'
-        .errorMessage="${this.localize(
-          "ui.panel.page-onboarding.user.required_field"
-        )}"
-      ></paper-input>
-
-      <paper-input
-        name="password"
-        label="${this.localize("ui.panel.page-onboarding.user.data.password")}"
-        value=${this._password}
-        @value-changed=${this._handleValueChanged}
-        required
-        type='password'
-        auto-validate
-        .errorMessage="${this.localize(
-          "ui.panel.page-onboarding.user.required_field"
-        )}"
-      ></paper-input>
-
-      <paper-input
-        name="passwordConfirm"
-        label="${this.localize(
-          "ui.panel.page-onboarding.user.data.password_confirm"
-        )}"
-        value=${this._passwordConfirm}
-        @value-changed=${this._handleValueChanged}
-        required
-        type='password'
-        .invalid=${this._password !== "" &&
-          this._passwordConfirm !== "" &&
-          this._passwordConfirm !== this._password}
-        .errorMessage="${this.localize(
-          "ui.panel.page-onboarding.user.error.password_not_match"
-        )}"
-      ></paper-input>
-
-      <p class="action">
-        <mwc-button
-          raised
-          @click=${this._submitForm}
-          .disabled=${this._loading}
-        >
-          ${this.localize("ui.panel.page-onboarding.user.create_account")}
-        </mwc-button>
-      </p>
-    </div>
-  </form>
-`;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.addEventListener("keypress", (ev) => {
-      if (ev.keyCode === 13) {
-        this._submitForm();
-      }
-    });
     this._fetchOnboardingSteps();
+    import("./onboarding-integrations");
     registerServiceWorker(false);
+    this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
+  }
+
+  private _curStep() {
+    return this._steps ? this._steps.find((stp) => !stp.done) : undefined;
   }
 
   private async _fetchOnboardingSteps() {
     try {
-      const response = await window.stepsPromise;
+      const response = await (window.stepsPromise || fetchOnboardingOverview());
 
       if (response.status === 404) {
         // We don't load the component when onboarding is done
-        document.location.href = "/";
+        document.location.assign("/");
         return;
       }
 
@@ -148,83 +97,73 @@ class HaOnboarding extends litLocalizeLiteMixin(LitElement) {
 
       if (steps.every((step) => step.done)) {
         // Onboarding is done!
-        document.location.href = "/";
+        document.location.assign("/");
+        return;
       }
+
+      if (steps[0].done) {
+        // First step is already done, so we need to get auth somewhere else.
+        const auth = await getAuth({
+          hassUrl,
+        });
+        await this._connectHass(auth);
+      }
+
+      this._steps = steps;
     } catch (err) {
       alert("Something went wrong loading loading onboarding, try refreshing");
     }
   }
 
-  private _handleValueChanged(ev: PolymerChangedEvent<string>): void {
-    const name = (ev.target as any).name;
-    this[`_${name}`] = ev.detail.value;
-  }
+  private async _handleStepDone(
+    ev: HASSDomEvent<OnboardingEvent<ValidOnboardingStep>>
+  ) {
+    const stepResult = ev.detail;
+    this._steps = this._steps!.map((step) =>
+      step.step === stepResult.type ? { ...step, done: true } : step
+    );
 
-  private _maybePopulateUsername(): void {
-    if (this._username) {
-      return;
-    }
+    if (stepResult.type === "user") {
+      const result = stepResult.result as OnboardingResponses["user"];
+      this._loading = true;
+      try {
+        const auth = await getAuth({
+          hassUrl,
+          authCode: result.auth_code,
+        });
+        await this._connectHass(auth);
+      } catch (err) {
+        alert("Ah snap, something went wrong!");
+        location.reload();
+      } finally {
+        this._loading = false;
+      }
+    } else if (stepResult.type === "integration") {
+      const result = stepResult.result as OnboardingResponses["integration"];
+      this._loading = true;
 
-    const parts = this._name.split(" ");
-
-    if (parts.length) {
-      this._username = parts[0].toLowerCase();
-    }
-  }
-
-  private async _submitForm(): Promise<void> {
-    if (!this._name || !this._username || !this._password) {
-      this._errorMsg = "required_fields";
-      return;
-    }
-
-    if (this._password !== this._passwordConfirm) {
-      this._errorMsg = "password_not_match";
-      return;
-    }
-
-    this._loading = true;
-    this._errorMsg = "";
-
-    try {
-      const clientId = genClientId();
-
-      const { auth_code } = await onboardUserStep({
-        client_id: clientId,
-        name: this._name,
-        username: this._username,
-        password: this._password,
-      });
+      // Revoke current auth token.
+      await this.hass!.auth.revoke();
 
       const state = btoa(
         JSON.stringify({
           hassUrl: `${location.protocol}//${location.host}`,
-          clientId,
+          clientId: genClientId(),
         })
       );
-
-      document.location.href = `/?auth_callback=1&code=${encodeURIComponent(
-        auth_code
-      )}&state=${state}`;
-    } catch (err) {
-      // tslint:disable-next-line
-      console.error(err);
-      this._loading = false;
-      this._errorMsg = err.message;
+      document.location.assign(
+        `/?auth_callback=1&code=${encodeURIComponent(
+          result.auth_code
+        )}&state=${state}`
+      );
     }
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .error {
-        color: red;
-      }
-
-      .action {
-        margin: 32px 0;
-        text-align: center;
-      }
-    `;
+  private async _connectHass(auth: Auth) {
+    const conn = await createConnection({ auth });
+    this.initializeHass(auth, conn);
+    // Load config strings for integrations
+    (this as any)._loadFragmentTranslations(this.hass!.language, "config");
   }
 }
 

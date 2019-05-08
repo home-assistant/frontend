@@ -226,6 +226,9 @@ class HaAutomationEditor extends LitElement {
     return [
       haStyle,
       css`
+        ha-card {
+          overflow: hidden;
+        }
         .errors {
           padding: 20px;
           font-weight: bold;
@@ -234,15 +237,12 @@ class HaAutomationEditor extends LitElement {
         .content {
           padding-bottom: 20px;
         }
-        paper-card {
-          display: block;
-        }
         .triggers,
         .script {
           margin-top: -16px;
         }
-        .triggers paper-card,
-        .script paper-card {
+        .triggers ha-card,
+        .script ha-card {
           margin-top: 16px;
         }
         .add-card mwc-button {

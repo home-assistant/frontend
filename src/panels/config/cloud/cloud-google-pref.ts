@@ -7,11 +7,12 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
 import "../../../components/buttons/ha-call-api-button";
+
+import "../../../components/ha-card";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
@@ -41,7 +42,7 @@ export class CloudGooglePref extends LitElement {
     } = this.cloudStatus.prefs;
 
     return html`
-      <paper-card heading="Google Assistant">
+      <ha-card header="Google Assistant">
         <paper-toggle-button
           id="google_enabled"
           .checked="${google_enabled}"
@@ -105,7 +106,7 @@ export class CloudGooglePref extends LitElement {
             >Sync devices</ha-call-api-button
           >
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -137,10 +138,11 @@ export class CloudGooglePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      paper-card > paper-toggle-button {
+      ha-card > paper-toggle-button {
+        margin: -4px 0;
         position: absolute;
         right: 8px;
-        top: 16px;
+        top: 32px;
       }
       ha-call-api-button {
         color: var(--primary-color);

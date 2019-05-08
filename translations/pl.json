@@ -1,6 +1,6 @@
 {
     "panel": {
-        "config": "Ustawienia",
+        "config": "Konfiguracja",
         "states": "Przegląd",
         "map": "Mapa",
         "logbook": "Dziennik",
@@ -933,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "Wyloguj",
-            "developer_tools": "Narzędzia deweloperskie"
+            "developer_tools": "Narzędzia deweloperskie",
+            "external_app_configuration": "Konfiguracja aplikacji"
         },
         "common": {
             "loading": "Ładowanie",

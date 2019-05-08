@@ -1,6 +1,5 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
@@ -11,6 +10,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
 import "../../../layouts/ha-app-layout";
+import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 
@@ -30,6 +30,10 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
       <style include="ha-style">
         :host {
           display: block;
+        }
+
+        ha-card {
+          overflow: hidden;
         }
 
         paper-item {
@@ -88,7 +92,7 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             to make sure that you have configured Home Assistant correctly.
           </div>
 
-          <paper-card heading="Pick script to edit">
+          <ha-card header="Pick script to edit">
             <template is="dom-if" if="[[!scripts.length]]">
               <div class="card-content">
                 <p>We couldn't find any editable scripts.</p>
@@ -103,7 +107,7 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
                 <ha-icon-next></ha-icon-next>
               </paper-item>
             </template>
-          </paper-card>
+          </ha-card>
         </ha-config-section>
 
         <paper-fab

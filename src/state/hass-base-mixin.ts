@@ -3,12 +3,15 @@ import {
   // @ts-ignore
   property,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
+import { Auth, Connection } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../types";
 
 /* tslint:disable */
 
 export class HassBaseEl {
   protected hass?: HomeAssistant;
+  protected _pendingHass: Partial<HomeAssistant> = {};
+  protected initializeHass(_auth: Auth, _conn: Connection) {}
   protected hassConnected() {}
   protected hassReconnected() {}
   protected hassDisconnected() {}
@@ -21,6 +24,7 @@ export class HassBaseEl {
 export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
   // @ts-ignore
   class extends superClass {
+    protected _pendingHass: Partial<HomeAssistant> = {};
     private __provideHass: HTMLElement[] = [];
     // @ts-ignore
     @property() protected hass: HomeAssistant;
@@ -53,7 +57,11 @@ export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
       el.hass = this.hass;
     }
 
-    protected async _updateHass(obj) {
+    protected async _updateHass(obj: Partial<HomeAssistant>) {
+      if (!this.hass) {
+        this._pendingHass = { ...this._pendingHass, ...obj };
+        return;
+      }
       this.hass = { ...this.hass, ...obj };
     }
   };

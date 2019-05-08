@@ -872,7 +872,7 @@
                     "picture-elements": {
                         "hold": "누르고 있기:",
                         "tap": "탭:",
-                        "navigate_to": "{location} 으로 이동",
+                        "navigate_to": "{location} 로(으로) 이동",
                         "toggle": "{name} 토글",
                         "call_service": "{name} 서비스 호출",
                         "more_info": "추가 정보 표시: {name}"
@@ -933,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "로그아웃",
-            "developer_tools": "개발자도구"
+            "developer_tools": "개발자도구",
+            "external_app_configuration": "앱 구성"
         },
         "common": {
             "loading": "읽는중",

@@ -31,7 +31,9 @@ export class HaDateInput extends LitElement {
       paper-input {
         width: 30px;
         text-align: center;
+        --paper-input-container-shared-input-style_-_-webkit-appearance: textfield;
         --paper-input-container-input_-_-moz-appearance: textfield;
+        --paper-input-container-shared-input-style_-_appearance: textfield;
         --paper-input-container-input-webkit-spinner_-_-webkit-appearance: none;
         --paper-input-container-input-webkit-spinner_-_margin: 0;
         --paper-input-container-input-webkit-spinner_-_display: none;

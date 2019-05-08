@@ -1,6 +1,7 @@
 const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
+const paths = require("../paths");
 
 const ICON_PACKAGE_PATH = path.resolve(
   __dirname,
@@ -117,6 +118,15 @@ gulp.task("gen-icons-hass", (done) => {
   done();
 });
 gulp.task("gen-icons", gulp.series("gen-icons-hass", "gen-icons-mdi"));
+
+gulp.task("gen-icons-demo", (done) => {
+  const iconNames = findIcons(path.resolve(paths.demo_dir, "./src"), "hademo");
+  fs.writeFileSync(
+    path.resolve(paths.demo_dir, "hademo-icons.html"),
+    generateIconset("hademo", iconNames)
+  );
+  done();
+});
 
 module.exports = {
   findIcons,

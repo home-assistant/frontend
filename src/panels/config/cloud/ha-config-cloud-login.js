@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item-body";
@@ -8,12 +7,13 @@ import "@polymer/paper-ripple/paper-ripple";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/buttons/ha-progress-button";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
 
 import "../ha-config-section";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import "../../../components/ha-icon-next";
 /*
@@ -34,14 +34,14 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
         [slot="introduction"] a {
           color: var(--primary-color);
         }
-        paper-card {
-          display: block;
-        }
         paper-item {
           cursor: pointer;
         }
-        paper-card:last-child {
-          margin-top: 24px;
+        ha-card {
+          overflow: hidden;
+        }
+        ha-card .card-header {
+          margin-bottom: -8px;
         }
         h1 {
           @apply --paper-font-headline;
@@ -97,7 +97,7 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
               </p>
             </div>
 
-            <paper-card hidden$="[[!flashMessage]]">
+            <ha-card hidden$="[[!flashMessage]]">
               <div class="card-content flash-msg">
                 [[flashMessage]]
                 <paper-icon-button icon="hass:close" on-click="_dismissFlash"
@@ -105,11 +105,10 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
                 >
                 <paper-ripple id="flashRipple" noink=""></paper-ripple>
               </div>
-            </paper-card>
+            </ha-card>
 
-            <paper-card>
+            <ha-card header="Sign in">
               <div class="card-content">
-                <h1>Sign In</h1>
                 <div class="error" hidden$="[[!_error]]">[[_error]]</div>
                 <paper-input
                   label="Email"
@@ -142,9 +141,9 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
                   forgot password?
                 </button>
               </div>
-            </paper-card>
+            </ha-card>
 
-            <paper-card>
+            <ha-card>
               <paper-item on-click="_handleRegister">
                 <paper-item-body two-line="">
                   Start your free 1 month trial
@@ -152,7 +151,7 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
                 </paper-item-body>
                 <ha-icon-next></ha-icon-next>
               </paper-item>
-            </paper-card>
+            </ha-card>
           </ha-config-section>
         </div>
       </hass-subpage>

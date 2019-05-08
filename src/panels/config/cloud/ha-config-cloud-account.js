@@ -1,10 +1,10 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/buttons/ha-call-api-button";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
@@ -13,7 +13,7 @@ import "../ha-config-section";
 import "./cloud-webhooks";
 
 import formatDateTime from "../../../common/datetime/format_date_time";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchCloudSubscriptionInfo } from "../../../data/cloud";
@@ -40,9 +40,6 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .content {
           padding-bottom: 24px;
           direction: ltr;
-        }
-        paper-card {
-          display: block;
         }
         .account-row {
           display: flex;
@@ -82,7 +79,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
               </p>
             </div>
 
-            <paper-card heading="Nabu Casa Account">
+            <ha-card header="Nabu Casa Account">
               <div class="account-row">
                 <paper-item-body two-line="">
                   [[cloudStatus.email]]
@@ -105,7 +102,7 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   >Sign out</mwc-button
                 >
               </div>
-            </paper-card>
+            </ha-card>
           </ha-config-section>
 
           <ha-config-section is-wide="[[isWide]]">

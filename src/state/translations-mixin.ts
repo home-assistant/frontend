@@ -1,17 +1,17 @@
-import { translationMetadata } from "../../resources/translations-metadata";
+import { translationMetadata } from "../resources/translations-metadata";
 import {
   getTranslation,
   getLocalLanguage,
   getUserLanguage,
-} from "../../util/hass-translation";
+} from "../util/hass-translation";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { computeLocalize } from "../../common/translations/localize";
-import { computeRTL } from "../../common/util/compute_rtl";
-import { HomeAssistant } from "../../types";
-import { saveFrontendUserData } from "../../data/frontend";
-import { storeState } from "../../util/ha-pref-storage";
-import { getHassTranslations } from "../../data/translation";
+import { computeLocalize } from "../common/translations/localize";
+import { computeRTL } from "../common/util/compute_rtl";
+import { HomeAssistant } from "../types";
+import { saveFrontendUserData } from "../data/frontend";
+import { storeState } from "../util/ha-pref-storage";
+import { getHassTranslations } from "../data/translation";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -115,7 +115,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
         },
       };
       const changes: Partial<HomeAssistant> = { resources };
-      if (language === this.hass!.language) {
+      if (this.hass && language === this.hass.language) {
         changes.localize = computeLocalize(this, language, resources);
       }
       this._updateHass(changes);

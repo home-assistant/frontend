@@ -1,4 +1,4 @@
-import { HomeAssistantAppEl } from "../../src/layouts/app/home-assistant";
+import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import {
   provideHass,
   MockHomeAssistant,
@@ -18,7 +18,7 @@ import { HomeAssistant } from "../../src/types";
 import { mockFrontend } from "./stubs/frontend";
 
 class HaDemo extends HomeAssistantAppEl {
-  protected async _handleConnProm() {
+  protected async _initialize() {
     const initial: Partial<MockHomeAssistant> = {
       panelUrl: (this as any).panelUrl,
       // Override updateHass so that the correct hass lifecycle methods are called
@@ -26,7 +26,7 @@ class HaDemo extends HomeAssistantAppEl {
         this._updateHass(hassUpdate),
     };
 
-    const hass = provideHass(this, initial);
+    const hass = (this.hass = provideHass(this, initial));
     mockLovelace(hass);
     mockAuth(hass);
     mockTranslations(hass);

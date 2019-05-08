@@ -1,12 +1,12 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../layouts/hass-subpage";
 
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixIn from "../../../mixins/localize-mixin";
 import "../../../components/entity/state-badge";
 import { computeEntityRegistryName } from "../../../data/entity_registry";
@@ -19,7 +19,7 @@ class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
-        paper-card {
+        ha-card {
           flex: 1 0 100%;
           padding-bottom: 8px;
         }
@@ -29,7 +29,7 @@ class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
           padding-bottom: 4px;
         }
       </style>
-      <paper-card heading="[[heading]]">
+      <ha-card header="[[heading]]">
         <template is="dom-repeat" items="[[entities]]" as="entity">
           <paper-icon-item on-click="_openMoreInfo">
             <state-badge
@@ -42,7 +42,7 @@ class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
             </paper-item-body>
           </paper-icon-item>
         </template>
-      </paper-card>
+      </ha-card>
     `;
   }
 

@@ -22,7 +22,15 @@
             "unknown": "Óþekkt",
             "unavailable": "Ekki tiltækt"
         },
+        "automation": {
+            "off": "Óvirk",
+            "on": "Virk"
+        },
         "binary_sensor": {
+            "default": {
+                "off": "Slökkt",
+                "on": "Kveikt"
+            },
             "moisture": {
                 "off": "Þurrt",
                 "on": "Blautt"
@@ -84,6 +92,10 @@
                 "on": "Aflæst"
             }
         },
+        "calendar": {
+            "off": "Óvirkt",
+            "on": "Virkt"
+        },
         "camera": {
             "recording": "Í upptöku",
             "streaming": "Streymi",
@@ -110,6 +122,10 @@
         "device_tracker": {
             "home": "Heima",
             "not_home": "Fjarverandi"
+        },
+        "fan": {
+            "off": "Slökkt",
+            "on": "Í gangi"
         },
         "group": {
             "off": "Óvirkur",
@@ -150,6 +166,14 @@
             "ok": "Í lagi",
             "problem": "Vandamál"
         },
+        "remote": {
+            "off": "Óvirk",
+            "on": "Virk"
+        },
+        "script": {
+            "off": "Óvirkt",
+            "on": "Virkt"
+        },
         "sensor": {
             "off": "Af",
             "on": "Á"
@@ -175,10 +199,13 @@
             }
         },
         "weather": {
+            "clear-night": "Heiðskýrt, nótt",
             "cloudy": "Skýjað",
             "fog": "Þoka",
             "hail": "Haglél",
             "lightning": "Eldingar",
+            "lightning-rainy": "Eldingar, rigning",
+            "partlycloudy": "Að hluta til skýjað",
             "pouring": "Úrhelli",
             "rainy": "Rigning",
             "snowy": "Snjókoma",
@@ -251,12 +278,14 @@
                             "introduction": "Að breyta stillingum getur verið þreytandi ferli og við vitum það. Þetta svæði mun reyna að létta þér lífið hvað það varðar.",
                             "validation": {
                                 "heading": "Staðfesta stillingar",
+                                "introduction": "Staðfestu stillingarnar þínar ef þú hefur gert breytingar á stillingum og vilt ganga úr skugga um að þær séu í lagi",
                                 "check_config": "Athuga stillingar",
                                 "valid": "Stillingar í lagi!",
                                 "invalid": "Stillingar ógildar"
                             },
                             "reloading": {
                                 "heading": "Endurhleðsla stillinga",
+                                "introduction": "Sumir hlutar af Home Assistant er hægt að hlaða inn að nýju án þess að það krefjist endurræsingar. Með því að velja að endurhlaða þá mun sú aðgerð hlaða inn nýjum stillingum.",
                                 "core": "Endurhlaða inn kjarna",
                                 "group": "Endurhlaða inn hópum",
                                 "automation": "Endurhlaða inn sjálfvirkni",
@@ -282,6 +311,7 @@
                     "caption": "Sjálfvirkni",
                     "description": "Stofna og breyta sjálfvirkni",
                     "picker": {
+                        "header": "Sjálfvirkniritill",
                         "pick_automation": "Veldu sjálfvirkni sem á að breyta",
                         "no_automations": "Við fundum ekki neinar sjálfvirkni-skilgreiningar sem hægt er að breyta",
                         "add_automation": "Bæta við sjálfvirkni",
@@ -334,6 +364,7 @@
                                     "at": "Þann"
                                 },
                                 "zone": {
+                                    "label": "Öryggissvæði",
                                     "entity": "Eining með staðsetningu",
                                     "event": "Viðburður:",
                                     "enter": "Koma",
@@ -350,6 +381,7 @@
                                     "seconds": "Sekúndur"
                                 },
                                 "geo_location": {
+                                    "label": "Staðsetning",
                                     "source": "Uppruni",
                                     "zone": "Öryggissvæði",
                                     "event": "Viðburður:",
@@ -388,7 +420,9 @@
                                     "before": "Fyrir"
                                 },
                                 "zone": {
-                                    "entity": "Eining með staðsetningu"
+                                    "label": "Öryggissvæði",
+                                    "entity": "Eining með staðsetningu",
+                                    "zone": "Öryggissvæði"
                                 }
                             },
                             "learn_more": "Læra meira um skilyrði"
@@ -412,7 +446,8 @@
                                     "delay": "Töf"
                                 },
                                 "wait_template": {
-                                    "label": "Bið"
+                                    "label": "Bið",
+                                    "timeout": "Tímamörk (valfrjálst)"
                                 },
                                 "condition": {
                                     "label": "Skilyrði"
@@ -424,6 +459,10 @@
                             "learn_more": "Læra meira um aðgerðir"
                         }
                     }
+                },
+                "script": {
+                    "caption": "Skrifta",
+                    "description": "Búa til og breyta skriftum"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -499,6 +538,14 @@
                 "area_registry": {
                     "caption": "Svæðaskrá",
                     "description": "Yfirlit yfir öll svæði á heimilinu þínu.",
+                    "picker": {
+                        "header": "Svæðaskrá",
+                        "introduction": "Svæði eru notuð til að skipuleggja hvar tæki eru staðsett. Þessar upplýsingar verða notaðar innan Home Assistant til að hjálpa þér að skipuleggja viðmótið, réttindi og samþættingar við önnur kerfi.",
+                        "introduction2": "Til að staðsetja tæki inn á tilteknu svæði þá skal notast við hlekkinn hér fyrir neðan til að vafra yfir á samþættingarsíðu og þar smella á stillta samþættingu til að fá upp spjaldið fyrir tækið.",
+                        "integrations_page": "Samþættingar síða",
+                        "no_areas": "Það virðist sem að þú hafir engin svæði ennþá!",
+                        "create_area": "BÚA TIL SVÆÐI"
+                    },
                     "no_areas": "Það virðist sem að þú hafir engin svæði ennþá!",
                     "create_area": "BÚA TIL SVÆÐI",
                     "editor": {
@@ -506,11 +553,6 @@
                         "delete": "EYÐA",
                         "update": "UPPFÆRA",
                         "create": "STOFNA"
-                    },
-                    "picker": {
-                        "integrations_page": "Samþættingar síða",
-                        "no_areas": "Það virðist sem að þú hafir engin svæði ennþá!",
-                        "create_area": "BÚA TIL SVÆÐI"
                     }
                 },
                 "entity_registry": {
@@ -519,6 +561,7 @@
                     "picker": {
                         "header": "Einingarskrá",
                         "unavailable": "(ekki tiltækt)",
+                        "introduction": "Home Assistant heldur bókhald utanum allar einingar sem verið greindar. Hver þessara eininga hafa einingar-auðkenni (ID) sem er frátekið bara fyrir þessa tilteknu einingu.",
                         "integrations_page": "Samþættingar síða"
                     },
                     "editor": {
@@ -541,6 +584,7 @@
             },
             "profile": {
                 "push_notifications": {
+                    "header": "Ýta út tilkynningum",
                     "description": "Senda tilkynningar í þetta tæki.",
                     "error_load_platform": "Stilla notify.html5.",
                     "error_use_https": "Krefst þess að SSL sé virkt á vef.",
@@ -560,13 +604,22 @@
                 },
                 "refresh_tokens": {
                     "created_at": "Búið til þann {date}",
+                    "delete_failed": "Ekki tókst að eyða endurnýjunartókanum.",
                     "last_used": "Síðast notaður þann {date} frá {location}",
                     "not_used": "Hefur aldrei verið notaður"
                 },
                 "long_lived_access_tokens": {
+                    "header": "Langlífir aðgangstókar",
+                    "description": "Stofna langlífa aðgangstóka sem leyfa skriftum að eiga samskipti við Home Assitant uppsetninguna. Hver tóki er gildur í 10 ár frá stofnun. Eftirfarandi langlífu tókar eru virkir.",
                     "learn_auth_requests": "Lærðu hvernig á að útbúa auðkenndar beiðnir.",
                     "created_at": "Búið til þann {date}",
+                    "confirm_delete": "Ertu viss um að þú viljir eyða aðgangstóka fyrir {name}?",
+                    "delete_failed": "Ekki tókst að eyða aðgangstókanum.",
+                    "create": "Búa til tóka",
+                    "create_failed": "Ekki tókst að stofna aðganstóka.",
                     "prompt_name": "Nafn?",
+                    "prompt_copy_token": "Afritaðu aðgangstókann þinn en hann verður ekki birtur aftur.",
+                    "empty_state": "Þú ert ekki með neina langlífa aðgangstóka sem stendur.",
                     "last_used": "Síðast notaður þann {date} frá {location}",
                     "not_used": "Hefur aldrei verið notaður"
                 },
@@ -615,7 +668,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Tvíþættur auðkenningarkóði"
-                                    }
+                                    },
+                                    "description": "Opnaðu **{mfa_module_name}** á tækinu þínu til að skoða tvíþátta auðkenningarkóðann þinn upp á að staðfesta auðkenni þitt:"
                                 }
                             },
                             "error": {
@@ -642,6 +696,9 @@
                             "error": {
                                 "invalid_auth": "Ógilt API lykilorð",
                                 "invalid_code": "Ógildur auðkenningarkóði"
+                            },
+                            "abort": {
+                                "login_expired": "Seta útrunnin, vinsamlegast skráðu þig inn að nýju."
                             }
                         },
                         "trusted_networks": {
@@ -709,7 +766,16 @@
                     },
                     "empty_state": {
                         "title": "Velkomin(n) heim",
+                        "no_devices": "Þessi síða leyfir þér að stjórna tækjunum þínum, hinsvegar lýtur út fyrir að þú sért ekki með nein tæki uppsett sem stendur. Farðu yfir á samþættingarsíðu til að byrja.",
                         "go_to_integrations_page": "Fara á samþættingar síðu."
+                    },
+                    "picture-elements": {
+                        "hold": "Halda inni:",
+                        "tap": "Ýta á:",
+                        "navigate_to": "Fara yfir á {location}",
+                        "toggle": "Víxla {name}",
+                        "call_service": "Kalla í þjónustu {name}",
+                        "more_info": "Sýna frekari upplýsingar: {name}"
                     }
                 },
                 "editor": {
@@ -724,7 +790,8 @@
                         "move": "Færa"
                     },
                     "migrate": {
-                        "header": "Ósamhæfðar stillingar"
+                        "header": "Ósamhæfðar stillingar",
+                        "migrate": "Uppfæra stillingar"
                     },
                     "header": "Breyta notendaviðmóti",
                     "edit_view": {
@@ -735,9 +802,13 @@
                     },
                     "save_config": {
                         "header": "Taka yfir stjórn á Lovelace viðmótinu",
+                        "para": "Home Assistant mun sjálfgefið halda utan um notendaviðmótið og uppfæra það þegar nýjar einingar eða Lovlace íhlutir verða aðgengilegir. Ef þú tekur yfir stjórn á viðmótinu þá mun þetta ekki gerast sjálfkrafa fyrir þig.",
                         "para_sure": "Ertu viss um að þú viljir taka yfir stjórn á notendaviðmótinu þínu?",
                         "cancel": "Gleymdu þessu",
                         "save": "Taka stjórnina"
+                    },
+                    "menu": {
+                        "raw_editor": "Ritill fyrir hráar stillingar"
                     },
                     "raw_editor": {
                         "header": "Breyta stillingum",
@@ -758,7 +829,9 @@
             }
         },
         "sidebar": {
-            "log_out": "Skrá út"
+            "log_out": "Skrá út",
+            "developer_tools": "Þróunarverkfæri",
+            "external_app_configuration": "Stillingar forrits"
         },
         "common": {
             "loading": "Hleð",
@@ -832,7 +905,8 @@
             "light": {
                 "brightness": "Birtustig",
                 "color_temperature": "Litastig",
-                "white_value": "Hvítt gildi"
+                "white_value": "Hvítt gildi",
+                "effect": "Áhrif"
             },
             "media_player": {
                 "text_to_speak": "Texti yfir í tal",
@@ -902,7 +976,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Vista",
-                "name": "Yfirskrifa nafn"
+                "name": "Yfirskrifa nafn",
+                "entity_id": "Kenni eingar"
             },
             "more_info_control": {
                 "script": {
@@ -937,7 +1012,9 @@
         "configurator": "Stillingarálfur",
         "conversation": "Samtal",
         "cover": "Gluggatjöld",
+        "device_tracker": "Rekja tæki",
         "fan": "Vifta",
+        "history_graph": "Sögulínurit",
         "group": "Hópur",
         "input_datetime": "Innsláttar dagsetning\/tími",
         "input_select": "Innsláttarval",
@@ -950,11 +1027,13 @@
         "notify": "Tilkynna",
         "plant": "Planta",
         "proximity": "Nálægð",
+        "remote": "Fjarstýring",
         "scene": "Sena",
         "script": "Skrifta",
         "sensor": "Skynjari",
         "sun": "Sól",
         "switch": "Rofi",
+        "updater": "Uppfærsluálfur",
         "weblink": "Vefslóð",
         "zwave": "Z-Wave",
         "zha": "ZHA",

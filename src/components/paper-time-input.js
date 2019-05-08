@@ -48,6 +48,7 @@ export class PaperTimeInput extends PolymerElement {
             margin: 0;
             display: none;
           }
+          --paper-input-container-shared-input-style_-_-webkit-appearance: textfield;
         }
 
         paper-dropdown-menu {

@@ -74,9 +74,6 @@
       content="https://www.home-assistant.io/images/default-social.png"
     />
     <title>Home Assistant Demo</title>
-    <script src="./custom-elements-es5-adapter.js"></script>
-    <script src="./compatibility.js"></script>
-    <script src="./main.js" async></script>
     <style>
       body {
         font-family: Roboto, Noto, sans-serif;
@@ -98,6 +95,47 @@
   <body>
     <div id="ha-init-skeleton"></div>
     <ha-demo></ha-demo>
+    <script>
+      function _ls(src) {
+        var doc = document.documentElement;
+        var script = doc.insertBefore(
+          document.createElement("script"),
+          doc.lastChild
+        );
+        script.type = "text/javascript";
+        script.src = src;
+      }
+      window.Polymer = {
+        lazyRegister: true,
+        useNativeCSSProperties: true,
+        dom: "shadow",
+        suppressTemplateNotifications: true,
+        suppressBindingNotifications: true,
+      };
+      var webComponentsSupported =
+        "customElements" in window &&
+        "content" in document.createElement("template");
+      if (!webComponentsSupported) {
+        _ls("/static/polyfills/webcomponents-bundle.js");
+      }
+      var isS101 = /\s+Version\/10\.1(?:\.\d+)?\s+Safari\//.test(
+        navigator.userAgent
+      );
+    </script>
+
+    <script type="module" src="./frontend_latest/main.js"></script>
+
+    <script nomodule>
+      (function() {
+        // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
+        if (!isS101) {
+          _ls("./static/polyfills/custom-elements-es5-adapter.js");
+          _ls("./frontend_es5/compatibility.js");
+          _ls("./frontend_es5/main.js");
+        }
+      })();
+    </script>
+
     <script>
       var _gaq = [["_setAccount", "UA-57927901-5"], ["_trackPageview"]];
       (function(d, t) {
