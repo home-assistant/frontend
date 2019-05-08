@@ -108,7 +108,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
     super.ready();
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
-        this._createUser();
+        this._createUser(ev);
       }
     });
   }
@@ -131,7 +131,8 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
     }
   }
 
-  async _createUser() {
+  async _createUser(ev) {
+    ev.preventDefault();
     if (!this._name || !this._username || !this._password) return;
 
     this._loading = true;
