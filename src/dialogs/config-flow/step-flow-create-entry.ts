@@ -169,6 +169,18 @@ class StepFlowCreateEntry extends LitElement {
         .buttons > *:last-child {
           margin-left: auto;
         }
+        paper-dropdown-menu-light {
+          cursor: pointer;
+        }
+        paper-item {
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          .device {
+            width: auto;
+          }
+        }
       `,
     ];
   }
