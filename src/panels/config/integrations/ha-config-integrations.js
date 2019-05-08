@@ -7,7 +7,7 @@ import { timeOut } from "@polymer/polymer/lib/utils/async";
 import "./ha-config-entries-dashboard";
 import "./ha-config-entry-page";
 import NavigateMixin from "../../../mixins/navigate-mixin";
-import compare from "../../../common/string/compare";
+import { compare } from "../../../common/string/compare";
 import { fetchAreaRegistry } from "../../../data/area_registry";
 
 class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
