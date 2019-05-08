@@ -44,7 +44,7 @@
         Home Assistant
       </div>
 
-      <ha-onboarding>Initializing</ha-onboarding>
+      <ha-onboarding></ha-onboarding>
     </div>
 
     <%= renderTemplate('_js_base') %>

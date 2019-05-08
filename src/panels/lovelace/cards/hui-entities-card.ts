@@ -89,7 +89,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         ${!title && !show_header_toggle
           ? html``
           : html`
-              <div class="header" slot="header">
+              <div class="card-header">
                 <div class="name">${title}</div>
                 ${show_header_toggle === false
                   ? html``
@@ -103,7 +103,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                     `}
               </div>
             `}
-        <div id="states">
+        <div id="states" class="card-content">
           ${this._configEntities!.map((entityConf) =>
             this.renderEntity(entityConf)
           )}
@@ -114,8 +114,19 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      #states {
-        padding: 12px 16px;
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .card-header .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .card-header hui-entities-toggle {
+        margin: -4px 0;
       }
 
       #states > * {
@@ -124,19 +135,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
       #states > div > * {
         overflow: hidden;
-      }
-
-      .header {
-        margin-bottom: -8px;
-        padding-bottom: 0px;
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .header .name {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
 
       .state-card-dialog {

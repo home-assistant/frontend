@@ -1,11 +1,11 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../components/ha-card";
 
 import computeStateName from "../../common/entity/compute_state_name";
 
@@ -13,8 +13,7 @@ class HaEntityConfig extends PolymerElement {
   static get template() {
     return html`
       <style include="iron-flex ha-style">
-        paper-card {
-          display: block;
+        ha-card {
           direction: ltr;
         }
 
@@ -38,7 +37,7 @@ class HaEntityConfig extends PolymerElement {
           @apply --layout-justified;
         }
       </style>
-      <paper-card>
+      <ha-card>
         <div class="card-content">
           <div class="device-picker">
             <paper-dropdown-menu
@@ -89,7 +88,7 @@ class HaEntityConfig extends PolymerElement {
             >
           </template>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 

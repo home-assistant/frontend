@@ -7,8 +7,8 @@ import { timeOut } from "@polymer/polymer/lib/utils/async";
 import "./ha-config-entries-dashboard";
 import "./ha-config-entry-page";
 import NavigateMixin from "../../../mixins/navigate-mixin";
-import compare from "../../../common/string/compare";
-import { fetchAreaRegistry } from "../../../data/area_registry";
+import { compare } from "../../../common/string/compare";
+import { subscribeAreaRegistry } from "../../../data/area_registry";
 
 class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
   static get template() {
@@ -96,6 +96,9 @@ class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
     this._loadData();
+    this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+      this._areas = areas;
+    });
 
     this.hass.connection
       .subscribeEvents(() => {
@@ -113,6 +116,7 @@ class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubEvents) this._unsubEvents();
+    if (this._unsubAreas) this._unsubAreas();
   }
 
   _loadData() {
@@ -143,10 +147,6 @@ class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
       .then((devices) => {
         this._devices = devices;
       });
-
-    fetchAreaRegistry(this.hass).then((areas) => {
-      this._areas = areas.sort((a, b) => compare(a.name, b.name));
-    });
   }
 
   _computeConfigEntry(routeData, entries) {

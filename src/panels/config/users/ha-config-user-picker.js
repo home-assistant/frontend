@@ -1,16 +1,16 @@
 import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../layouts/hass-subpage";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-card";
 
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 import { computeRTL } from "../../../common/util/compute_rtl";
 
@@ -47,10 +47,10 @@ class HaUserPicker extends EventsMixin(
           left: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           max-width: 600px;
           margin: 16px auto;
+          overflow: hidden;
         }
         a {
           text-decoration: none;
@@ -59,7 +59,7 @@ class HaUserPicker extends EventsMixin(
       </style>
 
       <hass-subpage header="[[localize('ui.panel.config.users.picker.title')]]">
-        <paper-card>
+        <ha-card>
           <template is="dom-repeat" items="[[users]]" as="user">
             <a href="[[_computeUrl(user)]]">
               <paper-item>
@@ -76,7 +76,7 @@ class HaUserPicker extends EventsMixin(
               </paper-item>
             </a>
           </template>
-        </paper-card>
+        </ha-card>
 
         <paper-fab
           is-wide$="[[isWide]]"

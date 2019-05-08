@@ -1,13 +1,13 @@
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/buttons/ha-progress-button";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
 import "../ha-config-section";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -29,14 +29,8 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
       a {
         color: var(--primary-color);
       }
-      paper-card {
-        display: block;
-      }
       paper-item {
         cursor: pointer;
-      }
-      paper-card:last-child {
-        margin-top: 24px;
       }
       h1 {
         @apply --paper-font-headline;
@@ -84,10 +78,9 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
             </p>
           </div>
 
-          <paper-card>
+          <ha-card header="Create Account">
             <div class="card-content">
               <div class="header">
-                <h1>Create Account</h1>
                 <div class="error" hidden$="[[!_error]]">[[_error]]</div>
               </div>
               <paper-input autofocus="" id="email" label="Email address" type="email" value="{{email}}" on-keydown="_keyDown" error-message="Invalid email"></paper-input>
@@ -97,7 +90,7 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
               <ha-progress-button on-click="_handleRegister" progress="[[_requestInProgress]]">Start trial</ha-progress-button>
               <button class="link" hidden="[[_requestInProgress]]" on-click="_handleResendVerifyEmail">Resend confirmation email</button>
             </div>
-          </paper-card>
+          </ha-card>
         </ha-config-section>
       </div>
     </hass-subpage>

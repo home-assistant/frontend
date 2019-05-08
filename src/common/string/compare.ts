@@ -1,4 +1,4 @@
-export default (a, b) => {
+export const compare = (a: string, b: string) => {
   if (a < b) {
     return -1;
   }
@@ -8,3 +8,6 @@ export default (a, b) => {
 
   return 0;
 };
+
+export const caseInsensitiveCompare = (a: string, b: string) =>
+  compare(a.toLowerCase(), b.toLowerCase());

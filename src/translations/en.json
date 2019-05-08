@@ -1172,6 +1172,11 @@
             "required_fields": "Fill in all required fields",
             "password_not_match": "Passwords don't match"
           }
+        },
+        "integration": {
+          "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
+          "more_integrations": "More",
+          "finish": "Finish"
         }
       }
     }

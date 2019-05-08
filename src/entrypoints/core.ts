@@ -14,6 +14,7 @@ import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import { HomeAssistant } from "../types";
+import { hassUrl } from "../data/auth";
 
 declare global {
   interface Window {
@@ -21,7 +22,6 @@ declare global {
   }
 }
 
-const hassUrl = `${location.protocol}//${location.host}`;
 const isExternal = location.search.includes("external_auth=1");
 
 const authProm = isExternal

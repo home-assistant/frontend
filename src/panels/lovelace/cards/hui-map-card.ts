@@ -19,7 +19,7 @@ import {
 } from "../../../common/dom/setup-leaflet-map";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
-import debounce from "../../../common/util/debounce";
+import { debounce } from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import computeDomain from "../../../common/entity/compute_domain";
 
