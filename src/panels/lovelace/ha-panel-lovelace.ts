@@ -171,7 +171,7 @@ class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      conf = generateLovelaceConfig(this.hass!, this.hass!.localize);
+      conf = await generateLovelaceConfig(this.hass!, this.hass!.localize);
       confMode = "generated";
     }
 
