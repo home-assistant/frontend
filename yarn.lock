@@ -7237,10 +7237,10 @@ hoek@6.x.x:
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-6.1.3.tgz#73b7d33952e01fe27a38b0457294b79dd8da242c"
   integrity sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==
 
-home-assistant-js-websocket@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.1.1.tgz#b85152c223a20bfe8827b817b927fd97cc021157"
-  integrity sha512-hNk8bj9JObd3NpgQ1+KtQCbSoz/TWockC8T/L8KvsPrDtkl1oQddajirumaMDgrJg/su4QsxFNUcDPGJyJ05UA==
+home-assistant-js-websocket@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.1.2.tgz#dbcdb4b67df8d189d29bbf5603771d5bc80ef031"
+  integrity sha512-/I0m6FTDEq3LkzFc4tmgHJHTj9gWA6Wn/fgaa1ghIJJY0Yqb3x6whovN5pRNFsl6bnKzOCR+nmJ2ruVTBa5mVQ==
 
 homedir-polyfill@^1.0.0, homedir-polyfill@^1.0.1:
   version "1.0.3"
