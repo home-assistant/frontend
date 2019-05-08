@@ -71,7 +71,7 @@ export const subscribeEntityRegistry = (
   onChange: (entities: EntityRegistryEntry[]) => void
 ) =>
   createCollection<EntityRegistryEntry[]>(
-    "_er",
+    "_entityRegistry",
     fetchEntityRegistry,
     subscribeEntityRegistryUpdates,
     hass.connection,

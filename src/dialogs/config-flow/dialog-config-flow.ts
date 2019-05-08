@@ -45,6 +45,7 @@ import {
 } from "../../data/area_registry";
 import { HomeAssistant } from "../../types";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { fireEvent } from "../../common/dom/fire_event";
 
 let instance = 0;
 
@@ -61,31 +62,17 @@ declare global {
 @customElement("dialog-config-flow")
 class ConfigFlowDialog extends LitElement {
   public hass!: HomeAssistant;
-
-  @property()
-  private _params?: HaConfigFlowParams;
-
-  @property()
-  private _loading = true;
-
+  @property() private _params?: HaConfigFlowParams;
+  @property() private _loading = true;
   private _instance = instance;
-
-  @property()
-  private _step:
+  @property() private _step:
     | ConfigFlowStep
     | undefined
     // Null means we need to pick a config flow
     | null;
-
-  @property()
-  private _devices?: DeviceRegistryEntry[];
-
-  @property()
-  private _areas?: AreaRegistryEntry[];
-
-  @property()
-  private _handlers?: string[];
-
+  @property() private _devices?: DeviceRegistryEntry[];
+  @property() private _areas?: AreaRegistryEntry[];
+  @property() private _handlers?: string[];
   private _unsubAreas?: UnsubscribeFunc;
   private _unsubDevices?: UnsubscribeFunc;
 
@@ -202,6 +189,10 @@ class ConfigFlowDialog extends LitElement {
     ) {
       this._fetchDevices(this._step.result);
       this._fetchAreas();
+    }
+
+    if (changedProps.has("_devices") && this._dialog) {
+      fireEvent(this._dialog as any, "iron-resize");
     }
   }
 

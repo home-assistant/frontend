@@ -60,13 +60,6 @@ class ZHADeviceCard extends LitElement {
   @property() private _userGivenName?: string;
   private _unsubAreas?: UnsubscribeFunc;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
-      this._areas = areas;
-    });
-  }
-
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubAreas) {
@@ -95,6 +88,11 @@ class ZHADeviceCard extends LitElement {
           ) + 1;
       }
       this._userGivenName = this.device!.user_given_name;
+    }
+    if (!this._unsubAreas) {
+      this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+        this._areas = areas;
+      });
     }
     super.update(changedProperties);
   }

@@ -5,6 +5,7 @@ import {
   css,
   CSSResult,
   PropertyDeclarations,
+  property,
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -31,25 +32,10 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 class HaConfigAreaRegistry extends LitElement {
-  public hass!: HomeAssistant;
-  public isWide?: boolean;
-  private _areas?: AreaRegistryEntry[];
+  @property() public hass!: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() private _areas?: AreaRegistryEntry[];
   private _unsubAreas?: UnsubscribeFunc;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _items: {},
-    };
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
-      this._areas = areas;
-    });
-  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -132,6 +118,15 @@ class HaConfigAreaRegistry extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (!this._unsubAreas) {
+      this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+        this._areas = areas;
+      });
+    }
   }
 
   private _createArea() {

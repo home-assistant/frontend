@@ -5,6 +5,7 @@ import {
   css,
   CSSResult,
   PropertyDeclarations,
+  property,
 } from "lit-element";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -33,27 +34,10 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { compare } from "../../../common/string/compare";
 
 class HaConfigEntityRegistry extends LitElement {
-  public hass!: HomeAssistant;
-  public isWide?: boolean;
-  private _entities?: EntityRegistryEntry[];
+  @property() public hass!: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() private _entities?: EntityRegistryEntry[];
   private _unsubEntities?: UnsubscribeFunc;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _items: {},
-    };
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubEntities = subscribeEntityRegistry(this.hass, (entities) => {
-      this._entities = entities.sort((ent1, ent2) =>
-        compare(ent1.entity_id, ent2.entity_id)
-      );
-    });
-  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -130,6 +114,17 @@ class HaConfigEntityRegistry extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     loadEntityRegistryDetailDialog();
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (!this._unsubEntities) {
+      this._unsubEntities = subscribeEntityRegistry(this.hass, (entities) => {
+        this._entities = entities.sort((ent1, ent2) =>
+          compare(ent1.entity_id, ent2.entity_id)
+        );
+      });
+    }
   }
 
   private _openEditEntry(ev: MouseEvent): void {

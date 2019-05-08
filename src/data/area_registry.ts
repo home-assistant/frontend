@@ -61,7 +61,7 @@ export const subscribeAreaRegistry = (
   onChange: (areas: AreaRegistryEntry[]) => void
 ) =>
   createCollection<AreaRegistryEntry[]>(
-    "_ar",
+    "_areaRegistry",
     fetchAreaRegistry,
     subscribeAreaRegistryUpdates,
     hass.connection,
