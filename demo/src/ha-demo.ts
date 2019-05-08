@@ -26,7 +26,7 @@ class HaDemo extends HomeAssistantAppEl {
         this._updateHass(hassUpdate),
     };
 
-    const hass = provideHass(this, initial);
+    const hass = (this.hass = provideHass(this, initial));
     mockLovelace(hass);
     mockAuth(hass);
     mockTranslations(hass);
