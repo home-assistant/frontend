@@ -1,4 +1,6 @@
 import { HomeAssistant } from "../types";
+import { createCollection } from "home-assistant-js-websocket";
+import { debounce } from "../common/util/debounce";
 
 export interface DeviceRegistryEntry {
   id: string;
@@ -18,9 +20,6 @@ export interface DeviceRegistryEntryMutableParams {
   name_by_user?: string;
 }
 
-export const fetchDeviceRegistry = (hass: HomeAssistant) =>
-  hass.callWS<DeviceRegistryEntry[]>({ type: "config/device_registry/list" });
-
 export const updateDeviceRegistryEntry = (
   hass: HomeAssistant,
   deviceId: string,
@@ -31,3 +30,33 @@ export const updateDeviceRegistryEntry = (
     device_id: deviceId,
     ...updates,
   });
+
+const fetchDeviceRegistry = (conn) =>
+  conn.sendMessagePromise({
+    type: "config/device_registry/list",
+  });
+
+const subscribeDeviceRegistryUpdates = (conn, store) =>
+  conn.subscribeEvents(
+    debounce(
+      () =>
+        fetchDeviceRegistry(conn).then((devices) =>
+          store.setState(devices, true)
+        ),
+      500,
+      true
+    ),
+    "device_registry_updated"
+  );
+
+export const subscribeDeviceRegistry = (
+  hass: HomeAssistant,
+  onChange: (devices: DeviceRegistryEntry[]) => void
+) =>
+  createCollection<DeviceRegistryEntry[]>(
+    "_dr",
+    fetchDeviceRegistry,
+    subscribeDeviceRegistryUpdates,
+    hass.connection,
+    onChange
+  );
