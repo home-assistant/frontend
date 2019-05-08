@@ -874,7 +874,7 @@
                         "tap": "Tik:",
                         "navigate_to": "Navigeer na {location}",
                         "toggle": "Wissel {name}",
-                        "call_service": "Call diens {name}",
+                        "call_service": "Oproep diens {name}",
                         "more_info": "Wys meer inligting: {name}"
                     }
                 },
@@ -933,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "Meld af",
-            "developer_tools": "Ontwikkelaar gereedskap"
+            "developer_tools": "Ontwikkelaar gereedskap",
+            "external_app_configuration": "App Konfigurasie"
         },
         "common": {
             "loading": "Laai tans",

@@ -16,7 +16,7 @@ import "../../resources/ha-style";
 
 import formatDateTime from "../../common/datetime/format_date_time";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 let registeredDialog = false;
 

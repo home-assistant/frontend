@@ -1,15 +1,14 @@
-import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../layouts/hass-subpage";
 
 import "../../../components/entity/state-badge";
-import compare from "../../../common/string/compare";
+import { compare } from "../../../common/string/compare";
 
 import "./ha-device-card";
 import "./ha-ce-entities-card";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 

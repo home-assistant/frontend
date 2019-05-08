@@ -4,7 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import { getAppKey } from "../data/notify_html5";
 
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 
 export const pushSupported =
   "serviceWorker" in navigator &&

@@ -10,7 +10,7 @@ import "../../../src/components/ha-label-badge";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/resources/ha-style";
-import EventsMixin from "../../../src/mixins/events-mixin";
+import { EventsMixin } from "../../../src/mixins/events-mixin";
 import { navigate } from "../../../src/common/navigate";
 
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";

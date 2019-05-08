@@ -1,8 +1,8 @@
 import { h, Component } from "preact";
 
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import "../ha-config-section";
+import "../../../components/ha-card";
 
 import Script from "./script/index";
 
@@ -36,7 +36,7 @@ export default class ScriptEditor extends Component {
           <span slot="introduction">
             Use scripts to execute a sequence of actions.
           </span>
-          <paper-card>
+          <ha-card>
             <div class="card-content">
               <paper-input
                 label="Name"
@@ -45,7 +45,7 @@ export default class ScriptEditor extends Component {
                 onvalue-changed={this.onChange}
               />
             </div>
-          </paper-card>
+          </ha-card>
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>

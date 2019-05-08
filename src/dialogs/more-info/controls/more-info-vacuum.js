@@ -109,12 +109,17 @@ class MoreInfoVacuum extends PolymerElement {
             dynamic-align=""
             label="Fan speed"
           >
-            <paper-listbox slot="dropdown-content" selected="{{fanSpeedIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              selected="[[stateObj.attributes.fan_speed]]"
+              on-selected-changed="fanSpeedChanged"
+              attr-for-selected="item-name"
+            >
               <template
                 is="dom-repeat"
                 items="[[stateObj.attributes.fan_speed_list]]"
               >
-                <paper-item>[[item]]</paper-item>
+                <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
             </paper-listbox>
           </ha-paper-dropdown-menu>
@@ -149,12 +154,6 @@ class MoreInfoVacuum extends PolymerElement {
 
       stateObj: {
         type: Object,
-      },
-
-      fanSpeedIndex: {
-        type: Number,
-        value: -1,
-        observer: "fanSpeedChanged",
       },
     };
   }
@@ -206,17 +205,15 @@ class MoreInfoVacuum extends PolymerElement {
     );
   }
 
-  fanSpeedChanged(fanSpeedIndex) {
-    var fanSpeedInput;
-    // Selected Option will transition to '' before transitioning to new value
-    if (fanSpeedIndex === "" || fanSpeedIndex === -1) return;
+  fanSpeedChanged(ev) {
+    var oldVal = this.stateObj.attributes.fan_speed;
+    var newVal = ev.detail.value;
 
-    fanSpeedInput = this.stateObj.attributes.fan_speed_list[fanSpeedIndex];
-    if (fanSpeedInput === this.stateObj.attributes.fan_speed) return;
+    if (!newVal || oldVal === newVal) return;
 
     this.hass.callService("vacuum", "set_fan_speed", {
       entity_id: this.stateObj.entity_id,
-      fan_speed: fanSpeedInput,
+      fan_speed: newVal,
     });
   }
 

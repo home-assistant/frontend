@@ -933,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "Ausloggen",
-            "developer_tools": "Entwécklungsgeschir"
+            "developer_tools": "Entwécklungsgeschir",
+            "external_app_configuration": "App Konfiguratioun"
         },
         "common": {
             "loading": "Lued",

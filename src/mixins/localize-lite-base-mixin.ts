@@ -31,10 +31,10 @@ export const localizeLiteBaseMixin = (superClass) =>
         return;
       }
 
-      this._updateResources();
+      this._downloadResources();
     }
 
-    private async _updateResources() {
+    private async _downloadResources() {
       const { language, data } = await getTranslation(
         this.translationFragment,
         this.language

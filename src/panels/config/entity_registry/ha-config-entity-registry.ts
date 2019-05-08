@@ -4,24 +4,23 @@ import {
   html,
   css,
   CSSResult,
-  PropertyDeclarations,
+  property,
 } from "lit-element";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-card/paper-card";
 
 import { HomeAssistant } from "../../../types";
 import {
   EntityRegistryEntry,
-  fetchEntityRegistry,
   computeEntityRegistryName,
   updateEntityRegistryEntry,
   removeEntityRegistryEntry,
+  subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
+import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import compare from "../../../common/string/compare";
 import domainIcon from "../../../common/entity/domain_icon";
 import stateIcon from "../../../common/entity/state_icon";
 import computeDomain from "../../../common/entity/compute_domain";
@@ -30,22 +29,24 @@ import {
   showEntityRegistryDetailDialog,
   loadEntityRegistryDetailDialog,
 } from "./show-dialog-entity-registry-detail";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { compare } from "../../../common/string/compare";
 
 class HaConfigEntityRegistry extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  private _items?: EntityRegistryEntry[];
+  @property() public hass!: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() private _entities?: EntityRegistryEntry[];
+  private _unsubEntities?: UnsubscribeFunc;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _items: {},
-    };
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubEntities) {
+      this._unsubEntities();
+    }
   }
 
   protected render(): TemplateResult | void {
-    if (!this.hass || this._items === undefined) {
+    if (!this.hass || this._entities === undefined) {
       return html`
         <hass-loading-screen></hass-loading-screen>
       `;
@@ -77,8 +78,8 @@ class HaConfigEntityRegistry extends LitElement {
               )}
             </a>
           </span>
-          <paper-card>
-            ${this._items.map((entry) => {
+          <ha-card>
+            ${this._entities.map((entry) => {
               const state = this.hass!.states[entry.entity_id];
               return html`
                 <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
@@ -103,7 +104,7 @@ class HaConfigEntityRegistry extends LitElement {
                 </paper-icon-item>
               `;
             })}
-          </paper-card>
+          </ha-card>
         </ha-config-section>
       </hass-subpage>
     `;
@@ -111,14 +112,18 @@ class HaConfigEntityRegistry extends LitElement {
 
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
-    this._fetchData();
     loadEntityRegistryDetailDialog();
   }
 
-  private async _fetchData(): Promise<void> {
-    this._items = (await fetchEntityRegistry(this.hass!)).sort((ent1, ent2) =>
-      compare(ent1.entity_id, ent2.entity_id)
-    );
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (!this._unsubEntities) {
+      this._unsubEntities = subscribeEntityRegistry(this.hass, (entities) => {
+        this._entities = entities.sort((ent1, ent2) =>
+          compare(ent1.entity_id, ent2.entity_id)
+        );
+      });
+    }
   }
 
   private _openEditEntry(ev: MouseEvent): void {
@@ -131,7 +136,7 @@ class HaConfigEntityRegistry extends LitElement {
           entry.entity_id,
           updates
         );
-        this._items = this._items!.map((ent) =>
+        this._entities = this._entities!.map((ent) =>
           ent === entry ? updated : ent
         );
       },
@@ -148,7 +153,7 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
 
         try {
           await removeEntityRegistryEntry(this.hass!, entry.entity_id);
-          this._items = this._items!.filter((ent) => ent !== entry);
+          this._entities = this._entities!.filter((ent) => ent !== entry);
           return true;
         } catch (err) {
           return false;
@@ -162,9 +167,9 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
       a {
         color: var(--primary-color);
       }
-      paper-card {
-        display: block;
+      ha-card {
         direction: ltr;
+        overflow: hidden;
       }
       paper-icon-item {
         cursor: pointer;
