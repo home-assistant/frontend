@@ -933,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "Abmelden",
-            "developer_tools": "Entwicklerwerkzeuge"
+            "developer_tools": "Entwicklerwerkzeuge",
+            "external_app_configuration": "App-Konfiguration"
         },
         "common": {
             "loading": "Laden",
