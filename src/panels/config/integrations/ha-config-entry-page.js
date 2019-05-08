@@ -4,7 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../layouts/hass-subpage";
 
 import "../../../components/entity/state-badge";
-import compare from "../../../common/string/compare";
+import { compare } from "../../../common/string/compare";
 
 import "./ha-device-card";
 import "./ha-ce-entities-card";

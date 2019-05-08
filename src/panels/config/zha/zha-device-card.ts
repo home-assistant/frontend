@@ -22,7 +22,7 @@ import {
 } from "lit-element";
 
 import { fireEvent } from "../../../common/dom/fire_event";
-import compare from "../../../common/string/compare";
+import { compare } from "../../../common/string/compare";
 import {
   AreaRegistryEntry,
   fetchAreaRegistry,
