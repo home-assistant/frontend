@@ -9,7 +9,7 @@ import "../../components/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
 
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
 let instance = 0;

@@ -12,7 +12,7 @@ import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
 import isComponentLoaded from "../../../common/config/is_component_loaded";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 

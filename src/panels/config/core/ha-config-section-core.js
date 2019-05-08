@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../resources/ha-style";
 
@@ -57,8 +57,8 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
           >[[localize('ui.panel.config.core.section.core.introduction')]]</span
         >
 
-        <paper-card
-          heading="[[localize('ui.panel.config.core.section.core.validation.heading')]]"
+        <ha-card
+          header="[[localize('ui.panel.config.core.section.core.validation.heading')]]"
         >
           <div class="card-content">
             [[localize('ui.panel.config.core.section.core.validation.introduction')]]
@@ -91,10 +91,10 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
               <div id="configLog" class="validate-log">[[validateLog]]</div>
             </template>
           </div>
-        </paper-card>
+        </ha-card>
 
-        <paper-card
-          heading="[[localize('ui.panel.config.core.section.core.reloading.heading')]]"
+        <ha-card
+          header="[[localize('ui.panel.config.core.section.core.reloading.heading')]]"
         >
           <div class="card-content">
             [[localize('ui.panel.config.core.section.core.reloading.introduction')]]
@@ -128,10 +128,10 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
               >[[localize('ui.panel.config.core.section.core.reloading.script')]]
             </ha-call-service-button>
           </div>
-        </paper-card>
+        </ha-card>
 
-        <paper-card
-          heading="[[localize('ui.panel.config.core.section.core.server_management.heading')]]"
+        <ha-card
+          header="[[localize('ui.panel.config.core.section.core.server_management.heading')]]"
         >
           <div class="card-content">
             [[localize('ui.panel.config.core.section.core.server_management.introduction')]]
@@ -152,7 +152,7 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
               >[[localize('ui.panel.config.core.section.core.server_management.stop')]]
             </ha-call-service-button>
           </div>
-        </paper-card>
+        </ha-card>
       </ha-config-section>
     `;
   }

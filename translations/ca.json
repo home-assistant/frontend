@@ -386,7 +386,7 @@
                         "alias": "Nom",
                         "triggers": {
                             "header": "Activadors",
-                            "introduction": "Els activadors són les regles que fan que es dispari un automatisme. Pots definir més d'un activador per a cada automatisme. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.\n\n[Més informació sobre activadors](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Els activadors són les regles que fan que es dispari un automatisme. Pots definir més d'un activador per a cada automatisme. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "add": "Afegir activador",
                             "duplicate": "Duplicar",
                             "delete": "Elimina",
@@ -468,7 +468,7 @@
                         },
                         "conditions": {
                             "header": "Condicions",
-                            "introduction": "Les condicions són una part opcional d'un automatisme i es poden utilitzar per permetre o evitar que es produeixi l'acció quan s'activa l'automatisme. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.\n\n[Més informació sobre les condicions](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/).",
+                            "introduction": "Les condicions són una part opcional d'un automatisme i es poden utilitzar per permetre o evitar que es produeixi l'acció quan s'activa l'automatisme. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.",
                             "add": "Afegir condició",
                             "duplicate": "Duplicar",
                             "delete": "Elimina",
@@ -514,7 +514,7 @@
                         },
                         "actions": {
                             "header": "Accions",
-                            "introduction": "Les accions són allò que farà Home Assistant quan s'activi l'automatisme i es compleixin totes les condicions (si n'hi ha).\n\n[Més informació sobre les accions](https:\/\/home-assistant.io\/docs\/automation\/action\/).",
+                            "introduction": "Les accions són allò que farà Home Assistant quan s'activi l'automatisme i es compleixin totes les condicions (si n'hi ha).",
                             "add": "Afegir acció",
                             "duplicate": "Duplicar",
                             "delete": "Elimina",
@@ -933,7 +933,8 @@
         },
         "sidebar": {
             "log_out": "Desconnectar",
-            "developer_tools": "Eines per a desenvolupadors"
+            "developer_tools": "Eines per a desenvolupadors",
+            "external_app_configuration": "Configuració de l’aplicació"
         },
         "common": {
             "loading": "Carregant",
@@ -1096,7 +1097,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Desar",
-                "name": "Nom",
+                "name": "Substitució de Nom",
                 "entity_id": "ID de l'entitat"
             },
             "more_info_control": {
@@ -1105,8 +1106,8 @@
                 },
                 "sun": {
                     "elevation": "Elevació",
-                    "rising": "Sortida",
-                    "setting": "Posta"
+                    "rising": "Sortint",
+                    "setting": "Ponent-se"
                 },
                 "updater": {
                     "title": "Instruccions d'actualització"

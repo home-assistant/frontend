@@ -1,10 +1,7 @@
 import { Constructor, LitElement } from "lit-element";
-import { HASSDomEvent } from "../../common/dom/fire_event";
+import { HASSDomEvent } from "../common/dom/fire_event";
 import { HassBaseEl } from "./hass-base-mixin";
-import {
-  makeDialogManager,
-  showDialog,
-} from "../../dialogs/make-dialog-manager";
+import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;

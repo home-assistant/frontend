@@ -12,7 +12,7 @@ import "../../components/ha-menu-button";
 import "../../resources/ha-style";
 import "./events-list";
 import "./event-subscribe-card";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

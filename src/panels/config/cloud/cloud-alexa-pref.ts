@@ -7,10 +7,11 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
+
+import "../../../components/ha-card";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
@@ -36,7 +37,7 @@ export class CloudAlexaPref extends LitElement {
     const enabled = this.cloudStatus!.prefs.alexa_enabled;
 
     return html`
-      <paper-card heading="Alexa">
+      <ha-card header="Alexa">
         <paper-toggle-button
           .checked="${enabled}"
           @change="${this._toggleChanged}"
@@ -73,7 +74,7 @@ export class CloudAlexaPref extends LitElement {
               `
             : ""}
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -92,10 +93,11 @@ export class CloudAlexaPref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      paper-card > paper-toggle-button {
+      ha-card > paper-toggle-button {
+        margin: -4px 0;
         position: absolute;
         right: 8px;
-        top: 16px;
+        top: 32px;
       }
     `;
   }

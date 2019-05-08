@@ -1,5 +1,4 @@
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -10,6 +9,7 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 
 import isComponentLoaded from "../../../common/config/is_component_loaded";
 
+import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 
 const CORE_PAGES = ["core", "customize", "entity_registry", "area_registry"];
@@ -21,14 +21,14 @@ class HaConfigNavigation extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="iron-flex">
-        paper-card {
-          display: block;
+        ha-card {
+          overflow: hidden;
         }
         paper-item {
           cursor: pointer;
         }
       </style>
-      <paper-card>
+      <ha-card>
         <template is="dom-repeat" items="[[pages]]">
           <template is="dom-if" if="[[_computeLoaded(hass, item)]]">
             <paper-item on-click="_navigate">
@@ -40,7 +40,7 @@ class HaConfigNavigation extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             </paper-item>
           </template>
         </template>
-      </paper-card>
+      </ha-card>
     `;
   }
 

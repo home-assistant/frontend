@@ -7,7 +7,7 @@ import React from "react";
 /* eslint-enable */
 import BigCalendar from "react-big-calendar";
 import moment from "moment";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 import "../../resources/ha-style";
 

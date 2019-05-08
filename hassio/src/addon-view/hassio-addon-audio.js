@@ -9,7 +9,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/resources/ha-style";
-import EventsMixin from "../../../src/mixins/events-mixin";
+import { EventsMixin } from "../../../src/mixins/events-mixin";
 
 class HassioAddonAudio extends EventsMixin(PolymerElement) {
   static get template() {

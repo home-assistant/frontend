@@ -1,12 +1,12 @@
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/ha-card";
 import "../../../components/buttons/ha-progress-button";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -20,8 +20,7 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
           direction: ltr;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           max-width: 600px;
           margin: 0 auto;
           margin-top: 24px;
@@ -47,9 +46,8 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
       </style>
       <hass-subpage header="Forgot Password">
         <div class="content">
-          <paper-card>
+          <ha-card header="Forgot your password">
             <div class="card-content">
-              <h1>Forgot your password?</h1>
               <p>
                 Enter your email address and we will send you a link to reset
                 your password.
@@ -72,7 +70,7 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
                 >Send reset email</ha-progress-button
               >
             </div>
-          </paper-card>
+          </ha-card>
         </div>
       </hass-subpage>
     `;
