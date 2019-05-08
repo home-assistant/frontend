@@ -55,9 +55,17 @@ interface Registries {
 
 let subscribedRegistries = false;
 
-const splitByAreas = (registries: Registries, entities: HassEntities) => {
+interface SplittedByAreas {
+  areasWithEntities: Array<[AreaRegistryEntry, HassEntity[]]>;
+  otherEntities: HassEntities;
+}
+
+const splitByAreas = (
+  registries: Registries,
+  entities: HassEntities
+): SplittedByAreas => {
   const allEntities = { ...entities };
-  const areasWithEntities: Array<[AreaRegistryEntry, HassEntity[]]> = [];
+  const areasWithEntities: SplittedByAreas["areasWithEntities"] = [];
 
   for (const area of registries.areas) {
     const areaEntities: HassEntity[] = [];
