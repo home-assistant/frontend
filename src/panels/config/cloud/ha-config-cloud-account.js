@@ -13,7 +13,7 @@ import "../ha-config-section";
 import "./cloud-webhooks";
 
 import formatDateTime from "../../../common/datetime/format_date_time";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchCloudSubscriptionInfo } from "../../../data/cloud";

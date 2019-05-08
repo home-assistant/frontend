@@ -4,7 +4,7 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import isPwa from "../../../common/config/is_pwa";
 
 import "../ha-config-section";

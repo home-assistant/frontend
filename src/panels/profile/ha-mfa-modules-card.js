@@ -7,7 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../resources/ha-style";
 
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
 let registeredDialog = false;

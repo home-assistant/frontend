@@ -4,7 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/components/buttons/ha-call-api-button";
-import EventsMixin from "../../../src/mixins/events-mixin";
+import { EventsMixin } from "../../../src/mixins/events-mixin";
 
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 
