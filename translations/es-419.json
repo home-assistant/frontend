@@ -868,6 +868,11 @@
                         "title": "Bienvenido a casa",
                         "no_devices": "Esta página le permite controlar sus dispositivos, sin embargo, parece que aún no tiene dispositivos configurados. Dirígete a la página de integraciones para empezar.",
                         "go_to_integrations_page": "Ir a la página de integraciones."
+                    },
+                    "picture-elements": {
+                        "navigate_to": "Navegue a {location}",
+                        "call_service": "Servicio de llamadas {name}",
+                        "more_info": "Mostrar más información: {nombre}"
                     }
                 },
                 "editor": {
@@ -925,7 +930,8 @@
         },
         "sidebar": {
             "log_out": "Cerrar sesión",
-            "developer_tools": "Herramientas para desarrolladores"
+            "developer_tools": "Herramientas para desarrolladores",
+            "external_app_configuration": "Configuración de la aplicación"
         },
         "common": {
             "loading": "Cargando",
