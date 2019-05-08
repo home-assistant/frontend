@@ -115,7 +115,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
         },
       };
       const changes: Partial<HomeAssistant> = { resources };
-      if (language === this.hass!.language) {
+      if (this.hass && language === this.hass.language) {
         changes.localize = computeLocalize(this, language, resources);
       }
       this._updateHass(changes);
