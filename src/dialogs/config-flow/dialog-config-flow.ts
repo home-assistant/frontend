@@ -12,6 +12,7 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-spinner/paper-spinner";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 import "../../components/ha-form";
 import "../../components/ha-markdown";
@@ -44,7 +45,7 @@ import {
   subscribeAreaRegistry,
 } from "../../data/area_registry";
 import { HomeAssistant } from "../../types";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { caseInsensitiveCompare } from "../../common/string/compare";
 
 let instance = 0;
 
@@ -88,7 +89,13 @@ class ConfigFlowDialog extends LitElement {
         this._loading = true;
         this.updateComplete.then(() => this._scheduleCenterDialog());
         try {
-          this._handlers = await getConfigFlowHandlers(this.hass);
+          this._handlers = (await getConfigFlowHandlers(this.hass)).sort(
+            (handlerA, handlerB) =>
+              caseInsensitiveCompare(
+                this.hass.localize(`component.${handlerA}.config.title`),
+                this.hass.localize(`component.${handlerB}.config.title`)
+              )
+          );
         } finally {
           this._loading = false;
         }
