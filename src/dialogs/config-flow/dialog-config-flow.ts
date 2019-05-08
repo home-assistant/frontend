@@ -45,7 +45,6 @@ import {
 } from "../../data/area_registry";
 import { HomeAssistant } from "../../types";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { fireEvent } from "../../common/dom/fire_event";
 
 let instance = 0;
 
@@ -192,7 +191,7 @@ class ConfigFlowDialog extends LitElement {
     }
 
     if (changedProps.has("_devices") && this._dialog) {
-      fireEvent(this._dialog as any, "iron-resize");
+      this._scheduleCenterDialog();
     }
   }
 

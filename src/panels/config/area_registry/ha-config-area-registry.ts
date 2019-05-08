@@ -4,7 +4,6 @@ import {
   html,
   css,
   CSSResult,
-  PropertyDeclarations,
   property,
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
