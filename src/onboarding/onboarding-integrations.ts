@@ -26,6 +26,8 @@ import "./integration-badge";
 import { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
 import { fireEvent } from "../common/dom/fire_event";
+import { onboardIntegrationStep } from "../data/onboarding";
+import { genClientId } from "home-assistant-js-websocket";
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
@@ -148,10 +150,13 @@ class OnboardingIntegrations extends LitElement {
     this._entries = entries;
   }
 
-  private _finish() {
+  private async _finish() {
+    const result = await onboardIntegrationStep(this.hass, {
+      client_id: genClientId(),
+    });
     fireEvent(this, "onboarding-step", {
       type: "integration",
-      result: undefined,
+      result,
     });
   }
 

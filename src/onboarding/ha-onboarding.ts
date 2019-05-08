@@ -9,6 +9,7 @@ import {
   getAuth,
   createConnection,
   genClientId,
+  Auth,
 } from "home-assistant-js-websocket";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import {
@@ -45,7 +46,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @property() private _loading = false;
   @property() private _steps?: OnboardingStep[];
-  private _finishAuthCode?: string;
 
   protected render(): TemplateResult | void {
     const step = this._curStep()!;
@@ -89,7 +89,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
       if (response.status === 404) {
         // We don't load the component when onboarding is done
-        document.location.href = "/";
+        document.location.assign("/");
         return;
       }
 
@@ -97,11 +97,19 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
       if (steps.every((step) => step.done)) {
         // Onboarding is done!
-        document.location.href = "/";
+        document.location.assign("/");
+        return;
       }
 
-      // Concatenate our non-mandatory onboarding steps, if user refreshes, they go to the app.
-      this._steps = [...steps, { step: "integration", done: false }];
+      if (steps[0].done) {
+        // First step is already done, so we need to get auth somewhere else.
+        const auth = await getAuth({
+          hassUrl,
+        });
+        await this._connectHass(auth);
+      }
+
+      this._steps = steps;
     } catch (err) {
       alert("Something went wrong loading loading onboarding, try refreshing");
     }
@@ -117,18 +125,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
     if (stepResult.type === "user") {
       const result = stepResult.result as OnboardingResponses["user"];
-      this._finishAuthCode = result.auth_code_2;
-
       this._loading = true;
       try {
         const auth = await getAuth({
           hassUrl,
           authCode: result.auth_code,
         });
-        const conn = await createConnection({ auth });
-        this.initializeHass(auth, conn);
-        // Load config strings for integrations
-        (this as any)._loadFragmentTranslations(this.hass!.language, "config");
+        await this._connectHass(auth);
       } catch (err) {
         alert("Ah snap, something went wrong!");
         location.reload();
@@ -136,6 +139,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         this._loading = false;
       }
     } else if (stepResult.type === "integration") {
+      const result = stepResult.result as OnboardingResponses["integration"];
       this._loading = true;
 
       // Revoke current auth token.
@@ -149,10 +153,17 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       );
       document.location.assign(
         `/?auth_callback=1&code=${encodeURIComponent(
-          this._finishAuthCode!
+          result.auth_code
         )}&state=${state}`
       );
     }
+  }
+
+  private async _connectHass(auth: Auth) {
+    const conn = await createConnection({ auth });
+    this.initializeHass(auth, conn);
+    // Load config strings for integrations
+    (this as any)._loadFragmentTranslations(this.hass!.language, "config");
   }
 }
 

@@ -1,13 +1,17 @@
 import { handleFetchPromise } from "../util/hass-call-api";
+import { HomeAssistant } from "../types";
 
 export interface OnboardingUserStepResponse {
   auth_code: string;
-  auth_code_2: string;
+}
+
+export interface OnboardingIntegrationStepResponse {
+  auth_code: string;
 }
 
 export interface OnboardingResponses {
   user: OnboardingUserStepResponse;
-  integration: undefined;
+  integration: OnboardingIntegrationStepResponse;
 }
 
 export type ValidOnboardingStep = keyof OnboardingResponses;
@@ -33,4 +37,14 @@ export const onboardUserStep = (params: {
       credentials: "same-origin",
       body: JSON.stringify(params),
     })
+  );
+
+export const onboardIntegrationStep = (
+  hass: HomeAssistant,
+  params: { client_id: string }
+) =>
+  hass.callApi<OnboardingIntegrationStepResponse>(
+    "POST",
+    "onboarding/integration",
+    params
   );
