@@ -80,6 +80,7 @@ class StepFlowExternal extends LitElement {
       },
       "data_entry_flow_progressed"
     );
+    window.open(this.step.url);
   }
 
   static get styles(): CSSResultArray {
