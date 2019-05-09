@@ -22,7 +22,9 @@ let es5Loaded: Promise<unknown> | undefined;
 window.loadES5Adapter = () => {
   if (!es5Loaded) {
     es5Loaded = Promise.all([
-      loadJS(`${__STATIC_PATH__}custom-elements-es5-adapter.js`).catch(),
+      loadJS(
+        `${__STATIC_PATH__}/polyfills/custom-elements-es5-adapter.js`
+      ).catch(),
       import(/* webpackChunkName: "compat" */ "./compatibility"),
     ]);
   }
@@ -47,7 +49,9 @@ function initialize(panel: CustomPanelInfo, properties: {}) {
   let start: Promise<unknown> = Promise.resolve();
 
   if (!webComponentsSupported) {
-    start = start.then(() => loadJS("/static/webcomponents-bundle.js"));
+    start = start.then(() =>
+      loadJS(`${__STATIC_PATH__}/polyfills/webcomponents-bundle.js`)
+    );
   }
 
   if (__BUILD__ === "es5") {

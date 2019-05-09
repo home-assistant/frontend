@@ -855,6 +855,11 @@
                         "required_fields": "Complete todos los campos requeridos",
                         "password_not_match": "Las contraseñas no coinciden"
                     }
+                },
+                "integration": {
+                    "intro": "Los dispositivos y servicios están representados en Home Assistant como integraciones. Puede configurarlos ahora, o hacerlo más tarde desde la pantalla de configuración.",
+                    "more_integrations": "Más",
+                    "finish": "Terminar"
                 }
             },
             "lovelace": {
@@ -868,6 +873,14 @@
                         "title": "Bienvenido a casa",
                         "no_devices": "Esta página te permite controlar tus dispositivos, aunque parece que aún no has configurado ninguno. Dirígete a la página de integraciones para empezar.",
                         "go_to_integrations_page": "Ir a la página de integraciones."
+                    },
+                    "picture-elements": {
+                        "hold": "Mantener:",
+                        "tap": "Toque:",
+                        "navigate_to": "Navegar a {location}",
+                        "toggle": "Alternar {name}",
+                        "call_service": "Ejecutar servicio {name}",
+                        "more_info": "Mostrar más información: {name}"
                     }
                 },
                 "editor": {
@@ -925,7 +938,8 @@
         },
         "sidebar": {
             "log_out": "Cerrar sesión",
-            "developer_tools": "Herramientas para desarrolladores"
+            "developer_tools": "Herramientas para desarrolladores",
+            "external_app_configuration": "Configuración de la aplicación"
         },
         "common": {
             "loading": "Cargando",

@@ -34,6 +34,7 @@ import { HaConfigFlowParams } from "./show-dialog-config-flow";
 import "./step-flow-pick-handler";
 import "./step-flow-loading";
 import "./step-flow-form";
+import "./step-flow-external";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
 import {
@@ -155,6 +156,13 @@ class ConfigFlowDialog extends LitElement {
                 .hass=${this.hass}
               ></step-flow-form>
             `
+          : this._step.type === "external"
+          ? html`
+              <step-flow-external
+                .step=${this._step}
+                .hass=${this.hass}
+              ></step-flow-external>
+            `
           : this._step.type === "abort"
           ? html`
               <step-flow-abort
@@ -251,7 +259,7 @@ class ConfigFlowDialog extends LitElement {
       return;
     }
     const flowFinished = Boolean(
-      this._step && ["success", "abort"].includes(this._step.type)
+      this._step && ["create_entry", "abort"].includes(this._step.type)
     );
 
     // If we created this flow, delete it now.
