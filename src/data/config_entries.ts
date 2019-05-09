@@ -3,6 +3,15 @@ import { createCollection } from "home-assistant-js-websocket";
 import { debounce } from "../common/util/debounce";
 import { LocalizeFunc } from "../common/translations/localize";
 
+export interface DataEntryFlowProgressedEvent {
+  type: "data_entry_flow_progressed";
+  data: {
+    handler: string;
+    flow_id: string;
+    refresh: boolean;
+  };
+}
+
 export interface ConfigEntry {
   entry_id: string;
   domain: string;
@@ -38,6 +47,15 @@ export interface ConfigFlowStepForm {
   description_placeholders: { [key: string]: string };
 }
 
+export interface ConfigFlowStepExternal {
+  type: "external";
+  flow_id: string;
+  handler: string;
+  step_id: string;
+  url: string;
+  description_placeholders: { [key: string]: string };
+}
+
 export interface ConfigFlowStepCreateEntry {
   type: "create_entry";
   version: number;
@@ -60,6 +78,7 @@ export interface ConfigFlowStepAbort {
 
 export type ConfigFlowStep =
   | ConfigFlowStepForm
+  | ConfigFlowStepExternal
   | ConfigFlowStepCreateEntry
   | ConfigFlowStepAbort;
 
