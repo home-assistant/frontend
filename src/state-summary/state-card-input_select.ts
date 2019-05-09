@@ -58,7 +58,7 @@ class StateCardInputSelect extends LitElement {
   private async _selectedOptionChanged(
     ev: PolymerIronSelectEvent<PaperItemElement>
   ) {
-    const option = ev.detail.item.innerText;
+    const option = ev.detail.item.innerText.trim();
     if (option === this.stateObj.state) {
       return;
     }

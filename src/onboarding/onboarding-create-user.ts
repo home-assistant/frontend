@@ -130,7 +130,7 @@ class OnboardingCreateUser extends LitElement {
     );
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
-        this._submitForm();
+        this._submitForm(ev);
       }
     });
   }
@@ -152,7 +152,8 @@ class OnboardingCreateUser extends LitElement {
     }
   }
 
-  private async _submitForm(): Promise<void> {
+  private async _submitForm(ev): Promise<void> {
+    ev.preventDefault();
     if (!this._name || !this._username || !this._password) {
       this._errorMsg = "required_fields";
       return;
