@@ -108,7 +108,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
               .resources="${this.resources}"
               .clientId="${this.clientId}"
               .authProviders="${inactiveProviders}"
-              @pick="${this._handleAuthProviderPick}"
+              @pick-auth-provider="${this._handleAuthProviderPick}"
             ></ha-pick-auth-provider>
           `
         : ""}

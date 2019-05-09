@@ -855,6 +855,11 @@
                         "required_fields": "Vyplňte všechna povinná pole",
                         "password_not_match": "Hesla se neshodují"
                     }
+                },
+                "integration": {
+                    "intro": "Zařízení a služby jsou v programu Home Assistant reprezentovány jako integrace. Můžete je nyní nastavit nebo provést později z konfigurační obrazovky.",
+                    "more_integrations": "Více",
+                    "finish": "Dokončit"
                 }
             },
             "lovelace": {
@@ -868,6 +873,14 @@
                         "title": "Vítejte doma",
                         "no_devices": "Tato stránka umožňuje ovládat vaše zařízení; zdá se však, že ještě nemáte žádné zařízení nastavené. Nejprve tedy přejděte na stránku integrace.",
                         "go_to_integrations_page": "Přejděte na stránku integrace."
+                    },
+                    "picture-elements": {
+                        "hold": "Podržte:",
+                        "tap": "Klepněte:",
+                        "navigate_to": "Přejděte na {location}",
+                        "toggle": "Přepnout {name}",
+                        "call_service": "Zavolat službu {name}",
+                        "more_info": "Zobrazit více informací: {name}"
                     }
                 },
                 "editor": {
@@ -925,7 +938,8 @@
         },
         "sidebar": {
             "log_out": "Odhlásit se",
-            "developer_tools": "Vývojářské nástroje"
+            "developer_tools": "Vývojářské nástroje",
+            "external_app_configuration": "Konfigurace aplikace"
         },
         "common": {
             "loading": "Načítání",
