@@ -1,4 +1,11 @@
-import { LitElement, html, property, PropertyValues } from "lit-element";
+import {
+  LitElement,
+  html,
+  property,
+  PropertyValues,
+  CSSResult,
+  css,
+} from "lit-element";
 import "@material/mwc-button";
 import "../components/ha-form";
 import "../components/ha-markdown";
@@ -20,19 +27,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   protected render() {
     return html`
-      <style>
-        :host {
-          /* So we can set min-height to avoid jumping during loading */
-          display: block;
-        }
-        .action {
-          margin: 24px 0 8px;
-          text-align: center;
-        }
-        .error {
-          color: red;
-        }
-      </style>
       <form>
         ${this._renderForm()}
       </form>
@@ -168,7 +162,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           return;
         }
 
-        this._updateStep(data);
+        await this._updateStep(data);
       } else {
         this._state = "error";
         this._errorMessage = data.message;
@@ -199,7 +193,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     document.location.assign(url);
   }
 
-  private _updateStep(step: ConfigFlowStep) {
+  private async _updateStep(step: ConfigFlowStep) {
     let stepData: any = null;
     if (
       this._step &&
@@ -215,6 +209,15 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     if (stepData != null) {
       this._stepData = stepData;
     }
+
+    await this.updateComplete;
+    // 100ms to give all the form elements time to initialize.
+    setTimeout(() => {
+      const form = this.shadowRoot!.querySelector("ha-form");
+      if (form) {
+        (form as any).focus();
+      }
+    }, 100);
   }
 
   private _computeStepDescription(step: ConfigFlowStepForm) {
@@ -282,7 +285,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         this._redirect(newStep.result);
         return;
       }
-      this._updateStep(newStep);
+      await this._updateStep(newStep);
     } catch (err) {
       // tslint:disable-next-line: no-console
       console.error("Error submitting step", err);
@@ -291,6 +294,22 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     } finally {
       this.style.setProperty("min-height", "");
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        /* So we can set min-height to avoid jumping during loading */
+        display: block;
+      }
+      .action {
+        margin: 24px 0 8px;
+        text-align: center;
+      }
+      .error {
+        color: red;
+      }
+    `;
   }
 }
 customElements.define("ha-auth-flow", HaAuthFlow);

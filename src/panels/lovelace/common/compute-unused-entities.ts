@@ -53,6 +53,9 @@ const addEntities = (entities: Set<string>, obj) => {
   if (obj.cards) {
     obj.cards.forEach((card) => addEntities(entities, card));
   }
+  if (obj.elements) {
+    obj.elements.forEach((card) => addEntities(entities, card));
+  }
   if (obj.badges) {
     obj.badges.forEach((badge) => addEntityId(entities, badge));
   }
