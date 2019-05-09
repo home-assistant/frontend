@@ -850,6 +850,12 @@
             "device_unavailable": "device unavailable",
             "entity_unavailable": "entity unavailable",
             "no_area": "No Area"
+          },
+          "config_flow": {
+            "external_step": {
+              "description": "This step requires you to visit an external website to be completed.",
+              "open_site": "Open website"
+            }
           }
         },
         "users": {
