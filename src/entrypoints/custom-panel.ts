@@ -49,7 +49,9 @@ function initialize(panel: CustomPanelInfo, properties: {}) {
   let start: Promise<unknown> = Promise.resolve();
 
   if (!webComponentsSupported) {
-    start = start.then(() => loadJS("/static/webcomponents-bundle.js"));
+    start = start.then(() =>
+      loadJS("/static/polyfills/webcomponents-bundle.js")
+    );
   }
 
   if (__BUILD__ === "es5") {
