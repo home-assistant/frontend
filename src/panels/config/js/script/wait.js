@@ -18,8 +18,8 @@ export default class WaitAction extends Component {
   onTemplateChange(ev) {
     this.props.onChange(
       this.props.index,
-      Object.assign({}, this.props.trigger, {
-        [ev.target.name]: ev.target.value,
+      Object.assign({}, this.props.action, {
+        [ev.target.getAttribute("name")]: ev.target.value,
       })
     );
   }
