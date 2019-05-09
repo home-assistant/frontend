@@ -50,7 +50,7 @@ function initialize(panel: CustomPanelInfo, properties: {}) {
 
   if (!webComponentsSupported) {
     start = start.then(() =>
-      loadJS("/static/polyfills/webcomponents-bundle.js")
+      loadJS("${__STATIC_PATH__}/polyfills/webcomponents-bundle.js")
     );
   }
 
