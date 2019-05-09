@@ -855,6 +855,11 @@
                         "required_fields": "Omple tots els camps obligatoris",
                         "password_not_match": "Les contrasenyes no coincideixen"
                     }
+                },
+                "integration": {
+                    "intro": "Els dispositius i serveis es representen a Home Assistant com a integracions. Pots configurar-los ara o més tard des de la pàgina de configuració.",
+                    "more_integrations": "Més",
+                    "finish": "Finalitza"
                 }
             },
             "lovelace": {
