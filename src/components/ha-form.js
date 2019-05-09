@@ -189,6 +189,18 @@ class HaForm extends EventsMixin(PolymerElement) {
     };
   }
 
+  focus() {
+    const input = this.shadowRoot.querySelector(
+      "ha-form, paper-input, ha-paper-slider, paper-checkbox, paper-dropdown-menu"
+    );
+
+    if (!input) {
+      return;
+    }
+
+    input.focus();
+  }
+
   _isArray(val) {
     return Array.isArray(val);
   }
