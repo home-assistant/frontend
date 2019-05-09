@@ -855,6 +855,11 @@
                         "required_fields": "填寫所有所需欄位",
                         "password_not_match": "密碼不相符"
                     }
+                },
+                "integration": {
+                    "intro": "將會於 Home Assistant 整合中呈現的裝置與服務。可以現在進行設定，或者稍後於設定選單中進行。",
+                    "more_integrations": "更多",
+                    "finish": "完成"
                 }
             },
             "lovelace": {
