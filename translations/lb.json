@@ -855,6 +855,11 @@
                         "required_fields": "Fëllt all néideg Felder aus",
                         "password_not_match": "Passwierder stëmmen net iwwereneen"
                     }
+                },
+                "integration": {
+                    "intro": "Apparaten a Servicë ginn am Home Assistant als Integratioune representéiert. Dir kënnt si elo astellen, oder méi spéit vun der Konfiguratioun's Säit aus.",
+                    "more_integrations": "Méi",
+                    "finish": "Ofschléissen"
                 }
             },
             "lovelace": {
