@@ -123,18 +123,14 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
 
   private _selectedChanged(ev): void {
     const stateObj = this.hass!.states[this._config!.entity];
-    const option = ev.detail.item.innerText;
+    const option = ev.target.selectedItem.innerText.trim();
     if (option === stateObj.state) {
       return;
     }
 
     forwardHaptic("light");
 
-    setInputSelectOption(
-      this.hass!,
-      stateObj.entity_id,
-      ev.target.selectedItem.innerText
-    );
+    setInputSelectOption(this.hass!, stateObj.entity_id, option);
   }
 }
 
