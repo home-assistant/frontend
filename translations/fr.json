@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Cloud Home Assistant",
                     "description_login": "Connecté en tant que {email}",
-                    "description_not_login": "Pas connecté"
+                    "description_not_login": "Pas connecté",
+                    "description_features": "Contrôle hors de la maison, intégration avec Alexa et Google Assistant."
                 },
                 "integrations": {
                     "caption": "Intégrations",
@@ -854,6 +855,11 @@
                         "required_fields": "Remplissez tous les champs requis",
                         "password_not_match": "Les mots de passe ne correspondent pas"
                     }
+                },
+                "integration": {
+                    "intro": "Les appareils et les services sont représentés dans Home Assistant sous forme d’intégrations. Vous pouvez les configurer maintenant ou le faire plus tard à partir de l'écran de configuration.",
+                    "more_integrations": "Plus",
+                    "finish": "Terminer"
                 }
             },
             "lovelace": {
