@@ -575,7 +575,7 @@
                         "name": "Имя",
                         "username": "Логин",
                         "password": "Пароль",
-                        "create": "Создать"
+                        "create": "Добавить"
                     }
                 },
                 "cloud": {
@@ -589,7 +589,7 @@
                     "description": "Управляйте подключенными устройствами и службами",
                     "discovered": "Обнаружено",
                     "configured": "Настроено",
-                    "new": "Создать новую интеграцию",
+                    "new": "Интеграции",
                     "configure": "Настроить",
                     "none": "Пока ничего не настроено",
                     "config_entry": {
@@ -745,8 +745,8 @@
             },
             "page-authorize": {
                 "initializing": "Инициализация",
-                "authorizing_client": "Вы собираетесь предоставить доступ {clientId} к вашему Home Assistant.",
-                "logging_in_with": "Вход с помощью **{authProviderName}**.",
+                "authorizing_client": "Получение доступа к Home Assistant через {clientId}.",
+                "logging_in_with": "Провайдер аутентификации: **{authProviderName}**.",
                 "pick_auth_provider": "Или войти с помощью",
                 "abort_intro": "Вход прерван",
                 "form": {
@@ -855,6 +855,11 @@
                         "required_fields": "Заполните все обязательные поля",
                         "password_not_match": "Пароли не совпадают"
                     }
+                },
+                "integration": {
+                    "intro": "Устройства и сервисы представлены в Home Assistant как интеграции. Вы можете добавить их сейчас или сделать это позже в разделе настроек.",
+                    "more_integrations": "Все интеграции",
+                    "finish": "Готово"
                 }
             },
             "lovelace": {
