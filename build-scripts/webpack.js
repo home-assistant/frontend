@@ -20,6 +20,12 @@ version = version[0];
 const genMode = (isProdBuild) => (isProdBuild ? "production" : "development");
 const genDevTool = (isProdBuild) =>
   isProdBuild ? "cheap-source-map" : "inline-cheap-module-source-map";
+const genFilename = (isProdBuild, dontHash = new Set()) => ({ chunk }) => {
+  if (!isProdBuild || dontHash.has(chunk.name)) {
+    return `${chunk.name}.js`;
+  }
+  return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
+};
 const genChunkFilename = (isProdBuild, isStatsBuild) =>
   isProdBuild && !isStatsBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
 
@@ -158,14 +164,7 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
         }),
     ].filter(Boolean),
     output: {
-      filename: ({ chunk }) => {
-        const dontHash = new Set([
-          // Files who'se names should not be hashed.
-          // We currently have none.
-        ]);
-        if (!isProdBuild || dontHash.has(chunk.name)) return `${chunk.name}.js`;
-        return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
-      },
+      filename: genFilename(isProdBuild),
       chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
       path: latestBuild ? paths.output : paths.output_es5,
       publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
@@ -187,6 +186,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     },
     optimization: optimization(latestBuild),
     plugins: [
+      new ManifestPlugin(),
       new webpack.DefinePlugin({
         __DEV__: !isProdBuild,
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
@@ -201,7 +201,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     ].filter(Boolean),
     resolve,
     output: {
-      filename: "[name].js",
+      filename: genFilename(isProdBuild),
       chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
       path: path.resolve(
         paths.demo_root,
