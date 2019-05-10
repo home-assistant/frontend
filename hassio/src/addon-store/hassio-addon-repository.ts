@@ -17,7 +17,7 @@ import {
   HassioAddonRepository,
 } from "../../../src/data/hassio";
 import { navigate } from "../../../src/common/navigate";
-import { filterAndSort } from "../components/hassio-filter-and-sort";
+import { filterAndSort } from "../components/hassio-filter-addons";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -27,7 +27,11 @@ class HassioAddonRepositoryEl extends LitElement {
 
   protected render(): TemplateResult | void {
     const repo = this.repo;
-    const addons = memoizeOne(filterAndSort(this.addons, this.filter));
+    const addons = this.filter
+      ? filterAndSort(this.addons, this.filter)
+      : this.addons.sort((a, b) =>
+          a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+        );
 
     if (this.filter && addons.length < 1) {
       return html`

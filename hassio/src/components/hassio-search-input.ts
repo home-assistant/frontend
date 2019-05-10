@@ -64,7 +64,6 @@ class HassioSearchInput extends LitElement {
       .search-container {
         display: inline-flex;
         width: calc(100% - 24px);
-        padding: 2px 16px;
         align-items: center;
       }
       .prefix {
