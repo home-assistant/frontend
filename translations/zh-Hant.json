@@ -603,6 +603,12 @@
                         "device_unavailable": "裝置不可用",
                         "entity_unavailable": "物件不可用",
                         "no_area": "無分區"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "此步驟將需要開啟外部網站方能完成。",
+                            "open_site": "開啟網站"
+                        }
                     }
                 },
                 "zha": {

@@ -925,7 +925,8 @@
         },
         "sidebar": {
             "log_out": "Esci",
-            "developer_tools": "Strumenti per gli sviluppatori"
+            "developer_tools": "Strumenti per gli sviluppatori",
+            "external_app_configuration": "Configurazione dell'App"
         },
         "common": {
             "loading": "Caricamento",
