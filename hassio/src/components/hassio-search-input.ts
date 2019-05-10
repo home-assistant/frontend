@@ -32,6 +32,7 @@ class HassioSearchInput extends LitElement {
             html`
               <paper-icon-button
                 slot="suffix"
+                class="suffix"
                 @click=${this._clearSearch}
                 icon="hassio:close"
                 alt="Clear"
@@ -67,7 +68,7 @@ class HassioSearchInput extends LitElement {
         align-items: center;
       }
       .prefix {
-        margin: 2px 8px;
+        margin: 8px;
       }
     `;
   }
