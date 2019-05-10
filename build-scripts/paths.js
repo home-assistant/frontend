@@ -13,5 +13,5 @@ module.exports = {
   demo_root: path.resolve(__dirname, "../demo/dist"),
   demo_static: path.resolve(__dirname, "../demo/dist/static"),
   demo_output: path.resolve(__dirname, "../demo/dist/frontend_latest"),
-  demo_output_es5: path.resolve(__dirname, "../demo/frontend_es5"),
+  demo_output_es5: path.resolve(__dirname, "../demo/dist/frontend_es5"),
 };

@@ -20,7 +20,7 @@ gulp.task(
       "gen-service-worker-dev",
       "gen-icons",
       "gen-pages-dev",
-      "gen-index-html-dev",
+      "gen-index-app-dev",
       "build-translations"
     ),
     "copy-static",
@@ -44,7 +44,7 @@ gulp.task(
     ),
     gulp.parallel(
       "gen-pages-prod",
-      "gen-index-html-prod",
+      "gen-index-app-prod",
       "gen-service-worker-prod"
     )
   )
