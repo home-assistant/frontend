@@ -1,7 +1,13 @@
 import "./hassio-addon-repository";
 import "./hassio-repositories-editor";
 import { TemplateResult, html } from "lit-html";
-import { LitElement, property, PropertyValues } from "lit-element";
+import {
+  LitElement,
+  CSSResult,
+  css,
+  property,
+  PropertyValues,
+} from "lit-element";
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioAddonRepository,
@@ -109,6 +115,14 @@ class HassioAddonStore extends LitElement {
 
   private async _filterChanged(e) {
     this._filter = e.detail.value;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      hassio-addon-repository {
+        margin-top: 24px;
+      }
+    `;
   }
 }
 

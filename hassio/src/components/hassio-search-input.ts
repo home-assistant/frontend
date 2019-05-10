@@ -59,7 +59,7 @@ class HassioSearchInput extends LitElement {
     return css`
       paper-input {
         flex: 1 1 auto;
-        margin-right: 16px;
+        margin: 0 16px;
       }
       .search-container {
         display: inline-flex;
@@ -67,7 +67,7 @@ class HassioSearchInput extends LitElement {
         align-items: center;
       }
       .prefix {
-        margin: 8px;
+        margin: 2px 8px;
       }
     `;
   }
