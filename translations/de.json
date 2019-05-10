@@ -603,6 +603,12 @@
                         "device_unavailable": "Gerät nicht verfügbar",
                         "entity_unavailable": "Entität nicht verfügbar",
                         "no_area": "Kein Bereich"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Für diesen Schritt musst du eine externe Website besuchen, um den Vorgang abzuschließen.",
+                            "open_site": "Website öffnen"
+                        }
                     }
                 },
                 "zha": {
@@ -855,6 +861,11 @@
                         "required_fields": "Fülle alle Pflichtfelder aus.",
                         "password_not_match": "Passwörter stimmen nicht überein"
                     }
+                },
+                "integration": {
+                    "intro": "Geräte und Dienste werden in Home Assistant als Integrationen dargestellt. Sie können jetzt oder später über die Konfigurationsseite eingerichtet werden.",
+                    "more_integrations": "Mehr",
+                    "finish": "Fertig"
                 }
             },
             "lovelace": {
