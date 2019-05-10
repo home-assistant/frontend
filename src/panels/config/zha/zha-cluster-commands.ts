@@ -1,7 +1,7 @@
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
+import "../../../components/ha-card";
 import "../ha-config-section";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
@@ -88,7 +88,7 @@ export class ZHAClusterCommands extends LitElement {
         </div>
         <span slot="introduction">View and issue cluster commands.</span>
 
-        <paper-card class="content">
+        <ha-card class="content">
           <div class="command-picker">
             <paper-dropdown-menu
               label="Commands of the selected cluster"
@@ -149,7 +149,7 @@ export class ZHAClusterCommands extends LitElement {
                 </div>
               `
             : ""}
-        </paper-card>
+        </ha-card>
       </ha-config-section>
     `;
   }
@@ -215,8 +215,7 @@ export class ZHAClusterCommands extends LitElement {
           margin-top: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
