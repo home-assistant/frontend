@@ -603,6 +603,12 @@
                         "device_unavailable": "Apparat net erreechbar",
                         "entity_unavailable": "Entitéit net erreechbar",
                         "no_area": "Kee Beräich"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Fir dës Etapp ofzeschléisse muss dir eng externe Internetsäit besichen.",
+                            "open_site": "Internetsäit opmaachen"
+                        }
                     }
                 },
                 "zha": {

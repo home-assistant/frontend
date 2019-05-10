@@ -603,6 +603,12 @@
                         "device_unavailable": "dispositiu no disponible",
                         "entity_unavailable": "entitat no disponible",
                         "no_area": "Sense àrea"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
+                            "open_site": "Vés al lloc web"
+                        }
                     }
                 },
                 "zha": {
