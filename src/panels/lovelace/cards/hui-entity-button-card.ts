@@ -132,7 +132,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
                   filter: this._computeBrightness(stateObj),
                   color: this._computeColor(stateObj),
                   height: this._config.icon_height
-                    ? `${this._config.icon_height}px`
+                    ? this._config.icon_height
                     : "auto",
                 })}"
               ></ha-icon>
