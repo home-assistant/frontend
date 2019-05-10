@@ -603,6 +603,12 @@
                         "device_unavailable": "enheten er utilgjengelig",
                         "entity_unavailable": "oppføringen er utilgjengelig",
                         "no_area": "Ingen område"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Dette trinnet krever at du besøker et eksternt nettsted som skal fylles ut.",
+                            "open_site": "Åpne nettsted"
+                        }
                     }
                 },
                 "zha": {
@@ -855,6 +861,11 @@
                         "required_fields": "Fyll ut alle nødvendige felt",
                         "password_not_match": "Passordene er ikke like"
                     }
+                },
+                "integration": {
+                    "intro": "Enheter og tjenester er representert i Home Assistant som integrasjoner. Du kan sette dem opp nå, eller gjøre det senere fra konfigurasjonen skjermen.",
+                    "more_integrations": "Mer",
+                    "finish": "Fullfør"
                 }
             },
             "lovelace": {
@@ -873,6 +884,8 @@
                         "hold": "Hold:",
                         "tap": "Trykk:",
                         "navigate_to": "Naviger til {location}",
+                        "toggle": "Veksle {name}",
+                        "call_service": "Kall tjeneste {navn}",
                         "more_info": "Vis mer info: {name}"
                     }
                 },
@@ -931,7 +944,8 @@
         },
         "sidebar": {
             "log_out": "Logg ut",
-            "developer_tools": "Utviklerverktøy"
+            "developer_tools": "Utviklerverktøy",
+            "external_app_configuration": "Appkonfigurasjon"
         },
         "common": {
             "loading": "Laster",
