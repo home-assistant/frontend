@@ -25,13 +25,20 @@ class HassioAddonRepositoryEl extends LitElement {
   @property() public addons!: HassioAddonInfo[];
   @property() public filter!: string;
 
+  private _getAddons = memoizeOne(
+    (addons: HassioAddonInfo[], filter?: string) => {
+      if (filter) {
+        return filterAndSort(addons, filter);
+      }
+      return addons.sort((a, b) =>
+        a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+      );
+    }
+  );
+
   protected render(): TemplateResult | void {
     const repo = this.repo;
-    const addons = this.filter
-      ? filterAndSort(this.addons, this.filter)
-      : this.addons.sort((a, b) =>
-          a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
-        );
+    const addons = this._getAddons(this.addons, this.filter);
 
     if (this.filter && addons.length < 1) {
       return html`
