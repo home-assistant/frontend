@@ -9,6 +9,7 @@ import {
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-icon-button/paper-icon-button";
 import "@material/mwc-button";
 
 @customElement("hassio-search-input")
@@ -44,8 +45,8 @@ class HassioSearchInput extends LitElement {
     `;
   }
 
-  private async _filterChanged(value) {
-    fireEvent(this, "filter-changed", { value: String(value) });
+  private async _filterChanged(value: string) {
+    fireEvent(this, "value-changed", { value: String(value) });
   }
 
   private async _filterInputChanged(e) {

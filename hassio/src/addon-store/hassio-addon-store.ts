@@ -83,7 +83,7 @@ class HassioAddonStore extends LitElement {
 
       <hassio-search-input
         .filter=${this._filter}
-        @filter-changed=${this._filterChanged}
+        @value-changed=${this._filterChanged}
       ></hassio-search-input>
 
       ${repos}
