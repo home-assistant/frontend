@@ -74,6 +74,7 @@
     "deep-clone-simple": "^1.1.1",
     "es6-object-assign": "^1.1.0",
     "fecha": "^3.0.2",
+    "fuse.js": "^3.4.4",
     "hls.js": "^0.12.4",
     "home-assistant-js-websocket": "^4.1.2",
     "intl-messageformat": "^2.2.0",
