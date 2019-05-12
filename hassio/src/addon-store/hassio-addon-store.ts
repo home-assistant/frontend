@@ -16,6 +16,7 @@ import {
   reloadHassioAddons,
 } from "../../../src/data/hassio";
 import "../../../src/layouts/loading-screen";
+import "../components/hassio-search-input";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {
@@ -37,10 +38,12 @@ class HassioAddonStore extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _addons?: HassioAddonInfo[];
   @property() private _repos?: HassioAddonRepository[];
+  @property() private _filter?: string;
 
   public async refreshData() {
     this._repos = undefined;
     this._addons = undefined;
+    this._filter = undefined;
     await reloadHassioAddons(this.hass);
     await this._loadData();
   }
@@ -67,6 +70,7 @@ class HassioAddonStore extends LitElement {
           .hass=${this.hass}
           .repo=${repo}
           .addons=${addons}
+          .filter=${this._filter}
         ></hassio-addon-repository>
       `);
     }
@@ -76,6 +80,11 @@ class HassioAddonStore extends LitElement {
         .hass=${this.hass}
         .repos=${this._repos}
       ></hassio-repositories-editor>
+
+      <hassio-search-input
+        .filter=${this._filter}
+        @value-changed=${this._filterChanged}
+      ></hassio-search-input>
 
       ${repos}
     `;
@@ -102,6 +111,10 @@ class HassioAddonStore extends LitElement {
     } catch (err) {
       alert("Failed to fetch add-on info");
     }
+  }
+
+  private async _filterChanged(e) {
+    this._filter = e.detail.value;
   }
 
   static get styles(): CSSResult {
