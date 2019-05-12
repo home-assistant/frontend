@@ -135,6 +135,7 @@ class HassioRepositoriesEditor extends LitElement {
         paper-input {
           width: calc(100% - 49px);
           display: inline-block;
+          margin-top: -4px;
         }
       `,
     ];
