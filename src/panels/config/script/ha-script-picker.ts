@@ -5,6 +5,7 @@ import {
   css,
   TemplateResult,
   property,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -24,6 +25,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { triggerScript } from "../../../data/script";
 
+@customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public scripts!: HassEntity[];
@@ -160,4 +162,8 @@ class HaScriptPicker extends LitElement {
   }
 }
 
-customElements.define("ha-script-picker", HaScriptPicker);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-script-picker": HaScriptPicker;
+  }
+}
