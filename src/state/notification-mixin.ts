@@ -1,6 +1,6 @@
 export default (superClass) =>
   class extends superClass {
-    firstUpdated(changedProps) {
+    protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.registerDialog({
         dialogShowEvent: "hass-notification",
