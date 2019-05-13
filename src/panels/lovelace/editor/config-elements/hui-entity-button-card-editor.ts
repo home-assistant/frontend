@@ -31,6 +31,7 @@ const cardConfigStruct = struct({
   show_name: "boolean?",
   icon: "string?",
   show_icon: "boolean?",
+  icon_height: "string?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
   theme: "string?",
@@ -66,6 +67,12 @@ export class HuiEntityButtonCardEditor extends LitElement
 
   get _show_icon(): boolean {
     return this._config!.show_icon || true;
+  }
+
+  get _icon_height(): string {
+    return this._config!.icon_height && this._config!.icon_height.includes("px")
+      ? String(parseFloat(this._config!.icon_height))
+      : "";
   }
 
   get _tap_action(): ActionConfig {
@@ -125,12 +132,24 @@ export class HuiEntityButtonCardEditor extends LitElement
             >Show Icon?</paper-toggle-button
           >
         </div>
-        <hui-theme-select-editor
-          .hass="${this.hass}"
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @theme-changed="${this._valueChanged}"
-        ></hui-theme-select-editor>
+        <div class="side-by-side">
+          <paper-input
+            label="Icon Height (Optional)"
+            .value="${this._icon_height}"
+            .configValue="${"icon_height"}"
+            @value-changed="${this._valueChanged}"
+            type="number"
+          ><div class="suffix" slot="suffix">px</div>
+          </paper-input>
+          <hui-theme-select-editor
+            .hass="${this.hass}"
+            .value="${this._theme}"
+            .configValue="${"theme"}"
+            @theme-changed="${this._valueChanged}"
+          ></hui-theme-select-editor>
+        </paper-input>
+
+        </div>
         <div class="side-by-side">
           <hui-action-editor
             label="Tap Action"
@@ -169,11 +188,20 @@ export class HuiEntityButtonCardEditor extends LitElement
       if (target.value === "") {
         delete this._config[target.configValue!];
       } else {
+        let newValue: string | undefined;
+        if (
+          target.configValue === "icon_height" &&
+          !isNaN(Number(target.value))
+        ) {
+          newValue = `${String(target.value)}px`;
+        }
         this._config = {
           ...this._config,
           [target.configValue!]:
             target.checked !== undefined
               ? target.checked
+              : newValue !== undefined
+              ? newValue
               : target.value
               ? target.value
               : target.config,
