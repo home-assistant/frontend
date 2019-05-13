@@ -6,8 +6,8 @@ import {
   PropertyDeclarations,
   TemplateResult,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-card";
 
 import { HomeAssistant } from "../../types";
 import {
@@ -85,9 +85,9 @@ class SystemHealthCard extends LitElement {
     }
 
     return html`
-      <paper-card heading="System Health">
+      <ha-card header="System Health">
         <div class="card-content">${sections}</div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -114,10 +114,6 @@ class SystemHealthCard extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-card {
-        display: block;
-      }
-
       table {
         width: 100%;
       }
