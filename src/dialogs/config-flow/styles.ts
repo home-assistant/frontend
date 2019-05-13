@@ -21,7 +21,7 @@ export const configFlowContentStyles = css`
   }
 
   ha-markdown {
-    word-break: break-word;
+    overflow-wrap: break-word;
   }
   ha-markdown a {
     color: var(--primary-color);
