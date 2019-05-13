@@ -8,7 +8,7 @@ import {
   property,
 } from "lit-element";
 
-import "@polymer/paper-card/paper-card";
+import "../../../components/ha-card";
 
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
@@ -32,8 +32,8 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <paper-card
-        .heading="${this.hass.localize(
+      <ha-card
+        .header="${this.hass.localize(
           "ui.panel.lovelace.cards.empty_state.title"
         )}"
       >
@@ -51,7 +51,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
             </mwc-button>
           </a>
         </div>
-      </paper-card>
+      </header-card>
     `;
   }
 
