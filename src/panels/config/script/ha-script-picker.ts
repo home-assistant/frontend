@@ -24,6 +24,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { triggerScript } from "../../../data/script";
+import { showToast } from "../../../util/toast";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -95,6 +96,9 @@ class HaScriptPicker extends LitElement {
   private async _runScript(ev) {
     const script = ev.currentTarget.script as HassEntity;
     await triggerScript(this.hass, script.entity_id);
+    showToast(this, {
+      message: `Triggered ${computeStateName(script)}`,
+    });
   }
 
   static get styles(): CSSResultArray {
