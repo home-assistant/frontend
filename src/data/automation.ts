@@ -6,6 +6,7 @@ import {
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     id?: string;
+    last_triggered: string;
   };
 }
 
