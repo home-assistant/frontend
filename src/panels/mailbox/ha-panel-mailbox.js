@@ -2,7 +2,6 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
@@ -12,6 +11,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/ha-menu-button";
+import "../../components/ha-card";
 import "../../resources/ha-style";
 
 import formatDateTime from "../../common/datetime/format_date_time";
@@ -39,8 +39,8 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
           margin: 0 auto;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
+          overflow: hidden;
         }
 
         paper-item {
@@ -98,7 +98,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </div>
         </app-header>
         <div class="content">
-          <paper-card>
+          <ha-card>
             <template is="dom-if" if="[[!_messages.length]]">
               <div class="card-content empty">
                 [[localize('ui.panel.mailbox.empty')]]
@@ -120,7 +120,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 </paper-item-body>
               </paper-item>
             </template>
-          </paper-card>
+          </ha-card>
         </div>
       </app-header-layout>
     `;
