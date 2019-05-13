@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -8,6 +7,7 @@ import { EventsMixin } from "../../../mixins/events-mixin";
 import isPwa from "../../../common/config/is_pwa";
 
 import "../ha-config-section";
+import "../../../components/ha-card";
 
 let registeredDialog = false;
 
@@ -19,8 +19,7 @@ class OzwLog extends EventsMixin(PolymerElement) {
         margin-top: 24px;
       }
 
-      paper-card {
-        display: block;
+      ha-card {
         margin: 0 auto;
         max-width: 600px;
       }
@@ -34,7 +33,7 @@ class OzwLog extends EventsMixin(PolymerElement) {
     </style>
     <ha-config-section is-wide="[[isWide]]">
       <span slot="header">OZW Log</span>
-      <paper-card>
+      <ha-card>
         <div class="device-picker">
           <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
           </paper-input>
@@ -42,7 +41,7 @@ class OzwLog extends EventsMixin(PolymerElement) {
         <div class="card-actions">
           <mwc-button raised="true" on-click="_openLogWindow">Load</mwc-button>
           <mwc-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</mwc-button>
-      </paper-card>
+      </ha-card>
     </ha-config-section>
 `;
   }

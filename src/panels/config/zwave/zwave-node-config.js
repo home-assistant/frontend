@@ -1,4 +1,3 @@
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -7,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
 
 class ZwaveNodeConfig extends PolymerElement {
   static get template() {
@@ -16,8 +16,7 @@ class ZwaveNodeConfig extends PolymerElement {
           margin-top: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
@@ -36,7 +35,7 @@ class ZwaveNodeConfig extends PolymerElement {
         }
       </style>
       <div class="content">
-        <paper-card heading="Node config options">
+        <ha-card header="Node config options">
           <template is="dom-if" if="[[_wakeupNode]]">
             <div class="card-actions">
               <paper-input
@@ -159,7 +158,7 @@ class ZwaveNodeConfig extends PolymerElement {
               </ha-call-service-button>
             </div>
           </template>
-        </paper-card>
+        </ha-card>
       </div>
     `;
   }

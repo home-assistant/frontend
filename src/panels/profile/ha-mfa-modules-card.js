@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../components/ha-card";
 
 import "../../resources/ha-style";
 
@@ -31,16 +31,11 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           position: absolute;
           top: -4px;
         }
-        paper-card {
-          display: block;
-          max-width: 600px;
-          margin: 16px auto;
-        }
         mwc-button {
           margin-right: -0.57em;
         }
       </style>
-      <paper-card heading="[[localize('ui.panel.profile.mfa.header')]]">
+      <ha-card header="[[localize('ui.panel.profile.mfa.header')]]">
         <template is="dom-repeat" items="[[mfaModules]]" as="module">
           <paper-item>
             <paper-item-body two-line="">
@@ -59,7 +54,7 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
             </template>
           </paper-item>
         </template>
-      </paper-card>
+      </ha-card>
     `;
   }
 

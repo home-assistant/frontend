@@ -1,4 +1,3 @@
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -6,6 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 
@@ -17,8 +17,7 @@ class ZwaveGroups extends PolymerElement {
           margin-top: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
@@ -37,7 +36,7 @@ class ZwaveGroups extends PolymerElement {
           padding-bottom: 12px;
         }
       </style>
-      <paper-card class="content" heading="Node group associations">
+      <ha-card class="content" header="Node group associations">
         <!-- TODO make api for getting groups and members -->
         <div class="device-picker">
           <paper-dropdown-menu label="Group" dynamic-align="" class="flex">
@@ -120,7 +119,7 @@ class ZwaveGroups extends PolymerElement {
             </template>
           </div>
         </template>
-      </paper-card>
+      </ha-card>
     `;
   }
 
