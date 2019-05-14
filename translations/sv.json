@@ -603,6 +603,12 @@
                         "device_unavailable": "enhet otillgänglig",
                         "entity_unavailable": "entitet otillgänglig",
                         "no_area": "Inget område (\"area\")"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Det här steget kräver att du besöker en extern webbplats för att slutföra.",
+                            "open_site": "Öppna webbplats"
+                        }
                     }
                 },
                 "zha": {
@@ -855,6 +861,11 @@
                         "required_fields": "Fyll i alla fält som krävs",
                         "password_not_match": "Lösenorden överensstämmer inte"
                     }
+                },
+                "integration": {
+                    "intro": "Enheter och tjänster representeras i Home Assistant som integrationer. Du kan ställa in dem nu eller göra det senare från konfigurations-skärmen.",
+                    "more_integrations": "Mer",
+                    "finish": "Avsluta"
                 }
             },
             "lovelace": {
@@ -868,6 +879,14 @@
                         "title": "Välkommen hem",
                         "no_devices": "På den här sidan kan du styra dina enheter, men det ser ut som om du inte har några enheter ännu. Gå till integrationssidan för att komma igång.",
                         "go_to_integrations_page": "Gå till integrationssidan."
+                    },
+                    "picture-elements": {
+                        "hold": "Håll:",
+                        "tap": "Tryck:",
+                        "navigate_to": "Navigera till {location}",
+                        "toggle": "Växla {name}",
+                        "call_service": "Kör tjänst {name}",
+                        "more_info": "Visa mer-info: {name}"
                     }
                 },
                 "editor": {
@@ -925,7 +944,8 @@
         },
         "sidebar": {
             "log_out": "Logga ut",
-            "developer_tools": "Utvecklarverktyg"
+            "developer_tools": "Utvecklarverktyg",
+            "external_app_configuration": "Appkonfiguration"
         },
         "common": {
             "loading": "Läser in",

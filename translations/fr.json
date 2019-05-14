@@ -603,6 +603,12 @@
                         "device_unavailable": "appareil indisponible",
                         "entity_unavailable": "entité indisponible",
                         "no_area": "Pas de pièce"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Cette étape nécessite la visite d'un site Web externe pour être complétée.",
+                            "open_site": "Ouvrir le site"
+                        }
                     }
                 },
                 "zha": {
@@ -873,6 +879,14 @@
                         "title": "Bienvenue à la maison",
                         "no_devices": "Cette page vous permet de contrôler vos périphériques. Toutefois, il semble que vous n’ayez pas encore configuré de périphériques. Rendez-vous sur la page des intégrations pour commencer.",
                         "go_to_integrations_page": "Aller à la page des intégrations."
+                    },
+                    "picture-elements": {
+                        "hold": "Maintenir:",
+                        "tap": "Appuyez sur:",
+                        "navigate_to": "Accédez à {location}",
+                        "toggle": "Activer\/désactiver {name}",
+                        "call_service": "Appeler le service {name}",
+                        "more_info": "Afficher plus d'informations: {name}"
                     }
                 },
                 "editor": {
@@ -930,7 +944,8 @@
         },
         "sidebar": {
             "log_out": "Déconnexion",
-            "developer_tools": "Outils de développement"
+            "developer_tools": "Outils de développement",
+            "external_app_configuration": "Configuration de l'application"
         },
         "common": {
             "loading": "Chargement",

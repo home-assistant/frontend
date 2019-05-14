@@ -603,6 +603,12 @@
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가",
                         "no_area": "영역 없음"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "이 단계는 외부 웹사이트 방문이 필요합니다.",
+                            "open_site": "웹사이트 열기"
+                        }
                     }
                 },
                 "zha": {
