@@ -603,6 +603,12 @@
                         "device_unavailable": "urządzenie niedostępne",
                         "entity_unavailable": "encja niedostępna",
                         "no_area": "brak"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Ten krok wymaga od Ciebie odwiedzenia zewnętrznej strony.",
+                            "open_site": "Otwórz stronę"
+                        }
                     }
                 },
                 "zha": {
@@ -855,6 +861,11 @@
                         "required_fields": "Wypełnij wszystkie wymagane pola",
                         "password_not_match": "Hasła nie są takie same"
                     }
+                },
+                "integration": {
+                    "intro": "Urządzenia i usługi są reprezentowane w Home Assistant jako integracje. Możesz je teraz skonfigurować lub zrobić to później w konfiguracji.",
+                    "more_integrations": "Więcej",
+                    "finish": "Koniec"
                 }
             },
             "lovelace": {
