@@ -1,8 +1,8 @@
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import "../../../components/entity/state-badge";
+import "../../../components/ha-card";
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -108,7 +108,7 @@ class ZHADeviceCard extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <paper-card heading="${this.isJoinPage ? this.device!.name : ""}">
+      <ha-card header="${this.isJoinPage ? this.device!.name : ""}">
         ${
           this.isJoinPage
             ? html`
@@ -256,7 +256,7 @@ class ZHADeviceCard extends LitElement {
             : ""
         }
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -326,7 +326,7 @@ class ZHADeviceCard extends LitElement {
           padding: 4px;
           justify-content: left;
         }
-        paper-card {
+        ha-card {
           flex: 1 0 100%;
           padding-bottom: 10px;
           min-width: 425px;

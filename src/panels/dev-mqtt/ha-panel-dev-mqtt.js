@@ -2,12 +2,12 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
 import "../../util/app-localstorage-document";
@@ -27,10 +27,6 @@ class HaPanelDevMqtt extends PolymerElement {
           max-width: 600px;
           margin: 0 auto;
           direction: ltr;
-        }
-
-        paper-card {
-          display: block;
         }
 
         mwc-button {
@@ -55,7 +51,7 @@ class HaPanelDevMqtt extends PolymerElement {
         </app-localstorage-document>
 
         <div class="content">
-          <paper-card heading="Publish a packet">
+          <ha-card header="Publish a packet">
             <div class="card-content">
               <paper-input label="topic" value="{{topic}}"></paper-input>
 
@@ -68,7 +64,7 @@ class HaPanelDevMqtt extends PolymerElement {
             <div class="card-actions">
               <mwc-button on-click="_publish">Publish</mwc-button>
             </div>
-          </paper-card>
+          </ha-card>
         </div>
       </app-header-layout>
     `;

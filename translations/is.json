@@ -268,7 +268,7 @@
             },
             "config": {
                 "header": "Stilla af Home Assistant",
-                "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistang. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
+                "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistant. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
                 "core": {
                     "caption": "Almennt",
                     "description": "Staðfesta að stillingarskráin þín sé rétt og stjórnun á miðlara",
@@ -573,7 +573,7 @@
                 },
                 "person": {
                     "caption": "Persónur",
-                    "description": "Stjórna persónum sem Home assistand er að rekja.",
+                    "description": "Stjórna persónum sem Home assistant er að rekja.",
                     "detail": {
                         "name": "Nafn",
                         "device_tracker_intro": "Veldu tæki sem tilheyrir þessari persónu.",

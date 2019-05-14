@@ -1,6 +1,5 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import "@material/mwc-button";
@@ -8,6 +7,7 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
 
@@ -58,7 +58,7 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
         </app-header>
 
         <div class="content">
-          <paper-card heading="[[hass.user.name]]">
+          <ha-card header="[[hass.user.name]]">
             <div class="card-content">
               [[localize('ui.panel.profile.current_user', 'fullName',
               hass.user.name)]]
@@ -87,7 +87,7 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 >[[localize('ui.panel.profile.logout')]]</mwc-button
               >
             </div>
-          </paper-card>
+          </ha-card>
 
           <template is="dom-if" if="[[_canChangePassword(hass.user)]]">
             <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
