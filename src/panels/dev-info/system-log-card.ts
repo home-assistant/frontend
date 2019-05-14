@@ -6,11 +6,11 @@ import {
   PropertyDeclarations,
   TemplateResult,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-card";
 import "../../components/buttons/ha-call-service-button";
 import "../../components/buttons/ha-progress-button";
 import { HomeAssistant } from "../../types";
@@ -43,7 +43,7 @@ class SystemLogCard extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <div class="system-log-intro">
-        <paper-card>
+        <ha-card>
           ${this._items === undefined
             ? html`
                 <div class="loading-container">
@@ -96,7 +96,7 @@ class SystemLogCard extends LitElement {
                   >
                 </div>
               `}
-        </paper-card>
+        </ha-card>
       </div>
     `;
   }
@@ -131,8 +131,7 @@ class SystemLogCard extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-card {
-        display: block;
+      ha-card {
         padding-top: 16px;
       }
 

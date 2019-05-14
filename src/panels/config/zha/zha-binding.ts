@@ -1,8 +1,8 @@
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
+import "../../../components/ha-card";
 import "../ha-config-section";
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-listbox/paper-listbox";
@@ -55,7 +55,7 @@ export class ZHABindingControl extends LitElement {
         </div>
         <span slot="introduction">Bind and unbind devices.</span>
 
-        <paper-card class="content">
+        <ha-card class="content">
           <div class="command-picker">
             <paper-dropdown-menu label="Bindable Devices" class="flex">
               <paper-listbox
@@ -102,7 +102,7 @@ export class ZHABindingControl extends LitElement {
                 `
               : ""}
           </div>
-        </paper-card>
+        </ha-card>
       </ha-config-section>
     `;
   }
@@ -155,8 +155,7 @@ export class ZHABindingControl extends LitElement {
           margin-top: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
