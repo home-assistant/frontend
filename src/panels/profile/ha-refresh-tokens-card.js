@@ -1,6 +1,8 @@
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 
+import "../../components/ha-card";
+
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { EventsMixin } from "../../mixins/events-mixin";
@@ -17,9 +19,6 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
-        paper-card {
-          display: block;
-        }
         paper-icon-button {
           color: var(--primary-text-color);
         }
@@ -27,9 +26,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--disabled-text-color);
         }
       </style>
-      <paper-card
-        heading="[[localize('ui.panel.profile.refresh_tokens.header')]]"
-      >
+      <ha-card header="[[localize('ui.panel.profile.refresh_tokens.header')]]">
         <div class="card-content">
           [[localize('ui.panel.profile.refresh_tokens.description')]]
         </div>
@@ -52,7 +49,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </div>
           </ha-settings-row>
         </template>
-      </paper-card>
+      </ha-card>
     `;
   }
 

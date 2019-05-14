@@ -603,6 +603,12 @@
                         "device_unavailable": "eszköz nem érhető el",
                         "entity_unavailable": "entitás nem érhető el",
                         "no_area": "Nincs Terület"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Ehhez a lépéshez egy külső weboldal meglátogatása szükséges.",
+                            "open_site": "Weboldal megnyitása"
+                        }
                     }
                 },
                 "zha": {
@@ -855,6 +861,11 @@
                         "required_fields": "Töltsd ki az összes szükséges mezőt",
                         "password_not_match": "A jelszavak nem egyeznek"
                     }
+                },
+                "integration": {
+                    "intro": "Az eszközöket és szolgáltatásokat a Home Assistant integrációként kezeli. Beállíthatod őket most, vagy később a konfigurációs képernyőn.",
+                    "more_integrations": "Több",
+                    "finish": "Befejezés"
                 }
             },
             "lovelace": {
@@ -933,7 +944,8 @@
         },
         "sidebar": {
             "log_out": "Kijelentkezés",
-            "developer_tools": "Fejlesztői eszközök"
+            "developer_tools": "Fejlesztői eszközök",
+            "external_app_configuration": "App Konfiguráció"
         },
         "common": {
             "loading": "Betöltés",

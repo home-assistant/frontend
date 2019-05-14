@@ -1,7 +1,7 @@
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
+import "../../../components/ha-card";
 import "../ha-config-section";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
