@@ -1,8 +1,8 @@
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
+import "../../../components/ha-card";
 import "../ha-config-section";
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-icon-button/paper-icon-button";
 
 import {
@@ -50,7 +50,7 @@ export class ZHANetwork extends LitElement {
         </div>
         <span slot="introduction">Commands that affect entire network</span>
 
-        <paper-card class="content">
+        <ha-card class="content">
           <div class="card-actions">
             <mwc-button @click=${this._onAddDevicesClick}>
               Add Devices
@@ -66,7 +66,7 @@ export class ZHANetwork extends LitElement {
                 `
               : ""}
           </div>
-        </paper-card>
+        </ha-card>
       </ha-config-section>
     `;
   }
@@ -87,8 +87,7 @@ export class ZHANetwork extends LitElement {
           margin-top: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }

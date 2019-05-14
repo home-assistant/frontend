@@ -82,6 +82,7 @@ const optimization = (latestBuild) => ({
       parallel: true,
       extractComments: true,
       terserOptions: {
+        safari10: true,
         ecma: latestBuild ? undefined : 5,
       },
     }),

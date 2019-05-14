@@ -12,5 +12,8 @@ export const configElementStyle = html`
       flex: 1;
       padding-right: 4px;
     }
+    .suffix {
+      margin: 0 8px;
+    }
   </style>
 `;

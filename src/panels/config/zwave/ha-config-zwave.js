@@ -1,6 +1,5 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
@@ -15,6 +14,7 @@ import "../../../components/ha-service-description";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 import "../../../resources/ha-style";
+import "../../../components/ha-card";
 
 import "../ha-config-section";
 import "../ha-form-style";
@@ -53,8 +53,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           padding-right: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
@@ -116,7 +115,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             list of available commands.
           </span>
 
-          <paper-card class="content">
+          <ha-card class="content">
             <div class="device-picker">
               <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
                 <paper-listbox
@@ -309,7 +308,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 </div>
               </template>
             </template>
-          </paper-card>
+          </ha-card>
 
           <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
             <!-- Value card -->

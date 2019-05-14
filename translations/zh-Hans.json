@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "登录为 {email}",
-                    "description_not_login": "未登录"
+                    "description_not_login": "未登录",
+                    "description_features": "整合 Alexa 及 Google 助理，远程控制智能家居。"
                 },
                 "integrations": {
                     "caption": "集成",
@@ -602,6 +603,12 @@
                         "device_unavailable": "设备不可用",
                         "entity_unavailable": "实体不可用",
                         "no_area": "没有区域"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "此步骤要求您访问要完成的外部网站。",
+                            "open_site": "打开网站"
+                        }
                     }
                 },
                 "zha": {
@@ -613,7 +620,8 @@
                         "remove": "从 ZigBee 网络中删除设备。"
                     },
                     "device_card": {
-                        "device_name_placeholder": "用户指定的名称"
+                        "device_name_placeholder": "用户指定的名称",
+                        "update_name_button": "更新名称"
                     },
                     "add_device_page": {
                         "header": "Zigbee家庭自动化 - 添加设备",
@@ -852,6 +860,10 @@
                         "required_fields": "请填写所有必填字段",
                         "password_not_match": "密码不匹配"
                     }
+                },
+                "integration": {
+                    "more_integrations": "更多",
+                    "finish": "完成"
                 }
             },
             "lovelace": {
@@ -865,6 +877,14 @@
                         "title": "欢迎回家",
                         "no_devices": "此页面是用来控制设备的，不过您好像还没有配置好任何设备。请前往集成页面以开始。",
                         "go_to_integrations_page": "前往集成页面。"
+                    },
+                    "picture-elements": {
+                        "hold": "按住：",
+                        "tap": "点击：",
+                        "navigate_to": "导航到{location}",
+                        "toggle": "切换{name}",
+                        "call_service": "调用服务{name}",
+                        "more_info": "显示更多信息： {name}"
                     }
                 },
                 "editor": {
@@ -922,7 +942,8 @@
         },
         "sidebar": {
             "log_out": "退出",
-            "developer_tools": "开发者工具"
+            "developer_tools": "开发者工具",
+            "external_app_configuration": "应用配置"
         },
         "common": {
             "loading": "加载中",
