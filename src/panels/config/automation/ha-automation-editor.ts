@@ -147,18 +147,34 @@ class HaAutomationEditor extends LitElement {
           "GET",
           `config/automation/config/${this.automation.attributes.id}`
         )
-        .then((config) => {
-          // Normalize data: ensure trigger, action and condition are lists
-          // Happens when people copy paste their automations into the config
-          for (const key of ["trigger", "condition", "action"]) {
-            const value = config[key];
-            if (value && !Array.isArray(value)) {
-              config[key] = [value];
+        .then(
+          (config) => {
+            // Normalize data: ensure trigger, action and condition are lists
+            // Happens when people copy paste their automations into the config
+            for (const key of ["trigger", "condition", "action"]) {
+              const value = config[key];
+              if (value && !Array.isArray(value)) {
+                config[key] = [value];
+              }
             }
+            this._dirty = false;
+            this._config = config;
+          },
+          (resp) => {
+            alert(
+              resp.status_code === 404
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.load_error_not_editable"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.load_error_unknown",
+                    "err_no",
+                    resp.status_code
+                  )
+            );
+            history.back();
           }
-          this._dirty = false;
-          this._config = config;
-        });
+        );
     }
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
