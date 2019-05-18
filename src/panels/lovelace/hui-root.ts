@@ -417,7 +417,7 @@ class HUIRoot extends LitElement {
         | Lovelace
         | undefined;
 
-      if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
+      if (!oldLovelace || this._isLovelaceConfigChanged(oldLovelace)) {
         this._loadResources(this.lovelace!.config.resources || []);
         // On config change, recreate the current view from scratch.
         force = true;
@@ -474,6 +474,13 @@ class HUIRoot extends LitElement {
 
   private _handleNotificationsOpenChanged(ev): void {
     this._notificationsOpen = ev.detail.value;
+  }
+
+  private _isLovelaceConfigChanged(oldLovelace: Lovelace): boolean {
+    return (
+      JSON.stringify(oldLovelace.config) !==
+      JSON.stringify(this.lovelace!.config)
+    );
   }
 
   private _updateNotifications(
