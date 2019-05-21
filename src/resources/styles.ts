@@ -27,6 +27,10 @@ export const haStyle = css`
     @apply --paper-font-title;
   }
 
+  a {
+    color: var(--hyperlink-color);
+  }
+
   button.link {
     background: none;
     color: inherit;
