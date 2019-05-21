@@ -30,6 +30,7 @@ documentContainer.innerHTML = `<custom-style>
       --light-primary-color: #b3e5fC;
       --accent-color: #ff9800;
       --divider-color: rgba(0, 0, 0, .12);
+      --hyperlink-color: var(--primary-color);
 
       /* states and badges */
       --state-icon-color: #44739e;
