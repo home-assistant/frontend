@@ -33,6 +33,9 @@ class ConfigCoreForm extends LitElement {
   @property() private _timeZone!: string;
 
   protected render(): TemplateResult | void {
+    const isStorage = this.hass.config.config_source === "storage";
+    const disabled = this._working || !isStorage;
+
     return html`
       <ha-card
         .header=${this.hass.localize(
@@ -40,9 +43,16 @@ class ConfigCoreForm extends LitElement {
         )}
       >
         <div class="card-content">
-          ${this.hass.localize(
-            "ui.panel.config.core.section.core.form.introduction"
-          )}
+          ${!isStorage
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.core.section.core.core_config.edit_requires_storage"
+                  )}
+                </p>
+              `
+            : ""}
+
           <div class="row">
             <paper-input
               class="flex"
@@ -50,7 +60,7 @@ class ConfigCoreForm extends LitElement {
                 "ui.panel.config.core.section.core.core_config.latitude"
               )}
               name="latitude"
-              .disabled=${this._working}
+              .disabled=${disabled}
               .value=${this._latitudeValue}
               @value-changed=${this._handleChange}
             ></paper-input>
@@ -60,7 +70,7 @@ class ConfigCoreForm extends LitElement {
                 "ui.panel.config.core.section.core.core_config.longitude"
               )}
               name="longitude"
-              .disabled=${this._working}
+              .disabled=${disabled}
               .value=${this._longitudeValue}
               @value-changed=${this._handleChange}
             ></paper-input>
@@ -80,7 +90,7 @@ class ConfigCoreForm extends LitElement {
               )}
               name="timeZone"
               list="timezones"
-              .disabled=${this._working}
+              .disabled=${disabled}
               .value=${this._timeZoneValue}
               @value-changed=${this._handleChange}
             ></paper-input>
@@ -99,7 +109,7 @@ class ConfigCoreForm extends LitElement {
               )}
               name="elevation"
               type="number"
-              .disabled=${this._working}
+              .disabled=${disabled}
               .value=${this._elevationValue}
               @value-changed=${this._handleChange}
             >
@@ -118,7 +128,7 @@ class ConfigCoreForm extends LitElement {
               )}
             </div>
             <paper-radio-group class="flex" .selected=${this._unitSystemValue}>
-              <paper-radio-button name="metric" .disabled=${this._working}>
+              <paper-radio-button name="metric" .disabled=${disabled}>
                 ${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.unit_system_metric"
                 )}
@@ -128,7 +138,7 @@ class ConfigCoreForm extends LitElement {
                   )}
                 </div>
               </paper-radio-button>
-              <paper-radio-button name="imperial" .disabled=${this._working}>
+              <paper-radio-button name="imperial" .disabled=${disabled}>
                 ${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.unit_system_imperial"
                 )}
@@ -142,7 +152,7 @@ class ConfigCoreForm extends LitElement {
           </div>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save} .disabled=${this._working}>
+          <mwc-button @click=${this._save} .disabled=${disabled}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}

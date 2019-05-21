@@ -25,22 +25,34 @@ class ConfigNameForm extends LitElement {
   @property() private _name!: ConfigUpdateValues["location_name"];
 
   protected render(): TemplateResult | void {
+    const isStorage = this.hass.config.config_source === "storage";
+    const disabled = this._working || !isStorage;
+
     return html`
       <ha-card>
         <div class="card-content">
+          ${!isStorage
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.core.section.core.core_config.edit_requires_storage"
+                  )}
+                </p>
+              `
+            : ""}
           <paper-input
             class="flex"
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.location_name"
             )}
             name="name"
-            .disabled=${this._working}
+            .disabled=${disabled}
             .value=${this._nameValue}
             @value-changed=${this._handleChange}
           ></paper-input>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save} .disabled=${this._working}>
+          <mwc-button @click=${this._save} .disabled=${disabled}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
