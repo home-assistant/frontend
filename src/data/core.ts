@@ -1,10 +1,5 @@
 import { HomeAssistant } from "../types";
-import {
-  HassConfig,
-  Connection,
-  createCollection,
-} from "home-assistant-js-websocket";
-import { fetchConfig } from "./lovelace";
+import { HassConfig } from "home-assistant-js-websocket";
 
 export interface ConfigUpdateValues {
   location_name: string;
