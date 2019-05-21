@@ -1,4 +1,4 @@
-import { createCollection } from "home-assistant-js-websocket";
+import { createCollection, Connection } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { compare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
@@ -57,13 +57,13 @@ const subscribeAreaRegistryUpdates = (conn, store) =>
   );
 
 export const subscribeAreaRegistry = (
-  hass: HomeAssistant,
+  conn: Connection,
   onChange: (areas: AreaRegistryEntry[]) => void
 ) =>
   createCollection<AreaRegistryEntry[]>(
     "_areaRegistry",
     fetchAreaRegistry,
     subscribeAreaRegistryUpdates,
-    hass.connection,
+    conn,
     onChange
   );

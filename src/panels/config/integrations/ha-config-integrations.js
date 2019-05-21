@@ -96,7 +96,7 @@ class HaConfigIntegrations extends NavigateMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
     this._loadData();
-    this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+    this._unsubAreas = subscribeAreaRegistry(this.hass.connection, (areas) => {
       this._areas = areas;
     });
 
