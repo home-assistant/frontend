@@ -14,7 +14,16 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import { compare } from "../../../common/string/compare";
-import { updateDeviceRegistryEntry } from "../../../data/device_registry";
+import {
+  subscribeDeviceRegistry,
+  updateDeviceRegistryEntry,
+} from "../../../data/device_registry";
+import { subscribeAreaRegistry } from "../../../data/area_registry";
+
+import {
+  showDeviceRegistryDetailDialog,
+  loadDeviceRegistryDetailDialog,
+} from "./show-dialog-device-registry-detail";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
@@ -38,6 +47,13 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding-bottom: 10px;
           min-width: 0;
         }
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+        }
+        .card-header .name {
+          width: 90%;
+        }
         .device {
           width: 30%;
         }
@@ -45,8 +61,12 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           font-weight: bold;
         }
         .device .model,
-        .device .manuf {
+        .device .manuf,
+        .device .area {
           color: var(--secondary-text-color);
+        }
+        .area .extra-info .name {
+          color: var(--primary-text-color);
         }
         .extra-info {
           margin-top: 8px;
@@ -57,39 +77,34 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding-bottom: 4px;
         }
         .manuf,
-        .entity-id {
+        .entity-id,
+        .area {
           color: var(--secondary-text-color);
         }
       </style>
-      <ha-card header="[[device.name]]">
+      <ha-card>
+        <div class="card-header">
+          <div class="name">[[_deviceName(device)]]</div>
+          <paper-icon-button
+            icon="hass:settings"
+            on-click="_gotoSettings"
+          ></paper-icon-button>
+        </div>
         <div class="card-content">
-          <!--
-            <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1>
-          -->
           <div class="info">
             <div class="model">[[device.model]]</div>
             <div class="manuf">
               [[localize('ui.panel.config.integrations.config_entry.manuf',
               'manufacturer', device.manufacturer)]]
             </div>
-            <div class="area">
-              <paper-dropdown-menu
-                selected-item-label="{{selectedArea}}"
-                label="Area"
-              >
-                <paper-listbox
-                  slot="dropdown-content"
-                  selected="[[_computeSelectedArea(areas, device)]]"
-                >
-                  <paper-item>
-                    [[localize('ui.panel.config.integrations.config_entry.no_area')]]
-                  </paper-item>
-                  <template is="dom-repeat" items="[[areas]]">
-                    <paper-item area="[[item]]">[[item.name]]</paper-item>
-                  </template>
-                </paper-listbox>
-              </paper-dropdown-menu>
-            </div>
+            <template is="dom-if" if="[[device.area_id]]">
+              <div class="area">
+                <div class="extra-info">
+                  [[localize('ui.panel.config.integrations.device_registry.area')]]
+                  <span class="name">{{_computeArea(areas, device)}}</span>
+                </div>
+              </div>
+            </template>
           </div>
           <template is="dom-if" if="[[device.hub_device_id]]">
             <div class="extra-info">
@@ -144,41 +159,41 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         type: Array,
         computed: "_computeChildDevices(device, devices)",
       },
-      selectedArea: {
-        type: String,
-        observer: "_selectedAreaChanged",
-      },
     };
   }
 
-  _computeSelectedArea(areas, device) {
-    if (!areas || !device || !device.area_id) {
-      return 0;
-    }
-    // +1 because of "No Area" entry
-    return areas.findIndex((area) => area.area_id === device.area_id) + 1;
+  firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    loadDeviceRegistryDetailDialog();
   }
 
-  async _selectedAreaChanged(option) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (option === "" || !this.device || !this.areas) {
-      return;
-    }
-    const area =
-      option === "No Area"
-        ? undefined
-        : this.areas.find((ar) => ar.name === option);
-
-    if (
-      (!area && !this.device.area_id) ||
-      (area && area.area_id === this.device.area_id)
-    ) {
-      return;
-    }
-
-    await updateDeviceRegistryEntry(this.hass, this.device.id, {
-      area_id: area ? area.area_id : null,
+  connectedCallback() {
+    super.connectedCallback();
+    this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+      this._areas = areas;
     });
+    this._unsubDevices = subscribeDeviceRegistry(this.hass, (devices) => {
+      this.devices = devices;
+      this.device = devices.find((device) => device.id === this.device.id);
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubAreas) {
+      this._unsubAreas();
+    }
+    if (this._unsubDevices) {
+      this._unsubDevices();
+    }
+  }
+
+  _computeArea(areas, device) {
+    if (!areas || !device || !device.area_id) {
+      return "No Area";
+    }
+    // +1 because of "No Area" entry
+    return areas.find((area) => area.area_id === device.area_id).name;
   }
 
   _computeChildDevices(device, devices) {
@@ -211,13 +226,27 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     );
   }
 
+  _deviceName(device) {
+    return device.name_by_user || device.name;
+  }
+
   _computeDeviceName(devices, deviceId) {
     const device = devices.find((dev) => dev.id === deviceId);
     return device
-      ? device.name
+      ? this._deviceName(device)
       : `(${this.localize(
           "ui.panel.config.integrations.config_entry.device_unavailable"
         )})`;
+  }
+
+  _gotoSettings() {
+    const device = this.device;
+    showDeviceRegistryDetailDialog(this, {
+      device,
+      updateEntry: async (updates) => {
+        await updateDeviceRegistryEntry(this.hass, device.id, updates);
+      },
+    });
   }
 
   _openMoreInfo(ev) {
