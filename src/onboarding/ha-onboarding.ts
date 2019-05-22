@@ -10,6 +10,7 @@ import {
   createConnection,
   genClientId,
   Auth,
+  subscribeConfig,
 } from "home-assistant-js-websocket";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import {
@@ -24,6 +25,8 @@ import "./onboarding-create-user";
 import "./onboarding-loading";
 import { hassUrl } from "../data/auth";
 import { HassElement } from "../state/hass-element";
+import { subscribeOne } from "../common/util/subscribe-one";
+import { subscribeUser } from "../data/ws-user";
 
 interface OnboardingEvent<T extends ValidOnboardingStep> {
   type: T;
@@ -61,6 +64,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           .language=${this.language}
         ></onboarding-create-user>
       `;
+    } else if (step.step === "core_config") {
+      return html`
+        <onboarding-core-config
+          .hass=${this.hass}
+          .onboardingLocalize=${this.localize}
+        ></onboarding-core-config>
+      `;
     } else if (step.step === "integration") {
       return html`
         <onboarding-integrations
@@ -75,6 +85,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
     import("./onboarding-integrations");
+    import("./onboarding-core-config");
     registerServiceWorker(false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
   }
@@ -106,6 +117,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         const auth = await getAuth({
           hassUrl,
         });
+        history.replaceState(null, "", location.pathname);
         await this._connectHass(auth);
       }
 
@@ -138,6 +150,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       } finally {
         this._loading = false;
       }
+    } else if (stepResult.type === "core_config") {
+      // We do nothing
     } else if (stepResult.type === "integration") {
       const result = stepResult.result as OnboardingResponses["integration"];
       this._loading = true;
@@ -161,6 +175,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   private async _connectHass(auth: Auth) {
     const conn = await createConnection({ auth });
+    // Make sure config and user info is loaded before we initialize.
+    // It is needed for the core config step.
+    await Promise.all([
+      subscribeOne(conn, subscribeConfig),
+      subscribeOne(conn, subscribeUser),
+    ]);
     this.initializeHass(auth, conn);
     // Load config strings for integrations
     (this as any)._loadFragmentTranslations(this.hass!.language, "config");

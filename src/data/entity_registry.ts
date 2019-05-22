@@ -1,4 +1,4 @@
-import { createCollection } from "home-assistant-js-websocket";
+import { createCollection, Connection } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import computeStateName from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
@@ -67,13 +67,13 @@ const subscribeEntityRegistryUpdates = (conn, store) =>
   );
 
 export const subscribeEntityRegistry = (
-  hass: HomeAssistant,
+  conn: Connection,
   onChange: (entities: EntityRegistryEntry[]) => void
 ) =>
   createCollection<EntityRegistryEntry[]>(
     "_entityRegistry",
     fetchEntityRegistry,
     subscribeEntityRegistryUpdates,
-    hass.connection,
+    conn,
     onChange
   );
