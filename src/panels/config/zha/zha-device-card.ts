@@ -90,9 +90,12 @@ class ZHADeviceCard extends LitElement {
       this._userGivenName = this.device!.user_given_name;
     }
     if (!this._unsubAreas) {
-      this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
-        this._areas = areas;
-      });
+      this._unsubAreas = subscribeAreaRegistry(
+        this.hass.connection,
+        (areas) => {
+          this._areas = areas;
+        }
+      );
     }
     super.update(changedProperties);
   }
