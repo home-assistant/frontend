@@ -16,4 +16,5 @@ export const demoConfig: HassConfig = {
   config_dir: "/config",
   version: "DEMO",
   whitelist_external_dirs: [],
+  config_source: "storage",
 };

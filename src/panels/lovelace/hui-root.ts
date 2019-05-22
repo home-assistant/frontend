@@ -310,6 +310,9 @@ class HUIRoot extends LitElement {
         ha-app-layout {
           min-height: 100%;
         }
+        paper-menu-button {
+          padding: 0;
+        }
         paper-tabs {
           margin-left: 12px;
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
