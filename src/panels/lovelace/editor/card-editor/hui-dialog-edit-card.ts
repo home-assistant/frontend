@@ -1,7 +1,9 @@
 import {
+  css,
   html,
   LitElement,
   TemplateResult,
+  CSSResult,
   customElement,
   property,
 } from "lit-element";
@@ -9,10 +11,16 @@ import {
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
-import "./hui-edit-card";
-import "./hui-dialog-pick-card";
+import "./hui-card-editor";
+// tslint:disable-next-line
+import { HuiCardEditor } from "./hui-card-editor";
+import "./hui-card-preview";
+import "./hui-card-picker";
 import { EditCardDialogParams } from "./show-edit-card-dialog";
 import { addCard, replaceCard } from "../config-util";
+
+import "../../../../components/dialog/ha-paper-dialog";
+import { haStyleDialog } from "../../../../resources/styles";
 
 declare global {
   // for fire event
@@ -33,72 +41,211 @@ export class HuiDialogEditCard extends LitElement {
 
   @property() private _cardConfig?: LovelaceCardConfig;
 
-  @property() private _newCard?: boolean;
-
-  constructor() {
-    super();
-    this._cardPicked = this._cardPicked.bind(this);
-    this._cancel = this._cancel.bind(this);
-    this._save = this._save.bind(this);
-  }
+  @property() private _saving: boolean = false;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     const [view, card] = params.path;
-    this._newCard = card !== undefined ? false : true;
     this._cardConfig =
       card !== undefined
         ? params.lovelace.config.views[view].cards![card]
         : undefined;
   }
 
+  private get _cardEditorEl(): HuiCardEditor | null {
+    return this.shadowRoot!.querySelector("hui-card-editor");
+  }
+
   protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }
-    if (!this._cardConfig) {
-      // Card picker
-      return html`
-        <hui-dialog-pick-card
-          .hass="${this.hass}"
-          .cardPicked="${this._cardPicked}"
-          .closeDialog="${this._cancel}"
-        ></hui-dialog-pick-card>
-      `;
-    }
+
     return html`
-      <hui-edit-card
-        .hass="${this.hass}"
-        .lovelace="${this._params.lovelace}"
-        .cardConfig="${this._cardConfig}"
-        .closeDialog="${this._cancel}"
-        .saveCard="${this._save}"
-        .newCard="${this._newCard}"
-      >
-      </hui-edit-card>
+      <ha-paper-dialog with-backdrop opened modal>
+        <h2>
+          ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}
+        </h2>
+        <paper-dialog-scrollable>
+          ${this._cardConfig === undefined
+            ? html`
+                <hui-card-picker
+                  .hass="${this.hass}"
+                  @config-changed="${this._handleConfigChanged}"
+                ></hui-card-picker>
+              `
+            : html`
+                <div class="content">
+                  <div class="element-editor">
+                    <hui-card-editor
+                      .hass="${this.hass}"
+                      .value="${this._cardConfig}"
+                      @config-changed="${this._handleConfigChanged}"
+                    ></hui-card-editor>
+                  </div>
+                  <hui-card-preview
+                    .hass="${this.hass}"
+                    .config="${this._cardConfig}"
+                  ></hui-card-preview>
+                </div>
+              `}
+        </paper-dialog-scrollable>
+        <div class="paper-dialog-buttons">
+          <mwc-button @click="${this._close}">
+            ${this.hass!.localize("ui.common.cancel")}
+          </mwc-button>
+          <mwc-button ?disabled="${!this._canSave}" @click="${this._save}">
+            <paper-spinner
+              ?active="${this._saving}"
+              alt="Saving"
+            ></paper-spinner>
+            ${this.hass!.localize("ui.common.save")}
+          </mwc-button>
+        </div>
+      </ha-paper-dialog>
     `;
   }
 
-  private _cardPicked(cardConf: LovelaceCardConfig): void {
-    this._cardConfig = cardConf;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        :host {
+          --code-mirror-max-height: calc(100vh - 176px);
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-paper-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+        }
+
+        @media all and (min-width: 660px) {
+          ha-paper-dialog {
+            width: 845px;
+          }
+        }
+
+        ha-paper-dialog {
+          max-width: 845px;
+        }
+
+        .center {
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .content {
+          display: flex;
+          flex-direction: column;
+          margin: 0 -10px;
+        }
+        .content hui-card-preview {
+          margin: 4px auto;
+          max-width: 390px;
+        }
+        .content .element-editor {
+          margin: 0 10px;
+        }
+
+        @media (min-width: 1200px) {
+          ha-paper-dialog {
+            max-width: none;
+            width: 1000px;
+          }
+
+          .content {
+            flex-direction: row;
+          }
+          .content > * {
+            flex-basis: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+            min-width: 0;
+          }
+          .content hui-card-preview {
+            padding: 8px 0;
+            margin: auto 10px;
+            max-width: 500px;
+          }
+        }
+
+        mwc-button paper-spinner {
+          width: 14px;
+          height: 14px;
+          margin-right: 20px;
+        }
+        paper-spinner {
+          display: none;
+        }
+        paper-spinner[active] {
+          display: block;
+        }
+        .hidden {
+          display: none;
+        }
+        .element-editor {
+          margin-bottom: 8px;
+        }
+        .error {
+          color: #ef5350;
+          border-bottom: 1px solid #ef5350;
+        }
+        hui-card-preview {
+          padding-top: 8px;
+          margin-bottom: 4px;
+          display: block;
+          width: 100%;
+        }
+        .toggle-button {
+          margin-right: auto;
+        }
+      `,
+    ];
   }
 
-  private _cancel(): void {
+  private _handleConfigChanged(ev) {
+    this._cardConfig = ev.detail.config;
+  }
+
+  private _close(): void {
     this._params = undefined;
     this._cardConfig = undefined;
   }
 
-  private async _save(cardConf: LovelaceCardConfig): Promise<void> {
+  private get _canSave(): boolean {
+    if (this._saving) {
+      return false;
+    }
+    if (this._cardConfig === undefined) {
+      return false;
+    }
+    if (this._cardEditorEl && this._cardEditorEl.error) {
+      return false;
+    }
+    return true;
+  }
+
+  private async _save(): Promise<void> {
     const lovelace = this._params!.lovelace;
+    this._saving = true;
     await lovelace.saveConfig(
       this._params!.path.length === 1
-        ? addCard(lovelace.config, this._params!.path as [number], cardConf)
+        ? addCard(
+            lovelace.config,
+            this._params!.path as [number],
+            this._cardConfig!
+          )
         : replaceCard(
             lovelace.config,
             this._params!.path as [number, number],
-            cardConf
+            this._cardConfig!
           )
     );
+    this._saving = false;
+    this._close();
   }
 }
 
