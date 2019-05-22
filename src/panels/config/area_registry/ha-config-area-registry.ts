@@ -122,9 +122,12 @@ class HaConfigAreaRegistry extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
     if (!this._unsubAreas) {
-      this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
-        this._areas = areas;
-      });
+      this._unsubAreas = subscribeAreaRegistry(
+        this.hass.connection,
+        (areas) => {
+          this._areas = areas;
+        }
+      );
     }
   }
 

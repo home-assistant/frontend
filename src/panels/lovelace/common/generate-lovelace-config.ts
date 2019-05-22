@@ -352,15 +352,15 @@ export const generateLovelaceConfig = async (
     // so that we don't serve up stale data after changing areas.
     if (!subscribedRegistries) {
       subscribedRegistries = true;
-      subscribeAreaRegistry(hass, () => undefined);
-      subscribeDeviceRegistry(hass, () => undefined);
-      subscribeEntityRegistry(hass, () => undefined);
+      subscribeAreaRegistry(hass.connection, () => undefined);
+      subscribeDeviceRegistry(hass.connection, () => undefined);
+      subscribeEntityRegistry(hass.connection, () => undefined);
     }
 
     const [areas, devices, entities] = await Promise.all([
-      subscribeOne(hass, subscribeAreaRegistry),
-      subscribeOne(hass, subscribeDeviceRegistry),
-      subscribeOne(hass, subscribeEntityRegistry),
+      subscribeOne(hass.connection, subscribeAreaRegistry),
+      subscribeOne(hass.connection, subscribeDeviceRegistry),
+      subscribeOne(hass.connection, subscribeEntityRegistry),
     ]);
     const registries = { areas, devices, entities };
 
