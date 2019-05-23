@@ -1,6 +1,7 @@
 const del = require("del");
 const path = require("path");
 const gulp = require("gulp");
+const fs = require("fs");
 const foreach = require("gulp-foreach");
 const hash = require("gulp-hash");
 const hashFilename = require("gulp-hash-filename");
@@ -72,6 +73,20 @@ function emptyFilter(data) {
   return newData;
 }
 
+function recursiveEmpty(data) {
+  const newData = {};
+  Object.keys(data).forEach((key) => {
+    if (data[key]) {
+      if (typeof data[key] === "object") {
+        newData[key] = recursiveEmpty(data[key]);
+      } else {
+        newData[key] = "TRANSLATED";
+      }
+    }
+  });
+  return newData;
+}
+
 /**
  * Replace Lokalise key placeholders with their actual values.
  *
@@ -108,6 +123,37 @@ gulp.task(taskName, function() {
 });
 tasks.push(taskName);
 
+taskName = "create-test-metadata";
+gulp.task(taskName, function(cb) {
+  fs.writeFile(
+    workDir + "/testMetadata.json",
+    JSON.stringify({
+      test: {
+        nativeName: "Test",
+      },
+    }),
+    cb
+  );
+});
+tasks.push(taskName);
+
+taskName = "create-test-translation";
+gulp.task(
+  taskName,
+  gulp.series("create-test-metadata", function() {
+    return gulp
+      .src("src/translations/en.json")
+      .pipe(
+        transform(function(data, file) {
+          return recursiveEmpty(data);
+        })
+      )
+      .pipe(rename("test.json"))
+      .pipe(gulp.dest(workDir));
+  })
+);
+tasks.push(taskName);
+
 /**
  * This task will build a master translation file, to be used as the base for
  * all languages. This starts with src/translations/en.json, and replaces all
@@ -138,33 +184,38 @@ taskName = "build-merged-translations";
 gulp.task(
   taskName,
   gulp.series("build-master-translation", function() {
-    return gulp.src(inDir + "/*.json").pipe(
-      foreach(function(stream, file) {
-        // For each language generate a merged json file. It begins with the master
-        // translation as a failsafe for untranslated strings, and merges all parent
-        // tags into one file for each specific subtag
-        //
-        // TODO: This is a naive interpretation of BCP47 that should be improved.
-        //       Will be OK for now as long as we don't have anything more complicated
-        //       than a base translation + region.
-        const tr = path.basename(file.history[0], ".json");
-        const subtags = tr.split("-");
-        const src = [workDir + "/translationMaster.json"];
-        for (let i = 1; i <= subtags.length; i++) {
-          const lang = subtags.slice(0, i).join("-");
-          src.push(inDir + "/" + lang + ".json");
-        }
-        return gulp
-          .src(src, { allowEmpty: true })
-          .pipe(transform((data) => emptyFilter(data)))
-          .pipe(
-            merge({
-              fileName: tr + ".json",
-            })
-          )
-          .pipe(gulp.dest(fullDir));
-      })
-    );
+    return gulp
+      .src([inDir + "/*.json", workDir + "/test.json"], { allowEmpty: true })
+      .pipe(
+        foreach(function(stream, file) {
+          // For each language generate a merged json file. It begins with the master
+          // translation as a failsafe for untranslated strings, and merges all parent
+          // tags into one file for each specific subtag
+          //
+          // TODO: This is a naive interpretation of BCP47 that should be improved.
+          //       Will be OK for now as long as we don't have anything more complicated
+          //       than a base translation + region.
+          const tr = path.basename(file.history[0], ".json");
+          const subtags = tr.split("-");
+          const src = [
+            workDir + "/translationMaster.json",
+            workDir + "/test.json",
+          ];
+          for (let i = 1; i <= subtags.length; i++) {
+            const lang = subtags.slice(0, i).join("-");
+            src.push(inDir + "/" + lang + ".json");
+          }
+          return gulp
+            .src(src, { allowEmpty: true })
+            .pipe(transform((data) => emptyFilter(data)))
+            .pipe(
+              merge({
+                fileName: tr + ".json",
+              })
+            )
+            .pipe(gulp.dest(fullDir));
+        })
+      );
   })
 );
 tasks.push(taskName);
@@ -299,10 +350,14 @@ gulp.task(
   taskName,
   gulp.series("build-translation-fingerprints", function() {
     return gulp
-      .src([
-        "src/translations/translationMetadata.json",
-        workDir + "/translationFingerprints.json",
-      ])
+      .src(
+        [
+          "src/translations/translationMetadata.json",
+          workDir + "/testMetadata.json",
+          workDir + "/translationFingerprints.json",
+        ],
+        { allowEmpty: true }
+      )
       .pipe(merge({}))
       .pipe(
         transform(function(data) {
