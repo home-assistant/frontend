@@ -26,6 +26,7 @@ import { HomeAssistant } from "../../../types";
 import { AutomationEntity } from "../../../data/automation";
 import format_date_time from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { repeat } from "lit-html/directives/repeat";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -73,7 +74,9 @@ class HaAutomationPicker extends LitElement {
                     </p>
                   </div>
                 `
-              : this.automations.map(
+              : repeat(
+                  this.automations,
+                  (automation) => automation.entity_id,
                   (automation) => html`
 
                       <div class='automation'>

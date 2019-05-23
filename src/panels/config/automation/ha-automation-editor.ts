@@ -24,7 +24,11 @@ import computeStateName from "../../../common/entity/compute_state_name";
 
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { AutomationEntity, AutomationConfig } from "../../../data/automation";
+import {
+  AutomationEntity,
+  AutomationConfig,
+  deleteAutomation,
+} from "../../../data/automation";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
@@ -33,8 +37,8 @@ function AutomationEditor(mountEl, props, mergeEl) {
 }
 
 class HaAutomationEditor extends LitElement {
-  public hass?: HomeAssistant;
-  public automation?: AutomationEntity;
+  public hass!: HomeAssistant;
+  public automation!: AutomationEntity;
   public isWide?: boolean;
   public creatingNew?: boolean;
   private _config?: AutomationConfig;
@@ -85,6 +89,14 @@ class HaAutomationEditor extends LitElement {
                     "ui.panel.config.automation.editor.default_name"
                   )}
             </div>
+            ${this.creatingNew
+              ? ""
+              : html`
+                  <paper-icon-button
+                    icon="hass:delete"
+                    @click=${this._delete}
+                  ></paper-icon-button>
+                `}
           </app-toolbar>
         </app-header>
 
@@ -135,18 +147,34 @@ class HaAutomationEditor extends LitElement {
           "GET",
           `config/automation/config/${this.automation.attributes.id}`
         )
-        .then((config) => {
-          // Normalize data: ensure trigger, action and condition are lists
-          // Happens when people copy paste their automations into the config
-          for (const key of ["trigger", "condition", "action"]) {
-            const value = config[key];
-            if (value && !Array.isArray(value)) {
-              config[key] = [value];
+        .then(
+          (config) => {
+            // Normalize data: ensure trigger, action and condition are lists
+            // Happens when people copy paste their automations into the config
+            for (const key of ["trigger", "condition", "action"]) {
+              const value = config[key];
+              if (value && !Array.isArray(value)) {
+                config[key] = [value];
+              }
             }
+            this._dirty = false;
+            this._config = config;
+          },
+          (resp) => {
+            alert(
+              resp.status_code === 404
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.load_error_not_editable"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.load_error_unknown",
+                    "err_no",
+                    resp.status_code
+                  )
+            );
+            history.back();
           }
-          this._dirty = false;
-          this._config = config;
-        });
+        );
     }
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
@@ -184,7 +212,6 @@ class HaAutomationEditor extends LitElement {
     this._config = config;
     this._errors = undefined;
     this._dirty = true;
-    // this._updateComponent();
   }
 
   private _backTapped(): void {
@@ -199,10 +226,18 @@ class HaAutomationEditor extends LitElement {
     history.back();
   }
 
+  private async _delete() {
+    if (!confirm("Are you sure you want to delete this automation?")) {
+      return;
+    }
+    await deleteAutomation(this.hass, this.automation.attributes.id!);
+    history.back();
+  }
+
   private _saveAutomation(): void {
     const id = this.creatingNew
       ? "" + Date.now()
-      : this.automation!.attributes.id;
+      : this.automation.attributes.id;
     this.hass!.callApi(
       "POST",
       "config/automation/config/" + id,
