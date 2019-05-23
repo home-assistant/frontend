@@ -2,9 +2,10 @@ import {
   LitElement,
   html,
   css,
-  PropertyDeclarations,
   CSSResult,
   TemplateResult,
+  customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
@@ -24,25 +25,18 @@ import {
   AreaRegistryEntry,
 } from "../../../data/area_registry";
 
+@customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
-  public hass!: HomeAssistant;
-  private _nameByUser!: string;
-  private _error?: string;
-  private _params?: DeviceRegistryDetailDialogParams;
-  private _submitting?: boolean;
-  private _areas?: AreaRegistryEntry[];
-  private _areaId?: string;
-  private _unsubAreas?: any;
+  @property() public hass!: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      _error: {},
-      _nameByUser: {},
-      _areaId: {},
-      _areas: {},
-      _params: {},
-    };
-  }
+  @property() private _nameByUser!: string;
+  @property() private _error?: string;
+  @property() private _params?: DeviceRegistryDetailDialogParams;
+  @property() private _areas?: AreaRegistryEntry[];
+  @property() private _areaId?: string;
+
+  private _submitting?: boolean;
+  private _unsubAreas?: any;
 
   public async showDialog(
     params: DeviceRegistryDetailDialogParams
@@ -207,8 +201,3 @@ declare global {
     "dialog-device-registry-detail": DialogDeviceRegistryDetail;
   }
 }
-
-customElements.define(
-  "dialog-device-registry-detail",
-  DialogDeviceRegistryDetail
-);
