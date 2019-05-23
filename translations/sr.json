@@ -29,6 +29,10 @@
         },
         "climate": {
             "manual": "Упутство"
+        },
+        "timer": {
+            "active": "укључен",
+            "idle": "неактна чекању"
         }
     },
     "state_badge": {
@@ -36,6 +40,14 @@
             "arming": "Aktiviranje",
             "disarming": "Deaktiviraj",
             "armed_custom_bypass": "Aktiviran"
+        },
+        "person": {
+            "home": "Кући",
+            "not_home": "Одсутан"
+        },
+        "default": {
+            "error": "Грешка",
+            "entity_not_found": "Вредност није пронађена"
         }
     },
     "ui": {
@@ -46,6 +58,60 @@
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "users": {
+                    "editor": {
+                        "caption": "Прикажи корисника"
+                    },
+                    "add_user": {
+                        "caption": "Додај корисника",
+                        "name": "Име",
+                        "username": "Корисничко име",
+                        "password": "Лозинка",
+                        "create": "Направите"
+                    }
+                },
+                "automation": {
+                    "picker": {
+                        "learn_more": "Сазнајте више о аутоматизацијама"
+                    },
+                    "editor": {
+                        "triggers": {
+                            "learn_more": "Сазнајте више о окидачима"
+                        }
+                    }
+                },
+                "integrations": {
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Овај корак захтева да посетите екстерни веб-сајт да би био завршен.",
+                            "open_site": "Отворите сајт"
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "password_confirm": "Потврда лозинке"
+                    },
+                    "error": {
+                        "password_not_match": "Лозинке се не подударају"
+                    }
+                },
+                "integration": {
+                    "finish": "Крај"
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "picture-elements": {
+                        "hold": "Придржи:",
+                        "tap": "Додирни",
+                        "navigate_to": "Отиђите на ",
+                        "toggle": "Укључи",
+                        "more_info": "Покажи више информација:"
+                    }
                 }
             }
         },
@@ -67,6 +133,16 @@
         }
     },
     "domain": {
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "person": "Особа"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Искључен",
+                "on": "Укључен",
+                "auto": "Аутоматски"
+            }
+        }
     }
 }
