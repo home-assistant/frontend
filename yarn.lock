@@ -6807,6 +6807,11 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
+google-timezones-json@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/google-timezones-json/-/google-timezones-json-1.0.2.tgz#6800000d7ebc2dd660611aad8c1c68196db78cab"
+  integrity sha512-UWXQ7BpSCW8erDespU2I4cri22xsKgwOCyhsJal0OJhi2tFpwJpsYNJt4vCiFPL1p2HzCGiS713LKpNR25n9Kg==
+
 got@^5.0.0:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/got/-/got-5.7.1.tgz#5f81635a61e4a6589f180569ea4e381680a51f35"
@@ -7242,10 +7247,10 @@ hoek@6.x.x:
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-6.1.3.tgz#73b7d33952e01fe27a38b0457294b79dd8da242c"
   integrity sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==
 
-home-assistant-js-websocket@^4.1.2:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.1.2.tgz#dbcdb4b67df8d189d29bbf5603771d5bc80ef031"
-  integrity sha512-/I0m6FTDEq3LkzFc4tmgHJHTj9gWA6Wn/fgaa1ghIJJY0Yqb3x6whovN5pRNFsl6bnKzOCR+nmJ2ruVTBa5mVQ==
+home-assistant-js-websocket@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.2.1.tgz#8acdf2a404b4204669213d8405cca027b8b1de1c"
+  integrity sha512-lF4owDhAAUY70FNvTzgg6MAEOpKbJDLsRDX3gW48muna03s3CRGQzbLmy621pJWK757CkXSW/rWbr34r3Wyi8Q==
 
 homedir-polyfill@^1.0.0, homedir-polyfill@^1.0.1:
   version "1.0.3"
@@ -8518,9 +8523,9 @@ lit-element@^2.0.1, lit-element@^2.1.0:
     lit-html "^1.0.0"
 
 lit-html@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.0.0.tgz#3dc3781a8ca68a9b5c2ff2a61e263662b9b2267b"
-  integrity sha512-oeWlpLmBW3gFl7979Wol2LKITpmKTUFNn7PnFbh6YNynF61W74l6x5WhwItAwPRSATpexaX1egNnRzlN4GOtfQ==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.1.0.tgz#6951fb717fb48fe34d915ae163448a04da321562"
+  integrity sha512-ZDJHpJi09yknMpjwPI8fuSl5sUG7+pF+eE5WciFtgyX7zebvgMDBgSLq4knXa7grxM00RkQ7PBd7UZQiruA78Q==
 
 load-json-file@^1.0.0:
   version "1.1.0"

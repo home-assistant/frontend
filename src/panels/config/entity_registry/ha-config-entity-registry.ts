@@ -118,11 +118,14 @@ class HaConfigEntityRegistry extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
     if (!this._unsubEntities) {
-      this._unsubEntities = subscribeEntityRegistry(this.hass, (entities) => {
-        this._entities = entities.sort((ent1, ent2) =>
-          compare(ent1.entity_id, ent2.entity_id)
-        );
-      });
+      this._unsubEntities = subscribeEntityRegistry(
+        this.hass.connection,
+        (entities) => {
+          this._entities = entities.sort((ent1, ent2) =>
+            compare(ent1.entity_id, ent2.entity_id)
+          );
+        }
+      );
     }
   }
 
