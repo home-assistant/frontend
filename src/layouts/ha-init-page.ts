@@ -18,9 +18,9 @@ class HaInitPage extends LitElement {
               ${location.host.includes("ui.nabu.casa")
                 ? html`
                     <p>
-                      It is possible that you see this screen because your Home
-                      Assistant is not currently connected. You can ask it to
-                      come online via
+                      It is possible that you are seeing this screen because
+                      your Home Assistant is not currently connected. You can
+                      ask it to come online via
                       <a href="https://remote.nabucasa.com/"
                         >the Remote UI portal</a
                       >.
