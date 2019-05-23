@@ -1052,7 +1052,7 @@
             },
             "lock": {
                 "code": "密碼",
-                "lock": "鎖",
+                "lock": "上鎖",
                 "unlock": "解鎖"
             },
             "vacuum": {

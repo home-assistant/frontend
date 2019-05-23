@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "לא ידוע",
-            "unavailable": "לא זמין"
+            "unavailable": "לא זמין",
+            "error": "שגיאה",
+            "entity_not_found": "ישות לא נמצאה"
         },
         "alarm_control_panel": {
             "armed": "מופעל",
@@ -579,7 +581,8 @@
                 "cloud": {
                     "caption": "ענן Home Assistant",
                     "description_login": "מחובר בתור {email} מה",
-                    "description_not_login": "לא מחובר"
+                    "description_not_login": "לא מחובר",
+                    "description_features": "שליטה הרחק מהבית, משתלב עם Alexa ו Google Assistant."
                 },
                 "integrations": {
                     "caption": "אינטגרציות",
@@ -600,6 +603,12 @@
                         "device_unavailable": "התקן אינו זמין",
                         "entity_unavailable": "ישות לא זמינה",
                         "no_area": "ללא אזור"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "שלב זה מחייב אותך לבקר באתר אינטרנט חיצוני להשלמת הפעולה.",
+                            "open_site": "פתח אתר"
+                        }
                     }
                 },
                 "zha": {
@@ -607,7 +616,18 @@
                     "description": "ניהול רשת Zigbee לאוטומציה ביתית",
                     "services": {
                         "reconfigure": "התקן מחדש את התקן ה ZHA. השתמש באפשרות זו אם אתה נתקל בבעיות בהתקן. אם ההתקן המדובר הוא התקן המופעל באמצעות סוללות, ודא שהוא ער ויכול לקבל פקודות בעת שימוש בשירות זה.",
-                        "updateDeviceName": "הגדר שם מותאם אישית עבור התקן זה במאגר ההתקנים."
+                        "updateDeviceName": "הגדר שם מותאם אישית עבור התקן זה במאגר ההתקנים.",
+                        "remove": "הסר התקן מרשת ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "שם פרטי",
+                        "area_picker_label": "אזור",
+                        "update_name_button": "עדכן שם"
+                    },
+                    "add_device_page": {
+                        "header": "אוטומציית Zigbee - הוספת התקנים",
+                        "spinner": "מחפש מכשירי ZHA Zigbee...",
+                        "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום."
                     }
                 },
                 "area_registry": {
@@ -841,6 +861,11 @@
                         "required_fields": "מלא את כל השדות הדרושים",
                         "password_not_match": "הסיסמאות אינן תואמות"
                     }
+                },
+                "integration": {
+                    "intro": "התקנים ושירותים מיוצגים ב- Home Assistant כאינטגרציות. באפשרותך להגדיר אותם כעת, או לעשות זאת מאוחר יותר ממסך התצורה.",
+                    "more_integrations": "עוד",
+                    "finish": "סיום"
                 }
             },
             "lovelace": {
@@ -854,6 +879,14 @@
                         "title": "ברוך הבא הביתה",
                         "no_devices": "דף זה מאפשר לך לשלוט במכשירים שלך, אך נראה שעדיין לא הוגדרו מכשירים. עבור אל דף האינטגרציות כדי להתחיל.",
                         "go_to_integrations_page": "עבור אל דף האינטגרציות."
+                    },
+                    "picture-elements": {
+                        "hold": "החזק:",
+                        "tap": "הקש:",
+                        "navigate_to": "נווט אל {location}",
+                        "toggle": "החלף מצב {name}",
+                        "call_service": "קריאה לשירות {name}",
+                        "more_info": "הצג מידע נוסף: {name}"
                     }
                 },
                 "editor": {
@@ -911,7 +944,8 @@
         },
         "sidebar": {
             "log_out": "התנתק",
-            "developer_tools": "כלים למפתחים"
+            "developer_tools": "כלים למפתחים",
+            "external_app_configuration": "הגדרות היישום"
         },
         "common": {
             "loading": "טוען",

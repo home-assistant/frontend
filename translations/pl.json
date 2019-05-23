@@ -347,7 +347,7 @@
                                 "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
                                 "core": "Przeładuj rdzeń",
                                 "group": "Przeładuj grupy",
-                                "automation": "Przeładuj reguły automatyzacji",
+                                "automation": "Przeładuj automatyzacje",
                                 "script": "Przeładuj skrypty"
                             },
                             "server_management": {
@@ -368,25 +368,25 @@
                     }
                 },
                 "automation": {
-                    "caption": "Reguły automatyzacji",
-                    "description": "Twórz i edytuj reguły automatyzacji",
+                    "caption": "Automatyzacje",
+                    "description": "Twórz i edytuj automatyzacje",
                     "picker": {
                         "header": "Edytor automatyzacji",
-                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować reguły automatyzacji. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie skonfigurować reguły automatyzacji w Home Assistant.",
-                        "pick_automation": "Wybierz regułę automatyzacji do edycji",
-                        "no_automations": "Nie znaleziono żadnych edytowalnych reguł automatyzacji",
-                        "add_automation": "Dodaj regułę automatyzacji",
-                        "learn_more": "Dowiedz się więcej o regułach automatyki"
+                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzacje Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie skonfigurować automatyzacje w Home Assistant.",
+                        "pick_automation": "Wybierz automatyzację do edycji",
+                        "no_automations": "Nie znaleziono żadnych edytowalnych automatyzacji",
+                        "add_automation": "Dodaj automatyzację",
+                        "learn_more": "Dowiedz się więcej o automatyzacjach"
                     },
                     "editor": {
-                        "introduction": "Użyj reguł automatyzacji, aby utrzymać swój dom przy życiu",
-                        "default_name": "Nowa reguła automatyzacji",
+                        "introduction": "Użyj automatyzacji, aby utrzymać swój dom przy życiu",
+                        "default_name": "Nowa automatyzacja",
                         "save": "Zapisz",
                         "unsaved_confirm": "Masz niezapisane zmiany. Jesteś pewny, że chcesz wyjść?",
                         "alias": "Nazwa",
                         "triggers": {
                             "header": "Wyzwalacze",
-                            "introduction": "Wyzwalacze uruchamiają przetwarzanie reguły automatyzacji. Możliwe jest stworzenie wielu wyzwalaczy dla tej samej reguły. Po uruchomieniu wyzwalacza Home Assistant sprawdzi ewentualne warunki i wywoła akcje.",
+                            "introduction": "Wyzwalacze uruchamiają przetwarzanie automatyzacji. Możliwe jest stworzenie wielu wyzwalaczy dla tej samej automatyzacji. Po uruchomieniu wyzwalacza Home Assistant sprawdzi ewentualne warunki i wywoła akcje.",
                             "add": "Dodaj wyzwalacz",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -468,7 +468,7 @@
                         },
                         "conditions": {
                             "header": "Warunki",
-                            "introduction": "Warunki są opcjonalną częścią reguły automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest przełączany. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony.",
+                            "introduction": "Warunki są opcjonalną częścią automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest przełączany. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony.",
                             "add": "Dodaj warunek",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -514,7 +514,7 @@
                         },
                         "actions": {
                             "header": "Akcje",
-                            "introduction": "Akcje są wykonywane przez Home Assistant'a po uruchomieniu reguły automatyzacji.",
+                            "introduction": "Akcje są wykonywane przez Home Assistant'a po uruchomieniu automatyzacji.",
                             "add": "Dodaj akcję",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",

@@ -603,6 +603,12 @@
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar",
                         "no_area": "Geen gebied"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Deze stap vereist dat u een externe website bezoekt om dit te voltooien.",
+                            "open_site": "Open website"
+                        }
                     }
                 },
                 "zha": {

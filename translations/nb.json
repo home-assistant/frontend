@@ -602,7 +602,7 @@
                         "firmware": "Fastvare: {version}",
                         "device_unavailable": "enheten er utilgjengelig",
                         "entity_unavailable": "oppføringen er utilgjengelig",
-                        "no_area": "Ingen område"
+                        "no_area": "Intet område"
                     },
                     "config_flow": {
                         "external_step": {
@@ -622,12 +622,12 @@
                     "device_card": {
                         "device_name_placeholder": "Brukerdefinert navn",
                         "area_picker_label": "Område",
-                        "update_name_button": "Oppdater navn"
+                        "update_name_button": "Oppdatér navn"
                     },
                     "add_device_page": {
                         "header": "ZigBee Home Automation - Legg til enheter",
-                        "spinner": "Søker etter ZHA Zigbee enheter...",
-                        "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i parringsmodus."
+                        "spinner": "Søker etter ZHA Zigbee-enheter...",
+                        "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus."
                     }
                 },
                 "area_registry": {
@@ -656,7 +656,7 @@
                     "picker": {
                         "header": "Enhetsregister",
                         "unavailable": "(utilgjengelig)",
-                        "introduction": "Home Assistant beholder et register over hver enhet som den noensinne har sett som kan identifiseres unikt. Hver av disse enhetene vil ha en enhets ID tilknyttet som vil bli reservert for bare denne enheten.",
+                        "introduction": "Home Assistant bygger opp et register over hver enhet den har sett som kan identifiseres unikt. Hver av disse enhetene vil ha en enhets-ID tilknyttet som vil bli reservert for bare denne enheten.",
                         "introduction2": "Bruk entitetsregisteret for å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
                         "integrations_page": "Integrasjonsside"
                     },
@@ -863,7 +863,7 @@
                     }
                 },
                 "integration": {
-                    "intro": "Enheter og tjenester er representert i Home Assistant som integrasjoner. Du kan sette dem opp nå, eller gjøre det senere fra konfigurasjonen skjermen.",
+                    "intro": "Enheter og tjenester er representert i Home Assistant som integrasjoner. Du kan sette dem opp nå eller gjøre det senere fra konfigurasjonen.",
                     "more_integrations": "Mer",
                     "finish": "Fullfør"
                 }
@@ -1199,6 +1199,6 @@
     "groups": {
         "system-admin": "Administratorer",
         "system-users": "Brukere",
-        "system-read-only": "Lesetilgang brukere"
+        "system-read-only": "Brukere med lesetilgang"
     }
 }
