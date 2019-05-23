@@ -1,37 +1,37 @@
 import "@polymer/paper-spinner/paper-spinner-lite";
 import "@material/mwc-button";
 
-import {
-  LitElement,
-  PropertyDeclarations,
-  html,
-  CSSResult,
-  css,
-} from "lit-element";
+import { LitElement, html, CSSResult, css, property } from "lit-element";
 import { removeInitSkeleton } from "../util/init-skeleton";
 
 class HaInitPage extends LitElement {
-  public error?: boolean;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      error: {
-        type: Boolean,
-      },
-    };
-  }
+  @property({ type: Boolean }) public error = false;
 
   protected render() {
     return html`
       <div>
         <img src="/static/icons/favicon-192x192.png" height="192" />
-        <paper-spinner-lite .active=${!this.error}></paper-spinner-lite>
         ${this.error
           ? html`
-              Unable to connect to Home Assistant.
+              <p>Unable to connect to Home Assistant.</p>
               <mwc-button @click=${this._retry}>Retry</mwc-button>
+              ${location.host.includes("ui.nabu.casa")
+                ? html`
+                    <p>
+                      It is possible that you are seeing this screen because
+                      your Home Assistant is not currently connected. You can
+                      ask it to come online via
+                      <a href="https://remote.nabucasa.com/"
+                        >the Remote UI portal</a
+                      >.
+                    </p>
+                  `
+                : ""}
             `
-          : "Loading data"}
+          : html`
+              <paper-spinner-lite active></paper-spinner-lite>
+              <p>Loading data</p>
+            `}
       </div>
     `;
   }
@@ -54,7 +54,13 @@ class HaInitPage extends LitElement {
         align-items: center;
       }
       paper-spinner-lite {
-        margin-bottom: 10px;
+        margin-top: 9px;
+      }
+      a {
+        color: var(--primary-color);
+      }
+      p {
+        max-width: 350px;
       }
     `;
   }

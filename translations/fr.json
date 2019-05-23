@@ -484,7 +484,7 @@
                                     "label": "Valeur numérique",
                                     "above": "Dessus",
                                     "below": "Sous",
-                                    "value_template": "Contenu du template (optionnel)"
+                                    "value_template": "Contenu du modèle (optionnel)"
                                 },
                                 "sun": {
                                     "label": "Soleil",

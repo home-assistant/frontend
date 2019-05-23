@@ -581,6 +581,21 @@
             "core": {
               "header": "Configuration and Server Control",
               "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
+              "core_config": {
+                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
+                "location_name": "Name of your Home Assistant installation",
+                "latitude": "Latitude",
+                "longitude": "Longitude",
+                "elevation": "Elevation",
+                "elevation_meters": "meters",
+                "time_zone": "Time Zone",
+                "unit_system": "Unit System",
+                "unit_system_imperial": "Imperial",
+                "unit_system_metric": "Metric",
+                "imperial_example": "Fahrenheit, pounds",
+                "metric_example": "Celsius, kilograms",
+                "save_button": "Save"
+              },
               "validation": {
                 "heading": "Configuration validation",
                 "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
@@ -627,6 +642,8 @@
           "editor": {
             "introduction": "Use automations to bring your home alive",
             "default_name": "New Automation",
+            "load_error_not_editable": "Only automations in automations.yaml are editable.",
+            "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
             "alias": "Name",
@@ -1178,6 +1195,14 @@
             "required_fields": "Fill in all required fields",
             "password_not_match": "Passwords don't match"
           }
+        },
+        "core-config": {
+          "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
+          "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
+          "intro_location_detect": "We can help you fill in this information by making a one-time request to an external service.",
+          "location_name_default": "Home",
+          "button_detect": "Detect",
+          "finish": "Next"
         },
         "integration": {
           "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
