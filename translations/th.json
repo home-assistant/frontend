@@ -581,7 +581,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "ลงชื่อเข้าใช้เป็น {email}",
-                    "description_not_login": "ยังไม่ได้เข้าสู่ระบบ"
+                    "description_not_login": "ยังไม่ได้เข้าสู่ระบบ",
+                    "description_features": "ควบคุมการทำงานเมื่อออกจากบ้านร่วมกับ Alexa และ Google Assistant"
                 },
                 "integrations": {
                     "caption": "การทำงานร่วมกัน",
@@ -602,6 +603,12 @@
                         "device_unavailable": "อุปกรณ์นี้ไม่พร้อมใช้งาน",
                         "entity_unavailable": "Entity นี้ไม่พร้อมใช้งาน",
                         "no_area": "ไม่มีห้อง"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "ขั้นตอนนี้กำหนดให้คุณเยี่ยมชมเว็บไซต์ภายนอกเพื่อทำให้การดำเนินการสมบูรณ์",
+                            "open_site": "เปิดเว็บไซต์"
+                        }
                     }
                 },
                 "zha": {
@@ -854,6 +861,10 @@
                         "required_fields": "กรอกข้อมูลในฟิลด์ที่จำเป็นทั้งหมด",
                         "password_not_match": "รหัสผ่านไม่ตรงกัน"
                     }
+                },
+                "integration": {
+                    "more_integrations": "เพิ่มเติม",
+                    "finish": "เสร็จสิ้น"
                 }
             },
             "lovelace": {
@@ -867,6 +878,14 @@
                         "title": "ยินดีต้อนรับกลับบ้าน",
                         "no_devices": "หน้านี้ช่วยให้คุณควบคุมอุปกรณ์ของคุณได้ แต่ยังไงก็ตามมันดูเหมือนว่าคุณยังไม่ได้ติดตั้งอุปกรณ์อะไรไว้เลย ไปยัง 'หน้าการทำงานด้วยกัน' เพื่อเริ่มติดตั้ง",
                         "go_to_integrations_page": "ไปที่หน้าการรวมระบบ"
+                    },
+                    "picture-elements": {
+                        "hold": "ถือ:",
+                        "tap": "แตะ:",
+                        "navigate_to": "นำทางไปยัง {location}",
+                        "toggle": "สลับ {name}",
+                        "call_service": "เรียกบริการ {name}",
+                        "more_info": "แสดงข้อมูลเพิ่มเติม: {name}"
                     }
                 },
                 "editor": {
@@ -924,7 +943,8 @@
         },
         "sidebar": {
             "log_out": "ออกจากระบบ",
-            "developer_tools": "เครื่องมือสำหรับนักพัฒนา"
+            "developer_tools": "เครื่องมือสำหรับนักพัฒนา",
+            "external_app_configuration": "การกำหนดค่าแอพ"
         },
         "common": {
             "loading": "กำลังโหลด",

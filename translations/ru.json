@@ -751,7 +751,7 @@
             },
             "page-authorize": {
                 "initializing": "Инициализация",
-                "authorizing_client": "Получение доступа к Home Assistant через {clientId}.",
+                "authorizing_client": "Получение доступа к {clientId}.",
                 "logging_in_with": "Провайдер аутентификации: **{authProviderName}**.",
                 "pick_auth_provider": "Или войти с помощью",
                 "abort_intro": "Вход прерван",

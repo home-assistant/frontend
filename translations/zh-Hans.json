@@ -173,7 +173,7 @@
             "not_home": "离开",
             "open": "开启",
             "opening": "正在打开",
-            "closed": "关闭",
+            "closed": "已关闭",
             "closing": "正在关闭",
             "stopped": "已停止",
             "locked": "已锁定",
@@ -372,7 +372,7 @@
                     "description": "创建和编辑自动化",
                     "picker": {
                         "header": "自动化编辑器",
-                        "introduction": "自动化编辑器方便你创建及编辑自动化。请阅读相关[说明](https:\/\/home-assistant.io\/docs\/automation\/editor\/)以确保正确配置。",
+                        "introduction": "自动化编辑器方便你创建及编辑自动化。请按照下面的链接阅读说明，以确保您已正确配置Home Assistant。",
                         "pick_automation": "选择要编辑的自动化",
                         "no_automations": "未找到可编辑的自动化",
                         "add_automation": "添加自动化",
@@ -468,7 +468,7 @@
                         },
                         "conditions": {
                             "header": "环境条件",
-                            "introduction": "环境条件是自动化流程中的可选条件，它可用于避免触发条件满足时动作的执行。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统的状态。例如，“灯被打开”这个事件属于触发条件，“灯是开着的”这个状态就属于环境条件。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "环境条件是自动化流程中的可选部分，它可用于触发条件触发时拦截不符合条件的动作。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统当前的状态。触发条件可以观察到开关打开的动作。条件只能查看当前开关是开还是关。",
                             "add": "添加环境条件",
                             "duplicate": "复制",
                             "delete": "删除",
@@ -606,7 +606,7 @@
                     },
                     "config_flow": {
                         "external_step": {
-                            "description": "此步骤要求您访问要完成的外部网站。",
+                            "description": "此步骤需要访问外部网站才能完成。",
                             "open_site": "打开网站"
                         }
                     }
@@ -621,6 +621,7 @@
                     },
                     "device_card": {
                         "device_name_placeholder": "用户指定的名称",
+                        "area_picker_label": "区域",
                         "update_name_button": "更新名称"
                     },
                     "add_device_page": {
@@ -862,6 +863,7 @@
                     }
                 },
                 "integration": {
+                    "intro": "设备和服务在 Home Assistant 中表示为集成。您可以立即设置它们，也可以稍后在配置屏幕进行设置。",
                     "more_integrations": "更多",
                     "finish": "完成"
                 }
