@@ -21,7 +21,7 @@ gulp.task(
       "gen-icons",
       "gen-pages-dev",
       "gen-index-app-dev",
-      "build-translations"
+      gulp.series("create-test-translation", "build-translations")
     ),
     "copy-static",
     "webpack-watch-app"
