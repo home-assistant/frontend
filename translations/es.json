@@ -286,9 +286,9 @@
         "alarm_control_panel": {
             "armed": "Armado",
             "disarmed": "Desarmar",
-            "armed_home": "Activada",
-            "armed_away": "Activada",
-            "armed_night": "Activada",
+            "armed_home": "Armada",
+            "armed_away": "Armada",
+            "armed_night": "Armada",
             "pending": "Pendiente",
             "arming": "Armando",
             "disarming": "Desarmar",
@@ -603,6 +603,12 @@
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible",
                         "no_area": "Ninguna área"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Este paso requiere que visites una web externa para ser completado.",
+                            "open_site": "Abrir sitio web"
+                        }
                     }
                 },
                 "zha": {
