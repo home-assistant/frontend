@@ -128,6 +128,7 @@ class LovelacePanel extends LitElement {
     } else if (this.lovelace && this.lovelace.mode === "generated") {
       // When lovelace is generated, we re-generate each time a user goes
       // to the states panel to make sure new entities are shown.
+      this._state = "loading";
       this._regenerateConfig();
     }
   }
@@ -135,6 +136,7 @@ class LovelacePanel extends LitElement {
   private async _regenerateConfig() {
     const conf = await generateLovelaceConfig(this.hass!, this.hass!.localize);
     this._setLovelaceConfig(conf, "generated");
+    this._state = "loaded";
   }
 
   private _closeEditor() {
