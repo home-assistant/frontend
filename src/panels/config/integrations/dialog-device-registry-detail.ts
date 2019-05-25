@@ -50,7 +50,7 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+    this._unsubAreas = subscribeAreaRegistry(this.hass.connection, (areas) => {
       this._areas = areas;
     });
   }
