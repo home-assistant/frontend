@@ -1,6 +1,11 @@
 import "@material/mwc-button";
 
-import { fetchConfig, LovelaceConfig, saveConfig } from "../../data/lovelace";
+import {
+  fetchConfig,
+  LovelaceConfig,
+  saveConfig,
+  subscribeLovelaceUpdates,
+} from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
@@ -41,6 +46,7 @@ class LovelacePanel extends LitElement {
   @property() private lovelace?: Lovelace;
 
   private mqls?: MediaQueryList[];
+  private _saving: boolean = false;
 
   constructor() {
     super();
@@ -107,6 +113,13 @@ class LovelacePanel extends LitElement {
 
   public firstUpdated() {
     this._fetchConfig(false);
+    subscribeLovelaceUpdates(this.hass!.connection, () => {
+      if (this._saving) {
+        this._saving = false;
+      } else {
+        this._fetchConfig(false);
+      }
+    });
     this._updateColumns = this._updateColumns.bind(this);
     this.mqls = [300, 600, 900, 1200].map((width) => {
       const mql = matchMedia(`(min-width: ${width}px)`);
@@ -211,6 +224,7 @@ class LovelacePanel extends LitElement {
             config: newConfig,
             mode: "storage",
           });
+          this._saving = true;
           await saveConfig(this.hass!, newConfig);
         } catch (err) {
           // tslint:disable-next-line
