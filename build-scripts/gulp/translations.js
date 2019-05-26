@@ -197,13 +197,14 @@ gulp.task(
           //       than a base translation + region.
           const tr = path.basename(file.history[0], ".json");
           const subtags = tr.split("-");
-          const src = [
-            workDir + "/translationMaster.json",
-            workDir + "/test.json",
-          ];
+          const src = [workDir + "/translationMaster.json"];
           for (let i = 1; i <= subtags.length; i++) {
             const lang = subtags.slice(0, i).join("-");
-            src.push(inDir + "/" + lang + ".json");
+            if (lang === "test") {
+              src.push(workDir + "/test.json");
+            } else {
+              src.push(inDir + "/" + lang + ".json");
+            }
           }
           return gulp
             .src(src, { allowEmpty: true })
