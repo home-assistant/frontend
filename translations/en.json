@@ -626,6 +626,9 @@
                             "description": "This step requires you to visit an external website to be completed.",
                             "open_site": "Open website"
                         }
+                    },
+                    "device_registry": {
+                        "area": "area"
                     }
                 },
                 "zha": {
