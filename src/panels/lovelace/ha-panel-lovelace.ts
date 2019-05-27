@@ -20,7 +20,6 @@ import {
 } from "lit-element";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfig } from "./common/generate-lovelace-config";
-import { fireEvent } from "../../common/dom/fire_event";
 import { showToast } from "../../util/toast";
 
 interface LovelacePanelConfig {
