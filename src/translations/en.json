@@ -999,7 +999,12 @@
         "warning": {
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}"
-        }
+        },
+        "changed_toast": {
+          "message": "The Lovelace config was updated, would you like to refresh?",
+          "refresh": "Refresh"
+        },
+        "reload_lovelace": "Reload Lovelace"
       },
       "mailbox": {
         "empty": "You do not have any messages",
