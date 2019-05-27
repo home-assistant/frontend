@@ -46,7 +46,7 @@ class NotificationManager extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-toast noCancelOnOutsideClick=${false}
+      <ha-toast .noCancelOnOutsideClick=${false}
         >${this._action
           ? html`
               <mwc-button
