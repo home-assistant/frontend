@@ -9,10 +9,6 @@ import {
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
 import "./hui-root";
-import "./components/hui-actionable-toast";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HuiActionableToast } from "./components/hui-actionable-toast";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { Lovelace } from "./types";
 import {
@@ -24,6 +20,7 @@ import {
 } from "lit-element";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfig } from "./common/generate-lovelace-config";
+import { fireEvent } from "../../common/dom/fire_event";
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -50,8 +47,8 @@ class LovelacePanel extends LitElement {
   @property() private lovelace?: Lovelace;
 
   private mqls?: MediaQueryList[];
+
   private _saving: boolean = false;
-  private _changedToast?: HuiActionableToast;
 
   constructor() {
     super();
@@ -123,7 +120,9 @@ class LovelacePanel extends LitElement {
   public firstUpdated() {
     this._fetchConfig(false);
     // we don't want to unsub as we want to stay informed of updates
-    subscribeLovelaceUpdates(this.hass!.connection, this._lovelaceChanged);
+    subscribeLovelaceUpdates(this.hass!.connection, () =>
+      this._lovelaceChanged()
+    );
     this._updateColumns = this._updateColumns.bind(this);
     this.mqls = [300, 600, 900, 1200].map((width) => {
       const mql = matchMedia(`(min-width: ${width}px)`);
@@ -176,19 +175,14 @@ class LovelacePanel extends LitElement {
     if (this._saving) {
       this._saving = false;
     } else {
-      if (!this._changedToast) {
-        this._changedToast = document.createElement("hui-actionable-toast");
-        this._changedToast.text = this.hass!.localize(
-          "ui.panel.lovelace.changed_toast.message"
-        );
-        this._changedToast.buttonText = this.hass!.localize(
-          "ui.panel.lovelace.changed_toast.refresh"
-        );
-        this._changedToast.buttonAction = () => this._fetchConfig(false);
-        document.body.append(this._changedToast);
-      } else if (!this._changedToast.opened) {
-        this._changedToast.opened = true;
-      }
+      fireEvent(this, "hass-notification", {
+        message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
+        action: {
+          action: () => this._fetchConfig(false),
+          text: this.hass!.localize("ui.panel.lovelace.changed_toast.refresh"),
+        },
+        duration: 0,
+      });
     }
   }
 
