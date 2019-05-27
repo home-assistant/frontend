@@ -38,7 +38,10 @@ class NotificationManager extends LitElement {
     toast.setAttribute("dir", computeRTL(this.hass) ? "rtl" : "ltr");
     this._action = action || undefined;
     toast.hide();
-    toast.show({ text: message, duration: duration || 3000 });
+    toast.show({
+      text: message,
+      duration: duration === undefined ? 3000 : duration,
+    });
   }
 
   protected render(): TemplateResult | void {
