@@ -1,5 +1,5 @@
-import { fireEvent } from "../common/dom/fire_event";
 import { HassElement } from "../state/hass-element";
+import { showToast } from "./toast";
 
 export const registerServiceWorker = (notifyUpdate = true) => {
   if (
@@ -26,7 +26,7 @@ export const registerServiceWorker = (notifyUpdate = true) => {
           const haElement = window.document.querySelector(
             "home-assistant, ha-onboarding"
           )! as HassElement;
-          fireEvent(haElement, "hass-notification", {
+          showToast(haElement, {
             message: "A new version of the frontend is available.",
             action: {
               action: () =>
@@ -34,6 +34,7 @@ export const registerServiceWorker = (notifyUpdate = true) => {
               text: "reload",
             },
             duration: 0,
+            dismissable: false,
           });
         }
       });

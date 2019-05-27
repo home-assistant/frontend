@@ -1,6 +1,6 @@
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { fireEvent } from "../common/dom/fire_event";
+import { showToast } from "../util/toast";
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
@@ -13,7 +13,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     protected hassReconnected() {
       super.hassReconnected();
 
-      fireEvent(this, "hass-notification", {
+      showToast(this, {
         message: "",
         duration: 1,
       });
@@ -22,9 +22,10 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     protected hassDisconnected() {
       super.hassDisconnected();
 
-      fireEvent(this, "hass-notification", {
+      showToast(this, {
         message: this.hass!.localize("ui.notification_toast.connection_lost"),
         duration: 0,
+        dismissable: false,
       });
     }
   };

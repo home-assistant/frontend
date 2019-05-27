@@ -19,6 +19,7 @@ export interface ShowToastParams {
   message: string;
   action?: ToastActionParams;
   duration?: number;
+  dismissable?: boolean;
 }
 
 export interface ToastActionParams {
@@ -30,13 +31,21 @@ class NotificationManager extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() private _action?: ToastActionParams;
+  @property() private _noCancelOnOutsideClick: boolean = false;
 
   @query("ha-toast") private _toast!: HaToast;
 
-  public showDialog({ message, action, duration }: ShowToastParams) {
+  public showDialog({
+    message,
+    action,
+    duration,
+    dismissable,
+  }: ShowToastParams) {
     const toast = this._toast;
     toast.setAttribute("dir", computeRTL(this.hass) ? "rtl" : "ltr");
     this._action = action || undefined;
+    this._noCancelOnOutsideClick =
+      dismissable === undefined ? false : !dismissable;
     toast.hide();
     toast.show({
       text: message,
@@ -46,8 +55,8 @@ class NotificationManager extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-toast .noCancelOnOutsideClick=${false}
-        >${this._action
+      <ha-toast .noCancelOnOutsideClick=${this._noCancelOnOutsideClick}>
+        ${this._action
           ? html`
               <mwc-button
                 .label=${this._action.text}

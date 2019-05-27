@@ -21,6 +21,7 @@ import {
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfig } from "./common/generate-lovelace-config";
 import { fireEvent } from "../../common/dom/fire_event";
+import { showToast } from "../../util/toast";
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -124,9 +125,11 @@ class LovelacePanel extends LitElement {
       this._lovelaceChanged()
     );
     // reload lovelace on reconnect so we are sure we have the latest config
-    this.hass!.connection.addEventListener("ready", () =>
-      this._fetchConfig(false)
-    );
+    window.addEventListener("connection-status", (ev) => {
+      if (ev.detail === "connected") {
+        this._fetchConfig(false);
+      }
+    });
     this._updateColumns = this._updateColumns.bind(this);
     this.mqls = [300, 600, 900, 1200].map((width) => {
       const mql = matchMedia(`(min-width: ${width}px)`);
@@ -179,13 +182,14 @@ class LovelacePanel extends LitElement {
     if (this._saving) {
       this._saving = false;
     } else {
-      fireEvent(this, "hass-notification", {
+      showToast(this, {
         message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
         action: {
           action: () => this._fetchConfig(false),
           text: this.hass!.localize("ui.panel.lovelace.changed_toast.refresh"),
         },
         duration: 0,
+        dismissable: false,
       });
     }
   }
