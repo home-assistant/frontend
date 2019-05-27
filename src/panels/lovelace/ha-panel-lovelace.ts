@@ -124,11 +124,9 @@ class LovelacePanel extends LitElement {
       this._lovelaceChanged()
     );
     // reload lovelace on reconnect so we are sure we have the latest config
-    window.addEventListener("connection-status", (ev) => {
-      if (ev.detail === "connected") {
-        this._fetchConfig(false);
-      }
-    });
+    this.hass!.connection.addEventListener("ready", () =>
+      this._fetchConfig(false)
+    );
     this._updateColumns = this._updateColumns.bind(this);
     this.mqls = [300, 600, 900, 1200].map((width) => {
       const mql = matchMedia(`(min-width: ${width}px)`);
