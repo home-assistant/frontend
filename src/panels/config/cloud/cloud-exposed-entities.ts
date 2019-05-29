@@ -16,8 +16,8 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import {
   FilterFunc,
   generateFilter,
+  EntityFilter,
 } from "../../../common/entity/entity_filter";
-import { EntityFilter } from "../../../data/cloud";
 
 export class CloudExposedEntities extends LitElement {
   public hass?: HomeAssistant;
