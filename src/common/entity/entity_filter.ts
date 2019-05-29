@@ -2,6 +2,20 @@ import computeDomain from "./compute_domain";
 
 export type FilterFunc = (entityId: string) => boolean;
 
+export interface EntityFilter {
+  include_domains: string[];
+  include_entities: string[];
+  exclude_domains: string[];
+  exclude_entities: string[];
+}
+
+export const isEmptyFilter = (filter: EntityFilter) =>
+  filter.include_domains.length +
+    filter.include_entities.length +
+    filter.exclude_domains.length +
+    filter.exclude_entities.length ===
+  0;
+
 export const generateFilter = (
   includeDomains?: string[],
   includeEntities?: string[],
