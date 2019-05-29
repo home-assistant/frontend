@@ -64,8 +64,57 @@ class CloudGoogleAssistant extends LitElement {
     const filterFunc = this._getEntityFilterFunc(
       this.cloudStatus.google_entities
     );
+    let selected = 0;
+    const cards = this._entities.map((entity) => {
+      const stateObj = this.hass.states[entity.entity_id];
+      const config = this._entityConfigs[entity.entity_id] || {};
+      const isExposed = emptyFilter
+        ? Boolean(config.should_expose)
+        : filterFunc(entity.entity_id);
+      if (isExposed) {
+        selected++;
+      }
+
+      return html`
+        <ha-card>
+          <div class="card-content">
+            <state-info
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+              secondary-line
+              @click=${this._showMoreInfo}
+            >
+              ${entity.traits
+                .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
+                .join(", ")}
+            </state-info>
+            <paper-toggle-button
+              .entityId=${entity.entity_id}
+              .disabled=${!emptyFilter}
+              .checked=${isExposed}
+              @checked-changed=${this._exposeChanged}
+            >
+              Expose to Google Assistant
+            </paper-toggle-button>
+            ${entity.might_2fa
+              ? html`
+                  <paper-toggle-button
+                    .entityId=${entity.entity_id}
+                    .checked=${Boolean(config.disable_2fa)}
+                    @checked-changed=${this._disable2FAChanged}
+                  >
+                    Disable two factor authentication
+                  </paper-toggle-button>
+                `
+              : ""}
+          </div>
+        </ha-card>
+      `;
+    });
+
     return html`
       <hass-subpage header="Google Assistant">
+        <span slot="toolbar-icon">${selected} selected</span>
         ${!emptyFilter
           ? html`
               <div class="banner">
@@ -76,49 +125,7 @@ class CloudGoogleAssistant extends LitElement {
             `
           : ""}
         <div class="content">
-          ${this._entities.map((entity) => {
-            const stateObj = this.hass.states[entity.entity_id];
-            const config = this._entityConfigs[entity.entity_id] || {};
-            const isExposed = emptyFilter
-              ? Boolean(config.should_expose)
-              : filterFunc(entity.entity_id);
-
-            return html`
-              <ha-card>
-                <div class="card-content">
-                  <state-info
-                    .hass=${this.hass}
-                    .stateObj=${stateObj}
-                    secondary-line
-                    @click=${this._showMoreInfo}
-                  >
-                    ${entity.traits
-                      .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
-                      .join(", ")}
-                  </state-info>
-                  <paper-toggle-button
-                    .entityId=${entity.entity_id}
-                    .disabled=${!emptyFilter}
-                    .checked=${isExposed}
-                    @checked-changed=${this._exposeChanged}
-                  >
-                    Expose to Google Assistant
-                  </paper-toggle-button>
-                  ${entity.might_2fa
-                    ? html`
-                        <paper-toggle-button
-                          .entityId=${entity.entity_id}
-                          .checked=${Boolean(config.disable_2fa)}
-                          @checked-changed=${this._disable2FAChanged}
-                        >
-                          Disable two factor authentication
-                        </paper-toggle-button>
-                      `
-                    : ""}
-                </div>
-              </ha-card>
-            `;
-          })}
+          ${cards}
         </div>
       </hass-subpage>
     `;
