@@ -355,6 +355,21 @@
                                 "introduction": "Kontrolléiert ären Home Assistant Server ... vun Home Assistant aus.",
                                 "restart": "Neistart",
                                 "stop": "Stop"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editeur ass desaktivéiert well d'Konfiguratioun an der configuration.yaml gespäichert ass.",
+                                "location_name": "Numm vun der Home Assistant Installatioun",
+                                "latitude": "Breedegrad",
+                                "longitude": "Längegrad",
+                                "elevation": "Héicht",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Zäitzone",
+                                "unit_system": "Eenheetesystem",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metresch",
+                                "imperial_example": "Fahrenheit, Pënner",
+                                "metric_example": "Celsius, Kilogramm",
+                                "save_button": "Späicheren"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Méi iwwert Aktioune liesen"
-                        }
+                        },
+                        "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
+                        "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no})."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "Apparaten a Servicë ginn am Home Assistant als Integratioune representéiert. Dir kënnt si elo astellen, oder méi spéit vun der Konfiguratioun's Säit aus.",
                     "more_integrations": "Méi",
                     "finish": "Ofschléissen"
+                },
+                "core-config": {
+                    "intro": "Hallo {name}, wëllkomm zu Home Assistant. Wéi wëllt dir äert Doheem benennen?",
+                    "intro_location": "Mir wëlle wësse wou dir wunnt. Dës Informatioun hëlleft fir Informatiounen unzeweisen an Automatiounen anzeriichten déi op d'Sonne baséieren. Dës Donnéeë ginn nimools ausserhalb vun ärem Netzwierk gedeelt.",
+                    "intro_location_detect": "Mir kënne beim Ausfëlle vun dësen Informatiounen hëllefen andeems eng eemoleg Demande bei engem externe Service ugefrot gëtt.",
+                    "location_name_default": "Doheem",
+                    "button_detect": "Entdecken",
+                    "finish": "Nächst"
                 }
             },
             "lovelace": {

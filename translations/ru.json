@@ -355,6 +355,21 @@
                                 "introduction": "Управляйте Вашим сервером Home Assistant... из Home Assistant",
                                 "restart": "Перезапустить",
                                 "stop": "Остановить"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Редактор отключен, поскольку конфигурация уже хранится в файле configuration.yaml.",
+                                "location_name": "Название для Вашего Home Assistant",
+                                "latitude": "Широта",
+                                "longitude": "Долгота",
+                                "elevation": "Высота",
+                                "elevation_meters": "метров",
+                                "time_zone": "Часовой пояс",
+                                "unit_system": "Система мер",
+                                "unit_system_imperial": "Имперская",
+                                "unit_system_metric": "Метрическая",
+                                "imperial_example": "Градус Фаренгейта, фунт",
+                                "metric_example": "Градус Цельсия, килограмм",
+                                "save_button": "Сохранить"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Узнайте больше о действиях"
-                        }
+                        },
+                        "load_error_not_editable": "Доступны для редактирования только автоматизации из automations.yaml.",
+                        "load_error_unknown": "Ошибка загрузки автоматизации ({err_no})."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "Устройства и сервисы представлены в Home Assistant как интеграции. Вы можете добавить их сейчас или сделать это позже в разделе настроек.",
                     "more_integrations": "Ещё",
                     "finish": "Готово"
+                },
+                "core-config": {
+                    "intro": "Добро пожаловать, {name}! Как Вы хотите назвать свой Home Assistant?",
+                    "intro_location": "Мы хотели бы знать, где Вы живете. Это поможет нам правильно отображать информацию и позволит Вам настраивать автоматизацию на основе данных о рассвете и закате. Эти данные никогда не будут переданы за пределы Вашей локальной сети.",
+                    "intro_location_detect": "Мы можем помочь Вам заполнить эту информацию, сделав однократный запрос во внешнюю службу.",
+                    "location_name_default": "Home Assistant",
+                    "button_detect": "Заполнить",
+                    "finish": "Далее"
                 }
             },
             "lovelace": {
