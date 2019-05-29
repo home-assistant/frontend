@@ -355,6 +355,21 @@
                                 "introduction": "Home Assistant 서버를 제어합니다",
                                 "restart": "재시작",
                                 "stop": "중지"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어있기 때문에 편집기가 비활성화 되었습니다.",
+                                "location_name": "Home Assistant 설치 이름",
+                                "latitude": "위도",
+                                "longitude": "경도",
+                                "elevation": "고도",
+                                "elevation_meters": "미터",
+                                "time_zone": "시간대",
+                                "unit_system": "단위",
+                                "unit_system_imperial": "야드파운드법",
+                                "unit_system_metric": "미터법",
+                                "imperial_example": "화씨, 파운드",
+                                "metric_example": "섭씨, 킬로그램",
+                                "save_button": "저장"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "동작에 대해 더 알아보기"
-                        }
+                        },
+                        "load_error_not_editable": "automations.yaml 의 자동화만 편집 할 수 있습니다.",
+                        "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no})."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "기기 및 서비스는 Home Assistant 에서 통합 구성요소로 표시됩니다. 지금 구성하거나 설정 화면에서 나중에 구성할 수 있습니다.",
                     "more_integrations": "더보기",
                     "finish": "완료"
+                },
+                "core-config": {
+                    "intro": "{name} 님, 안녕하세요! Home Assistant 에 오신 것을 환영합니다. 집에 어떤 이름을 지어주시겠어요?",
+                    "intro_location": "현재 살고 계시는 위치를 알려주세요. 이는 태양 위치를 기반으로 하는 자동화를 설정하는데 도움이 됩니다. 위치 정보는 외부 네트워크와 절대 공유되지 않습니다.",
+                    "intro_location_detect": "외부 서비스에 일회성 요청을 해서 위치 정보를 넣는데 도움을 드릴 수 있습니다.",
+                    "location_name_default": "집",
+                    "button_detect": "탐색",
+                    "finish": "다음"
                 }
             },
             "lovelace": {

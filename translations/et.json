@@ -279,7 +279,8 @@
     "state_badge": {
         "default": {
             "unknown": "?",
-            "unavailable": "Kadunud"
+            "unavailable": "Kadunud",
+            "error": "Viga"
         },
         "alarm_control_panel": {
             "armed": "Valves",
@@ -353,6 +354,20 @@
                                 "introduction": "Kontrolli oma Home Assistant serverit... Home Assistant-ist.",
                                 "restart": "Taaskäivita",
                                 "stop": "Peata"
+                            },
+                            "core_config": {
+                                "location_name": "Sinu Home Assistant paigalduse nimi",
+                                "latitude": "Laius",
+                                "longitude": "Pikkus",
+                                "elevation": "Kõrgus",
+                                "elevation_meters": "meetrit",
+                                "time_zone": "Ajavöönd",
+                                "unit_system": "Ühikute süsteem",
+                                "unit_system_imperial": "Imperiaalne süsteem",
+                                "unit_system_metric": "Meetermõõdustik",
+                                "imperial_example": "Fahrenheit, naelad",
+                                "metric_example": "Celsius, kilogrammid",
+                                "save_button": "Salvesta"
                             }
                         }
                     }
@@ -369,7 +384,7 @@
                     "description": "Loo ja redigeeri automatiseeringuid",
                     "picker": {
                         "header": "Automaatika redaktor",
-                        "introduction": "Automaatika redaktor võimaldab teil luua ja muuta automatiseeringuid. Palun loe läbi [kasutusjuhend](https:\/\/home-assistant.io\/docs\/automation\/editor\/), veendumaks, et oled Home Assistant-i õigesti seadistanud.",
+                        "introduction": "Automaatika redaktor võimaldab teil luua ja muuta automatiseeringuid. Palun järgige allolevat linki, veendumaks, et oled Home Assistant-i õigesti seadistanud.",
                         "pick_automation": "Vali muudetav automatiseering",
                         "no_automations": "Me ei leidnud ühtegi muudetavat automatiseeringut",
                         "add_automation": "Lisa automatiseering",
@@ -383,7 +398,7 @@
                         "alias": "Nimi",
                         "triggers": {
                             "header": "Päästikud",
-                            "introduction": "Päästikud on need, millest algab automatiseeringu töö. Ühe automatiseeringu jaoks on võimalik määrata mitu päästikut. Kui päästik vallandub, kontrollib Home Assistant võimalike tingimuste täidetust ja käivitab tegevuse.\n\n[Lisateave päästikutest.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Päästikud on need, millest algab automatiseeringu töö. Ühe automatiseeringu jaoks on võimalik määrata mitu päästikut. Kui päästik vallandub, kontrollib Home Assistant võimalike tingimuste täidetust ja käivitab tegevuse.",
                             "add": "Lisa päästik",
                             "duplicate": "Paljunda",
                             "delete": "Kustuta",
@@ -465,7 +480,7 @@
                         },
                         "conditions": {
                             "header": "Tingimused",
-                            "introduction": "Tingimused on automatiseeringu valikuline osa ja neid saab kasutada, et vältida tegevuse käivitumist päästiku vallandumisel. Tingimused tunduvad väga sarnased päästikutele, kuid on siiski erinevad. Päästik jälgib süsteemis toimuvaid sündmusi, tingimus jälgib ainult süsteem praegust olekut. Päästik võib märgata, et lülitit ollakse parasjagu lülitamas. Tingimus võib näha ainult seda, kas lüliti on praegu sisse või välja lülitatud. \n\n [Lisateave tingimustest.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Tingimused on automatiseeringu valikuline osa ja neid saab kasutada, et vältida tegevuse käivitumist päästiku vallandumisel. Tingimused tunduvad väga sarnased päästikutele, kuid on siiski erinevad. Päästik jälgib süsteemis toimuvaid sündmusi, tingimus jälgib ainult süsteem praegust olekut. Päästik võib märgata, et lülitit ollakse parasjagu lülitamas. Tingimus võib näha ainult seda, kas lüliti on praegu sisse või välja lülitatud.",
                             "add": "Lisa tingimus",
                             "duplicate": "Duubelda",
                             "delete": "Kustuta",
@@ -511,7 +526,7 @@
                         },
                         "actions": {
                             "header": "Tegevused",
-                            "introduction": "Tegevused on need, mida Home Assistant teeb kui päästik käivitab automatiseeringu.\n\n[Lisateave tegevustest.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Tegevused on need, mida Home Assistant teeb kui päästik käivitab automatiseeringu.",
                             "add": "Lisa toiming",
                             "duplicate": "Paljunda",
                             "delete": "Kustuta",
@@ -602,7 +617,10 @@
                     }
                 },
                 "zha": {
-                    "caption": "ZHA"
+                    "caption": "ZHA",
+                    "device_card": {
+                        "area_picker_label": "Ala"
+                    }
                 },
                 "area_registry": {
                     "caption": "Alade register",
@@ -822,6 +840,18 @@
                         "required_fields": "Täida kõik nõutud väljad",
                         "password_not_match": "Salasõnad ei ühti"
                     }
+                },
+                "integration": {
+                    "more_integrations": "Rohkem",
+                    "finish": "Lõpeta"
+                },
+                "core-config": {
+                    "intro": "Tere tulemast Home Assistant'i kasutama, {name}. Kuidas sa soovid oma kodu nimetada?",
+                    "intro_location": "Soovime teada, kus sa elad. See teave aitab informatsiooni kuvamisel ja päikesepõhiste automatiseeringute loomisel. Neid andmeid ei jagata kunagi väljaspool teie võrku.",
+                    "intro_location_detect": "Me saame aidata sul seda teavet leida, tehes ühekordse päringu välisele teenusele.",
+                    "location_name_default": "Kodu",
+                    "button_detect": "Tuvasta",
+                    "finish": "Edasi"
                 }
             },
             "lovelace": {
