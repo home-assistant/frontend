@@ -355,6 +355,21 @@
                                 "introduction": "Nadzirajte strežnik Home Assistant ... iz Home Assistanta",
                                 "restart": "Ponovni zagon",
                                 "stop": "Ustavi"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v config.yaml.",
+                                "location_name": "Ime vašega instalacije vašega Home Assistant-a.",
+                                "latitude": "Zemljepisna širina",
+                                "longitude": "Zemljepisna dolžina",
+                                "elevation": "Nadmorska višina",
+                                "elevation_meters": "metrov",
+                                "time_zone": "Časovni pas",
+                                "unit_system": "Sistem enot",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrično",
+                                "imperial_example": "Fahrenheit, funtov",
+                                "metric_example": "Celzija, kilogramov",
+                                "save_button": "Shrani"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Več o akcijah"
-                        }
+                        },
+                        "load_error_not_editable": "Urejati je mogoče le avtomatizacije v automations.yaml.",
+                        "load_error_unknown": "Napaka pri nalaganju avtomatizacije ( {err_no})."
                     }
                 },
                 "script": {
@@ -603,6 +620,12 @@
                         "device_unavailable": "naprava ni na voljo",
                         "entity_unavailable": "subjekt ni na voljo",
                         "no_area": "Brez območja"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Ta korak zahteva, da za končanje obiščete zunanjo spletno stran.",
+                            "open_site": "Odprite spletno stran"
+                        }
                     }
                 },
                 "zha": {
@@ -855,6 +878,19 @@
                         "required_fields": "Izpolnite vsa zahtevana polja",
                         "password_not_match": "Gesli se ne ujemata"
                     }
+                },
+                "integration": {
+                    "intro": "Naprave in storitve so v Home Assistantu predstavljene kot integracije. Zdaj jih lahko nastavite ali pa to storite kasneje iz konfiguracijske strani.",
+                    "more_integrations": "Več",
+                    "finish": "Dokončaj"
+                },
+                "core-config": {
+                    "intro": "Pozdravljeni {name}, dobrodošli v Home Assistantu. Kako bi radi poimenovali vaš dom?",
+                    "intro_location": "Radi bi vedeli, kje živite. Te informacije vam bodo pomagale pri prikazovanju informacij in postavitvi avtomatizacij, ki temeljijo na soncu. Ti podatki se nikoli ne delijo izven vašega omrežja.",
+                    "intro_location_detect": "Lahko vam pomagamo izpolniti te informacije z enkratno zahtevo za zunanjo storitev.",
+                    "location_name_default": "Domov",
+                    "button_detect": "Odkrij",
+                    "finish": "Naslednji"
                 }
             },
             "lovelace": {
@@ -868,6 +904,14 @@
                         "title": "Dobrodošli Doma",
                         "no_devices": "Ta stran vam omogoča nadzor nad napravami, vendar je videti, da še niste nastavili nobenih naprav. Pojdite na stran za integracije, da začnete.",
                         "go_to_integrations_page": "Pojdite na stran za integracije."
+                    },
+                    "picture-elements": {
+                        "hold": "Pridržite:",
+                        "tap": "Tapnite:",
+                        "navigate_to": "Pojdite na {location}",
+                        "toggle": "Preklopi {name}",
+                        "call_service": "Kličite storitev {name}",
+                        "more_info": "Pokaži več informacij: {name}"
                     }
                 },
                 "editor": {
@@ -925,7 +969,8 @@
         },
         "sidebar": {
             "log_out": "Odjava",
-            "developer_tools": "Orodja za razvijalce"
+            "developer_tools": "Orodja za razvijalce",
+            "external_app_configuration": "Konfiguracija aplikacije"
         },
         "common": {
             "loading": "Nalaganje",
