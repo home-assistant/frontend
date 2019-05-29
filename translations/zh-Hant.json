@@ -355,6 +355,21 @@
                                 "introduction": "控制 Home Assistant 伺服器。",
                                 "restart": "重啟",
                                 "stop": "停止"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "由於設定儲存於 configuration.yaml 內，編輯功能已關閉。",
+                                "location_name": "Home Assistant 安裝名稱",
+                                "latitude": "緯度",
+                                "longitude": "經度",
+                                "elevation": "海拔",
+                                "elevation_meters": "公尺",
+                                "time_zone": "時區",
+                                "unit_system": "單位制",
+                                "unit_system_imperial": "英制",
+                                "unit_system_metric": "公制",
+                                "imperial_example": "華氏、磅",
+                                "metric_example": "攝氏、公斤",
+                                "save_button": "儲存"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "詳細了解動作"
-                        }
+                        },
+                        "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
+                        "load_error_unknown": "載入自動化錯誤（{err_no}）。"
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "將會於 Home Assistant 整合中呈現的裝置與服務。可以現在進行設定，或者稍後於設定選單中進行。",
                     "more_integrations": "更多",
                     "finish": "完成"
+                },
+                "core-config": {
+                    "intro": "{name}、你好，歡迎使用 Home Assistant。為您的家庭取個名字吧？",
+                    "intro_location": "希望能夠提供您所居住的區域，資料將協助所顯示的資訊內容、設定以日出日落為基礎的自動化。此資料將絕不會與外部網路進行分享。",
+                    "intro_location_detect": "設定可以藉由一次性請求外部服務、以協助您填寫此項資料。",
+                    "location_name_default": "首頁",
+                    "button_detect": "偵測",
+                    "finish": "下一步"
                 }
             },
             "lovelace": {
