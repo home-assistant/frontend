@@ -91,13 +91,12 @@ class StateInfo extends PolymerElement {
 
   static get properties() {
     return {
-      detailed: {
-        type: Boolean,
-        value: false,
-      },
       hass: Object,
       stateObj: Object,
-      inDialog: Boolean,
+      inDialog: {
+        type: Boolean,
+        value: () => false,
+      },
       rtl: {
         type: Boolean,
         reflectToAttribute: true,

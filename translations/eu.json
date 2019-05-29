@@ -260,6 +260,19 @@
                                 "introduction": "Zure Home Assistant zerbitzaria... Home Assistantetik kontrolatu",
                                 "restart": "Berrabiarazi",
                                 "stop": "Gelditu"
+                            },
+                            "core_config": {
+                                "location_name": "Zure Home Assistant instalazioaren izena",
+                                "latitude": "Latitudea",
+                                "longitude": "Longitudea",
+                                "elevation_meters": "metro",
+                                "time_zone": "Ordu-eremua",
+                                "unit_system": "Unitate Sistema",
+                                "unit_system_imperial": "Inperiala",
+                                "unit_system_metric": "Metrikoa",
+                                "imperial_example": "Fahrenheit, librak",
+                                "metric_example": "Celsius, kilogramoak",
+                                "save_button": "Gorde"
                             }
                         }
                     }
@@ -325,6 +338,10 @@
                                 "zone": {
                                     "enter": "Sartu",
                                     "leave": "Utzi"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook IDa"
                                 },
                                 "time_pattern": {
                                     "label": "Denbora Eredua",
@@ -392,7 +409,9 @@
                                 }
                             },
                             "learn_more": "Ekintzei buruz gehiago ikasi"
-                        }
+                        },
+                        "load_error_not_editable": "Soilik automations.yaml fitxategian dauden automatizazioak dira editagarriak.",
+                        "load_error_unknown": "Errorea automatizazioa kargatzean ({err_no})."
                     }
                 },
                 "users": {
@@ -430,8 +449,15 @@
                     "none": "Ez dago ezer konfiguratuta",
                     "config_entry": {
                         "no_devices": "Integrazio honek ez du gailurik.",
+                        "no_device": "Gailurik gabeko entitateak",
                         "firmware": "Firmware: {version}",
                         "no_area": "Ez dago gunerik"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Urrats hau betetzeko kanpoko webgune bat bisitatu beharko duzu.",
+                            "open_site": "Webgunea ireki"
+                        }
                     }
                 },
                 "zha": {
@@ -452,6 +478,7 @@
                 },
                 "area_registry": {
                     "caption": "Gune Erregistroa",
+                    "description": "Zure etxeko gune guztien ikuspegi orokorra.",
                     "picker": {
                         "header": "Gune Erregistroa",
                         "integrations_page": "Integrazioen orria",
@@ -474,6 +501,7 @@
                         "integrations_page": "Integrazioak"
                     },
                     "editor": {
+                        "unavailable": "Entitate hau ez dago eskuragarri une honetan.",
                         "default_name": "Gune berria",
                         "delete": "EZABATU",
                         "update": "EGUNERATU"
@@ -481,8 +509,12 @@
                 },
                 "person": {
                     "caption": "Pertsonak",
+                    "description": "Kudeatu Home Assistantek jarraituko dituen pertsonak.",
                     "detail": {
-                        "name": "Izena"
+                        "name": "Izena",
+                        "device_tracker_intro": "Hautatu pertsona horri dagozkion gailuak.",
+                        "device_tracker_picked": "Gailua jarraitu",
+                        "device_tracker_pick": "Jarraituko diren gailua aukeratu"
                     }
                 }
             },
@@ -613,6 +645,17 @@
                         "required_fields": "Beharrezkoak diren eremu guztiak bete",
                         "password_not_match": "Pasahitzak ez datoz bat"
                     }
+                },
+                "integration": {
+                    "more_integrations": "Gehiago",
+                    "finish": "Amaitu"
+                },
+                "core-config": {
+                    "intro": "Kaixo {name}, ongi etorri Home Assistantera. Nola izendatu nahi duzu zure etxea?",
+                    "intro_location_detect": "Informazio hau betetzen lagundu diezazukegu kanpoko zerbitzu batera esakera bakarra eginez.",
+                    "location_name_default": "Etxea",
+                    "button_detect": "Detektatu",
+                    "finish": "Hurregoa"
                 }
             },
             "lovelace": {
@@ -624,12 +667,20 @@
                     "empty_state": {
                         "title": "Ongi etorri Etxera",
                         "go_to_integrations_page": "Integrazioen orrira joan."
+                    },
+                    "picture-elements": {
+                        "hold": "Eutsi:",
+                        "tap": "Ukitu:",
+                        "navigate_to": "{location}-ra nabigatu",
+                        "call_service": "{name} zerbitzua deitu",
+                        "more_info": "Informazio gehiago erakutsi: {name}"
                     }
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Txartelaren konfigurazioa",
                         "save": "Gorde",
+                        "pick_card": "Gehitu nahi duzun txartela aukeratu.",
                         "add": "Txartela gehitu",
                         "edit": "Editatu",
                         "delete": "Ezabatu",
@@ -647,6 +698,7 @@
                         "delete": "Bista ezabatu"
                     },
                     "save_config": {
+                        "header": "Hartu zure Lovelace UI-aren kontrola",
                         "cancel": "Berdin dio",
                         "save": "Kontrola hartu"
                     },
@@ -674,7 +726,8 @@
         },
         "sidebar": {
             "log_out": "Saioa itxi",
-            "developer_tools": "Garatzaileentzako tresnak"
+            "developer_tools": "Garatzaileentzako tresnak",
+            "external_app_configuration": "Aplikazioaren Konfigurazioa"
         },
         "common": {
             "loading": "Kargatzen",

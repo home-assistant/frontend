@@ -16,8 +16,8 @@ export interface DeviceRegistryEntry {
 }
 
 export interface DeviceRegistryEntryMutableParams {
-  area_id?: string;
-  name_by_user?: string;
+  area_id?: string | null;
+  name_by_user?: string | null;
 }
 
 export const updateDeviceRegistryEntry = (
