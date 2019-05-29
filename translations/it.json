@@ -355,6 +355,21 @@
                                 "introduction": "Controllare il server Home Assistant... da Home Assistant.",
                                 "restart": "Riavviare",
                                 "stop": "Stop"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor disabilitato perché la configurazione memorizzata in configuration.yaml.",
+                                "location_name": "Nome della tua installazione di Home Assistant",
+                                "latitude": "Latitudine",
+                                "longitude": "Logitudine",
+                                "elevation": "Altitudine",
+                                "elevation_meters": "Metri",
+                                "time_zone": "Fuso orario",
+                                "unit_system": "Unità di misura",
+                                "unit_system_imperial": "Imperiale",
+                                "unit_system_metric": "metrico",
+                                "imperial_example": "Fahrenheit, libbre",
+                                "metric_example": "Celsius, chilogrammi",
+                                "save_button": "Salva"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Per saperne di più sulle azioni"
-                        }
+                        },
+                        "load_error_not_editable": "Solo le automazioni in automations.yaml sono modificabili.",
+                        "load_error_unknown": "Errore durante il caricamento dell'automazione ( {err_no} )."
                     }
                 },
                 "script": {
@@ -606,6 +623,7 @@
                     },
                     "config_flow": {
                         "external_step": {
+                            "description": "Questo passaggio richiede di visitare un sito Web esterno per essere completato.",
                             "open_site": "Apri sito Web"
                         }
                     }
@@ -863,7 +881,16 @@
                 },
                 "integration": {
                     "intro": "Dispositivi e servizi sono rappresentati in Home Assistant come integrazioni. È possibile impostarli ora, o farlo in seguito dalla schermata di configurazione.",
+                    "more_integrations": "Di Più",
                     "finish": "finire"
+                },
+                "core-config": {
+                    "intro": "Salve {name} , benvenuto su Home Assistant. Come vorresti nominare la tua casa?",
+                    "intro_location": "Vorremmo sapere dove vivete. Queste informazioni aiuteranno a visualizzare informazioni e automazioni basate sul sole. Questi dati non vengono mai condivisi al di fuori della vostra rete.",
+                    "intro_location_detect": "Possiamo aiutarti a compilare queste informazioni effettuando una richiesta una volta a un servizio esterno.",
+                    "location_name_default": "Casa",
+                    "button_detect": "Rileva",
+                    "finish": "Prossimo"
                 }
             },
             "lovelace": {
@@ -879,6 +906,11 @@
                         "go_to_integrations_page": "Vai alla pagina delle integrazioni."
                     },
                     "picture-elements": {
+                        "hold": "Tenere premuto:",
+                        "tap": "Tocca:",
+                        "navigate_to": "Vai a {location}",
+                        "toggle": "Commuta {name}",
+                        "call_service": "Chiama il servizio {name}",
                         "more_info": "Mostra più informazioni: {name}"
                     }
                 },
