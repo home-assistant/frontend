@@ -25,13 +25,15 @@ class ConfigNameForm extends LitElement {
   @property() private _name!: ConfigUpdateValues["location_name"];
 
   protected render(): TemplateResult | void {
-    const isStorage = this.hass.config.config_source === "storage";
-    const disabled = this._working || !isStorage;
+    const canEdit = ["storage", "default"].includes(
+      this.hass.config.config_source
+    );
+    const disabled = this._working || !canEdit;
 
     return html`
       <ha-card>
         <div class="card-content">
-          ${!isStorage
+          ${!canEdit
             ? html`
                 <p>
                   ${this.hass.localize(
