@@ -355,6 +355,21 @@
                                 "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Aturar"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
+                                "location_name": "Nom de la instal·lació de Home Assistant",
+                                "latitude": "Latitud",
+                                "longitude": "Longitud",
+                                "elevation": "Altitud",
+                                "elevation_meters": "metres",
+                                "time_zone": "Zona horària",
+                                "unit_system": "Sistema d'unitats",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Mètric",
+                                "imperial_example": "Fahrenheit, lliures",
+                                "metric_example": "Celsius, quilograms",
+                                "save_button": "Desa"
                             }
                         }
                     }
@@ -381,7 +396,7 @@
                     "editor": {
                         "introduction": "Utilitza els automatismes per donar més vida a la teva casa",
                         "default_name": "Nou automatisme",
-                        "save": "Desar",
+                        "save": "Desa",
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?",
                         "alias": "Nom",
                         "triggers": {
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Més informació sobre les accions"
-                        }
+                        },
+                        "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
+                        "load_error_unknown": "Error en carregar l’automatització ({err_no})."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "Els dispositius i serveis es representen a Home Assistant com a integracions. Pots configurar-los ara o més tard des de la pàgina de configuració.",
                     "more_integrations": "Més",
                     "finish": "Finalitza"
+                },
+                "core-config": {
+                    "intro": "Hola {name}, benvingut\/uda a Home Assistant. Quin nom t'agradaria posar a la teva casa?",
+                    "intro_location": "Voldirem saber la zona on vius. Aquesta informació servirà per poder mostrar certa informació i configurar automatitzacions relatives a la posició del sol. Aquestes dades mai es compartiran fora de la teva xarxa personal.",
+                    "intro_location_detect": "Et podem ajudar a completar aquesta informació fent una única sol·licitud a un servei extern.",
+                    "location_name_default": "Casa",
+                    "button_detect": "Detecta",
+                    "finish": "Següent"
                 }
             },
             "lovelace": {
@@ -892,7 +917,7 @@
                 "editor": {
                     "edit_card": {
                         "header": "Targeta de Configuració",
-                        "save": "Desar",
+                        "save": "Desa",
                         "toggle_editor": "Commutar l'editor",
                         "pick_card": "Tria la targeta que vols afegir.",
                         "add": "Afegir targeta",
@@ -925,7 +950,7 @@
                     },
                     "raw_editor": {
                         "header": "Edita la configuració",
-                        "save": "Desar",
+                        "save": "Desa",
                         "unsaved_changes": "Canvis sense desar",
                         "saved": "Desat"
                     }
@@ -950,7 +975,7 @@
         "common": {
             "loading": "Carregant",
             "cancel": "Cancel·la",
-            "save": "Desar"
+            "save": "Desa"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
@@ -1107,7 +1132,7 @@
         },
         "dialogs": {
             "more_info_settings": {
-                "save": "Desar",
+                "save": "Desa",
                 "name": "Substitució de Nom",
                 "entity_id": "ID de l'entitat"
             },
@@ -1128,7 +1153,7 @@
         "auth_store": {
             "ask": "Voleu desar aquest inici de sessió?",
             "decline": "No, gràcies",
-            "confirm": "Desar inici de sessió"
+            "confirm": "Desa inici de sessió"
         },
         "notification_drawer": {
             "click_to_configure": "Prem el botó per configurar {entity}",

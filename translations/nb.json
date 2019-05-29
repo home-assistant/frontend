@@ -355,6 +355,21 @@
                                 "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                                 "restart": "Start på nytt",
                                 "stop": "Stopp"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
+                                "location_name": "Navn på installasjonen av Home Assistant",
+                                "latitude": "Breddegrad",
+                                "longitude": "Lengdegrad",
+                                "elevation": "Høyde",
+                                "elevation_meters": "meter",
+                                "time_zone": "Tidssone",
+                                "unit_system": "Enhetssystem",
+                                "unit_system_imperial": "Imperisk",
+                                "unit_system_metric": "Metrisk",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Lagre"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Lær mer om handlinger"
-                        }
+                        },
+                        "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres.",
+                        "load_error_unknown": "Feil ved lasting av automatisering ( {err_no} )."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "Enheter og tjenester er representert i Home Assistant som integrasjoner. Du kan sette dem opp nå eller gjøre det senere fra konfigurasjonen.",
                     "more_integrations": "Mer",
                     "finish": "Fullfør"
+                },
+                "core-config": {
+                    "intro": "Hei {Name}, velkommen til Home Assistant. Hva ønsker du å kalle hjemmet ditt?",
+                    "intro_location": "Vi vil gjerne vite hvor du bor. Denne informasjonen vil bidra til å vise informasjon og sette opp solbaserte automatiseringer. Denne dataen deles ikke utenfor nettverket ditt.",
+                    "intro_location_detect": "Vi kan hjelpe deg med å fylle ut denne informasjonen ved å gjøre en engangsforespørsel til en ekstern tjeneste.",
+                    "location_name_default": "Hjem",
+                    "button_detect": "Oppdag",
+                    "finish": "Neste"
                 }
             },
             "lovelace": {

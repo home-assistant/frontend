@@ -399,6 +399,7 @@ class HUIRoot extends LitElement {
         views
       ) {
         navigate(this, `/lovelace/${views[0].path || 0}`, true);
+        newSelectView = 0;
       } else if (this._routeData!.view === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (this._routeData!.view) {

@@ -355,6 +355,21 @@
                                 "introduction": "Contrôlez votre serveur Home Assistant... depuis Home Assistant.",
                                 "restart": "Redémarrer",
                                 "stop": "Arrêter"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
+                                "location_name": "Nom de votre installation Home Assistant",
+                                "latitude": "Latitude",
+                                "longitude": "Longitude",
+                                "elevation": "Élévation",
+                                "elevation_meters": "mètres",
+                                "time_zone": "Fuseau horaire",
+                                "unit_system": "Système d'unité",
+                                "unit_system_imperial": "Impérial",
+                                "unit_system_metric": "Métrique",
+                                "imperial_example": "Fahrenheit, livres",
+                                "metric_example": "Celsius, kilogrammes",
+                                "save_button": "Enregistrer"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "En savoir plus sur les actions"
-                        }
+                        },
+                        "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
+                        "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} )."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "Les appareils et les services sont représentés dans Home Assistant sous forme d’intégrations. Vous pouvez les configurer maintenant ou le faire plus tard à partir de l'écran de configuration.",
                     "more_integrations": "Plus",
                     "finish": "Terminer"
+                },
+                "core-config": {
+                    "intro": "Bonjour {name} , bienvenue dans Home Assistant. Comment voudriez-vous nommer votre maison?",
+                    "intro_location": "Nous aimerions savoir où vous habitez. Ces informations vous aideront à afficher des informations et à configurer des automatismes basés sur le soleil. Ces données ne sont jamais partagées en dehors de votre réseau.",
+                    "intro_location_detect": "Nous pouvons vous aider à renseigner ces informations en adressant une demande unique à un service externe.",
+                    "location_name_default": "Maison",
+                    "button_detect": "Détecter",
+                    "finish": "Suivant"
                 }
             },
             "lovelace": {

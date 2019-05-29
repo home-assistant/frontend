@@ -33,8 +33,10 @@ class ConfigCoreForm extends LitElement {
   @property() private _timeZone!: string;
 
   protected render(): TemplateResult | void {
-    const isStorage = this.hass.config.config_source === "storage";
-    const disabled = this._working || !isStorage;
+    const canEdit = ["storage", "default"].includes(
+      this.hass.config.config_source
+    );
+    const disabled = this._working || !canEdit;
 
     return html`
       <ha-card
@@ -43,7 +45,7 @@ class ConfigCoreForm extends LitElement {
         )}
       >
         <div class="card-content">
-          ${!isStorage
+          ${!canEdit
             ? html`
                 <p>
                   ${this.hass.localize(
