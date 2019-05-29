@@ -11,7 +11,7 @@ import { CloudStatus } from "../../../data/cloud";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { PolymerElement } from "@polymer/polymer";
 
-const LOGGED_IN_URLS = ["account"];
+const LOGGED_IN_URLS = ["account", "google-assistant"];
 const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];
 
 @customElement("ha-config-cloud")
@@ -52,6 +52,10 @@ class HaConfigCloud extends HassRouterPage {
       },
       account: {
         tag: "ha-config-cloud-account",
+      },
+      "google-assistant": {
+        tag: "ha-config-cloud-google-assistant",
+        load: () => import("./ha-config-cloud-google-assistant"),
       },
     },
   };
