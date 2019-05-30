@@ -358,7 +358,7 @@
                             },
                             "core_config": {
                                 "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어있기 때문에 편집기가 비활성화 되었습니다.",
-                                "location_name": "Home Assistant 설치 이름",
+                                "location_name": "Home Assistant 설치 위치명",
                                 "latitude": "위도",
                                 "longitude": "경도",
                                 "elevation": "고도",
@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}",
                     "entity_non_numeric": "구성요소가 숫자형식이 아닙니다: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Lovelace 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
+                    "refresh": "새로고침"
+                },
+                "reload_lovelace": "Lovelace 새로고침"
             }
         },
         "sidebar": {
