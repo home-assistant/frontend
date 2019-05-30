@@ -169,13 +169,16 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   connectedCallback() {
     super.connectedCallback();
-    this._unsubAreas = subscribeAreaRegistry(this.hass, (areas) => {
+    this._unsubAreas = subscribeAreaRegistry(this.hass.connection, (areas) => {
       this._areas = areas;
     });
-    this._unsubDevices = subscribeDeviceRegistry(this.hass, (devices) => {
-      this.devices = devices;
-      this.device = devices.find((device) => device.id === this.device.id);
-    });
+    this._unsubDevices = subscribeDeviceRegistry(
+      this.hass.connection,
+      (devices) => {
+        this.devices = devices;
+        this.device = devices.find((device) => device.id === this.device.id);
+      }
+    );
   }
 
   disconnectedCallback() {

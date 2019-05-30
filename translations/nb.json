@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Enhet ikke tilgjengelig: {entity}",
                     "entity_non_numeric": "Enheten er ikke-numerisk: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Lovelace-konfigurasjonen ble oppdatert, ønsker du å oppdatere?",
+                    "refresh": "Oppdatere"
+                },
+                "reload_lovelace": "Laste Lovelace på nytt"
             }
         },
         "sidebar": {

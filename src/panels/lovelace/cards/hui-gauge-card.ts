@@ -42,6 +42,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
+  @property() private _baseUnit = "50px";
   @property() private _config?: GaugeCardConfig;
 
   private _updated?: boolean;
@@ -99,16 +100,21 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card @click="${this._handleClick}">
+      <ha-card
+        @click="${this._handleClick}"
+        style=${styleMap({
+          "--base-unit": this._baseUnit,
+        })}
+      >
         <div class="container">
           <div class="gauge-a"></div>
           <div class="gauge-b"></div>
           <div
             class="gauge-c"
-            style="${styleMap({
+            style=${styleMap({
               transform: `rotate(${this._translateTurn(state)}turn)`,
               "background-color": this._computeSeverity(state),
-            })}"
+            })}
           ></div>
           <div class="gauge-data">
             <div id="percent">
@@ -154,12 +160,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       return;
     }
     const baseUnit = this._computeBaseUnit();
-    if (baseUnit === "0px") {
-      return;
+    if (baseUnit !== "0px") {
+      this._baseUnit = baseUnit;
     }
-    (this.shadowRoot!.querySelector(
-      "ha-card"
-    )! as HTMLElement).style.setProperty("--base-unit", baseUnit);
   }
 
   private _computeSeverity(numberValue: number): string {
@@ -211,7 +214,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       ha-card {
-        --base-unit: 50px;
         height: calc(var(--base-unit) * 3);
         position: relative;
         cursor: pointer;
