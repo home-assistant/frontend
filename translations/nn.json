@@ -617,7 +617,7 @@
                     }
                 },
                 "area_registry": {
-                    "caption": "Oppføringsregister",
+                    "caption": "Områderegister",
                     "description": "Oversikt over områda i heimen din.",
                     "picker": {
                         "header": "Områderegister",
