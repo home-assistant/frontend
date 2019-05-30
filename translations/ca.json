@@ -345,10 +345,10 @@
                             "reloading": {
                                 "heading": "Recàrrega de la configuració",
                                 "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar-les. Les opcions de sota esborraran la configuració antiga i carregaran la nova.",
-                                "core": "Recarregar el nucli",
-                                "group": "Recarregar grups",
-                                "automation": "Recarregar automatismes",
-                                "script": "Recarregar programes"
+                                "core": "Recarrega el nucli",
+                                "group": "Recarrega grups",
+                                "automation": "Recarrega automatismes",
+                                "script": "Recarrega programes"
                             },
                             "server_management": {
                                 "heading": "Gestió del servidor",
@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Entitat no disponible: {entity}",
                     "entity_non_numeric": "Entitat no numèrica: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "S'ha actualitzat la configuració de Lovelace, vols refrescar-ho?",
+                    "refresh": "Actualitza"
+                },
+                "reload_lovelace": "Recarrega Lovelace"
             }
         },
         "sidebar": {
