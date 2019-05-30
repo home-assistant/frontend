@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Объект недоступен: {entity}",
                     "entity_non_numeric": "Объект не является числом: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Конфигурация Lovelace была изменена, обновить эту страницу?",
+                    "refresh": "Обновить"
+                },
+                "reload_lovelace": "Перезагрузить Lovelace"
             }
         },
         "sidebar": {

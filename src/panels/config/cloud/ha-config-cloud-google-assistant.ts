@@ -60,7 +60,7 @@ class CloudGoogleAssistant extends LitElement {
         <hass-loading-screen></hass-loading-screen>
       `;
     }
-    const emptyFilter = true || isEmptyFilter(this.cloudStatus.google_entities);
+    const emptyFilter = isEmptyFilter(this.cloudStatus.google_entities);
     const filterFunc = this._getEntityFilterFunc(
       this.cloudStatus.google_entities
     );

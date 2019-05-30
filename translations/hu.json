@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Entitás nem elérhető: {entity}",
                     "entity_non_numeric": "Entitás nem numerikus: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "A Lovelace config módosult, szeretnéd frissíteni?",
+                    "refresh": "Frissítés"
+                },
+                "reload_lovelace": "Lovelace Újratöltése"
             }
         },
         "sidebar": {
