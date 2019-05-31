@@ -129,7 +129,11 @@ class ConfigCoreForm extends LitElement {
                 "ui.panel.config.core.section.core.core_config.unit_system"
               )}
             </div>
-            <paper-radio-group class="flex" .selected=${this._unitSystemValue}>
+            <paper-radio-group
+              class="flex"
+              .selected=${this._unitSystemValue}
+              @selected-changed=${this._unitSystemChanged}
+            >
               <paper-radio-button name="metric" .disabled=${disabled}>
                 ${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.unit_system_metric"
@@ -207,6 +211,12 @@ class ConfigCoreForm extends LitElement {
   private _handleChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
     this[`_${target.name}`] = target.value;
+  }
+
+  private _unitSystemChanged(
+    ev: PolymerChangedEvent<ConfigUpdateValues["unit_system"]>
+  ) {
+    this._unitSystem = ev.detail.value;
   }
 
   private async _save() {
