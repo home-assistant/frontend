@@ -240,7 +240,7 @@ class CloudGoogleAssistant extends LitElement {
     return css`
       .banner {
         color: var(--primary-text-color);
-        background-color: var(--card-background-color);
+        background-color: var(--paper-card-background-color);
         padding: 16px 8px;
         text-align: center;
       }
