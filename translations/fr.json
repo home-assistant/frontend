@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Entité non disponible: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "La configuration de Lovelace á été changé, voulez-vous rafraîchir?",
+                    "refresh": "Rafraîchir"
+                },
+                "reload_lovelace": "Recharger Lovelace"
             }
         },
         "sidebar": {

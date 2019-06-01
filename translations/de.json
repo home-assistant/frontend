@@ -355,6 +355,21 @@
                                 "introduction": "Verwalte den Home Assistant Server",
                                 "restart": "Neu starten",
                                 "stop": "Stoppen"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
+                                "location_name": "Name deiner Home Assistant Installation",
+                                "latitude": "Breitengrad",
+                                "longitude": "Längengrad",
+                                "elevation": "Höhe",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Zeitzone",
+                                "unit_system": "Einheitensystem",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrisch",
+                                "imperial_example": "Fahrenheit, Pfund",
+                                "metric_example": "Celsius, Kilogramm",
+                                "save_button": "Speichern"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Erfahre mehr über Aktionen"
-                        }
+                        },
+                        "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
+                        "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no})."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "Geräte und Dienste werden in Home Assistant als Integrationen dargestellt. Sie können jetzt oder später über die Konfigurationsseite eingerichtet werden.",
                     "more_integrations": "Mehr",
                     "finish": "Fertig"
+                },
+                "core-config": {
+                    "intro": "Hallo {name}, willkommen bei der Home Assistant. Wie möchtest du dein Haus benennen?",
+                    "intro_location": "Wir würden gerne wissen, wo du wohnst. Diese Information hilft bei der Anzeige von Informationen und der Einrichtung von Sonnenstands-basierten Automatisierungen. Diese Daten werden niemals außerhalb deines Netzwerks weitergegeben.",
+                    "intro_location_detect": "Wir können helfen, diese Informationen auszufüllen, indem wir eine einmalige Anfrage an einen externen Dienstleister richten.",
+                    "location_name_default": "Home",
+                    "button_detect": "Erkennen",
+                    "finish": "Weiter"
                 }
             },
             "lovelace": {
@@ -939,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Entität nicht verfügbar: {entity}",
                     "entity_non_numeric": "Die Entität ist nicht-numerisch: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Die Lovelace-Konfiguration wurde aktualisiert, möchtest du sie aktualisieren?",
+                    "refresh": "Aktualisieren"
+                },
+                "reload_lovelace": "Lovelace neu laden"
             }
         },
         "sidebar": {
