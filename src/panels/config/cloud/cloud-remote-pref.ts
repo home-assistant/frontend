@@ -127,6 +127,9 @@ export class CloudRemotePref extends LitElement {
       .card-actions {
         display: flex;
       }
+      .card-actions a {
+        text-decoration: none;
+      }
       .spacer {
         flex-grow: 1;
       }

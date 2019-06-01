@@ -99,6 +99,7 @@ export class CloudGooglePref extends LitElement {
           >
             Sync entities to Google
           </ha-call-api-button>
+          <div class="spacer"></div>
           <a href="/config/cloud/google-assistant">
             <mwc-button>Manage Entities</mwc-button>
           </a>
@@ -151,11 +152,14 @@ export class CloudGooglePref extends LitElement {
       paper-input {
         width: 200px;
       }
+      .card-actions {
+        display: flex;
+      }
       .card-actions a {
         text-decoration: none;
       }
-      .card-actions mwc-button {
-        float: right;
+      .spacer {
+        flex-grow: 1;
       }
     `;
   }
