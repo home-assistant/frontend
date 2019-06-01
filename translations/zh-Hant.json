@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "物件不可用：{entity}",
                     "entity_non_numeric": "物件為非數字：{entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Lovelace 設定已更新，是否要更新頁面？",
+                    "refresh": "更新"
+                },
+                "reload_lovelace": "重新載入 Lovelace"
             }
         },
         "sidebar": {

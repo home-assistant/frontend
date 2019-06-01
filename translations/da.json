@@ -300,7 +300,7 @@
         },
         "person": {
             "home": "Hjemme",
-            "not_home": "Ikke hjemme"
+            "not_home": "Ude"
         }
     },
     "ui": {
@@ -354,6 +354,20 @@
                                 "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                                 "restart": "Genstart",
                                 "stop": "Stop"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i configuration.yaml.",
+                                "latitude": "Breddegrad",
+                                "longitude": "Længdegrad",
+                                "elevation": "Højde",
+                                "elevation_meters": "meter",
+                                "time_zone": "Tidszone",
+                                "unit_system": "Enheds system",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metriske",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsius, kg",
+                                "save_button": "Gem"
                             }
                         }
                     }
@@ -544,7 +558,8 @@
                                 }
                             },
                             "learn_more": "Lær om handlinger"
-                        }
+                        },
+                        "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres."
                     }
                 },
                 "script": {
@@ -601,6 +616,12 @@
                         "device_unavailable": "enhed utilgængelig",
                         "entity_unavailable": "entitet utilgængelig",
                         "no_area": "Intet område"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Dette trin kræver, at du besøger et eksternt websted.",
+                            "open_site": "Åbn websted"
+                        }
                     }
                 },
                 "zha": {
@@ -848,6 +869,17 @@
                         "required_fields": "Udfyld alle obligatoriske felter",
                         "password_not_match": "Adgangskoderne er ikke ens"
                     }
+                },
+                "integration": {
+                    "more_integrations": "Mere",
+                    "finish": "Afslut"
+                },
+                "core-config": {
+                    "intro": "Hej {name}, velkommen til Home Assistant. Hvordan vil du navngive dit hjem?",
+                    "intro_location": "Vi vil gerne vide, hvor du bor. Disse oplysninger hjælper med at vise information og opsætte solbaserede automationer. Disse data deles aldrig uden for dit netværk.",
+                    "intro_location_detect": "Vi kan hjælpe dig med at udfylde disse oplysninger ved at foretage en engangsforespørgsel til en ekstern service.",
+                    "location_name_default": "Hjem",
+                    "finish": "Næste"
                 }
             },
             "lovelace": {
@@ -861,6 +893,11 @@
                         "title": "Velkommen hjem",
                         "no_devices": "Denne side giver dig mulighed for at styre dine enheder, men det ser ud til, at du endnu ikke har konfigureret enheder. Gå til integrationssiden for at komme i gang.",
                         "go_to_integrations_page": "Gå til integrationssiden."
+                    },
+                    "picture-elements": {
+                        "navigate_to": "Naviger til {location}",
+                        "call_service": "Kald service {name}",
+                        "more_info": "Vis mere-info: {Name}"
                     }
                 },
                 "editor": {
@@ -913,12 +950,16 @@
                 "warning": {
                     "entity_not_found": "Enhed ikke tilgængelig: {entity}",
                     "entity_non_numeric": "Enhed er ikke-numerisk: {entity}"
+                },
+                "changed_toast": {
+                    "refresh": "Opdater"
                 }
             }
         },
         "sidebar": {
             "log_out": "Log af",
-            "developer_tools": "Udviklerværktøjer"
+            "developer_tools": "Udviklerværktøjer",
+            "external_app_configuration": "App Konfiguration"
         },
         "common": {
             "loading": "Indlæser",
