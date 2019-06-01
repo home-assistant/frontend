@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Ta encja nie jest dostępna: {entity}",
                     "entity_non_numeric": "Ta encja nie jest numeryczna: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Zaktualizowano konfigurację Lovelace, czy chcesz odświeżyć?",
+                    "refresh": "Odśwież"
+                },
+                "reload_lovelace": "Przeładuj Lovelace"
             }
         },
         "sidebar": {

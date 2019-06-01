@@ -280,7 +280,8 @@
         "default": {
             "unknown": "Ukjent",
             "unavailable": "Utilgjengeleg",
-            "error": "Feil"
+            "error": "Feil",
+            "entity_not_found": "Fann ikkje einheten"
         },
         "alarm_control_panel": {
             "armed": "Påslått",
@@ -354,6 +355,20 @@
                                 "introduction": "Kontroller Home Assistant-serveren din... frå Home Assistant.",
                                 "restart": "Omstart",
                                 "stop": "Stopp"
+                            },
+                            "core_config": {
+                                "location_name": "Namnet på din Home Assistant installasjon",
+                                "latitude": "Breiddegrad",
+                                "longitude": "Lengdegrad",
+                                "elevation": "Høgde",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Tidssone",
+                                "unit_system": "Måleining",
+                                "unit_system_imperial": "Imperisk",
+                                "unit_system_metric": "Metrisk",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Spare"
                             }
                         }
                     }
@@ -370,7 +385,7 @@
                     "caption": "Automasjon",
                     "description": "Lag og rediger automasjonar",
                     "picker": {
-                        "header": "Automasjonsredigeringa",
+                        "header": "Automasjonsredigar",
                         "introduction": "Automasjonsredigeringa tillet deg å lage og redigere automasjonar. Ver vennleg og les [instruksjonane](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å vere sikker på om du har konfigurert Home Assistant rett.",
                         "pick_automation": "Vel ein automasjon for å redigere",
                         "no_automations": "Vi klarte ikkje å finne nokon automasjonar som kunne redigerast",
@@ -471,7 +486,7 @@
                             "add": "Legg til føresetnad",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette?",
+                            "delete_confirm": "Er det sekert du vil slettje?",
                             "unsupported_condition": "Ikkje støtta føresetnad: {condition}",
                             "type_select": "Føresetnadstype",
                             "type": {
@@ -517,7 +532,7 @@
                             "add": "Legg til handling",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette?",
+                            "delete_confirm": "Er det sekert du vil slettje?",
                             "unsupported_action": "Ikkje støtta handling: {action}",
                             "type_select": "Handlingstype",
                             "type": {
@@ -527,7 +542,7 @@
                                 },
                                 "delay": {
                                     "label": "Forseinking",
-                                    "delay": "Forseinking"
+                                    "delay": "Forsinking"
                                 },
                                 "wait_template": {
                                     "label": "Vent",
@@ -544,7 +559,9 @@
                                 }
                             },
                             "learn_more": "Lær meir om handlingar"
-                        }
+                        },
+                        "load_error_not_editable": "Berre automasjonar i automations.yaml kan redigerast",
+                        "load_error_unknown": "Feil ved lasting av automasjon ({err_no})."
                     }
                 },
                 "script": {
@@ -601,19 +618,30 @@
                         "device_unavailable": "Eininga utilgjengelig",
                         "entity_unavailable": "Oppføringa utilgjengelig",
                         "no_area": "Inga område"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Ei ekstern nettside treng vitjast for å fullføre dette steget.",
+                            "open_site": "Opne nettside"
+                        }
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
                     "description": "Zigbee heimeautomasjon nettverksadministrering",
                     "services": {
-                        "reconfigure": "Konfigurer ZHA-eininga (heal device) på nytt. Bruk dette om du har problem med eininga. Dersom eining går på batteri, ver sikker på at den er vaken og tek i mot kommandar når du brukar denne tenesta."
+                        "reconfigure": "Konfigurer ZHA-eininga (heal device) på nytt. Bruk dette om du har problem med eininga. Dersom eining går på batteri, ver sikker på at den er vaken og tek i mot kommandar når du brukar denne tenesta.",
+                        "updateDeviceName": "Gje einheten eit eige namn i einhetsregistret.",
+                        "remove": "Fjern einhet frå Zigbee nettverk"
                     },
                     "device_card": {
+                        "device_name_placeholder": "Brukarnamn",
+                        "area_picker_label": "Område",
                         "update_name_button": "Oppdater namn"
                     },
                     "add_device_page": {
-                        "spinner": "Leitar etter ZHA ZigBee apparat..."
+                        "spinner": "Leitar etter ZHA ZigBee apparat...",
+                        "discovery_text": "Oppdaga einheter synast her. Følg instruksjonane for einheten(e) og gjer dei klar for samankopling."
                     }
                 },
                 "area_registry": {
@@ -624,7 +652,8 @@
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
                         "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet.",
                         "integrations_page": "Integrasjonsside",
-                        "no_areas": "Ser ut til at du ikkje har noko område endå!"
+                        "no_areas": "Ser ut til at du ikkje har noko område endå!",
+                        "create_area": "Skap område"
                     },
                     "no_areas": "Ser ut til at du ikkje har noko område endå!",
                     "create_area": "LAG OMRÅDE",
@@ -846,6 +875,16 @@
                         "required_fields": "Fyll ut dei nødvendige felta",
                         "password_not_match": "Passorda er ikkje eins"
                     }
+                },
+                "integration": {
+                    "more_integrations": "Meir",
+                    "finish": "Fullfør"
+                },
+                "core-config": {
+                    "intro": "Hallo {name}! Velkomen til Home Assistant. Kva for namn ønskjer du å gje heimen din?",
+                    "location_name_default": "Heim",
+                    "button_detect": "Oppdag",
+                    "finish": "Neste"
                 }
             },
             "lovelace": {
@@ -859,6 +898,12 @@
                         "title": "Velkommen heim",
                         "no_devices": "Denne sida let deg ta kontroll på einingane dine, men det ser ut til at du ikkje har sett opp noko endå. Gå til integrasjonssida for å setje i gang.",
                         "go_to_integrations_page": "Gå til integrasjonssida"
+                    },
+                    "picture-elements": {
+                        "hold": "Hald:",
+                        "navigate_to": "Naviger til {location}",
+                        "toggle": "Endre {name}",
+                        "call_service": "Tilkall teneste {name}"
                     }
                 },
                 "editor": {
@@ -911,7 +956,12 @@
                 "warning": {
                     "entity_not_found": "Oppføringa er utilgjengelig: {entity}",
                     "entity_non_numeric": "Oppføringa er ikkje numerisk: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Lovelace konfigurasjonen blei oppdatert, ønskjer du å oppfriske?",
+                    "refresh": "Oppfrisk"
+                },
+                "reload_lovelace": "Omlast Lovelace"
             }
         },
         "sidebar": {
