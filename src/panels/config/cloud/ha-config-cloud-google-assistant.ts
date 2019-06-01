@@ -8,6 +8,7 @@ import {
   property,
 } from "lit-element";
 import "@polymer/paper-toggle-button";
+import "@polymer/paper-icon-button";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
 import "../../../components/ha-card";
@@ -33,12 +34,21 @@ import computeStateName from "../../../common/entity/compute_state_name";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showToast } from "../../../util/toast";
 import { PolymerChangedEvent } from "../../../polymer-types";
+import { showDomainTogglerDialog } from "../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import computeDomain from "../../../common/entity/compute_domain";
+
+const DEFAULT_CONFIG_EXPOSE = true;
+
+const configIsExposed = (config: GoogleEntityConfig) =>
+  config.should_expose === undefined
+    ? DEFAULT_CONFIG_EXPOSE
+    : config.should_expose;
 
 @customElement("ha-config-cloud-google-assistant")
 class CloudGoogleAssistant extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public cloudStatus!: CloudStatusLoggedIn;
-  @property() public isWide!: boolean;
+  @property() public narrow!: boolean;
   @property() private _entities?: GoogleEntity[];
   @property()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
@@ -69,7 +79,7 @@ class CloudGoogleAssistant extends LitElement {
       const stateObj = this.hass.states[entity.entity_id];
       const config = this._entityConfigs[entity.entity_id] || {};
       const isExposed = emptyFilter
-        ? Boolean(config.should_expose)
+        ? configIsExposed(config)
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
@@ -114,7 +124,18 @@ class CloudGoogleAssistant extends LitElement {
 
     return html`
       <hass-subpage header="Google Assistant">
-        <span slot="toolbar-icon">${selected} selected</span>
+        <span slot="toolbar-icon">
+          ${selected}${!this.narrow
+            ? html`
+                selected
+              `
+            : ""}
+        </span>
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:tune"
+          @click=${this._openDomainToggler}
+        ></paper-icon-button>
         ${!emptyFilter
           ? html`
               <div class="banner">
@@ -164,9 +185,11 @@ class CloudGoogleAssistant extends LitElement {
   private async _exposeChanged(ev: PolymerChangedEvent<boolean>) {
     const entityId = (ev.currentTarget as any).entityId;
     const newExposed = ev.detail.value;
-    const curExposed = Boolean(
-      (this._entityConfigs[entityId] || {}).should_expose
-    );
+    await this._updateExposed(entityId, newExposed);
+  }
+
+  private async _updateExposed(entityId: string, newExposed: boolean) {
+    const curExposed = configIsExposed(this._entityConfigs[entityId] || {});
     if (newExposed === curExposed) {
       return;
     }
@@ -201,6 +224,21 @@ class CloudGoogleAssistant extends LitElement {
       [entityId]: updatedConfig,
     };
     this._ensureStatusReload();
+  }
+
+  private _openDomainToggler() {
+    showDomainTogglerDialog(this, {
+      domains: this._entities!.map((entity) =>
+        computeDomain(entity.entity_id)
+      ).filter((value, idx, self) => self.indexOf(value) === idx),
+      toggleDomain: (domain, turnOn) => {
+        this._entities!.forEach((entity) => {
+          if (computeDomain(entity.entity_id) === domain) {
+            this._updateExposed(entity.entity_id, turnOn);
+          }
+        });
+      },
+    });
   }
 
   private _ensureStatusReload() {
