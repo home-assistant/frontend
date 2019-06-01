@@ -637,7 +637,7 @@
                         "remove": "Fjern en enhet fra ZigBee-nettverket."
                     },
                     "device_card": {
-                        "device_name_placeholder": "Brukerdefinert navn",
+                        "device_name_placeholder": "Brukers navn",
                         "area_picker_label": "Område",
                         "update_name_button": "Oppdatér navn"
                     },
@@ -910,7 +910,7 @@
                         "tap": "Trykk:",
                         "navigate_to": "Naviger til {location}",
                         "toggle": "Veksle {name}",
-                        "call_service": "Kall tjeneste {navn}",
+                        "call_service": "Tjenestekall {navn}",
                         "more_info": "Vis mer info: {name}"
                     }
                 },
@@ -1041,7 +1041,7 @@
                 "disarm": "Deaktiver",
                 "arm_home": "Armer hjemme",
                 "arm_away": "Armer borte",
-                "arm_night": "Armer natt",
+                "arm_night": "Aktiver natt",
                 "armed_custom_bypass": "Tilpasset bypass",
                 "arm_custom_bypass": "Tilpasset bypass"
             },
@@ -1147,8 +1147,8 @@
                 },
                 "sun": {
                     "elevation": "Elevasjon",
-                    "rising": "Stiger",
-                    "setting": "Innstilling"
+                    "rising": "Soloppgang",
+                    "setting": "Solnedgang"
                 },
                 "updater": {
                     "title": "Oppdateringsanvisning"

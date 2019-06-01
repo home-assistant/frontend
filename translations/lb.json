@@ -964,7 +964,11 @@
                 "warning": {
                     "entity_not_found": "Entitéit net erreechbar: {entity}",
                     "entity_non_numeric": "Entitéit ass net numerescher Natur: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "refresh": "Odśwież"
+                },
+                "reload_lovelace": "Przeładuj Lovelace"
             }
         },
         "sidebar": {
