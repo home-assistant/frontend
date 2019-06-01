@@ -34,6 +34,13 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { showToast } from "../../../util/toast";
 import { PolymerChangedEvent } from "../../../polymer-types";
 
+const DEFAULT_CONFIG_EXPOSE = true;
+
+const configIsExposed = (config: GoogleEntityConfig) =>
+  config.should_expose === undefined
+    ? DEFAULT_CONFIG_EXPOSE
+    : config.should_expose;
+
 @customElement("ha-config-cloud-google-assistant")
 class CloudGoogleAssistant extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -69,7 +76,7 @@ class CloudGoogleAssistant extends LitElement {
       const stateObj = this.hass.states[entity.entity_id];
       const config = this._entityConfigs[entity.entity_id] || {};
       const isExposed = emptyFilter
-        ? Boolean(config.should_expose)
+        ? configIsExposed(config)
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
@@ -164,9 +171,7 @@ class CloudGoogleAssistant extends LitElement {
   private async _exposeChanged(ev: PolymerChangedEvent<boolean>) {
     const entityId = (ev.currentTarget as any).entityId;
     const newExposed = ev.detail.value;
-    const curExposed = Boolean(
-      (this._entityConfigs[entityId] || {}).should_expose
-    );
+    const curExposed = configIsExposed(this._entityConfigs[entityId] || {});
     if (newExposed === curExposed) {
       return;
     }
