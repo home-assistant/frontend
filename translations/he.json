@@ -293,7 +293,7 @@
             "arming": "דורך",
             "disarming": "מבטל",
             "triggered": "מופעל",
-            "armed_custom_bypass": "דרוך"
+            "armed_custom_bypass": "מופעל"
         },
         "device_tracker": {
             "home": "בבית",
@@ -355,6 +355,21 @@
                                 "introduction": "לשלוט על שרת הHome Assistant שלך... מHome Assistant.",
                                 "restart": "הפעלה מחדש",
                                 "stop": "עצור"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "עורך מושבת משום שתצורה מאוחסנת ב- configuration.yaml.",
+                                "location_name": "שם ההתקנה של הבית שלך",
+                                "latitude": "קו רוחב",
+                                "longitude": "קו אורך",
+                                "elevation": "גובה",
+                                "elevation_meters": "מטר",
+                                "time_zone": "איזור זמן",
+                                "unit_system": "יחידת מידה",
+                                "unit_system_imperial": "אימפריאלי",
+                                "unit_system_metric": "מטרי",
+                                "imperial_example": "פרנהייט, פאונד",
+                                "metric_example": "צלזיוס, ק\"ג",
+                                "save_button": "שמור"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "למד עוד על פעולות"
-                        }
+                        },
+                        "load_error_not_editable": "רק אוטומציה ב automations.yaml ניתנים לעריכה.",
+                        "load_error_unknown": "שגיאה בטעינת האוטומציה ( {err_no} )."
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "התקנים ושירותים מיוצגים ב- Home Assistant כאינטגרציות. באפשרותך להגדיר אותם כעת, או לעשות זאת מאוחר יותר ממסך התצורה.",
                     "more_integrations": "עוד",
                     "finish": "סיום"
+                },
+                "core-config": {
+                    "intro": "שלום {name} , ברוך הבא ל- Home Assistant. איך היית רוצה את שם הבית שלך?",
+                    "intro_location": "אנחנו רוצים לדעת איפה אתה גר. מידע זה יעזור עם הצגת מידע והגדרת אוטומציה מבוססת שמש. נתונים אלה לעולם אינם משותפים מחוץ לרשת שלך.",
+                    "intro_location_detect": "אנו יכולים לעזור לך למלא מידע זה על ידי ביצוע בקשה חד פעמית לשירות חיצוני.",
+                    "location_name_default": "בית",
+                    "button_detect": "לזהות",
+                    "finish": "הבא"
                 }
             },
             "lovelace": {
@@ -939,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "הישות אינה זמינה: {entity}",
                     "entity_non_numeric": "הישות אינה מספרית: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "תצורת Lovelace עודכנה, האם ברצונך לרענן?",
+                    "refresh": "רענן"
+                },
+                "reload_lovelace": "טען מחדש את Lovelace"
             }
         },
         "sidebar": {
