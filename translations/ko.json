@@ -358,7 +358,7 @@
                             },
                             "core_config": {
                                 "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어있기 때문에 편집기가 비활성화 되었습니다.",
-                                "location_name": "Navnet på din Home Assistant installasjon",
+                                "location_name": "Home Assistant 설치 위치명",
                                 "latitude": "위도",
                                 "longitude": "경도",
                                 "elevation": "고도",
