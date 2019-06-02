@@ -30,7 +30,6 @@ declare global {
     "hass-logout": undefined;
     "iron-resize": undefined;
     "config-refresh": undefined;
-    "ha-refresh-cloud-status": undefined;
     "hass-api-called": {
       success: boolean;
       response: unknown;

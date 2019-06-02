@@ -35,13 +35,18 @@ class NotificationManager extends LitElement {
 
   @query("ha-toast") private _toast!: HaToast;
 
-  public showDialog({
+  public async showDialog({
     message,
     action,
     duration,
     dismissable,
   }: ShowToastParams) {
-    const toast = this._toast;
+    let toast = this._toast;
+    // Can happen on initial load
+    if (!toast) {
+      await this.updateComplete;
+      toast = this._toast;
+    }
     toast.setAttribute("dir", computeRTL(this.hass) ? "rtl" : "ltr");
     this._action = action || undefined;
     this._noCancelOnOutsideClick =
