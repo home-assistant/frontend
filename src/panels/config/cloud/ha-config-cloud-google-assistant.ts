@@ -249,7 +249,7 @@ class CloudGoogleAssistant extends LitElement {
     // Cache parent because by the time popstate happens,
     // this element is detached
     const parent = this.parentElement!;
-    this.addEventListener(
+    window.addEventListener(
       "popstate",
       () => fireEvent(parent, "ha-refresh-cloud-status"),
       { once: true }
@@ -278,7 +278,10 @@ class CloudGoogleAssistant extends LitElement {
     return css`
       .banner {
         color: var(--primary-text-color);
-        background-color: var(--card-background-color);
+        background-color: var(
+          --ha-card-background,
+          var(--paper-card-background-color, white)
+        );
         padding: 16px 8px;
         text-align: center;
       }
