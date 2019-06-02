@@ -6,6 +6,13 @@ import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "ha-refresh-cloud-status": undefined;
+  }
+}
+
 @customElement("ha-panel-config")
 class HaPanelConfig extends HassRouterPage {
   @property() public hass!: HomeAssistant;
