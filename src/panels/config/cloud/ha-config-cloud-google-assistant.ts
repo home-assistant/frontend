@@ -249,7 +249,7 @@ class CloudGoogleAssistant extends LitElement {
     // Cache parent because by the time popstate happens,
     // this element is detached
     const parent = this.parentElement!;
-    this.addEventListener(
+    window.addEventListener(
       "popstate",
       () => fireEvent(parent, "ha-refresh-cloud-status"),
       { once: true }
