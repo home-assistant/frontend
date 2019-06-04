@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Enheten är ej tillgänglig: {entity}",
                     "entity_non_numeric": "Enheten är icke-numerisk: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Lovelace-konfigurationen uppdaterades, vill du ladda om?",
+                    "refresh": "Uppdatera"
+                },
+                "reload_lovelace": "Uppdatera Lovelace"
             }
         },
         "sidebar": {
