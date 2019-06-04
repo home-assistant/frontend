@@ -84,8 +84,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
-    import("./onboarding-integrations");
-    import("./onboarding-core-config");
+    import(/* webpackChunkName: "onboarding-integrations" */ "./onboarding-integrations");
+    import(/* webpackChunkName: "onboarding-core-config" */ "./onboarding-core-config");
     registerServiceWorker(false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
   }
@@ -156,6 +156,15 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       const result = stepResult.result as OnboardingResponses["integration"];
       this._loading = true;
 
+      // If we don't close the connection manually, the connection will be
+      // closed when we navigate away from the page. Firefox allows JS to
+      // continue to execute, and so HAWS will automatically reconnect once
+      // the connection is closed. However, since we revoke our token below,
+      // HAWS will reload the page, since that will trigger the auth flow.
+      // In Firefox, triggering a reload will overrule the navigation that
+      // was in progress.
+      this.hass!.connection.close();
+
       // Revoke current auth token.
       await this.hass!.auth.revoke();
 
@@ -184,6 +193,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this.initializeHass(auth, conn);
     // Load config strings for integrations
     (this as any)._loadFragmentTranslations(this.hass!.language, "config");
+    // Make sure hass is initialized + the config/user callbacks have called.
+    await new Promise((resolve) => setTimeout(resolve, 0));
   }
 }
 
