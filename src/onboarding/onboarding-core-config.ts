@@ -257,7 +257,7 @@ class OnboardingCoreConfig extends LitElement {
         longitude: location[1],
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
-        time_zone: this._timeZoneValue,
+        time_zone: this._timeZoneValue || "UTC",
       });
       const result = await onboardCoreConfigStep(this.hass);
       fireEvent(this, "onboarding-step", {
