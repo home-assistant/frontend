@@ -77,8 +77,8 @@
                 "on": "otwarte"
             },
             "safety": {
-                "off": "zabezpieczony",
-                "on": "niezabezpieczony"
+                "off": "brak zagrożenia",
+                "on": "zagrożenie"
             },
             "presence": {
                 "off": "poza domem",
