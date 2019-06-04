@@ -11,14 +11,14 @@ export const setupLeafletMap = async (
   }
   // tslint:disable-next-line
   const Leaflet = (await import(/* webpackChunkName: "leaflet" */ "leaflet")) as LeafletModuleType;
-  Leaflet.Icon.Default.imagePath = "/static/images/leaflet";
+  Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
 
   const map = Leaflet.map(mapElement);
   const style = document.createElement("link");
   style.setAttribute("href", "/static/images/leaflet/leaflet.css");
   style.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(style);
-  map.setView([51.505, -0.09], 13);
+  map.setView([52.3731339, 4.8903147], 13);
   Leaflet.tileLayer(
     `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}${
       Leaflet.Browser.retina ? "@2x.png" : ".png"
