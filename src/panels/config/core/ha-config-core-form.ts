@@ -19,6 +19,7 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UNIT_C } from "../../../common/const";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { createTimezoneListEl } from "../../../components/timezone-datalist";
+import "../../../components/map/ha-location-editor";
 
 @customElement("ha-config-core-form")
 class ConfigCoreForm extends LitElement {
@@ -26,8 +27,8 @@ class ConfigCoreForm extends LitElement {
 
   @property() private _working = false;
 
-  @property() private _latitude!: string;
-  @property() private _longitude!: string;
+  @property() private _location!: [number, number];
+
   @property() private _elevation!: string;
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
   @property() private _timeZone!: string;
@@ -56,26 +57,11 @@ class ConfigCoreForm extends LitElement {
             : ""}
 
           <div class="row">
-            <paper-input
+            <ha-location-editor
               class="flex"
-              .label=${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.latitude"
-              )}
-              name="latitude"
-              .disabled=${disabled}
-              .value=${this._latitudeValue}
-              @value-changed=${this._handleChange}
-            ></paper-input>
-            <paper-input
-              class="flex"
-              .label=${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.longitude"
-              )}
-              name="longitude"
-              .disabled=${disabled}
-              .value=${this._longitudeValue}
-              @value-changed=${this._handleChange}
-            ></paper-input>
+              .location=${this._locationValue}
+              @change=${this._locationChanged}
+            ></ha-location-editor>
           </div>
 
           <div class="row">
@@ -176,16 +162,10 @@ class ConfigCoreForm extends LitElement {
     input.inputElement.appendChild(createTimezoneListEl());
   }
 
-  private get _latitudeValue() {
-    return this._latitude !== undefined
-      ? this._latitude
-      : this.hass.config.latitude;
-  }
-
-  private get _longitudeValue() {
-    return this._longitude !== undefined
-      ? this._longitude
-      : this.hass.config.longitude;
+  private get _locationValue() {
+    return this._location !== undefined
+      ? this._location
+      : [Number(this.hass.config.latitude), Number(this.hass.config.longitude)];
   }
 
   private get _elevationValue() {
@@ -213,6 +193,10 @@ class ConfigCoreForm extends LitElement {
     this[`_${target.name}`] = target.value;
   }
 
+  private _locationChanged(ev) {
+    this._location = ev.currentTarget.location;
+  }
+
   private _unitSystemChanged(
     ev: PolymerChangedEvent<ConfigUpdateValues["unit_system"]>
   ) {
@@ -222,9 +206,10 @@ class ConfigCoreForm extends LitElement {
   private async _save() {
     this._working = true;
     try {
+      const location = this._locationValue;
       await saveCoreConfig(this.hass, {
-        latitude: Number(this._latitudeValue),
-        longitude: Number(this._longitudeValue),
+        latitude: location[0],
+        longitude: location[1],
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,

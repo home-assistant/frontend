@@ -19,12 +19,14 @@ import {
   detectCoreConfig,
   saveCoreConfig,
 } from "../data/core";
-import { UNIT_C } from "../common/const";
 import { PolymerChangedEvent } from "../polymer-types";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import { createTimezoneListEl } from "../components/timezone-datalist";
+import "../components/map/ha-location-editor";
+
+const amsterdam = [52.3731339, 4.8903147];
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
@@ -34,8 +36,7 @@ class OnboardingCoreConfig extends LitElement {
   @property() private _working = false;
 
   @property() private _name!: ConfigUpdateValues["location_name"];
-  @property() private _latitude!: string;
-  @property() private _longitude!: string;
+  @property() private _location!: [number, number];
   @property() private _elevation!: string;
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
   @property() private _timeZone!: string;
@@ -82,26 +83,12 @@ class OnboardingCoreConfig extends LitElement {
       </div>
 
       <div class="row">
-        <paper-input
+        <ha-location-editor
           class="flex"
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.latitude"
-          )}
-          name="latitude"
-          .disabled=${this._working}
-          .value=${this._latitudeValue}
-          @value-changed=${this._handleChange}
-        ></paper-input>
-        <paper-input
-          class="flex"
-          .label=${this.hass.localize(
-            "ui.panel.config.core.section.core.core_config.longitude"
-          )}
-          name="longitude"
-          .disabled=${this._working}
-          .value=${this._longitudeValue}
-          @value-changed=${this._handleChange}
-        ></paper-input>
+          .location=${this._locationValue}
+          .fitZoom=${14}
+          @change=${this._locationChanged}
+        ></ha-location-editor>
       </div>
 
       <div class="row">
@@ -205,41 +192,29 @@ class OnboardingCoreConfig extends LitElement {
         );
   }
 
-  private get _latitudeValue() {
-    return this._latitude !== undefined
-      ? this._latitude
-      : this.hass.config.latitude;
-  }
-
-  private get _longitudeValue() {
-    return this._longitude !== undefined
-      ? this._longitude
-      : this.hass.config.longitude;
+  private get _locationValue() {
+    return this._location || amsterdam;
   }
 
   private get _elevationValue() {
-    return this._elevation !== undefined
-      ? this._elevation
-      : this.hass.config.elevation;
+    return this._elevation !== undefined ? this._elevation : 0;
   }
 
   private get _timeZoneValue() {
-    return this._timeZone !== undefined
-      ? this._timeZone
-      : this.hass.config.time_zone;
+    return this._timeZone;
   }
 
   private get _unitSystemValue() {
-    return this._unitSystem !== undefined
-      ? this._unitSystem
-      : this.hass.config.unit_system.temperature === UNIT_C
-      ? "metric"
-      : "imperial";
+    return this._unitSystem !== undefined ? this._unitSystem : "metric";
   }
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
     this[`_${target.name}`] = target.value;
+  }
+
+  private _locationChanged(ev) {
+    this._location = ev.currentTarget.location;
   }
 
   private _unitSystemChanged(
@@ -252,14 +227,17 @@ class OnboardingCoreConfig extends LitElement {
     this._working = true;
     try {
       const values = await detectCoreConfig(this.hass);
-      for (const key in values) {
-        if (key === "unit_system") {
-          this._unitSystem = values[key]!;
-        } else if (key === "time_zone") {
-          this._timeZone = values[key]!;
-        } else {
-          this[`_${key}`] = values[key];
-        }
+      if (values.latitude && values.longitude) {
+        this._location = [Number(values.latitude), Number(values.longitude)];
+      }
+      if (values.elevation) {
+        this._elevation = String(values.elevation);
+      }
+      if (values.unit_system) {
+        this._unitSystem = values.unit_system;
+      }
+      if (values.time_zone) {
+        this._timeZone = values.time_zone;
       }
     } catch (err) {
       alert(`Failed to detect location information: ${err.message}`);
@@ -272,13 +250,14 @@ class OnboardingCoreConfig extends LitElement {
     ev.preventDefault();
     this._working = true;
     try {
+      const location = this._locationValue;
       await saveCoreConfig(this.hass, {
         location_name: this._nameValue,
-        latitude: Number(this._latitudeValue),
-        longitude: Number(this._longitudeValue),
+        latitude: location[0],
+        longitude: location[1],
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
-        time_zone: this._timeZoneValue,
+        time_zone: this._timeZoneValue || "UTC",
       });
       const result = await onboardCoreConfigStep(this.hass);
       fireEvent(this, "onboarding-step", {
