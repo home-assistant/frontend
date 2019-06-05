@@ -2,6 +2,7 @@ import {
   html,
   LitElement,
   PropertyValues,
+  property,
   PropertyDeclarations,
   TemplateResult,
 } from "lit-element";
@@ -46,10 +47,10 @@ const getColumnIndex = (columnEntityCount: number[], size: number) => {
 };
 
 export class HUIView extends LitElement {
-  public hass?: HomeAssistant;
-  public lovelace?: Lovelace;
-  public columns?: number;
-  public index?: number;
+  @property() public hass?: HomeAssistant;
+  @property() public lovelace?: Lovelace;
+  @property() public columns?: number;
+  @property() public index?: number;
   private _cards: Array<LovelaceCard | HuiErrorCard>;
   private _badges: Array<{ element: HaStateLabelBadge; entityId: string }>;
 

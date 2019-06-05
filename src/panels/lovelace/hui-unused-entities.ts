@@ -2,6 +2,7 @@ import {
   html,
   LitElement,
   PropertyDeclarations,
+  property,
   TemplateResult,
 } from "lit-element";
 
@@ -16,7 +17,7 @@ import computeDomain from "../../common/entity/compute_domain";
 
 export class HuiUnusedEntities extends LitElement {
   private _hass?: HomeAssistant;
-  private _config?: LovelaceConfig;
+  @property() private _config?: LovelaceConfig;
   private _elements?: LovelaceCard[];
 
   static get properties(): PropertyDeclarations {
