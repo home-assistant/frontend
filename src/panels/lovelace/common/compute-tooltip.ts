@@ -3,10 +3,18 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig } from "../elements/types";
 import { ActionConfig } from "../../../data/lovelace";
 
-export const computeTooltip = (
-  hass: HomeAssistant,
-  config: LovelaceElementConfig
-): string => {
+interface Config extends LovelaceElementConfig {
+  entity?: string;
+  title?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+}
+
+export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
+  if (config.title === null) {
+    return "";
+  }
+
   if (config.title) {
     return config.title;
   }
@@ -22,10 +30,10 @@ export const computeTooltip = (
   }
 
   const tapTooltip = config.tap_action
-    ? computeActionTooltip(stateName, config.tap_action, false)
+    ? computeActionTooltip(hass, stateName, config.tap_action, false)
     : "";
   const holdTooltip = config.hold_action
-    ? computeActionTooltip(stateName, config.hold_action, true)
+    ? computeActionTooltip(hass, stateName, config.hold_action, true)
     : "";
 
   const newline = tapTooltip && holdTooltip ? "\n" : "";
@@ -36,6 +44,7 @@ export const computeTooltip = (
 };
 
 function computeActionTooltip(
+  hass: HomeAssistant,
   state: string,
   config: ActionConfig,
   isHold: boolean
@@ -44,20 +53,39 @@ function computeActionTooltip(
     return "";
   }
 
-  let tooltip = isHold ? "Hold: " : "Tap: ";
+  let tooltip =
+    (isHold
+      ? hass.localize("ui.panel.lovelace.cards.picture-elements.hold")
+      : hass.localize("ui.panel.lovelace.cards.picture-elements.tap")) + " ";
 
   switch (config.action) {
     case "navigate":
-      tooltip += `Navigate to ${config.navigation_path}`;
+      tooltip += `${hass.localize(
+        "ui.panel.lovelace.cards.picture-elements.navigate_to",
+        "location",
+        config.navigation_path
+      )}`;
       break;
     case "toggle":
-      tooltip += `Toggle ${state}`;
+      tooltip += `${hass.localize(
+        "ui.panel.lovelace.cards.picture-elements.toggle",
+        "name",
+        state
+      )}`;
       break;
     case "call-service":
-      tooltip += `Call service ${config.service}`;
+      tooltip += `${hass.localize(
+        "ui.panel.lovelace.cards.picture-elements.call_service",
+        "name",
+        config.service
+      )}`;
       break;
     case "more-info":
-      tooltip += `Show more-info: ${state}`;
+      tooltip += `${hass.localize(
+        "ui.panel.lovelace.cards.picture-elements.more_info",
+        "name",
+        state
+      )}`;
       break;
   }
 

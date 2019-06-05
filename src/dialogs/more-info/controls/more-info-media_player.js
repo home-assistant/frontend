@@ -1,6 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -8,12 +7,14 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-paper-slider";
+import "../../../components/ha-paper-dropdown-menu";
 import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
 import isComponentLoaded from "../../../common/config/is_component_loaded";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -49,7 +50,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin-top: 15px;
         }
 
-        paper-dropdown-menu.source-input {
+        ha-paper-dropdown-menu.source-input {
           margin-left: 10px;
         }
 
@@ -110,6 +111,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             disabled$="[[playerObj.isMuted]]"
             on-mousedown="handleVolumeDown"
             on-touchstart="handleVolumeDown"
+            on-touchend="handleVolumeTouchEnd"
             icon="hass:volume-medium"
           ></paper-icon-button>
           <paper-icon-button
@@ -117,6 +119,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             disabled$="[[playerObj.isMuted]]"
             on-mousedown="handleVolumeUp"
             on-touchstart="handleVolumeUp"
+            on-touchend="handleVolumeTouchEnd"
             icon="hass:volume-high"
           ></paper-icon-button>
         </div>
@@ -137,6 +140,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             on-change="volumeSliderChanged"
             class="flex"
             ignore-bar-touch=""
+            dir="{{rtl}}"
           >
           </ha-paper-slider>
         </div>
@@ -146,24 +150,29 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
           hidden$="[[computeHideSelectSource(playerObj)]]"
         >
           <iron-icon class="source-input" icon="hass:login-variant"></iron-icon>
-          <paper-dropdown-menu
+          <ha-paper-dropdown-menu
             class="flex source-input"
             dynamic-align=""
             label-float=""
             label="[[localize('ui.card.media_player.source')]]"
           >
-            <paper-listbox slot="dropdown-content" selected="{{sourceIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              attr-for-selected="item-name"
+              selected="[[playerObj.source]]"
+              on-selected-changed="handleSourceChanged"
+            >
               <template is="dom-repeat" items="[[playerObj.sourceList]]">
-                <paper-item>[[item]]</paper-item>
+                <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
             </paper-listbox>
-          </paper-dropdown-menu>
+          </ha-paper-dropdown-menu>
         </div>
         <!-- SOUND MODE PICKER -->
         <template is="dom-if" if="[[!computeHideSelectSoundMode(playerObj)]]">
           <div class="controls layout horizontal justified">
             <iron-icon class="source-input" icon="hass:music-note"></iron-icon>
-            <paper-dropdown-menu
+            <ha-paper-dropdown-menu
               class="flex source-input"
               dynamic-align
               label-float
@@ -172,13 +181,14 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <paper-listbox
                 slot="dropdown-content"
                 attr-for-selected="item-name"
-                selected="{{SoundModeInput}}"
+                selected="[[playerObj.soundMode]]"
+                on-selected-changed="handleSoundModeChanged"
               >
                 <template is="dom-repeat" items="[[playerObj.soundModeList]]">
                   <paper-item item-name$="[[item]]">[[item]]</paper-item>
                 </template>
               </paper-listbox>
-            </paper-dropdown-menu>
+            </ha-paper-dropdown-menu>
           </div>
         </template>
         <!-- TTS -->
@@ -212,18 +222,6 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "playerObjChanged",
       },
 
-      sourceIndex: {
-        type: Number,
-        value: 0,
-        observer: "handleSourceChanged",
-      },
-
-      SoundModeInput: {
-        type: String,
-        value: "",
-        observer: "handleSoundModeChanged",
-      },
-
       ttsLoaded: {
         type: Boolean,
         computed: "computeTTSLoaded(hass)",
@@ -233,6 +231,11 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         type: String,
         value: "",
       },
+
+      rtl: {
+        type: String,
+        computed: "_computeRTLDirection(hass)",
+      },
     };
   }
 
@@ -241,14 +244,6 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   playerObjChanged(newVal, oldVal) {
-    if (newVal && newVal.sourceList !== undefined) {
-      this.sourceIndex = newVal.sourceList.indexOf(newVal.source);
-    }
-
-    if (newVal && newVal.soundModeList !== undefined) {
-      this.SoundModeInput = newVal.soundMode;
-    }
-
     if (oldVal) {
       setTimeout(() => {
         this.fire("iron-resize");
@@ -335,36 +330,26 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playerObj.nextTrack();
   }
 
-  handleSourceChanged(sourceIndex, sourceIndexOld) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (
-      !this.playerObj ||
-      !this.playerObj.supportsSelectSource ||
-      this.playerObj.sourceList === undefined ||
-      sourceIndex < 0 ||
-      sourceIndex >= this.playerObj.sourceList ||
-      sourceIndexOld === undefined
-    ) {
-      return;
-    }
+  handleSourceChanged(ev) {
+    if (!this.playerObj) return;
 
-    const sourceInput = this.playerObj.sourceList[sourceIndex];
+    var oldVal = this.playerObj.source;
+    var newVal = ev.detail.value;
 
-    if (sourceInput === this.playerObj.source) {
-      return;
-    }
+    if (!newVal || oldVal === newVal) return;
 
-    this.playerObj.selectSource(sourceInput);
+    this.playerObj.selectSource(newVal);
   }
 
-  handleSoundModeChanged(newVal, oldVal) {
-    if (
-      oldVal &&
-      newVal !== this.playerObj.soundMode &&
-      this.playerObj.supportsSelectSoundMode
-    ) {
-      this.playerObj.selectSoundMode(newVal);
-    }
+  handleSoundModeChanged(ev) {
+    if (!this.playerObj) return;
+
+    var oldVal = this.playerObj.soundMode;
+    var newVal = ev.detail.value;
+
+    if (!newVal || oldVal === newVal) return;
+
+    this.playerObj.selectSoundMode(newVal);
   }
 
   handleVolumeTap() {
@@ -372,6 +357,12 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
       return;
     }
     this.playerObj.volumeMute(!this.playerObj.isMuted);
+  }
+
+  handleVolumeTouchEnd(ev) {
+    /* when touch ends, we must prevent this from
+     * becoming a mousedown, up, click by emulation */
+    ev.preventDefault();
   }
 
   handleVolumeUp() {
@@ -424,6 +415,10 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     });
     this.ttsMessage = "";
     this.$.ttsInput.focus();
+  }
+
+  _computeRTLDirection(hass) {
+    return computeRTLDirection(hass);
   }
 }
 

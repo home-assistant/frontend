@@ -1,6 +1,5 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
@@ -12,8 +11,10 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-service-description";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 import "../../../resources/ha-style";
+import "../../../components/ha-card";
 
 import "../ha-config-section";
 import "../ha-form-style";
@@ -28,7 +29,7 @@ import "./zwave-node-protection";
 import sortByName from "../../../common/entity/states_sort_by_name";
 import computeStateName from "../../../common/entity/compute_state_name";
 import computeStateDomain from "../../../common/entity/compute_state_domain";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
@@ -52,8 +53,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           padding-right: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
@@ -85,10 +85,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="_backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">
               [[localize('ui.panel.config.zwave.caption')]]
             </div>
@@ -116,7 +115,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             list of available commands.
           </span>
 
-          <paper-card class="content">
+          <ha-card class="content">
             <div class="device-picker">
               <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
                 <paper-listbox
@@ -236,8 +235,8 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   hidden$="[[!showHelp]]"
                 >
                 </ha-service-description>
-                <paper-button on-click="_nodeMoreInfo"
-                  >Node Information</paper-button
+                <mwc-button on-click="_nodeMoreInfo"
+                  >Node Information</mwc-button
                 >
               </div>
 
@@ -277,8 +276,8 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     hidden$="[[!showHelp]]"
                   >
                   </ha-service-description>
-                  <paper-button on-click="_entityMoreInfo"
-                    >Entity Information</paper-button
+                  <mwc-button on-click="_entityMoreInfo"
+                    >Entity Information</mwc-button
                   >
                 </div>
                 <div class="form-group">
@@ -309,7 +308,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 </div>
               </template>
             </template>
-          </paper-card>
+          </ha-card>
 
           <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
             <!-- Value card -->

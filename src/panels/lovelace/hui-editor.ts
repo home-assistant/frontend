@@ -1,99 +1,120 @@
-import { LitElement, html } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import { LitElement, html, TemplateResult, CSSResult, css } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import yaml from "js-yaml";
 
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-spinner/paper-spinner";
 
+import { struct } from "./common/structs/struct";
 import { Lovelace } from "./types";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 
-const TAB_INSERT = "  ";
+import "../../components/ha-icon";
+import { haStyle } from "../../resources/styles";
+import "./components/hui-yaml-editor";
+// This is not a duplicate import, one is for types, one is for element.
+// tslint:disable-next-line
+import { HuiYamlEditor } from "./components/hui-yaml-editor";
+import { HomeAssistant } from "../../types";
 
-class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
+const lovelaceStruct = struct.interface({
+  title: "string?",
+  views: ["object"],
+  resources: struct.optional(["object"]),
+});
+
+class LovelaceFullConfigEditor extends LitElement {
+  public hass?: HomeAssistant;
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
-  private _haStyle?: DocumentFragment;
+  private _saving?: boolean;
+  private _changed?: boolean;
+  private _generation?: number;
 
   static get properties() {
     return {
+      hass: {},
       lovelace: {},
+      closeEditor: {},
+      _saving: {},
+      _changed: {},
     };
   }
 
-  public render(): TemplateResult {
+  public render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <app-header-layout>
         <app-header>
           <app-toolbar>
             <paper-icon-button
               icon="hass:close"
-              @click="${this.closeEditor}"
+              @click="${this._closeEditor}"
             ></paper-icon-button>
-            <div main-title>Edit Config</div>
-            <paper-button @click="${this._handleSave}">Save</paper-button>
+            <div main-title>
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.raw_editor.header"
+              )}
+            </div>
+            <div
+              class="save-button
+              ${classMap({
+                saved: this._saving! === false || this._changed === true,
+              })}"
+            >
+              ${this._changed
+                ? this.hass!.localize(
+                    "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.lovelace.editor.raw_editor.saved"
+                  )}
+            </div>
+            <mwc-button raised @click="${this._handleSave}"
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.raw_editor.save"
+              )}</mwc-button
+            >
           </app-toolbar>
         </app-header>
         <div class="content">
-          <textarea
-            autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-          ></textarea>
+          <hui-yaml-editor
+            .hass="${this.hass}"
+            @yaml-changed="${this._yamlChanged}"
+            @yaml-save="${this._handleSave}"
+          >
+          </hui-yaml-editor>
         </div>
       </app-header-layout>
     `;
   }
 
   protected firstUpdated() {
-    const textArea = this.textArea;
-    textArea.value = yaml.safeDump(this.lovelace!.config);
-    textArea.addEventListener("keydown", (e) => {
-      if (e.keyCode !== 9) {
-        return;
-      }
-
-      e.preventDefault();
-
-      // tab was pressed, get caret position/selection
-      const val = textArea.value;
-      const start = textArea.selectionStart;
-      const end = textArea.selectionEnd;
-
-      // set textarea value to: text before caret + tab + text after caret
-      textArea.value =
-        val.substring(0, start) + TAB_INSERT + val.substring(end);
-
-      // put caret at right position again
-      textArea.selectionStart = textArea.selectionEnd =
-        start + TAB_INSERT.length;
-    });
+    this.yamlEditor.value = yaml.safeDump(this.lovelace!.config);
+    this.yamlEditor.codemirror.clearHistory();
+    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
   }
 
-  protected renderStyle() {
-    if (!this._haStyle) {
-      this._haStyle = document.importNode(
-        (document.getElementById("ha-style")!
-          .children[0] as HTMLTemplateElement).content,
-        true
-      );
-    }
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        :host {
+          --code-mirror-height: 100%;
+        }
 
-    return html`
-      ${this._haStyle}
-      <style>
         app-header-layout {
           height: 100vh;
         }
+
         app-toolbar {
-          background-color: #455a64;
+          background-color: var(--dark-background-color, #455a64);
+          color: var(--dark-text-color);
         }
-        paper-button {
+
+        .comments {
           font-size: 16px;
         }
 
@@ -101,35 +122,91 @@ class LovelaceFullConfigEditor extends hassLocalizeLitMixin(LitElement) {
           height: calc(100vh - 68px);
         }
 
-        textarea {
-          box-sizing: border-box;
+        hui-code-editor {
           height: 100%;
-          width: 100%;
-          resize: none;
-          border: 0;
-          outline: 0;
-          font-size: 12pt;
-          font-family: "Courier New", Courier, monospace;
-          padding: 8px;
         }
-      </style>
-    `;
+
+        .save-button {
+          opacity: 0;
+          font-size: 14px;
+          padding: 0px 10px;
+        }
+
+        .saved {
+          opacity: 1;
+        }
+      `,
+    ];
   }
 
-  private _handleSave() {
-    let value;
-    try {
-      value = yaml.safeLoad(this.textArea.value);
-    } catch (err) {
-      alert(`Unable to parse YAML: ${err}`);
+  private _yamlChanged() {
+    if (!this._generation) {
       return;
     }
-
-    this.lovelace!.saveConfig(value);
+    this._changed = !this.yamlEditor.codemirror.isClean(this._generation);
+    if (this._changed && !window.onbeforeunload) {
+      window.onbeforeunload = () => {
+        return true;
+      };
+    } else if (!this._changed && window.onbeforeunload) {
+      window.onbeforeunload = null;
+    }
   }
 
-  private get textArea(): HTMLTextAreaElement {
-    return this.shadowRoot!.querySelector("textarea")!;
+  private _closeEditor() {
+    if (this._changed) {
+      if (
+        !confirm("You have unsaved changes, are you sure you want to exit?")
+      ) {
+        return;
+      }
+    }
+    window.onbeforeunload = null;
+    if (this.closeEditor) {
+      this.closeEditor();
+    }
+  }
+
+  private async _handleSave() {
+    this._saving = true;
+
+    if (this.yamlEditor.hasComments) {
+      if (
+        !confirm(
+          "Your config contains comment(s), these will not be saved. Do you want to continue?"
+        )
+      ) {
+        return;
+      }
+    }
+
+    let value;
+    try {
+      value = yaml.safeLoad(this.yamlEditor.value);
+    } catch (err) {
+      alert(`Unable to parse YAML: ${err}`);
+      this._saving = false;
+      return;
+    }
+    try {
+      value = lovelaceStruct(value);
+    } catch (err) {
+      alert(`Your config is not valid: ${err}`);
+      return;
+    }
+    try {
+      await this.lovelace!.saveConfig(value);
+    } catch (err) {
+      alert(`Unable to save YAML: ${err}`);
+    }
+    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
+    window.onbeforeunload = null;
+    this._saving = false;
+    this._changed = false;
+  }
+
+  private get yamlEditor(): HuiYamlEditor {
+    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
   }
 }
 

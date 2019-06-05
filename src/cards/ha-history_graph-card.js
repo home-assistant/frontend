@@ -6,7 +6,7 @@ import "../components/state-history-charts";
 import "../data/ha-state-history-data";
 
 import computeStateName from "../common/entity/compute_state_name";
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

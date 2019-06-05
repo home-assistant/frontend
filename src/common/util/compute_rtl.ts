@@ -7,3 +7,7 @@ export function computeRTL(hass: HomeAssistant) {
   }
   return false;
 }
+
+export function computeRTLDirection(hass: HomeAssistant) {
+  return computeRTL(hass) ? "rtl" : "ltr";
+}

@@ -3,8 +3,8 @@ import {
   LitElement,
   PropertyValues,
   PropertyDeclarations,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 
 import "../../components/entity/ha-state-label-badge";
 // This one is for types
@@ -13,14 +13,17 @@ import { HaStateLabelBadge } from "../../components/entity/ha-state-label-badge"
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
-import { LovelaceViewConfig } from "../../data/lovelace";
+import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
+import { classMap } from "lit-html/directives/class-map";
 
 import { Lovelace, LovelaceCard } from "./types";
 import { createCardElement } from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
 import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
+import { HuiErrorCard } from "./cards/hui-error-card";
+
+import { computeRTL } from "../../common/util/compute_rtl";
 
 let editCodeLoaded = false;
 
@@ -42,12 +45,12 @@ const getColumnIndex = (columnEntityCount: number[], size: number) => {
   return minIndex;
 };
 
-export class HUIView extends hassLocalizeLitMixin(LitElement) {
+export class HUIView extends LitElement {
   public hass?: HomeAssistant;
   public lovelace?: Lovelace;
   public columns?: number;
   public index?: number;
-  private _cards: LovelaceCard[];
+  private _cards: Array<LovelaceCard | HuiErrorCard>;
   private _badges: Array<{ element: HaStateLabelBadge; entityId: string }>;
 
   static get properties(): PropertyDeclarations {
@@ -67,25 +70,44 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     this._badges = [];
   }
 
-  protected render(): TemplateResult {
+  // Public to make demo happy
+  public createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = createCardElement(cardConfig) as LovelaceCard;
+    element.hass = this.hass;
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        // In edit mode let it go to hui-root and rebuild whole view.
+        if (!this.lovelace!.editMode) {
+          ev.stopPropagation();
+          this._rebuildCard(element, cardConfig);
+        }
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyles()}
       <div id="badges"></div>
       <div id="columns"></div>
-      ${
-        this.lovelace!.editMode
-          ? html`
-              <paper-fab
-                elevated="2"
-                icon="hass:plus"
-                title="${
-                  this.localize("ui.panel.lovelace.editor.edit_card.add")
-                }"
-                @click="${this._addCard}"
-              ></paper-fab>
-            `
-          : ""
-      }
+      ${this.lovelace!.editMode
+        ? html`
+            <paper-fab
+              elevated="2"
+              icon="hass:plus"
+              title="${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.add"
+              )}"
+              @click="${this._addCard}"
+              class="${classMap({
+                rtl: computeRTL(this.hass!),
+              })}"
+            ></paper-fab>
+          `
+        : ""}
     `;
   }
 
@@ -130,6 +152,12 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
           bottom: 16px;
           right: 16px;
           z-index: 1;
+        }
+
+        paper-fab.rtl {
+          float: left;
+          right: auto;
+          left: 16px;
         }
 
         @media (max-width: 500px) {
@@ -239,8 +267,7 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     const elements: LovelaceCard[] = [];
     const elementsToAppend: HTMLElement[] = [];
     config.cards.forEach((cardConfig, cardIndex) => {
-      const element = createCardElement(cardConfig) as LovelaceCard;
-      element.hass = this.hass;
+      const element = this.createCardElement(cardConfig);
       elements.push(element);
 
       if (!this.lovelace!.editMode) {
@@ -286,6 +313,17 @@ export class HUIView extends hassLocalizeLitMixin(LitElement) {
     if ("theme" in config) {
       applyThemesOnElement(root, this.hass!.themes, config.theme);
     }
+  }
+
+  private _rebuildCard(
+    cardElToReplace: LovelaceCard,
+    config: LovelaceCardConfig
+  ): void {
+    const newCardEl = this.createCardElement(config);
+    cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
+    this._cards = this._cards!.map((curCardEl) =>
+      curCardEl === cardElToReplace ? newCardEl : curCardEl
+    );
   }
 }
 

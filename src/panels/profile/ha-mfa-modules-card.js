@@ -1,13 +1,13 @@
-import "@polymer/paper-button/paper-button";
-import "@polymer/paper-card/paper-card";
+import "@material/mwc-button";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../components/ha-card";
 
 import "../../resources/ha-style";
 
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
 let registeredDialog = false;
@@ -31,18 +31,11 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           position: absolute;
           top: -4px;
         }
-        paper-card {
-          display: block;
-          max-width: 600px;
-          margin: 16px auto;
-        }
-        paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
+        mwc-button {
           margin-right: -0.57em;
         }
       </style>
-      <paper-card heading="[[localize('ui.panel.profile.mfa.header')]]">
+      <ha-card header="[[localize('ui.panel.profile.mfa.header')]]">
         <template is="dom-repeat" items="[[mfaModules]]" as="module">
           <paper-item>
             <template is="dom-if" if="[[!module.count]]">
@@ -70,18 +63,18 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
               >
             </template>
             <template is="dom-if" if="[[module.enabled]]">
-              <paper-button on-click="_disable"
-                >[[localize('ui.panel.profile.mfa.disable')]]</paper-button
+              <mwc-button on-click="_disable"
+                >[[localize('ui.panel.profile.mfa.disable')]]</mwc-button
               >
             </template>
             <template is="dom-if" if="[[!module.enabled]]">
-              <paper-button on-click="_enable"
-                >[[localize('ui.panel.profile.mfa.enable')]]</paper-button
+              <mwc-button on-click="_enable"
+                >[[localize('ui.panel.profile.mfa.enable')]]</mwc-button
               >
             </template>
           </paper-item>
         </template>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -110,7 +103,8 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-mfa-module-setup-flow",
         dialogTag: "ha-mfa-module-setup-flow",
-        dialogImport: () => import("./ha-mfa-module-setup-flow"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "ha-mfa-module-setup-flow" */ "./ha-mfa-module-setup-flow"),
       });
     }
   }

@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -38,21 +38,19 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
-        paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
+        mwc-button {
           top: 3px;
           height: 37px;
           margin-right: -0.57em;
         }
-        paper-button[disabled] {
+        mwc-button[disabled] {
           background-color: transparent;
           color: var(--secondary-text-color);
         }
       </style>
 
-      <paper-button on-click="_callService" disabled="[[!_interceptable]]"
-        >[[_computeLabel(stateObj.state, _interceptable)]]</paper-button
+      <mwc-button on-click="_callService" disabled="[[!_interceptable]]"
+        >[[_computeLabel(stateObj.state, _interceptable)]]</mwc-button
       >
     `;
   }

@@ -1,17 +1,17 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 
 import { HomeAssistant } from "../../../types";
 import format_date from "../../../common/datetime/format_date";
 import format_date_time from "../../../common/datetime/format_date_time";
 import format_time from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
   date: format_date,
@@ -20,36 +20,38 @@ const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
 };
 const INTERVAL_FORMAT = ["relative", "total"];
 
-class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
-  public hass?: HomeAssistant;
-  public ts?: Date;
-  public format?: "relative" | "total" | "date" | "datetime" | "time";
-  private _relative?: string;
+@customElement("hui-timestamp-display")
+class HuiTimestampDisplay extends LitElement {
+  @property() public hass?: HomeAssistant;
+
+  @property() public ts?: Date;
+
+  @property() public format?:
+    | "relative"
+    | "total"
+    | "date"
+    | "datetime"
+    | "time";
+
+  @property() private _relative?: string;
+
   private _connected?: boolean;
+
   private _interval?: number;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      ts: {},
-      hass: {},
-      format: {},
-      _relative: {},
-    };
-  }
-
-  public connectedCallback() {
+  public connectedCallback(): void {
     super.connectedCallback();
     this._connected = true;
     this._startInterval();
   }
 
-  public disconnectedCallback() {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._connected = false;
     this._clearInterval();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.ts || !this.hass) {
       return html``;
     }
@@ -66,18 +68,18 @@ class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
       return html`
         ${this._relative}
       `;
-    } else if (format in FORMATS) {
+    }
+    if (format in FORMATS) {
       return html`
         ${FORMATS[format](this.ts, this.hass.language)}
       `;
-    } else {
-      return html`
-        Invalid format
-      `;
     }
+    return html`
+      Invalid format
+    `;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (!changedProperties.has("format") || !this._connected) {
       return;
@@ -90,11 +92,11 @@ class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private get _format() {
+  private get _format(): string {
     return this.format || "relative";
   }
 
-  private _startInterval() {
+  private _startInterval(): void {
     this._clearInterval();
     if (this._connected && INTERVAL_FORMAT.includes(this._format)) {
       this._updateRelative();
@@ -102,19 +104,19 @@ class HuiTimestampDisplay extends hassLocalizeLitMixin(LitElement) {
     }
   }
 
-  private _clearInterval() {
+  private _clearInterval(): void {
     if (this._interval) {
       clearInterval(this._interval);
       this._interval = undefined;
     }
   }
 
-  private _updateRelative() {
-    if (this.ts && this.localize) {
+  private _updateRelative(): void {
+    if (this.ts && this.hass!.localize) {
       this._relative =
         this._format === "relative"
-          ? relativeTime(this.ts, this.localize)
-          : (this._relative = relativeTime(new Date(), this.localize, {
+          ? relativeTime(this.ts, this.hass!.localize)
+          : (this._relative = relativeTime(new Date(), this.hass!.localize, {
               compareTime: this.ts,
               includeTense: false,
             }));
@@ -127,5 +129,3 @@ declare global {
     "hui-timestamp-display": HuiTimestampDisplay;
   }
 }
-
-customElements.define("hui-timestamp-display", HuiTimestampDisplay);

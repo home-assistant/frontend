@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 
@@ -6,9 +6,11 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./hui-notification-item";
+import "../../../../components/ha-paper-icon-button-next";
 
-import EventsMixin from "../../../../mixins/events-mixin";
+import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 /*
  * @appliesMixin EventsMixin
@@ -47,8 +49,16 @@ export class HuiNotificationDrawer extends EventsMixin(
         z-index: 10;
       }
 
+      :host([rtl]) .container {
+        transition: left .2s ease-in !important;
+      }
+
       :host(:not(narrow)) .container {
         right: -500px;
+      }
+
+      :host([rtl]:not(narrow)) .container {
+        left: -500px;
       }
 
       :host([narrow]) .container {
@@ -56,9 +66,19 @@ export class HuiNotificationDrawer extends EventsMixin(
         width: 100%;
       }
 
+      :host([rtl][narrow]) .container {
+        left: -100%;
+        width: 100%;
+      }
+
       :host(.open) .container,
       :host(.open[narrow]) .container {
         right: 0;
+      }
+
+      :host([rtl].open) .container,
+      :host([rtl].open[narrow]) .container {
+        left: 0;
       }
 
       app-toolbar {
@@ -102,7 +122,7 @@ export class HuiNotificationDrawer extends EventsMixin(
     <div class="container">
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
-        <paper-icon-button icon="hass:chevron-right" on-click="_closeDrawer"></paper-icon-button>
+        <ha-paper-icon-button-next on-click="_closeDrawer"></paper-icon-button>
       </app-toolbar>
       <div class="notifications">
         <template is="dom-if" if="[[!_empty(notifications)]]">
@@ -143,6 +163,11 @@ export class HuiNotificationDrawer extends EventsMixin(
         type: Array,
         value: [],
       },
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
+      },
     };
   }
 
@@ -170,6 +195,10 @@ export class HuiNotificationDrawer extends EventsMixin(
         this.hidden = true;
       }, 250);
     }
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 customElements.define("hui-notification-drawer", HuiNotificationDrawer);

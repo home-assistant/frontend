@@ -1,12 +1,13 @@
 const path = require("path");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const { babelLoaderConfig } = require("../config/babel.js");
+const { babelLoaderConfig } = require("../build-scripts/babel.js");
+const webpackBase = require("../build-scripts/webpack.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
 const buildPath = path.resolve(__dirname, "dist");
 const publicPath = isProd ? "./" : "http://localhost:8080/";
+const latestBuild = true;
 
 module.exports = {
   mode: isProd ? "production" : "development",
@@ -16,7 +17,7 @@ module.exports = {
   entry: "./src/entrypoint.js",
   module: {
     rules: [
-      babelLoaderConfig({ latestBuild: true }),
+      babelLoaderConfig({ latestBuild }),
       {
         test: /\.css$/,
         use: "raw-loader",
@@ -32,6 +33,7 @@ module.exports = {
       },
     ],
   },
+  optimization: webpackBase.optimization(latestBuild),
   plugins: [
     new CopyWebpackPlugin([
       "public",
@@ -50,19 +52,8 @@ module.exports = {
         to: "static/images/leaflet/",
       },
     ]),
-    isProd &&
-      new UglifyJsPlugin({
-        extractComments: true,
-        sourceMap: true,
-        uglifyOptions: {
-          // Disabling because it broke output
-          mangle: false,
-        },
-      }),
   ].filter(Boolean),
-  resolve: {
-    extensions: [".ts", ".js", ".json"],
-  },
+  resolve: webpackBase.resolve,
   output: {
     filename: "[name].js",
     chunkFilename: chunkFilename,

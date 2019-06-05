@@ -53,6 +53,7 @@ export default class JSONTextArea extends Component {
         value={value}
         style={style}
         onvalue-changed={this.onChange}
+        dir="ltr"
       />
     );
   }

@@ -1,17 +1,17 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
 
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
 import "./ha-change-password-card";
@@ -52,16 +52,13 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>[[localize('panel.profile')]]</div>
           </app-toolbar>
         </app-header>
 
         <div class="content">
-          <paper-card heading="[[hass.user.name]]">
+          <ha-card header="[[hass.user.name]]">
             <div class="card-content">
               [[localize('ui.panel.profile.current_user', 'fullName',
               hass.user.name)]]
@@ -86,11 +83,11 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
             ></ha-push-notifications-row>
 
             <div class="card-actions">
-              <paper-button class="warning" on-click="_handleLogOut"
-                >[[localize('ui.panel.profile.logout')]]</paper-button
+              <mwc-button class="warning" on-click="_handleLogOut"
+                >[[localize('ui.panel.profile.logout')]]</mwc-button
               >
             </div>
-          </paper-card>
+          </ha-card>
 
           <template is="dom-if" if="[[_canChangePassword(hass.user)]]">
             <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
@@ -121,7 +118,6 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return {
       hass: Object,
       narrow: Boolean,
-      showMenu: Boolean,
       _refreshTokens: Array,
     };
   }

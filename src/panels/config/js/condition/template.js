@@ -22,6 +22,7 @@ export default class TemplateCondition extends Component {
           name="value_template"
           value={value_template}
           onvalue-changed={this.onChange}
+          dir="ltr"
         />
       </div>
     );

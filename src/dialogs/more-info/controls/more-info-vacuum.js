@@ -1,6 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -8,6 +7,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-attributes";
+import "../../../components/ha-paper-dropdown-menu";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 
 class MoreInfoVacuum extends PolymerElement {
@@ -104,20 +104,25 @@ class MoreInfoVacuum extends PolymerElement {
 
       <div hidden$="[[!supportsFanSpeed(stateObj)]]">
         <div class="horizontal justified layout">
-          <paper-dropdown-menu
+          <ha-paper-dropdown-menu
             label-float=""
             dynamic-align=""
             label="Fan speed"
           >
-            <paper-listbox slot="dropdown-content" selected="{{fanSpeedIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              selected="[[stateObj.attributes.fan_speed]]"
+              on-selected-changed="fanSpeedChanged"
+              attr-for-selected="item-name"
+            >
               <template
                 is="dom-repeat"
                 items="[[stateObj.attributes.fan_speed_list]]"
               >
-                <paper-item>[[item]]</paper-item>
+                <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
             </paper-listbox>
-          </paper-dropdown-menu>
+          </ha-paper-dropdown-menu>
           <div
             style="justify-content: center; align-self: center; padding-top: 1.3em"
           >
@@ -149,12 +154,6 @@ class MoreInfoVacuum extends PolymerElement {
 
       stateObj: {
         type: Object,
-      },
-
-      fanSpeedIndex: {
-        type: Number,
-        value: -1,
-        observer: "fanSpeedChanged",
       },
     };
   }
@@ -206,17 +205,15 @@ class MoreInfoVacuum extends PolymerElement {
     );
   }
 
-  fanSpeedChanged(fanSpeedIndex) {
-    var fanSpeedInput;
-    // Selected Option will transition to '' before transitioning to new value
-    if (fanSpeedIndex === "" || fanSpeedIndex === -1) return;
+  fanSpeedChanged(ev) {
+    var oldVal = this.stateObj.attributes.fan_speed;
+    var newVal = ev.detail.value;
 
-    fanSpeedInput = this.stateObj.attributes.fan_speed_list[fanSpeedIndex];
-    if (fanSpeedInput === this.stateObj.attributes.fan_speed) return;
+    if (!newVal || oldVal === newVal) return;
 
     this.hass.callService("vacuum", "set_fan_speed", {
       entity_id: this.stateObj.entity_id,
-      fan_speed: fanSpeedInput,
+      fan_speed: newVal,
     });
   }
 

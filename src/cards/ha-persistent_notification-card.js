@@ -1,4 +1,4 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -38,16 +38,15 @@ class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
         ha-markdown img {
           max-width: 100%;
         }
-        paper-button {
+        mwc-button {
           margin: 8px;
-          font-weight: 500;
         }
       </style>
 
       <ha-card header="[[computeTitle(stateObj)]]">
         <ha-markdown content="[[stateObj.attributes.message]]"></ha-markdown>
-        <paper-button on-click="dismissTap"
-          >[[localize('ui.card.persistent_notification.dismiss')]]</paper-button
+        <mwc-button on-click="dismissTap"
+          >[[localize('ui.card.persistent_notification.dismiss')]]</mwc-button
         >
       </ha-card>
     `;

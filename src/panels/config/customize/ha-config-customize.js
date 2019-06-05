@@ -6,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../resources/ha-style";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 
 import "../ha-config-section";
 import "../ha-entity-config";
@@ -27,10 +28,9 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
       <app-header-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <paper-icon-button
-              icon="hass:arrow-left"
+            <ha-paper-icon-button-arrow-prev
               on-click="_backTapped"
-            ></paper-icon-button>
+            ></ha-paper-icon-button-arrow-prev>
             <div main-title="">
               [[localize('ui.panel.config.customize.caption')]]
             </div>
@@ -39,11 +39,11 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
 
         <div class$="[[computeClasses(isWide)]]">
           <ha-config-section is-wide="[[isWide]]">
-            <span slot="header">Customization</span>
+            <span slot="header">
+              [[localize('ui.panel.config.customize.picker.header')]]
+            </span>
             <span slot="introduction">
-              Tweak per-entity attributes.<br />
-              Added/edited customizations will take effect immediately. Removed
-              customizations will take effect when the entity is updated.
+              [[localize('ui.panel.config.customize.picker.introduction')]]
             </span>
             <ha-entity-config
               hass="[[hass]]"

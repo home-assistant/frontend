@@ -2,7 +2,9 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../mixins/events-mixin";
+import { getAppKey } from "../data/notify_html5";
+
+import { EventsMixin } from "../mixins/events-mixin";
 
 export const pushSupported =
   "serviceWorker" in navigator &&
@@ -20,6 +22,7 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       <paper-toggle-button
         disabled="[[_compDisabled(disabled, loading)]]"
         checked="{{pushChecked}}"
+        on-change="handlePushChange"
       ></paper-toggle-button>
     `;
   }
@@ -35,7 +38,6 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         type: Boolean,
         value:
           "Notification" in window && Notification.permission === "granted",
-        observer: "handlePushChange",
       },
       loading: {
         type: Boolean,
@@ -63,12 +65,12 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
     }
   }
 
-  handlePushChange(pushChecked) {
+  handlePushChange(event) {
     // Somehow this is triggered on Safari on page load causing
     // it to get into a loop and crash the page.
     if (!pushSupported) return;
 
-    if (pushChecked) {
+    if (event.target.checked) {
       this.subscribePushNotifications();
     } else {
       this.unsubscribePushNotifications();
@@ -77,10 +79,9 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
 
   async subscribePushNotifications() {
     const reg = await navigator.serviceWorker.ready;
+    let sub;
 
     try {
-      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
-
       let browserName;
       if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
         browserName = "firefox";
@@ -88,12 +89,38 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         browserName = "chrome";
       }
 
+      const name = prompt("What should this device be called ?");
+      if (name == null) {
+        this.pushChecked = false;
+        return;
+      }
+
+      let applicationServerKey;
+      try {
+        applicationServerKey = await getAppKey(this.hass);
+      } catch (ex) {
+        applicationServerKey = null;
+      }
+
+      if (applicationServerKey) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey,
+        });
+      } else {
+        sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
+      }
+
       await this.hass.callApi("POST", "notify.html5", {
         subscription: sub,
         browser: browserName,
+        name,
       });
     } catch (err) {
       const message = err.message || "Notification registration failed.";
+      if (sub) {
+        await sub.unsubscribe();
+      }
 
       // eslint-disable-next-line
       console.error(err);

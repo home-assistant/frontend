@@ -1,0 +1,11 @@
+#!/bin/sh
+# Analyze stats
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+STATS=1 NODE_ENV=production ../node_modules/.bin/webpack --profile --json > compilation-stats.json
+npx webpack-bundle-analyzer compilation-stats.json dist
+rm compilation-stats.json

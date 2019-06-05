@@ -236,7 +236,7 @@
                 "ready": "Gereed"
             },
             "query_stage": {
-                "initializing": "Initialiseren ({query_stage})",
+                "initializing": "Voorbereiden ({query_stage})",
                 "dead": "Onbereikbaar ({query_stage})"
             }
         },
@@ -248,7 +248,7 @@
             "lightning": "Bliksem",
             "lightning-rainy": "Bliksem, regenachtig",
             "partlycloudy": "Gedeeltelijk bewolkt",
-            "pouring": "Gieten",
+            "pouring": "Regen",
             "rainy": "Regenachtig",
             "snowy": "Sneeuwachtig",
             "snowy-rainy": "Sneeuw-, regenachtig",
@@ -265,19 +265,30 @@
             "on": "Aan",
             "paused": "Gepauseerd",
             "returning": "Terugkeren naar dock"
+        },
+        "timer": {
+            "active": "actief",
+            "idle": "inactief",
+            "paused": "gepauzeerd"
+        },
+        "person": {
+            "home": "Thuis",
+            "not_home": "Afwezig"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Onbek.",
-            "unavailable": "Niet besch"
+            "unavailable": "Niet besch",
+            "error": "Fout",
+            "entity_not_found": "Entiteit niet gevonden"
         },
         "alarm_control_panel": {
             "armed": "Actief",
             "disarmed": "Uit",
             "armed_home": "Actief",
-            "armed_away": "Ingeschakeld",
-            "armed_night": "Ingeschakeld",
+            "armed_away": "Actief",
+            "armed_night": "Actief",
             "pending": "Wacht",
             "arming": "Activeren",
             "disarming": "Uitschakelen",
@@ -285,6 +296,10 @@
             "armed_custom_bypass": "Ingeschakeld"
         },
         "device_tracker": {
+            "home": "Thuis",
+            "not_home": "Afwezig"
+        },
+        "person": {
             "home": "Thuis",
             "not_home": "Afwezig"
         }
@@ -301,7 +316,8 @@
                 "period": "Periode"
             },
             "logbook": {
-                "showing_entries": "Toon items voor"
+                "showing_entries": "Toont gegevens van",
+                "period": "Periode"
             },
             "mailbox": {
                 "empty": "Je hebt geen berichten",
@@ -345,7 +361,11 @@
                 },
                 "customize": {
                     "caption": "Aanpassingen",
-                    "description": "Pas je entiteiten aan"
+                    "description": "Pas je entiteiten aan",
+                    "picker": {
+                        "header": "Aanpassingen",
+                        "introduction": "Pas attributen per entiteit aan. Toegevoegde\/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
+                    }
                 },
                 "automation": {
                     "caption": "Automatisering",
@@ -355,7 +375,8 @@
                         "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Lees [de instructies](https:\/\/home-assistant.io\/docs\/automation\/editor\/) om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
-                        "add_automation": "Automatisering toevoegen"
+                        "add_automation": "Automatisering toevoegen",
+                        "learn_more": "Meer informatie over automatiseringen"
                     },
                     "editor": {
                         "introduction": "Gebruik automatiseringen om je huis tot leven te brengen",
@@ -370,7 +391,7 @@
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
                             "delete_confirm": "Zeker dat u wilt verwijderen?",
-                            "unsupported_platform": "Niet-ondersteund platform: {platform}",
+                            "unsupported_platform": "Niet ondersteund platform: {platform}",
                             "type_select": "Trigger-type",
                             "type": {
                                 "event": {
@@ -423,17 +444,36 @@
                                     "event": "Gebeurtenis:",
                                     "enter": "Betreden",
                                     "leave": "Verlaten"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Tijdspatroon",
+                                    "hours": "Uren",
+                                    "minutes": "Minuten",
+                                    "seconds": "Seconden"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocatie",
+                                    "source": "Bron",
+                                    "zone": "Zone",
+                                    "event": "Gebeurtenis:",
+                                    "enter": "Invoeren",
+                                    "leave": "Verlaten"
                                 }
-                            }
+                            },
+                            "learn_more": "Meer informatie over triggers"
                         },
                         "conditions": {
                             "header": "Voorwaarden",
-                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn erg verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat. \n\n [Meer informatie over voorwaarden.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat. \n\n [Meer informatie over voorwaarden.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Voorwaarde toevoegen",
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
                             "delete_confirm": "Zeker weten dat je wilt verwijderen?",
-                            "unsupported_condition": "Niet-ondersteunde voorwaarde: {condition}",
+                            "unsupported_condition": "Niet ondersteunde voorwaarde: {condition}",
                             "type_select": "Type voorwaarde",
                             "type": {
                                 "state": {
@@ -441,7 +481,7 @@
                                     "state": "Staat"
                                 },
                                 "numeric_state": {
-                                    "label": "Numerieke status",
+                                    "label": "Numerieke staat",
                                     "above": "Boven",
                                     "below": "Onder",
                                     "value_template": "Waardetemplate (optioneel)"
@@ -469,7 +509,8 @@
                                     "entity": "Entiteit met locatie",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "Meer informatie over condities"
                         },
                         "actions": {
                             "header": "Acties",
@@ -502,7 +543,8 @@
                                     "event": "Gebeurtenis:",
                                     "service_data": "Service data"
                                 }
-                            }
+                            },
+                            "learn_more": "Meer informatie over acties"
                         }
                     }
                 },
@@ -525,13 +567,22 @@
                         "change_password": "Wachtwoord wijzigen",
                         "activate_user": "Activeer gebruiker",
                         "deactivate_user": "Deactiveer gebruiker",
-                        "delete_user": "Verwijder gebruiker"
+                        "delete_user": "Verwijder gebruiker",
+                        "caption": "Bekijk gebruiker"
+                    },
+                    "add_user": {
+                        "caption": "Gebruiker toevoegen",
+                        "name": "Naam",
+                        "username": "Gebruikersnaam",
+                        "password": "Wachtwoord",
+                        "create": "Maken"
                     }
                 },
                 "cloud": {
                     "caption": "Home Assistent Cloud",
                     "description_login": "Ingelogd als {email}",
-                    "description_not_login": "Niet ingelogd"
+                    "description_not_login": "Niet ingelogd",
+                    "description_features": "Bestuur weg van huis, verbind met Alexa en Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integraties",
@@ -550,7 +601,80 @@
                         "hub": "Verbonden via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "apparaat niet beschikbaar",
-                        "entity_unavailable": "entiteit niet beschikbaar"
+                        "entity_unavailable": "entiteit niet beschikbaar",
+                        "no_area": "Geen gebied"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Deze stap vereist dat u een externe website bezoekt om dit te voltooien.",
+                            "open_site": "Open website"
+                        }
+                    }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation netwerkbeheer",
+                    "services": {
+                        "reconfigure": "Herconfigureer het ZHA-apparaat (heal device). Gebruik dit als je problemen hebt met het apparaat. Als het een apparaat met batterij is, zorg dan dat het wakker is en commando's accepteert wanneer je deze service gebruikt.",
+                        "updateDeviceName": "Stel een aangepaste naam in voor dit apparaat in het apparaatregister.",
+                        "remove": "Verwijder een apparaat uit het ZigBee-netwerk."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Door gebruiker ingegeven naam",
+                        "area_picker_label": "Gebied",
+                        "update_name_button": "Naam bijwerken"
+                    },
+                    "add_device_page": {
+                        "header": "ZigBee Home Automation - Apparaten toevoegen",
+                        "spinner": "Zoeken naar ZHA Zigbee-apparaten ...",
+                        "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor uw apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Gebiedenregister",
+                    "description": "Overzicht van alle gebieden in je huis.",
+                    "picker": {
+                        "header": "Gebiedenregister",
+                        "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om u te helpen bij het organiseren van uw interface, machtigingen en integraties met andere systemen.",
+                        "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
+                        "integrations_page": "Integratiespagina",
+                        "no_areas": "Het lijkt erop dat je nog geen ruimtes hebt!",
+                        "create_area": "MAAK RUIMTE"
+                    },
+                    "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
+                    "create_area": "MAAK GEBIED",
+                    "editor": {
+                        "default_name": "Nieuw gebied",
+                        "delete": "VERWIJDEREN",
+                        "update": "BIJWERKEN",
+                        "create": "MAKEN"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Entiteiten register",
+                    "description": "Overzicht van alle gekende entiteiten",
+                    "picker": {
+                        "header": "Entiteiten register",
+                        "unavailable": "(niet beschikbaar)",
+                        "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
+                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit de Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
+                        "integrations_page": "Integratiespagina"
+                    },
+                    "editor": {
+                        "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
+                        "default_name": "Nieuw gebied",
+                        "delete": "VERWIJDEREN",
+                        "update": "BIJWERKEN"
+                    }
+                },
+                "person": {
+                    "caption": "Personen",
+                    "description": "Beheer de personen die Home Assistant volgt.",
+                    "detail": {
+                        "name": "Naam",
+                        "device_tracker_intro": "Selecteer de apparaten die bij deze persoon horen.",
+                        "device_tracker_picked": "Volg apparaat",
+                        "device_tracker_pick": "Kies apparaat om te volgen"
                     }
                 }
             },
@@ -694,6 +818,29 @@
                             "abort": {
                                 "not_whitelisted": "Uw computer staat niet op de whitelist."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Gebruikersnaam",
+                                        "password": "Wachtwoord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Twee-factor authenticatie code"
+                                    },
+                                    "description": "Open de **{mfa_module_name}** op je apparaat voor de twee-factor authenticatiecode en verifieer je identiteit:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord",
+                                "invalid_code": "Onjuiste authenticatie code"
+                            },
+                            "abort": {
+                                "login_expired": "Sessie verlopen, meldt u opnieuw aan."
+                            }
                         }
                     }
                 }
@@ -706,12 +853,19 @@
                     "data": {
                         "name": "Naam",
                         "username": "Gebruikersnaam",
-                        "password": "Wachtwoord"
+                        "password": "Wachtwoord",
+                        "password_confirm": "Bevestig wachtwoord"
                     },
                     "create_account": "Account aanmaken",
                     "error": {
-                        "required_fields": "Vul alle verplichte velden in"
+                        "required_fields": "Vul alle verplichte velden in",
+                        "password_not_match": "Wachtwoorden komen niet overeen"
                     }
+                },
+                "integration": {
+                    "intro": "Apparaten en services worden in Home Assistant weergegeven als integraties. U kunt ze nu instellen of later via het configuratiescherm.",
+                    "more_integrations": "Meer",
+                    "finish": "Voltooien"
                 }
             },
             "lovelace": {
@@ -720,30 +874,83 @@
                         "checked_items": "Geselecteerde items",
                         "clear_items": "Geselecteerde items wissen",
                         "add_item": "Item toevoegen"
+                    },
+                    "empty_state": {
+                        "title": "Welkom thuis",
+                        "no_devices": "Op deze pagina kun je je apparaten bedienen, maar het lijkt er op dat je nog geen apparaten hebt ingesteld. Ga naar de integraties pagina om te beginnen.",
+                        "go_to_integrations_page": "Ga naar de integraties pagina."
+                    },
+                    "picture-elements": {
+                        "hold": "Vasthouden:",
+                        "tap": "Tik:",
+                        "navigate_to": "Navigeer naar {location}",
+                        "toggle": "Omschakelen {name}",
+                        "call_service": "Roep service {name} aan",
+                        "more_info": "Meer informatie weergeven: {name}"
                     }
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Kaart configuratie",
                         "save": "Opslaan",
-                        "toggle_editor": "Toggle Editor"
+                        "toggle_editor": "Toggle Editor",
+                        "pick_card": "Kies de kaart die je wilt toevoegen.",
+                        "add": "Kaart toevoegen",
+                        "edit": "Bewerken",
+                        "delete": "Verwijder",
+                        "move": "Verplaatsen"
                     },
                     "migrate": {
                         "header": "Configuratie incompatibel",
                         "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'.",
                         "para_migrate": "Home Assistant kan ID's voor al je kaarten en weergaven automatisch voor je toevoegen door op de knop 'Migrate config' te klikken.",
                         "migrate": "Configuratie migreren"
+                    },
+                    "header": "Bewerk UI",
+                    "edit_view": {
+                        "header": "Bekijk de configuratie",
+                        "add": "Weergave toevoegen",
+                        "edit": "Weergave bewerken",
+                        "delete": "Weergave verwijderen"
+                    },
+                    "save_config": {
+                        "header": "Neem de controle over uw Lovelace UI",
+                        "para": "Normaal gesproken onderhoudt Home Assistant je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
+                        "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
+                        "cancel": "Laat maar",
+                        "save": "Neem over"
+                    },
+                    "menu": {
+                        "raw_editor": "Platte configuratie-editor"
+                    },
+                    "raw_editor": {
+                        "header": "Configuratie bewerken",
+                        "save": "Opslaan",
+                        "unsaved_changes": "Niet-opgeslagen wijzigingen",
+                        "saved": "Opgeslagen"
                     }
+                },
+                "menu": {
+                    "configure_ui": "Configureer UI",
+                    "unused_entities": "Ongebruikte entiteiten",
+                    "help": "Help",
+                    "refresh": "Vernieuwen"
+                },
+                "warning": {
+                    "entity_not_found": "Entiteit niet beschikbaar: {entity}",
+                    "entity_non_numeric": "Entiteit is niet-numeriek: {entity}"
                 }
             }
         },
         "sidebar": {
             "log_out": "Uitloggen",
-            "developer_tools": "Ontwikkelaarstools"
+            "developer_tools": "Ontwikkelaarstools",
+            "external_app_configuration": "App configuratie"
         },
         "common": {
             "loading": "Bezig met laden",
-            "cancel": "Annuleren"
+            "cancel": "Annuleren",
+            "save": "Opslaan"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
@@ -805,7 +1012,8 @@
                 "arm_home": "Inschakelen thuis",
                 "arm_away": "Inschakelen afwezig",
                 "arm_night": "Inschakelen nacht",
-                "armed_custom_bypass": "Aangepaste overbrugging(en)"
+                "armed_custom_bypass": "Aangepaste overbrugging(en)",
+                "arm_custom_bypass": "Gedeeltelijk actief"
             },
             "automation": {
                 "last_triggered": "Laatst uitgevoerd",
@@ -900,14 +1108,27 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Opslaan",
-                "name": "Naam",
+                "name": "Naam overschrijven",
                 "entity_id": "Entiteits-ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Laatste actie"
+                },
+                "sun": {
+                    "elevation": "Hoogtehoek",
+                    "rising": "Opkomst",
+                    "setting": "Ondergang"
+                },
+                "updater": {
+                    "title": "Instructies bijwerken"
+                }
             }
         },
         "auth_store": {
             "ask": "Wilt u de inloggegevens opslaan?",
             "decline": "Nee, bedankt",
-            "confirm": "Bewaar inloggegevens"
+            "confirm": "Login opslaan"
         },
         "notification_drawer": {
             "click_to_configure": "Klik op de knop om {entity} te configureren",
@@ -931,7 +1152,7 @@
         "group": "Groep",
         "image_processing": "Beeldverwerking",
         "input_boolean": "Boolean invoer",
-        "input_datetime": "Invoer datum en tijd",
+        "input_datetime": "Voer datum en tijd in",
         "input_select": "Invoer selectie",
         "input_number": "Numerieke invoer",
         "input_text": "Tekstinvoer",
@@ -951,7 +1172,13 @@
         "updater": "Updater",
         "weblink": "Web link",
         "zwave": "Z-Wave",
-        "vacuum": "Stofzuigen"
+        "vacuum": "Stofzuigen",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Systeemstatus",
+        "person": "Persoon"
     },
     "attribute": {
         "weather": {
@@ -959,5 +1186,19 @@
             "visibility": "Zichtbaarheid",
             "wind_speed": "Windsnelheid"
         }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Uit",
+                "on": "Aan",
+                "auto": "Auto"
+            }
+        }
+    },
+    "groups": {
+        "system-admin": "Beheerders",
+        "system-users": "Gebruikers",
+        "system-read-only": "Alleen-lezen gebruikers"
     }
 }

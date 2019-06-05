@@ -2,7 +2,7 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -11,7 +11,8 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
 import "./events-list";
-import EventsMixin from "../../mixins/events-mixin";
+import "./event-subscribe-card";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -30,6 +31,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
         .content {
           @apply --paper-font-body1;
           padding: 16px;
+          direction: ltr;
         }
 
         .ha-form {
@@ -39,47 +41,51 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
         .header {
           @apply --paper-font-title;
         }
+
+        event-subscribe-card {
+          display: block;
+          max-width: 800px;
+          margin: 16px auto;
+        }
       </style>
 
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>Events</div>
           </app-toolbar>
         </app-header>
 
-        <div class$="[[computeFormClasses(narrow)]]">
-          <div class="flex">
-            <p>Fire an event on the event bus.</p>
+        <div class="content">
+          <div class$="[[computeFormClasses(narrow)]]">
+            <div class="flex">
+              <p>Fire an event on the event bus.</p>
 
-            <div class="ha-form">
-              <paper-input
-                label="Event Type"
-                autofocus
-                required
-                value="{{eventType}}"
-              ></paper-input>
-              <paper-textarea
-                label="Event Data (JSON, optional)"
-                value="{{eventData}}"
-              ></paper-textarea>
-              <paper-button on-click="fireEvent" raised
-                >Fire Event</paper-button
-              >
+              <div class="ha-form">
+                <paper-input
+                  label="Event Type"
+                  autofocus
+                  required
+                  value="{{eventType}}"
+                ></paper-input>
+                <paper-textarea
+                  label="Event Data (JSON, optional)"
+                  value="{{eventData}}"
+                ></paper-textarea>
+                <mwc-button on-click="fireEvent" raised>Fire Event</mwc-button>
+              </div>
+            </div>
+
+            <div>
+              <div class="header">Available Events</div>
+              <events-list
+                on-event-selected="eventSelected"
+                hass="[[hass]]"
+              ></events-list>
             </div>
           </div>
-
-          <div>
-            <div class="header">Available Events</div>
-            <events-list
-              on-event-selected="eventSelected"
-              hass="[[hass]]"
-            ></events-list>
-          </div>
+          <event-subscribe-card hass="[[hass]]"></event-subscribe-card>
         </div>
       </app-header-layout>
     `;
@@ -89,16 +95,6 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-      },
-
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
       },
 
       eventType: {
@@ -139,7 +135,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
   }
 
   computeFormClasses(narrow) {
-    return narrow ? "content fit" : "content fit layout horizontal";
+    return narrow ? "" : "layout horizontal";
   }
 }
 

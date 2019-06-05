@@ -1,24 +1,26 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  customElement,
+  PropertyValues,
+} from "lit-element";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 import "../components/hui-generic-entity-row";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setValue } from "../../../data/input_text";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
+@customElement("hui-input-text-entity-row")
 class HuiInputTextEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -27,7 +29,11 @@ class HuiInputTextEntityRow extends LitElement implements EntityRow {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -36,9 +42,13 @@ class HuiInputTextEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
@@ -80,5 +90,3 @@ declare global {
     "hui-input-text-entity-row": HuiInputTextEntityRow;
   }
 }
-
-customElements.define("hui-input-text-entity-row", HuiInputTextEntityRow);

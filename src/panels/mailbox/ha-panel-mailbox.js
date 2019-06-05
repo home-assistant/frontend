@@ -1,8 +1,7 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
-import "@polymer/paper-card/paper-card";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
@@ -12,11 +11,12 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/ha-menu-button";
+import "../../components/ha-card";
 import "../../resources/ha-style";
 
 import formatDateTime from "../../common/datetime/format_date_time";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 let registeredDialog = false;
 
@@ -39,8 +39,8 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
           margin: 0 auto;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
+          overflow: hidden;
         }
 
         paper-item {
@@ -80,10 +80,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>[[localize('panel.mailbox')]]</div>
           </app-toolbar>
           <div sticky hidden$="[[areTabsHidden(platforms)]]">
@@ -101,7 +98,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </div>
         </app-header>
         <div class="content">
-          <paper-card>
+          <ha-card>
             <template is="dom-if" if="[[!_messages.length]]">
               <div class="card-content empty">
                 [[localize('ui.panel.mailbox.empty')]]
@@ -123,7 +120,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 </paper-item-body>
               </paper-item>
             </template>
-          </paper-card>
+          </ha-card>
         </div>
       </app-header-layout>
     `;
@@ -133,16 +130,6 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return {
       hass: {
         type: Object,
-      },
-
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
       },
 
       platforms: {
@@ -167,7 +154,8 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-audio-message-dialog",
         dialogTag: "ha-dialog-show-audio-message",
-        dialogImport: () => import("./ha-dialog-show-audio-message"),
+        dialogImport: () =>
+          import(/* webpackChunkName: "ha-dialog-show-audio-message" */ "./ha-dialog-show-audio-message"),
       });
     }
     this.hassChanged = this.hassChanged.bind(this);

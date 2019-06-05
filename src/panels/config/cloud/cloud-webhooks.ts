@@ -3,31 +3,22 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
+} from "lit-element";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
 import "../../../components/ha-card";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-
 import { HomeAssistant, WebhookError } from "../../../types";
-import { WebhookDialogParams, CloudStatusLoggedIn } from "./types";
 import { Webhook, fetchWebhooks } from "../../../data/webhook";
 import {
   createCloudhook,
   deleteCloudhook,
   CloudWebhook,
+  CloudStatusLoggedIn,
 } from "../../../data/cloud";
-import { ERR_UNKNOWN_COMMAND } from "../../../data/websocket_api";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "manage-cloud-webhook": WebhookDialogParams;
-  }
-}
+import { showManageCloudhookDialog } from "./show-cloud-webhook-manage-dialog";
 
 export class CloudWebhooks extends LitElement {
   public hass?: HomeAssistant;
@@ -60,19 +51,17 @@ export class CloudWebhooks extends LitElement {
     return html`
       ${this.renderStyle()}
       <ha-card header="Webhooks">
-        <div class="body">
+        <div class="card-content">
           Anything that is configured to be triggered by a webhook can be given
           a publicly accessible URL to allow you to send data back to Home
           Assistant from anywhere, without exposing your instance to the
-          internet.
-        </div>
+          internet. ${this._renderBody()}
 
-        ${this._renderBody()}
-
-        <div class="footer">
-          <a href="https://www.nabucasa.com/config/webhooks" target="_blank">
-            Learn more about creating webhook-powered automations.
-          </a>
+          <div class="footer">
+            <a href="https://www.nabucasa.com/config/webhooks" target="_blank">
+              Learn more about creating webhook-powered automations.
+            </a>
+          </div>
         </div>
       </ha-card>
     `;
@@ -108,33 +97,29 @@ export class CloudWebhooks extends LitElement {
           <paper-item-body two-line>
             <div>
               ${entry.name}
-              ${
-                entry.domain === entry.name.toLowerCase()
-                  ? ""
-                  : ` (${entry.domain})`
-              }
+              ${entry.domain === entry.name.toLowerCase()
+                ? ""
+                : ` (${entry.domain})`}
             </div>
             <div secondary>${entry.webhook_id}</div>
           </paper-item-body>
-          ${
-            this._progress.includes(entry.webhook_id)
-              ? html`
-                  <div class="progress">
-                    <paper-spinner active></paper-spinner>
-                  </div>
-                `
-              : this._cloudHooks![entry.webhook_id]
-              ? html`
-                  <paper-button @click="${this._handleManageButton}"
-                    >Manage</paper-button
-                  >
-                `
-              : html`
-                  <paper-toggle-button
-                    @click="${this._enableWebhook}"
-                  ></paper-toggle-button>
-                `
-          }
+          ${this._progress.includes(entry.webhook_id)
+            ? html`
+                <div class="progress">
+                  <paper-spinner active></paper-spinner>
+                </div>
+              `
+            : this._cloudHooks![entry.webhook_id]
+            ? html`
+                <mwc-button @click="${this._handleManageButton}">
+                  Manage
+                </mwc-button>
+              `
+            : html`
+                <paper-toggle-button
+                  @click="${this._enableWebhook}"
+                ></paper-toggle-button>
+              `}
         </div>
       `
     );
@@ -143,14 +128,13 @@ export class CloudWebhooks extends LitElement {
   private _showDialog(webhookId: string) {
     const webhook = this._localHooks!.find(
       (ent) => ent.webhook_id === webhookId
-    );
+    )!;
     const cloudhook = this._cloudHooks![webhookId];
-    const params: WebhookDialogParams = {
-      webhook: webhook!,
+    showManageCloudhookDialog(this, {
+      webhook,
       cloudhook,
       disableHook: () => this._disableWebhook(webhookId),
-    };
-    fireEvent(this, "manage-cloud-webhook", params);
+    });
   }
 
   private _handleManageButton(ev: MouseEvent) {
@@ -200,29 +184,20 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    try {
-      this._localHooks = await fetchWebhooks(this.hass!);
-    } catch (err) {
-      if (err.code === ERR_UNKNOWN_COMMAND) {
-        this._localHooks = [];
-      } else {
-        throw err;
-      }
-    }
+    this._localHooks = this.hass!.config.components.includes("webhook")
+      ? await fetchWebhooks(this.hass!)
+      : [];
   }
 
   private renderStyle() {
     return html`
       <style>
-        .body {
-          padding: 0 16px 8px;
-        }
         .body-text {
-          padding: 0 16px;
+          padding: 8px 0;
         }
         .webhook {
           display: flex;
-          padding: 4px 16px;
+          padding: 4px 0;
         }
         .progress {
           margin-right: 16px;
@@ -230,12 +205,8 @@ export class CloudWebhooks extends LitElement {
           flex-direction: column;
           justify-content: center;
         }
-        paper-button {
-          font-weight: 500;
-          color: var(--primary-color);
-        }
         .footer {
-          padding: 16px;
+          padding-top: 16px;
         }
         .body-text a,
         .footer a {

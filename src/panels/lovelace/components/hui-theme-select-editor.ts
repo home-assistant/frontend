@@ -1,10 +1,16 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import "@polymer/paper-button/paper-button";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
+} from "lit-element";
+import "@material/mwc-button";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 
 declare global {
   // for fire event
@@ -17,24 +23,18 @@ declare global {
   }
 }
 
-export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
-  public value?: string;
-  public hass?: HomeAssistant;
+@customElement("hui-theme-select-editor")
+export class HuiThemeSelectEditor extends LitElement {
+  @property() public value?: string;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      value: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     const themes = ["Backend-selected", "default"].concat(
       Object.keys(this.hass!.themes.themes).sort()
     );
 
     return html`
-      ${this.renderStyle()}
       <paper-dropdown-menu
         label="Theme"
         dynamic-align
@@ -45,25 +45,21 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
           .selected="${this.value}"
           attr-for-selected="theme"
         >
-          ${
-            themes.map((theme) => {
-              return html`
-                <paper-item theme="${theme}">${theme}</paper-item>
-              `;
-            })
-          }
+          ${themes.map((theme) => {
+            return html`
+              <paper-item theme="${theme}">${theme}</paper-item>
+            `;
+          })}
         </paper-listbox>
       </paper-dropdown-menu>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-dropdown-menu {
-          width: 100%;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      paper-dropdown-menu {
+        width: 100%;
+      }
     `;
   }
 
@@ -78,8 +74,6 @@ export class HuiThemeSelectionEditor extends hassLocalizeLitMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-theme-select-editor": HuiThemeSelectionEditor;
+    "hui-theme-select-editor": HuiThemeSelectEditor;
   }
 }
-
-customElements.define("hui-theme-select-editor", HuiThemeSelectionEditor);

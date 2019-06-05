@@ -1,11 +1,11 @@
 import { HomeAssistant } from "../types";
+import { Connection } from "home-assistant-js-websocket";
 
 export interface LovelaceConfig {
   title?: string;
   views: LovelaceViewConfig[];
   background?: string;
   resources?: Array<{ type: "css" | "js" | "module" | "html"; url: string }>;
-  excluded_entities?: string[];
 }
 
 export interface LovelaceViewConfig {
@@ -34,7 +34,10 @@ export interface ToggleActionConfig {
 export interface CallServiceActionConfig {
   action: "call-service";
   service: string;
-  service_data?: { [key: string]: any };
+  service_data?: {
+    entity_id?: string | [string];
+    [key: string]: any;
+  };
 }
 
 export interface NavigateActionConfig {
@@ -74,3 +77,8 @@ export const saveConfig = (
     type: "lovelace/config/save",
     config,
   });
+
+export const subscribeLovelaceUpdates = (
+  conn: Connection,
+  onChange: () => void
+) => conn.subscribeEvents(onChange, "lovelace_updated");

@@ -149,7 +149,7 @@
         },
         "configurator": {
             "configure": "Konfigurēt",
-            "configured": "Nokonfigurēts"
+            "configured": "Konfigurēts"
         },
         "cover": {
             "open": "Atvērts",
@@ -352,8 +352,8 @@
                     "description": "Veidojiet un rediģējiet automatizācijas",
                     "picker": {
                         "header": "Automatizāciju redaktors",
-                        "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, izlasiet [norādījumus] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
-                        "pick_automation": "Izvēlieties automatizāciju kuru rediģēt",
+                        "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, sekojiet [norādījumiem] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
+                        "pick_automation": "Izvēlieties automatizāciju rediģēšanai",
                         "no_automations": "Mēs nevarējām atrast rediģējamas automatizācijas",
                         "add_automation": "Pievienot automatizāciju"
                     },
@@ -423,6 +423,19 @@
                                     "event": "Notikums:",
                                     "enter": "Ieiet",
                                     "leave": "Iziet"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Laika Modelis",
+                                    "hours": "Stundas",
+                                    "minutes": "Minūtes",
+                                    "seconds": "Sekundes"
+                                },
+                                "geo_location": {
+                                    "label": "Ģeogrāfiskā atrašanās vieta"
                                 }
                             }
                         },
@@ -525,7 +538,15 @@
                         "change_password": "Mainīt paroli",
                         "activate_user": "Aktivizēt lietotāju",
                         "deactivate_user": "Deaktivizēt lietotāju",
-                        "delete_user": "Dzēst lietotāju"
+                        "delete_user": "Dzēst lietotāju",
+                        "caption": "Skatīt lietotāju"
+                    },
+                    "add_user": {
+                        "caption": "Lietotāja pievienošana",
+                        "name": "Vārds",
+                        "username": "Lietotājvārds",
+                        "password": "Parole",
+                        "create": "Izveidot"
                     }
                 },
                 "cloud": {
@@ -552,6 +573,13 @@
                         "device_unavailable": "ierīce nav pieejama",
                         "entity_unavailable": "vienība nav pieejama"
                     }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation tīkla pārvaldība"
+                },
+                "area_registry": {
+                    "description": "Pārskats par visām vietām jūsu mājās."
                 }
             },
             "profile": {
@@ -569,10 +597,10 @@
                     "dropdown_label": "Valoda"
                 },
                 "themes": {
-                    "header": "Motīvs",
-                    "error_no_theme": "Nav pieejams neviens motīvs",
+                    "header": "Tēma",
+                    "error_no_theme": "Nav nevienas tēmas",
                     "link_promo": "Uzziniet par tēmām",
-                    "dropdown_label": "Motīvs"
+                    "dropdown_label": "Tēma"
                 },
                 "refresh_tokens": {
                     "header": "Atsvaidzināšanas pilnvaras",
@@ -694,6 +722,26 @@
                             "abort": {
                                 "not_whitelisted": "Jūsu dators nav iekļauts baltajā sarakstā."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Lietotājvārds",
+                                        "password": "Parole"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Divpakāpju Autorizācijas Kods"
+                                    },
+                                    "description": "Atveriet **{mfa_module_name}** Jūsu ierīcē, lai apskatītu savu divpakāpju autorizācijas kodu un aptiprinātu savu identitāti:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nepareizs lietotājvārds un parole",
+                                "invalid_code": "Nepareizs autorizācijas kods"
+                            }
                         }
                     }
                 }
@@ -713,6 +761,67 @@
                         "required_fields": "Aizpildiet visus obligātos laukus"
                     }
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "Atzīmētie vienumi",
+                        "clear_items": "Notīrīt atzīmētos vienumus",
+                        "add_item": "Pievienot vienumu"
+                    },
+                    "empty_state": {
+                        "title": "Laipni lūgti mājās",
+                        "no_devices": "Šī lapa ļauj jums kontrolēt savas ierīces, tomēr izskatās, ka vēl nav izveidotas ierīces. Lai sāktu darbu, dodieties uz integrācijas lapu.",
+                        "go_to_integrations_page": "Dodieties uz integrācijas lapu."
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "header": "Kartītes konfigurācija",
+                        "save": "Saglabāt",
+                        "toggle_editor": "Pārslēgt redaktoru",
+                        "pick_card": "Izvēlieties kartīti, kuru vēlaties pievienot.",
+                        "add": "Pievienot kartīti",
+                        "edit": "Rediģēt",
+                        "delete": "Dzēst",
+                        "move": "Pārvietot"
+                    },
+                    "migrate": {
+                        "header": "Nesaderīga konfigurācija",
+                        "para_no_id": "Šim elementam nav ID. Lūdzu, pievienojiet ID šim elementam 'ui-lovelace.yaml' failā.",
+                        "para_migrate": "Home Assistant var automātiski pievienot ID visām kartītēm un skatiem, nospiežot pogu \"Pārvietot konfigurāciju\".",
+                        "migrate": "Pārvietot konfigurāciju"
+                    },
+                    "header": "Rediģēt lietotāja saskarni",
+                    "edit_view": {
+                        "header": "Skatīt konfigurāciju",
+                        "add": "Pievienot skatu",
+                        "edit": "Rediģēt skatu",
+                        "delete": "Dzēst skatu"
+                    },
+                    "save_config": {
+                        "header": "Pārņemt kontroli pār savu Lovelace lietotāja saskarni",
+                        "para": "Pēc noklusējuma Home Assistant uzturēs jūsu lietotāja saskarni, atjauninot to, kad būs pieejami jauni objekti vai Lovelace komponenti. Ja jūs uzņematies kontroli, mēs jums vairs neveiksim izmaiņas automātiski jūsu vietā.",
+                        "para_sure": "Vai tiešām vēlaties pārņemt kontroli pār lietotāja saskarni?",
+                        "cancel": "Atcelt",
+                        "save": "Pārņemt kontroli"
+                    },
+                    "menu": {
+                        "raw_editor": "Konfigurācijas teksta redaktors"
+                    },
+                    "raw_editor": {
+                        "header": "Konfigurācijas redaktors",
+                        "save": "Saglabāt",
+                        "unsaved_changes": "Nesaglabātās izmaiņas",
+                        "saved": "Saglabāts"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "Konfigurēt lietotāja saskarni",
+                    "unused_entities": "Neizmantotās vienības",
+                    "help": "Palīdzība",
+                    "refresh": "Atsvaidzināt"
+                }
             }
         },
         "sidebar": {
@@ -721,7 +830,8 @@
         },
         "common": {
             "loading": "Ielāde",
-            "cancel": "Atcelt"
+            "cancel": "Atcelt",
+            "save": "Saglabāt"
         },
         "duration": {
             "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}",
@@ -778,10 +888,13 @@
             },
             "alarm_control_panel": {
                 "code": "Kods",
-                "clear_code": "Dzēst",
+                "clear_code": "Notīrīt",
                 "disarm": "Atslēgt",
                 "arm_home": "Pieslēgt mājas",
-                "arm_away": "Pieslēgt prombūtni"
+                "arm_away": "Pieslēgt prombūtni",
+                "arm_night": "Pieslēgts uz nakti",
+                "armed_custom_bypass": "Pielāgots apvedceļš",
+                "arm_custom_bypass": "Pielāgots apvedceļš"
             },
             "automation": {
                 "last_triggered": "Pēdējais izsaukums",
@@ -803,7 +916,7 @@
                 "effect": "Efekts"
             },
             "media_player": {
-                "text_to_speak": "Teksts, ko teikt",
+                "text_to_speak": "Teksts, ko izrunāt",
                 "source": "Avots",
                 "sound_mode": "Skaņas režīms"
             },
@@ -876,8 +989,21 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Saglabāt",
-                "name": "Vārds",
+                "name": "Nosaukuma ignorēšana",
                 "entity_id": "Vienības ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Pēdējā Darbība"
+                },
+                "sun": {
+                    "elevation": "Augstums",
+                    "rising": "Aust",
+                    "setting": "Riet"
+                },
+                "updater": {
+                    "title": "Atjaunināt Instrukcijas"
+                }
             }
         },
         "auth_store": {
@@ -927,7 +1053,11 @@
         "updater": "Atjauninātājs",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Putekļsūcējs"
+        "vacuum": "Putekļsūcējs",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace"
     },
     "attribute": {
         "weather": {

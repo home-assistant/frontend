@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
@@ -11,7 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -28,6 +28,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
         .content {
           padding: 16px;
+          direction: ltr;
         }
 
         ha-entity-picker,
@@ -72,10 +73,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>States</div>
           </app-toolbar>
         </app-header>
@@ -110,9 +108,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
               spellcheck="false"
               value="{{_stateAttributes}}"
             ></paper-textarea>
-            <paper-button on-click="handleSetState" raised
-              >Set State</paper-button
-            >
+            <mwc-button on-click="handleSetState" raised>Set State</mwc-button>
           </div>
 
           <h1>Current entities</h1>
@@ -182,16 +178,6 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     return {
       hass: {
         type: Object,
-      },
-
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
       },
 
       _entityId: {

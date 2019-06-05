@@ -1,32 +1,37 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  css,
+  LitElement,
+  TemplateResult,
+  CSSResult,
+  customElement,
+  property,
+} from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-dialog/paper-dialog";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-button/paper-button";
+import "../../../../components/dialog/ha-paper-dialog";
+// tslint:disable-next-line:no-duplicate-imports
+import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+
+import { haStyleDialog } from "../../../../resources/styles";
+
 import "./hui-lovelace-editor";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { Lovelace } from "../../types";
 
-export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
-  public hass?: HomeAssistant;
-  private _lovelace?: Lovelace;
+@customElement("hui-dialog-edit-lovelace")
+export class HuiDialogEditLovelace extends LitElement {
+  @property() public hass?: HomeAssistant;
+
+  @property() private _lovelace?: Lovelace;
+
   private _config?: LovelaceConfig;
+
   private _saving: boolean;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _lovelace: {},
-    };
-  }
-
-  protected constructor() {
+  public constructor() {
     super();
     this._saving = false;
   }
@@ -43,14 +48,13 @@ export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
     this._dialog.open();
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
-      <paper-dialog with-backdrop>
+      <ha-paper-dialog with-backdrop>
         <h2>Edit Lovelace</h2>
         <paper-dialog-scrollable>
           <hui-lovelace-editor
@@ -60,10 +64,10 @@ export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
           ></hui-lovelace-editor
         ></paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button @click="${this._closeDialog}"
-            >${this.localize("ui.common.cancel")}</paper-button
+          <mwc-button @click="${this._closeDialog}"
+            >${this.hass!.localize("ui.common.cancel")}</mwc-button
           >
-          <paper-button
+          <mwc-button
             ?disabled="${!this._config || this._saving}"
             @click="${this._save}"
           >
@@ -71,10 +75,10 @@ export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${this.localize("ui.common.save")}</paper-button
+            ${this.hass!.localize("ui.common.save")}</mwc-button
           >
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
@@ -121,13 +125,26 @@ export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
     return JSON.stringify(this._config) !== JSON.stringify(lovelaceConfig);
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-dialog {
-          width: 650px;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-paper-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
         }
-        paper-button paper-spinner {
+        @media all and (min-width: 660px) {
+          ha-paper-dialog {
+            width: 650px;
+          }
+        }
+        ha-paper-dialog {
+          max-width: 650px;
+        }
+        mwc-button paper-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;
@@ -138,8 +155,8 @@ export class HuiDialogEditLovelace extends hassLocalizeLitMixin(LitElement) {
         paper-spinner[active] {
           display: block;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 }
 
@@ -148,5 +165,3 @@ declare global {
     "hui-dialog-edit-lovelace": HuiDialogEditLovelace;
   }
 }
-
-customElements.define("hui-dialog-edit-lovelace", HuiDialogEditLovelace);

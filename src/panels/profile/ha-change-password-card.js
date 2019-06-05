@@ -1,9 +1,9 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../components/ha-card";
 
 import LocalizeMixin from "../../mixins/localize-mixin";
 
@@ -27,16 +27,13 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
           position: absolute;
           top: -4px;
         }
-        paper-card {
-          display: block;
-        }
         .currentPassword {
           margin-top: -4px;
         }
       </style>
       <div>
-        <paper-card
-          heading="[[localize('ui.panel.profile.change_password.header')]]"
+        <ha-card
+          header="[[localize('ui.panel.profile.change_password.header')]]"
         >
           <div class="card-content">
             <template is="dom-if" if="[[_errorMsg]]">
@@ -78,12 +75,12 @@ class HaChangePasswordCard extends LocalizeMixin(PolymerElement) {
               <div><paper-spinner active></paper-spinner></div>
             </template>
             <template is="dom-if" if="[[!_loading]]">
-              <paper-button on-click="_changePassword"
-                >[[localize('ui.panel.profile.change_password.submit')]]</paper-button
+              <mwc-button on-click="_changePassword"
+                >[[localize('ui.panel.profile.change_password.submit')]]</mwc-button
               >
             </template>
           </div>
-        </paper-card>
+        </ha-card>
       </div>
     `;
   }

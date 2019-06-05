@@ -105,8 +105,11 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
             <template is="dom-if" if="[[_showValue(item.condition)]]">
               <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
             </template>
-            <div class="main">[[computeDateTime(item.datetime)]]</div>
+            <template is="dom-if" if="[[!_showValue(item.templow)]]">
+              <div class="main">[[computeDateTime(item.datetime)]]</div>
+            </template>
             <template is="dom-if" if="[[_showValue(item.templow)]]">
+              <div class="main">[[computeDate(item.datetime)]]</div>
               <div class="templow">
                 [[item.templow]] [[getUnit('temperature')]]
               </div>
@@ -170,28 +173,21 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
     };
   }
 
+  computeDate(data) {
+    const date = new Date(data);
+    return date.toLocaleDateString(this.hass.language, {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
   computeDateTime(data) {
     const date = new Date(data);
-    const provider = this.stateObj.attributes.attribution;
-    if (
-      provider === "Powered by Dark Sky" ||
-      provider === "Data provided by OpenWeatherMap"
-    ) {
-      if (new Date().getDay() === date.getDay()) {
-        return date.toLocaleTimeString(
-          this.hass.selectedLanguage || this.hass.language,
-          { hour: "numeric" }
-        );
-      }
-      return date.toLocaleDateString(
-        this.hass.selectedLanguage || this.hass.language,
-        { weekday: "long", hour: "numeric" }
-      );
-    }
-    return date.toLocaleDateString(
-      this.hass.selectedLanguage || this.hass.language,
-      { weekday: "long", month: "short", day: "numeric" }
-    );
+    return date.toLocaleDateString(this.hass.language, {
+      weekday: "long",
+      hour: "numeric",
+    });
   }
 
   getUnit(measure) {

@@ -1,4 +1,3 @@
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -6,6 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
 
 import computeStateName from "../../../common/entity/compute_state_name";
 
@@ -17,8 +17,7 @@ class ZwaveGroups extends PolymerElement {
           margin-top: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
@@ -37,7 +36,7 @@ class ZwaveGroups extends PolymerElement {
           padding-bottom: 12px;
         }
       </style>
-      <paper-card class="content" heading="Node group associations">
+      <ha-card class="content" header="Node group associations">
         <!-- TODO make api for getting groups and members -->
         <div class="device-picker">
           <paper-dropdown-menu label="Group" dynamic-align="" class="flex">
@@ -108,9 +107,19 @@ class ZwaveGroups extends PolymerElement {
                 Remove From Group
               </ha-call-service-button>
             </template>
+            <template is="dom-if" if="[[_isBroadcastNodeInGroup]]">
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="zwave"
+                service="change_association"
+                service-data="[[_removeBroadcastNodeServiceData]]"
+              >
+                Remove Broadcast
+              </ha-call-service-button>
+            </template>
           </div>
         </template>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -165,6 +174,16 @@ class ZwaveGroups extends PolymerElement {
         type: String,
         value: "",
       },
+
+      _removeBroadcastNodeServiceData: {
+        type: String,
+        value: "",
+      },
+
+      _isBroadcastNodeInGroup: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -201,6 +220,7 @@ class ZwaveGroups extends PolymerElement {
 
   _computeOtherGroupNodes(selectedGroup) {
     if (selectedGroup === -1) return -1;
+    this.setProperties({ _isBroadcastNodeInGroup: false });
     const associations = Object.values(
       this.groups[selectedGroup].value.association_instances
     );
@@ -212,6 +232,17 @@ class ZwaveGroups extends PolymerElement {
       const id = assoc[0];
       const instance = assoc[1];
       const node = this.nodes.find((n) => n.attributes.node_id === id);
+      if (id === 255) {
+        this.setProperties({
+          _isBroadcastNodeInGroup: true,
+          _removeBroadcastNodeServiceData: {
+            node_id: this.nodes[this.selectedNode].attributes.node_id,
+            association: "remove",
+            target_node_id: 255,
+            group: this.groups[selectedGroup].key,
+          },
+        });
+      }
       if (!node) {
         return `Unknown Node (${id}: (${instance} ? ${id}.${instance} : ${id}))`;
       }
@@ -288,6 +319,7 @@ class ZwaveGroups extends PolymerElement {
       _otherGroupNodes: Object.values(
         groupData[this._selectedGroup].value.associations
       ),
+      _isBroadcastNodeInGroup: false,
     });
     const oldGroup = this._selectedGroup;
     this.setProperties({ _selectedGroup: -1 });

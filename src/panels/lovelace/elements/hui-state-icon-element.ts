@@ -1,25 +1,30 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
+  PropertyValues,
+} from "lit-element";
 
 import "../../../components/entity/state-badge";
+import "../components/hui-warning-element";
 
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, StateIconElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
-export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceElement {
-  public hass?: HomeAssistant;
-  private _config?: LovelaceElementConfig;
+@customElement("hui-state-icon-element")
+export class HuiStateIconElement extends LitElement implements LovelaceElement {
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: StateIconElementConfig;
 
-  static get properties() {
-    return { hass: {}, _config: {} };
-  }
-
-  public setConfig(config: LovelaceElementConfig): void {
+  public setConfig(config: StateIconElementConfig): void {
     if (!config.entity) {
       throw Error("Invalid Configuration: 'entity' required");
     }
@@ -27,43 +32,54 @@ export class HuiStateIconElement extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render(): TemplateResult {
-    if (
-      !this._config ||
-      !this.hass ||
-      !this.hass.states[this._config.entity!]
-    ) {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected render(): TemplateResult | void {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
-    const state = this.hass!.states[this._config.entity!];
+    const stateObj = this.hass.states[this._config.entity!];
+
+    if (!stateObj) {
+      return html`
+        <hui-warning-element
+          label=${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}
+        ></hui-warning-element>
+      `;
+    }
+
     return html`
-      ${this.renderStyle()}
       <state-badge
-        .stateObj="${state}"
-        .title="${computeTooltip(this.hass!, this._config)}"
+        .stateObj="${stateObj}"
+        .title="${computeTooltip(this.hass, this._config)}"
         @ha-click="${this._handleClick}"
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
+        .overrideIcon=${this._config.icon}
       ></state-badge>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          cursor: pointer;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        cursor: pointer;
+      }
     `;
   }
 
-  private _handleClick() {
+  private _handleClick(): void {
     handleClick(this, this.hass!, this._config!, false);
   }
 
-  private _handleHold() {
+  private _handleHold(): void {
     handleClick(this, this.hass!, this._config!, true);
   }
 }
@@ -73,5 +89,3 @@ declare global {
     "hui-state-icon-element": HuiStateIconElement;
   }
 }
-
-customElements.define("hui-state-icon-element", HuiStateIconElement);

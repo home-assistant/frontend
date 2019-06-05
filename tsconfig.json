@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "h",
     "target": "es2017",
     "module": "esnext",
     "moduleResolution": "node",
@@ -11,6 +13,8 @@
     "noFallthroughCasesInSwitch": true,
     "strict": true,
     "noImplicitAny": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true
   }
 }

@@ -1,5 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -17,16 +22,11 @@ declare global {
   }
 }
 
+@customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
-  protected hass?: HomeAssistant;
-  private _params?: EditViewDialogParams;
+  @property() protected hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _params: {},
-    };
-  }
+  @property() private _params?: EditViewDialogParams;
 
   public async showDialog(params: EditViewDialogParams): Promise<void> {
     this._params = params;
@@ -34,7 +34,7 @@ export class HuiDialogEditView extends LitElement {
     (this.shadowRoot!.children[0] as any).showDialog();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }
@@ -54,5 +54,3 @@ declare global {
     "hui-dialog-edit-view": HuiDialogEditView;
   }
 }
-
-customElements.define("hui-dialog-edit-view", HuiDialogEditView);

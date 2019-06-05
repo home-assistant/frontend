@@ -1,7 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 
 /**
  * Color-picker custom element
@@ -140,6 +140,7 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
       hueSegments: {
         type: Number,
         value: 0,
+        observer: "segmentationChange",
       },
 
       // the amount segments for the hue
@@ -149,6 +150,7 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
       saturationSegments: {
         type: Number,
         value: 0,
+        observer: "segmentationChange",
       },
 
       // set to true to make the segments purely esthetical
@@ -589,6 +591,12 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     svgElement.tooltip.setAttribute("cy", TooltipOffsetY);
     this.tooltip = svgElement.tooltip;
     svgElement.appendChild(svgElement.tooltip);
+  }
+
+  segmentationChange() {
+    if (this.backgroundLayer) {
+      this.drawColorWheel();
+    }
   }
 }
 customElements.define("ha-color-picker", HaColorPicker);

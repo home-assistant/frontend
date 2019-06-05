@@ -1,34 +1,27 @@
-import { html, LitElement } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  customElement,
+  css,
+  CSSResult,
+} from "lit-element";
 
 import "../components/hui-image";
 
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
-import { LovelaceElement, LovelaceElementConfig } from "./types";
+import { LovelaceElement, ImageElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { TemplateResult } from "lit-html";
 
-interface Config extends LovelaceElementConfig {
-  image?: string;
-  state_image?: string;
-  camera_image?: string;
-  filter?: string;
-  state_filter?: string;
-  aspect_ratio?: string;
-}
+@customElement("hui-image-element")
+export class HuiImageElement extends LitElement implements LovelaceElement {
+  @property() public hass?: HomeAssistant;
+  @property() private _config?: ImageElementConfig;
 
-export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceElement {
-  public hass?: HomeAssistant;
-  private _config?: Config;
-
-  static get properties() {
-    return { hass: {}, _config: {} };
-  }
-
-  public setConfig(config: Config): void {
+  public setConfig(config: ImageElementConfig): void {
     if (!config) {
       throw Error("Error in element configuration");
     }
@@ -40,13 +33,12 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render(): TemplateResult {
-    if (!this._config) {
+  protected render(): TemplateResult | void {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-image
         .hass="${this.hass}"
         .entity="${this._config.entity}"
@@ -55,7 +47,7 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
         .cameraImage="${this._config.camera_image}"
         .filter="${this._config.filter}"
         .stateFilter="${this._config.state_filter}"
-        .title="${computeTooltip(this.hass!, this._config)}"
+        .title="${computeTooltip(this.hass, this._config)}"
         .aspectRatio="${this._config.aspect_ratio}"
         @ha-click="${this._handleTap}"
         @ha-hold="${this._handleHold}"
@@ -64,26 +56,24 @@ export class HuiImageElement extends hassLocalizeLitMixin(LitElement)
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host(.clickable) {
-          cursor: pointer;
-          overflow: hidden;
-          -webkit-touch-callout: none !important;
-        }
-        hui-image {
-          -webkit-user-select: none !important;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      :host(.clickable) {
+        cursor: pointer;
+        overflow: hidden;
+        -webkit-touch-callout: none !important;
+      }
+      hui-image {
+        -webkit-user-select: none !important;
+      }
     `;
   }
 
-  private _handleTap() {
+  private _handleTap(): void {
     handleClick(this, this.hass!, this._config!, false);
   }
 
-  private _handleHold() {
+  private _handleHold(): void {
     handleClick(this, this.hass!, this._config!, true);
   }
 }
@@ -93,5 +83,3 @@ declare global {
     "hui-image-element": HuiImageElement;
   }
 }
-
-customElements.define("hui-image-element", HuiImageElement);

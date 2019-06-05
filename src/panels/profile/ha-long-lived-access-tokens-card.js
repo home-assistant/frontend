@@ -1,10 +1,11 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import formatDateTime from "../../common/datetime/format_date_time";
+import "../../components/ha-card";
 
 import "../../resources/ha-style";
 
@@ -18,9 +19,6 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="ha-style">
-        paper-card {
-          display: block;
-        }
         .card-content {
           margin: -1em 0;
         }
@@ -31,8 +29,8 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--primary-text-color);
         }
       </style>
-      <paper-card
-        heading="[[localize('ui.panel.profile.long_lived_access_tokens.header')]]"
+      <ha-card
+        header="[[localize('ui.panel.profile.long_lived_access_tokens.header')]]"
       >
         <div class="card-content">
           <p>
@@ -61,11 +59,11 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
           </ha-settings-row>
         </template>
         <div class="card-actions">
-          <paper-button on-click="_handleCreate">
+          <mwc-button on-click="_handleCreate">
             [[localize('ui.panel.profile.long_lived_access_tokens.create')]]
-          </paper-button>
+          </mwc-button>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 

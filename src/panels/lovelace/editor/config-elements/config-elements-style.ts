@@ -1,4 +1,4 @@
-import { html } from "@polymer/lit-element";
+import { html } from "lit-element";
 
 export const configElementStyle = html`
   <style>
@@ -11,6 +11,9 @@ export const configElementStyle = html`
     .side-by-side > * {
       flex: 1;
       padding-right: 4px;
+    }
+    .suffix {
+      margin: 0 8px;
     }
   </style>
 `;

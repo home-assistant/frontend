@@ -3,8 +3,8 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntityBase } from "home-assistant-js-websocket";
@@ -12,11 +12,11 @@ import "../../../components/entity/ha-state-icon";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
-import { EntityFilter } from "./types";
 import computeStateName from "../../../common/entity/compute_state_name";
 import {
   FilterFunc,
   generateFilter,
+  EntityFilter,
 } from "../../../common/entity/entity_filter";
 
 export class CloudExposedEntities extends LitElement {
@@ -34,7 +34,7 @@ export class CloudExposedEntities extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._filterFunc) {
       return html``;
     }
@@ -51,21 +51,19 @@ export class CloudExposedEntities extends LitElement {
 
     return html`
       ${this.renderStyle()}
-      ${
-        repeat(
-          states!,
-          (stateInfo) => stateInfo[1].entity_id,
-          (stateInfo) => html`
-            <span>
-              <ha-state-icon
-                .stateObj="${stateInfo[1]}"
-                @click="${this._handleMoreInfo}"
-              ></ha-state-icon>
-              <paper-tooltip position="bottom">${stateInfo[0]}</paper-tooltip>
-            </span>
-          `
-        )
-      }
+      ${repeat(
+        states!,
+        (stateInfo) => stateInfo[1].entity_id,
+        (stateInfo) => html`
+          <span>
+            <ha-state-icon
+              .stateObj="${stateInfo[1]}"
+              @click="${this._handleMoreInfo}"
+            ></ha-state-icon>
+            <paper-tooltip position="bottom">${stateInfo[0]}</paper-tooltip>
+          </span>
+        `
+      )}
     `;
   }
 

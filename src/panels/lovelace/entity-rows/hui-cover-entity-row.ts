@@ -1,25 +1,29 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  css,
+  CSSResult,
+  customElement,
+  PropertyValues,
+} from "lit-element";
 
 import "../components/hui-generic-entity-row";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import { isTiltOnly } from "../../../util/cover-model";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
+@customElement("hui-cover-entity-row")
 class HuiCoverEntityRow extends LitElement implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -28,7 +32,11 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -37,42 +45,41 @@ class HuiCoverEntityRow extends LitElement implements EntityRow {
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        ${
-          isTiltOnly(stateObj)
-            ? html`
-                <ha-cover-tilt-controls
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-cover-tilt-controls>
-              `
-            : html`
-                <ha-cover-controls
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-cover-controls>
-              `
-        }
+        ${isTiltOnly(stateObj)
+          ? html`
+              <ha-cover-tilt-controls
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-cover-tilt-controls>
+            `
+          : html`
+              <ha-cover-controls
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-cover-controls>
+            `}
       </hui-generic-entity-row>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-cover-controls,
-        ha-cover-tilt-controls {
-          margin-right: -0.57em;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-cover-controls,
+      ha-cover-tilt-controls {
+        margin-right: -0.57em;
+      }
     `;
   }
 }
@@ -82,5 +89,3 @@ declare global {
     "hui-cover-entity-row": HuiCoverEntityRow;
   }
 }
-
-customElements.define("hui-cover-entity-row", HuiCoverEntityRow);

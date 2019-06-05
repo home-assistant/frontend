@@ -52,7 +52,10 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
             --more-info-header-color: var(--text-primary-color);
           }
           :host {
-            @apply --ha-dialog-fullscreen;
+            width: 100% !important;
+            border-radius: 0px;
+            position: fixed !important;
+            margin: 0;
           }
           :host::before {
             content: "";
@@ -86,7 +89,7 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
           large="{{large}}"
         ></more-info-controls>
       </template>
-      <template is="dom-if" if="[[_equals(_page, &quot;settings&quot;)]]">
+      <template is="dom-if" if='[[_equals(_page, "settings")]]'>
         <more-info-settings
           class="no-padding"
           hass="[[hass]]"
@@ -167,20 +170,22 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
     );
 
     if (
-      !isComponentLoaded(this.hass, "config.entity_registry") ||
+      !isComponentLoaded(this.hass, "config") ||
       (oldVal && oldVal.entity_id === newVal.entity_id)
     ) {
       return;
     }
 
-    try {
-      const info = await this.hass.callWS({
-        type: "config/entity_registry/get",
-        entity_id: newVal.entity_id,
-      });
-      this._registryInfo = info;
-    } catch (err) {
-      this._registryInfo = null;
+    if (this.hass.user.is_admin) {
+      try {
+        const info = await this.hass.callWS({
+          type: "config/entity_registry/get",
+          entity_id: newVal.entity_id,
+        });
+        this._registryInfo = info;
+      } catch (err) {
+        this._registryInfo = null;
+      }
     }
   }
 

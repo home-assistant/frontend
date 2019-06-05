@@ -10,9 +10,10 @@ function patch(version) {
 
 function today() {
   const now = new Date();
-  return `${now.getFullYear()}${now.getMonth() + 1}${String(
-    now.getDate()
-  ).padStart(2, "0")}.0`;
+  return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}${String(now.getDate()).padStart(2, "0")}.0`;
 }
 
 const methods = {
@@ -51,4 +52,4 @@ async function main(args) {
   console.log(stdout);
 }
 
-main(process.argv.slice(2));
+main(process.argv.slice(2)).catch(console.error);

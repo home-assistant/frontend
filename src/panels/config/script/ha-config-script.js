@@ -19,21 +19,19 @@ class HaConfigScript extends PolymerElement {
       </style>
       <app-route
         route="[[route]]"
-        pattern="/script/edit/:script"
+        pattern="/edit/:script"
         data="{{_routeData}}"
         active="{{_edittingScript}}"
       ></app-route>
       <app-route
         route="[[route]]"
-        pattern="/script/new"
+        pattern="/new"
         active="{{_creatingNew}}"
       ></app-route>
 
       <template is="dom-if" if="[[!showEditor]]">
         <ha-script-picker
           hass="[[hass]]"
-          narrow="[[narrow]]"
-          show-menu="[[showMenu]]"
           scripts="[[scripts]]"
           is-wide="[[isWide]]"
         ></ha-script-picker>
@@ -53,8 +51,6 @@ class HaConfigScript extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       route: Object,
       isWide: Boolean,
       _routeData: Object,

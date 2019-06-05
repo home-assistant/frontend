@@ -1,40 +1,41 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-shopping-list-card";
+import { ShoppingListCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
   title: "string?",
 });
 
-export class HuiShoppingListEditor extends hassLocalizeLitMixin(LitElement)
+@customElement("hui-shopping-list-card-editor")
+export class HuiShoppingListEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  public setConfig(config: Config): void {
+  @property() private _config?: ShoppingListCardConfig;
+
+  public setConfig(config: ShoppingListCardConfig): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "shopping-list", ...config };
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
+    this._config = config;
   }
 
   get _title(): string {
     return this._config!.title || "";
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }
@@ -61,10 +62,14 @@ export class HuiShoppingListEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue!]: target.value,
-      };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [target.configValue!]: target.value,
+        };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -75,5 +80,3 @@ declare global {
     "hui-shopping-list-card-editor": HuiShoppingListEditor;
   }
 }
-
-customElements.define("hui-shopping-list-card-editor", HuiShoppingListEditor);

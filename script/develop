@@ -6,14 +6,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-BUILD_DIR=build
-OUTPUT_DIR=hass_frontend
-OUTPUT_DIR_ES5=hass_frontend_es5
-
-rm -rf $OUTPUT_DIR $OUTPUT_DIR_ES5 $BUILD_DIR
-mkdir $OUTPUT_DIR $OUTPUT_DIR_ES5
-# Needed in case frontend repo installed with pip3 install -e
-cp -r public/__init__.py $OUTPUT_DIR_ES5/
-
-./node_modules/.bin/gulp build-translations gen-icons
-./node_modules/.bin/webpack --watch --progress
+./node_modules/.bin/gulp develop-app

@@ -1,5 +1,4 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -10,13 +9,15 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-climate-control";
 import "../../../components/ha-paper-slider";
+import "../../../components/ha-paper-dropdown-menu";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
 import featureClassNames from "../../../common/entity/feature_class_names";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 /*
  * @appliesMixin EventsMixin
@@ -63,7 +64,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin: 22px 16px 0 0;
         }
 
-        paper-dropdown-menu {
+        ha-paper-dropdown-menu {
           width: 100%;
         }
 
@@ -84,6 +85,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
           width: 90px;
           font-size: 200%;
           margin: auto;
+          direction: ltr;
         }
 
         ha-climate-control.range-control-left,
@@ -181,6 +183,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 value="[[stateObj.attributes.humidity]]"
                 on-change="targetHumiditySliderChanged"
                 ignore-bar-touch=""
+                dir="[[rtl]]"
               >
               </ha-paper-slider>
             </div>
@@ -190,67 +193,78 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
           <div class="container-operation_list">
             <div class="controls">
-              <paper-dropdown-menu
+              <ha-paper-dropdown-menu
                 label-float=""
                 dynamic-align=""
                 label="[[localize('ui.card.climate.operation')]]"
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  selected="{{operationIndex}}"
+                  selected="[[stateObj.attributes.operation_mode]]"
+                  attr-for-selected="item-name"
+                  on-selected-changed="handleOperationmodeChanged"
                 >
                   <template
                     is="dom-repeat"
                     items="[[stateObj.attributes.operation_list]]"
-                    on-dom-change="handleOperationListUpdate"
                   >
-                    <paper-item
+                    <paper-item item-name$="[[item]]"
                       >[[_localizeOperationMode(localize, item)]]</paper-item
                     >
                   </template>
                 </paper-listbox>
-              </paper-dropdown-menu>
+              </ha-paper-dropdown-menu>
             </div>
           </div>
         </template>
 
         <template is="dom-if" if="[[supportsFanMode(stateObj)]]">
           <div class="container-fan_list">
-            <paper-dropdown-menu
+            <ha-paper-dropdown-menu
               label-float=""
               dynamic-align=""
               label="[[localize('ui.card.climate.fan_mode')]]"
             >
-              <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
+              <paper-listbox
+                slot="dropdown-content"
+                selected="[[stateObj.attributes.fan_mode]]"
+                attr-for-selected="item-name"
+                on-selected-changed="handleFanmodeChanged"
+              >
                 <template
                   is="dom-repeat"
                   items="[[stateObj.attributes.fan_list]]"
-                  on-dom-change="handleFanListUpdate"
                 >
-                  <paper-item>[[item]]</paper-item>
+                  <paper-item item-name$="[[item]]"
+                    >[[_localizeFanMode(localize, item)]]
+                  </paper-item>
                 </template>
               </paper-listbox>
-            </paper-dropdown-menu>
+            </ha-paper-dropdown-menu>
           </div>
         </template>
 
         <template is="dom-if" if="[[supportsSwingMode(stateObj)]]">
           <div class="container-swing_list">
-            <paper-dropdown-menu
+            <ha-paper-dropdown-menu
               label-float=""
               dynamic-align=""
               label="[[localize('ui.card.climate.swing_mode')]]"
             >
-              <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
+              <paper-listbox
+                slot="dropdown-content"
+                selected="[[stateObj.attributes.swing_mode]]"
+                attr-for-selected="item-name"
+                on-selected-changed="handleSwingmodeChanged"
+              >
                 <template
                   is="dom-repeat"
                   items="[[stateObj.attributes.swing_list]]"
-                  on-dom-change="handleSwingListUpdate"
                 >
-                  <paper-item>[[item]]</paper-item>
+                  <paper-item item-name$="[[item]]">[[item]]</paper-item>
                 </template>
               </paper-listbox>
-            </paper-dropdown-menu>
+            </ha-paper-dropdown-menu>
           </div>
         </template>
 
@@ -294,26 +308,15 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      operationIndex: {
-        type: Number,
-        value: -1,
-        observer: "handleOperationmodeChanged",
-      },
-
-      fanIndex: {
-        type: Number,
-        value: -1,
-        observer: "handleFanmodeChanged",
-      },
-
-      swingIndex: {
-        type: Number,
-        value: -1,
-        observer: "handleSwingmodeChanged",
-      },
       awayToggleChecked: Boolean,
       auxToggleChecked: Boolean,
       onToggleChecked: Boolean,
+
+      rtl: {
+        type: String,
+        value: "ltr",
+        computed: "_computeRTLDirection(hass)",
+      },
     };
   }
 
@@ -333,36 +336,6 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         () => {
           this.fire("iron-resize");
         }
-      );
-    }
-  }
-
-  handleOperationListUpdate() {
-    // force polymer to recognize selected item change (to update actual label)
-    this.operationIndex = -1;
-    if (this.stateObj.attributes.operation_list) {
-      this.operationIndex = this.stateObj.attributes.operation_list.indexOf(
-        this.stateObj.attributes.operation_mode
-      );
-    }
-  }
-
-  handleSwingListUpdate() {
-    // force polymer to recognize selected item change (to update actual label)
-    this.swingIndex = -1;
-    if (this.stateObj.attributes.swing_list) {
-      this.swingIndex = this.stateObj.attributes.swing_list.indexOf(
-        this.stateObj.attributes.swing_mode
-      );
-    }
-  }
-
-  handleFanListUpdate() {
-    // force polymer to recognize selected item change (to update actual label)
-    this.fanIndex = -1;
-    if (this.stateObj.attributes.fan_list) {
-      this.fanIndex = this.stateObj.attributes.fan_list.indexOf(
-        this.stateObj.attributes.fan_mode
       );
     }
   }
@@ -508,33 +481,27 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.callServiceHelper(newVal ? "turn_on" : "turn_off", {});
   }
 
-  handleFanmodeChanged(fanIndex) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (fanIndex === "" || fanIndex === -1) return;
-    const fanInput = this.stateObj.attributes.fan_list[fanIndex];
-    if (fanInput === this.stateObj.attributes.fan_mode) return;
-    this.callServiceHelper("set_fan_mode", { fan_mode: fanInput });
+  handleFanmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.fan_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
+    this.callServiceHelper("set_fan_mode", { fan_mode: newVal });
   }
 
-  handleOperationmodeChanged(operationIndex) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (operationIndex === "" || operationIndex === -1) return;
-    const operationInput = this.stateObj.attributes.operation_list[
-      operationIndex
-    ];
-    if (operationInput === this.stateObj.attributes.operation_mode) return;
-
+  handleOperationmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.operation_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
     this.callServiceHelper("set_operation_mode", {
-      operation_mode: operationInput,
+      operation_mode: newVal,
     });
   }
 
-  handleSwingmodeChanged(swingIndex) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (swingIndex === "" || swingIndex === -1) return;
-    const swingInput = this.stateObj.attributes.swing_list[swingIndex];
-    if (swingInput === this.stateObj.attributes.swing_mode) return;
-    this.callServiceHelper("set_swing_mode", { swing_mode: swingInput });
+  handleSwingmodeChanged(ev) {
+    const oldVal = this.stateObj.attributes.swing_mode;
+    const newVal = ev.detail.value;
+    if (!newVal || oldVal === newVal) return;
+    this.callServiceHelper("set_swing_mode", { swing_mode: newVal });
   }
 
   callServiceHelper(service, data) {
@@ -552,6 +519,14 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _localizeOperationMode(localize, mode) {
     return localize(`state.climate.${mode}`) || mode;
+  }
+
+  _localizeFanMode(localize, mode) {
+    return localize(`state_attributes.climate.fan_mode.${mode}`) || mode;
+  }
+
+  _computeRTLDirection(hass) {
+    return computeRTLDirection(hass);
   }
 }
 

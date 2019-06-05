@@ -1,33 +1,30 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import "@polymer/paper-button/paper-button";
+import { html, LitElement, TemplateResult } from "lit-element";
+import "@material/mwc-button";
 
 import "../../../src/components/ha-card";
 import { longPress } from "../../../src/panels/lovelace/common/directives/long-press-directive";
 
 export class DemoUtilLongPress extends LitElement {
-  public render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
       ${this.renderStyle()}
-      ${
-        [1, 2, 3].map(
-          () => html`
-            <ha-card>
-              <paper-button
-                @ha-click="${this._handleTap}"
-                @ha-hold="${this._handleHold}"
-                .longPress="${longPress()}"
-              >
-                (long) press me!
-              </paper-button>
+      ${[1, 2, 3].map(
+        () => html`
+          <ha-card>
+            <mwc-button
+              @ha-click="${this._handleTap}"
+              @ha-hold="${this._handleHold}"
+              .longPress="${longPress()}"
+            >
+              (long) press me!
+            </mwc-button>
 
-              <textarea></textarea>
+            <textarea></textarea>
 
-              <div>(try pressing and scrolling too!)</div>
-            </ha-card>
-          `
-        )
-      }
+            <div>(try pressing and scrolling too!)</div>
+          </ha-card>
+        `
+      )}
     `;
   }
 
@@ -61,11 +58,6 @@ export class DemoUtilLongPress extends LitElement {
         }
         ha-card:last-of-type {
           margin-bottom: 16px;
-        }
-
-        paper-button {
-          font-weight: bold;
-          color: var(--primary-color);
         }
 
         textarea {

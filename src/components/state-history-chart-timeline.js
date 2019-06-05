@@ -7,6 +7,7 @@ import LocalizeMixin from "../mixins/localize-mixin";
 import "./entity/ha-chart-base";
 
 import formatDateTime from "../common/datetime/format_date_time";
+import { computeRTL } from "../common/util/compute_rtl";
 
 class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -20,10 +21,15 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
         :host([rendered]) {
           opacity: 1;
         }
+
+        ha-chart-base {
+          direction: ltr;
+        }
       </style>
       <ha-chart-base
         data="[[chartData]]"
         rendered="{{rendered}}"
+        rtl="{{rtl}}"
       ></ha-chart-base>
     `;
   }
@@ -45,6 +51,10 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
+      },
+      rtl: {
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -185,6 +195,7 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
               afterSetDimensions: (yaxe) => {
                 yaxe.maxWidth = yaxe.chart.width * 0.18;
               },
+              position: this._computeRTL ? "right" : "left",
             },
           ],
         },
@@ -199,6 +210,10 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
       },
     };
     this.chartData = chartOptions;
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 customElements.define(

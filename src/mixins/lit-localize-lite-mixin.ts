@@ -3,11 +3,10 @@ import {
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { HomeAssistant } from "../types";
-import { getActiveTranslation } from "../util/hass-translation";
-import { LocalizeFunc, LocalizeMixin } from "./localize-base-mixin";
+} from "lit-element";
+import { getLocalLanguage } from "../util/hass-translation";
 import { localizeLiteBaseMixin } from "./localize-lite-base-mixin";
+import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 
 const empty = () => "";
 
@@ -15,19 +14,16 @@ interface LitLocalizeLiteMixin {
   language: string;
   resources: {};
   translationFragment: string;
+  localize: LocalizeFunc;
 }
 
 export const litLocalizeLiteMixin = <T extends LitElement>(
   superClass: Constructor<T>
-): Constructor<T & LocalizeMixin & LitLocalizeLiteMixin> =>
+): Constructor<T & LitLocalizeLiteMixin> =>
   // @ts-ignore
   class extends localizeLiteBaseMixin(superClass) {
-    protected hass?: HomeAssistant;
-    protected localize!: LocalizeFunc;
-
     static get properties(): PropertyDeclarations {
       return {
-        hass: {},
         localize: {},
         language: {},
         resources: {},
@@ -39,13 +35,18 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
       super();
       // This will prevent undefined errors if called before connected to DOM.
       this.localize = empty;
-      this.language = getActiveTranslation();
+      // Use browser language setup before login.
+      this.language = getLocalLanguage();
     }
 
     public connectedCallback(): void {
       super.connectedCallback();
       this._initializeLocalizeLite();
-      this.localize = this.__computeLocalize(this.language, this.resources);
+      this.localize = computeLocalize(
+        this.constructor.prototype,
+        this.language,
+        this.resources
+      );
     }
 
     public updated(changedProperties: PropertyValues) {
@@ -54,7 +55,11 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
         changedProperties.has("language") ||
         changedProperties.has("resources")
       ) {
-        this.localize = this.__computeLocalize(this.language, this.resources);
+        this.localize = computeLocalize(
+          this.constructor.prototype,
+          this.language,
+          this.resources
+        );
       }
     }
   };

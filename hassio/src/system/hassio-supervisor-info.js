@@ -1,15 +1,15 @@
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/components/buttons/ha-call-api-button";
-import EventsMixin from "../../../src/mixins/events-mixin";
+import { EventsMixin } from "../../../src/mixins/events-mixin";
 
 class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-      <style include="iron-flex ha-style">
+      <style>
         paper-card {
           display: inline-block;
           width: 400px;
@@ -50,10 +50,7 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
                 <td>Latest version</td>
                 <td>[[data.last_version]]</td>
               </tr>
-              <template
-                is="dom-if"
-                if="[[!_equals(data.channel, &quot;stable&quot;)]]"
-              >
+              <template is="dom-if" if='[[!_equals(data.channel, "stable")]]'>
                 <tr>
                   <td>Channel</td>
                   <td>[[data.channel]]</td>
@@ -74,10 +71,7 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
               >Update</ha-call-api-button
             >
           </template>
-          <template
-            is="dom-if"
-            if="[[_equals(data.channel, &quot;beta&quot;)]]"
-          >
+          <template is="dom-if" if='[[_equals(data.channel, "beta")]]'>
             <ha-call-api-button
               hass="[[hass]]"
               path="hassio/supervisor/options"
@@ -85,15 +79,12 @@ class HassioSupervisorInfo extends EventsMixin(PolymerElement) {
               >Leave beta channel</ha-call-api-button
             >
           </template>
-          <template
-            is="dom-if"
-            if="[[_equals(data.channel, &quot;stable&quot;)]]"
-          >
-            <paper-button
+          <template is="dom-if" if='[[_equals(data.channel, "stable")]]'>
+            <mwc-button
               on-click="_joinBeta"
               class="warning"
               title="Get beta updates for Home Assistant (RCs), supervisor and host"
-              >Join beta channel</paper-button
+              >Join beta channel</mwc-button
             >
           </template>
         </div>

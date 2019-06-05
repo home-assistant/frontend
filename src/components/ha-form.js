@@ -8,7 +8,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./ha-paper-slider";
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -51,12 +51,12 @@ class HaForm extends EventsMixin(PolymerElement) {
 
         <template
           is="dom-if"
-          if="[[_equals(schema.type, &quot;string&quot;)]]"
+          if='[[_equals(schema.type, "string")]]'
           restamp=""
         >
           <template
             is="dom-if"
-            if="[[_includes(schema.name, &quot;password&quot;)]]"
+            if='[[_includes(schema.name, "password")]]'
             restamp=""
           >
             <paper-input
@@ -80,7 +80,7 @@ class HaForm extends EventsMixin(PolymerElement) {
           </template>
           <template
             is="dom-if"
-            if="[[!_includes(schema.name, &quot;password&quot;)]]"
+            if='[[!_includes(schema.name, "password")]]'
             restamp=""
           >
             <paper-input
@@ -95,7 +95,7 @@ class HaForm extends EventsMixin(PolymerElement) {
 
         <template
           is="dom-if"
-          if="[[_equals(schema.type, &quot;integer&quot;)]]"
+          if='[[_equals(schema.type, "integer")]]'
           restamp=""
         >
           <template is="dom-if" if="[[_isRange(schema)]]" restamp="">
@@ -121,11 +121,7 @@ class HaForm extends EventsMixin(PolymerElement) {
           </template>
         </template>
 
-        <template
-          is="dom-if"
-          if="[[_equals(schema.type, &quot;float&quot;)]]"
-          restamp=""
-        >
+        <template is="dom-if" if='[[_equals(schema.type, "float")]]' restamp="">
           <!-- TODO -->
           <paper-input
             label="[[computeLabel(schema)]]"
@@ -138,7 +134,7 @@ class HaForm extends EventsMixin(PolymerElement) {
 
         <template
           is="dom-if"
-          if="[[_equals(schema.type, &quot;boolean&quot;)]]"
+          if='[[_equals(schema.type, "boolean")]]'
           restamp=""
         >
           <div>
@@ -150,7 +146,7 @@ class HaForm extends EventsMixin(PolymerElement) {
 
         <template
           is="dom-if"
-          if="[[_equals(schema.type, &quot;select&quot;)]]"
+          if='[[_equals(schema.type, "select")]]'
           restamp=""
         >
           <paper-dropdown-menu label="[[computeLabel(schema)]]">
@@ -194,6 +190,18 @@ class HaForm extends EventsMixin(PolymerElement) {
         value: () => (error, schema) => error, // eslint-disable-line no-unused-vars
       },
     };
+  }
+
+  focus() {
+    const input = this.shadowRoot.querySelector(
+      "ha-form, paper-input, ha-paper-slider, paper-checkbox, paper-dropdown-menu"
+    );
+
+    if (!input) {
+      return;
+    }
+
+    input.focus();
   }
 
   _isArray(val) {

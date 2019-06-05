@@ -6,19 +6,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-BUILD_DIR=build
-BUILD_TRANSLATIONS_DIR=build-translations
-OUTPUT_DIR=hass_frontend
-OUTPUT_DIR_ES5=hass_frontend_es5
-
-rm -rf $OUTPUT_DIR $OUTPUT_DIR_ES5 $BUILD_DIR $BUILD_TRANSLATIONS_DIR
-
-# Build frontend
-./node_modules/.bin/gulp build-translations gen-icons
-NODE_ENV=production ./node_modules/.bin/webpack
-
-# Generate the __init__ file
-echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR/__init__.py
-echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR/__init__.py
-echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR_ES5/__init__.py
-echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR_ES5/__init__.py
+./node_modules/.bin/gulp build-app

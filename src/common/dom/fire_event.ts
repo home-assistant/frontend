@@ -55,7 +55,7 @@ export interface HASSDomEvent<T> extends Event {
  * @return {Event} The new event that was fired.
  */
 export const fireEvent = <HassEvent extends ValidHassDomEvent>(
-  node: HTMLElement,
+  node: HTMLElement | Window,
   type: HassEvent,
   detail?: HASSDomEvents[HassEvent],
   options?: {

@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
-import "@polymer/paper-card/paper-card";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
+import "../../../../components/ha-card";
 
 import TriggerRow from "./trigger_row";
 import StateTrigger from "./state";
@@ -45,13 +45,13 @@ export default class Trigger extends Component {
             localize={localize}
           />
         ))}
-        <paper-card>
+        <ha-card>
           <div class="card-actions add-card">
-            <paper-button onTap={this.addTrigger}>
+            <mwc-button onTap={this.addTrigger}>
               {localize("ui.panel.config.automation.editor.triggers.add")}
-            </paper-button>
+            </mwc-button>
           </div>
-        </paper-card>
+        </ha-card>
       </div>
     );
   }

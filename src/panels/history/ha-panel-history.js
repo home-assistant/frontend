@@ -18,6 +18,7 @@ import "../../resources/ha-style";
 
 import formatDate from "../../common/datetime/format_date";
 import LocalizeMixin from "../../mixins/localize-mixin";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -37,6 +38,15 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
 
         paper-dropdown-menu {
           max-width: 100px;
+          margin-top: 13px;
+          margin-right: 16px;
+          --paper-input-container-label-floating: {
+            padding-bottom: 10px;
+          }
+        }
+
+        :host([rtl]) paper-dropdown-menu {
+          text-align: right;
         }
 
         paper-item {
@@ -55,10 +65,7 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>[[localize('panel.history')]]</div>
           </app-toolbar>
         </app-header>
@@ -113,15 +120,6 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
         type: Object,
       },
 
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
       stateHistory: {
         type: Object,
         value: null,
@@ -157,6 +155,12 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
       _filterType: {
         type: String,
         value: "date",
+      },
+
+      rtl: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: "_computeRTL(hass)",
       },
     };
   }
@@ -197,6 +201,10 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
       default:
         return 1;
     }
+  }
+
+  _computeRTL(hass) {
+    return computeRTL(hass);
   }
 }
 

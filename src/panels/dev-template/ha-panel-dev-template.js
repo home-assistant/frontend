@@ -24,6 +24,7 @@ class HaPanelDevTemplate extends PolymerElement {
 
         .content {
           padding: 16px;
+          direction: ltr;
         }
 
         .edit-pane {
@@ -69,10 +70,7 @@ class HaPanelDevTemplate extends PolymerElement {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>Templates</div>
           </app-toolbar>
         </app-header>
@@ -122,16 +120,6 @@ class HaPanelDevTemplate extends PolymerElement {
     return {
       hass: {
         type: Object,
-      },
-
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
       },
 
       error: {
@@ -209,7 +197,9 @@ For loop example:
         this.rendering = false;
       }.bind(this),
       function(error) {
-        this.processed = error.body.message;
+        this.processed =
+          (error && error.body && error.body.message) ||
+          "Unknown error rendering template";
         this.error = true;
         this.rendering = false;
       }.bind(this)

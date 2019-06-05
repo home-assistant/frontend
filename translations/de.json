@@ -265,12 +265,23 @@
             "on": "An",
             "paused": "Pausiert",
             "returning": "Rückkehr zur Dockingstation"
+        },
+        "timer": {
+            "active": "aktiv",
+            "idle": "Leerlauf",
+            "paused": "pausiert"
+        },
+        "person": {
+            "home": "Zu Hause",
+            "not_home": "Abwesend"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Unbek.",
-            "unavailable": "N.v."
+            "unavailable": "N.v.",
+            "error": "Fehler",
+            "entity_not_found": "Entität  nicht gefunden!"
         },
         "alarm_control_panel": {
             "armed": "Aktiv",
@@ -287,6 +298,10 @@
         "device_tracker": {
             "home": "Z. Hause",
             "not_home": "Abwes."
+        },
+        "person": {
+            "home": "Zu Hause",
+            "not_home": "Abwesend"
         }
     },
     "ui": {
@@ -301,7 +316,8 @@
                 "period": "Zeitraum"
             },
             "logbook": {
-                "showing_entries": "Zeige Einträge für"
+                "showing_entries": "Zeige Einträge für",
+                "period": "Zeitraum"
             },
             "mailbox": {
                 "empty": "Du hast keine Nachrichten",
@@ -314,7 +330,7 @@
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
-                    "description": "Überprüfe deine Konfigurationsdatei und steuer den Server",
+                    "description": "Überprüfe deine Konfigurationsdatei und steuere den Server",
                     "section": {
                         "core": {
                             "header": "Einstellungen und Serversteuerung",
@@ -339,23 +355,43 @@
                                 "introduction": "Verwalte den Home Assistant Server",
                                 "restart": "Neu starten",
                                 "stop": "Stoppen"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
+                                "location_name": "Name deiner Home Assistant Installation",
+                                "latitude": "Breitengrad",
+                                "longitude": "Längengrad",
+                                "elevation": "Höhe",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Zeitzone",
+                                "unit_system": "Einheitensystem",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrisch",
+                                "imperial_example": "Fahrenheit, Pfund",
+                                "metric_example": "Celsius, Kilogramm",
+                                "save_button": "Speichern"
                             }
                         }
                     }
                 },
                 "customize": {
                     "caption": "Anpassung",
-                    "description": "Elemente anpassen"
+                    "description": "Elemente anpassen",
+                    "picker": {
+                        "header": "Anpassung",
+                        "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte \/ bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
+                    }
                 },
                 "automation": {
                     "caption": "Automatisierung",
                     "description": "Automatisierungen erstellen und bearbeiten",
                     "picker": {
                         "header": "Automatisierungseditor",
-                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte lies [die Anleitungen](https:\/\/home-assistant.io\/docs\/automation\/editor\/), um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
+                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte folge dem nachfolgenden Link, um die Anleitung zu lesen, um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
-                        "add_automation": "Automatisierung hinzufügen"
+                        "add_automation": "Automatisierung hinzufügen",
+                        "learn_more": "Erfahre mehr über Automatisierungen"
                     },
                     "editor": {
                         "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
@@ -365,7 +401,7 @@
                         "alias": "Name",
                         "triggers": {
                             "header": "Auslöser",
-                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist mögliche, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.",
                             "add": "Auslöser hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -423,12 +459,31 @@
                                     "event": "Ereignis:",
                                     "enter": "Betreten",
                                     "leave": "Verlassen"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Zeitraster",
+                                    "hours": "Stunden",
+                                    "minutes": "Minuten",
+                                    "seconds": "Sekunden"
+                                },
+                                "geo_location": {
+                                    "label": "Geolokalisierung",
+                                    "source": "Quelle",
+                                    "zone": "Zone",
+                                    "event": "Ereignis:",
+                                    "enter": "Betreten",
+                                    "leave": "Verlassen"
                                 }
-                            }
+                            },
+                            "learn_more": "Erfahre mehr über Auslöser"
                         },
                         "conditions": {
                             "header": "Bedingungen",
-                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, dass ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.\n\n[Erfahre mehr über Bedingungen.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, ob ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.",
                             "add": "Bedingung hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -469,11 +524,12 @@
                                     "entity": "Entität mit Standort",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "Erfahre mehr über Bedingungen"
                         },
                         "actions": {
                             "header": "Aktionen",
-                            "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.\n\n[Erfahre mehr über Aktionen.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.",
                             "add": "Aktion hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -502,8 +558,11 @@
                                     "event": "Ereignis:",
                                     "service_data": "Dienstdaten"
                                 }
-                            }
-                        }
+                            },
+                            "learn_more": "Erfahre mehr über Aktionen"
+                        },
+                        "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
+                        "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no})."
                     }
                 },
                 "script": {
@@ -525,13 +584,22 @@
                         "change_password": "Passwort ändern",
                         "activate_user": "Benutzer aktivieren",
                         "deactivate_user": "Benutzer deaktivieren",
-                        "delete_user": "Benutzer löschen"
+                        "delete_user": "Benutzer löschen",
+                        "caption": "Benutzer anzeigen"
+                    },
+                    "add_user": {
+                        "caption": "Benutzer hinzufügen",
+                        "name": "Name",
+                        "username": "Benutzername",
+                        "password": "Passwort",
+                        "create": "Benutzerkonto anlegen"
                     }
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Angemeldet als {email}",
-                    "description_not_login": "Nicht angemeldet"
+                    "description_not_login": "Nicht angemeldet",
+                    "description_features": "Fernsteuerung und Integration mit Alexa und Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrationen",
@@ -550,7 +618,80 @@
                         "hub": "Verbunden über",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Gerät nicht verfügbar",
-                        "entity_unavailable": "Entität nicht verfügbar"
+                        "entity_unavailable": "Entität nicht verfügbar",
+                        "no_area": "Kein Bereich"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Für diesen Schritt musst du eine externe Website besuchen, um den Vorgang abzuschließen.",
+                            "open_site": "Website öffnen"
+                        }
+                    }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "ZigBee Home Automation Netzwerkmanagement",
+                    "services": {
+                        "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt.",
+                        "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest.",
+                        "remove": "Entfernen Sie ein Gerät aus dem ZigBee-Netzwerk."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Benutzername",
+                        "area_picker_label": "Bereich",
+                        "update_name_button": "Name aktualisieren"
+                    },
+                    "add_device_page": {
+                        "header": "ZigBee Home Automation - Geräte hinzufügen",
+                        "spinner": "Suche nach ZHA ZigBee Geräten... ",
+                        "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Bereichsregister",
+                    "description": "Überblick über alle Bereiche in Deinem Haus.",
+                    "picker": {
+                        "header": "Bereichsregister",
+                        "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um dich bei der Organisation deiner Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
+                        "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen.",
+                        "integrations_page": "Integrationsseite",
+                        "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
+                        "create_area": "BEREICH ERSTELLEN"
+                    },
+                    "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
+                    "create_area": "BEREICH ERSTELLEN",
+                    "editor": {
+                        "default_name": "Neuer Bereich",
+                        "delete": "LÖSCHEN",
+                        "update": "AKTUALISIEREN",
+                        "create": "ERSTELLEN"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Entitätsregister",
+                    "description": "Überblick aller bekannten Elemente.",
+                    "picker": {
+                        "header": "Entitätsregister",
+                        "unavailable": "(nicht verfügbar)",
+                        "introduction": "Der Home Assistent führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
+                        "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entität-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite.",
+                        "integrations_page": "Integrationsseite"
+                    },
+                    "editor": {
+                        "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
+                        "default_name": "Neuer Bereich",
+                        "delete": "LÖSCHEN",
+                        "update": "UPDATE"
+                    }
+                },
+                "person": {
+                    "caption": "Personen",
+                    "description": "Verwalte die Personen, die Home Assistant verfolgt.",
+                    "detail": {
+                        "name": "Name",
+                        "device_tracker_intro": "Wähle die Geräte, die dieser Person gehören.",
+                        "device_tracker_picked": "Verfolge Gerät",
+                        "device_tracker_pick": "Wähle zu verfolgendes Gerät"
                     }
                 }
             },
@@ -580,7 +721,7 @@
                     "token_title": "Aktualisierungs-Token für {clientId}",
                     "created_at": "Erstellt am {date}",
                     "confirm_delete": "Möchtest du das Aktualisierungstoken für {name} wirklich löschen?",
-                    "delete_failed": "Fehler beim Löschen des Aktualisierungs-Token.",
+                    "delete_failed": "Fehler beim Löschen das Aktualisierungs-Token.",
                     "last_used": "Zuletzt verwendet am {date} in {location}",
                     "not_used": "Wurde noch nie benutzt",
                     "current_token_tooltip": "Aktueller Refresh-Token konnte nicht gelöscht werden"
@@ -694,6 +835,29 @@
                             "abort": {
                                 "not_whitelisted": "Dein Computer ist nicht auf der Whitelist."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benutzername",
+                                        "password": "Passwort"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwei-Faktor Authentifizierungscode"
+                                    },
+                                    "description": "Öffne das **{mfa_module_name}** auf deinem Gerät um den 2-Faktor Authentifizierungscode zu sehen und deine Identität zu bestätigen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ungültiger Benutzername oder Passwort",
+                                "invalid_code": "Ungültiger Authentifizierungscode"
+                            },
+                            "abort": {
+                                "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
+                            }
                         }
                     }
                 }
@@ -706,20 +870,48 @@
                     "data": {
                         "name": "Name",
                         "username": "Benutzername",
-                        "password": "Passwort"
+                        "password": "Passwort",
+                        "password_confirm": "Passwort bestätigen"
                     },
                     "create_account": "Benutzerkonto anlegen",
                     "error": {
-                        "required_fields": "Fülle alle Pflichtfelder aus."
+                        "required_fields": "Fülle alle Pflichtfelder aus.",
+                        "password_not_match": "Passwörter stimmen nicht überein"
                     }
+                },
+                "integration": {
+                    "intro": "Geräte und Dienste werden in Home Assistant als Integrationen dargestellt. Sie können jetzt oder später über die Konfigurationsseite eingerichtet werden.",
+                    "more_integrations": "Mehr",
+                    "finish": "Fertig"
+                },
+                "core-config": {
+                    "intro": "Hallo {name}, willkommen bei der Home Assistant. Wie möchtest du dein Haus benennen?",
+                    "intro_location": "Wir würden gerne wissen, wo du wohnst. Diese Information hilft bei der Anzeige von Informationen und der Einrichtung von Sonnenstands-basierten Automatisierungen. Diese Daten werden niemals außerhalb deines Netzwerks weitergegeben.",
+                    "intro_location_detect": "Wir können helfen, diese Informationen auszufüllen, indem wir eine einmalige Anfrage an einen externen Dienstleister richten.",
+                    "location_name_default": "Home",
+                    "button_detect": "Erkennen",
+                    "finish": "Weiter"
                 }
             },
             "lovelace": {
                 "cards": {
                     "shopping-list": {
-                        "checked_items": "Markierte Items",
+                        "checked_items": "Markierte Artikel",
                         "clear_items": "Markierte Elemente löschen",
-                        "add_item": "Item hinzufügen"
+                        "add_item": "Artikel hinzufügen"
+                    },
+                    "empty_state": {
+                        "title": "Willkommen zu Hause",
+                        "no_devices": "Auf dieser Seite kannst du deine Geräte steuern, es sieht jedoch so aus, als hättest du noch keine eingerichtet. Gehe zur Integrationsseite, um damit zu beginnen.",
+                        "go_to_integrations_page": "Gehe zur Integrationsseite."
+                    },
+                    "picture-elements": {
+                        "hold": "Halten:",
+                        "tap": "Tippe auf:",
+                        "navigate_to": "Navigiere zu {location}",
+                        "toggle": "{name} umschalten",
+                        "call_service": "Dienst  {name} ausführen",
+                        "more_info": "Zeige weitere Informationen: {name}"
                     }
                 },
                 "editor": {
@@ -730,15 +922,16 @@
                         "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
                         "add": "Karte hinzufügen",
                         "edit": "Bearbeiten",
-                        "delete": "Löschen"
+                        "delete": "Löschen",
+                        "move": "Bewegen"
                     },
                     "migrate": {
                         "header": "Konfiguration inkompatibel",
                         "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu.",
+                        "para_migrate": "Home Assistant kann für alle Ihre Karten und Ansichten die IDs automatisch generieren, wenn Sie den \"Konfiguration migrieren\"-Button klicken.",
                         "migrate": "Konfiguration migrieren"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
-                    "configure_ui": "Benutzeroberfläche konfigurieren",
                     "edit_view": {
                         "header": "Konfiguration anzeigen",
                         "add": "Ansicht hinzufügen",
@@ -746,15 +939,43 @@
                         "delete": "Ansicht löschen"
                     },
                     "save_config": {
+                        "header": "Lovelace Userinterface selbst verwalten",
+                        "para": "Standardmäßig verwaltet Home Assistant Ihre Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn Sie die Verwaltung selbst übernehmen, nehmen wir für Sie keine Änderungen mehr vor.",
+                        "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "cancel": "Abbrechen",
                         "save": "Kontrolle übernehmen"
+                    },
+                    "menu": {
+                        "raw_editor": "Raw-Konfigurationseditor"
+                    },
+                    "raw_editor": {
+                        "header": "Konfiguration bearbeiten",
+                        "save": "Speichern",
+                        "unsaved_changes": "Nicht gespeicherte Änderungen",
+                        "saved": "Gespeichert"
                     }
-                }
+                },
+                "menu": {
+                    "configure_ui": "Benutzeroberfläche konfigurieren",
+                    "unused_entities": "Ungenutzte Elemente",
+                    "help": "Hilfe",
+                    "refresh": "Aktualisieren"
+                },
+                "warning": {
+                    "entity_not_found": "Entität nicht verfügbar: {entity}",
+                    "entity_non_numeric": "Die Entität ist nicht-numerisch: {entity}"
+                },
+                "changed_toast": {
+                    "message": "Die Lovelace-Konfiguration wurde aktualisiert, möchtest du sie aktualisieren?",
+                    "refresh": "Aktualisieren"
+                },
+                "reload_lovelace": "Lovelace neu laden"
             }
         },
         "sidebar": {
             "log_out": "Abmelden",
-            "developer_tools": "Entwicklerwerkzeuge"
+            "developer_tools": "Entwicklerwerkzeuge",
+            "external_app_configuration": "App-Konfiguration"
         },
         "common": {
             "loading": "Laden",
@@ -821,7 +1042,8 @@
                 "arm_home": "Aktivieren, Zuhause",
                 "arm_away": "Aktivieren, unterwegs",
                 "arm_night": "Nacht aktiviert",
-                "armed_custom_bypass": "Benutzerdefinierter Bypass"
+                "armed_custom_bypass": "Benutzerdefinierter Bypass",
+                "arm_custom_bypass": "Benutzerdefinierter Bypass"
             },
             "automation": {
                 "last_triggered": "Zuletzt ausgelöst",
@@ -918,6 +1140,19 @@
                 "save": "Speichern",
                 "name": "Name",
                 "entity_id": "Entitäts-ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Letzte Aktion"
+                },
+                "sun": {
+                    "elevation": "Höhe",
+                    "rising": "Aufgang",
+                    "setting": "Untergang"
+                },
+                "updater": {
+                    "title": "Update-Anweisungen"
+                }
             }
         },
         "auth_store": {
@@ -967,7 +1202,13 @@
         "updater": "Updater",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Staubsauger"
+        "vacuum": "Staubsauger",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Systemzustand",
+        "person": "Person"
     },
     "attribute": {
         "weather": {
@@ -975,5 +1216,19 @@
             "visibility": "Sichtweite",
             "wind_speed": "Windgeschwindigkeit"
         }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Aus",
+                "on": "An",
+                "auto": "Auto"
+            }
+        }
+    },
+    "groups": {
+        "system-admin": "Administratoren",
+        "system-users": "Benutzer",
+        "system-read-only": "Nur-Lesen Benutzer"
     }
 }

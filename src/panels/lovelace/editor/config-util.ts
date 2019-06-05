@@ -178,6 +178,22 @@ export const replaceView = (
   ),
 });
 
+export const swapView = (
+  config: LovelaceConfig,
+  path1: number,
+  path2: number
+): LovelaceConfig => {
+  const view1 = config.views[path1];
+  const view2 = config.views[path2];
+
+  return {
+    ...config,
+    views: config.views.map((origView, index) =>
+      index === path2 ? view1 : index === path1 ? view2 : origView
+    ),
+  };
+};
+
 export const deleteView = (
   config: LovelaceConfig,
   viewIndex: number

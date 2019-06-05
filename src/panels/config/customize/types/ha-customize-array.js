@@ -4,7 +4,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../../../../mixins/events-mixin";
+import { EventsMixin } from "../../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin

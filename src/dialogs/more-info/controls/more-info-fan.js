@@ -1,5 +1,4 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -8,9 +7,10 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-attributes";
+import "../../../components/ha-paper-dropdown-menu";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
@@ -33,7 +33,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
           display: block;
         }
 
-        paper-dropdown-menu {
+        ha-paper-dropdown-menu {
           width: 100%;
         }
 
@@ -44,20 +44,25 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <div class$="[[computeClassNames(stateObj)]]">
         <div class="container-speed_list">
-          <paper-dropdown-menu
+          <ha-paper-dropdown-menu
             label-float=""
             dynamic-align=""
             label="[[localize('ui.card.fan.speed')]]"
           >
-            <paper-listbox slot="dropdown-content" selected="{{speedIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              selected="[[stateObj.attributes.speed]]"
+              on-selected-changed="speedChanged"
+              attr-for-selected="item-name"
+            >
               <template
                 is="dom-repeat"
                 items="[[stateObj.attributes.speed_list]]"
               >
-                <paper-item>[[item]]</paper-item>
+                <paper-item item-name$="[[item]]">[[item]]</paper-item>
               </template>
             </paper-listbox>
-          </paper-dropdown-menu>
+          </ha-paper-dropdown-menu>
         </div>
 
         <div class="container-oscillating">
@@ -108,12 +113,6 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: "stateObjChanged",
       },
 
-      speedIndex: {
-        type: Number,
-        value: -1,
-        observer: "speedChanged",
-      },
-
       oscillationToggleChecked: {
         type: Boolean,
       },
@@ -124,9 +123,6 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         oscillationToggleChecked: newVal.attributes.oscillating,
-        speedIndex: newVal.attributes.speed_list
-          ? newVal.attributes.speed_list.indexOf(newVal.attributes.speed)
-          : -1,
       });
     }
 
@@ -144,17 +140,15 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     );
   }
 
-  speedChanged(speedIndex) {
-    var speedInput;
-    // Selected Option will transition to '' before transitioning to new value
-    if (speedIndex === "" || speedIndex === -1) return;
+  speedChanged(ev) {
+    var oldVal = this.stateObj.attributes.speed;
+    var newVal = ev.detail.value;
 
-    speedInput = this.stateObj.attributes.speed_list[speedIndex];
-    if (speedInput === this.stateObj.attributes.speed) return;
+    if (!newVal || oldVal === newVal) return;
 
     this.hass.callService("fan", "turn_on", {
       entity_id: this.stateObj.entity_id,
-      speed: speedInput,
+      speed: newVal,
     });
   }
 

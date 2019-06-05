@@ -1,20 +1,19 @@
 import {
-  createCollection,
   getUser,
   Connection,
+  getCollection,
 } from "home-assistant-js-websocket";
-import { User } from "../types";
+import { CurrentUser } from "../types";
+
+export const userCollection = (conn: Connection) =>
+  getCollection(
+    conn,
+    "_usr",
+    () => getUser(conn) as Promise<CurrentUser>,
+    undefined
+  );
 
 export const subscribeUser = (
   conn: Connection,
-  onChange: (user: User) => void
-) =>
-  createCollection<User>(
-    "_usr",
-    // the getUser command is mistyped in current verrsion of HAWS.
-    // Fixed in 3.2.5
-    () => (getUser(conn) as unknown) as Promise<User>,
-    undefined,
-    conn,
-    onChange
-  );
+  onChange: (user: CurrentUser) => void
+) => userCollection(conn).subscribe(onChange);

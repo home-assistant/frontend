@@ -3,8 +3,9 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import computeStateName from "../common/entity/compute_state_name";
-import EventsMixin from "../mixins/events-mixin";
+import { EventsMixin } from "../mixins/events-mixin";
 import LocalizeMixin from "../mixins/localize-mixin";
+import { fetchThumbnailUrlWithCache } from "../data/camera";
 
 const UPDATE_INTERVAL = 10000; // ms
 /*
@@ -54,6 +55,8 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           src="[[cameraFeedSrc]]"
           class="camera-feed"
           alt="[[_computeStateName(stateObj)]]"
+          on-load="_imageLoaded"
+          on-error="_imageError"
         />
       </template>
       <div class="caption">
@@ -98,23 +101,23 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     clearInterval(this.timer);
   }
 
+  _imageLoaded() {
+    this.imageLoaded = true;
+  }
+
+  _imageError() {
+    this.imageLoaded = false;
+  }
+
   cardTapped() {
     this.fire("hass-more-info", { entityId: this.stateObj.entity_id });
   }
 
   async updateCameraFeedSrc() {
-    try {
-      const { content_type: contentType, content } = await this.hass.callWS({
-        type: "camera_thumbnail",
-        entity_id: this.stateObj.entity_id,
-      });
-      this.setProperties({
-        imageLoaded: true,
-        cameraFeedSrc: `data:${contentType};base64, ${content}`,
-      });
-    } catch (err) {
-      this.imageLoaded = false;
-    }
+    this.cameraFeedSrc = await fetchThumbnailUrlWithCache(
+      this.hass,
+      this.stateObj.entity_id
+    );
   }
 
   _computeStateName(stateObj) {

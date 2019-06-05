@@ -1,3 +1,6 @@
+import deepClone from "deep-clone-simple";
+
+import "../elements/hui-conditional-element";
 import "../elements/hui-icon-element";
 import "../elements/hui-image-element";
 import "../elements/hui-service-button-element";
@@ -15,6 +18,7 @@ import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const ELEMENT_TYPES = new Set([
+  "conditional",
   "icon",
   "image",
   "service-button",
@@ -30,7 +34,7 @@ const _createElement = (
 ): LovelaceElement | HuiErrorCard => {
   const element = document.createElement(tag) as LovelaceElement;
   try {
-    element.setConfig(config);
+    element.setConfig(deepClone(config));
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
@@ -72,7 +76,7 @@ export const createHuiElement = (
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);
-      fireEvent(element, "rebuild-view");
+      fireEvent(element, "ll-rebuild");
     });
 
     return element;

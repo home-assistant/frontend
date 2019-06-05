@@ -6,9 +6,10 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import NavigateMixin from "../../../mixins/navigate-mixin";
 
-import "./ha-user-picker";
+import "./ha-config-user-picker";
 import "./ha-user-editor";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { fetchUsers } from "../../../data/user";
 
 /*
  * @appliesMixin NavigateMixin
@@ -18,19 +19,19 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
     return html`
       <app-route
         route="[[route]]"
-        pattern="/users/:user"
+        pattern="/:user"
         data="{{_routeData}}"
       ></app-route>
 
-      <template
-        is="dom-if"
-        if="[[_equals(_routeData.user, &quot;picker&quot;)]]"
-      >
-        <ha-user-picker hass="[[hass]]" users="[[_users]]"></ha-user-picker>
+      <template is="dom-if" if='[[_equals(_routeData.user, "picker")]]'>
+        <ha-config-user-picker
+          hass="[[hass]]"
+          users="[[_users]]"
+        ></ha-config-user-picker>
       </template>
       <template
         is="dom-if"
-        if="[[!_equals(_routeData.user, &quot;picker&quot;)]]"
+        if='[[!_equals(_routeData.user, "picker")]]'
         restamp
       >
         <ha-user-editor
@@ -71,8 +72,6 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   }
 
   _checkRoute(route) {
-    if (!route || route.path.substr(0, 6) !== "/users") return;
-
     // prevent list getting under toolbar
     fireEvent(this, "iron-resize");
 
@@ -80,8 +79,8 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
       this._debouncer,
       timeOut.after(0),
       () => {
-        if (route.path === "/users") {
-          this.navigate("/config/users/picker", true);
+        if (route.path === "") {
+          this.navigate(`${route.prefix}/picker`, true);
         }
       }
     );
@@ -96,9 +95,7 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   }
 
   async _loadData() {
-    this._users = await this.hass.callWS({
-      type: "config/auth/list",
-    });
+    this._users = await fetchUsers(this.hass);
   }
 }
 

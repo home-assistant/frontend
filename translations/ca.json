@@ -28,7 +28,7 @@
             "disarmed": "Desactivada",
             "armed_home": "Activada, mode a casa",
             "armed_away": "Activada, mode fora",
-            "armed_night": "Activada, mode nit",
+            "armed_night": "Activada, mode nocturn",
             "pending": "Pendent",
             "arming": "Activant",
             "disarming": "Desactivant",
@@ -133,8 +133,8 @@
         "climate": {
             "off": "Apagat",
             "on": "Encès",
-            "heat": "Calent",
-            "cool": "Fred",
+            "heat": "Escalfar",
+            "cool": "Refredar",
             "idle": "Inactiu",
             "auto": "Automàtic",
             "dry": "Assecar",
@@ -265,12 +265,23 @@
             "on": "Encesa",
             "paused": "Pausada",
             "returning": "Retornant a la base"
+        },
+        "timer": {
+            "active": "actiu",
+            "idle": "inactiu",
+            "paused": "en pausa"
+        },
+        "person": {
+            "home": "A casa",
+            "not_home": "Fora"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Descon.",
-            "unavailable": "No disp."
+            "unavailable": "No disp.",
+            "error": "Error",
+            "entity_not_found": "Entitat no trobada"
         },
         "alarm_control_panel": {
             "armed": "Activad.",
@@ -287,12 +298,16 @@
         "device_tracker": {
             "home": "A casa",
             "not_home": "Fora"
+        },
+        "person": {
+            "home": "A casa",
+            "not_home": "Fora"
         }
     },
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Suprimir completats",
+                "clear_completed": "Elimina els completats",
                 "add_item": "Afegir article",
                 "microphone_tip": "Clica el micròfon a la part superior dreta i digues \"Add candy to my shopping list\""
             },
@@ -301,13 +316,14 @@
                 "period": "Període"
             },
             "logbook": {
-                "showing_entries": "Mostrant entrades de"
+                "showing_entries": "Mostrant entrades de",
+                "period": "Període"
             },
             "mailbox": {
                 "empty": "No tens missatges",
                 "playback_title": "Reproducció de missatges",
-                "delete_prompt": "Vols suprimir aquest missatge?",
-                "delete_button": "Suprimir"
+                "delete_prompt": "Vols eliminar aquest missatge?",
+                "delete_button": "Elimina"
             },
             "config": {
                 "header": "Configuració de Home Assistant",
@@ -329,23 +345,42 @@
                             "reloading": {
                                 "heading": "Recàrrega de la configuració",
                                 "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar-les. Les opcions de sota esborraran la configuració antiga i carregaran la nova.",
-                                "core": "Recarregar el nucli",
-                                "group": "Recarregar grups",
-                                "automation": "Recarregar automatismes",
-                                "script": "Recarregar programes"
+                                "core": "Recarrega el nucli",
+                                "group": "Recarrega grups",
+                                "automation": "Recarrega automatismes",
+                                "script": "Recarrega programes"
                             },
                             "server_management": {
                                 "heading": "Gestió del servidor",
                                 "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Aturar"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
+                                "location_name": "Nom de la instal·lació de Home Assistant",
+                                "latitude": "Latitud",
+                                "longitude": "Longitud",
+                                "elevation": "Altitud",
+                                "elevation_meters": "metres",
+                                "time_zone": "Zona horària",
+                                "unit_system": "Sistema d'unitats",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Mètric",
+                                "imperial_example": "Fahrenheit, lliures",
+                                "metric_example": "Celsius, quilograms",
+                                "save_button": "Desa"
                             }
                         }
                     }
                 },
                 "customize": {
                     "caption": "Personalització",
-                    "description": "Personalitza les entitats"
+                    "description": "Personalitza les entitats",
+                    "picker": {
+                        "header": "Personalització",
+                        "introduction": "Modificació dels atributs d'entitat. Les personalitzacions afegides\/modificades apareixeran immediatament. Les personalitzacions eliminades tindran efecte quan l'entitat s'actualitzi."
+                    }
                 },
                 "automation": {
                     "caption": "Automatització",
@@ -355,21 +390,22 @@
                         "introduction": "L'editor d'automatismes permet crear i editar automatismes. Llegeix [les instruccions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assegurar-te que has configurat el Home Assistant correctament.",
                         "pick_automation": "Selecciona l'automatisme a editar",
                         "no_automations": "No s'ha pogut trobar cap automatisme editable",
-                        "add_automation": "Afegir automatisme"
+                        "add_automation": "Afegir automatisme",
+                        "learn_more": "Més informació sobre els automatismes"
                     },
                     "editor": {
                         "introduction": "Utilitza els automatismes per donar més vida a la teva casa",
                         "default_name": "Nou automatisme",
-                        "save": "Desar",
+                        "save": "Desa",
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?",
                         "alias": "Nom",
                         "triggers": {
                             "header": "Activadors",
-                            "introduction": "Els activadors són les regles que fan que es dispari un automatisme. Pots definir més d'un activadors per cada automatisme. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.\n\n[Més informació sobre activadors](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Els activadors són les regles que fan que es dispari un automatisme. Pots definir més d'un activador per a cada automatisme. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "add": "Afegir activador",
                             "duplicate": "Duplicar",
-                            "delete": "Suprimir",
-                            "delete_confirm": "Segur que vols suprimir-ho?",
+                            "delete": "Elimina",
+                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "unsupported_platform": "Plataforma {platform} no suportada.",
                             "type_select": "Tipus d'activador",
                             "type": {
@@ -423,16 +459,35 @@
                                     "event": "Esdeveniment:",
                                     "enter": "Entrar",
                                     "leave": "Sortir"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "ID de Webhook"
+                                },
+                                "time_pattern": {
+                                    "label": "Patró temporal",
+                                    "hours": "Hores",
+                                    "minutes": "Minuts",
+                                    "seconds": "Segons"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocalització",
+                                    "source": "Font",
+                                    "zone": "Zona",
+                                    "event": "Esdeveniment:",
+                                    "enter": "Entrar",
+                                    "leave": "Sortir"
                                 }
-                            }
+                            },
+                            "learn_more": "Més informació sobre els activadors"
                         },
                         "conditions": {
                             "header": "Condicions",
-                            "introduction": "Les condicions són una part opcional d'un automatisme i es poden utilitzar per permetre o evitar que es produeixi l'acció quan s'activa l'automatisme. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.\n\n[Més informació sobre les condicions](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/).",
+                            "introduction": "Les condicions són una part opcional d'un automatisme i es poden utilitzar per permetre o evitar que es produeixi l'acció quan s'activa l'automatisme. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.",
                             "add": "Afegir condició",
                             "duplicate": "Duplicar",
-                            "delete": "Suprimir",
-                            "delete_confirm": "Segur que vols suprimir-ho?",
+                            "delete": "Elimina",
+                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "unsupported_condition": "Condició {condition} no suportada.",
                             "type_select": "Tipus de condició",
                             "type": {
@@ -469,15 +524,16 @@
                                     "entity": "Entitat amb ubicació",
                                     "zone": "Zona"
                                 }
-                            }
+                            },
+                            "learn_more": "Més informació sobre les condicions"
                         },
                         "actions": {
                             "header": "Accions",
-                            "introduction": "Les accions són allò que farà Home Assistant quan s'activi l'automatisme i es compleixin totes les condicions (si n'hi ha).\n\n[Més informació sobre les accions](https:\/\/home-assistant.io\/docs\/automation\/action\/).",
+                            "introduction": "Les accions són allò que farà Home Assistant quan s'activi l'automatisme i es compleixin totes les condicions (si n'hi ha).",
                             "add": "Afegir acció",
                             "duplicate": "Duplicar",
-                            "delete": "Suprimir",
-                            "delete_confirm": "Segur que vols suprimir-ho?",
+                            "delete": "Elimina",
+                            "delete_confirm": "Segur que vols eliminar-ho?",
                             "unsupported_action": "Acció {action} no suportada.",
                             "type_select": "Tipus d'acció",
                             "type": {
@@ -502,8 +558,11 @@
                                     "event": "Esdeveniment:",
                                     "service_data": "Dades de servei"
                                 }
-                            }
-                        }
+                            },
+                            "learn_more": "Més informació sobre les accions"
+                        },
+                        "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
+                        "load_error_unknown": "Error en carregar l’automatització ({err_no})."
                     }
                 },
                 "script": {
@@ -525,13 +584,22 @@
                         "change_password": "Canviar contrasenya",
                         "activate_user": "Activar usuari",
                         "deactivate_user": "Desactivar usuari",
-                        "delete_user": "Eliminar usuari"
+                        "delete_user": "Eliminar usuari",
+                        "caption": "Mostrar usuari"
+                    },
+                    "add_user": {
+                        "caption": "Afegir usuari",
+                        "name": "Nom",
+                        "username": "Nom d'usuari",
+                        "password": "Contrasenya",
+                        "create": "Crear"
                     }
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Sessió iniciada com a {email}",
-                    "description_not_login": "No has iniciat sessió"
+                    "description_not_login": "No has iniciat sessió",
+                    "description_features": "Controla la casa des de fora, pots integrar Alexa i Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integracions",
@@ -544,13 +612,86 @@
                     "config_entry": {
                         "no_devices": "Aquesta integració no té dispositius.",
                         "no_device": "Entitats sense dispositius",
-                        "delete_confirm": "Estas segur que vols suprimir aquesta integració?",
+                        "delete_confirm": "Estas segur que vols eliminar aquesta integració?",
                         "restart_confirm": "Reinicia el Home Assistant per acabar d'eliminar aquesta integració",
                         "manuf": "de {manufacturer}",
                         "hub": "Connectat a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositiu no disponible",
-                        "entity_unavailable": "entitat no disponible"
+                        "entity_unavailable": "entitat no disponible",
+                        "no_area": "Sense àrea"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
+                            "open_site": "Vés al lloc web"
+                        }
+                    }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Gestiona la xarxa domòtica Zigbee",
+                    "services": {
+                        "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
+                        "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius.",
+                        "remove": "Treu un dispositiu de la xarxa ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nom donat per l'usuari",
+                        "area_picker_label": "Àrea",
+                        "update_name_button": "Actualitzar Nom"
+                    },
+                    "add_device_page": {
+                        "header": "Domòtica amb Zigbee - Afegir dispositius",
+                        "spinner": "S'estan cercant dispositius ZHA Zigbee...",
+                        "discovery_text": "Els dispositius descoberts apareixeran aquí. Segueix les instruccions del teu dispositiu\/s i posa el dispositiu\/s en mode d’emparellament."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Registre d'àrees",
+                    "description": "Visió general de totes les àrees de la casa.",
+                    "picker": {
+                        "header": "Registre d'àrees",
+                        "introduction": "Les àrees s'utilitzen per organitzar la situació dels dispositius. Aquesta informació serà utilitzada per Home Assistant per ajudar-te a organitzar millor la teva interfície, els permisos i les integracions amb d'altres sistemes.",
+                        "introduction2": "Per col·locar dispositius en una àrea, utilitza l'enllaç de sota per anar a la pàgina d'integracions i, a continuació, fes clic a una integració configurada per accedir a les targetes del dispositiu.",
+                        "integrations_page": "Pàgina d'integracions",
+                        "no_areas": "Sembla que encara no tens cap àrea!",
+                        "create_area": "CREAR ÀREA"
+                    },
+                    "no_areas": "Sembla que encara no tens cap àrea!.",
+                    "create_area": "CREA ÀREA",
+                    "editor": {
+                        "default_name": "Àrea nova",
+                        "delete": "ELIMINA",
+                        "update": "ACTUALITZAR",
+                        "create": "CREAR"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Registre d'entitats",
+                    "description": "Visió general de totes les entitats conegudes.",
+                    "picker": {
+                        "header": "Registre d'entitats",
+                        "unavailable": "(no disponible)",
+                        "introduction": "Home Assistant manté un registre de totes les entitats que ha detectat alguna vegada les quals tenen una identificació única. Cadascuna d'aquestes entitats té un identificador (ID) assignat que està reservat només per a ella.",
+                        "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant de les entitats. Tingues en compte que eliminar-les del registre d'entitats no eliminarà l'entitat. Per fer-ho, segueix l'enllaç següent i elimineu-la dins la pàgina d'integracions.",
+                        "integrations_page": "Pàgina d'integracions"
+                    },
+                    "editor": {
+                        "unavailable": "Aquesta entitat no està disponible actualment.",
+                        "default_name": "Àrea nova",
+                        "delete": "ELIMINA",
+                        "update": "ACTUALITZAR"
+                    }
+                },
+                "person": {
+                    "caption": "Persones",
+                    "description": "Gestiona a quines persones fa seguiment Home Assistant.",
+                    "detail": {
+                        "name": "Nom",
+                        "device_tracker_intro": "Selecciona els dispositius que pertanyen a aquesta persona.",
+                        "device_tracker_picked": "Seguint dispositiu",
+                        "device_tracker_pick": "Tria un dispositiu per fer-li el seguiment"
                     }
                 }
             },
@@ -579,19 +720,19 @@
                     "description": "Cada testimoni d'autenticació d'actualització representa un inici de sessió diferent. Els testimonis d'autenticació d'actualització s'eliminaran automàticament quan tanquis la sessió. A sota hi ha una llista de testimonis d'autenticació d'actualització que estan actius actualment al teu compte.",
                     "token_title": "Refresca el testimoni d'autenticació del {clientId}",
                     "created_at": "Creat el {date}",
-                    "confirm_delete": "Estas segur que vols suprimir el testimoni d'autenticació d'actualització per {name}?",
-                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització.",
+                    "confirm_delete": "Estas segur que vols eliminar el testimoni d'autenticació d'actualització per {name}?",
+                    "delete_failed": "No s'ha pogut eliminar el testimoni d'autenticació d'actualització.",
                     "last_used": "Darrer ús el {date} des de {location}",
                     "not_used": "Mai no s'ha utilitzat",
-                    "current_token_tooltip": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització."
+                    "current_token_tooltip": "No s'ha pogut eliminar el testimoni d'autenticació d'actualització."
                 },
                 "long_lived_access_tokens": {
                     "header": "Testimonis d'autenticació d'accés de llarga durada",
                     "description": "Crea testimonis d'autenticació d'accés de llarga durada per permetre als teus programes (scripts) interactuar amb la instància de Home Assistant. Cada testimoni d'autenticació serà vàlid durant deu anys després de la seva creació. Els següents testimonis d'autenticació d'accés de llarga durada estan actius actualment.",
                     "learn_auth_requests": "Aprèn a fer sol·licituds autenticades.",
                     "created_at": "Creat el {date}",
-                    "confirm_delete": "Estàs segur que vols suprimir el testimoni d'autenticació d'accés per {name}?",
-                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'accés.",
+                    "confirm_delete": "Estàs segur que vols eliminar el testimoni d'autenticació d'accés per {name}?",
+                    "delete_failed": "No s'ha pogut eliminar el testimoni d'autenticació d'accés.",
                     "create": "Crea un testimoni d'autenticació",
                     "create_failed": "No s'ha pogut crear el testimoni d'autenticació d'accés.",
                     "prompt_name": "Nom?",
@@ -609,7 +750,7 @@
                     "new_password": "Contrasenya nova",
                     "confirm_new_password": "Confirmar contrasenya nova",
                     "error_required": "Obligatori",
-                    "submit": "Enviar"
+                    "submit": "Envia"
                 },
                 "mfa": {
                     "header": "Mòduls d'autenticació amb múltiples passos",
@@ -622,7 +763,7 @@
                     "title_success": "Èxit!",
                     "step_done": "Configuració feta per a {step}",
                     "close": "Tanca",
-                    "submit": "Enviar"
+                    "submit": "Envia"
                 }
             },
             "page-authorize": {
@@ -694,6 +835,29 @@
                             "abort": {
                                 "not_whitelisted": "El teu ordinador no es troba accessible a la llista."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'usuari",
+                                        "password": "Contrasenya"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codi de verificació en dos passos"
+                                    },
+                                    "description": "Obre el **{mfa_module_name}** al teu dispositiu per veure el codi de verificació en dos passos i verifica la teva identitat:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'usuari o contrasenya incorrectes",
+                                "invalid_code": "El codi d'autenticació no és vàlid"
+                            },
+                            "abort": {
+                                "login_expired": "La sessió ha caducat, torna a iniciar la sessió."
+                            }
                         }
                     }
                 }
@@ -706,12 +870,27 @@
                     "data": {
                         "name": "Nom",
                         "username": "Nom d'usuari",
-                        "password": "Contrasenya"
+                        "password": "Contrasenya",
+                        "password_confirm": "Confirma la contrasenya"
                     },
-                    "create_account": "Crear un compte",
+                    "create_account": "Crear compte",
                     "error": {
-                        "required_fields": "Omple tots els camps obligatoris"
+                        "required_fields": "Omple tots els camps obligatoris",
+                        "password_not_match": "Les contrasenyes no coincideixen"
                     }
+                },
+                "integration": {
+                    "intro": "Els dispositius i serveis es representen a Home Assistant com a integracions. Pots configurar-los ara o més tard des de la pàgina de configuració.",
+                    "more_integrations": "Més",
+                    "finish": "Finalitza"
+                },
+                "core-config": {
+                    "intro": "Hola {name}, benvingut\/uda a Home Assistant. Quin nom t'agradaria posar a la teva casa?",
+                    "intro_location": "Voldirem saber la zona on vius. Aquesta informació servirà per poder mostrar certa informació i configurar automatitzacions relatives a la posició del sol. Aquestes dades mai es compartiran fora de la teva xarxa personal.",
+                    "intro_location_detect": "Et podem ajudar a completar aquesta informació fent una única sol·licitud a un servei extern.",
+                    "location_name_default": "Casa",
+                    "button_detect": "Detecta",
+                    "finish": "Següent"
                 }
             },
             "lovelace": {
@@ -720,17 +899,31 @@
                         "checked_items": "Articles seleccionats",
                         "clear_items": "Esborrar els articles seleccionats",
                         "add_item": "Afegir element"
+                    },
+                    "empty_state": {
+                        "title": "Benvingut\/da a casa",
+                        "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per a començar.",
+                        "go_to_integrations_page": "Vés a la pàgina d'integracions."
+                    },
+                    "picture-elements": {
+                        "hold": "Manté:",
+                        "tap": "Tocar:",
+                        "navigate_to": "Navega a {location}",
+                        "toggle": "Commuta {name}",
+                        "call_service": "Cridar servei {name}",
+                        "more_info": "Mostra més informació: {name}"
                     }
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Targeta de Configuració",
-                        "save": "Desar",
+                        "save": "Desa",
                         "toggle_editor": "Commutar l'editor",
                         "pick_card": "Tria la targeta que vols afegir.",
                         "add": "Afegir targeta",
                         "edit": "Editar",
-                        "delete": "Suprimir"
+                        "delete": "Elimina",
+                        "move": "Mou"
                     },
                     "migrate": {
                         "header": "Configuració incompatible",
@@ -739,12 +932,11 @@
                         "migrate": "Migrar la configuració"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
-                    "configure_ui": "Configurar la interfície d'usuari",
                     "edit_view": {
                         "header": "Configuració de la visualització",
                         "add": "Afegeix visualització",
                         "edit": "Editar visualització",
-                        "delete": "Suprimir visualització"
+                        "delete": "Eliminar visualització"
                     },
                     "save_config": {
                         "header": "Pren el control de la interfície d'usuari Lovelace",
@@ -752,18 +944,43 @@
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
                         "cancel": "M'ho he repensat",
                         "save": "Prendre el control"
+                    },
+                    "menu": {
+                        "raw_editor": "Editor de codi"
+                    },
+                    "raw_editor": {
+                        "header": "Edita la configuració",
+                        "save": "Desa",
+                        "unsaved_changes": "Canvis sense desar",
+                        "saved": "Desat"
                     }
-                }
+                },
+                "menu": {
+                    "configure_ui": "Configurar la interfície d'usuari",
+                    "unused_entities": "Entitats sense utilitzar",
+                    "help": "Ajuda",
+                    "refresh": "Actualitzar"
+                },
+                "warning": {
+                    "entity_not_found": "Entitat no disponible: {entity}",
+                    "entity_non_numeric": "Entitat no numèrica: {entity}"
+                },
+                "changed_toast": {
+                    "message": "S'ha actualitzat la configuració de Lovelace, vols refrescar-ho?",
+                    "refresh": "Actualitza"
+                },
+                "reload_lovelace": "Recarrega Lovelace"
             }
         },
         "sidebar": {
             "log_out": "Desconnectar",
-            "developer_tools": "Eines per a desenvolupadors"
+            "developer_tools": "Eines per a desenvolupadors",
+            "external_app_configuration": "Configuració de l’aplicació"
         },
         "common": {
             "loading": "Carregant",
-            "cancel": "Cancel·lar",
-            "save": "Desar"
+            "cancel": "Cancel·la",
+            "save": "Desa"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
@@ -820,12 +1037,13 @@
             },
             "alarm_control_panel": {
                 "code": "Codi",
-                "clear_code": "Esborrar",
+                "clear_code": "Borrar",
                 "disarm": "Desactivar",
                 "arm_home": "Activar, a casa",
                 "arm_away": "Activar, fora",
-                "arm_night": "Activar, nit",
-                "armed_custom_bypass": "Bypass personalitzat"
+                "arm_night": "Activar, nocturn",
+                "armed_custom_bypass": "Bypass personalitzat",
+                "arm_custom_bypass": "Bypass personalitzat"
             },
             "automation": {
                 "last_triggered": "Última execució",
@@ -859,7 +1077,7 @@
                 "operation": "Funcionament",
                 "fan_mode": "Mode ventilació",
                 "swing_mode": "Mode oscil·lació",
-                "away_mode": "Mode fora",
+                "away_mode": "Mode absent",
                 "aux_heat": "Calefactor auxiliar"
             },
             "lock": {
@@ -919,15 +1137,28 @@
         },
         "dialogs": {
             "more_info_settings": {
-                "save": "Desar",
-                "name": "Nom",
+                "save": "Desa",
+                "name": "Substitució de Nom",
                 "entity_id": "ID de l'entitat"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Última acció"
+                },
+                "sun": {
+                    "elevation": "Elevació",
+                    "rising": "Sortint",
+                    "setting": "Ponent-se"
+                },
+                "updater": {
+                    "title": "Instruccions d'actualització"
+                }
             }
         },
         "auth_store": {
             "ask": "Voleu desar aquest inici de sessió?",
             "decline": "No, gràcies",
-            "confirm": "Desar inici de sessió"
+            "confirm": "Desa inici de sessió"
         },
         "notification_drawer": {
             "click_to_configure": "Prem el botó per configurar {entity}",
@@ -971,7 +1202,13 @@
         "updater": "Actualitzador",
         "weblink": "Enllaços web",
         "zwave": "Z-Wave",
-        "vacuum": "Aspiradora"
+        "vacuum": "Aspiradora",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "Estat del sistema",
+        "person": "Persona"
     },
     "attribute": {
         "weather": {
@@ -979,5 +1216,19 @@
             "visibility": "Visibilitat",
             "wind_speed": "Velocitat del vent"
         }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Desactivat",
+                "on": "Activat",
+                "auto": "Automàtic"
+            }
+        }
+    },
+    "groups": {
+        "system-admin": "Administradors",
+        "system-users": "Usuaris",
+        "system-read-only": "Usuaris de només lectura"
     }
 }

@@ -1,26 +1,27 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  PropertyValues,
+} from "lit-element";
 
 import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
-import "./hui-error-entity-row";
+import "../components/hui-warning";
 
 import computeStateDisplay from "../../../common/entity/compute_state_display";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
+
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
-class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
+@customElement("hui-toggle-entity-row")
+class HuiToggleEntityRow extends LitElement implements EntityRow {
+  @property() public hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -29,7 +30,11 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -38,34 +43,34 @@ class HuiToggleEntityRow extends hassLocalizeLitMixin(LitElement)
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
     return html`
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        ${
-          stateObj.state === "on" || stateObj.state === "off"
-            ? html`
-                <ha-entity-toggle
-                  .hass="${this.hass}"
-                  .stateObj="${stateObj}"
-                ></ha-entity-toggle>
-              `
-            : html`
-                <div>
-                  ${
-                    computeStateDisplay(
-                      this.localize,
-                      stateObj,
-                      this.hass!.language
-                    )
-                  }
-                </div>
-              `
-        }
+        ${stateObj.state === "on" || stateObj.state === "off"
+          ? html`
+              <ha-entity-toggle
+                .hass="${this.hass}"
+                .stateObj="${stateObj}"
+              ></ha-entity-toggle>
+            `
+          : html`
+              <div>
+                ${computeStateDisplay(
+                  this.hass!.localize,
+                  stateObj,
+                  this.hass!.language
+                )}
+              </div>
+            `}
       </hui-generic-entity-row>
     `;
   }
@@ -76,5 +81,3 @@ declare global {
     "hui-toggle-entity-row": HuiToggleEntityRow;
   }
 }
-
-customElements.define("hui-toggle-entity-row", HuiToggleEntityRow);

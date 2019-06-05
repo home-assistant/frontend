@@ -18,21 +18,19 @@ class HaConfigAutomation extends PolymerElement {
       </style>
       <app-route
         route="[[route]]"
-        pattern="/automation/edit/:automation"
+        pattern="/edit/:automation"
         data="{{_routeData}}"
         active="{{_edittingAutomation}}"
       ></app-route>
       <app-route
         route="[[route]]"
-        pattern="/automation/new"
+        pattern="/new"
         active="{{_creatingNew}}"
       ></app-route>
 
       <template is="dom-if" if="[[!showEditor]]">
         <ha-automation-picker
           hass="[[hass]]"
-          narrow="[[narrow]]"
-          show-menu="[[showMenu]]"
           automations="[[automations]]"
           is-wide="[[isWide]]"
         ></ha-automation-picker>
@@ -52,8 +50,6 @@ class HaConfigAutomation extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       route: Object,
       isWide: Boolean,
       _routeData: Object,
@@ -97,10 +93,7 @@ class HaConfigAutomation extends PolymerElement {
     Object.keys(hass.states).forEach(function(key) {
       var entity = hass.states[key];
 
-      if (
-        computeStateDomain(entity) === "automation" &&
-        "id" in entity.attributes
-      ) {
+      if (computeStateDomain(entity) === "automation") {
         automations.push(entity);
       }
     });

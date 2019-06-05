@@ -2,7 +2,6 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -11,6 +10,7 @@ import moment from "moment";
 import dates from "react-big-calendar/lib/utils/dates";
 
 import "../../components/ha-menu-button";
+import "../../components/ha-card";
 import "../../resources/ha-style";
 import "./ha-big-calendar";
 
@@ -67,17 +67,14 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>[[localize('panel.calendar')]]</div>
           </app-toolbar>
         </app-header>
 
         <div class="flex content">
           <div id="calendars" class="layout vertical wrap">
-            <paper-card heading="Calendars">
+            <ha-card header="Calendars">
               <paper-listbox
                 id="calendar_list"
                 multi
@@ -95,7 +92,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
                   </paper-item>
                 </template>
               </paper-listbox>
-            </paper-card>
+            </ha-card>
           </div>
           <div class="flex layout horizontal wrap">
             <ha-big-calendar
@@ -144,11 +141,6 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       narrow: {
         type: Boolean,
         reflectToAttribute: true,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
       },
     };
   }

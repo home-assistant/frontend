@@ -11,31 +11,33 @@ class HuiHistoryGraphCard extends PolymerElement {
   static get template() {
     return html`
       <style>
-        ha-card {
+        .content {
           padding: 16px;
         }
-        ha-card[header] {
+        [header] .content {
           padding-top: 0;
         }
       </style>
 
       <ha-card header$="[[_config.title]]">
-        <ha-state-history-data
-          hass="[[hass]]"
-          filter-type="recent-entity"
-          entity-id="[[_entities]]"
-          data="{{_stateHistory}}"
-          is-loading="{{_stateHistoryLoading}}"
-          cache-config="[[_cacheConfig]]"
-        ></ha-state-history-data>
-        <state-history-charts
-          hass="[[hass]]"
-          history-data="[[_stateHistory]]"
-          is-loading-data="[[_stateHistoryLoading]]"
-          names="[[_names]]"
-          up-to-now
-          no-single
-        ></state-history-charts>
+        <div class="content">
+          <ha-state-history-data
+            hass="[[hass]]"
+            filter-type="recent-entity"
+            entity-id="[[_entities]]"
+            data="{{_stateHistory}}"
+            is-loading="{{_stateHistoryLoading}}"
+            cache-config="[[_cacheConfig]]"
+          ></ha-state-history-data>
+          <state-history-charts
+            hass="[[hass]]"
+            history-data="[[_stateHistory]]"
+            is-loading-data="[[_stateHistoryLoading]]"
+            names="[[_names]]"
+            up-to-now
+            no-single
+          ></state-history-charts>
+        </div>
       </ha-card>
     `;
   }

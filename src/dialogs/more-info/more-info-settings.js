@@ -1,17 +1,18 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import EventsMixin from "../../mixins/events-mixin";
+import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
 import computeStateName from "../../common/entity/compute_state_name";
 import computeDomain from "../../common/entity/compute_domain";
-import isComponentLoaded from "../../common/config/is_component_loaded";
+import { updateEntityRegistryEntry } from "../../data/entity_registry";
 
+import "../../components/ha-paper-icon-button-arrow-prev";
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -32,7 +33,7 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
           @apply --ha-more-info-app-toolbar-title;
         }
 
-        app-toolbar paper-button {
+        app-toolbar mwc-button {
           font-size: 0.8em;
           margin: 0;
         }
@@ -43,13 +44,12 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <app-toolbar>
-        <paper-icon-button
-          icon="hass:arrow-left"
+        <ha-paper-icon-button-arrow-prev
           on-click="_backTapped"
-        ></paper-icon-button>
+        ></ha-paper-icon-button-arrow-prev>
         <div main-title="">[[_computeStateName(stateObj)]]</div>
-        <paper-button on-click="_save" disabled="[[_computeInvalid(_entityId)]]"
-          >[[localize('ui.dialogs.more_info_settings.save')]]</paper-button
+        <mwc-button on-click="_save" disabled="[[_computeInvalid(_entityId)]]"
+          >[[localize('ui.dialogs.more_info_settings.save')]]</mwc-button
         >
       </app-toolbar>
 
@@ -73,11 +73,6 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
       hass: Object,
       stateObj: Object,
 
-      _componentLoaded: {
-        type: Boolean,
-        computed: "_computeComponentLoaded(hass)",
-      },
-
       registryInfo: {
         type: Object,
         observer: "_registryInfoChanged",
@@ -92,10 +87,6 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _computeStateName(stateObj) {
     if (!stateObj) return "";
     return computeStateName(stateObj);
-  }
-
-  _computeComponentLoaded(hass) {
-    return isComponentLoaded(hass, "config.entity_registry");
   }
 
   _computeInvalid(entityId) {
@@ -122,12 +113,14 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   async _save() {
     try {
-      const info = await this.hass.callWS({
-        type: "config/entity_registry/update",
-        entity_id: this.stateObj.entity_id,
-        name: this._name,
-        new_entity_id: this._entityId,
-      });
+      const info = await updateEntityRegistryEntry(
+        this.hass,
+        this.stateObj.entity_id,
+        {
+          name: this._name,
+          new_entity_id: this._entityId,
+        }
+      );
 
       this.registryInfo = info;
 

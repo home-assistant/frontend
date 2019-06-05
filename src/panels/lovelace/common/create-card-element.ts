@@ -1,3 +1,5 @@
+import deepClone from "deep-clone-simple";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 
 import "../cards/hui-alarm-panel-card";
@@ -68,7 +70,7 @@ const _createElement = (
 ): LovelaceCard | HuiErrorCard => {
   const element = document.createElement(tag) as LovelaceCard;
   try {
-    element.setConfig(config);
+    element.setConfig(deepClone(config));
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
@@ -106,7 +108,7 @@ export const createCardElement = (
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);
-      fireEvent(element, "rebuild-view");
+      fireEvent(element, "ll-rebuild");
     });
 
     return element;

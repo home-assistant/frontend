@@ -5,7 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/resources/ha-style";
-import EventsMixin from "../../../src/mixins/events-mixin";
+import { EventsMixin } from "../../../src/mixins/events-mixin";
 
 class HassioAddonNetwork extends EventsMixin(PolymerElement) {
   static get template() {
@@ -37,16 +37,19 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
               <tr>
                 <th>Container</th>
                 <th>Host</th>
+                <th>Description</th>
               </tr>
               <template is="dom-repeat" items="[[config]]">
                 <tr>
                   <td>[[item.container]]</td>
                   <td>
                     <paper-input
+                      placeholder="disabled"
                       value="{{item.host}}"
                       no-label-float=""
                     ></paper-input>
                   </td>
+                  <td>[[item.description]]</td>
                 </tr>
               </template>
             </tbody>
@@ -60,7 +63,7 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
             data="[[resetData]]"
             >Reset to defaults</ha-call-api-button
           >
-          <paper-button on-click="saveTapped">Save</paper-button>
+          <mwc-button on-click="saveTapped">Save</mwc-button>
         </div>
       </paper-card>
     `;
@@ -89,9 +92,11 @@ class HassioAddonNetwork extends EventsMixin(PolymerElement) {
     if (!addon) return;
 
     const network = addon.network || {};
+    const description = addon.network_description || {};
     const items = Object.keys(network).map((key) => ({
       container: key,
       host: network[key],
+      description: description[key],
     }));
     this.config = items.sort(function(el1, el2) {
       return el1.host - el2.host;

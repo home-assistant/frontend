@@ -1,5 +1,10 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -7,6 +12,7 @@ import { LovelaceCardConfig } from "../../../../data/lovelace";
 import "./hui-edit-card";
 import "./hui-dialog-pick-card";
 import { EditCardDialogParams } from "./show-edit-card-dialog";
+import { addCard, replaceCard } from "../config-util";
 
 declare global {
   // for fire event
@@ -19,36 +25,34 @@ declare global {
   }
 }
 
+@customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard extends LitElement {
-  protected hass?: HomeAssistant;
-  private _params?: EditCardDialogParams;
-  private _cardConfig?: LovelaceCardConfig;
+  @property() protected hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _params: {},
-      _cardConfig: {},
-    };
-  }
+  @property() private _params?: EditCardDialogParams;
+
+  @property() private _cardConfig?: LovelaceCardConfig;
+
+  @property() private _newCard?: boolean;
 
   constructor() {
     super();
     this._cardPicked = this._cardPicked.bind(this);
     this._cancel = this._cancel.bind(this);
+    this._save = this._save.bind(this);
   }
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
+    const [view, card] = params.path;
+    this._newCard = card !== undefined ? false : true;
     this._cardConfig =
-      params.path.length === 2
-        ? (this._cardConfig = params.lovelace.config.views[
-            params.path[0]
-          ].cards![params.path[1]])
+      card !== undefined
+        ? params.lovelace.config.views[view].cards![card]
         : undefined;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }
@@ -58,6 +62,7 @@ export class HuiDialogEditCard extends LitElement {
         <hui-dialog-pick-card
           .hass="${this.hass}"
           .cardPicked="${this._cardPicked}"
+          .closeDialog="${this._cancel}"
         ></hui-dialog-pick-card>
       `;
     }
@@ -65,21 +70,35 @@ export class HuiDialogEditCard extends LitElement {
       <hui-edit-card
         .hass="${this.hass}"
         .lovelace="${this._params.lovelace}"
-        .path="${this._params.path}"
         .cardConfig="${this._cardConfig}"
         .closeDialog="${this._cancel}"
+        .saveCard="${this._save}"
+        .newCard="${this._newCard}"
       >
       </hui-edit-card>
     `;
   }
 
-  private _cardPicked(cardConf: LovelaceCardConfig) {
+  private _cardPicked(cardConf: LovelaceCardConfig): void {
     this._cardConfig = cardConf;
   }
 
-  private _cancel() {
+  private _cancel(): void {
     this._params = undefined;
     this._cardConfig = undefined;
+  }
+
+  private async _save(cardConf: LovelaceCardConfig): Promise<void> {
+    const lovelace = this._params!.lovelace;
+    await lovelace.saveConfig(
+      this._params!.path.length === 1
+        ? addCard(lovelace.config, this._params!.path as [number], cardConf)
+        : replaceCard(
+            lovelace.config,
+            this._params!.path as [number, number],
+            cardConf
+          )
+    );
   }
 }
 
@@ -88,5 +107,3 @@ declare global {
     "hui-dialog-edit-card": HuiDialogEditCard;
   }
 }
-
-customElements.define("hui-dialog-edit-card", HuiDialogEditCard);

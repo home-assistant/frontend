@@ -26,8 +26,27 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "vibration",
     "window",
   ],
-  cover: ["garage"],
-  sensor: ["battery", "humidity", "illuminance", "temperature", "pressure"],
+  cover: [
+    "awning",
+    "blind",
+    "curtain",
+    "damper",
+    "door",
+    "garage",
+    "shade",
+    "shutter",
+    "window",
+  ],
+  sensor: [
+    "battery",
+    "humidity",
+    "illuminance",
+    "temperature",
+    "pressure",
+    "power",
+    "signal_strength",
+  ],
+  switch: ["switch", "outlet"],
 };
 
 hassAttributeUtil.UNKNOWN_TYPE = "json";
@@ -70,7 +89,7 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = hassAttributeUtil.LOGIC_STATE_ATTRIBU
     type: "array",
     options: hassAttributeUtil.DOMAIN_DEVICE_CLASS,
     description: "Device class",
-    domains: ["binary_sensor", "cover", "sensor"],
+    domains: ["binary_sensor", "cover", "sensor", "switch"],
   },
   hidden: { type: "boolean", description: "Hide from UI" },
   assumed_state: {

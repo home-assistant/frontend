@@ -1,19 +1,24 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
+import {
+  html,
+  LitElement,
+  PropertyDeclarations,
+  css,
+  CSSResult,
+} from "lit-element";
 
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
+import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 // tslint:disable-next-line
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
-import { buttonLink } from "../../../resources/ha-style";
-
 import { HomeAssistant } from "../../../types";
-import { WebhookDialogParams } from "./types";
+import { haStyle } from "../../../resources/styles";
+import { WebhookDialogParams } from "./show-cloud-webhook-manage-dialog";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
@@ -44,8 +49,7 @@ export class CloudWebhookManageDialog extends LitElement {
         ? "https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger"
         : `https://www.home-assistant.io/components/${webhook.domain}/`;
     return html`
-      ${this._renderStyle()}
-      <paper-dialog with-backdrop>
+      <ha-paper-dialog with-backdrop>
         <h2>Webhook for ${webhook.name}</h2>
         <div>
           <p>The webhook is available at the following url:</p>
@@ -56,25 +60,32 @@ export class CloudWebhookManageDialog extends LitElement {
             @blur="${this._restoreLabel}"
           ></paper-input>
           <p>
-            If you no longer want to use this webhook, you can
-            <button class="link" @click="${this._disableWebhook}">
-              disable it</button
-            >.
+            ${cloudhook.managed
+              ? html`
+                  This webhook is managed by an integration and cannot be
+                  disabled.
+                `
+              : html`
+                  If you no longer want to use this webhook, you can
+                  <button class="link" @click="${this._disableWebhook}">
+                    disable it</button
+                  >.
+                `}
           </p>
         </div>
 
         <div class="paper-dialog-buttons">
           <a href="${docsUrl}" target="_blank"
-            ><paper-button>VIEW DOCUMENTATION</paper-button></a
+            ><mwc-button>VIEW DOCUMENTATION</mwc-button></a
           >
-          <paper-button @click="${this._closeDialog}">CLOSE</paper-button>
+          <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private get _paperInput(): PaperInputElement {
@@ -112,24 +123,21 @@ export class CloudWebhookManageDialog extends LitElement {
     this._paperInput.label = inputLabel;
   }
 
-  private _renderStyle() {
-    return html`
-      <style>
-        paper-dialog {
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        ha-paper-dialog {
           width: 650px;
         }
         paper-input {
           margin-top: -8px;
         }
-        ${buttonLink} button.link {
+        button.link {
           color: var(--primary-color);
         }
-        paper-button {
-          color: var(--primary-color);
-          font-weight: 500;
-        }
-      </style>
-    `;
+      `,
+    ];
   }
 }
 

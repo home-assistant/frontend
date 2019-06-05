@@ -1,56 +1,42 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html/lib/shady-render";
-import { classMap } from "lit-html/directives/classMap";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
+  PropertyValues,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import "../../../components/ha-card";
 import "../components/hui-image";
+import "../components/hui-warning";
 
 import computeDomain from "../../../common/entity/compute_domain";
 import computeStateDisplay from "../../../common/entity/compute_state_display";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 import { longPress } from "../common/directives/long-press-directive";
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { LovelaceCard } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  createErrorCardElement,
-  createErrorCardConfig,
-} from "./hui-error-card";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { PictureEntityCardConfig } from "./types";
 
-interface Config extends LovelaceCardConfig {
-  entity: string;
-  name?: string;
-  image?: string;
-  camera_image?: string;
-  state_image?: {};
-  aspect_ratio?: string;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  show_name?: boolean;
-  show_state?: boolean;
-}
+@customElement("hui-picture-entity-card")
+class HuiPictureEntityCard extends LitElement implements LovelaceCard {
+  @property() public hass?: HomeAssistant;
 
-class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
-  implements LovelaceCard {
-  public hass?: HomeAssistant;
-  private _config?: Config;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;
   }
 
-  public setConfig(config: Config): void {
+  public setConfig(config: PictureEntityCardConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid Configuration: 'entity' required");
     }
@@ -65,7 +51,11 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
     this._config = { show_name: true, show_state: true, ...config };
   }
 
-  protected render(): TemplateResult {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -74,20 +64,19 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
 
     if (!stateObj) {
       return html`
-        ${
-          createErrorCardElement(
-            createErrorCardConfig(
-              `Entity not found: ${this._config.entity}`,
-              this._config
-            )
-          )
-        }
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
     const name = this._config.name || computeStateName(stateObj);
     const state = computeStateDisplay(
-      this.localize,
+      this.hass!.localize,
       stateObj,
       this.hass.language
     );
@@ -111,64 +100,67 @@ class HuiPictureEntityCard extends hassLocalizeLitMixin(LitElement)
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card>
         <hui-image
           .hass="${this.hass}"
           .image="${this._config.image}"
           .stateImage="${this._config.state_image}"
-          .cameraImage="${
-            computeDomain(this._config.entity) === "camera"
-              ? this._config.entity
-              : this._config.camera_image
-          }"
+          .cameraImage="${computeDomain(this._config.entity) === "camera"
+            ? this._config.entity
+            : this._config.camera_image}"
+          .cameraView="${this._config.camera_view}"
           .entity="${this._config.entity}"
           .aspectRatio="${this._config.aspect_ratio}"
           @ha-click="${this._handleTap}"
           @ha-hold="${this._handleHold}"
           .longPress="${longPress()}"
-          class="${
-            classMap({
-              clickable: stateObj.state !== UNAVAILABLE,
-            })
-          }"
+          class="${classMap({
+            clickable: stateObj.state !== UNAVAILABLE,
+          })}"
         ></hui-image>
         ${footer}
       </ha-card>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        ha-card {
-          min-height: 75px;
-          overflow: hidden;
-          position: relative;
-        }
-        hui-image.clickable {
-          cursor: pointer;
-        }
-        .footer {
-          @apply --paper-font-common-nowrap;
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.3);
-          padding: 16px;
-          font-size: 16px;
-          line-height: 16px;
-          color: white;
-        }
-        .both {
-          display: flex;
-          justify-content: space-between;
-        }
-        .state {
-          text-align: right;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      ha-card {
+        min-height: 75px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      hui-image.clickable {
+        cursor: pointer;
+      }
+
+      .footer {
+        /* start paper-font-common-nowrap style */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        /* end paper-font-common-nowrap style */
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 16px;
+        font-size: 16px;
+        line-height: 16px;
+        color: white;
+      }
+
+      .both {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .state {
+        text-align: right;
+      }
     `;
   }
 
@@ -186,5 +178,3 @@ declare global {
     "hui-picture-entity-card": HuiPictureEntityCard;
   }
 }
-
-customElements.define("hui-picture-entity-card", HuiPictureEntityCard);

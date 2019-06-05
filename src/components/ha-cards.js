@@ -36,12 +36,13 @@ const PRIORITY = {
   // badges have priority >= 0
   updater: 0,
   sun: 1,
-  device_tracker: 2,
-  alarm_control_panel: 3,
-  timer: 4,
-  sensor: 5,
-  binary_sensor: 6,
-  mailbox: 7,
+  person: 2,
+  device_tracker: 3,
+  alarm_control_panel: 4,
+  timer: 5,
+  sensor: 6,
+  binary_sensor: 7,
+  mailbox: 8,
 };
 
 const getPriority = (domain) => (domain in PRIORITY ? PRIORITY[domain] : 100);

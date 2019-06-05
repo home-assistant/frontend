@@ -3,6 +3,7 @@ import * as assert from "assert";
 import {
   swapCard,
   moveCard,
+  swapView,
 } from "../../../../src/panels/lovelace/editor/config-util";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 
@@ -127,5 +128,67 @@ describe("moveCard", () => {
       Error,
       "You can not move a card to the view it is in."
     );
+  });
+});
+
+describe("swapView", () => {
+  it("swaps 2 view", () => {
+    const config: LovelaceConfig = {
+      views: [
+        {
+          title: "view1",
+          cards: [],
+        },
+        {
+          title: "view2",
+          cards: [],
+        },
+      ],
+    };
+
+    const result = swapView(config, 1, 0);
+    const expected = {
+      views: [
+        {
+          title: "view2",
+          cards: [],
+        },
+        {
+          title: "view1",
+          cards: [],
+        },
+      ],
+    };
+    assert.deepEqual(expected, result);
+  });
+
+  it("swaps the same views", () => {
+    const config: LovelaceConfig = {
+      views: [
+        {
+          title: "view1",
+          cards: [],
+        },
+        {
+          title: "view2",
+          cards: [],
+        },
+      ],
+    };
+
+    const result = swapView(config, 0, 0);
+    const expected = {
+      views: [
+        {
+          title: "view1",
+          cards: [],
+        },
+        {
+          title: "view2",
+          cards: [],
+        },
+      ],
+    };
+    assert.deepEqual(expected, result);
   });
 });

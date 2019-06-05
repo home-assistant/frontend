@@ -33,7 +33,7 @@ import { fireEvent } from "../common/dom/fire_event";
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* @polymerMixin */
-export default dedupingMixin(
+export const EventsMixin = dedupingMixin(
   (superClass) =>
     class extends superClass {
       /**

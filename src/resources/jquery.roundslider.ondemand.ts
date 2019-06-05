@@ -1,4 +1,4 @@
-import { TemplateResult } from "lit-html";
+import { TemplateResult } from "lit-element";
 
 type LoadedRoundSlider = Promise<{
   roundSliderStyle: TemplateResult;

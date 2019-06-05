@@ -1,18 +1,22 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-thermostat-card";
-import { configElementStyle } from "./config-elements-style";
 
 import "../../components/hui-theme-select-editor";
 import "../../../../components/entity/ha-entity-picker";
+
+import { struct } from "../../common/structs/struct";
+import { EntitiesEditorEvent, EditorTarget } from "../types";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCardEditor } from "../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { configElementStyle } from "./config-elements-style";
+import { ThermostatCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -21,18 +25,16 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
-export class HuiThermostatCardEditor extends hassLocalizeLitMixin(LitElement)
+@customElement("hui-thermostat-card-editor")
+export class HuiThermostatCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  public setConfig(config: Config): void {
+  @property() private _config?: ThermostatCardConfig;
+
+  public setConfig(config: ThermostatCardConfig): void {
     config = cardConfigStruct(config);
-    this._config = { type: "thermostat", ...config };
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
+    this._config = config;
   }
 
   get _entity(): string {
@@ -47,7 +49,7 @@ export class HuiThermostatCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.theme || "default";
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }
@@ -91,7 +93,11 @@ export class HuiThermostatCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      this._config = { ...this._config, [target.configValue!]: target.value };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = { ...this._config, [target.configValue!]: target.value };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -102,5 +108,3 @@ declare global {
     "hui-thermostat-card-editor": HuiThermostatCardEditor;
   }
 }
-
-customElements.define("hui-thermostat-card-editor", HuiThermostatCardEditor);

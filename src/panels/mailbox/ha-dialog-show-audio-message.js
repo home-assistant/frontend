@@ -1,10 +1,10 @@
-import "@polymer/paper-button/paper-button";
-import "@polymer/paper-dialog/paper-dialog";
+import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../resources/ha-style";
+import "../../components/dialog/ha-paper-dialog";
 
 import LocalizeMixin from "../../mixins/localize-mixin";
 
@@ -19,7 +19,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
           color: red;
         }
         @media all and (max-width: 500px) {
-          paper-dialog {
+          ha-paper-dialog {
             margin: 0;
             width: 100%;
             max-height: calc(100% - 64px);
@@ -34,10 +34,10 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
           }
         }
 
-        paper-dialog {
+        ha-paper-dialog {
           border-radius: 2px;
         }
-        paper-dialog p {
+        ha-paper-dialog p {
           color: var(--secondary-text-color);
         }
 
@@ -45,7 +45,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
           float: right;
         }
       </style>
-      <paper-dialog
+      <ha-paper-dialog
         id="mp3dialog"
         with-backdrop
         opened="{{_opened}}"
@@ -73,7 +73,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
             <source id="mp3src" src="" type="audio/mpeg" />
           </audio>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 

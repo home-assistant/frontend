@@ -265,12 +265,23 @@
             "on": "On",
             "paused": "Paused",
             "returning": "Returning to dock"
+        },
+        "timer": {
+            "active": "active",
+            "idle": "idle",
+            "paused": "paused"
+        },
+        "person": {
+            "home": "Home",
+            "not_home": "Away"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Unk",
-            "unavailable": "Unavai"
+            "unavailable": "Unavai",
+            "error": "Error",
+            "entity_not_found": "Entity Not Found"
         },
         "alarm_control_panel": {
             "armed": "Armed",
@@ -285,6 +296,10 @@
             "armed_custom_bypass": "Armed"
         },
         "device_tracker": {
+            "home": "Home",
+            "not_home": "Away"
+        },
+        "person": {
             "home": "Home",
             "not_home": "Away"
         }
@@ -340,23 +355,43 @@
                                 "introduction": "Control your Home Assistant server… from Home Assistant.",
                                 "restart": "Restart",
                                 "stop": "Stop"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
+                                "location_name": "Name of your Home Assistant installation",
+                                "latitude": "Latitude",
+                                "longitude": "Longitude",
+                                "elevation": "Elevation",
+                                "elevation_meters": "meters",
+                                "time_zone": "Time Zone",
+                                "unit_system": "Unit System",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metric",
+                                "imperial_example": "Fahrenheit, pounds",
+                                "metric_example": "Celsius, kilograms",
+                                "save_button": "Save"
                             }
                         }
                     }
                 },
                 "customize": {
                     "caption": "Customization",
-                    "description": "Customize your entities"
+                    "description": "Customize your entities",
+                    "picker": {
+                        "header": "Customization",
+                        "introduction": "Tweak per-entity attributes. Added\/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
+                    }
                 },
                 "automation": {
                     "caption": "Automation",
                     "description": "Create and edit automations",
                     "picker": {
                         "header": "Automation Editor",
-                        "introduction": "The automation editor allows you to create and edit automations. Please read [the instructions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) to make sure that you have configured Home Assistant correctly.",
+                        "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "pick_automation": "Pick automation to edit",
                         "no_automations": "We couldn’t find any editable automations",
-                        "add_automation": "Add automation"
+                        "add_automation": "Add automation",
+                        "learn_more": "Learn more about automations"
                     },
                     "editor": {
                         "introduction": "Use automations to bring your home alive",
@@ -366,7 +401,7 @@
                         "alias": "Name",
                         "triggers": {
                             "header": "Triggers",
-                            "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.\n\n[Learn more about triggers.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
                             "add": "Add trigger",
                             "duplicate": "Duplicate",
                             "delete": "Delete",
@@ -424,12 +459,31 @@
                                     "event": "Event:",
                                     "enter": "Enter",
                                     "leave": "Leave"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "time_pattern": {
+                                    "label": "Time Pattern",
+                                    "hours": "Hours",
+                                    "minutes": "Minutes",
+                                    "seconds": "Seconds"
+                                },
+                                "geo_location": {
+                                    "label": "Geolocation",
+                                    "source": "Source",
+                                    "zone": "Zone",
+                                    "event": "Event:",
+                                    "enter": "Enter",
+                                    "leave": "Leave"
                                 }
-                            }
+                            },
+                            "learn_more": "Learn more about triggers"
                         },
                         "conditions": {
                             "header": "Conditions",
-                            "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.\n\n[Learn more about conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
                             "add": "Add condition",
                             "duplicate": "Duplicate",
                             "delete": "Delete",
@@ -470,11 +524,12 @@
                                     "entity": "Entity with location",
                                     "zone": "Zone"
                                 }
-                            }
+                            },
+                            "learn_more": "Learn more about conditions"
                         },
                         "actions": {
                             "header": "Actions",
-                            "introduction": "The actions are what Home Assistant will do when the automation is triggered.\n\n[Learn more about actions.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
                             "add": "Add action",
                             "duplicate": "Duplicate",
                             "delete": "Delete",
@@ -503,8 +558,11 @@
                                     "event": "Event:",
                                     "service_data": "Service data"
                                 }
-                            }
-                        }
+                            },
+                            "learn_more": "Learn more about actions"
+                        },
+                        "load_error_not_editable": "Only automations in automations.yaml are editable.",
+                        "load_error_unknown": "Error loading automation ({err_no})."
                     }
                 },
                 "script": {
@@ -526,13 +584,22 @@
                         "change_password": "Change password",
                         "activate_user": "Activate user",
                         "deactivate_user": "Deactivate user",
-                        "delete_user": "Delete user"
+                        "delete_user": "Delete user",
+                        "caption": "View user"
+                    },
+                    "add_user": {
+                        "caption": "Add user",
+                        "name": "Name",
+                        "username": "Username",
+                        "password": "Password",
+                        "create": "Create"
                     }
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Logged in as {email}",
-                    "description_not_login": "Not logged in"
+                    "description_not_login": "Not logged in",
+                    "description_features": "Control away from home, integrate with Alexa and Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrations",
@@ -551,7 +618,80 @@
                         "hub": "Connected via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "device unavailable",
-                        "entity_unavailable": "entity unavailable"
+                        "entity_unavailable": "entity unavailable",
+                        "no_area": "No Area"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "This step requires you to visit an external website to be completed.",
+                            "open_site": "Open website"
+                        }
+                    }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation network management",
+                    "services": {
+                        "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
+                        "updateDeviceName": "Set a custom name for this device in the device registry.",
+                        "remove": "Remove a device from the ZigBee network."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "User given name",
+                        "area_picker_label": "Area",
+                        "update_name_button": "Update Name"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Add Devices",
+                        "spinner": "Searching for ZHA Zigbee devices...",
+                        "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode."
+                    }
+                },
+                "area_registry": {
+                    "caption": "Area Registry",
+                    "description": "Overview of all areas in your home.",
+                    "picker": {
+                        "header": "Area Registry",
+                        "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
+                        "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
+                        "integrations_page": "Integrations page",
+                        "no_areas": "Looks like you have no areas yet!",
+                        "create_area": "CREATE AREA"
+                    },
+                    "no_areas": "Looks like you have no areas yet!",
+                    "create_area": "CREATE AREA",
+                    "editor": {
+                        "default_name": "New Area",
+                        "delete": "DELETE",
+                        "update": "UPDATE",
+                        "create": "CREATE"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Entity Registry",
+                    "description": "Overview of all known entities.",
+                    "picker": {
+                        "header": "Entity Registry",
+                        "unavailable": "(unavailable)",
+                        "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
+                        "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
+                        "integrations_page": "Integrations page"
+                    },
+                    "editor": {
+                        "unavailable": "This entity is not currently available.",
+                        "default_name": "New Area",
+                        "delete": "DELETE",
+                        "update": "UPDATE"
+                    }
+                },
+                "person": {
+                    "caption": "Persons",
+                    "description": "Manage the persons that Home Assistant tracks.",
+                    "detail": {
+                        "name": "Name",
+                        "device_tracker_intro": "Select the devices that belong to this person.",
+                        "device_tracker_picked": "Track Device",
+                        "device_tracker_pick": "Pick device to track"
                     }
                 }
             },
@@ -704,6 +844,29 @@
                             "abort": {
                                 "not_whitelisted": "Your computer is not whitelisted."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Username",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Two-factor Authentication Code"
+                                    },
+                                    "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Invalid username or password",
+                                "invalid_code": "Invalid authentication code"
+                            },
+                            "abort": {
+                                "login_expired": "Session expired, please login again."
+                            }
                         }
                     }
                 }
@@ -716,12 +879,27 @@
                     "data": {
                         "name": "Name",
                         "username": "Username",
-                        "password": "Password"
+                        "password": "Password",
+                        "password_confirm": "Confirm Password"
                     },
                     "create_account": "Create Account",
                     "error": {
-                        "required_fields": "Fill in all required fields"
+                        "required_fields": "Fill in all required fields",
+                        "password_not_match": "Passwords don't match"
                     }
+                },
+                "integration": {
+                    "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
+                    "more_integrations": "More",
+                    "finish": "Finish"
+                },
+                "core-config": {
+                    "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
+                    "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
+                    "intro_location_detect": "We can help you fill in this information by making a one-time request to an external service.",
+                    "location_name_default": "Home",
+                    "button_detect": "Detect",
+                    "finish": "Next"
                 }
             },
             "lovelace": {
@@ -730,6 +908,19 @@
                         "checked_items": "Checked items",
                         "clear_items": "Clear checked items",
                         "add_item": "Add item"
+                    },
+                    "empty_state": {
+                        "title": "Welcome Home",
+                        "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
+                        "go_to_integrations_page": "Go to the integrations page."
+                    },
+                    "picture-elements": {
+                        "hold": "Hold:",
+                        "tap": "Tap:",
+                        "navigate_to": "Navigate to {location}",
+                        "toggle": "Toggle {name}",
+                        "call_service": "Call service {name}",
+                        "more_info": "Show more-info: {name}"
                     }
                 },
                 "editor": {
@@ -740,7 +931,8 @@
                         "pick_card": "Pick the card you want to add.",
                         "add": "Add Card",
                         "edit": "Edit",
-                        "delete": "Delete"
+                        "delete": "Delete",
+                        "move": "Move"
                     },
                     "migrate": {
                         "header": "Configuration Incompatible",
@@ -749,7 +941,6 @@
                         "migrate": "Migrate config"
                     },
                     "header": "Edit UI",
-                    "configure_ui": "Configure UI",
                     "edit_view": {
                         "header": "View Configuration",
                         "add": "Add view",
@@ -762,13 +953,38 @@
                         "para_sure": "Are you sure you want to take control of your user interface?",
                         "cancel": "Never mind",
                         "save": "Take control"
+                    },
+                    "menu": {
+                        "raw_editor": "Raw config editor"
+                    },
+                    "raw_editor": {
+                        "header": "Edit Config",
+                        "save": "Save",
+                        "unsaved_changes": "Unsaved changes",
+                        "saved": "Saved"
                     }
-                }
+                },
+                "menu": {
+                    "configure_ui": "Configure UI",
+                    "unused_entities": "Unused entities",
+                    "help": "Help",
+                    "refresh": "Refresh"
+                },
+                "warning": {
+                    "entity_not_found": "Entity not available: {entity}",
+                    "entity_non_numeric": "Entity is non-numeric: {entity}"
+                },
+                "changed_toast": {
+                    "message": "The Lovelace config was updated, would you like to refresh?",
+                    "refresh": "Refresh"
+                },
+                "reload_lovelace": "Reload Lovelace"
             }
         },
         "sidebar": {
             "log_out": "Log out",
-            "developer_tools": "Developer tools"
+            "developer_tools": "Developer tools",
+            "external_app_configuration": "App Configuration"
         },
         "common": {
             "loading": "Loading",
@@ -835,7 +1051,8 @@
                 "arm_home": "Arm home",
                 "arm_away": "Arm away",
                 "arm_night": "Arm night",
-                "armed_custom_bypass": "Custom bypass"
+                "armed_custom_bypass": "Custom bypass",
+                "arm_custom_bypass": "Custom bypass"
             },
             "automation": {
                 "last_triggered": "Last triggered",
@@ -930,8 +1147,21 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Save",
-                "name": "Name",
+                "name": "Name Override",
                 "entity_id": "Entity ID"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Last Action"
+                },
+                "sun": {
+                    "elevation": "Elevation",
+                    "rising": "Rising",
+                    "setting": "Setting"
+                },
+                "updater": {
+                    "title": "Update Instructions"
+                }
             }
         },
         "auth_store": {
@@ -981,7 +1211,13 @@
         "updater": "Updater",
         "weblink": "Weblink",
         "zwave": "Z-Wave",
-        "vacuum": "Vacuum"
+        "vacuum": "Vacuum",
+        "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "system_health": "System Health",
+        "person": "Person"
     },
     "attribute": {
         "weather": {
@@ -989,5 +1225,19 @@
             "visibility": "Visibility",
             "wind_speed": "Wind speed"
         }
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Off",
+                "on": "On",
+                "auto": "Auto"
+            }
+        }
+    },
+    "groups": {
+        "system-admin": "Administrators",
+        "system-users": "Users",
+        "system-read-only": "Read-Only Users"
     }
 }

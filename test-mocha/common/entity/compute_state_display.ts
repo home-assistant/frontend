@@ -258,22 +258,4 @@ describe("computeStateDisplay", () => {
       "My Custom State"
     );
   });
-
-  it("Only calculates state display once per immutable state object", () => {
-    const stateObj: any = {
-      entity_id: "cover.test",
-      state: "open",
-      attributes: {},
-    };
-    assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
-      "state.cover.open"
-    );
-
-    stateObj.state = "closing";
-    assert.strictEqual(
-      computeStateDisplay(localize, stateObj, "en"),
-      "state.cover.open"
-    );
-  });
 });

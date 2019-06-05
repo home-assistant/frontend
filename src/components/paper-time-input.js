@@ -23,7 +23,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-class PaperTimeInput extends PolymerElement {
+export class PaperTimeInput extends PolymerElement {
   static get template() {
     return html`
       <style>
@@ -48,6 +48,7 @@ class PaperTimeInput extends PolymerElement {
             margin: 0;
             display: none;
           }
+          --paper-input-container-shared-input-style_-_-webkit-appearance: textfield;
         }
 
         paper-dropdown-menu {

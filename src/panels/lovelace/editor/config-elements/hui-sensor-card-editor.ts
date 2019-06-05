@@ -1,21 +1,25 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
+import "../../components/hui-theme-select-editor";
+import "../../../../components/entity/ha-entity-picker";
+
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-sensor-card";
 import { configElementStyle } from "./config-elements-style";
-
-import "../../components/hui-theme-select-editor";
-import "../../../../components/entity/ha-entity-picker";
+import { SensorCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -29,19 +33,16 @@ const cardConfigStruct = struct({
   hours_to_show: "number?",
 });
 
-export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
+@customElement("hui-sensor-card-editor")
+export class HuiSensorCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  public setConfig(config: Config): void {
+  @property() private _config?: SensorCardConfig;
+
+  public setConfig(config: SensorCardConfig): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "sensor", ...config };
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
+    this._config = config;
   }
 
   get _entity(): string {
@@ -57,26 +58,26 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
   }
 
   get _graph(): string {
-    return this._config!.graph || "line";
+    return this._config!.graph || "none";
   }
 
   get _unit(): string {
     return this._config!.unit || "";
   }
 
-  get _detail(): number {
-    return this._config!.number || 1;
+  get _detail(): number | string {
+    return this._config!.number || "1";
   }
 
   get _theme(): string {
     return this._config!.theme || "default";
   }
 
-  get _hours_to_show(): number {
-    return this._config!.hours_to_show || 24;
+  get _hours_to_show(): number | string {
+    return this._config!.hours_to_show || "24";
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }
@@ -110,7 +111,7 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-dropdown-menu
-            .label="Graph Type"
+            label="Graph Type"
             .configValue="${"graph"}"
             @value-changed="${this._valueChanged}"
           >
@@ -118,13 +119,11 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
               slot="dropdown-content"
               .selected="${graphs.indexOf(this._graph)}"
             >
-              ${
-                graphs.map((graph) => {
-                  return html`
-                    <paper-item>${graph}</paper-item>
-                  `;
-                })
-              }
+              ${graphs.map((graph) => {
+                return html`
+                  <paper-item>${graph}</paper-item>
+                `;
+              })}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -172,14 +171,18 @@ export class HuiSensorCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      let value: any = target.value;
-      if (target.type === "number") {
-        value = Number(value);
+      if (
+        target.value === "" ||
+        (target.type === "number" && isNaN(Number(target.value)))
+      ) {
+        delete this._config[target.configValue!];
+      } else {
+        let value: any = target.value;
+        if (target.type === "number") {
+          value = Number(value);
+        }
+        this._config = { ...this._config, [target.configValue!]: value };
       }
-      this._config = {
-        ...this._config,
-        [target.configValue!]: value,
-      };
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -190,5 +193,3 @@ declare global {
     "hui-sensor-card-editor": HuiSensorCardEditor;
   }
 }
-
-customElements.define("hui-sensor-card-editor", HuiSensorCardEditor);

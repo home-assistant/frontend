@@ -1,11 +1,12 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-button/paper-button";
+import "@material/mwc-button";
 import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import { ENTITY_COMPONENT_DOMAINS } from "../../data/entity";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
 import "../../components/ha-service-picker";
@@ -25,6 +26,7 @@ class HaPanelDevService extends PolymerElement {
 
         .content {
           padding: 16px;
+          direction: ltr;
         }
 
         .ha-form {
@@ -82,10 +84,7 @@ class HaPanelDevService extends PolymerElement {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button
-              narrow="[[narrow]]"
-              show-menu="[[showMenu]]"
-            ></ha-menu-button>
+            <ha-menu-button></ha-menu-button>
             <div main-title>Services</div>
           </app-toolbar>
         </app-header>
@@ -130,11 +129,8 @@ class HaPanelDevService extends PolymerElement {
               autocomplete="off"
               spellcheck="false"
             ></paper-textarea>
-            <paper-button
-              on-click="_callService"
-              raised
-              disabled="[[!validJSON]]"
-              >Call Service</paper-button
+            <mwc-button on-click="_callService" raised disabled="[[!validJSON]]"
+              >Call Service</mwc-button
             >
             <template is="dom-if" if="[[!validJSON]]">
               <span class="error">Invalid JSON</span>
@@ -186,16 +182,6 @@ class HaPanelDevService extends PolymerElement {
     return {
       hass: {
         type: Object,
-      },
-
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
       },
 
       domainService: {
@@ -295,7 +281,7 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _computeEntityDomainFilter(domain) {
-    return domain === "homeassistant" ? null : domain;
+    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? domain : null;
   }
 
   _callService() {

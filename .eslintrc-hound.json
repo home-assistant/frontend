@@ -8,7 +8,8 @@
   },
   "settings": {
     "react": {
-      "pragma": "h"
+      "pragma": "h",
+      "version": "15.0"
     },
     "import/resolver": {
       "webpack": {
@@ -18,6 +19,7 @@
   },
   "globals": {
     "__DEV__": false,
+    "__DEMO__": false,
     "__BUILD__": false,
     "__VERSION__": false,
     "__STATIC_PATH__": false,

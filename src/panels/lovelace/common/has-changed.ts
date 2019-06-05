@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../../../types";
-import { PropertyValues } from "@polymer/lit-element";
+import { PropertyValues } from "lit-element";
 
 // Check if config or Entity changed
 export function hasConfigOrEntityChanged(

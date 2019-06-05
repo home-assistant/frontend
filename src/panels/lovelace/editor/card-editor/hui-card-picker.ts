@@ -1,12 +1,17 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import "@polymer/paper-button/paper-button";
+import {
+  html,
+  css,
+  LitElement,
+  TemplateResult,
+  CSSResult,
+  customElement,
+} from "lit-element";
+import "@material/mwc-button";
 
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { CardPickTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
@@ -35,44 +40,49 @@ const cards = [
   { name: "Weather Forecast", type: "weather-forecast" },
 ];
 
-export class HuiCardPicker extends hassLocalizeLitMixin(LitElement) {
+@customElement("hui-card-picker")
+export class HuiCardPicker extends LitElement {
   public hass?: HomeAssistant;
+
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
-      <h3>${this.localize("ui.panel.lovelace.editor.edit_card.pick_card")}</h3>
+      <h3>
+        ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card")}
+      </h3>
       <div class="cards-container">
-        ${
-          cards.map((card) => {
-            return html`
-              <paper-button
-                raised
-                @click="${this._cardPicked}"
-                .type="${card.type}"
-                >${card.name}</paper-button
-              >
-            `;
-          })
-        }
+        ${cards.map((card) => {
+          return html`
+            <mwc-button @click="${this._cardPicked}" .type="${card.type}">
+              ${card.name}
+            </mwc-button>
+          `;
+        })}
       </div>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      css`
         .cards-container {
           display: flex;
           flex-wrap: wrap;
           margin-bottom: 10px;
         }
-        .cards-container paper-button {
+        .cards-container mwc-button {
           flex: 1 0 25%;
+          margin: 4px;
         }
-      </style>
-    `;
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          .cards-container mwc-button {
+            flex: 1 0 33%;
+          }
+        }
+      `,
+    ];
   }
 
   private _cardPicked(ev: Event): void {
@@ -96,5 +106,3 @@ declare global {
     "hui-card-picker": HuiCardPicker;
   }
 }
-
-customElements.define("hui-card-picker", HuiCardPicker);

@@ -2,8 +2,9 @@
  * Lite mixin to add localization without depending on the Hass object.
  */
 import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin";
-import { getActiveTranslation } from "../util/hass-translation";
+import { getLocalLanguage } from "../util/hass-translation";
 import { localizeLiteBaseMixin } from "./localize-lite-base-mixin";
+import { computeLocalize } from "../common/translations/localize";
 
 /**
  * @polymerMixin
@@ -15,7 +16,8 @@ export const localizeLiteMixin = dedupingMixin(
         return {
           language: {
             type: String,
-            value: getActiveTranslation(),
+            // Use browser language setup before login.
+            value: getLocalLanguage(),
           },
           resources: Object,
           // The fragment to load.
@@ -35,6 +37,15 @@ export const localizeLiteMixin = dedupingMixin(
       public ready() {
         super.ready();
         this._initializeLocalizeLite();
+      }
+
+      protected __computeLocalize(language, resources, formats?) {
+        return computeLocalize(
+          this.constructor.prototype,
+          language,
+          resources,
+          formats
+        );
       }
     }
 );

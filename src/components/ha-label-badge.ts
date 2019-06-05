@@ -1,10 +1,13 @@
 import {
+  html,
   LitElement,
   PropertyDeclarations,
   PropertyValues,
-} from "@polymer/lit-element";
-import { TemplateResult, html } from "lit-html";
-import { classMap } from "lit-html/directives/classMap";
+  TemplateResult,
+  CSSResult,
+  css,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {
@@ -24,62 +27,52 @@ class HaLabelBadge extends LitElement {
     };
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
-      ${this.renderStyle()}
       <div class="badge-container">
         <div class="label-badge" id="badge">
           <div
-            class="${
-              classMap({
-                value: true,
-                big: Boolean(this.value && this.value.length > 4),
-              })
-            }"
+            class="${classMap({
+              value: true,
+              big: Boolean(this.value && this.value.length > 4),
+            })}"
           >
-            ${
-              this.icon && !this.value && !this.image
-                ? html`
-                    <ha-icon .icon="${this.icon}"></ha-icon>
-                  `
-                : ""
-            }
-            ${
-              this.value && !this.image
-                ? html`
-                    <span>${this.value}</span>
-                  `
-                : ""
-            }
-          </div>
-          ${
-            this.label
+            ${this.icon && !this.value && !this.image
               ? html`
-                  <div
-                    class="${
-                      classMap({ label: true, big: this.label.length > 5 })
-                    }"
-                  >
-                    <span>${this.label}</span>
-                  </div>
+                  <ha-icon .icon="${this.icon}"></ha-icon>
                 `
-              : ""
-          }
-        </div>
-        ${
-          this.description
+              : ""}
+            ${this.value && !this.image
+              ? html`
+                  <span>${this.value}</span>
+                `
+              : ""}
+          </div>
+          ${this.label
             ? html`
-                <div class="title">${this.description}</div>
+                <div
+                  class="${classMap({
+                    label: true,
+                    big: this.label.length > 5,
+                  })}"
+                >
+                  <span>${this.label}</span>
+                </div>
               `
-            : ""
-        }
+            : ""}
+        </div>
+        ${this.description
+          ? html`
+              <div class="title">${this.description}</div>
+            `
+          : ""}
       </div>
     `;
   }
 
-  protected renderStyle(): TemplateResult {
-    return html`
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      css`
         .badge-container {
           display: inline-block;
           text-align: center;
@@ -148,8 +141,8 @@ class HaLabelBadge extends LitElement {
           text-overflow: ellipsis;
           line-height: normal;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 
   protected updated(changedProperties: PropertyValues): void {

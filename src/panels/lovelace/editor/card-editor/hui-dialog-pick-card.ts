@@ -1,25 +1,37 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
-import "@polymer/paper-dialog/paper-dialog";
+import {
+  html,
+  css,
+  LitElement,
+  TemplateResult,
+  CSSResult,
+  customElement,
+} from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+
+import "../../../../components/dialog/ha-paper-dialog";
+
+import { haStyleDialog } from "../../../../resources/styles";
 
 import "./hui-card-picker";
 import { HomeAssistant } from "../../../../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 
-export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
+@customElement("hui-dialog-pick-card")
+export class HuiDialogPickCard extends LitElement {
   public hass?: HomeAssistant;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+  public closeDialog?: () => void;
 
-  static get properties(): PropertyDeclarations {
-    return {};
-  }
-
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     return html`
-      <paper-dialog with-backdrop opened>
-        <h2>${this.localize("ui.panel.lovelace.editor.edit_card.header")}</h2>
+      <ha-paper-dialog
+        with-backdrop
+        opened
+        @opened-changed="${this._openedChanged}"
+      >
+        <h2>
+          ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}
+        </h2>
         <paper-dialog-scrollable>
           <hui-card-picker
             .hass="${this.hass}"
@@ -27,14 +39,45 @@ export class HuiDialogPickCard extends hassLocalizeLitMixin(LitElement) {
           ></hui-card-picker>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <paper-button @click="${this._skipPick}">SKIP</paper-button>
+          <mwc-button @click="${this._skipPick}">MANUAL CARD</mwc-button>
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
+  }
+
+  private _openedChanged(ev): void {
+    if (!ev.detail.value) {
+      this.closeDialog!();
+    }
   }
 
   private _skipPick() {
     this.cardPicked!({ type: "" });
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-paper-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+        }
+
+        @media all and (min-width: 660px) {
+          ha-paper-dialog {
+            width: 650px;
+          }
+        }
+
+        ha-paper-dialog {
+          max-width: 650px;
+        }
+      `,
+    ];
   }
 }
 
@@ -43,5 +86,3 @@ declare global {
     "hui-dialog-pick-card": HuiDialogPickCard;
   }
 }
-
-customElements.define("hui-dialog-pick-card", HuiDialogPickCard);

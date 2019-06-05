@@ -1,3 +1,5 @@
+import deepClone from "deep-clone-simple";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 
 import {
@@ -8,6 +10,7 @@ import {
 import "../entity-rows/hui-climate-entity-row";
 import "../entity-rows/hui-cover-entity-row";
 import "../entity-rows/hui-group-entity-row";
+import "../entity-rows/hui-input-datetime-entity-row";
 import "../entity-rows/hui-input-number-entity-row";
 import "../entity-rows/hui-input-select-entity-row";
 import "../entity-rows/hui-input-text-entity-row";
@@ -44,14 +47,19 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   input_select: "input-select",
   input_text: "input-text",
   light: "toggle",
-  media_player: "media-player",
   lock: "lock",
+  media_player: "media-player",
+  remote: "toggle",
   scene: "scene",
   script: "script",
   sensor: "sensor",
   timer: "timer",
   switch: "toggle",
   vacuum: "toggle",
+  // Temporary. Once climate is rewritten,
+  // water heater should get it's own row.
+  water_heater: "climate",
+  input_datetime: "input-datetime",
 };
 const TIMEOUT = 2000;
 
@@ -61,7 +69,7 @@ const _createElement = (
 ): EntityRow | HuiErrorCard => {
   const element = document.createElement(tag) as EntityRow;
   try {
-    element.setConfig(config);
+    element.setConfig(deepClone(config));
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
@@ -115,7 +123,7 @@ export const createRowElement = (
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);
-      fireEvent(element, "rebuild-view");
+      fireEvent(element, "ll-rebuild");
     });
 
     return element;

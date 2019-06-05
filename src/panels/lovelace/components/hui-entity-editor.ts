@@ -1,5 +1,12 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  css,
+  CSSResult,
+} from "lit-element";
 
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -8,39 +15,31 @@ import { EntityConfig } from "../entity-rows/types";
 import "../../../components/entity/ha-entity-picker";
 import { EditorTarget } from "../editor/types";
 
+@customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
-  protected hass?: HomeAssistant;
-  protected entities?: EntityConfig[];
+  @property() protected hass?: HomeAssistant;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      entities: {},
-    };
-  }
+  @property() protected entities?: EntityConfig[];
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.entities) {
       return html``;
     }
 
     return html`
-      ${this.renderStyle()}
       <h3>Entities</h3>
       <div class="entities">
-        ${
-          this.entities.map((entityConf, index) => {
-            return html`
-              <ha-entity-picker
-                .hass="${this.hass}"
-                .value="${entityConf.entity}"
-                .index="${index}"
-                @change="${this._valueChanged}"
-                allow-custom-entity
-              ></ha-entity-picker>
-            `;
-          })
-        }
+        ${this.entities.map((entityConf, index) => {
+          return html`
+            <ha-entity-picker
+              .hass="${this.hass}"
+              .value="${entityConf.entity}"
+              .index="${index}"
+              @change="${this._valueChanged}"
+              allow-custom-entity
+            ></ha-entity-picker>
+          `;
+        })}
         <ha-entity-picker
           .hass="${this.hass}"
           @change="${this._addEntity}"
@@ -77,13 +76,11 @@ export class HuiEntityEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .entities {
-          padding-left: 20px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .entities {
+        padding-left: 20px;
+      }
     `;
   }
 }
@@ -93,5 +90,3 @@ declare global {
     "hui-entity-editor": HuiEntityEditor;
   }
 }
-
-customElements.define("hui-entity-editor", HuiEntityEditor);

@@ -2,11 +2,17 @@ import {
   LitElement,
   html,
   PropertyValues,
-  PropertyDeclarations,
-} from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+  TemplateResult,
+  css,
+  CSSResult,
+  customElement,
+  property,
+} from "lit-element";
+
 import { HassEntity } from "home-assistant-js-websocket";
-import { classMap } from "lit-html/directives/classMap";
+import { classMap } from "lit-html/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
+import { HomeAssistant } from "../../types";
 
 import computeStateDomain from "../../common/entity/compute_state_domain";
 import computeStateName from "../../common/entity/compute_state_name";
@@ -14,20 +20,20 @@ import domainIcon from "../../common/entity/domain_icon";
 import stateIcon from "../../common/entity/state_icon";
 import timerTimeRemaining from "../../common/entity/timer_time_remaining";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
-import { fireEvent } from "../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../mixins/lit-localize-mixin";
 
 import "../ha-label-badge";
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin EventsMixin
- */
-export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
-  public state?: HassEntity;
+@customElement("ha-state-label-badge")
+export class HaStateLabelBadge extends LitElement {
+  @property() public hass?: HomeAssistant;
+
+  @property() public state?: HassEntity;
+
+  @property() private _timerTimeRemaining?: number;
+
   private _connected?: boolean;
+
   private _updateRemaining?: number;
-  private _timerTimeRemaining?: number;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -41,28 +47,30 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
     this.clearInterval();
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     const state = this.state;
 
     if (!state) {
       return html`
-        ${this.renderStyle()}
-        <ha-label-badge label="not found"></ha-label-badge>
+        <ha-label-badge
+          class="warning"
+          label="${this.hass!.localize("state_badge.default.error")}"
+          icon="hass:alert"
+          description="${this.hass!.localize(
+            "state_badge.default.entity_not_found"
+          )}"
+        ></ha-label-badge>
       `;
     }
 
     const domain = computeStateDomain(state);
 
     return html`
-      ${this.renderStyle()}
       <ha-label-badge
-        class="${
-          classMap({
-            [domain]: true,
-            "has-unit_of_measurement":
-              "unit_of_measurement" in state.attributes,
-          })
-        }"
+        class="${classMap({
+          [domain]: true,
+          "has-unit_of_measurement": "unit_of_measurement" in state.attributes,
+        })}"
         .value="${this._computeValue(domain, state)}"
         .icon="${this._computeIcon(domain, state)}"
         .image="${state.attributes.entity_picture}"
@@ -70,14 +78,6 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
         .description="${computeStateName(state)}"
       ></ha-label-badge>
     `;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      state: {},
-      _timerTimeRemaining: {},
-    };
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -111,7 +111,7 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
       default:
         return state.state === "unknown"
           ? "-"
-          : this.localize(`component.${domain}.state.${state.state}`) ||
+          : this.hass!.localize(`component.${domain}.state.${state.state}`) ||
               state.state;
     }
   }
@@ -135,7 +135,7 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
           return "hass:weather-night";
         }
         if (state.state === "armed_custom_bypass") {
-          return "hass:security-home";
+          return "hass:shield-home";
         }
         if (state.state === "triggered") {
           return "hass:alert-circle";
@@ -145,6 +145,7 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
       case "binary_sensor":
       case "device_tracker":
       case "updater":
+      case "person":
         return stateIcon(state);
       case "sun":
         return state.state === "above_horizon"
@@ -160,14 +161,14 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
   private _computeLabel(domain, state, _timerTimeRemaining) {
     if (
       state.state === "unavailable" ||
-      ["device_tracker", "alarm_control_panel"].includes(domain)
+      ["device_tracker", "alarm_control_panel", "person"].includes(domain)
     ) {
       // Localize the state with a special state_badge namespace, which has variations of
       // the state translations that are truncated to fit within the badge label. Translations
-      // are only added for device_tracker and alarm_control_panel.
+      // are only added for device_tracker, alarm_control_panel and person.
       return (
-        this.localize(`state_badge.${domain}.${state.state}`) ||
-        this.localize(`state_badge.default.${state.state}`) ||
+        this.hass!.localize(`state_badge.${domain}.${state.state}`) ||
+        this.hass!.localize(`state_badge.default.${state.state}`) ||
         state.state
       );
     }
@@ -202,48 +203,47 @@ export class HaStateLabelBadge extends hassLocalizeLitMixin(LitElement) {
     this._timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          cursor: pointer;
-        }
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        cursor: pointer;
+      }
 
-        ha-label-badge {
-          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
-        }
-        ha-label-badge.has-unit_of_measurement {
-          --ha-label-badge-label-text-transform: none;
-        }
+      ha-label-badge {
+        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+      }
+      ha-label-badge.has-unit_of_measurement {
+        --ha-label-badge-label-text-transform: none;
+      }
 
-        ha-label-badge.binary_sensor,
-        ha-label-badge.updater {
-          --ha-label-badge-color: var(--label-badge-blue, #039be5);
-        }
+      ha-label-badge.binary_sensor,
+      ha-label-badge.updater {
+        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+      }
 
-        .red {
-          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
-        }
+      .red {
+        --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+      }
 
-        .blue {
-          --ha-label-badge-color: var(--label-badge-blue, #039be5);
-        }
+      .blue {
+        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+      }
 
-        .green {
-          --ha-label-badge-color: var(--label-badge-green, #0da035);
-        }
+      .green {
+        --ha-label-badge-color: var(--label-badge-green, #0da035);
+      }
 
-        .yellow {
-          --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
-        }
+      .yellow {
+        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+      }
 
-        .grey {
-          --ha-label-badge-color: var(
-            --label-badge-grey,
-            var(--paper-grey-500)
-          );
-        }
-      </style>
+      .grey {
+        --ha-label-badge-color: var(--label-badge-grey, var(--paper-grey-500));
+      }
+
+      .warning {
+        --ha-label-badge-color: var(--label-badge-yellow, #fce588);
+      }
     `;
   }
 }
@@ -253,5 +253,3 @@ declare global {
     "ha-state-label-badge": HaStateLabelBadge;
   }
 }
-
-customElements.define("ha-state-label-badge", HaStateLabelBadge);

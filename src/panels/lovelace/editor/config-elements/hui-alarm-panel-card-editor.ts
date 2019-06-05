@@ -1,20 +1,26 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+  CSSResult,
+  css,
+} from "lit-element";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-alarm-panel-card";
 import { configElementStyle } from "./config-elements-style";
 
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
+import { AlarmPanelCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -23,19 +29,16 @@ const cardConfigStruct = struct({
   states: "array?",
 });
 
-export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
+@customElement("hui-alarm-panel-card-editor")
+export class HuiAlarmPanelCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  public setConfig(config: Config): void {
+  @property() private _config?: AlarmPanelCardConfig;
+
+  public setConfig(config: AlarmPanelCardConfig): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "alarm-panel", ...config };
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
+    this._config = config;
   }
 
   get _entity(): string {
@@ -50,7 +53,7 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.states || [];
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }
@@ -58,7 +61,7 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
     const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
 
     return html`
-      ${configElementStyle} ${this.renderStyle()}
+      ${configElementStyle}
       <div class="card-config">
         <div class="side-by-side">
           <paper-input
@@ -76,56 +79,50 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
             allow-custom-entity
           ></ha-entity-picker>
         </div>
-        <span>Used States</span> ${
-          this._states.map((state, index) => {
-            return html`
-              <div class="states">
-                <paper-item>${state}</paper-item>
-                <ha-icon
-                  class="deleteState"
-                  .value="${index}"
-                  icon="hass:close"
-                  @click=${this._stateRemoved}
-                ></ha-icon>
-              </div>
-            `;
-          })
-        }
+        <span>Used States</span> ${this._states.map((state, index) => {
+          return html`
+            <div class="states">
+              <paper-item>${state}</paper-item>
+              <ha-icon
+                class="deleteState"
+                .value="${index}"
+                icon="hass:close"
+                @click=${this._stateRemoved}
+              ></ha-icon>
+            </div>
+          `;
+        })}
         <paper-dropdown-menu
           label="Available States"
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
-            ${
-              states.map((state) => {
-                return html`
-                  <paper-item>${state}</paper-item>
-                `;
-              })
-            }
+            ${states.map((state) => {
+              return html`
+                <paper-item>${state}</paper-item>
+              `;
+            })}
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .states {
-          display: flex;
-          flex-direction: row;
-        }
-        .deleteState {
-          visibility: hidden;
-        }
-        .states:hover > .deleteState {
-          visibility: visible;
-        }
-        ha-icon {
-          padding-top: 12px;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .states {
+        display: flex;
+        flex-direction: row;
+      }
+      .deleteState {
+        visibility: hidden;
+      }
+      .states:hover > .deleteState {
+        visibility: visible;
+      }
+      ha-icon {
+        padding-top: 12px;
+      }
     `;
   }
 
@@ -174,10 +171,14 @@ export class HuiAlarmPanelCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue!]: target.value,
-      };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [target.configValue!]: target.value,
+        };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -188,5 +189,3 @@ declare global {
     "hui-alarm-panel-card-editor": HuiAlarmPanelCardEditor;
   }
 }
-
-customElements.define("hui-alarm-panel-card-editor", HuiAlarmPanelCardEditor);

@@ -1,10 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Home Assistant</title>
-    <link rel='preload' href='/static/fonts/roboto/Roboto-Light.ttf' as='font' crossorigin />
-    <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
-    <%= require('raw-loader!./_header.html.template') %>
+    <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin />
+    <link
+      rel="preload"
+      href="/static/fonts/roboto/Roboto-Light.ttf"
+      as="font"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/static/fonts/roboto/Roboto-Regular.ttf"
+      as="font"
+      crossorigin
+    />
+    <%= renderTemplate('_header') %>
     <style>
       .content {
         padding: 20px 16px;
@@ -27,29 +38,33 @@
   </head>
   <body>
     <div class="content">
-      <div class='header'>
-        <img src="/static/icons/favicon-192x192.png" height="52">
+      <div class="header">
+        <img src="/static/icons/favicon-192x192.png" height="52" />
         Home Assistant
       </div>
       <ha-authorize><p>Initializing</p></ha-authorize>
     </div>
-    <% if (!latestBuild) { %>
-      <script src="/static/custom-elements-es5-adapter.js"></script>
-      <script src="<%= compatibility %>"></script>
-    <% } %>
-    <script>
-    window.providersPromise = fetch('/auth/providers', { credentials: 'same-origin' });
 
-    var webComponentsSupported = (
-      'customElements' in window &&
-      'content' in document.createElement('template'));
-    if (!webComponentsSupported) {
-      var e = document.createElement('script');
-      e.src = '/static/webcomponents-bundle.js';
-      document.write(e.outerHTML);
-    }
+    <%= renderTemplate('_js_base') %>
+
+    <script type="module">
+      import "<%= latestPageJS %>";
+      import "<%= latestHassIconsJS %>";
+      window.providersPromise = fetch("/auth/providers", {
+        credentials: "same-origin",
+      });
     </script>
-    <script src="<%= entrypoint %>"></script>
-    <script src='<%= hassIconsJS %>' async></script>
+
+    <script nomodule>
+      (function() {
+        // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
+        if (!isS101) {
+          _ls("/static/polyfills/custom-elements-es5-adapter.js");
+          _ls("<%= es5Compatibility %>");
+          _ls("<%= es5PageJS %>");
+          _ls("<%= es5HassIconsJS %>");
+        }
+      })();
+    </script>
   </body>
 </html>

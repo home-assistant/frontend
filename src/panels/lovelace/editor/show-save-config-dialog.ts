@@ -26,7 +26,8 @@ export const showSaveDialog = (
     fireEvent(element, "register-dialog", {
       dialogShowEvent,
       dialogTag,
-      dialogImport: () => import("./hui-dialog-save-config"),
+      dialogImport: () =>
+        import(/* webpackChunkName: "hui-dialog-save-config" */ "./hui-dialog-save-config"),
     });
   }
   fireEvent(element, dialogShowEvent, saveDialogParams);

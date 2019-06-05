@@ -1,16 +1,20 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  customElement,
+  property,
+} from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Config } from "../../cards/hui-glance-card";
 import { configElementStyle } from "./config-elements-style";
+import { MarkdownCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -18,19 +22,16 @@ const cardConfigStruct = struct({
   content: "string",
 });
 
-export class HuiMarkdownCardEditor extends hassLocalizeLitMixin(LitElement)
+@customElement("hui-markdown-card-editor")
+export class HuiMarkdownCardEditor extends LitElement
   implements LovelaceCardEditor {
-  public hass?: HomeAssistant;
-  private _config?: Config;
+  @property() public hass?: HomeAssistant;
 
-  public setConfig(config: Config): void {
+  @property() private _config?: MarkdownCardConfig;
+
+  public setConfig(config: MarkdownCardConfig): void {
     config = cardConfigStruct(config);
-
-    this._config = { type: "markdown", ...config };
-  }
-
-  static get properties(): PropertyDeclarations {
-    return { hass: {}, _config: {} };
+    this._config = config;
   }
 
   get _title(): string {
@@ -41,7 +42,7 @@ export class HuiMarkdownCardEditor extends hassLocalizeLitMixin(LitElement)
     return this._config!.content || "";
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
     }
@@ -78,10 +79,14 @@ export class HuiMarkdownCardEditor extends hassLocalizeLitMixin(LitElement)
       return;
     }
     if (target.configValue) {
-      this._config = {
-        ...this._config,
-        [target.configValue!]: target.value,
-      };
+      if (target.value === "") {
+        delete this._config[target.configValue!];
+      } else {
+        this._config = {
+          ...this._config,
+          [target.configValue!]: target.value,
+        };
+      }
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -92,5 +97,3 @@ declare global {
     "hui-markdown-card-editor": HuiMarkdownCardEditor;
   }
 }
-
-customElements.define("hui-markdown-card-editor", HuiMarkdownCardEditor);

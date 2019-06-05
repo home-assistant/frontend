@@ -17,17 +17,18 @@ export interface EditCardDialogParams {
   path: [number] | [number, number];
 }
 
-const registerEditCardDialog = (element: HTMLElement) =>
+const registerEditCardDialog = (element: HTMLElement): Event =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
-    dialogImport: () => import("./hui-dialog-edit-card"),
+    dialogImport: () =>
+      import(/* webpackChunkName: "hui-dialog-edit-card" */ "./hui-dialog-edit-card"),
   });
 
 export const showEditCardDialog = (
   element: HTMLElement,
   editCardDialogParams: EditCardDialogParams
-) => {
+): void => {
   if (!registeredDialog) {
     registeredDialog = true;
     registerEditCardDialog(element);

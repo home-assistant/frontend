@@ -1,4 +1,3 @@
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -7,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
 
 class ZwaveUsercodes extends PolymerElement {
   static get template() {
@@ -16,8 +16,7 @@ class ZwaveUsercodes extends PolymerElement {
           margin-top: 24px;
         }
 
-        paper-card {
-          display: block;
+        ha-card {
           margin: 0 auto;
           max-width: 600px;
         }
@@ -31,7 +30,7 @@ class ZwaveUsercodes extends PolymerElement {
         }
       </style>
       <div class="content">
-        <paper-card heading="Node user codes">
+        <ha-card header="Node user codes">
           <div class="device-picker">
             <paper-dropdown-menu
               label="Code slot"
@@ -69,7 +68,7 @@ class ZwaveUsercodes extends PolymerElement {
                 hass="[[hass]]"
                 domain="lock"
                 service="set_usercode"
-                service-data="[[_computeUserCodeServiceData(_selectedUserCodeValue, &quot;Add&quot;)]]"
+                service-data='[[_computeUserCodeServiceData(_selectedUserCodeValue, "Add")]]'
               >
                 Set Usercode
               </ha-call-service-button>
@@ -77,13 +76,13 @@ class ZwaveUsercodes extends PolymerElement {
                 hass="[[hass]]"
                 domain="lock"
                 service="clear_usercode"
-                service-data="[[_computeUserCodeServiceData(_selectedUserCode, &quot;Delete&quot;)]]"
+                service-data='[[_computeUserCodeServiceData(_selectedUserCode, "Delete")]]'
               >
                 Delete Usercode
               </ha-call-service-button>
             </div>
           </template>
-        </paper-card>
+        </ha-card>
       </div>
     `;
   }

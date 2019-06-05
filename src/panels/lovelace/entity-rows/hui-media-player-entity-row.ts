@@ -1,10 +1,18 @@
-import { html, LitElement } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  css,
+  CSSResult,
+  property,
+  customElement,
+  PropertyValues,
+} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
 
-import { hassLocalizeLitMixin } from "../../../mixins/lit-localize-mixin";
 import { EntityRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -15,18 +23,13 @@ import {
   OFF_STATES,
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
-class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
-  implements EntityRow {
-  public hass?: HomeAssistant;
-  private _config?: EntityConfig;
+@customElement("hui-media-player-entity-row")
+class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
+  @property() public hass?: HomeAssistant;
 
-  static get properties() {
-    return {
-      hass: {},
-      _config: {},
-    };
-  }
+  @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
@@ -36,7 +39,11 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
     this._config = config;
   }
 
-  protected render(): TemplateResult {
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected render(): TemplateResult | void {
     if (!this.hass || !this._config) {
       return html``;
     }
@@ -45,68 +52,61 @@ class HuiMediaPlayerEntityRow extends hassLocalizeLitMixin(LitElement)
 
     if (!stateObj) {
       return html`
-        <hui-error-entity-row
-          .entity="${this._config.entity}"
-        ></hui-error-entity-row>
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
       `;
     }
 
     return html`
-      ${this.renderStyle()}
       <hui-generic-entity-row
         .hass="${this.hass}"
         .config="${this._config}"
         .showSecondary="false"
       >
-        ${
-          OFF_STATES.includes(stateObj.state)
-            ? html`
-                <div>
-                  ${
-                    this.localize(`state.media_player.${stateObj.state}`) ||
-                      this.localize(`state.default.${stateObj.state}`) ||
-                      stateObj.state
-                  }
-                </div>
-              `
-            : html`
-                <div class="controls">
-                  ${
-                    stateObj.state !== "playing" &&
-                    !supportsFeature(stateObj, SUPPORTS_PLAY)
-                      ? ""
-                      : html`
-                          <paper-icon-button
-                            icon="${this._computeControlIcon(stateObj)}"
-                            @click="${this._playPause}"
-                          ></paper-icon-button>
-                        `
-                  }
-                  ${
-                    supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
-                      ? html`
-                          <paper-icon-button
-                            icon="hass:skip-next"
-                            @click="${this._nextTrack}"
-                          ></paper-icon-button>
-                        `
-                      : ""
-                  }
-                </div>
-                <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
-              `
-        }
+        ${OFF_STATES.includes(stateObj.state)
+          ? html`
+              <div>
+                ${this.hass!.localize(`state.media_player.${stateObj.state}`) ||
+                  this.hass!.localize(`state.default.${stateObj.state}`) ||
+                  stateObj.state}
+              </div>
+            `
+          : html`
+              <div class="controls">
+                ${stateObj.state !== "playing" &&
+                !supportsFeature(stateObj, SUPPORTS_PLAY)
+                  ? ""
+                  : html`
+                      <paper-icon-button
+                        icon="${this._computeControlIcon(stateObj)}"
+                        @click="${this._playPause}"
+                      ></paper-icon-button>
+                    `}
+                ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+                  ? html`
+                      <paper-icon-button
+                        icon="hass:skip-next"
+                        @click="${this._nextTrack}"
+                      ></paper-icon-button>
+                    `
+                  : ""}
+              </div>
+              <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
+            `}
       </hui-generic-entity-row>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        .controls {
-          white-space: nowrap;
-        }
-      </style>
+  static get styles(): CSSResult {
+    return css`
+      .controls {
+        white-space: nowrap;
+      }
     `;
   }
 
@@ -165,5 +165,3 @@ declare global {
     "hui-media-player-entity-row": HuiMediaPlayerEntityRow;
   }
 }
-
-customElements.define("hui-media-player-entity-row", HuiMediaPlayerEntityRow);

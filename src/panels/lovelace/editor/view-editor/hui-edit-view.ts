@@ -1,16 +1,25 @@
-import { html, LitElement, PropertyDeclarations } from "@polymer/lit-element";
-import { TemplateResult } from "lit-html";
+import {
+  html,
+  css,
+  LitElement,
+  TemplateResult,
+  CSSResult,
+  customElement,
+  property,
+} from "lit-element";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-icon-button/paper-icon-button.js";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-button/paper-button";
+import "../../../../components/dialog/ha-paper-dialog";
+// tslint:disable-next-line:no-duplicate-imports
+import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+
+import { haStyleDialog } from "../../../../resources/styles";
+
 import "../../components/hui-entity-editor";
 import "./hui-view-editor";
 import { HomeAssistant } from "../../../../types";
@@ -19,7 +28,6 @@ import {
   LovelaceCardConfig,
 } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { hassLocalizeLitMixin } from "../../../../mixins/lit-localize-mixin";
 import { EntitiesEditorEvent, ViewEditEvent } from "../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
@@ -27,31 +35,27 @@ import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
 
-export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
-  public lovelace?: Lovelace;
-  public viewIndex?: number;
-  public hass?: HomeAssistant;
-  private _config?: LovelaceViewConfig;
-  private _badges?: EntityConfig[];
-  private _cards?: LovelaceCardConfig[];
-  private _saving: boolean;
+@customElement("hui-edit-view")
+export class HuiEditView extends LitElement {
+  @property() public lovelace?: Lovelace;
+
+  @property() public viewIndex?: number;
+
+  @property() public hass?: HomeAssistant;
+
+  @property() private _config?: LovelaceViewConfig;
+
+  @property() private _badges?: EntityConfig[];
+
+  @property() private _cards?: LovelaceCardConfig[];
+
+  @property() private _saving: boolean;
+
+  @property() private _curTab?: string;
+
   private _curTabIndex: number;
-  private _curTab?: string;
 
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      lovelace: {},
-      viewIndex: {},
-      _config: {},
-      _badges: {},
-      _cards: {},
-      _saving: {},
-      _curTab: {},
-    };
-  }
-
-  protected constructor() {
+  public constructor() {
     super();
     this._saving = false;
     this._curTabIndex = 0;
@@ -79,11 +83,11 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
     this._dialog.open();
   }
 
-  private get _dialog(): PaperDialogElement {
-    return this.shadowRoot!.querySelector("paper-dialog")!;
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | void {
     let content;
     switch (this._curTab) {
       case "tab-settings":
@@ -111,9 +115,10 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
         break;
     }
     return html`
-      ${this.renderStyle()}
-      <paper-dialog with-backdrop>
-        <h2>${this.localize("ui.panel.lovelace.editor.edit_view.header")}</h2>
+      <ha-paper-dialog with-backdrop>
+        <h2>
+          ${this.hass!.localize("ui.panel.lovelace.editor.edit_view.header")}
+        </h2>
         <paper-tabs
           scrollable
           hide-scroll-buttons
@@ -125,22 +130,20 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
         </paper-tabs>
         <paper-dialog-scrollable> ${content} </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          ${
-            this.viewIndex !== undefined
-              ? html`
-                  <paper-icon-button
-                    class="delete"
-                    title="Delete"
-                    icon="hass:delete"
-                    @click="${this._delete}"
-                  ></paper-icon-button>
-                `
-              : ""
-          }
-          <paper-button @click="${this._closeDialog}"
-            >${this.localize("ui.common.cancel")}</paper-button
+          ${this.viewIndex !== undefined
+            ? html`
+                <paper-icon-button
+                  class="delete"
+                  title="Delete"
+                  icon="hass:delete"
+                  @click="${this._delete}"
+                ></paper-icon-button>
+              `
+            : ""}
+          <mwc-button @click="${this._closeDialog}"
+            >${this.hass!.localize("ui.common.cancel")}</mwc-button
           >
-          <paper-button
+          <mwc-button
             ?disabled="${!this._config || this._saving}"
             @click="${this._save}"
           >
@@ -148,51 +151,14 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
               ?active="${this._saving}"
               alt="Saving"
             ></paper-spinner>
-            ${this.localize("ui.common.save")}</paper-button
+            ${this.hass!.localize("ui.common.save")}</mwc-button
           >
         </div>
-      </paper-dialog>
+      </ha-paper-dialog>
     `;
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        paper-dialog {
-          width: 650px;
-        }
-        paper-tabs {
-          --paper-tabs-selection-bar-color: var(--primary-color);
-          text-transform: uppercase;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        paper-button paper-spinner {
-          width: 14px;
-          height: 14px;
-          margin-right: 20px;
-        }
-        paper-icon-button.delete {
-          margin-right: auto;
-          color: var(--secondary-text-color);
-        }
-        paper-spinner {
-          display: none;
-        }
-        paper-spinner[active] {
-          display: block;
-        }
-        .hidden {
-          display: none;
-        }
-        .error {
-          color: #ef5350;
-          border-bottom: 1px solid #ef5350;
-        }
-      </style>
-    `;
-  }
-
-  private async _delete() {
+  private async _delete(): Promise<void> {
     if (this._cards && this._cards.length > 0) {
       alert(
         "You can't delete a view that has cards in it. Remove the cards first."
@@ -217,7 +183,7 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
 
   private async _resizeDialog(): Promise<void> {
     await this.updateComplete;
-    fireEvent(this._dialog, "iron-resize");
+    fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
   private _closeDialog(): void {
@@ -293,6 +259,57 @@ export class HuiEditView extends hassLocalizeLitMixin(LitElement) {
   private get _creatingView(): boolean {
     return this.viewIndex === undefined;
   }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-paper-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+        }
+        @media all and (min-width: 660px) {
+          ha-paper-dialog {
+            width: 650px;
+          }
+        }
+        ha-paper-dialog {
+          max-width: 650px;
+        }
+        paper-tabs {
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          text-transform: uppercase;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        mwc-button paper-spinner {
+          width: 14px;
+          height: 14px;
+          margin-right: 20px;
+        }
+        paper-icon-button.delete {
+          margin-right: auto;
+          color: var(--secondary-text-color);
+        }
+        paper-spinner {
+          display: none;
+        }
+        paper-spinner[active] {
+          display: block;
+        }
+        .hidden {
+          display: none;
+        }
+        .error {
+          color: #ef5350;
+          border-bottom: 1px solid #ef5350;
+        }
+      </style>
+    `,
+    ];
+  }
 }
 
 declare global {
@@ -300,5 +317,3 @@ declare global {
     "hui-edit-view": HuiEditView;
   }
 }
-
-customElements.define("hui-edit-view", HuiEditView);

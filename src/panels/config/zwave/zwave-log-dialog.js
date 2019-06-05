@@ -1,23 +1,23 @@
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-dialog/paper-dialog";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "../../../components/dialog/ha-paper-dialog";
 import "../../../resources/ha-style";
 
-import EventsMixin from "../../../mixins/events-mixin";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 class ZwaveLogDialog extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style-dialog">
     </style>
-      <paper-dialog id="pwaDialog" with-backdrop="" opened="{{_opened}}">
+      <ha-paper-dialog id="pwaDialog" with-backdrop="" opened="{{_opened}}">
         <h2>OpenZwave internal logfile</h2>
         <paper-dialog-scrollable>
           <pre>[[_ozwLog]]</pre>
         <paper-dialog-scrollable>
-      </paper-dialog>
+      </ha-paper-dialog>
       `;
   }
 
