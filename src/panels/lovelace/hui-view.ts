@@ -48,9 +48,13 @@ const getColumnIndex = (columnEntityCount: number[], size: number) => {
 
 export class HUIView extends LitElement {
   @property() public hass?: HomeAssistant;
+  
   @property() public lovelace?: Lovelace;
+  
   @property() public columns?: number;
+  
   @property() public index?: number;
+  
   private _cards: Array<LovelaceCard | HuiErrorCard>;
   private _badges: Array<{ element: HaStateLabelBadge; entityId: string }>;
 
