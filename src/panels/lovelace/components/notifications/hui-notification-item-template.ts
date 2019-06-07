@@ -25,6 +25,10 @@ export class HuiNotificationItemTemplate extends LitElement {
     return css`
       .contents {
         padding: 16px;
+        -ms-user-select: text;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        user-select: text;
       }
 
       ha-card .header {
