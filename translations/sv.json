@@ -615,7 +615,7 @@
                         "delete_confirm": "Är du säker på att du vill radera denna integration?",
                         "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
                         "manuf": "av {manufacturer}",
-                        "hub": "Ansluten via",
+                        "via": "Ansluten via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "enhet otillgänglig",
                         "entity_unavailable": "entitet otillgänglig",

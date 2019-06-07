@@ -106,11 +106,11 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
               </div>
             </template>
           </div>
-          <template is="dom-if" if="[[device.hub_device_id]]">
+          <template is="dom-if" if="[[device.via_device_id]]">
             <div class="extra-info">
-              [[localize('ui.panel.config.integrations.config_entry.hub')]]
+              [[localize('ui.panel.config.integrations.config_entry.via')]]
               <span class="hub"
-                >[[_computeDeviceName(devices, device.hub_device_id)]]</span
+                >[[_computeDeviceName(devices, device.via_device_id)]]</span
               >
             </div>
           </template>
@@ -201,7 +201,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeChildDevices(device, devices) {
     return devices
-      .filter((dev) => dev.hub_device_id === device.id)
+      .filter((dev) => dev.via_device_id === device.id)
       .sort((dev1, dev2) => compare(dev1.name, dev2.name));
   }
 

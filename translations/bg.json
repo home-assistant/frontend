@@ -595,7 +595,7 @@
                         "delete_confirm": "Сигурни ли сте, че искате да изтриете интеграцията?",
                         "restart_confirm": "Рестартирайте Home Assistant за да завършите премахването на интеграцията",
                         "manuf": "от {manufacturer}",
-                        "hub": "Свързан чрез",
+                        "via": "Свързан чрез",
                         "firmware": "Фърмуер: {version}",
                         "device_unavailable": "недостъпно устройство",
                         "entity_unavailable": "недостъпен",

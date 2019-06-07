@@ -615,7 +615,7 @@
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to integracijo?",
                         "restart_confirm": "Znova zaženite Home Assistant-a, da dokončate odstranitev te integracije",
                         "manuf": "po {manufacturer}",
-                        "hub": "Povezan prek",
+                        "via": "Povezan prek",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "naprava ni na voljo",
                         "entity_unavailable": "subjekt ni na voljo",

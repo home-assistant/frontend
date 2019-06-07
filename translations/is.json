@@ -510,7 +510,7 @@
                         "delete_confirm": "Ertu viss um að þú viljir eyða þessari samþættingu?",
                         "restart_confirm": "Endurræsa Home Assitant til að klára að fjarlægja þessa samþættingu",
                         "manuf": "eftir {manufacturer}",
-                        "hub": "Tengt gegnum",
+                        "via": "Tengt gegnum",
                         "firmware": "Fastbúnaðarútgáfa: {version}",
                         "device_unavailable": "Tæki ekki tiltækt",
                         "entity_unavailable": "Eining ekki tiltæk",

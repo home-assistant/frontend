@@ -586,7 +586,7 @@
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "manuf": "{manufacturer}",
-                        "hub": "Yhdistetty kautta",
+                        "via": "Yhdistetty kautta",
                         "firmware": "Laiteohjelmisto: {version}",
                         "device_unavailable": "laite ei saatavissa",
                         "entity_unavailable": "kohde ei saatavilla",
