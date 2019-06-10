@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin />
+    <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
     <link
       rel="preload"
       href="/static/fonts/roboto/Roboto-Regular.ttf"
@@ -59,7 +59,7 @@
 
     <%= renderTemplate('_js_base') %>
 
-    <script type="module">
+    <script type="module" crossorigin="use-credentials">
       import "<%= latestCoreJS %>";
       import "<%= latestAppJS %>";
       import "<%= latestHassIconsJS %>";
