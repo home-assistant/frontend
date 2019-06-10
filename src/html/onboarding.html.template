@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>Home Assistant</title>
-    <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin />
+    <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin="use-credentials" />
     <link
       rel="preload"
       href="/static/fonts/roboto/Roboto-Light.ttf"
@@ -49,7 +49,7 @@
 
     <%= renderTemplate('_js_base') %>
 
-    <script type="module">
+    <script type="module" crossorigin="use-credentials">
       import "<%= latestPageJS %>";
       import "<%= latestHassIconsJS %>";
       window.stepsPromise = fetch("/api/onboarding", {
