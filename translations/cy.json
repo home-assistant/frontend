@@ -545,7 +545,7 @@
                 },
                 "integrations": {
                     "config_entry": {
-                        "hub": "Cysylltiad drwy",
+                        "via": "Cysylltiad drwy",
                         "firmware": "Cadarnwedd: {version}",
                         "device_unavailable": "Dyfais ddim ar gael",
                         "entity_unavailable": "endid ar gael",

@@ -547,7 +547,7 @@
                         "delete_confirm": "Sigur doriți să ștergeți această integrare?",
                         "restart_confirm": "Reporniți Home Assistant pentru a termina eliminarea acestei integrări",
                         "manuf": "de {manufacturer}",
-                        "hub": "Conectat prin",
+                        "via": "Conectat prin",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispozitiv indisponibil",
                         "entity_unavailable": "Entitatea nu este disponibilă"

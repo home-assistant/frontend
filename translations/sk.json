@@ -590,7 +590,7 @@
                         "delete_confirm": "Naozaj chcete odstrániť túto integráciu?",
                         "restart_confirm": "Ak chcete dokončiť odstránenie tejto integrácie, reštartujte Home Assistant",
                         "manuf": "od {manufacturer}",
-                        "hub": "Pripojené cez",
+                        "via": "Pripojené cez",
                         "firmware": "Firmvér: {version}",
                         "device_unavailable": "zariadenie nie je k dispozícii",
                         "entity_unavailable": "entita nie je k dispozícii",

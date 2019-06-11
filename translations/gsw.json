@@ -386,7 +386,7 @@
                     "configure": "Konfiguriärä",
                     "config_entry": {
                         "manuf": "vo {manufacturer}",
-                        "hub": "Verbunge über",
+                        "via": "Verbunge über",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Grät verfüägbar",
                         "entity_unavailable": "Entitiy verfüägbar"

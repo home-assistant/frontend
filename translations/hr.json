@@ -533,7 +533,7 @@
                         "delete_confirm": "Jeste li sigurni da želite izbrisati tu integraciju?",
                         "restart_confirm": "Ponovo pokrenite Home Assistant da biste dovršili uklanjanje ove integracije",
                         "manuf": "od {manufacturer}",
-                        "hub": "Povezan putem",
+                        "via": "Povezan putem",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "uređaj nije dostupan",
                         "entity_unavailable": "entitet nije dostupan"
