@@ -598,7 +598,7 @@
                         "delete_confirm": "Weet u zeker dat u deze integratie wilt verwijderen?",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "manuf": "door {manufacturer}",
-                        "hub": "Verbonden via",
+                        "via": "Verbonden via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar",

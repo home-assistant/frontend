@@ -615,7 +615,7 @@
                         "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
                         "manuf": "vun {manufacturer}",
-                        "hub": "Verbonnen via",
+                        "via": "Verbonnen via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Apparat net erreechbar",
                         "entity_unavailable": "Entitéit net erreechbar",

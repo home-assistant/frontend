@@ -562,7 +562,7 @@
                         "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
                         "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل",
                         "manuf": "بواسطة {manufacturer}",
-                        "hub": "متصل من خلال",
+                        "via": "متصل من خلال",
                         "firmware": "نظام التشغيل {version}",
                         "device_unavailable": "الجهاز غير متوفر",
                         "entity_unavailable": "العنصر غير متوفر",

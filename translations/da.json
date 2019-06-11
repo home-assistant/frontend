@@ -611,7 +611,7 @@
                         "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
                         "restart_confirm": "Genstart Home Assistant for at afslutte fjernelsen af denne integration",
                         "manuf": "af {manufacturer}",
-                        "hub": "Forbundet via",
+                        "via": "Forbundet via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "enhed utilgængelig",
                         "entity_unavailable": "entitet utilgængelig",

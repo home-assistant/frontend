@@ -615,7 +615,7 @@
                         "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
                         "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
                         "manuf": "{manufacturer} 제조",
-                        "hub": "연결 경유 대상",
+                        "via": "연결 경유 대상",
                         "firmware": "펌웨어: {version}",
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가",
