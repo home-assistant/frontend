@@ -125,7 +125,7 @@ class HaConfigEntryPage extends NavigateMixin(
       .filter((device) => device.config_entries.includes(configEntry.entry_id))
       .sort(
         (dev1, dev2) =>
-          !!dev1.hub_device_id - !!dev2.hub_device_id ||
+          !!dev1.via_device_id - !!dev2.via_device_id ||
           compare(dev1.name, dev2.name)
       );
   }

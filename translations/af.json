@@ -598,7 +598,7 @@
                         "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
                         "restart_confirm": "Herbegin Home Assistant om hierdie integrasie te voltooi",
                         "manuf": "deur {manufacturer}",
-                        "hub": "Gekonnekteer via",
+                        "via": "Gekonnekteer via",
                         "firmware": "Fermware: {version}",
                         "device_unavailable": "toestel nie beskikbaar nie",
                         "entity_unavailable": "entiteit nie beskikbaar nie",

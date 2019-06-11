@@ -598,7 +598,7 @@
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
                         "restart_confirm": "Reinicie Home Assistant para terminar de eliminar esta integración.",
                         "manuf": "por {manufacturer}",
-                        "hub": "Conectado a través de",
+                        "via": "Conectado a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible",

@@ -615,7 +615,7 @@
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי להשלים את הסרת האינטגרציה",
                         "manuf": "על ידי {manufacturer}",
-                        "hub": "מחובר באמצעות",
+                        "via": "מחובר באמצעות",
                         "firmware": "קושחה: {version}",
                         "device_unavailable": "התקן אינו זמין",
                         "entity_unavailable": "ישות לא זמינה",

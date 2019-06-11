@@ -615,7 +615,7 @@
                         "delete_confirm": "確定要刪除此整合？",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "manuf": "廠牌：{manufacturer}",
-                        "hub": "連線：",
+                        "via": "連線：",
                         "firmware": "韌體：{version}",
                         "device_unavailable": "裝置不可用",
                         "entity_unavailable": "物件不可用",

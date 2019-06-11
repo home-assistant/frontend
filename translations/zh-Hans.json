@@ -598,7 +598,7 @@
                         "delete_confirm": "您确定要删除此集成吗？",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "manuf": "by {manufacturer}",
-                        "hub": "链接于",
+                        "via": "链接于",
                         "firmware": "固件：{version}",
                         "device_unavailable": "设备不可用",
                         "entity_unavailable": "实体不可用",
