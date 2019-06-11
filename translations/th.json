@@ -598,7 +598,7 @@
                         "delete_confirm": "แน่ใจหรือว่าต้องการจะลบการบูรณาการนี้",
                         "restart_confirm": "เริ่ม Home Assistant ใหม่หลังจากลบการบูรณาการนี้",
                         "manuf": "โดย {manufacturer}",
-                        "hub": "เชื่อมต่อแล้ว",
+                        "via": "เชื่อมต่อแล้ว",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "อุปกรณ์นี้ไม่พร้อมใช้งาน",
                         "entity_unavailable": "Entity นี้ไม่พร้อมใช้งาน",

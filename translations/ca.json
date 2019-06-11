@@ -615,7 +615,7 @@
                         "delete_confirm": "Estas segur que vols eliminar aquesta integració?",
                         "restart_confirm": "Reinicia el Home Assistant per acabar d'eliminar aquesta integració",
                         "manuf": "de {manufacturer}",
-                        "hub": "Connectat a través de",
+                        "via": "Connectat a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositiu no disponible",
                         "entity_unavailable": "entitat no disponible",

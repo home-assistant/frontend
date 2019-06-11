@@ -594,7 +594,7 @@
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "restart_confirm": "Khởi động lại Home Assistant để hoàn tất xóa bộ tích hợp này",
                         "manuf": "bởi {manufacturer}",
-                        "hub": "Đã kết nối qua",
+                        "via": "Đã kết nối qua",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Thiết bị không khả dụng",
                         "entity_unavailable": "Thiết bị không khả dụng",
