@@ -741,15 +741,15 @@
     tslib "^1.9.3"
 
 "@material/button@^1.0.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@material/button/-/button-1.1.0.tgz#dbb46c953040d3a161346e1d3cd057159b9a3c34"
-  integrity sha512-P1oZyyC1ELRe26vdnmax+fO3BWNmftDqHDDlQbJ+gfYMDQsNQtZNJU16ZbnVHsnzEXOpFj729imbmuLfnz8Nbg==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@material/button/-/button-1.1.1.tgz#35af0d295f6ce6e3df9d4978485b5294d794f682"
+  integrity sha512-03aEyzZBIeqpgZkqLjro/enz8ORUnfQslBUdAgkPqdjh1X0oIEugr3UaFyC5QlSBTU3j3GIsnKIxWaggkRenpQ==
   dependencies:
     "@material/elevation" "^1.1.0"
     "@material/feature-targeting" "^0.44.1"
     "@material/ripple" "^1.1.0"
     "@material/rtl" "^0.42.0"
-    "@material/shape" "^1.0.0"
+    "@material/shape" "^1.1.1"
     "@material/theme" "^1.1.0"
     "@material/typography" "^1.0.0"
 
@@ -826,10 +826,10 @@
   resolved "https://registry.yarnpkg.com/@material/rtl/-/rtl-0.42.0.tgz#1836e78186c2d8b996f6fbf97adab203535335bc"
   integrity sha512-VrnrKJzhmspsN8WXHuxxBZ69yM5IwhCUqWr1t1eNfw3ZEvEj7i1g3P31HGowKThIN1dc1Wh4LE14rCISWCtv5w==
 
-"@material/shape@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@material/shape/-/shape-1.0.0.tgz#bef17de1f282e5c71138338a34078d8402308f65"
-  integrity sha512-zfXEacPQZmH+ujVtaFyfAsYiF46j1QCcFzJeZVouG4pznrbA7XD6614Ywg0wbyWX5iB6hD52ld/IN+R/6oxKqA==
+"@material/shape@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@material/shape/-/shape-1.1.1.tgz#7a5368694bc3555e69ea547950904b46fa1024bf"
+  integrity sha512-Jge/h1XBLjdLlam4QMSzVgM99e/N8+elQROPkltqVP7eyLc17BwM3aP5cLVfZDgrJgvsjUxbgAP1H1j8sqmUyg==
   dependencies:
     "@material/feature-targeting" "^0.44.1"
 
@@ -1050,10 +1050,10 @@
     "@polymer/iron-meta" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-image@^3.0.0-pre.26", "@polymer/iron-image@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@polymer/iron-image/-/iron-image-3.0.1.tgz#c5456d65733879ab0aaed75fbc26419db79cbe5d"
-  integrity sha512-Tp6iB/7YYo6IwmVnxHgctKJXjlE6KcHtja+BvyKq7Du+9JB8XgZ2D+WZTYofagwQJ5Akl4oFis5gtO+LM9Z4dA==
+"@polymer/iron-image@3.0.2", "@polymer/iron-image@^3.0.0-pre.26", "@polymer/iron-image@^3.0.1":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-image/-/iron-image-3.0.2.tgz#425ee6269634e024dbea726a91a61724ae4402b6"
+  integrity sha512-VyYtnewGozDb5sUeoLR1OvKzlt5WAL6b8Od7fPpio5oYL+9t061/nTV8+ZMrpMgF2WgB0zqM/3K53o3pbK5v8Q==
   dependencies:
     "@polymer/polymer" "^3.0.0"
 
@@ -1240,9 +1240,9 @@
     "@polymer/polymer" "^3.0.0"
 
 "@polymer/paper-drawer-panel@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@polymer/paper-drawer-panel/-/paper-drawer-panel-3.0.1.tgz#e50756f3402919c8e3a1bd4d8e28a4009ee8fcc9"
-  integrity sha512-4WthuicPKOwtfxoYCfHiGTkM/W61p15A4rGbxI6VltY2ostQEqXXsQvdGHguHsxkjdasOc2mstBhP0ZOrCdGgg==
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-drawer-panel/-/paper-drawer-panel-3.0.2.tgz#a4e40294e7a4879030df895a22c906a0415fdaaa"
+  integrity sha512-3hoGbPGh6OXkDnC33kXDMHFW9+pV7CXb3wFFvvu+JPkFGGRq6Es464qHOdiBHL+H76sQ/+NcgpvTMUO4a/k3XA==
   dependencies:
     "@polymer/iron-media-query" "^3.0.0-pre.26"
     "@polymer/iron-resizable-behavior" "^3.0.0-pre.26"
@@ -1288,9 +1288,9 @@
     "@polymer/polymer" "^3.0.0"
 
 "@polymer/paper-input@^3.0.0-pre.26", "@polymer/paper-input@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@polymer/paper-input/-/paper-input-3.0.1.tgz#ec711a131af74f10553bbf1125971ddc354afe62"
-  integrity sha512-th6fuP6PyQEBJSWVtJQ/ZsoQp8Zysq4bRIOg2uGZsNX6gfm6AVoMph5pXOlS8RHoVDDYDG9GRjQib7JPSWKkrw==
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-input/-/paper-input-3.0.2.tgz#c70559ed9b38a34efda972de8bcb7caed3c299d5"
+  integrity sha512-EoyJLsUCo7zLQp63jG7+qbRcN7ynT0p9MktDeH+dnl29UqFD4Ovj2/O5cSgq3lA3dYrei4vHF11Qmdmk7iab7Q==
   dependencies:
     "@polymer/iron-a11y-keys-behavior" "^3.0.0-pre.26"
     "@polymer/iron-autogrow-textarea" "^3.0.0-pre.26"
@@ -1413,9 +1413,9 @@
     "@polymer/polymer" "^3.0.0"
 
 "@polymer/paper-tabs@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@polymer/paper-tabs/-/paper-tabs-3.0.1.tgz#525bfdfeff00af37d16c7ca70779fad72f74a086"
-  integrity sha512-gXCMUp17ND1rfhKzA3HPxA7CiHa00FG6cj2upovzPnm3/0rZ/apHGOFH8nyNcBU0JyrxTgKi8qVDp7eZqASr9g==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-tabs/-/paper-tabs-3.1.0.tgz#a173839d20703fdd5fca97a9d878f7b0e6257150"
+  integrity sha512-t8G+3CiyI0R+wA077UNQXR/oG9GlsqRRO1KMsFHHjBSsYqWXghNsqxUG827wEj+PafI5u9tZ3vVt1S++Lg4B2g==
   dependencies:
     "@polymer/iron-behaviors" "^3.0.0-pre.26"
     "@polymer/iron-flex-layout" "^3.0.0-pre.26"
@@ -2374,14 +2374,14 @@
     "@xtuc/long" "4.2.2"
 
 "@webcomponents/shadycss@^1.8.0", "@webcomponents/shadycss@^1.9.0":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.0.tgz#8450465037370d4f5c32e801bb2554a7cf2f5037"
-  integrity sha512-g8Xa+6RSEME4g/wLJW4YII0eq15rvXp76RxPAuv7hx+Bdoi7GzZJ/EoZOUfyIbqAsQbII1TcWD4/+Xhs5NcM1w==
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.1.tgz#d769fbadfa504f11b84caeef26701f89070ec49a"
+  integrity sha512-IaZOnWOKXHghqk/WfPNDRIgDBi3RsVPY2IFAw6tYiL9UBGvQRy5R6uC+Fk7qTZsReTJ0xh5MTT8yAcb3MUR4mQ==
 
-"@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0", "@webcomponents/webcomponentsjs@^2.2.7":
-  version "2.2.7"
-  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.7.tgz#1f1a7a7aa083db5ae6aadaeda68caa8fd8657462"
-  integrity sha512-kPPjzV+5kpoWpTniyvBSPcXS33f3j/C6HvNOJ3YecF3pvz3XwVeU4ammbxtVy/osF3z7hr1DYNptIf4oPEvXZA==
+"@webcomponents/webcomponentsjs@2.2.10", "@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0", "@webcomponents/webcomponentsjs@^2.2.7":
+  version "2.2.10"
+  resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.10.tgz#6f6bee0277833ae98d7e5b46f1e0fdb48cd5ff44"
+  integrity sha512-5dzhUhP+h0qMiK0IWb7VNb0OGBoXO3AuI6Qi8t9PoKT50s5L1jv0xnwnLq+cFgPuTB8FLTNP8xIDmyoOsKBy9Q==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -7248,9 +7248,9 @@ hoek@6.x.x:
   integrity sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==
 
 home-assistant-js-websocket@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.2.1.tgz#8acdf2a404b4204669213d8405cca027b8b1de1c"
-  integrity sha512-lF4owDhAAUY70FNvTzgg6MAEOpKbJDLsRDX3gW48muna03s3CRGQzbLmy621pJWK757CkXSW/rWbr34r3Wyi8Q==
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.2.2.tgz#e13b058a9e200bc56080e1b48fdeaaf1ed2e4e5f"
+  integrity sha512-4mXYbn2DCiDVBYGZROUSWLBDerSoDRJulw1GiQbhKEyrDhzFs5KQkcLdIu6k3CSDYQiiKQez5uAhOfb0Hr/M0A==
 
 homedir-polyfill@^1.0.0, homedir-polyfill@^1.0.1:
   version "1.0.3"
@@ -8516,9 +8516,9 @@ listr@^0.14.2:
     rxjs "^6.3.3"
 
 lit-element@^2.0.1, lit-element@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.1.0.tgz#85bc3f1da0227f4b13de8a1be978229b9fa327e9"
-  integrity sha512-0z/KHm1xZweivfOVRr8AKR06+D3k02u15m9s4jkuRdnGe5wfmEwePzrQQBsSZNILdnfJvfo3TJOeGhBCVZaPbw==
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.2.0.tgz#e853be38021f0c7743a10180affdf84b8a02400c"
+  integrity sha512-Mzs3H7IO4wAnpzqreHw6dQqp9IG+h/oN8X9pgNbMZbE7x6B0aNOwP5Nveox/5HE+65ZfW2PeULEjoHkrwpTnuQ==
   dependencies:
     lit-html "^1.0.0"
 
@@ -9127,9 +9127,9 @@ map-visit@^1.0.0:
     object-visit "^1.0.0"
 
 marked@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.1.tgz#a63addde477bca9613028de4b2bc3629e53a0562"
-  integrity sha512-+H0L3ibcWhAZE02SKMqmvYsErLo4EAVJxu5h3bHBBDvvjeWXtl92rGUSBYHL2++5Y+RSNgl8dYOAXcYe7lp1fA==
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.6.2.tgz#c574be8b545a8b48641456ca1dbe0e37b6dccc1a"
+  integrity sha512-LqxwVH3P/rqKX4EKGz7+c2G9r98WeM/SW34ybhgNGhUQNKtf1GmmSkJ6cDGJ/t6tiyae49qRkpyTw2B9HOrgUA==
 
 matchdep@^2.0.0:
   version "2.0.0"
@@ -9172,9 +9172,9 @@ md5@^2.2.1:
     is-buffer "~1.1.1"
 
 mdn-polyfills@^5.16.0:
-  version "5.16.0"
-  resolved "https://registry.yarnpkg.com/mdn-polyfills/-/mdn-polyfills-5.16.0.tgz#f44a0c37a47158e1b1c748ac03d9c1be63ad89f7"
-  integrity sha512-1rMxLgeYCwW4a8sUvoyLY7wCdKgMVQdS6me52D0a5lvuTUEAn3Mhi5gFN+9kI0jfea1TUepq72K1AgmbIt2ffw==
+  version "5.17.0"
+  resolved "https://registry.yarnpkg.com/mdn-polyfills/-/mdn-polyfills-5.17.0.tgz#462b3e34d5c6ba769a32fda2b270e711da634a05"
+  integrity sha512-KntYq3r7jQ3lqjGvQ+1zIv6Yvlt+G3Y3TngDZqzSB7SNBjW7IZ8WyrhHM4LyLWzgUVX53DrC2XR7cymQqbTFkw==
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -13123,9 +13123,9 @@ tslib@1.9.0:
   integrity sha512-f/qGG2tUkrISBlQZEjEqoZ3B2+npJjIf04H1wuAv9iA8i04Icp+61KRXxFdha22670NJopsZCIjhC3SnjPRKrQ==
 
 tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
-  integrity sha512-4krF8scpejhaOgqzBEcGM7yDIEfi0/8+8zDRZhNZZ2kjmHJ4hv3zCbQWxoJGz1iw5U0Jl0nma13xzHXcncMavQ==
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
+  integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
 tslint-config-prettier@^1.18.0:
   version "1.18.0"
@@ -13236,9 +13236,9 @@ typedarray@^0.0.6:
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
 typescript@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.1.tgz#b6691be11a881ffa9a05765a205cb7383f3b63c6"
-  integrity sha512-3NSMb2VzDQm8oBTLH6Nj55VVtUEpe/rgkIzMir0qVoLyjDZlnMBva0U6vDiV3IH+sl/Yu6oP5QwsAQtHPmDd2Q==
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.1.tgz#ba72a6a600b2158139c5dd8850f700e231464202"
+  integrity sha512-64HkdiRv1yYZsSe4xC1WVgamNigVYjlssIoaH2HcZF0+ijsk5YK2g0G34w9wJkze8+5ow4STd22AynfO6ZYYLw==
 
 typical@^2.6.1:
   version "2.6.1"
