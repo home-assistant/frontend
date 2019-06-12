@@ -65,7 +65,7 @@ export class HuiCardEditor extends LitElement {
       return yaml.safeLoad(this.yaml);
     } catch (err) {
       this._error = err;
-      return undefined;
+      return { type: "error", error: err.message };
     }
   }
   public set config(config: LovelaceCardConfig | undefined) {
@@ -199,7 +199,6 @@ export class HuiCardEditor extends LitElement {
           throw new Error("No card type defined");
         }
 
-        this._configElType = cardType;
         const tag = getCardElementTag(cardType);
 
         // Check if the card type exists
@@ -226,6 +225,7 @@ export class HuiCardEditor extends LitElement {
         }
 
         this._configElement = configElement;
+        this._configElType = cardType;
       }
 
       // Setup GUI editor and check that it can handle the current config
