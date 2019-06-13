@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-toggle-button";
 import "@polymer/paper-icon-button";
+import { observer } from "@material/mwc-base/observer";
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../components/ha-card";
@@ -45,9 +46,17 @@ const configIsExposed = (config: AlexaEntityConfig) =>
 @customElement("cloud-alexa")
 class CloudAlexa extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public cloudStatus!: CloudStatusLoggedIn;
-  @property() public narrow!: boolean;
+
+  @property()
+  @observer(function(this: CloudAlexa, value) {
+    this._entityConfigs = value.prefs.alexa_entity_configs;
+  })
+  public cloudStatus!: CloudStatusLoggedIn;
+
+  @property({ type: Boolean }) public narrow!: boolean;
+
   @property() private _entities?: AlexaEntity[];
+
   @property()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
   private _popstateSyncAttached = false;
@@ -189,13 +198,6 @@ class CloudAlexa extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._fetchData();
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (changedProps.has("cloudStatus")) {
-      this._entityConfigs = this.cloudStatus.prefs.alexa_entity_configs;
-    }
   }
 
   private async _fetchData() {

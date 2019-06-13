@@ -783,6 +783,15 @@
     lit-element "^2.0.1"
     lit-html "^1.0.0"
 
+"@material/mwc-base@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.6.0.tgz#2077b5f94c3d8fa2a65736b02c3d380314ea1154"
+  integrity sha512-AiMEoU3dkLhuEnK5HJ0yMrdcyq5rUq9LdooxOSLMzPRr/ALT8YS14/oklufYiPagehzJcL0MeiyL40OlSpkyBA==
+  dependencies:
+    "@material/base" "^1.0.0"
+    lit-element "^2.0.1"
+    lit-html "^1.0.0"
+
 "@material/mwc-button@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@material/mwc-button/-/mwc-button-0.5.0.tgz#3456bfd9ef7d91d96c623952cca974216bf47f3e"
@@ -1050,7 +1059,7 @@
     "@polymer/iron-meta" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-image@3.0.2", "@polymer/iron-image@^3.0.0-pre.26", "@polymer/iron-image@^3.0.1":
+"@polymer/iron-image@^3.0.0-pre.26", "@polymer/iron-image@^3.0.1":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@polymer/iron-image/-/iron-image-3.0.2.tgz#425ee6269634e024dbea726a91a61724ae4402b6"
   integrity sha512-VyYtnewGozDb5sUeoLR1OvKzlt5WAL6b8Od7fPpio5oYL+9t061/nTV8+ZMrpMgF2WgB0zqM/3K53o3pbK5v8Q==
@@ -2378,7 +2387,7 @@
   resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.9.1.tgz#d769fbadfa504f11b84caeef26701f89070ec49a"
   integrity sha512-IaZOnWOKXHghqk/WfPNDRIgDBi3RsVPY2IFAw6tYiL9UBGvQRy5R6uC+Fk7qTZsReTJ0xh5MTT8yAcb3MUR4mQ==
 
-"@webcomponents/webcomponentsjs@2.2.10", "@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0", "@webcomponents/webcomponentsjs@^2.2.7":
+"@webcomponents/webcomponentsjs@^1.0.7", "@webcomponents/webcomponentsjs@^2.0.0", "@webcomponents/webcomponentsjs@^2.2.10", "@webcomponents/webcomponentsjs@^2.2.7":
   version "2.2.10"
   resolved "https://registry.yarnpkg.com/@webcomponents/webcomponentsjs/-/webcomponentsjs-2.2.10.tgz#6f6bee0277833ae98d7e5b46f1e0fdb48cd5ff44"
   integrity sha512-5dzhUhP+h0qMiK0IWb7VNb0OGBoXO3AuI6Qi8t9PoKT50s5L1jv0xnwnLq+cFgPuTB8FLTNP8xIDmyoOsKBy9Q==
