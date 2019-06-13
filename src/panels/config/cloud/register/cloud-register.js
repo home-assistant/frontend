@@ -2,17 +2,17 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card";
-import "../../../components/buttons/ha-progress-button";
-import "../../../layouts/hass-subpage";
-import "../../../resources/ha-style";
-import "../ha-config-section";
-import { EventsMixin } from "../../../mixins/events-mixin";
+import "../../../../components/ha-card";
+import "../../../../components/buttons/ha-progress-button";
+import "../../../../layouts/hass-subpage";
+import "../../../../resources/ha-style";
+import "../../ha-config-section";
+import { EventsMixin } from "../../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
  */
-class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
+class CloudRegister extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -217,4 +217,4 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define("ha-config-cloud-register", HaConfigCloudRegister);
+customElements.define("cloud-register", CloudRegister);

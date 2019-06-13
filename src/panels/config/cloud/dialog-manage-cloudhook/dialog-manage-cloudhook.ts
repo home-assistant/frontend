@@ -9,20 +9,20 @@ import {
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../../components/dialog/ha-paper-dialog";
+import "../../../../components/dialog/ha-paper-dialog";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
+import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 // tslint:disable-next-line
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
-import { HomeAssistant } from "../../../types";
-import { haStyle } from "../../../resources/styles";
-import { WebhookDialogParams } from "./show-cloud-webhook-manage-dialog";
+import { HomeAssistant } from "../../../../types";
+import { haStyle } from "../../../../resources/styles";
+import { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
-export class CloudWebhookManageDialog extends LitElement {
+export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
   private _params?: WebhookDialogParams;
 
@@ -75,9 +75,9 @@ export class CloudWebhookManageDialog extends LitElement {
         </div>
 
         <div class="paper-dialog-buttons">
-          <a href="${docsUrl}" target="_blank"
-            ><mwc-button>VIEW DOCUMENTATION</mwc-button></a
-          >
+          <a href="${docsUrl}" target="_blank">
+            <mwc-button>VIEW DOCUMENTATION</mwc-button>
+          </a>
           <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
         </div>
       </ha-paper-dialog>
@@ -136,6 +136,9 @@ export class CloudWebhookManageDialog extends LitElement {
         button.link {
           color: var(--primary-color);
         }
+        .paper-dialog-buttons a {
+          text-decoration: none;
+        }
       `,
     ];
   }
@@ -143,8 +146,8 @@ export class CloudWebhookManageDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "cloud-webhook-manage-dialog": CloudWebhookManageDialog;
+    "dialog-manage-cloudhook": DialogManageCloudhook;
   }
 }
 
-customElements.define("cloud-webhook-manage-dialog", CloudWebhookManageDialog);
+customElements.define("dialog-manage-cloudhook", DialogManageCloudhook);
