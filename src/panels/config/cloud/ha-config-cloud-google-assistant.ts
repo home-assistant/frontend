@@ -54,6 +54,7 @@ class CloudGoogleAssistant extends LitElement {
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
   private _popstateSyncAttached = false;
   private _popstateReloadStatusAttached = false;
+  private _isInitialExposed?: Set<string>;
 
   private _getEntityFilterFunc = memoizeOne((filter: EntityFilter) =>
     generateFilter(
@@ -74,8 +75,21 @@ class CloudGoogleAssistant extends LitElement {
     const filterFunc = this._getEntityFilterFunc(
       this.cloudStatus.google_entities
     );
+
+    // We will only generate `isInitialExposed` during first render.
+    // On each subsequent render we will use the same set so that cards
+    // will not jump around when we change the exposed setting.
+    const showInExposed = this._isInitialExposed || new Set();
+    const trackExposed = this._isInitialExposed === undefined;
+
     let selected = 0;
-    const cards = this._entities.map((entity) => {
+
+    // On first render we decide which cards show in which category.
+    // That way cards won't jump around when changing values.
+    const exposedCards: TemplateResult[] = [];
+    const notExposedCards: TemplateResult[] = [];
+
+    this._entities.forEach((entity) => {
       const stateObj = this.hass.states[entity.entity_id];
       const config = this._entityConfigs[entity.entity_id] || {};
       const isExposed = emptyFilter
@@ -83,9 +97,17 @@ class CloudGoogleAssistant extends LitElement {
         : filterFunc(entity.entity_id);
       if (isExposed) {
         selected++;
+
+        if (trackExposed) {
+          showInExposed.add(entity.entity_id);
+        }
       }
 
-      return html`
+      const target = showInExposed.has(entity.entity_id)
+        ? exposedCards
+        : notExposedCards;
+
+      target.push(html`
         <ha-card>
           <div class="card-content">
             <state-info
@@ -119,34 +141,57 @@ class CloudGoogleAssistant extends LitElement {
               : ""}
           </div>
         </ha-card>
-      `;
+      `);
     });
+
+    if (trackExposed) {
+      this._isInitialExposed = showInExposed;
+    }
 
     return html`
       <hass-subpage header="Google Assistant">
         <span slot="toolbar-icon">
-          ${selected}${!this.narrow
-            ? html`
-                selected
-              `
-            : ""}
+          ${selected}${
+      !this.narrow
+        ? html`
+            selected
+          `
+        : ""
+    }
         </span>
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:tune"
           @click=${this._openDomainToggler}
         ></paper-icon-button>
-        ${!emptyFilter
-          ? html`
-              <div class="banner">
-                Editing which entities are exposed via this UI is disabled
-                because you have configured entity filters in
-                configuration.yaml.
-              </div>
-            `
-          : ""}
-        <div class="content">
-          ${cards}
+        ${
+          !emptyFilter
+            ? html`
+                <div class="banner">
+                  Editing which entities are exposed via this UI is disabled
+                  because you have configured entity filters in
+                  configuration.yaml.
+                </div>
+              `
+            : ""
+        }
+
+          ${
+            exposedCards.length > 0
+              ? html`
+                  <h1>Exposed entities</h1>
+                  <div class="content">${exposedCards}</div>
+                `
+              : ""
+          }
+          ${
+            notExposedCards.length > 0
+              ? html`
+                  <h1>Not Exposed entities</h1>
+                  <div class="content">${notExposedCards}</div>
+                `
+              : ""
+          }
         </div>
       </hass-subpage>
     `;
@@ -285,6 +330,13 @@ class CloudGoogleAssistant extends LitElement {
         padding: 16px 8px;
         text-align: center;
       }
+      h1 {
+        color: var(--primary-text-color);
+        font-size: 24px;
+        letter-spacing: -0.012em;
+        margin-bottom: 0;
+        padding: 0 8px;
+      }
       .content {
         display: flex;
         flex-wrap: wrap;
@@ -304,6 +356,12 @@ class CloudGoogleAssistant extends LitElement {
       }
       paper-toggle-button {
         padding: 8px 0;
+      }
+
+      @media all and (max-width: 450px) {
+        ha-card {
+          max-width: 100%;
+        }
       }
     `;
   }
