@@ -161,11 +161,17 @@ class CloudGoogleAssistant extends LitElement {
         : ""
     }
         </span>
-        <paper-icon-button
-          slot="toolbar-icon"
-          icon="hass:tune"
-          @click=${this._openDomainToggler}
-        ></paper-icon-button>
+        ${
+          emptyFilter
+            ? html`
+                <paper-icon-button
+                  slot="toolbar-icon"
+                  icon="hass:tune"
+                  @click=${this._openDomainToggler}
+                ></paper-icon-button>
+              `
+            : ""
+        }
         ${
           !emptyFilter
             ? html`
