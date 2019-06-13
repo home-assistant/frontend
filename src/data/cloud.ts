@@ -13,6 +13,10 @@ export interface GoogleEntityConfig {
   disable_2fa?: boolean;
 }
 
+export interface AlexaEntityConfig {
+  should_expose?: boolean;
+}
+
 export interface CertificateInformation {
   common_name: string;
   expire_date: string;
@@ -27,6 +31,9 @@ export interface CloudPreferences {
   cloudhooks: { [webhookId: string]: CloudWebhook };
   google_entity_configs: {
     [entityId: string]: GoogleEntityConfig;
+  };
+  alexa_entity_configs: {
+    [entityId: string]: AlexaEntityConfig;
   };
 }
 
@@ -53,12 +60,6 @@ export interface CloudWebhook {
   cloudhook_id: string;
   cloudhook_url: string;
   managed?: boolean;
-}
-
-export interface GoogleEntity {
-  entity_id: string;
-  traits: string[];
-  might_2fa: boolean;
 }
 
 export const fetchCloudStatus = (hass: HomeAssistant) =>
@@ -102,9 +103,6 @@ export const updateCloudPref = (
     ...prefs,
   });
 
-export const fetchCloudGoogleEntities = (hass: HomeAssistant) =>
-  hass.callWS<GoogleEntity[]>({ type: "cloud/google_assistant/entities" });
-
 export const updateCloudGoogleEntityConfig = (
   hass: HomeAssistant,
   entityId: string,
@@ -118,3 +116,14 @@ export const updateCloudGoogleEntityConfig = (
 
 export const cloudSyncGoogleAssistant = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/google_actions/sync");
+
+export const updateCloudAlexaEntityConfig = (
+  hass: HomeAssistant,
+  entityId: string,
+  values: AlexaEntityConfig
+) =>
+  hass.callWS<AlexaEntityConfig>({
+    type: "cloud/alexa/entities/update",
+    entity_id: entityId,
+    ...values,
+  });

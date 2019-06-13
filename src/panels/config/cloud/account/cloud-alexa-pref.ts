@@ -11,12 +11,11 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
 
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
-import "./cloud-exposed-entities";
-import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 
 export class CloudAlexaPref extends LitElement {
   public hass?: HomeAssistant;
@@ -63,16 +62,12 @@ export class CloudAlexaPref extends LitElement {
             >This integration requires an Alexa-enabled device like the Amazon
             Echo.</em
           >
-          ${enabled
-            ? html`
-                <p>Exposed entities:</p>
-                <cloud-exposed-entities
-                  .hass="${this.hass}"
-                  .filter="${this.cloudStatus!.alexa_entities}"
-                  .supportedDomains="${this.cloudStatus!.alexa_domains}"
-                ></cloud-exposed-entities>
-              `
-            : ""}
+        </div>
+        <div class="card-actions">
+          <div class="spacer"></div>
+          <a href="/config/cloud/alexa">
+            <mwc-button>Manage Entities</mwc-button>
+          </a>
         </div>
       </ha-card>
     `;
@@ -98,6 +93,15 @@ export class CloudAlexaPref extends LitElement {
         position: absolute;
         right: 8px;
         top: 32px;
+      }
+      .card-actions {
+        display: flex;
+      }
+      .card-actions a {
+        text-decoration: none;
+      }
+      .spacer {
+        flex-grow: 1;
       }
     `;
   }
