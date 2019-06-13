@@ -79,7 +79,7 @@ export class HuiDialogEditCard extends LitElement {
                   <div class="element-editor">
                     <hui-card-editor
                       .hass="${this.hass}"
-                      .config="${this._cardConfig}"
+                      .value="${this._cardConfig}"
                       @config-changed="${this._handleConfigChanged}"
                     ></hui-card-editor>
                   </div>

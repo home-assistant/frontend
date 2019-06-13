@@ -37,8 +37,9 @@ declare global {
 @customElement("hui-card-editor")
 export class HuiCardEditor extends LitElement {
   @property() public hass?: HomeAssistant;
+  @property() public value?: LovelaceCardConfig;
 
-  @property() private _yaml?: string | undefined;
+  @property() private _yaml?: string;
   @property() private _configElement?: LovelaceCardEditor;
   @property() private _configElType?: string;
   @property() private _GUImode: boolean = true;
@@ -140,6 +141,10 @@ export class HuiCardEditor extends LitElement {
     `;
   }
 
+  protected async firstUpdated() {
+    this.config = this.value;
+  }
+
   protected updated(changedProperties) {
     super.updated(changedProperties);
 
@@ -189,14 +194,6 @@ export class HuiCardEditor extends LitElement {
         const elClass = customElements.get(tag);
         if (!elClass) {
           throw new Error(`Unknown card type encountered: ${cardType}.`);
-        }
-
-        try {
-          // Check if the card config works
-          const testElement = new elClass();
-          testElement.setConfig(this.config);
-        } catch (err) {
-          throw new Error(err.message);
         }
 
         this._loading = true;
