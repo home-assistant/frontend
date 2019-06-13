@@ -22,6 +22,8 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
 ): Constructor<T & LitLocalizeLiteMixin> =>
   // @ts-ignore
   class extends localizeLiteBaseMixin(superClass) {
+    public localize: LocalizeFunc;
+
     static get properties(): PropertyDeclarations {
       return {
         localize: {},
@@ -44,8 +46,8 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
       this._initializeLocalizeLite();
       this.localize = computeLocalize(
         this.constructor.prototype,
-        this.language,
-        this.resources
+        this.language!,
+        this.resources!
       );
     }
 
@@ -57,8 +59,8 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
       ) {
         this.localize = computeLocalize(
           this.constructor.prototype,
-          this.language,
-          this.resources
+          this.language!,
+          this.resources!
         );
       }
     }
