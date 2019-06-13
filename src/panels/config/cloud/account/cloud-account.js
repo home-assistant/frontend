@@ -4,30 +4,27 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card";
-import "../../../components/buttons/ha-call-api-button";
-import "../../../layouts/hass-subpage";
-import "../../../resources/ha-style";
+import "../../../../components/ha-card";
+import "../../../../components/buttons/ha-call-api-button";
+import "../../../../layouts/hass-subpage";
+import "../../../../resources/ha-style";
 
-import "../ha-config-section";
+import "../../ha-config-section";
 import "./cloud-webhooks";
 
-import formatDateTime from "../../../common/datetime/format_date_time";
-import { EventsMixin } from "../../../mixins/events-mixin";
-import LocalizeMixin from "../../../mixins/localize-mixin";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { fetchCloudSubscriptionInfo } from "../../../data/cloud";
+import formatDateTime from "../../../../common/datetime/format_date_time";
+import { EventsMixin } from "../../../../mixins/events-mixin";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
+import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import "./cloud-remote-pref";
-
-let registeredWebhookDialog = false;
 
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  */
-class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
+class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="iron-flex ha-style">
@@ -163,20 +160,6 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._fetchSubscriptionInfo();
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-
-    if (!registeredWebhookDialog) {
-      registeredWebhookDialog = true;
-      fireEvent(this, "register-dialog", {
-        dialogShowEvent: "manage-cloud-webhook",
-        dialogTag: "cloud-webhook-manage-dialog",
-        dialogImport: () =>
-          import(/* webpackChunkName: "cloud-webhook-manage-dialog" */ "./cloud-webhook-manage-dialog"),
-      });
-    }
-  }
-
   _computeRemoteConnected(connected) {
     return connected ? "Connected" : "Not Connected";
   }
@@ -219,4 +202,4 @@ class HaConfigCloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 }
 
-customElements.define("ha-config-cloud-account", HaConfigCloudAccount);
+customElements.define("cloud-account", CloudAccount);

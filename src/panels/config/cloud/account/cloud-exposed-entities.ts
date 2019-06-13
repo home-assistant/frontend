@@ -8,16 +8,16 @@ import {
 import { repeat } from "lit-html/directives/repeat";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntityBase } from "home-assistant-js-websocket";
-import "../../../components/entity/ha-state-icon";
+import "../../../../components/entity/ha-state-icon";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import computeStateName from "../../../../common/entity/compute_state_name";
 import {
   FilterFunc,
   generateFilter,
   EntityFilter,
-} from "../../../common/entity/entity_filter";
+} from "../../../../common/entity/entity_filter";
 
 export class CloudExposedEntities extends LitElement {
   public hass?: HomeAssistant;

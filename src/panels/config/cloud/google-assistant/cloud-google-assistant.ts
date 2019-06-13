@@ -9,11 +9,11 @@ import {
 } from "lit-element";
 import "@polymer/paper-toggle-button";
 import "@polymer/paper-icon-button";
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-loading-screen";
-import "../../../components/ha-card";
-import "../../../components/entity/state-info";
-import { HomeAssistant } from "../../../types";
+import "../../../../layouts/hass-subpage";
+import "../../../../layouts/hass-loading-screen";
+import "../../../../components/ha-card";
+import "../../../../components/entity/state-info";
+import { HomeAssistant } from "../../../../types";
 import {
   GoogleEntity,
   fetchCloudGoogleEntities,
@@ -22,20 +22,20 @@ import {
   updateCloudGoogleEntityConfig,
   cloudSyncGoogleAssistant,
   GoogleEntityConfig,
-} from "../../../data/cloud";
+} from "../../../../data/cloud";
 import memoizeOne from "memoize-one";
 import {
   generateFilter,
   isEmptyFilter,
   EntityFilter,
-} from "../../../common/entity/entity_filter";
-import { compare } from "../../../common/string/compare";
-import computeStateName from "../../../common/entity/compute_state_name";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { showToast } from "../../../util/toast";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { showDomainTogglerDialog } from "../../../dialogs/domain-toggler/show-dialog-domain-toggler";
-import computeDomain from "../../../common/entity/compute_domain";
+} from "../../../../common/entity/entity_filter";
+import { compare } from "../../../../common/string/compare";
+import computeStateName from "../../../../common/entity/compute_state_name";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { showToast } from "../../../../util/toast";
+import { PolymerChangedEvent } from "../../../../polymer-types";
+import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -44,7 +44,7 @@ const configIsExposed = (config: GoogleEntityConfig) =>
     ? DEFAULT_CONFIG_EXPOSE
     : config.should_expose;
 
-@customElement("ha-config-cloud-google-assistant")
+@customElement("cloud-google-assistant")
 class CloudGoogleAssistant extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public cloudStatus!: CloudStatusLoggedIn;
@@ -369,6 +369,6 @@ class CloudGoogleAssistant extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-cloud-google-assistant": CloudGoogleAssistant;
+    "cloud-google-assistant": CloudGoogleAssistant;
   }
 }

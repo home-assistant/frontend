@@ -11,12 +11,12 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
 
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
 import "./cloud-exposed-entities";
-import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 
 export class CloudAlexaPref extends LitElement {
   public hass?: HomeAssistant;

@@ -61,6 +61,12 @@ export interface GoogleEntity {
   might_2fa: boolean;
 }
 
+export interface AlexaEntity {
+  entity_id: string;
+  display_categories: string[];
+  interfaces: string[];
+}
+
 export const fetchCloudStatus = (hass: HomeAssistant) =>
   hass.callWS<CloudStatus>({ type: "cloud/status" });
 
@@ -118,3 +124,6 @@ export const updateCloudGoogleEntityConfig = (
 
 export const cloudSyncGoogleAssistant = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/google_actions/sync");
+
+export const fetchCloudAlexaEntities = (hass: HomeAssistant) =>
+  hass.callWS<AlexaEntity[]>({ type: "cloud/alexa/entities" });
