@@ -17,9 +17,8 @@ import { HomeAssistant } from "../../../../types";
 import {
   CloudStatusLoggedIn,
   CloudPreferences,
-  updateCloudGoogleEntityConfig,
-  cloudSyncGoogleAssistant,
-  GoogleEntityConfig,
+  updateCloudAlexaEntityConfig,
+  AlexaEntityConfig,
 } from "../../../../data/cloud";
 import memoizeOne from "memoize-one";
 import {
@@ -30,30 +29,27 @@ import {
 import { compare } from "../../../../common/string/compare";
 import computeStateName from "../../../../common/entity/compute_state_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { showToast } from "../../../../util/toast";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import computeDomain from "../../../../common/entity/compute_domain";
-import {
-  GoogleEntity,
-  fetchCloudGoogleEntities,
-} from "../../../../data/google_assistant";
+import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
 
 const DEFAULT_CONFIG_EXPOSE = true;
+const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
 
-const configIsExposed = (config: GoogleEntityConfig) =>
+const configIsExposed = (config: AlexaEntityConfig) =>
   config.should_expose === undefined
     ? DEFAULT_CONFIG_EXPOSE
     : config.should_expose;
 
-@customElement("cloud-google-assistant")
-class CloudGoogleAssistant extends LitElement {
+@customElement("cloud-alexa")
+class CloudAlexa extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public cloudStatus!: CloudStatusLoggedIn;
   @property() public narrow!: boolean;
-  @property() private _entities?: GoogleEntity[];
+  @property() private _entities?: AlexaEntity[];
   @property()
-  private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
+  private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
   private _popstateSyncAttached = false;
   private _popstateReloadStatusAttached = false;
   private _isInitialExposed?: Set<string>;
@@ -73,9 +69,9 @@ class CloudGoogleAssistant extends LitElement {
         <hass-loading-screen></hass-loading-screen>
       `;
     }
-    const emptyFilter = isEmptyFilter(this.cloudStatus.google_entities);
+    const emptyFilter = isEmptyFilter(this.cloudStatus.alexa_entities);
     const filterFunc = this._getEntityFilterFunc(
-      this.cloudStatus.google_entities
+      this.cloudStatus.alexa_entities
     );
 
     // We will only generate `isInitialExposed` during first render.
@@ -118,8 +114,11 @@ class CloudGoogleAssistant extends LitElement {
               secondary-line
               @click=${this._showMoreInfo}
             >
-              ${entity.traits
-                .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
+              ${entity.interfaces
+                .filter((ifc) => !IGNORE_INTERFACES.includes(ifc))
+                .map((ifc) =>
+                  ifc.replace("Alexa.", "").replace("Controller", "")
+                )
                 .join(", ")}
             </state-info>
             <paper-toggle-button
@@ -128,19 +127,8 @@ class CloudGoogleAssistant extends LitElement {
               .checked=${isExposed}
               @checked-changed=${this._exposeChanged}
             >
-              Expose to Google Assistant
+              Expose to Alexa
             </paper-toggle-button>
-            ${entity.might_2fa
-              ? html`
-                  <paper-toggle-button
-                    .entityId=${entity.entity_id}
-                    .checked=${Boolean(config.disable_2fa)}
-                    @checked-changed=${this._disable2FAChanged}
-                  >
-                    Disable two factor authentication
-                  </paper-toggle-button>
-                `
-              : ""}
           </div>
         </ha-card>
       `);
@@ -151,7 +139,7 @@ class CloudGoogleAssistant extends LitElement {
     }
 
     return html`
-      <hass-subpage header="Google Assistant">
+      <hass-subpage header="Alexa">
         <span slot="toolbar-icon">
           ${selected}${
       !this.narrow
@@ -206,12 +194,12 @@ class CloudGoogleAssistant extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("cloudStatus")) {
-      this._entityConfigs = this.cloudStatus.prefs.google_entity_configs;
+      this._entityConfigs = this.cloudStatus.prefs.alexa_entity_configs;
     }
   }
 
   private async _fetchData() {
-    const entities = await fetchCloudGoogleEntities(this.hass);
+    const entities = await fetchCloudAlexaEntities(this.hass);
     entities.sort((a, b) => {
       const stateA = this.hass.states[a.entity_id];
       const stateB = this.hass.states[b.entity_id];
@@ -245,22 +233,8 @@ class CloudGoogleAssistant extends LitElement {
     this._ensureEntitySync();
   }
 
-  private async _disable2FAChanged(ev: PolymerChangedEvent<boolean>) {
-    const entityId = (ev.currentTarget as any).entityId;
-    const newDisable2FA = ev.detail.value;
-    const curDisable2FA = Boolean(
-      (this._entityConfigs[entityId] || {}).disable_2fa
-    );
-    if (newDisable2FA === curDisable2FA) {
-      return;
-    }
-    await this._updateConfig(entityId, {
-      disable_2fa: newDisable2FA,
-    });
-  }
-
-  private async _updateConfig(entityId: string, values: GoogleEntityConfig) {
-    const updatedConfig = await updateCloudGoogleEntityConfig(
+  private async _updateConfig(entityId: string, values: AlexaEntityConfig) {
+    const updatedConfig = await updateCloudAlexaEntityConfig(
       this.hass,
       entityId,
       values
@@ -309,12 +283,13 @@ class CloudGoogleAssistant extends LitElement {
     this._popstateSyncAttached = true;
     // Cache parent because by the time popstate happens,
     // this element is detached
-    const parent = this.parentElement!;
+    // const parent = this.parentElement!;
     window.addEventListener(
       "popstate",
       () => {
-        showToast(parent, { message: "Synchronizing changes to Google." });
-        cloudSyncGoogleAssistant(this.hass);
+        // We don't have anything yet.
+        // showToast(parent, { message: "Synchronizing changes to Google." });
+        // cloudSyncGoogleAssistant(this.hass);
       },
       { once: true }
     );
@@ -344,6 +319,9 @@ class CloudGoogleAssistant extends LitElement {
         padding: 4px;
         --paper-toggle-button-label-spacing: 16px;
       }
+      paper-toggle-button {
+        clear: both;
+      }
       ha-card {
         margin: 4px;
         width: 100%;
@@ -370,6 +348,6 @@ class CloudGoogleAssistant extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "cloud-google-assistant": CloudGoogleAssistant;
+    "cloud-alexa": CloudAlexa;
   }
 }
