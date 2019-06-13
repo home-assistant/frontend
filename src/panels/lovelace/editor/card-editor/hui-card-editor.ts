@@ -37,7 +37,6 @@ declare global {
 @customElement("hui-card-editor")
 export class HuiCardEditor extends LitElement {
   @property() public hass?: HomeAssistant;
-  @property() public value?;
 
   @property() private _yaml?: string | undefined;
   @property() private _configElement?: LovelaceCardEditor;
@@ -56,7 +55,11 @@ export class HuiCardEditor extends LitElement {
     this._yaml = _yaml;
     this._updateConfigElement();
     // TODO: Defer this to next redraw? How?
-    setTimeout(() => this._yamlEditor.codemirror.refresh(), 1);
+    setTimeout(() => {
+      if (this._yamlEditor) {
+        this._yamlEditor.codemirror.refresh();
+      }
+    }, 1);
     fireEvent(this, "config-changed", { config: this.config! });
   }
 
@@ -72,7 +75,7 @@ export class HuiCardEditor extends LitElement {
     this.yaml = yaml.safeDump(config);
   }
 
-  public get error(): boolean {
+  public get hasError(): boolean {
     return this._error !== undefined;
   }
 
@@ -80,78 +83,61 @@ export class HuiCardEditor extends LitElement {
     return this.shadowRoot!.querySelector("hui-yaml-editor")!;
   }
 
+  public toggleMode() {
+    this._GUImode = !this._GUImode;
+  }
+
   protected render(): TemplateResult {
     return html`
-      <div style="width: 100%;">
-        <div class="gui-editor" ?hidden="${this._GUImode === false}">
-          ${this._loading
-            ? html`
-                <paper-spinner
-                  ?active="${this._loading}"
-                  alt="Loading"
-                  class="center margin-bot"
-                ></paper-spinner>
-              `
-            : this._warning || this._error
-            ? ""
-            : this._configElement}
-        </div>
-        <div class="yaml-editor" ?hidden="${this._GUImode === true}">
-          <hui-yaml-editor
-            .hass="${this.hass}"
-            .value="${this.yaml}"
-            @yaml-changed="${this._handleYAMLChanged}"
-          ></hui-yaml-editor>
-          <div class="error">
-            ${this._error}
-          </div>
-          <div class="warning">
-            ${this._warning}
-          </div>
-        </div>
+      <div class="wrapper">
+        ${this._GUImode
+          ? html`
+              <div class="gui-editor">
+                ${this._loading
+                  ? html`
+                      <paper-spinner
+                        active
+                        alt="Loading"
+                        class="center margin-bot"
+                      ></paper-spinner>
+                    `
+                  : this._configElement}
+              </div>
+            `
+          : html`
+              <div class="yaml-editor">
+                <hui-yaml-editor
+                  .hass=${this.hass}
+                  .value=${this.yaml}
+                  @yaml-changed=${this._handleYAMLChanged}
+                ></hui-yaml-editor>
+              </div>
+            `}
+        ${this._error
+          ? html`
+              <div class="error">
+                ${this._error}
+              </div>
+            `
+          : ""}
+        ${this._warning
+          ? html`
+              <div class="warning">
+                ${this._warning}
+              </div>
+            `
+          : ""}
         <div class="buttons">
           <mwc-button
-            @click="${() => (this._GUImode = !this._GUImode)}"
-            ?disabled="${this._warning || this._error}"
-            ?unelevated="${this._GUImode === false}"
+            @click=${this.toggleMode}
+            ?disabled=${this._warning || this._error}
+            ?unelevated=${this._GUImode === false}
           >
-            <ha-icon .icon="${"mdi:code-braces"}"></ha-icon>
+            <ha-icon icon="mdi:code-braces"></ha-icon>
           </mwc-button>
         </div>
       </div>
     `;
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        margin: 0 10px;
-        display: flex;
-      }
-      .hidden {
-        display: none;
-      }
-      .gui-editor,
-      .yaml-editor {
-        padding: 8px 0px;
-      }
-      .error {
-        color: #ef5350;
-      }
-      .warning {
-        color: #ffa726;
-      }
-      .buttons {
-        text-align: right;
-
-        padding: 8px 0px;
-        border-top: 1px solid #e8e8e8;
-      }
-    `;
-  }
-
-  protected async firstUpdated() {
-    this.config = this.value;
   }
 
   protected updated(changedProperties) {
@@ -170,9 +156,7 @@ export class HuiCardEditor extends LitElement {
   private _handleUIConfigChanged(ev) {
     ev.stopPropagation();
     const config = ev.detail.config;
-    if (JSON.stringify(config) !== JSON.stringify(this.config)) {
-      this.config = config;
-    }
+    this.config = config;
   }
   private _handleYAMLChanged(ev) {
     ev.stopPropagation();
@@ -251,9 +235,37 @@ export class HuiCardEditor extends LitElement {
       this._GUImode = false;
     } finally {
       this._loading = false;
-      fireEvent(this as HTMLElement, "iron-resize");
+      fireEvent(this, "iron-resize");
     }
-    return;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: flex;
+      }
+      .wrapper {
+        width: 100%;
+      }
+      .gui-editor,
+      .yaml-editor {
+        padding: 8px 0px;
+      }
+      .error {
+        color: #ef5350;
+      }
+      .warning {
+        color: #ffa726;
+      }
+      .buttons {
+        text-align: right;
+        padding: 8px 0px;
+      }
+      paper-spinner {
+        display: block;
+        margin: auto;
+      }
+    `;
   }
 }
 

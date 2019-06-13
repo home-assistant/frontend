@@ -3,7 +3,7 @@ import {
   html,
   LitElement,
   TemplateResult,
-  CSSResult,
+  CSSResultArray,
   customElement,
   property,
 } from "lit-element";
@@ -79,7 +79,7 @@ export class HuiDialogEditCard extends LitElement {
                   <div class="element-editor">
                     <hui-card-editor
                       .hass="${this.hass}"
-                      .value="${this._cardConfig}"
+                      .config="${this._cardConfig}"
                       @config-changed="${this._handleConfigChanged}"
                     ></hui-card-editor>
                   </div>
@@ -94,19 +94,22 @@ export class HuiDialogEditCard extends LitElement {
           <mwc-button @click="${this._close}">
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          <mwc-button ?disabled="${!this._canSave}" @click="${this._save}">
-            <paper-spinner
-              ?active="${this._saving}"
-              alt="Saving"
-            ></paper-spinner>
-            ${this.hass!.localize("ui.common.save")}
+          <mwc-button
+            ?disabled="${!this._canSave || this._saving}"
+            @click="${this._save}"
+          >
+            ${this._saving
+              ? html`
+                  <paper-spinner active alt="Saving"></paper-spinner>
+                `
+              : this.hass!.localize("ui.common.save")}
           </mwc-button>
         </div>
       </ha-paper-dialog>
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultArray {
     return [
       haStyleDialog,
       css`
@@ -177,12 +180,6 @@ export class HuiDialogEditCard extends LitElement {
           height: 14px;
           margin-right: 20px;
         }
-        paper-spinner {
-          display: none;
-        }
-        paper-spinner[active] {
-          display: block;
-        }
         .hidden {
           display: none;
         }
@@ -222,7 +219,7 @@ export class HuiDialogEditCard extends LitElement {
     if (this._cardConfig === undefined) {
       return false;
     }
-    if (this._cardEditorEl && this._cardEditorEl.error) {
+    if (this._cardEditorEl && this._cardEditorEl.hasError) {
       return false;
     }
     return true;
