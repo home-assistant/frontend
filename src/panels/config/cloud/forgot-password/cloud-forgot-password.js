@@ -2,16 +2,16 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card";
-import "../../../components/buttons/ha-progress-button";
-import "../../../layouts/hass-subpage";
-import "../../../resources/ha-style";
-import { EventsMixin } from "../../../mixins/events-mixin";
+import "../../../../components/ha-card";
+import "../../../../components/buttons/ha-progress-button";
+import "../../../../layouts/hass-subpage";
+import "../../../../resources/ha-style";
+import { EventsMixin } from "../../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
  */
-class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
+class CloudForgotPassword extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="iron-flex ha-style">
@@ -141,7 +141,4 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(
-  "ha-config-cloud-forgot-password",
-  HaConfigCloudForgotPassword
-);
+customElements.define("cloud-forgot-password", CloudForgotPassword);
