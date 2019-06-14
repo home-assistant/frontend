@@ -1,5 +1,5 @@
-import "./ha-config-cloud-account";
-import "./ha-config-cloud-login";
+import "./account/cloud-account";
+import "./login/cloud-login";
 import {
   HassRouterPage,
   RouterOptions,
@@ -11,7 +11,7 @@ import { CloudStatus } from "../../../data/cloud";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { PolymerElement } from "@polymer/polymer";
 
-const LOGGED_IN_URLS = ["account", "google-assistant"];
+const LOGGED_IN_URLS = ["account", "google-assistant", "alexa"];
 const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];
 
 @customElement("ha-config-cloud")
@@ -41,22 +41,26 @@ class HaConfigCloud extends HassRouterPage {
     },
     routes: {
       login: {
-        tag: "ha-config-cloud-login",
+        tag: "cloud-login",
       },
       register: {
-        tag: "ha-config-cloud-register",
-        load: () => import("./ha-config-cloud-register"),
+        tag: "cloud-register",
+        load: () => import("./register/cloud-register"),
       },
       "forgot-password": {
-        tag: "ha-config-cloud-forgot-password",
-        load: () => import("./ha-config-cloud-forgot-password"),
+        tag: "cloud-forgot-password",
+        load: () => import("./forgot-password/cloud-forgot-password"),
       },
       account: {
-        tag: "ha-config-cloud-account",
+        tag: "cloud-account",
       },
       "google-assistant": {
-        tag: "ha-config-cloud-google-assistant",
-        load: () => import("./ha-config-cloud-google-assistant"),
+        tag: "cloud-google-assistant",
+        load: () => import("./google-assistant/cloud-google-assistant"),
+      },
+      alexa: {
+        tag: "cloud-alexa",
+        load: () => import("./alexa/cloud-alexa"),
       },
     },
   };

@@ -11,12 +11,11 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
 
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
-import "./cloud-exposed-entities";
-import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 
 export class CloudAlexaPref extends LitElement {
   public hass?: HomeAssistant;
@@ -34,13 +33,13 @@ export class CloudAlexaPref extends LitElement {
       return html``;
     }
 
-    const enabled = this.cloudStatus!.prefs.alexa_enabled;
+    const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
 
     return html`
       <ha-card header="Alexa">
         <paper-toggle-button
-          .checked="${enabled}"
-          @change="${this._toggleChanged}"
+          .checked=${alexa_enabled}
+          @change=${this._enabledToggleChanged}
         ></paper-toggle-button>
         <div class="card-content">
           With the Alexa integration for Home Assistant Cloud you'll be able to
@@ -63,25 +62,48 @@ export class CloudAlexaPref extends LitElement {
             >This integration requires an Alexa-enabled device like the Amazon
             Echo.</em
           >
-          ${enabled
+          ${alexa_enabled
             ? html`
-                <p>Exposed entities:</p>
-                <cloud-exposed-entities
-                  .hass="${this.hass}"
-                  .filter="${this.cloudStatus!.alexa_entities}"
-                  .supportedDomains="${this.cloudStatus!.alexa_domains}"
-                ></cloud-exposed-entities>
+                <h3>Enable State Reporting</h3>
+                <p>
+                  If you enable state reporting, Home Assistant will sent
+                  <b>all</b> state changes of exposed entities to Amazon. This
+                  allows you to always see the latest states in the Alexa app
+                  and use the state changes to create routines.
+                </p>
+                <paper-toggle-button
+                  .checked=${alexa_report_state}
+                  @change=${this._reportToggleChanged}
+                ></paper-toggle-button>
               `
             : ""}
+        </div>
+        <div class="card-actions">
+          <div class="spacer"></div>
+          <a href="/config/cloud/alexa">
+            <mwc-button>Manage Entities</mwc-button>
+          </a>
         </div>
       </ha-card>
     `;
   }
 
-  private async _toggleChanged(ev) {
+  private async _enabledToggleChanged(ev) {
     const toggle = ev.target as PaperToggleButtonElement;
     try {
       await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _reportToggleChanged(ev) {
+    const toggle = ev.target as PaperToggleButtonElement;
+    try {
+      await updateCloudPref(this.hass!, {
+        alexa_report_state: toggle.checked!,
+      });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       toggle.checked = !toggle.checked;
@@ -98,6 +120,21 @@ export class CloudAlexaPref extends LitElement {
         position: absolute;
         right: 8px;
         top: 32px;
+      }
+      .card-actions {
+        display: flex;
+      }
+      .card-actions a {
+        text-decoration: none;
+      }
+      .spacer {
+        flex-grow: 1;
+      }
+      h3 {
+        margin-bottom: 0;
+      }
+      h3 + p {
+        margin-top: 0.5em;
       }
     `;
   }

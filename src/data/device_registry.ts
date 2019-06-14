@@ -10,7 +10,7 @@ export interface DeviceRegistryEntry {
   model?: string;
   name?: string;
   sw_version?: string;
-  hub_device_id?: string;
+  via_device_id?: string;
   area_id?: string;
   name_by_user?: string;
 }

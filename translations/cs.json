@@ -598,7 +598,7 @@
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "manuf": "od {manufacturer}",
-                        "hub": "Připojeno přes",
+                        "via": "Připojeno přes",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "zařízení není k dispozici",
                         "entity_unavailable": "entita není k dispozici",

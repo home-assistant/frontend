@@ -613,7 +613,7 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen",
                         "manuf": "av {manufacturer}",
-                        "hub": "Tilkopla via",
+                        "via": "Tilkopla via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Eininga utilgjengelig",
                         "entity_unavailable": "Oppføringa utilgjengelig",

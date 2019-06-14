@@ -57,8 +57,6 @@ import { computeRTLDirection } from "../../common/util/compute_rtl";
 const CSS_CACHE = {};
 const JS_CACHE = {};
 
-let loadedUnusedEntities = false;
-
 class HUIRoot extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public lovelace?: Lovelace;
@@ -441,7 +439,8 @@ class HUIRoot extends LitElement {
       if (force && newSelectView === undefined) {
         newSelectView = this._curView;
       }
-      this._selectView(newSelectView, force);
+      // Will allow for ripples to start rendering
+      afterNextRender(() => this._selectView(newSelectView, force));
     }
   }
 
@@ -565,10 +564,7 @@ class HUIRoot extends LitElement {
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
 
-  private async _selectView(
-    viewIndex: HUIRoot["_curView"],
-    force: boolean
-  ): Promise<void> {
+  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
     if (!force && this._curView === viewIndex) {
       return;
     }
@@ -589,15 +585,16 @@ class HUIRoot extends LitElement {
     }
 
     if (viewIndex === "hass-unused-entities") {
-      if (!loadedUnusedEntities) {
-        loadedUnusedEntities = true;
-        await import(/* webpackChunkName: "hui-unused-entities" */ "./hui-unused-entities");
-      }
       const unusedEntities = document.createElement("hui-unused-entities");
-      unusedEntities.setConfig(this.config);
-      unusedEntities.hass = this.hass!;
+      // Wait for promise to resolve so that the element has been upgraded.
+      import(/* webpackChunkName: "hui-unused-entities" */ "./hui-unused-entities").then(
+        () => {
+          unusedEntities.setConfig(this.config);
+          unusedEntities.hass = this.hass!;
+        }
+      );
       root.style.background = this.config.background || "";
-      root.appendChild(unusedEntities);
+      root.append(unusedEntities);
       return;
     }
 
@@ -612,8 +609,6 @@ class HUIRoot extends LitElement {
     if (!force && this._viewCache![viewIndex]) {
       view = this._viewCache![viewIndex];
     } else {
-      await new Promise((resolve) => afterNextRender(resolve));
-
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
         view = createCardElement(viewConfig.cards[0]);
         view.isPanel = true;
@@ -629,7 +624,7 @@ class HUIRoot extends LitElement {
     view.hass = this.hass;
     root.style.background =
       viewConfig.background || this.config.background || "";
-    root.appendChild(view);
+    root.append(view);
   }
 
   private _loadResources(resources) {

@@ -357,8 +357,8 @@
                                 "stop": "중지"
                             },
                             "core_config": {
-                                "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어있기 때문에 편집기가 비활성화 되었습니다.",
-                                "location_name": "Home Assistant 설치 위치명",
+                                "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어 있기 때문에 편집기가 비활성화 되었습니다.",
+                                "location_name": "Home Assistant 이름",
                                 "latitude": "위도",
                                 "longitude": "경도",
                                 "elevation": "고도",
@@ -615,7 +615,7 @@
                         "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
                         "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
                         "manuf": "{manufacturer} 제조",
-                        "hub": "연결 경유 대상",
+                        "via": "연결 경유 대상",
                         "firmware": "펌웨어: {version}",
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가",
@@ -653,7 +653,7 @@
                     "picker": {
                         "header": "영역 등록",
                         "introduction": "영역은 기기가있는 위치를 구성하는데 사용합니다. 이 정보는 Home Assistant 의 인터페이스 정리, 권한 및 다른 시스템과의 통합 구성에 도움을 줍니다.",
-                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정 할 수 있습니다.",
+                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
                         "integrations_page": "통합 구성요소 페이지",
                         "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
                         "create_area": "영역 만들기"
@@ -673,8 +673,8 @@
                     "picker": {
                         "header": "구성요소",
                         "unavailable": "(사용불가)",
-                        "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 대해 고유한 레지스트리를 유지합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
-                        "introduction2": "구성요소 편집을 사용하여 이름을 대체하거나 구성요소 ID를 변경하거나 Home Assistant 에서 항목을 제거할 수 있습니다. 단, 구성요소 편집창에서 구성요소를 삭제해도 구성요소가 완전히 제거되는것은 아닙니다. 완전히 제거하려면, 아래 링크를 따라 통합 구성요소 페이지에서 제거해주세요.",
+                        "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 고유한 레지스트리를 부여합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
+                        "introduction2": "구성요소를 편집하여 이름을 대체하거나 구성요소 ID를 변경하거나 Home Assistant 에서 항목을 제거할 수 있습니다. 단, 구성요소 편집창에서 구성요소를 삭제해도 구성요소가 완전히 제거되는것은 아닙니다. 완전히 제거하려면, 아래 링크를 따라 통합 구성요소 페이지에서 제거해주세요.",
                         "integrations_page": "통합 구성요소 페이지"
                     },
                     "editor": {
@@ -880,7 +880,7 @@
                     }
                 },
                 "integration": {
-                    "intro": "기기 및 서비스는 Home Assistant 에서 통합 구성요소로 표시됩니다. 지금 구성하거나 설정 화면에서 나중에 구성할 수 있습니다.",
+                    "intro": "기기 및 서비스는 Home Assistant 에서 통합 구성요소로 표시됩니다. 지금 구성하거나 나중에 설정 화면에서 구성할 수 있습니다.",
                     "more_integrations": "더보기",
                     "finish": "완료"
                 },
