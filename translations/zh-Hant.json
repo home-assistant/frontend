@@ -357,14 +357,14 @@
                                 "stop": "停止"
                             },
                             "core_config": {
-                                "edit_requires_storage": "由於設定儲存於 configuration.yaml 內，編輯功能已關閉。",
+                                "edit_requires_storage": "由於 configuration.yaml 內已儲存設定，編輯功能已關閉。",
                                 "location_name": "Home Assistant 安裝名稱",
                                 "latitude": "緯度",
                                 "longitude": "經度",
                                 "elevation": "海拔",
                                 "elevation_meters": "公尺",
                                 "time_zone": "時區",
-                                "unit_system": "單位制",
+                                "unit_system": "單位系統",
                                 "unit_system_imperial": "英制",
                                 "unit_system_metric": "公制",
                                 "imperial_example": "華氏、磅",
