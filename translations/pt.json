@@ -596,7 +596,7 @@
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
                         "manuf": "por {manufacturer}",
-                        "hub": "Ligado via",
+                        "via": "Ligado via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Dispositivo indisponível",
                         "entity_unavailable": "Entidade indisponível",

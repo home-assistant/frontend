@@ -609,7 +609,7 @@
                         "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
                         "restart_confirm": "Selle sidumise lõplikuks eemaldamiseks taaskäivita Home Assistant",
                         "manuf": "{manufacturer}",
-                        "hub": "Ühendatud",
+                        "via": "Ühendatud",
                         "firmware": "Püsivara: {version}",
                         "device_unavailable": "seade pole saadaval",
                         "entity_unavailable": "üksus pole saadaval",

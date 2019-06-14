@@ -478,7 +478,7 @@
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
                         "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
                         "manuf": "üretici: {manufacturer}",
-                        "hub": "Şununla bağlı:",
+                        "via": "Şununla bağlı:",
                         "firmware": "Aygıt yazılımı: {version}",
                         "device_unavailable": "aygıt kullanılamıyor",
                         "entity_unavailable": "varlık kullanılamıyor"

@@ -266,6 +266,11 @@
             "paused": "Pozastavený",
             "returning": "Vracia sa do doku"
         },
+        "timer": {
+            "active": "aktívny",
+            "idle": "nečinný",
+            "paused": "pozastavený"
+        },
         "person": {
             "home": "Doma",
             "not_home": "Preč"
@@ -350,6 +355,21 @@
                                 "introduction": "Ovládajte Váš Home Assistant server... z aplikácie Home Assistant.",
                                 "restart": "Reštartovať",
                                 "stop": "Zastaviť"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor je zablokovaný, pretože konfigurácia je uložená v configuration.yaml",
+                                "location_name": "Názov vašej Home Assistant inštalácie",
+                                "latitude": "zemepisná šírka",
+                                "longitude": "zemepisná dĺžka",
+                                "elevation": "Nadmorská výška",
+                                "elevation_meters": "metrov",
+                                "time_zone": "Časové pásmo",
+                                "unit_system": "Jednotková sústava",
+                                "unit_system_imperial": "Imperiálny",
+                                "unit_system_metric": "metrický",
+                                "imperial_example": "Fahrenheita, libry",
+                                "metric_example": "Celsia, kilogramy",
+                                "save_button": "Uložiť"
                             }
                         }
                     }
@@ -358,7 +378,8 @@
                     "caption": "Prispôsobenie",
                     "description": "Prispôsobte svoje entity",
                     "picker": {
-                        "header": "Prispôsobenie"
+                        "header": "Prispôsobenie",
+                        "introduction": "Upravujte atribúty v rámci entity. Pridané \/ upravené prispôsobenia sa prejavia okamžite. Odstránené prispôsobenia sa prejavia po aktualizácii entity."
                     }
                 },
                 "automation": {
@@ -454,6 +475,7 @@
                                     "source": "Zdroj",
                                     "zone": "Zóna",
                                     "event": "Udalosť:",
+                                    "enter": "Potvrdiť",
                                     "leave": "Opustiť"
                                 }
                             },
@@ -538,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Získajte viac informácií o akciách"
-                        }
+                        },
+                        "load_error_not_editable": "Len automatizácie v automations.yaml je možné upravovať.",
+                        "load_error_unknown": "Chyba pri načítaní automatizácie ( {err_no} )."
                     }
                 },
                 "script": {
@@ -574,7 +598,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Prihlásený ako {email}",
-                    "description_not_login": "Neprihlásený"
+                    "description_not_login": "Neprihlásený",
+                    "description_features": "Ovládanie mimo domova, integrácia s Alexa a Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrácie",
@@ -590,21 +615,35 @@
                         "delete_confirm": "Naozaj chcete odstrániť túto integráciu?",
                         "restart_confirm": "Ak chcete dokončiť odstránenie tejto integrácie, reštartujte Home Assistant",
                         "manuf": "od {manufacturer}",
-                        "hub": "Pripojené cez",
+                        "via": "Pripojené cez",
                         "firmware": "Firmvér: {version}",
                         "device_unavailable": "zariadenie nie je k dispozícii",
                         "entity_unavailable": "entita nie je k dispozícii",
                         "no_area": "Žiadna oblasť"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Tento krok vyžaduje, aby ste navštívili externú webovú stránku, ktorá dokončí proces.",
+                            "open_site": "Otvoriť webovú stránku"
+                        }
                     }
                 },
                 "zha": {
                     "caption": "ZHA",
                     "description": "Správa siete ZigBee Home Automation",
                     "services": {
-                        "updateDeviceName": "Nastavte vlastný názov pre toto zariadenie v registri zariadenia."
+                        "reconfigure": "Znovu nakonfigurujte zariadenie ZHA (oprava zariadenia). Použite, len ak máte problémy so zariadením. Ak sa jedná o zariadenie s batériovým napájaním, uistite sa, že pri používaní tejto služby, nebolo zariadenie v režime spánku a prijímalo príkazy.",
+                        "updateDeviceName": "Nastavte vlastný názov pre toto zariadenie v registri zariadenia.",
+                        "remove": "Odstráňte zariadenie zo siete ZigBee."
                     },
                     "device_card": {
-                        "area_picker_label": "Oblasť"
+                        "area_picker_label": "Oblasť",
+                        "update_name_button": "Aktualizovať názov"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Pridať zariadenia",
+                        "spinner": "Vyhľadávanie ZHA Zigbee zariadení ...",
+                        "discovery_text": "Tu sa zobrazia objavené zariadenia. Postupujte podľa pokynov pre zariadenie (zariadenia) a umiestnite zariadenie (zariadenia) do režimu párovania."
                     }
                 },
                 "area_registry": {
@@ -612,6 +651,8 @@
                     "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
                     "picker": {
                         "header": "Register oblastí",
+                        "introduction": "Oblasti sa používajú na usporiadanie zariadení. Tieto informácie sa použijú v službe Home Assistant, aby vám pomohli pri organizovaní rozhrania, povolení a integrácií s inými systémami.",
+                        "introduction2": "Ak chcete umiestniť zariadenia do oblasti, pomocou odkazu nižšie prejdite na stránku integrácií a potom kliknite na nakonfigurovanú integráciu a prejdite na karty zariadení.",
                         "integrations_page": "Stránka Integrácie",
                         "no_areas": "Vyzerá to, že ešte nemáte žiadne oblasti!",
                         "create_area": "VYTVORIŤ OBLASŤ"
@@ -631,6 +672,8 @@
                     "picker": {
                         "header": "Register entít",
                         "unavailable": "(nedostupné)",
+                        "introduction": "Home Assistant vedie register všetkých subjektov, ktoré kedy videl a ktoré môžu byť jednoznačne identifikované. Každá z týchto entít bude mať pridelené ID, ktoré bude vyhradené len pre tento subjekt.",
+                        "introduction2": "Použite register entít na prepísanie mena, zmenu ID entity alebo odstránenie položky z Home Assistanta. Poznámka: Odstránenie položky databázy entít neodstráni entitu. Postupujte podľa nižšie uvedeného odkazu a odstráňte ho z integračnej stránky.",
                         "integrations_page": "Stránka Integrácie"
                     },
                     "editor": {
@@ -803,7 +846,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "2-faktorový autentifikačný kód"
-                                    }
+                                    },
+                                    "description": "Otvorte **{mfa_module_name}** na vašom zariadení a pozrite si váš dvoj-faktorový autentifikačný kód, aby ste overili svoju identitu."
                                 }
                             },
                             "error": {
@@ -833,6 +877,19 @@
                         "required_fields": "Vyplňte všetky povinné polia",
                         "password_not_match": "Heslá sa nezhodujú"
                     }
+                },
+                "integration": {
+                    "intro": "Zariadenia a služby sú v systéme Home Assistant zobrazené ako integrácie. Môžete ich nastaviť teraz alebo to urobiť neskôr z konfiguračnej obrazovky.",
+                    "more_integrations": "Viac",
+                    "finish": "Dokončiť"
+                },
+                "core-config": {
+                    "intro": "Dobrý deň, {name} , vitajte v Home Assistantovi. Ako by ste chceli pomenovať svoj domov?",
+                    "intro_location": "Radi by sme vedeli, kde žijete. Tieto informácie vám pomôžu pri zobrazovaní informácií a nastavovaní automatizácie na základe slnka. Tieto údaje sa nikdy nezdieľajú mimo vašej siete.",
+                    "intro_location_detect": "Môžeme vám pomôcť vyplniť tieto informácie jednorazovou žiadosťou o externú službu.",
+                    "location_name_default": "Domov",
+                    "button_detect": "Zistiť",
+                    "finish": "Ďalej"
                 }
             },
             "lovelace": {
@@ -844,7 +901,16 @@
                     },
                     "empty_state": {
                         "title": "Vitajte doma",
+                        "no_devices": "Táto stránka vám umožňuje ovládať vaše zariadenia, zdá sa však, že ešte nemáte nastavené žiadne zariadenia. Ak chcete začať, choďte na stránku integrácií.",
                         "go_to_integrations_page": "Prejsť na stránku integrácií"
+                    },
+                    "picture-elements": {
+                        "hold": "Držať:",
+                        "tap": "Ťuknite:",
+                        "navigate_to": "Navigovať do {Location}",
+                        "toggle": "Prepnúť {name}",
+                        "call_service": "Zavolať službu",
+                        "more_info": "Zobraziť viac informácií: {name}"
                     }
                 },
                 "editor": {
@@ -897,12 +963,18 @@
                 "warning": {
                     "entity_not_found": "Entita nie je k dispozícií",
                     "entity_non_numeric": "Entita je nečíselná: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Konfigurácia Lovelace bola aktualizovaná, chcete ju obnoviť?",
+                    "refresh": "Obnoviť"
+                },
+                "reload_lovelace": "Znovu načítať Lovelace"
             }
         },
         "sidebar": {
             "log_out": "Odhlásiť sa",
-            "developer_tools": "Vývojárske nástroje"
+            "developer_tools": "Vývojárske nástroje",
+            "external_app_configuration": "Konfigurácia aplikácie"
         },
         "common": {
             "loading": "Načítava sa",
@@ -1133,6 +1205,7 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
+        "system_health": "Stav systému",
         "person": "Osoba"
     },
     "attribute": {
@@ -1142,8 +1215,18 @@
             "wind_speed": "Rýchlosť vetra"
         }
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "Vypnutý",
+                "on": "Zapnutý",
+                "auto": "Auto"
+            }
+        }
+    },
     "groups": {
         "system-admin": "Správcovia",
-        "system-users": "Používatelia"
+        "system-users": "Používatelia",
+        "system-read-only": "Používatelia len na čítanie"
     }
 }
