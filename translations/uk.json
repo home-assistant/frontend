@@ -588,7 +588,7 @@
                         "delete_confirm": "Ви впевнені, що хочете видалити цю інтеграцію?",
                         "restart_confirm": "Перезавантажте Home Assistant, щоб завершити видалення цієї інтеграції",
                         "manuf": "від {manufacturer}",
-                        "hub": "Підключено через",
+                        "via": "Підключено через",
                         "firmware": "Прошивка: {version}",
                         "device_unavailable": "пристрій недоступний",
                         "entity_unavailable": "Недоступний",

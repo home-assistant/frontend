@@ -8,17 +8,17 @@ import "@polymer/paper-toggle-button/paper-toggle-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 
-import { HomeAssistant, WebhookError } from "../../../types";
-import { Webhook, fetchWebhooks } from "../../../data/webhook";
+import { HomeAssistant, WebhookError } from "../../../../types";
+import { Webhook, fetchWebhooks } from "../../../../data/webhook";
 import {
   createCloudhook,
   deleteCloudhook,
   CloudWebhook,
   CloudStatusLoggedIn,
-} from "../../../data/cloud";
-import { showManageCloudhookDialog } from "./show-cloud-webhook-manage-dialog";
+} from "../../../../data/cloud";
+import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialog-manage-cloudhook";
 
 export class CloudWebhooks extends LitElement {
   public hass?: HomeAssistant;

@@ -279,7 +279,8 @@
     "state_badge": {
         "default": {
             "unknown": "Tunt",
-            "unavailable": "Ei saat"
+            "unavailable": "Ei saat",
+            "error": "Virhe"
         },
         "alarm_control_panel": {
             "armed": "Viritetty",
@@ -353,6 +354,17 @@
                                 "introduction": "Hallitse Home Assistantia... suoraan Home Assistantista",
                                 "restart": "Käynnistä uudelleen",
                                 "stop": "Pysäytä"
+                            },
+                            "core_config": {
+                                "location_name": "Home Assistant -järjestelmäsi nimi",
+                                "latitude": "Leveysaste",
+                                "longitude": "Pituusaste",
+                                "elevation": "Korkeus merenpinnasta",
+                                "elevation_meters": "metriä",
+                                "time_zone": "Aikavyöhyke",
+                                "imperial_example": "Fahrenheit, paunaa",
+                                "metric_example": "Celsius, kilogrammat",
+                                "save_button": "Tallenna"
                             }
                         }
                     }
@@ -534,7 +546,9 @@
                                 }
                             },
                             "learn_more": "Lisätietoja toiminnoista"
-                        }
+                        },
+                        "load_error_not_editable": "Vain automaatiot tiedostossa automations.yaml ovat muokattavissa",
+                        "load_error_unknown": "Virhe ladatessa automaatiota ( {err_no} )"
                     }
                 },
                 "script": {
@@ -586,7 +600,7 @@
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "manuf": "{manufacturer}",
-                        "hub": "Yhdistetty kautta",
+                        "via": "Yhdistetty kautta",
                         "firmware": "Laiteohjelmisto: {version}",
                         "device_unavailable": "laite ei saatavissa",
                         "entity_unavailable": "kohde ei saatavilla",
@@ -595,24 +609,35 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "ZigBee kotiautomaation verkonhallinta"
+                    "description": "ZigBee kotiautomaation verkonhallinta",
+                    "device_card": {
+                        "area_picker_label": "Alue"
+                    },
+                    "add_device_page": {
+                        "spinner": "Etsitään ZHA Zigbee laitteita..."
+                    }
                 },
                 "entity_registry": {
                     "description": "Yleiskuva kaikista tunnetuista entiteeteistä.",
-                    "editor": {
-                        "default_name": "Uusi alue"
-                    },
                     "picker": {
+                        "unavailable": "(ei saatavilla)",
                         "integrations_page": "Integraatiot"
+                    },
+                    "editor": {
+                        "default_name": "Uusi alue",
+                        "delete": "POISTA"
                     }
                 },
                 "area_registry": {
                     "picker": {
                         "header": "Aluekisteri",
-                        "integrations_page": "Integraatiot"
+                        "integrations_page": "Integraatiot",
+                        "no_areas": "Et ole vielä luonut alueita!",
+                        "create_area": "LUO ALUE"
                     },
                     "editor": {
-                        "default_name": "Uusi alue"
+                        "default_name": "Uusi alue",
+                        "create": "LUO"
                     }
                 },
                 "person": {
@@ -767,7 +792,15 @@
                                         "username": "Käyttäjätunnus",
                                         "password": "Salasana"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kaksivaiheinen tunnistuskoodi"
+                                    }
                                 }
+                            },
+                            "error": {
+                                "invalid_auth": "Väärä käyttäjänimi tai salasana"
                             },
                             "abort": {
                                 "login_expired": "Istunto päättyi, ole hyvä ja kirjaudu uudelleen."
@@ -784,12 +817,23 @@
                     "data": {
                         "name": "Nimi",
                         "username": "Käyttäjätunnus",
-                        "password": "Salasana"
+                        "password": "Salasana",
+                        "password_confirm": "Vahvista salasana"
                     },
                     "create_account": "Luo tili",
                     "error": {
                         "required_fields": "Täytä kaikki pakolliset kentät"
                     }
+                },
+                "integration": {
+                    "more_integrations": "Lisää",
+                    "finish": "Valmis"
+                },
+                "core-config": {
+                    "intro": "Hei {name}, tervetuloa Home Assistant -käyttäjäksi. Kuinka haluaisit nimetä uuden kotisi?",
+                    "location_name_default": "Koti",
+                    "button_detect": "Havaitse",
+                    "finish": "Seuraava"
                 }
             },
             "lovelace": {
@@ -854,7 +898,11 @@
                 "warning": {
                     "entity_not_found": "Yksikkö ei ole käytettävissä: {entity}",
                     "entity_non_numeric": "Yksikkö ei ole numeerinen: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "refresh": "Päivitä"
+                },
+                "reload_lovelace": "Lataa Lovelace uudelleen"
             }
         },
         "sidebar": {

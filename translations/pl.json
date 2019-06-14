@@ -615,7 +615,7 @@
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
                         "restart_confirm": "Zrestartuj Home Assistant'a, aby zakończyć usuwanie tej integracji",
                         "manuf": "przez: {manufacturer}",
-                        "hub": "Połączony przez",
+                        "via": "Połączony przez",
                         "firmware": "Oprogramowanie: {version}",
                         "device_unavailable": "urządzenie niedostępne",
                         "entity_unavailable": "encja niedostępna",

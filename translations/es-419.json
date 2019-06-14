@@ -355,6 +355,21 @@
                                 "introduction": "Controle su servidor Home Assistant ... desde Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Detener"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor desactivado porque config está almacenado en configuration.yaml.",
+                                "location_name": "Nombre de la instalación de tu Home Assistant",
+                                "latitude": "Latitud",
+                                "longitude": "Longitud",
+                                "elevation": "Elevación",
+                                "elevation_meters": "metros",
+                                "time_zone": "Zona horaria",
+                                "unit_system": "Sistema de unidades",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Métrico",
+                                "imperial_example": "Fahrenheit, libras",
+                                "metric_example": "Centígrados, kilogramos",
+                                "save_button": "Guardar"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Más información sobre las acciones"
-                        }
+                        },
+                        "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
+                        "load_error_unknown": "Error al cargar la automatización ({err_no})."
                     }
                 },
                 "script": {
@@ -598,11 +615,17 @@
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
                         "restart_confirm": "Reinicie Home Assistant para terminar de eliminar esta integración.",
                         "manuf": "por {manufacturer}",
-                        "hub": "Conectado a través de",
+                        "via": "Conectado a través de",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible",
                         "no_area": "Ninguna área"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Este paso requiere que visites un sitio web externo para ser completado.",
+                            "open_site": "Abrir sitio web"
+                        }
                     }
                 },
                 "zha": {
@@ -855,6 +878,19 @@
                         "required_fields": "Completar todos los campos requeridos",
                         "password_not_match": "Las contraseñas no coinciden"
                     }
+                },
+                "integration": {
+                    "intro": "Los dispositivos y servicios están representados en Home Assistant como integraciones. Puede configurarlos ahora, o hacerlo más tarde desde la pantalla de configuración.",
+                    "more_integrations": "Más",
+                    "finish": "Terminar"
+                },
+                "core-config": {
+                    "intro": "Hola {name}, bienvenido a Home Assistant. ¿Cómo te gustaría llamar a tu casa?",
+                    "intro_location": "Nos gustaría saber dónde vives. Esta información ayudará a mostrar información y configurar automatizaciones basadas en el sol. Estos datos nunca se comparten fuera de tu red.",
+                    "intro_location_detect": "Podemos ayudarte a completar esta información realizando una solicitud única a un servicio externo.",
+                    "location_name_default": "En Casa",
+                    "button_detect": "Detectar",
+                    "finish": "Siguiente"
                 }
             },
             "lovelace": {
@@ -870,7 +906,10 @@
                         "go_to_integrations_page": "Ir a la página de integraciones."
                     },
                     "picture-elements": {
+                        "hold": "Mantener:",
+                        "tap": "Toque:",
                         "navigate_to": "Navegue a {location}",
+                        "toggle": "Alternar {name}",
                         "call_service": "Servicio de llamadas {name}",
                         "more_info": "Mostrar más información: {nombre}"
                     }
@@ -925,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Entidad no disponible: {entity}",
                     "entity_non_numeric": "Entidad no es numérica: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "La configuración de Lovelace fue actualizada, ¿te gustaría refrescarla?",
+                    "refresh": "Actualizar"
+                },
+                "reload_lovelace": "Recargar Lovelace"
             }
         },
         "sidebar": {

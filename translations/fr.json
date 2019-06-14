@@ -615,7 +615,7 @@
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "restart_confirm": "Redémarrez Home Assistant pour terminer la suppression de cette intégration",
                         "manuf": "par {manufacturer}",
-                        "hub": "Connecté via",
+                        "via": "Connecté via",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "appareil indisponible",
                         "entity_unavailable": "entité indisponible",
@@ -885,7 +885,7 @@
                     "finish": "Terminer"
                 },
                 "core-config": {
-                    "intro": "Bonjour {name} , bienvenue dans Home Assistant. Comment voudriez-vous nommer votre maison?",
+                    "intro": "Bonjour {name}, bienvenue dans Home Assistant. Comment voudriez-vous nommer votre maison?",
                     "intro_location": "Nous aimerions savoir où vous habitez. Ces informations vous aideront à afficher des informations et à configurer des automatismes basés sur le soleil. Ces données ne sont jamais partagées en dehors de votre réseau.",
                     "intro_location_detect": "Nous pouvons vous aider à renseigner ces informations en adressant une demande unique à un service externe.",
                     "location_name_default": "Maison",
@@ -939,9 +939,9 @@
                         "delete": "Supprimer la vue"
                     },
                     "save_config": {
-                        "header": "Prenez le controle de Lovelace UI",
+                        "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
-                        "para_sure": "Êtes-vous sûr de vouloir prendre le controle de l'interface utilisateur?",
+                        "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "save": "Prenez le contrôle"
                     },
@@ -966,7 +966,7 @@
                     "entity_non_numeric": "L'entité est non numérique: {entity}"
                 },
                 "changed_toast": {
-                    "message": "La configuration de Lovelace á été changé, voulez-vous rafraîchir?",
+                    "message": "La configuration de Lovelace a été modifiée, voulez-vous rafraîchir?",
                     "refresh": "Rafraîchir"
                 },
                 "reload_lovelace": "Recharger Lovelace"
