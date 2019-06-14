@@ -33,13 +33,13 @@ export class CloudAlexaPref extends LitElement {
       return html``;
     }
 
-    const enabled = this.cloudStatus!.prefs.alexa_enabled;
+    const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
 
     return html`
       <ha-card header="Alexa">
         <paper-toggle-button
-          .checked="${enabled}"
-          @change="${this._toggleChanged}"
+          .checked=${alexa_enabled}
+          @change=${this._enabledToggleChanged}
         ></paper-toggle-button>
         <div class="card-content">
           With the Alexa integration for Home Assistant Cloud you'll be able to
@@ -62,6 +62,21 @@ export class CloudAlexaPref extends LitElement {
             >This integration requires an Alexa-enabled device like the Amazon
             Echo.</em
           >
+          ${alexa_enabled
+            ? html`
+                <h3>Enable State Reporting</h3>
+                <p>
+                  If you enable state reporting, Home Assistant will sent
+                  <b>all</b> state changes of exposed entities to Amazon. This
+                  allows you to always see the latest states in the Alexa app
+                  and use the state changes to create routines.
+                </p>
+                <paper-toggle-button
+                  .checked=${alexa_report_state}
+                  @change=${this._reportToggleChanged}
+                ></paper-toggle-button>
+              `
+            : ""}
         </div>
         <div class="card-actions">
           <div class="spacer"></div>
@@ -73,10 +88,22 @@ export class CloudAlexaPref extends LitElement {
     `;
   }
 
-  private async _toggleChanged(ev) {
+  private async _enabledToggleChanged(ev) {
     const toggle = ev.target as PaperToggleButtonElement;
     try {
       await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _reportToggleChanged(ev) {
+    const toggle = ev.target as PaperToggleButtonElement;
+    try {
+      await updateCloudPref(this.hass!, {
+        alexa_report_state: toggle.checked!,
+      });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       toggle.checked = !toggle.checked;
@@ -102,6 +129,12 @@ export class CloudAlexaPref extends LitElement {
       }
       .spacer {
         flex-grow: 1;
+      }
+      h3 {
+        margin-bottom: 0;
+      }
+      h3 + p {
+        margin-top: 0.5em;
       }
     `;
   }
