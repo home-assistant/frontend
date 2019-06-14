@@ -35,6 +35,7 @@ export interface CloudPreferences {
   alexa_entity_configs: {
     [entityId: string]: AlexaEntityConfig;
   };
+  alexa_report_state: boolean;
 }
 
 export type CloudStatusLoggedIn = CloudStatusBase & {
@@ -42,7 +43,6 @@ export type CloudStatusLoggedIn = CloudStatusBase & {
   google_entities: EntityFilter;
   google_domains: string[];
   alexa_entities: EntityFilter;
-  alexa_domains: string[];
   prefs: CloudPreferences;
   remote_domain: string | undefined;
   remote_connected: boolean;
@@ -95,6 +95,7 @@ export const updateCloudPref = (
   prefs: {
     google_enabled?: CloudPreferences["google_enabled"];
     alexa_enabled?: CloudPreferences["alexa_enabled"];
+    alexa_report_state?: CloudPreferences["alexa_report_state"];
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
   }
 ) =>
