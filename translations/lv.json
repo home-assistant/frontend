@@ -568,7 +568,7 @@
                         "delete_confirm": "Vai tiešām vēlaties dzēst šo integrāciju?",
                         "restart_confirm": "Restartēt Home Assistant, lai pabeigtu šīs integrācijas noņemšanu",
                         "manuf": "{manufacturer}",
-                        "hub": "Savienots ar",
+                        "via": "Savienots ar",
                         "firmware": "Programmaparatūra: {version}",
                         "device_unavailable": "ierīce nav pieejama",
                         "entity_unavailable": "vienība nav pieejama"

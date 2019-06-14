@@ -7,20 +7,20 @@ import "@polymer/paper-ripple/paper-ripple";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card";
-import "../../../components/buttons/ha-progress-button";
-import "../../../layouts/hass-subpage";
-import "../../../resources/ha-style";
+import "../../../../components/ha-card";
+import "../../../../components/buttons/ha-progress-button";
+import "../../../../layouts/hass-subpage";
+import "../../../../resources/ha-style";
 
-import "../ha-config-section";
-import { EventsMixin } from "../../../mixins/events-mixin";
-import NavigateMixin from "../../../mixins/navigate-mixin";
-import "../../../components/ha-icon-next";
+import "../../ha-config-section";
+import { EventsMixin } from "../../../../mixins/events-mixin";
+import NavigateMixin from "../../../../mixins/navigate-mixin";
+import "../../../../components/ha-icon-next";
 /*
  * @appliesMixin NavigateMixin
  * @appliesMixin EventsMixin
  */
-class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
+class CloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="iron-flex ha-style">
@@ -292,4 +292,4 @@ class HaConfigCloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 }
 
-customElements.define("ha-config-cloud-login", HaConfigCloudLogin);
+customElements.define("cloud-login", CloudLogin);

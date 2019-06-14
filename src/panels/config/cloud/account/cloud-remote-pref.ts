@@ -13,16 +13,16 @@ import "@polymer/paper-item/paper-item-body";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
 
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
 import {
   connectCloudRemote,
   disconnectCloudRemote,
   CloudStatusLoggedIn,
-} from "../../../data/cloud";
-import { showCloudCertificateDialog } from "./show-dialog-cloud-certificate";
+} from "../../../../data/cloud";
+import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {

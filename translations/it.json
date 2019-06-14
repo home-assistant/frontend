@@ -357,7 +357,7 @@
                                 "stop": "Stop"
                             },
                             "core_config": {
-                                "edit_requires_storage": "Editor disabilitato perché la configurazione memorizzata in configuration.yaml.",
+                                "edit_requires_storage": "Editor disabilitato perché la configurazione è memorizzata in configuration.yaml.",
                                 "location_name": "Nome della tua installazione di Home Assistant",
                                 "latitude": "Latitudine",
                                 "longitude": "Logitudine",
@@ -615,7 +615,7 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "manuf": "da {manufacturer}",
-                        "hub": "Connesso tramite",
+                        "via": "Connesso tramite",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo non disponibile",
                         "entity_unavailable": "entità non disponibile",
@@ -964,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Entità non disponibile: {entity}",
                     "entity_non_numeric": "L'entità non è numerica: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "La configurazione di Lovelace è stata aggiornata, desideri aggiornare?",
+                    "refresh": "Aggiorna"
+                },
+                "reload_lovelace": "Ricarica Lovelace"
             }
         },
         "sidebar": {
@@ -1146,7 +1151,7 @@
                     "setting": "Tramonto"
                 },
                 "updater": {
-                    "title": "Aggiorna istruzioni"
+                    "title": "Istruzioni per l'aggiornamento"
                 }
             }
         },

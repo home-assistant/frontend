@@ -75,8 +75,9 @@ class StepFlowExternal extends LitElement {
           return;
         }
 
-        const step = await fetchConfigFlow(this.hass, this.step.flow_id);
-        fireEvent(this, "flow-update", { step });
+        fireEvent(this, "flow-update", {
+          stepPromise: fetchConfigFlow(this.hass, this.step.flow_id),
+        });
       },
       "data_entry_flow_progressed"
     );

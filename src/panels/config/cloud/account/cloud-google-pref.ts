@@ -10,13 +10,13 @@ import "@material/mwc-button";
 import "@polymer/paper-toggle-button/paper-toggle-button";
 // tslint:disable-next-line
 import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
-import "../../../components/buttons/ha-call-api-button";
+import "../../../../components/buttons/ha-call-api-button";
 
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../types";
-import { CloudStatusLoggedIn, updateCloudPref } from "../../../data/cloud";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 export class CloudGooglePref extends LitElement {
