@@ -9,7 +9,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-toggle-button";
 import "@polymer/paper-icon-button";
-import { observer } from "@material/mwc-base/observer";
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../components/ha-card";
@@ -48,9 +47,6 @@ class CloudAlexa extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property()
-  @observer(function(this: CloudAlexa, value) {
-    this._entityConfigs = value.prefs.alexa_entity_configs;
-  })
   public cloudStatus!: CloudStatusLoggedIn;
 
   @property({ type: Boolean }) public narrow!: boolean;
@@ -204,6 +200,13 @@ class CloudAlexa extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._fetchData();
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (changedProps.has("cloudStatus")) {
+      this._entityConfigs = this.cloudStatus.prefs.alexa_entity_configs;
+    }
   }
 
   private async _fetchData() {

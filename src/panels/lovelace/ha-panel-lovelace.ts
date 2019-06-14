@@ -5,6 +5,7 @@ import {
   LovelaceConfig,
   saveConfig,
   subscribeLovelaceUpdates,
+  WindowWithLovelaceProm,
 } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
@@ -200,9 +201,19 @@ class LovelacePanel extends LitElement {
   private async _fetchConfig(forceDiskRefresh) {
     let conf: LovelaceConfig;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
+    let confProm: Promise<LovelaceConfig>;
+    const llWindow = window as WindowWithLovelaceProm;
+
+    // On first load, we speed up loading page by having LL promise ready
+    if (llWindow.llConfProm) {
+      confProm = llWindow.llConfProm;
+      llWindow.llConfProm = undefined;
+    } else {
+      confProm = fetchConfig(this.hass!.connection, forceDiskRefresh);
+    }
 
     try {
-      conf = await fetchConfig(this.hass!, forceDiskRefresh);
+      conf = await confProm;
     } catch (err) {
       if (err.code !== "config_not_found") {
         // tslint:disable-next-line
