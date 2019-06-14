@@ -94,10 +94,27 @@ export const provideHass = (
     connection: {
       addEventListener: () => undefined,
       removeEventListener: () => undefined,
-      sendMessagePromise: () =>
-        new Promise(() => {
-          /* we never resolve */
-        }),
+      sendMessage: (msg) => {
+        const callback = wsCommands[msg.type];
+
+        if (callback) {
+          callback(msg);
+        } else {
+          // tslint:disable-next-line
+          console.error(`Unknown WS command: ${msg.type}`);
+        }
+      },
+      sendMessagePromise: (msg) => {
+        const callback = wsCommands[msg.type];
+        return callback
+          ? callback(msg)
+          : Promise.reject({
+              code: "command_not_mocked",
+              message: `WS Command ${
+                msg.type
+              } is not implemented in provide_hass.`,
+            });
+      },
       subscribeEvents: async (
         // @ts-ignore
         callback,
@@ -166,29 +183,8 @@ export const provideHass = (
         : Promise.reject(`API Mock for ${path} is not implemented`);
     },
     fetchWithAuth: () => Promise.reject("Not implemented"),
-    async sendWS(msg) {
-      const callback = wsCommands[msg.type];
-
-      if (callback) {
-        callback(msg);
-      } else {
-        // tslint:disable-next-line
-        console.error(`Unknown WS command: ${msg.type}`);
-      }
-      // tslint:disable-next-line
-      console.log("sendWS", msg);
-    },
-    async callWS(msg) {
-      const callback = wsCommands[msg.type];
-      return callback
-        ? callback(msg)
-        : Promise.reject({
-            code: "command_not_mocked",
-            message: `WS Command ${
-              msg.type
-            } is not implemented in provide_hass.`,
-          });
-    },
+    sendWS: (msg) => hassObj.connection.sendMessage(msg),
+    callWS: (msg) => hassObj.connection.sendMessagePromise(msg),
 
     // Mock stuff
     mockEntities: entities,
