@@ -334,17 +334,17 @@
                     "section": {
                         "core": {
                             "header": "Konfiguratioun an Server Kontroll",
-                            "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
+                            "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
                             "validation": {
-                                "heading": "Validatioun vun der Konfiguratioun",
+                                "heading": "Validatioun vun der Konfiguratioun",
                                 "introduction": "Validéiert är Konfiguratioun wann Dir viru kuerzem e puer Ännerungen an ärer Konfiguratioun gemaacht hutt a wëllt sécher sinn datt alles gëlteg ass",
                                 "check_config": "Konfiguratioun iwwerpréiwen",
                                 "valid": "Konfiguratioun gëlteg!",
                                 "invalid": "Konfiguratioun ongëlteg"
                             },
                             "reloading": {
-                                "heading": "Konfiguratioun gëtt frësch gelueden",
-                                "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                                "heading": "Konfiguratioun gëtt frësch gelueden",
+                                "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
                                 "core": "Kär nei lueden",
                                 "group": "Gruppe nei lueden",
                                 "automation": "Automatismen nei lueden",
@@ -966,9 +966,10 @@
                     "entity_non_numeric": "Entitéit ass net numerescher Natur: {entity}"
                 },
                 "changed_toast": {
-                    "refresh": "Odśwież"
+                    "message": "Lovelace Konfiguratioun gouf geännert, soll frësch geluede ginn?",
+                    "refresh": "Frësch lueden"
                 },
-                "reload_lovelace": "Przeładuj Lovelace"
+                "reload_lovelace": "Lovelace frësch lueden"
             }
         },
         "sidebar": {
