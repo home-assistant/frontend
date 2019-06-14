@@ -296,6 +296,13 @@
                                 "introduction": "Stjórna Home Assistant miðlara... frá Home Assistant.",
                                 "restart": "Endurræsa",
                                 "stop": "Stöðva"
+                            },
+                            "core_config": {
+                                "latitude": "Breiddargráða",
+                                "longitude": "Lengdargráða",
+                                "elevation": "Hækkun",
+                                "time_zone": "Tímabelti",
+                                "save_button": "Vista"
                             }
                         }
                     }
@@ -515,6 +522,11 @@
                         "device_unavailable": "Tæki ekki tiltækt",
                         "entity_unavailable": "Eining ekki tiltæk",
                         "no_area": "Ekkert svæði"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "open_site": "Opna vefsíðu"
+                        }
                     }
                 },
                 "zha": {
@@ -755,6 +767,10 @@
                         "required_fields": "Fylltu út í alla nauðsynlega reiti",
                         "password_not_match": "Lykilorð passa ekki saman"
                     }
+                },
+                "integration": {
+                    "more_integrations": "Meira",
+                    "finish": "Ljúka"
                 }
             },
             "lovelace": {

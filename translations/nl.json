@@ -355,6 +355,21 @@
                                 "introduction": "Beheer je Home Assistant-server ... vanuit Home Assistant.",
                                 "restart": "Herstarten",
                                 "stop": "Stop"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
+                                "location_name": "Naam van Home Assistant installatie",
+                                "latitude": "Breedtegraad",
+                                "longitude": "Lengtegraad",
+                                "elevation": "Hoogte",
+                                "elevation_meters": "meter",
+                                "time_zone": "Tijdzone",
+                                "unit_system": "Maatsysteem",
+                                "unit_system_imperial": "Imperiaal",
+                                "unit_system_metric": "Metrisch",
+                                "imperial_example": "Fahrenheit, ponden",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Opslaan"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Meer informatie over acties"
-                        }
+                        },
+                        "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
+                        "load_error_unknown": "Fout bij laden van automatisering ({err_no})."
                     }
                 },
                 "script": {
@@ -602,7 +619,7 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar",
-                        "no_area": "Geen gebied"
+                        "no_area": "Geen Gebied"
                     },
                     "config_flow": {
                         "external_step": {
@@ -636,7 +653,7 @@
                     "picker": {
                         "header": "Gebiedenregister",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om u te helpen bij het organiseren van uw interface, machtigingen en integraties met andere systemen.",
-                        "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
+                        "introduction2": "Als u apparaten in een Gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
                         "integrations_page": "Integratiespagina",
                         "no_areas": "Het lijkt erop dat je nog geen ruimtes hebt!",
                         "create_area": "MAAK RUIMTE"
@@ -644,17 +661,17 @@
                     "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
                     "create_area": "MAAK GEBIED",
                     "editor": {
-                        "default_name": "Nieuw gebied",
+                        "default_name": "Nieuw Gebied",
                         "delete": "VERWIJDEREN",
                         "update": "BIJWERKEN",
                         "create": "MAKEN"
                     }
                 },
                 "entity_registry": {
-                    "caption": "Entiteiten register",
-                    "description": "Overzicht van alle gekende entiteiten",
+                    "caption": "Entiteitenregister",
+                    "description": "Overzicht van alle geregistreerde entiteiten",
                     "picker": {
-                        "header": "Entiteiten register",
+                        "header": "Entiteitenregister",
                         "unavailable": "(niet beschikbaar)",
                         "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
                         "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit de Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
@@ -662,7 +679,7 @@
                     },
                     "editor": {
                         "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
-                        "default_name": "Nieuw gebied",
+                        "default_name": "Nieuw Gebied",
                         "delete": "VERWIJDEREN",
                         "update": "BIJWERKEN"
                     }
@@ -866,6 +883,14 @@
                     "intro": "Apparaten en services worden in Home Assistant weergegeven als integraties. U kunt ze nu instellen of later via het configuratiescherm.",
                     "more_integrations": "Meer",
                     "finish": "Voltooien"
+                },
+                "core-config": {
+                    "intro": "Hallo {name} , welkom bij Home Assistant. Welke naam wil je je huis geven?",
+                    "intro_location": "We willen graag weten waar je woont. Deze informatie zal helpen bij het weergeven van informatie en het instellen van zongebaseerde automatiseringen. Deze gegevens worden nooit gedeeld buiten uw netwerk.",
+                    "intro_location_detect": "Wij kunnen u helpen deze informatie in te vullen door een eenmalig verbinding te maken met een externe service.",
+                    "location_name_default": "Huis",
+                    "button_detect": "Detecteren",
+                    "finish": "Volgende"
                 }
             },
             "lovelace": {
@@ -939,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "Entiteit niet beschikbaar: {entity}",
                     "entity_non_numeric": "Entiteit is niet-numeriek: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "De Lovelace configuratie is bijgewerkt. Wil je de pagina vernieuwen?",
+                    "refresh": "Vernieuwen"
+                },
+                "reload_lovelace": "Lovelace herladen"
             }
         },
         "sidebar": {
@@ -1121,7 +1151,7 @@
                     "setting": "Ondergang"
                 },
                 "updater": {
-                    "title": "Instructies bijwerken"
+                    "title": "Update-instructies"
                 }
             }
         },
