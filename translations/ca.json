@@ -387,7 +387,7 @@
                     "description": "Crea i edita automatismes",
                     "picker": {
                         "header": "Editor d'automatismes",
-                        "introduction": "L'editor d'automatismes permet crear i editar automatismes. Llegeix [les instruccions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assegurar-te que has configurat el Home Assistant correctament.",
+                        "introduction": "L'editor d'automatismes permet crear i editar automatismes. Vés a l'enllaç de sota per llegir les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "pick_automation": "Selecciona l'automatisme a editar",
                         "no_automations": "No s'ha pogut trobar cap automatisme editable",
                         "add_automation": "Afegir automatisme",
@@ -966,7 +966,7 @@
                     "entity_non_numeric": "Entitat no numèrica: {entity}"
                 },
                 "changed_toast": {
-                    "message": "S'ha actualitzat la configuració de Lovelace, vols refrescar-ho?",
+                    "message": "S'ha actualitzat la configuració de Lovelace, vols actualitzar la pàgina?",
                     "refresh": "Actualitza"
                 },
                 "reload_lovelace": "Recarrega Lovelace"

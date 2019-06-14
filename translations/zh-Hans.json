@@ -355,6 +355,21 @@
                                 "introduction": "在这里即可控制 Home Assistant 服务。",
                                 "restart": "重启服务",
                                 "stop": "停止服务"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "编辑器已禁用，因为配置存储于 configuration.yaml。",
+                                "location_name": "Home Assistant 安装的名称",
+                                "latitude": "纬度",
+                                "longitude": "经度",
+                                "elevation": "海拔",
+                                "elevation_meters": "米",
+                                "time_zone": "时区",
+                                "unit_system": "单位制",
+                                "unit_system_imperial": "英制",
+                                "unit_system_metric": "公制",
+                                "imperial_example": "华氏、磅",
+                                "metric_example": "摄氏、千克",
+                                "save_button": "保存"
                             }
                         }
                     }
@@ -545,7 +560,9 @@
                                 }
                             },
                             "learn_more": "详细了解动作"
-                        }
+                        },
+                        "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
+                        "load_error_unknown": "加载自动化错误 ( {err_no})。"
                     }
                 },
                 "script": {
@@ -866,6 +883,14 @@
                     "intro": "设备和服务在 Home Assistant 中表示为集成。您可以立即设置它们，也可以稍后在配置屏幕进行设置。",
                     "more_integrations": "更多",
                     "finish": "完成"
+                },
+                "core-config": {
+                    "intro": "{name}，您好！欢迎来到 Home Assistant。您想怎样命名您的家呢？",
+                    "intro_location": "我们想知道您住在哪里。这将用于显示资讯以及设置基于太阳的自动化。此数据永远不会在您的网络以外共享。",
+                    "intro_location_detect": "我们可以通过向外部服务发出一个一次性请求来帮助您填写此信息。",
+                    "location_name_default": "Home",
+                    "button_detect": "自动检测",
+                    "finish": "下一步"
                 }
             },
             "lovelace": {
@@ -939,7 +964,12 @@
                 "warning": {
                     "entity_not_found": "实体 {entity} 不可用",
                     "entity_non_numeric": "实体 {entity} 非数值"
-                }
+                },
+                "changed_toast": {
+                    "message": "Lovelace 配置已更新，您想刷新吗？",
+                    "refresh": "刷新"
+                },
+                "reload_lovelace": "重新加载 Lovelace"
             }
         },
         "sidebar": {

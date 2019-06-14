@@ -343,6 +343,21 @@
                                 "introduction": "Rheoli gweinydd eich Home Assistant ... o Home Assistant",
                                 "restart": "Ailgychwyn",
                                 "stop": "Stopio"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Golygydd wedi'i analluogi oherwydd bod ffurfwedd wedi'i storio mewn 'configuration.yaml'.",
+                                "location_name": "Enw eich gosodiad Home Assistant",
+                                "latitude": "Lledred",
+                                "longitude": "Hydred",
+                                "elevation": "Uchder",
+                                "elevation_meters": "metrau",
+                                "time_zone": "Parth Amser",
+                                "unit_system": "System Uned",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrig",
+                                "imperial_example": "Fahrenheit, pwys",
+                                "metric_example": "Celsius, cilogramau",
+                                "save_button": "Arbed"
                             }
                         }
                     }
@@ -532,7 +547,9 @@
                                 }
                             },
                             "learn_more": "Dysgu mwy am gamau gweithredu"
-                        }
+                        },
+                        "load_error_not_editable": "Dim ond awtomiadau yn 'automations. yaml' y gellir golygu.",
+                        "load_error_unknown": "Gwall wrth lwytho awtomeiddad ( {err_no} )."
                     }
                 },
                 "script": {
@@ -550,6 +567,12 @@
                         "device_unavailable": "Dyfais ddim ar gael",
                         "entity_unavailable": "endid ar gael",
                         "no_area": "Dim Ardal"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Mae'r cam angen ichi ymweld â wefan allanol i'w lenwi.",
+                            "open_site": "Gwefan agored"
+                        }
                     }
                 },
                 "zha": {
@@ -697,7 +720,12 @@
                 "warning": {
                     "entity_not_found": "Endid ddim ar gael: {entity}",
                     "entity_non_numeric": "Endid di-rhifol: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Diweddarwyd ffurfwedd Lovelace, hoffech adnewyddu?",
+                    "refresh": "Adnewyddu"
+                },
+                "reload_lovelace": "Ail-lwytho Lovelace"
             },
             "page-authorize": {
                 "form": {
@@ -736,12 +764,26 @@
                     "error": {
                         "password_not_match": "Cyfrineiriau ddim yn cyfateb"
                     }
+                },
+                "integration": {
+                    "intro": "Cynrychiolir dyfeisiau a gwasanaethau yn Home Assistant fel integreiddiadau. Gallwch eu gosod nawr, neu'n ddiweddarach o'r sgrin ffurfweddu.",
+                    "more_integrations": "Mwy",
+                    "finish": "Gorffen"
+                },
+                "core-config": {
+                    "intro": "Helo {name}, croeso i Home Assistant. Sut hoffech enwi eich tŷ?",
+                    "intro_location": "Hoffem wybod ble rydych chi'n byw. Bydd y wybodaeth yn helpu i arddangos gwybodaeth a sefydlu awtomeiddiadau haul. Tydi'r data byth yn cael ei rannu thu allan i'ch rhwydwaith.",
+                    "intro_location_detect": "Gallwn eich helpu i lenwi'r wybodaeth hon drwy wneud cais un-tro i wasanaeth allanol.",
+                    "location_name_default": "Hafan",
+                    "button_detect": "Canfod",
+                    "finish": "Nesaf"
                 }
             }
         },
         "sidebar": {
             "log_out": "Allgofnodi",
-            "developer_tools": "Offer datblygwr"
+            "developer_tools": "Offer datblygwr",
+            "external_app_configuration": "Ffurfweddu App"
         },
         "common": {
             "loading": "Llwytho",
