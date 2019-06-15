@@ -37,6 +37,7 @@ const cardConfigStruct = struct({
   title: "string?",
   aspect_ratio: "string?",
   default_zoom: "number?",
+  dark_mode: "boolean?",
   entities: [entitiesConfigStruct],
   geo_location_sources: "array?",
 });
@@ -71,6 +72,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._config!.geo_location_sources || [];
   }
 
+  get _dark_mode(): boolean {
+    return this._config!.dark_mode || false;
+  }
+
   protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
@@ -100,6 +105,12 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
+        <paper-toggle-button
+          ?checked="${this._dark_mode !== false}"
+          .configValue="${"dark_mode"}"
+          @change="${this._valueChanged}"
+          >Dark Mode?</paper-toggle-button
+        >
         <hui-entity-editor
           .hass="${this.hass}"
           .entities="${this._configEntities}"
@@ -155,7 +166,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         }
         this._config = {
           ...this._config,
-          [target.configValue!]: value,
+          [target.configValue]:
+            target.checked !== undefined ? target.checked : value,
         };
       }
     }
