@@ -4,7 +4,8 @@ import { Map } from "leaflet";
 export type LeafletModuleType = typeof import("leaflet");
 
 export const setupLeafletMap = async (
-  mapElement: HTMLElement
+  mapElement: HTMLElement,
+  darkMode = false
 ): Promise<[Map, LeafletModuleType]> => {
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
@@ -20,9 +21,9 @@ export const setupLeafletMap = async (
   mapElement.parentNode.appendChild(style);
   map.setView([52.3731339, 4.8903147], 13);
   Leaflet.tileLayer(
-    `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}${
-      Leaflet.Browser.retina ? "@2x.png" : ".png"
-    }`,
+    `https://{s}.basemaps.cartocdn.com/${
+      darkMode ? "dark_all" : "light_all"
+    }/{z}/{x}/{y}${Leaflet.Browser.retina ? "@2x.png" : ".png"}`,
     {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
