@@ -167,7 +167,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         this._config = {
           ...this._config,
           [target.configValue]:
-            target.checked !== undefined ? target.checked : target.value,
+            target.checked !== undefined ? target.checked : value,
         };
       }
     }
