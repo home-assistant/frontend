@@ -187,10 +187,8 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
       },
       _codeValid: {
         type: Boolean,
-        computed: "_validateCode(_enteredCode, \
-                                 _codeFormat, \
-                                 _armVisible, \
-                                 _codeArmRequired)",
+        computed:
+          "_validateCode(_enteredCode,  _codeFormat,  _armVisible, _codeArmRequired)",
       },
       _disarmVisible: {
         type: Boolean,
