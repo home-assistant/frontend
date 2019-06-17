@@ -187,7 +187,8 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
       },
       _codeValid: {
         type: Boolean,
-        computed: "_validateCode(_enteredCode, _codeFormat)",
+        computed:
+          "_validateCode(_enteredCode,  _codeFormat,  _armVisible, _codeArmRequired)",
       },
       _disarmVisible: {
         type: Boolean,
@@ -220,6 +221,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
       const props = {
         _codeFormat: newVal.attributes.code_format,
         _armVisible: state === "disarmed",
+        _codeArmRequired: newVal.attributes.code_arm_required,
         _disarmVisible:
           this._armedStates.includes(state) ||
           state === "pending" ||
@@ -240,8 +242,8 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
     return format === "Number";
   }
 
-  _validateCode(code, format) {
-    return !format || code.length > 0;
+  _validateCode(code, format, armVisible, codeArmRequired) {
+    return !format || code.length > 0 || (armVisible && !codeArmRequired);
   }
 
   _digitClicked(ev) {
