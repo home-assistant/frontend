@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "device unavailable",
                         "entity_unavailable": "entity unavailable",
-                        "no_area": "No Area"
+                        "no_area": "No Area",
+                        "hub": "Connected via"
                     },
                     "config_flow": {
                         "external_step": {
