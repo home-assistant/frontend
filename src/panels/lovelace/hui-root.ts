@@ -195,11 +195,15 @@ class HUIRoot extends LitElement {
                             >
                           `
                         : ""}
-                      <paper-item @click="${this._handleUnusedEntities}"
-                        >${this.hass!.localize(
-                          "ui.panel.lovelace.menu.unused_entities"
-                        )}</paper-item
-                      >
+                      ${__DEMO__ /* No unused entities available in the demo */
+                        ? ""
+                        : html`
+                            <paper-item @click="${this._handleUnusedEntities}">
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                            </paper-item>
+                          `}
                       <paper-item @click="${this._editModeEnable}"
                         >${this.hass!.localize(
                           "ui.panel.lovelace.menu.configure_ui"
