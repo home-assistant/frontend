@@ -113,7 +113,7 @@
                 "on": "Caliente"
             },
             "window": {
-                "off": "Cerrado",
+                "off": "Cerrada",
                 "on": "Abierta"
             },
             "lock": {
@@ -361,7 +361,7 @@
                                 "location_name": "Nombre de tu instalación de Home Assistant",
                                 "latitude": "Latitud",
                                 "longitude": "Longitud",
-                                "elevation": "Elevación",
+                                "elevation": "Altitud",
                                 "elevation_meters": "metros",
                                 "time_zone": "Zona horaria",
                                 "unit_system": "Sistema de unidades",
@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible",
-                        "no_area": "Ningún área"
+                        "no_area": "Ningún área",
+                        "hub": "Conectado a través de"
                     },
                     "config_flow": {
                         "external_step": {

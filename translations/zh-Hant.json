@@ -619,7 +619,8 @@
                         "firmware": "韌體：{version}",
                         "device_unavailable": "裝置不可用",
                         "entity_unavailable": "物件不可用",
-                        "no_area": "無分區"
+                        "no_area": "無分區",
+                        "hub": "連線："
                     },
                     "config_flow": {
                         "external_step": {
