@@ -619,7 +619,8 @@
                         "firmware": "Fastvare: {version}",
                         "device_unavailable": "enheten er utilgjengelig",
                         "entity_unavailable": "oppføringen er utilgjengelig",
-                        "no_area": "Intet område"
+                        "no_area": "Intet område",
+                        "hub": "Ligado atravez de"
                     },
                     "config_flow": {
                         "external_step": {

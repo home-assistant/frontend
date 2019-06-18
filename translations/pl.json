@@ -619,7 +619,8 @@
                         "firmware": "Oprogramowanie: {version}",
                         "device_unavailable": "urządzenie niedostępne",
                         "entity_unavailable": "encja niedostępna",
-                        "no_area": "brak"
+                        "no_area": "brak",
+                        "hub": "Połączony przez"
                     },
                     "config_flow": {
                         "external_step": {

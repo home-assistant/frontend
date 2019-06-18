@@ -36,6 +36,7 @@ import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
 import { navigate } from "../../../common/navigate";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { formatAsPaddedHex } from "./functions";
 
 declare global {
   // for fire event
@@ -132,6 +133,8 @@ class ZHADeviceCard extends LitElement {
           <dl>
             <dt>IEEE:</dt>
             <dd class="zha-info">${this.device!.ieee}</dd>
+            <dt>Nwk:</dt>
+            <dd class="zha-info">${formatAsPaddedHex(this.device!.nwk)}</dd>
             ${
               this.device!.quirk_applied
                 ? html`

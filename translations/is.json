@@ -298,9 +298,11 @@
                                 "stop": "Stöðva"
                             },
                             "core_config": {
+                                "location_name": "Nafnið á Home Assistant uppsetningunni",
                                 "latitude": "Breiddargráða",
                                 "longitude": "Lengdargráða",
                                 "elevation": "Hækkun",
+                                "elevation_meters": "metrar",
                                 "time_zone": "Tímabelti",
                                 "save_button": "Vista"
                             }
@@ -521,7 +523,8 @@
                         "firmware": "Fastbúnaðarútgáfa: {version}",
                         "device_unavailable": "Tæki ekki tiltækt",
                         "entity_unavailable": "Eining ekki tiltæk",
-                        "no_area": "Ekkert svæði"
+                        "no_area": "Ekkert svæði",
+                        "hub": "Tengt gegnum"
                     },
                     "config_flow": {
                         "external_step": {
@@ -771,6 +774,10 @@
                 "integration": {
                     "more_integrations": "Meira",
                     "finish": "Ljúka"
+                },
+                "core-config": {
+                    "location_name_default": "Heima",
+                    "finish": "Næsta"
                 }
             },
             "lovelace": {
@@ -841,7 +848,11 @@
                 },
                 "warning": {
                     "entity_not_found": "Eining ekki tiltæk: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "refresh": "Endurnýja"
+                },
+                "reload_lovelace": "Endurhlaða Lovelace"
             }
         },
         "sidebar": {
@@ -871,7 +882,7 @@
                 "not_available": "Mynd ekki tiltæk"
             },
             "persistent_notification": {
-                "dismiss": "Hafna"
+                "dismiss": "Vísa frá"
             },
             "scene": {
                 "activate": "Virkja"

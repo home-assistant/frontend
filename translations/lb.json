@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Apparat net erreechbar",
                         "entity_unavailable": "Entitéit net erreechbar",
-                        "no_area": "Kee Beräich"
+                        "no_area": "Kee Beräich",
+                        "hub": "Verbonnen via"
                     },
                     "config_flow": {
                         "external_step": {

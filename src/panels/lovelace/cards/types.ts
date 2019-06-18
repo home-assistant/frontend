@@ -109,6 +109,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
   geo_location_sources?: string[];
+  dark_mode?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

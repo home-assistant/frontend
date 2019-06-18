@@ -4,12 +4,10 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-class MoreInfoAlarmControlPanel extends LocalizeMixin(
-  EventsMixin(PolymerElement)
-) {
+class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="iron-flex"></style>
@@ -187,7 +185,8 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
       },
       _codeValid: {
         type: Boolean,
-        computed: "_validateCode(_enteredCode, _codeFormat)",
+        computed:
+          "_validateCode(_enteredCode,  _codeFormat,  _armVisible, _codeArmRequired)",
       },
       _disarmVisible: {
         type: Boolean,
@@ -220,6 +219,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
       const props = {
         _codeFormat: newVal.attributes.code_format,
         _armVisible: state === "disarmed",
+        _codeArmRequired: newVal.attributes.code_arm_required,
         _disarmVisible:
           this._armedStates.includes(state) ||
           state === "pending" ||
@@ -231,7 +231,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
     }
     if (oldVal) {
       setTimeout(() => {
-        this.fire("iron-resize");
+        fireEvent(this, "iron-resize");
       }, 500);
     }
   }
@@ -240,8 +240,8 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
     return format === "Number";
   }
 
-  _validateCode(code, format) {
-    return !format || code.length > 0;
+  _validateCode(code, format, armVisible, codeArmRequired) {
+    return !format || code.length > 0 || (armVisible && !codeArmRequired);
   }
 
   _digitClicked(ev) {
