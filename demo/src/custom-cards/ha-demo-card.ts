@@ -49,11 +49,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <div class="picker">
-          <ha-paper-icon-button-prev
-            @click=${this._prevConfig}
-            .disabled=${this._switching}
-          ></ha-paper-icon-button-prev>
-          <div>
+          <div class="label">
             ${this._switching
               ? html`
                   <paper-spinner-lite active></paper-spinner-lite>
@@ -73,16 +69,15 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                   ""
                 )}
           </div>
-          <ha-paper-icon-button-next
-            @click=${this._nextConfig}
-            .disabled=${this._switching}
-          ></ha-paper-icon-button-next>
+          <mwc-button @click=${this._nextConfig} .disabled=${this._switching}>
+            Next demo
+          </mwc-button>
         </div>
-        <div class="content">
+        <div class="content small-hidden">
           Welcome home! You've reached the Home Assistant demo where we showcase
           the best UIs created by our community.
         </div>
-        <div class="actions">
+        <div class="actions small-hidden">
           <a href="https://www.home-assistant.io" target="_blank">
             <mwc-button>Learn more about Home Assistant</mwc-button>
           </a>
@@ -125,6 +120,10 @@ export class HADemoCard extends LitElement implements LovelaceCard {
           color: var(--primary-color);
         }
 
+        .actions a {
+          text-decoration: none;
+        }
+
         .content {
           padding: 16px;
         }
@@ -136,16 +135,26 @@ export class HADemoCard extends LitElement implements LovelaceCard {
           height: 60px;
         }
 
-        .picker div {
-          text-align: center;
+        .picker mwc-button {
+          margin-right: 8px;
         }
 
-        .picker small {
+        .label {
+          padding-left: 16px;
+        }
+
+        .label small {
           display: block;
         }
 
         .actions {
           padding-left: 8px;
+        }
+
+        @media only screen and (max-width: 500px) {
+          .small-hidden {
+            display: none;
+          }
         }
       `,
     ];
