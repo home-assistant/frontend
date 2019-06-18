@@ -619,7 +619,8 @@
                         "firmware": "固件：{version}",
                         "device_unavailable": "设备不可用",
                         "entity_unavailable": "实体不可用",
-                        "no_area": "没有区域"
+                        "no_area": "没有区域",
+                        "hub": "连接于"
                     },
                     "config_flow": {
                         "external_step": {
@@ -888,7 +889,7 @@
                     "intro": "{name}，您好！欢迎来到 Home Assistant。您想怎样命名您的家呢？",
                     "intro_location": "我们想知道您住在哪里。这将用于显示资讯以及设置基于太阳的自动化。此数据永远不会在您的网络以外共享。",
                     "intro_location_detect": "我们可以通过向外部服务发出一个一次性请求来帮助您填写此信息。",
-                    "location_name_default": "Home",
+                    "location_name_default": "家",
                     "button_detect": "自动检测",
                     "finish": "下一步"
                 }

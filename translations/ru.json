@@ -619,7 +619,8 @@
                         "firmware": "Прошивка: {version}",
                         "device_unavailable": "устройство недоступно",
                         "entity_unavailable": "объект недоступен",
-                        "no_area": "Не указано"
+                        "no_area": "Не указано",
+                        "hub": "Подключено через"
                     },
                     "config_flow": {
                         "external_step": {
