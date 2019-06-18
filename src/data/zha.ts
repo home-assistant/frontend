@@ -8,6 +8,7 @@ export interface ZHAEntityReference extends HassEntity {
 export interface ZHADevice {
   name: string;
   ieee: string;
+  nwk: string;
   manufacturer: string;
   model: string;
   quirk_applied: boolean;
