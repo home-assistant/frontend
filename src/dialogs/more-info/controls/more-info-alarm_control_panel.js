@@ -4,12 +4,10 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { fireEvent } from "../../../common/dom/fire_event";
 
-class MoreInfoAlarmControlPanel extends LocalizeMixin(
-  EventsMixin(PolymerElement)
-) {
+class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="iron-flex"></style>
@@ -233,7 +231,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(
     }
     if (oldVal) {
       setTimeout(() => {
-        this.fire("iron-resize");
+        fireEvent(this, "iron-resize");
       }, 500);
     }
   }
