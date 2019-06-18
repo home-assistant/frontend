@@ -87,7 +87,7 @@
       #ha-init-skeleton::before {
         display: block;
         content: "";
-        height: 112px;
+        height: 64px;
         background-color: #03a9f4;
       }
     </style>
