@@ -1,7 +1,7 @@
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 
 export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
-  title: "ARS Home",
+  title: "Home Assistant",
   views: [
     {
       icon: "hass:home-assistant",
