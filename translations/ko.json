@@ -619,7 +619,8 @@
                         "firmware": "펌웨어: {version}",
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가",
-                        "no_area": "영역 없음"
+                        "no_area": "영역 없음",
+                        "hub": "연결 경유 대상"
                     },
                     "config_flow": {
                         "external_step": {

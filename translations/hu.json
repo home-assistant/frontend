@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "eszköz nem érhető el",
                         "entity_unavailable": "entitás nem érhető el",
-                        "no_area": "Nincs Terület"
+                        "no_area": "Nincs Terület",
+                        "hub": "Kapcsolódva"
                     },
                     "config_flow": {
                         "external_step": {
