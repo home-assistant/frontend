@@ -6,12 +6,9 @@ import {
   PropertyDeclarations,
 } from "lit-element";
 import { until } from "lit-html/directives/until";
-import "@polymer/paper-icon-button";
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import "../../../src/components/ha-card";
-import "../../../src/components/ha-paper-icon-button-next";
-import "../../../src/components/ha-paper-icon-button-prev";
 import { LovelaceCard, Lovelace } from "../../../src/panels/lovelace/types";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
@@ -84,14 +81,6 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         </div>
       </ha-card>
     `;
-  }
-
-  private _prevConfig() {
-    this._updateConfig(
-      selectedDemoConfigIndex > 0
-        ? selectedDemoConfigIndex - 1
-        : demoConfigs.length - 1
-    );
   }
 
   private _nextConfig() {
