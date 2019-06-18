@@ -619,7 +619,8 @@
                         "firmware": "קושחה: {version}",
                         "device_unavailable": "התקן אינו זמין",
                         "entity_unavailable": "ישות לא זמינה",
-                        "no_area": "ללא אזור"
+                        "no_area": "ללא אזור",
+                        "hub": "מחובר באמצעות"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1138,7 +1139,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "שמור",
-                "name": "שם",
+                "name": "שם חלופי",
                 "entity_id": "מזהה ישות"
             },
             "more_info_control": {
