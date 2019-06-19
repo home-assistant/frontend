@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "Gerät nicht verfügbar",
                         "entity_unavailable": "Entität nicht verfügbar",
-                        "no_area": "Kein Bereich"
+                        "no_area": "Kein Bereich",
+                        "hub": "Verbunden über"
                     },
                     "config_flow": {
                         "external_step": {
