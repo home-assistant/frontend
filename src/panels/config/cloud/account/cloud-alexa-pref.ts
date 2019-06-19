@@ -1,10 +1,10 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   CSSResult,
   css,
+  property,
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-toggle-button/paper-toggle-button";
@@ -16,17 +16,12 @@ import "../../../../components/ha-card";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
+import { syncCloudAlexaEntities } from "../../../../data/alexa";
 
 export class CloudAlexaPref extends LitElement {
-  public hass?: HomeAssistant;
-  public cloudStatus?: CloudStatusLoggedIn;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      cloudStatus: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property() private _syncing = false;
 
   protected render(): TemplateResult | void {
     if (!this.cloudStatus) {
@@ -79,6 +74,9 @@ export class CloudAlexaPref extends LitElement {
             : ""}
         </div>
         <div class="card-actions">
+          <mwc-button @click=${this._handleSync} .disabled=${this._syncing}>
+            Sync Entities
+          </mwc-button>
           <div class="spacer"></div>
           <a href="/config/cloud/alexa">
             <mwc-button>Manage Entities</mwc-button>
@@ -86,6 +84,17 @@ export class CloudAlexaPref extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private async _handleSync() {
+    this._syncing = true;
+    try {
+      await syncCloudAlexaEntities(this.hass!);
+    } catch (err) {
+      alert(`Failed to sync entities: ${err.body.message}`);
+    } finally {
+      this._syncing = false;
+    }
   }
 
   private async _enabledToggleChanged(ev) {
