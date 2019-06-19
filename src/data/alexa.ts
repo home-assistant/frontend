@@ -8,3 +8,6 @@ export interface AlexaEntity {
 
 export const fetchCloudAlexaEntities = (hass: HomeAssistant) =>
   hass.callWS<AlexaEntity[]>({ type: "cloud/alexa/entities" });
+
+export const syncCloudAlexaEntities = (hass: HomeAssistant) =>
+  hass.callWS({ type: "cloud/alexa/sync" });
