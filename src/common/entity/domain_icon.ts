@@ -42,6 +42,7 @@ const fixedIcons = {
   updater: "hass:cloud-upload",
   vacuum: "hass:robot-vacuum",
   water_heater: "hass:thermometer",
+  weather: "hass:weather-cloudy",
   weblink: "hass:open-in-new",
 };
 

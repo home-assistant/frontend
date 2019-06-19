@@ -216,9 +216,11 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                       ></ha-icon>
                     </div>
                   </template>
-                  <div class="temp">
-                    [[item.temperature]] [[getUnit('temperature')]]
-                  </div>
+                  <template is="dom-if" if="[[_showValue(item.temperature)]]">
+                    <div class="temp">
+                      [[item.temperature]] [[getUnit('temperature')]]
+                    </div>
+                  </template>
                   <template is="dom-if" if="[[_showValue(item.templow)]]">
                     <div class="templow">
                       [[item.templow]] [[getUnit('temperature')]]
