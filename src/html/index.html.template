@@ -81,7 +81,16 @@
     </script>
 
     {% for extra_url in extra_urls -%}
-    <link rel="import" href="{{ extra_url }}" async />
+    <script type="module" async>
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', "{{ extra_url}}", true);
+      xhr.onreadystatechange = function() {
+        if(this.readyState !== 4) return;
+        if(this.status !== 200) return;
+        document.body.innerHTML += this.responseText;
+      }
+      xhr.send();
+    </script>
     {% endfor -%}
   </body>
 </html>
