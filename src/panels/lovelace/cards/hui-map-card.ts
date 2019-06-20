@@ -182,7 +182,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private async loadMap(): Promise<void> {
     [this._leafletMap, this.Leaflet] = await setupLeafletMap(
       this._mapEl,
-      this._config !== undefined ? this._config.dark_mode !== false : false
+      this._config !== undefined ? this._config.dark_mode === true : false
     );
     this._drawEntities();
     this._leafletMap.invalidateSize();
