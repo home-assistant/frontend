@@ -1,13 +1,19 @@
 {
     "panel": {
         "config": "پیکربندی",
-        "states": "وضعیت",
+        "states": "نمای کلی",
         "map": "نقشه",
         "logbook": "گزارش روزانه",
         "history": "تاریخچه",
         "mailbox": "صندوق پستی",
         "shopping_list": "لیست خرید",
-        "dev-mqtt": "MQTT"
+        "dev-services": "خدمات",
+        "dev-states": "ایالت ها",
+        "dev-events": "رویدادها",
+        "dev-templates": "قالب ها",
+        "dev-mqtt": "MQTT",
+        "dev-info": "اطلاعات",
+        "calendar": "تقویم"
     },
     "state": {
         "default": {
@@ -25,7 +31,8 @@
             "pending": "در انتظار",
             "arming": "در حال مسلح کردن",
             "disarming": "در حال غیر مسلح کردن",
-            "triggered": "راه انداخته شده"
+            "triggered": "راه انداخته شده",
+            "armed_custom_bypass": "بایگانی سفارشی مسلح"
         },
         "automation": {
             "off": "غیرفعال",
@@ -76,8 +83,17 @@
                 "off": "بیرون",
                 "on": "خانه"
             },
+            "battery": {
+                "off": "عادی",
+                "on": "کم"
+            },
+            "problem": {
+                "off": "خوب",
+                "on": "مشکل"
+            },
             "cold": {
-                "off": "عادی"
+                "off": "عادی",
+                "on": "سرد"
             },
             "door": {
                 "off": "بسته",
@@ -88,7 +104,8 @@
                 "on": "باز"
             },
             "heat": {
-                "off": "عادی"
+                "off": "عادی",
+                "on": "داغ"
             },
             "window": {
                 "off": "بسته",
@@ -221,15 +238,27 @@
         "weather": {
             "cloudy": "ابری",
             "fog": "مه",
+            "hail": "تگرگ",
             "lightning": "رعد و برق",
             "partlycloudy": "نیمه ابری",
+            "pouring": "ریختن",
             "rainy": "بارانی",
             "snowy": "برفی",
-            "sunny": "آفتابی"
+            "snowy-rainy": "برفی، بارانی",
+            "sunny": "آفتابی",
+            "windy": "باد",
+            "windy-variant": "باد"
+        },
+        "vacuum": {
+            "cleaning": "تمیز کردن",
+            "off": "غیر فعال",
+            "on": "فغال",
+            "paused": "مکث"
         },
         "timer": {
             "active": "فعال",
-            "idle": "بیکار "
+            "idle": "بیکار ",
+            "paused": "متوقف شد"
         },
         "person": {
             "home": "خانه",
@@ -265,20 +294,22 @@
         }
     },
     "ui": {
-        "sidebar": {
-            "log_out": "خروج",
-            "external_app_configuration": "پیکربندی برنامه"
-        },
-        "duration": {
-            "day": "\n{count} {count, plural,\n  one {روز}\n  other {روز ها}\n}\n",
-            "week": "\n{count} {count, plural,\n  one {هفته}\n  other {هفته ها}\n}\n",
-            "second": "ویرایشگر اتوماسیون اجازه می دهد تا شما را به ایجاد و ویرایش اتوماسیون بپردازید. لطفا پیوند زیر را بخوانید تا دستورالعمل ها را متوجه بشید تا مطمئن شوید که صفحه اصلی دستیار را به درستی پیکربندی کرده اید."
-        },
         "panel": {
+            "shopping-list": {
+                "add_item": "اضافه کردن آیتم"
+            },
+            "history": {
+                "showing_entries": "نمایش نوشته ها برای"
+            },
             "logbook": {
-                "showing_entries": "نمایش نامه برای"
+                "showing_entries": "نمایش نامه برای",
+                "period": "دوره"
+            },
+            "mailbox": {
+                "empty": "شما پیامی ندارید"
             },
             "config": {
+                "header": "پیکربندی HOME ASSistant",
                 "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید. ",
                 "core": {
                     "section": {
@@ -286,7 +317,8 @@
                             "header": "پیکربندی و کنترل سرور",
                             "introduction": "تغییر پیکربندی شما می تواند یک روند خسته کننده باشد. ما میدانیم. این بخش سعی خواهد کرد زندگی شما را کمی ساده تر کند.",
                             "validation": {
-                                "heading": "تایید  پیکربندی"
+                                "heading": "تایید  پیکربندی",
+                                "check_config": "بررسی پیکربندی"
                             },
                             "reloading": {
                                 "heading": "بارگذاری مجدد پیکربندی",
@@ -295,6 +327,9 @@
                                 "group": "بارگذاری مجدد گروه ها",
                                 "automation": "بازنگری automations",
                                 "script": "بازنگری اسکریپت"
+                            },
+                            "server_management": {
+                                "introduction": "صفحه اصلی home assistant سرور خود را کنترل کنید ... از  home assistant"
                             },
                             "core_config": {
                                 "edit_requires_storage": "ویرایشگر غیرفعال شده است چون پیکربندی ذخیره شده در configuration.yaml.",
@@ -329,20 +364,52 @@
                         "introduction": "از اتوماسیون استفاده کنید برای زنده کردن خانه",
                         "default_name": "اضافه کردن اتوماسیون",
                         "save": "ذخیره",
+                        "alias": "نام",
                         "triggers": {
                             "introduction": "راه حلی است که پردازش یک قانون اتوماسیون را آغاز می کند. ممکن است چند عامل برای یک قاعده مشخص شود. هنگامی که یک ماشه شروع می شود، Home Assistant شرایط را تایید می کند، اگر وجود داشته باشد، و اقدام را فراخوانی می کند.",
+                            "duplicate": "کپی کنید",
                             "delete": "حذف",
                             "type": {
+                                "event": {
+                                    "label": "رویداد",
+                                    "event_type": "نوع رویداد",
+                                    "event_data": "داده های رویداد"
+                                },
+                                "state": {
+                                    "label": "وضعیت"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant"
+                                },
+                                "numeric_state": {
+                                    "label": "حالت عددی"
+                                },
                                 "sun": {
-                                    "event": "اتفاق"
+                                    "label": "آفتاب",
+                                    "event": "اتفاق",
+                                    "sunrise": "طلوع",
+                                    "sunset": "غروب"
+                                },
+                                "template": {
+                                    "label": "قالب"
+                                },
+                                "time": {
+                                    "label": "زمان"
                                 },
                                 "zone": {
+                                    "entity": "نهاد با موقعیت",
                                     "zone": "منطقه",
                                     "event": "اتفاق"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
                                     "webhook_id": "شناسه Webhook"
+                                },
+                                "time_pattern": {
+                                    "label": "الگو زمان",
+                                    "hours": "ساعت ها",
+                                    "minutes": "دقیقه ها",
+                                    "seconds": "ثانیه ها"
                                 },
                                 "geo_location": {
                                     "label": "موقعیت جغرافیایی",
@@ -356,11 +423,14 @@
                             "learn_more": "درباره ماشه بیشتر بدانید"
                         },
                         "conditions": {
+                            "header": "شرایط",
                             "introduction": "شرایط یک بخش اختیاری از یک قانون اتوماسیون است و می تواند مورد استفاده قرار گیرد تا از وقوع رویداد زمانی که باعث ایجاد فعالیت می شود جلوگیری شود. شرایط بسیار شبیه به ماژورها هستند اما خیلی متفاوت هستند. یک ماشه به حوادث اتفاق می افتد در سیستم نگاه کنید، در حالی که یک وضعیت فقط به نظر می رسد که سیستم به نظر می رسد در حال حاضر. یک ماشه می تواند مشاهده کند که سوئیچ روشن است. یک وضعیت فقط می تواند ببینید که آیا یک سوئیچ در حال حاضر روشن یا خاموش است.",
+                            "add": "اضافه کردن شرط",
                             "duplicate": "نمایش مطالب برای",
                             "delete": "حذف",
                             "delete_confirm": "مطمئنا میخواهید حذف کنید؟",
                             "unsupported_condition": "شرایط غیرقابل پشتیبانی: {condition}",
+                            "type_select": "نوع وضعیت",
                             "type": {
                                 "state": {
                                     "label": "حالت",
@@ -373,37 +443,63 @@
                                     "value_template": "قالب مقدار (اختیاری)"
                                 },
                                 "sun": {
-                                    "label": "آفتاب"
+                                    "label": "آفتاب",
+                                    "before": "قبل از:",
+                                    "after": "بعد از:",
+                                    "before_offset": "قبل از افست (اختیاری)",
+                                    "after_offset": "پس از افست (اختیاری)",
+                                    "sunrise": "طلوع",
+                                    "sunset": "غروب"
                                 },
                                 "template": {
                                     "label": "قالب",
                                     "value_template": "مقدار قالب"
                                 },
                                 "time": {
-                                    "label": "زمان"
+                                    "label": "زمان",
+                                    "after": "بعد از",
+                                    "before": "قبل از"
                                 },
                                 "zone": {
                                     "label": "منطقه",
                                     "entity": "وجود با محل",
                                     "zone": "منطقه"
                                 }
-                            }
+                            },
+                            "learn_more": "درباره شرایط بیشتر بدانید"
                         },
                         "actions": {
+                            "header": "اقدامات",
                             "introduction": "این اقدامات همان چیزی است که دستیار خانه انجام می دهد وقتی که اتوماسیون راه اندازی می شود.",
+                            "add": "افزودن اقدام",
                             "duplicate": "دوبل کردن",
                             "delete": "حذف",
                             "delete_confirm": "مطمئنا میخواهید حذف کنید؟",
                             "unsupported_action": "عمل پشتیبانی نشده: {action}",
+                            "type_select": "نوع عمل",
                             "type": {
+                                "service": {
+                                    "label": "خدمات تماس",
+                                    "service_data": "داده های خدمات"
+                                },
                                 "delay": {
+                                    "label": "تاخیر",
                                     "delay": "تاخیر"
                                 },
+                                "wait_template": {
+                                    "label": "صبر کنید",
+                                    "wait_template": "منتظر قالب"
+                                },
+                                "condition": {
+                                    "label": "وضعیت"
+                                },
                                 "event": {
+                                    "label": "رویداد آتش",
                                     "event": "اتفاق",
                                     "service_data": "اطلاعات خدمات"
                                 }
-                            }
+                            },
+                            "learn_more": "درباره عملکردها بیشتر بدانید"
                         },
                         "load_error_not_editable": "فقط اتوماسیون در automations.yaml قابل ویرایش هستند.",
                         "load_error_unknown": "خطا در بارگذاری اتوماسیون ({err_no})."
@@ -412,10 +508,53 @@
                 "zwave": {
                     "caption": "Z-Wave"
                 },
+                "users": {
+                    "caption": "کاربران",
+                    "description": "مدیریت کاربران",
+                    "picker": {
+                        "title": "کاربران"
+                    },
+                    "editor": {
+                        "rename_user": "تغییر نام کاربر",
+                        "change_password": "تغییر رمز عبور",
+                        "activate_user": "فعال کردن کاربر",
+                        "deactivate_user": "غیر فعال کردن کاربر",
+                        "delete_user": "حذف کاربر",
+                        "caption": "مشاهده کاربر"
+                    },
+                    "add_user": {
+                        "caption": "افزودن کاربر",
+                        "name": "نام",
+                        "username": "نام کاربری",
+                        "password": "رمز عبور",
+                        "create": "ایجاد"
+                    }
+                },
+                "cloud": {
+                    "caption": " home assistant ابر",
+                    "description_login": "وارد شده به عنوان {email}",
+                    "description_not_login": "وارد نشده اید",
+                    "description_features": "کنترل کردن از خانه، ادغام با Alexa و Google Assistant."
+                },
                 "integrations": {
+                    "caption": "یکپارچگی",
+                    "description": "مدیریت دستگاهها و خدمات متصل شده",
+                    "discovered": "کشف شده",
+                    "configured": "پیکربندی شده",
+                    "new": "تنظیم ادغام جدید",
+                    "configure": "پیکربندی",
+                    "none": "هیچ چیز پیکربندی نشده است",
                     "config_entry": {
+                        "no_devices": "این ادغام هیچ دستگاهی ندارد.",
                         "no_device": " بدون دستگاه",
-                        "no_area": "بدون منطقه"
+                        "restart_confirm": "راه اندازی مجدد home assistant به پایان بردن این ادغام",
+                        "manuf": "توسط {manufacturer}",
+                        "via": "اتصال از طریق",
+                        "firmware": "سیستم عامل: {version}",
+                        "device_unavailable": "دستگاه در دسترس نیست",
+                        "entity_unavailable": "نهاد در دسترس نیست",
+                        "no_area": "بدون منطقه",
+                        "hub": "اتصال از طریق"
                     },
                     "config_flow": {
                         "external_step": {
@@ -450,11 +589,13 @@
                         "header": "ثبت منطقه",
                         "introduction": "مناطق برای سازمان دهی دستگاه های جاسازی شده استفاده می شوند. این اطلاعات در سراسر دستیار خانگی برای کمک به شما در سازماندهی رابط کاربری، مجوزها و ادغام با دیگر سیستم ها مورد استفاده قرار می گیرد.",
                         "introduction2": "برای قرار دادن دستگاه در یک منطقه، از پیوند زیر برای حرکت به صفحه ی ادغام استفاده کنید و سپس روی ادغام پیکربندی شوید تا به کارت دستگاه دسترسی پیدا کنید.",
+                        "integrations_page": "صفحه ادغام",
                         "no_areas": "به نظر می رسد هنوز هیچ زمینه ای ندارید",
                         "create_area": "ایجاد منطقه"
                     },
                     "create_area": "ایجاد منطقه",
                     "editor": {
+                        "default_name": "منطقه جدید",
                         "delete": "حذف",
                         "update": "به روز رسانی",
                         "create": "ايجاد كردن"
@@ -472,6 +613,7 @@
                     },
                     "editor": {
                         "unavailable": "این نهاد در حال حاضر در دسترس نیست",
+                        "default_name": "منطقه جدید",
                         "delete": "حذف",
                         "update": "به روز رسانی"
                     }
@@ -482,27 +624,14 @@
                     }
                 },
                 "person": {
+                    "caption": "افراد",
                     "description": "مدیریت افراد خانه هوشمند",
                     "detail": {
+                        "name": "نام",
                         "device_tracker_intro": "دستگاه هایی که متعلق به این شخص هستند را انتخاب کنید.",
                         "device_tracker_picked": "پیگیری دستگاه",
                         "device_tracker_pick": "دستگاه را برای پیگیری انتخاب کنید"
                     }
-                },
-                "users": {
-                    "editor": {
-                        "caption": "مشاهده کاربر"
-                    },
-                    "add_user": {
-                        "caption": "افزودن کاربر",
-                        "name": "نام",
-                        "username": "نام کاربری",
-                        "password": "رمز عبور",
-                        "create": "ایجاد"
-                    }
-                },
-                "cloud": {
-                    "description_features": "کنترل کردن از خانه، ادغام با Alexa و Google Assistant."
                 }
             },
             "profile": {
@@ -510,20 +639,73 @@
                     "description": "ارسال اعلان ها به این دستگاه"
                 },
                 "refresh_tokens": {
+                    "header": "تازه کردن نشانه",
                     "description": "هر نشانه بازخوانی نشان دهنده یک جلسه ورود به سیستم است. هنگام خروج از سیستم ، نشانه های تازه سازی به صورت خودکار حذف می شوند. نشانه های تازه سازی زیر در حال حاضر برای حساب شما فعال هستند.",
                     "token_title": "تازه token برای {clientId}",
+                    "created_at": "ایجاد شده در {date}",
                     "delete_failed": "token حذف نشد.",
+                    "last_used": "آخرین در {date} از {location}",
+                    "not_used": "هرگز استفاده نشده است",
                     "current_token_tooltip": "عدم امکان حذف تازه کردن​ token"
                 },
                 "long_lived_access_tokens": {
-                    "confirm_delete": "آیا مطمئن هستید که میخواهید token زیر را برای {name} حذف کنید؟"
+                    "description": "علامت های دسترسی طولانی مدت را ایجاد کنید تا اسکریپت های شما بتوانند با مثال معاونت Home خود ارتباط برقرار کنند. هر علامت گذاری برای 10 سال معتبر است. برچسبهای دسترسی طولانی مدت در حال حاضر فعال هستند.",
+                    "learn_auth_requests": "با نحوه انجام درخواست های تأیید اعتبار آشنا شوید.",
+                    "created_at": "ایجاد شده در {date}",
+                    "confirm_delete": "آیا مطمئن هستید که میخواهید token زیر را برای {name} حذف کنید؟",
+                    "not_used": "هرگز استفاده نشده است"
+                },
+                "current_user": "شما در حال حاضر به عنوان {fullName} وارد شده اید.",
+                "logout": "خروج",
+                "change_password": {
+                    "header": "تغییر رمز عبور"
+                },
+                "mfa": {
+                    "confirm_disable": "آیا مطمئن هستید که میخواهید {name} غیرفعال کنید؟"
+                },
+                "mfa_setup": {
+                    "title_aborted": "لغو شد"
                 }
             },
             "page-authorize": {
                 "authorizing_client": "شما در مورد ارائه {clientId} به عنوان مثال دستیار Home Assistant هستید.",
+                "logging_in_with": "ورود با ** {authProviderName} **.",
+                "pick_auth_provider": "یا وارد سیستم شوید",
+                "abort_intro": "ورود به سیستم لغو شد",
                 "form": {
+                    "working": "لطفاً منتظر بمانید",
                     "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "نام کاربری",
+                                        "password": "رمز عبور"
+                                    }
+                                },
+                                "mfa": {
+                                    "description": "باز کردن **{mfa_module_name}** * * * در دستگاه خود را برای مشاهده شما دو فاکتور تأیید هویت کد و هویت خود را تایید کنید:"
+                                }
+                            },
+                            "error": {
+                                "invalid_code": "کد احراز هویت نامعتبر"
+                            },
+                            "abort": {
+                                "login_expired": "ورود منقضی شده است، لطفا دوباره وارد شوید."
+                            }
+                        },
                         "legacy_api_password": {
+                            "step": {
+                                "mfa": {
+                                    "data": {
+                                        "code": "تایید ۲ مرحله ای کد"
+                                    },
+                                    "description": "** {mfa_module_name} ** را بر روی دستگاه خود باز کنید تا کد تأیید اعتبار دو نفره خود را ببینید و هویت خود را تأیید کنید:"
+                                }
+                            },
+                            "error": {
+                                "invalid_code": "کد احراز هویت نامعتبر"
+                            },
                             "abort": {
                                 "login_expired": "لطفا دوباره وارد شوید."
                             }
@@ -546,63 +728,25 @@
                             "error": {
                                 "invalid_auth": "کد احراز هویت نامعتبر",
                                 "invalid_code": "کد احراز هویت نامعتبر"
+                            },
+                            "abort": {
+                                "login_expired": "ورود منقضی شده است، لطفا دوباره وارد شوید."
                             }
                         }
                     }
                 }
             },
-            "lovelace": {
-                "editor": {
-                    "edit_card": {
-                        "save": "ذخیره",
-                        "pick_card": "کارتی را که می خواهید اضافه کنید انتخاب کنید ؛",
-                        "edit": "ویرایش",
-                        "delete": "حذف"
-                    },
-                    "save_config": {
-                        "header": "کنترل UI Lovelace خود را بگیرید",
-                        "para_sure": "آیا مطمئن هستید که میخواهید کنترل رابط کاربری خود را کنترل کنید؟"
-                    },
-                    "menu": {
-                        "raw_editor": "ویرایشگر اتوماسیون"
-                    },
-                    "raw_editor": {
-                        "header": "ویرایش پیکربندی",
-                        "save": "ذخیره",
-                        "unsaved_changes": "تغییرات ذخیره نشده",
-                        "saved": "ذخیره"
-                    }
-                },
-                "cards": {
-                    "empty_state": {
-                        "title": "به خانه خوش آمدی",
-                        "no_devices": "این صفحه به شما اجازه می دهد تا دستگاه های خود را کنترل کنید، با این حال به نظر می رسد که هیچ دستگاهی تنظیم نشده است. برای شروع به صفحه ادغام بروید.",
-                        "go_to_integrations_page": "به صفحه ادغام بروید."
-                    },
-                    "picture-elements": {
-                        "hold": "نگه دارید:",
-                        "tap": "ضربه زدن:",
-                        "navigate_to": "رفتن به {location}",
-                        "toggle": "تغییر {name}",
-                        "call_service": "سرویس تماس {name}",
-                        "more_info": "نمایش اطلاعات بیشتر: {name}"
-                    }
-                },
-                "warning": {
-                    "entity_non_numeric": "نهاد غیر عددی است: {entity}"
-                },
-                "changed_toast": {
-                    "message": "پیکربندی Lovelace به روز شد، آیا مایل به بروزرسانی  هستید؟",
-                    "refresh": "تازه کردن"
-                },
-                "reload_lovelace": "بازنگری Lovelace"
-            },
             "page-onboarding": {
                 "user": {
                     "data": {
+                        "name": "نام",
+                        "username": "نام کاربری",
+                        "password": "رمز عبور",
                         "password_confirm": "تایید رمز عبور"
                     },
+                    "create_account": "ایجاد حساب کاربری",
                     "error": {
+                        "required_fields": "تمام فیلدهای لازم را پر کنید",
                         "password_not_match": "رمزهای عبور مطابقت ندارند"
                     }
                 },
@@ -619,64 +763,278 @@
                     "button_detect": "تشخیص",
                     "finish": "بعدی"
                 }
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "checked_items": "موارد بررسی شده",
+                        "add_item": "اضافه کردن آیتم"
+                    },
+                    "empty_state": {
+                        "title": "به خانه خوش آمدی",
+                        "no_devices": "این صفحه به شما اجازه می دهد تا دستگاه های خود را کنترل کنید، با این حال به نظر می رسد که هیچ دستگاهی تنظیم نشده است. برای شروع به صفحه ادغام بروید.",
+                        "go_to_integrations_page": "به صفحه ادغام بروید."
+                    },
+                    "picture-elements": {
+                        "hold": "نگه دارید:",
+                        "tap": "ضربه زدن:",
+                        "navigate_to": "رفتن به {location}",
+                        "toggle": "تغییر {name}",
+                        "call_service": "سرویس تماس {name}",
+                        "more_info": "نمایش اطلاعات بیشتر: {name}"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "save": "ذخیره",
+                        "toggle_editor": "تغییر ویرایشگر",
+                        "pick_card": "کارتی را که می خواهید اضافه کنید انتخاب کنید ؛",
+                        "add": "افزودن کارت",
+                        "edit": "ویرایش",
+                        "delete": "حذف"
+                    },
+                    "migrate": {
+                        "para_no_id": "این عنصر ID ندارد لطفا یک شناسه را برای این عنصر در ui-lovelace.yaml اضافه کنید.",
+                        "para_migrate": "صفحه اصلی  home assistant می تواند با استفاده از دکمه 'Migrate config' به صورت خودکار برای شما کارت شناسایی را به تمام کارت های خود اضافه کند.",
+                        "migrate": "انتقال پیکربندی"
+                    },
+                    "header": "ویرایش رابط کاربری",
+                    "edit_view": {
+                        "add": "افزودن نمایه",
+                        "edit": "ویرایش نما"
+                    },
+                    "save_config": {
+                        "header": "کنترل UI Lovelace خود را بگیرید",
+                        "para": "به طور پیش فرض Home Assistant رابط کاربر خود را حفظ می کند، آن را به روز می کند زمانی که موجودیت های جدید و یا اجزای Lovelace در دسترس قرار گیرد. اگر کنترل داشته باشید دیگر تغییرات را برای شما انجام نخواهیم داد.",
+                        "para_sure": "آیا مطمئن هستید که میخواهید کنترل رابط کاربری خود را کنترل کنید؟",
+                        "cancel": "بیخیال",
+                        "save": "کنترل را به دست گرفتن"
+                    },
+                    "menu": {
+                        "raw_editor": "ویرایشگر اتوماسیون"
+                    },
+                    "raw_editor": {
+                        "header": "ویرایش پیکربندی",
+                        "save": "ذخیره",
+                        "unsaved_changes": "تغییرات ذخیره نشده",
+                        "saved": "ذخیره"
+                    }
+                },
+                "menu": {
+                    "unused_entities": "نهادهای استفاده نشده",
+                    "help": "کمک",
+                    "refresh": "تازه کردن"
+                },
+                "warning": {
+                    "entity_not_found": "نهاد موجود نیست: {entity}",
+                    "entity_non_numeric": "نهاد غیر عددی است: {entity}"
+                },
+                "changed_toast": {
+                    "message": "پیکربندی Lovelace به روز شد، آیا مایل به بروزرسانی  هستید؟",
+                    "refresh": "تازه کردن"
+                },
+                "reload_lovelace": "بازنگری Lovelace"
             }
         },
+        "sidebar": {
+            "log_out": "خروج",
+            "external_app_configuration": "پیکربندی برنامه"
+        },
+        "duration": {
+            "day": "\n{count} {count, plural,\n  one {روز}\n  other {روز ها}\n}\n",
+            "week": "\n{count} {count, plural,\n  one {هفته}\n  other {هفته ها}\n}\n",
+            "second": "ویرایشگر اتوماسیون اجازه می دهد تا شما را به ایجاد و ویرایش اتوماسیون بپردازید. لطفا پیوند زیر را بخوانید تا دستورالعمل ها را متوجه بشید تا مطمئن شوید که صفحه اصلی دستیار را به درستی پیکربندی کرده اید.",
+            "minute": "{count} {count, plural, <span class=\"lokalise linebreak notranslate\"> one {<\/span> دقیقه {count, plural, <span class=\"lokalise linebreak notranslate\"> one {<\/span> دقیقه } <span class=\"lokalise linebreak notranslate\"> other {<\/span> دقیقه } <span class=\"lokalise linebreak notranslate\"> }<\/span>",
+            "hour": "{count} {تعداد, جمع,\nیکی {ساعت}\nدیگر {ساعت}\n}"
+        },
+        "login-form": {
+            "password": "رمز عبور",
+            "remember": "یاد آوردن",
+            "log_in": "ورود"
+        },
         "card": {
+            "persistent_notification": {
+                "dismiss": "رد"
+            },
             "scene": {
                 "activate": "فعال سازی"
+            },
+            "script": {
+                "execute": "اجرا کردن"
             },
             "weather": {
                 "attributes": {
                     "air_pressure": "فشار هوا",
                     "humidity": "رطوبت",
                     "temperature": "دما",
+                    "visibility": "قابل دیدن",
                     "wind_speed": "سرعت باد"
                 },
                 "cardinal_direction": {
-                    "se": "جنوب شرقی"
+                    "e": "شرق",
+                    "n": "شمال",
+                    "nne": "شمال شرقی",
+                    "nw": "شمال غربی",
+                    "nnw": "شمال غربی",
+                    "s": "جنوب",
+                    "se": "جنوب شرقی",
+                    "ssw": "جنوب غربی",
+                    "sw": "جنوب غربی",
+                    "w": "شرق",
+                    "wnw": "شمال شرقی",
+                    "wsw": "جنوب غربی"
                 },
                 "forecast": "پیش بینی"
             },
-            "lock": {
-                "lock": "قفل"
-            },
             "alarm_control_panel": {
+                "code": "کد",
+                "clear_code": "پاک کردن",
+                "disarm": "خلع سلاح",
                 "arm_night": "نوبت شب",
+                "armed_custom_bypass": "بایگانی سفارشی",
                 "arm_custom_bypass": "بایگانی سفارشی"
+            },
+            "automation": {
+                "last_triggered": "آخرین ماشه",
+                "trigger": "ماشه"
+            },
+            "cover": {
+                "position": "موقعیت",
+                "tilt_position": "موقعیت شیب"
+            },
+            "fan": {
+                "speed": "سرعت",
+                "oscillate": "نوسان",
+                "direction": "جهت"
+            },
+            "light": {
+                "brightness": "روشنایی",
+                "color_temperature": "دمای رنگ",
+                "white_value": "ارزش سفید"
+            },
+            "media_player": {
+                "text_to_speak": "متن به صحبت کردن",
+                "source": "منبع",
+                "sound_mode": "حالت صدا"
+            },
+            "climate": {
+                "currently": "در حال حاضر",
+                "on_off": "روشن\/خاموش",
+                "target_temperature": "هدف دما",
+                "target_humidity": "هدف رطوبت",
+                "operation": "عملیات",
+                "fan_mode": "حالت فن",
+                "swing_mode": "حالت چرخش",
+                "away_mode": "حالت بیرون",
+                "aux_heat": "Aux گرما"
+            },
+            "lock": {
+                "code": "رمز",
+                "lock": "قفل",
+                "unlock": "باز کردن"
+            },
+            "water_heater": {
+                "currently": "در حال حاضر",
+                "on_off": "روشن\/خاموش",
+                "target_temperature": "دمای هدف",
+                "operation": "عملیات",
+                "away_mode": "حالت بیرون"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "نهاد"
+                }
+            },
+            "relative_time": {
+                "past": "{time} قبل",
+                "future": "در {time}",
+                "never": "هرگز",
+                "duration": {
+                    "second": "تعداد {count ، جمع ،\n  یکی {ثانیه}\n  دیگر {ثانیه}\n}",
+                    "minute": "{count} {تعداد, جمع,\nیکی {دقیقه}\nدیگر {ساعت}\n}",
+                    "hour": "تعداد {count ، جمع ،\n  یک {ساعت}\n  دیگر {ساعت}\n}",
+                    "day": "{count} {تعداد, جمع,\nیکی {روز}\nدیگر {روز}\n}",
+                    "week": "تعداد {count ، جمع ،\n  یک {هفته}\n  دیگر {هفته}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "بارگیری وضعیت تاریخچه",
+                "no_history_found": "هیچ دولتی سابقه یافت."
             }
         },
         "notification_toast": {
-            "entity_turned_off": "خاموش {نهاد}."
+            "entity_turned_on": "روشن {نهاد}.",
+            "entity_turned_off": "خاموش {نهاد}.",
+            "service_called": "سرویس {service} نامیده می شود.",
+            "service_call_failed": "تماس با سرویس {service} ناموفق بود",
+            "connection_lost": "اتصالبرقرار نشد . اتصال مجدد..."
         },
         "dialogs": {
             "more_info_settings": {
                 "save": "ذخیره",
-                "name": "باطل کردن"
+                "name": "باطل کردن",
+                "entity_id": "شناسه نهاد"
             },
             "more_info_control": {
+                "script": {
+                    "last_action": "آخرین اقدام"
+                },
                 "sun": {
                     "elevation": "ارتفاع",
                     "rising": "افزایش",
                     "setting": "تنظیمات"
+                },
+                "updater": {
+                    "title": "دستورالعمل به روز رسانی"
                 }
             }
         },
         "auth_store": {
             "confirm": "ذخیره ورود به سیستم"
         },
+        "notification_drawer": {
+            "click_to_configure": "برای پیکربندی {entity} روی دکمه کلیک کنید"
+        },
         "common": {
             "save": "ذخیره"
         }
     },
     "domain": {
+        "alarm_control_panel": "کنترل پنل آلارم",
+        "automation": "اتوماسیون",
+        "binary_sensor": "حسگر باینری",
+        "calendar": "تقویم",
+        "camera": "دوربین",
+        "configurator": "تنظیم کننده",
+        "conversation": "گفتگو",
+        "cover": "پوشش",
+        "fan": "فن",
+        "group": "گروه",
+        "image_processing": "پردازش تصویر",
+        "input_boolean": "ورودی بولین",
+        "light": "چراغ",
+        "lock": "قفل",
+        "mailbox": "میل باکس",
+        "sensor": "سنسور",
+        "sun": "آفتاب",
+        "switch": "سوئیچ",
+        "weblink": "لینک سایت",
         "zwave": "Z-Wave",
+        "vacuum": "خلاء",
         "zha": "ZHA",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
+        "system_health": "سلامت سیستم",
         "person": "فرد"
     },
     "attribute": {
         "weather": {
-            "humidity": "رطوبت"
+            "humidity": "رطوبت",
+            "visibility": "قابل دیدن",
+            "wind_speed": "سرعت باد"
         }
     },
     "state_attributes": {

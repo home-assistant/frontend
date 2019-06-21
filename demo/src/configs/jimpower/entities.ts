@@ -1,6 +1,7 @@
-import { Entity, convertEntities } from "../../../../src/fake_data/entity";
+import { convertEntities } from "../../../../src/fake_data/entity";
+import { DemoConfig } from "../types";
 
-export const demoEntitiesJimpower: () => Entity[] = () =>
+export const demoEntitiesJimpower: DemoConfig["entities"] = () =>
   convertEntities({
     "zone.powertec": {
       entity_id: "zone.powertec",

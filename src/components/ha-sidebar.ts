@@ -125,6 +125,7 @@ class HaSidebar extends LitElement {
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
               <a
+                aria-label="App Configuration"
                 href="#external-app-configuration"
                 tabindex="-1"
                 @click=${this._handleExternalAppConfiguration}
