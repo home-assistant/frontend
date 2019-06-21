@@ -1216,7 +1216,8 @@
               "hdmi_switcher": "HDMI Switcher",
               "volume": "Volume",
               "total_tv_time": "Total TV Time",
-              "turn_tv_off": "Turn Television off"
+              "turn_tv_off": "Turn Television off",
+              "air": "Air"
             },
             "unit": {
               "watching": "watching",
