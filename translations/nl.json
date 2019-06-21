@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar",
-                        "no_area": "Geen Gebied"
+                        "no_area": "Geen Gebied",
+                        "hub": "Verbonden via"
                     },
                     "config_flow": {
                         "external_step": {

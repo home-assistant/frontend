@@ -566,7 +566,8 @@
                         "firmware": "Cadarnwedd: {version}",
                         "device_unavailable": "Dyfais ddim ar gael",
                         "entity_unavailable": "endid ar gael",
-                        "no_area": "Dim Ardal"
+                        "no_area": "Dim Ardal",
+                        "hub": "Cysylltiad drwy"
                     },
                     "config_flow": {
                         "external_step": {
