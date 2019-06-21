@@ -34,6 +34,7 @@ const TRANSLATION_FRAGMENTS = [
   "profile",
   "shopping-list",
   "page-authorize",
+  "page-demo",
   "page-onboarding",
 ];
 

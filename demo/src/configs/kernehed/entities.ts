@@ -1,6 +1,7 @@
-import { Entity, convertEntities } from "../../../../src/fake_data/entity";
+import { convertEntities } from "../../../../src/fake_data/entity";
+import { DemoConfig } from "../types";
 
-export const demoEntitiesKernehed: () => Entity[] = () =>
+export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
   convertEntities({
     "zone.anna": {
       entity_id: "zone.anna",

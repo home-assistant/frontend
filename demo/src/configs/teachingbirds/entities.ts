@@ -1,6 +1,7 @@
-import { Entity, convertEntities } from "../../../../src/fake_data/entity";
+import { convertEntities } from "../../../../src/fake_data/entity";
+import { DemoConfig } from "../types";
 
-export const demoEntitiesTeachingbirds: () => Entity[] = () =>
+export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
   convertEntities({
     "sensor.pollen_grabo": {
       entity_id: "sensor.pollen_grabo",

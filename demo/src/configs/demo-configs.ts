@@ -25,7 +25,7 @@ export const setDemoConfig = async (
   selectedDemoConfigIndex = index;
   selectedDemoConfig = confProm;
 
-  hass.addEntities(config.entities(), true);
-  lovelace.saveConfig(config.lovelace());
+  hass.addEntities(config.entities(hass.localize), true);
+  lovelace.saveConfig(config.lovelace(hass.localize));
   hass.mockTheme(config.theme());
 };
