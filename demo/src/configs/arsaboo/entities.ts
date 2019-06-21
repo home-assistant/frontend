@@ -1,6 +1,7 @@
-import { Entity, convertEntities } from "../../../../src/fake_data/entity";
+import { convertEntities } from "../../../../src/fake_data/entity";
+import { DemoConfig } from "../types";
 
-export const demoEntitiesArsaboo: () => Entity[] = () =>
+export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
   convertEntities({
     "zone.home": {
       entity_id: "zone.home",
@@ -43,7 +44,7 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
     },
     "sensor.livingroom_temp_rounded": {
       entity_id: "sensor.livingroom_temp_rounded",
-      state: "66",
+      state: "21",
       attributes: {
         friendly_name: "Living room temperature",
         homebridge_hidden: true,
@@ -54,7 +55,7 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
     },
     "sensor.study_temp_rounded": {
       entity_id: "sensor.study_temp_rounded",
-      state: "67",
+      state: "23",
       attributes: {
         friendly_name: "Study temperature",
         homebridge_hidden: true,
@@ -63,23 +64,11 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       last_updated: "2019-01-22T19:17:17.881894+00:00",
       context: { id: "9e25fd2c4032461f83df3ed778fc031e", user_id: null },
     },
-    "sensor.sonos_audio_in": {
-      entity_id: "sensor.sonos_audio_in",
-      state: "Paused",
-      attributes: {
-        friendly_name: "Sonos Audio-in",
-        icon: "hademo:volume-high",
-        homebridge_hidden: true,
-      },
-      last_changed: "2019-01-22T17:00:14.678332+00:00",
-      last_updated: "2019-01-22T17:00:14.678332+00:00",
-      context: { id: "072d120e6d584e4d88e3222196b27e4d", user_id: null },
-    },
     "sensor.living_room": {
       entity_id: "sensor.living_room",
-      state: "PowerOff",
+      state: "YouTube",
       attributes: {
-        friendly_name: "Harmony Activity",
+        friendly_name: "Harmony",
         homebridge_hidden: true,
         entity_picture: "/assets/arsaboo/icons/Harmony.png",
       },
@@ -93,7 +82,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       attributes: {
         value: "25m",
         unit_of_measurement: "h",
-        friendly_name: "Total TV Time",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.total_tv_time"
+        ),
         icon: "hademo:chart-line",
         homebridge_hidden: true,
       },
@@ -124,10 +115,11 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
         operation: "fan",
         climate_list: ["Away", "Sleep", "Day", "Home"],
         fan_min_on_time: 10,
-        friendly_name: "Upstairs",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.upstairs"
+        ),
         supported_features: 3575,
         homebridge_hidden: true,
-        entity_picture: "/assets/arsaboo/icons/Ecobee.png",
       },
       last_changed: "2019-01-22T16:59:56.810867+00:00",
       last_updated: "2019-01-22T19:33:14.146114+00:00",
@@ -202,16 +194,18 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
     },
     "input_select.livingroomharmony": {
       entity_id: "input_select.livingroomharmony",
-      state: "PowerOff",
+      state: "YouTube",
       attributes: {
         options: [
           "PowerOff",
           "Watch Fire TV",
-          "Youtube",
+          "YouTube",
           "SATV",
           "Watch Apple TV",
         ],
-        friendly_name: "Harmony Activity",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.activity"
+        ),
         icon: "hademo:remote",
       },
       last_changed: "2019-01-22T16:59:56.884366+00:00",
@@ -223,7 +217,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       state: "Shield",
       attributes: {
         options: ["AppleTV", "FireTV", "Shield"],
-        friendly_name: "HDMI Switcher",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.hdmi_switcher"
+        ),
         icon: "hademo:remote",
       },
       last_changed: "2019-01-22T16:59:56.884597+00:00",
@@ -235,7 +231,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       state: "InputHdmi4",
       attributes: {
         options: ["InputHdmi1", "InputHdmi2", "InputHDMI3", "InputHdmi4"],
-        friendly_name: "HDMI Input",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.hdmi_input"
+        ),
         icon: "hademo:remote",
       },
       last_changed: "2019-01-22T16:59:56.884850+00:00",
@@ -251,7 +249,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
         max: 100,
         step: 1,
         mode: "slider",
-        friendly_name: "Volume",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.volume"
+        ),
         icon: "hademo:volume-high",
       },
       last_changed: "2019-01-22T17:00:16.104666+00:00",
@@ -263,7 +263,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       state: "off",
       attributes: {
         last_triggered: null,
-        friendly_name: "Turn Television off",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.turn_tv_off"
+        ),
       },
       last_changed: "2019-01-22T16:59:57.074073+00:00",
       last_updated: "2019-01-22T16:59:57.074073+00:00",
@@ -354,11 +356,11 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
     },
     "light.hue_color_lamp_1": {
       entity_id: "light.hue_color_lamp_1",
-      state: "off",
+      state: "on",
       attributes: {
         min_mireds: 153,
         max_mireds: 500,
-        friendly_name: "Master 1",
+        friendly_name: localize("ui.panel.page-demo.config.arsaboo.names.left"),
         supported_features: 63,
         homebridge_hidden: true,
       },
@@ -372,7 +374,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       attributes: {
         min_mireds: 153,
         max_mireds: 500,
-        friendly_name: "Master 2",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.right"
+        ),
         supported_features: 63,
         homebridge_hidden: true,
       },
@@ -382,11 +386,13 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
     },
     "light.hue_color_lamp_3": {
       entity_id: "light.hue_color_lamp_3",
-      state: "off",
+      state: "on",
       attributes: {
         min_mireds: 153,
         max_mireds: 500,
-        friendly_name: "Master 3",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.mirror"
+        ),
         supported_features: 63,
         homebridge_hidden: true,
       },
@@ -513,7 +519,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       entity_id: "light.gateway_light_34ce00813670",
       state: "off",
       attributes: {
-        friendly_name: "Gateway light",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.hallway"
+        ),
         supported_features: 17,
         homebridge_hidden: true,
         emulated_hue_hidden: false,
@@ -681,12 +689,15 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
         volume_level: 0.18,
         is_volume_muted: false,
         media_content_type: "music",
-        media_duration: 155,
+        media_duration: 300,
         media_position: 0,
-        media_position_updated_at: "2019-05-09T16:21:57.112Z",
-        media_title: "Ek Ladki Ko Dekha Toh Aisa Laga - Title Track",
-        media_artist: "Rochak Kohli",
-        media_album_name: "Ek Ladki Ko Dekha Toh Aisa Laga",
+        media_position_updated_at: new Date(
+          // 23 seconds in
+          new Date().getTime() - 23000
+        ).toISOString(),
+        media_title: "I Wasn't Born To Follow",
+        media_artist: "The Byrds",
+        media_album_name: "The Notorious Byrd Brothers",
         source_list: [
           "Bollywood Hindi Hits",
           "Bollywood Radio and Beyond",
@@ -704,7 +715,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
         sonos_group: ["media_player.family_room_2"],
         night_sound: false,
         speech_enhance: false,
-        friendly_name: "Family Room",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.family_room"
+        ),
         entity_picture:
           "/api/media_player_proxy/media_player.family_room_2?token=be41a86e2a360761d67c36a010b09654b730deec092016ee92aafef79b1978ff&cache=e03d22fb103202e7",
         supported_features: 64063,
@@ -773,7 +786,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       attributes: {
         min_mireds: 111,
         max_mireds: 400,
-        friendly_name: "LifxnrGuest",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.patio"
+        ),
         supported_features: 55,
         homebridge_hidden: true,
       },
@@ -787,7 +802,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
       attributes: {
         min_mireds: 111,
         max_mireds: 400,
-        friendly_name: "Lifx3",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.kitchen"
+        ),
         supported_features: 55,
         homebridge_hidden: true,
       },
@@ -823,7 +840,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
         duration: "44 mins",
         distance: "34.3 mi",
         unit_of_measurement: "min",
-        friendly_name: "Commute to Home",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.commute_home"
+        ),
         homebridge_hidden: true,
         icon: "hademo:car",
       },
@@ -844,7 +863,9 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
         duration: "37 mins",
         distance: "30.2 mi",
         unit_of_measurement: "min",
-        friendly_name: "Morning Commute",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.labels.morning_commute"
+        ),
         homebridge_hidden: true,
         icon: "hademo:car",
       },
@@ -855,26 +876,13 @@ export const demoEntitiesArsaboo: () => Entity[] = () =>
     "switch.wemoswitch": {
       entity_id: "switch.wemoswitch",
       state: "on",
-      attributes: { friendly_name: "WeMoSwitch", homebridge_hidden: true },
+      attributes: {
+        friendly_name: localize("ui.panel.page-demo.config.arsaboo.labels.air"),
+        homebridge_hidden: true,
+      },
       last_changed: "2019-01-22T17:00:22.455617+00:00",
       last_updated: "2019-01-22T17:00:22.455617+00:00",
       context: { id: "d5ddc6e4c88f436ab372934934c8675e", user_id: null },
-    },
-    "switch.wemoinsight": {
-      entity_id: "switch.wemoinsight",
-      state: "off",
-      attributes: {
-        state_detail: "off",
-        on_latest_time: "00d 00h 00m 17s",
-        on_today_time: "00d 00h 00m 00s",
-        on_total_time: "00d 21h 49m 35s",
-        power_threshold_w: 2,
-        friendly_name: "WeMoInsight",
-        homebridge_hidden: true,
-      },
-      last_changed: "2019-01-22T17:00:22.397783+00:00",
-      last_updated: "2019-01-22T17:00:22.492778+00:00",
-      context: { id: "1ff8d42d21084350acbdb6002551fc61", user_id: null },
     },
     "switch.driveway": {
       entity_id: "switch.driveway",
