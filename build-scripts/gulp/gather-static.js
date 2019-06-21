@@ -2,6 +2,7 @@
 
 const gulp = require("gulp");
 const path = require("path");
+const cpx = require("cpx");
 const fs = require("fs-extra");
 const zopfli = require("gulp-zopfli-green");
 const merge = require("merge-stream");
@@ -48,7 +49,10 @@ function copyPolyfills(staticDir) {
 function copyFonts(staticDir) {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
-  fs.copySync(npmPath("@polymer/font-roboto-local/fonts"), staticPath("fonts"));
+  cpx.copySync(
+    npmPath("roboto-fontface/fonts/roboto/*.woff2"),
+    staticPath("fonts/roboto")
+  );
 }
 
 function copyMapPanel(staticDir) {

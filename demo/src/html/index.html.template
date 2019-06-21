@@ -7,13 +7,13 @@
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
     <link
       rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.ttf"
+      href="/static/fonts/roboto/Roboto-Regular.woff2"
       as="font"
       crossorigin
     />
     <link
       rel="preload"
-      href="/static/fonts/roboto/Roboto-Medium.ttf"
+      href="/static/fonts/roboto/Roboto-Medium.woff2"
       as="font"
       crossorigin
     />
