@@ -19,6 +19,9 @@ import { getHassTranslations } from "../data/translation";
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
+    // tslint:disable-next-line: variable-name
+    private __coreProgress?: string;
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) =>
@@ -97,8 +100,18 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     }
 
     private async _loadCoreTranslations(language: string) {
-      const result = await getTranslation(null, language);
-      this._updateResources(result.language, result.data);
+      // Check if already in progress
+      // Necessary as we call this in firstUpdated and hassConnected
+      if (this.__coreProgress === language) {
+        return;
+      }
+      this.__coreProgress = language;
+      try {
+        const result = await getTranslation(null, language);
+        this._updateResources(result.language, result.data);
+      } finally {
+        this.__coreProgress = undefined;
+      }
     }
 
     private _updateResources(language: string, data: any) {

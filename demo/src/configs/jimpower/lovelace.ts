@@ -1,7 +1,7 @@
-import { LovelaceConfig } from "../../../../src/data/lovelace";
 import "../../custom-cards/card-modder";
+import { DemoConfig } from "../types";
 
-export const demoLovelaceJimpower: () => LovelaceConfig = () => ({
+export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
   name: "Kingia Castle",
   resources: [
     // {

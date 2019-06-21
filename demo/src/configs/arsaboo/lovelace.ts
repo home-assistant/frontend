@@ -1,6 +1,6 @@
-import { LovelaceConfig } from "../../../../src/data/lovelace";
+import { DemoConfig } from "../types";
 
-export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
+export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
   title: "Home Assistant",
   views: [
     {
@@ -484,14 +484,10 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
           entity: "media_player.family_room_2",
         },
         {
-          type: "iframe",
-          aspect_ratio: "90%",
-          url:
-            "https://embed.windy.com/embed2.html?zoom=5&level=surface&overlay=rain&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=32.487&detailLon=--84.023&metricWind=default&metricTemp=default&radarRange=-1",
-        },
-        {
           type: "entities",
-          title: "Information",
+          title: localize(
+            "ui.panel.page-demo.config.arsaboo.labels.information"
+          ),
           show_header_toggle: false,
           entities: [
             "sensor.morning_commute",
@@ -502,52 +498,34 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
         },
         {
           type: "entities",
-          title: "Lights",
+          title: localize("ui.panel.page-demo.config.arsaboo.labels.lights"),
           entities: [
             {
               entity: "light.gateway_light_34ce00813670",
-              // type: "custom:slider-entity-row",
             },
             {
               entity: "light.lifx3",
-              // type: "custom:slider-entity-row",
             },
             {
               entity: "light.lifxnrguest",
-              // type: "custom:slider-entity-row",
             },
             {
-              entity: "light.lifxnrkitchen",
-              // type: "custom:slider-entity-row",
-            },
-            {
-              type: "divider",
+              type: "section",
+              label: localize(
+                "ui.panel.page-demo.config.arsaboo.names.master_bedroom"
+              ),
             },
             {
               entity: "light.hue_color_lamp_1",
-              // type: "custom:slider-entity-row",
             },
             {
               entity: "light.hue_color_lamp_2",
-              // type: "custom:slider-entity-row",
             },
             {
               entity: "light.hue_color_lamp_3",
-              // type: "custom:slider-entity-row",
             },
-          ],
-        },
-        {
-          type: "entities",
-          title: "Switches",
-          entities: [
             {
               entity: "switch.wemoswitch",
-              secondary_info: "last-changed",
-            },
-            {
-              entity: "switch.wemoinsight",
-              secondary_info: "last-changed",
             },
           ],
         },
@@ -560,7 +538,9 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
         },
         {
           type: "entities",
-          title: "Entertainment",
+          title: localize(
+            "ui.panel.page-demo.config.arsaboo.labels.entertainment"
+          ),
           show_header_toggle: false,
           entities: [
             "sensor.living_room",
@@ -569,7 +549,6 @@ export const demoLovelaceArsaboo: () => LovelaceConfig = () => ({
             "input_select.hdmiinput",
             "input_number.harmonyvolume",
             "sensor.total_tv_time",
-            "sensor.sonos_audio_in",
             "script.tv_off",
           ],
         },
