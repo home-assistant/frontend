@@ -63,6 +63,9 @@
       import "<%= latestCoreJS %>";
       import "<%= latestAppJS %>";
       import "<%= latestHassIconsJS %>";
+      {% for extra_module in extra_modules -%}
+      import "{{ extra_module }}";
+      {% endfor -%}
       window.customPanelJS = "<%= latestCustomPanelJS %>";
     </script>
 
@@ -76,21 +79,15 @@
           _ls("<%= es5CoreJS %>");
           _ls("<%= es5AppJS %>");
           _ls("<%= es5HassIconsJS %>");
+          {% for extra_module in extra_modules_es5 -%}
+          _ls("{{ extra_module }}");
+          {% endfor -%}
         }
       })();
     </script>
 
     {% for extra_url in extra_urls -%}
-    <script type="module" async>
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', "{{ extra_url}}", true);
-      xhr.onreadystatechange = function() {
-        if(this.readyState !== 4) return;
-        if(this.status !== 200) return;
-        document.body.innerHTML += this.responseText;
-      }
-      xhr.send();
-    </script>
+    <link rel="import" href="{{ extra_url }}" async />
     {% endfor -%}
   </body>
 </html>
