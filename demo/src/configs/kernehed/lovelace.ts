@@ -1,6 +1,6 @@
-import { LovelaceConfig } from "../../../../src/data/lovelace";
+import { DemoConfig } from "../types";
 
-export const demoLovelaceKernehed: () => LovelaceConfig = () => ({
+export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
   name: "Hem",
   resources: [
     // {
