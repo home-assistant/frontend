@@ -51,6 +51,18 @@ function copyFonts(staticDir) {
   fs.copySync(npmPath("@polymer/font-roboto-local/fonts"), staticPath("fonts"));
 }
 
+function copyMapPanel(staticDir) {
+  const staticPath = genStaticPath(staticDir);
+  copyFileDir(
+    npmPath("leaflet/dist/leaflet.css"),
+    staticPath("images/leaflet/")
+  );
+  fs.copySync(
+    npmPath("leaflet/dist/images"),
+    staticPath("images/leaflet/images/")
+  );
+}
+
 function compressStatic(staticDir) {
   const staticPath = genStaticPath(staticDir);
   const fonts = gulp
@@ -84,14 +96,7 @@ gulp.task("copy-static", (done) => {
     npmPath("react-big-calendar/lib/css/react-big-calendar.css"),
     staticPath("panels/calendar/")
   );
-  copyFileDir(
-    npmPath("leaflet/dist/leaflet.css"),
-    staticPath("images/leaflet/")
-  );
-  fs.copySync(
-    npmPath("leaflet/dist/images"),
-    staticPath("images/leaflet/images/")
-  );
+  copyMapPanel(staticDir);
   done();
 });
 
@@ -104,6 +109,7 @@ gulp.task("copy-static-demo", (done) => {
   fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_root);
 
   copyPolyfills(paths.demo_static);
+  copyMapPanel(paths.demo_static);
   copyFonts(paths.demo_static);
   copyTranslations(paths.demo_static);
   done();

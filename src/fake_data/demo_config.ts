@@ -3,8 +3,8 @@ import { HassConfig } from "home-assistant-js-websocket";
 export const demoConfig: HassConfig = {
   location_name: "Home",
   elevation: 300,
-  latitude: 51.5287352,
-  longitude: -0.381773,
+  latitude: 52.3731339,
+  longitude: 4.8903147,
   unit_system: {
     length: "km",
     mass: "kg",
