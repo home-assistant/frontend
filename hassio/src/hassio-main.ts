@@ -52,11 +52,13 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       system: "dashboard",
       addon: {
         tag: "hassio-addon-view",
-        load: () => import("./addon-view/hassio-addon-view"),
+        load: () =>
+          import(/* webpackChunkName: "hassio-addon-view" */ "./addon-view/hassio-addon-view"),
       },
       ingress: {
         tag: "hassio-ingress-view",
-        load: () => import("./ingress-view/hassio-ingress-view"),
+        load: () =>
+          import(/* webpackChunkName: "hassio-ingress-view" */ "./ingress-view/hassio-ingress-view"),
       },
     },
   };
