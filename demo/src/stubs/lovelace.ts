@@ -4,12 +4,16 @@ import "../custom-cards/ha-demo-card";
 import { HADemoCard } from "../custom-cards/ha-demo-card";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { selectedDemoConfig } from "../configs/demo-configs";
+import { LocalizeFunc } from "../../../src/common/translations/localize";
 
-export const mockLovelace = (hass: MockHomeAssistant) => {
-  selectedDemoConfig.then((config) => hass.addEntities(config.entities()));
-
+export const mockLovelace = (
+  hass: MockHomeAssistant,
+  localizePromise: Promise<LocalizeFunc>
+) => {
   hass.mockWS("lovelace/config", () =>
-    selectedDemoConfig.then((config) => config.lovelace())
+    Promise.all([selectedDemoConfig, localizePromise]).then(
+      ([config, localize]) => config.lovelace(localize)
+    )
   );
 
   hass.mockWS("lovelace/config/save", () => Promise.resolve());

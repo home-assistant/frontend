@@ -21,8 +21,9 @@ import {
 
 export class HADemoCard extends LitElement implements LovelaceCard {
   public lovelace?: Lovelace;
-  public hass?: MockHomeAssistant;
+  public hass!: MockHomeAssistant;
   private _switching?: boolean;
+  private _hidden = localStorage.hide_demo_card;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -33,7 +34,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize() {
-    return 2;
+    return this._hidden ? 0 : 2;
   }
 
   public setConfig(
@@ -43,6 +44,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   ) {}
 
   protected render() {
+    if (this._hidden) {
+      return;
+    }
     return html`
       <ha-card>
         <div class="picker">
@@ -56,9 +60,12 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                     (conf) => html`
                       ${conf.name}
                       <small>
-                        by
                         <a target="_blank" href="${conf.authorUrl}">
-                          ${conf.authorName}
+                          ${this.hass.localize(
+                            "ui.panel.page-demo.cards.demo.demo_by",
+                            "name",
+                            conf.authorName
+                          )}
                         </a>
                       </small>
                     `
@@ -67,20 +74,28 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                 )}
           </div>
           <mwc-button @click=${this._nextConfig} .disabled=${this._switching}>
-            Next demo
+            ${this.hass.localize("ui.panel.page-demo.cards.demo.next_demo")}
           </mwc-button>
         </div>
         <div class="content small-hidden">
-          Welcome home! You've reached the Home Assistant demo where we showcase
-          the best UIs created by our community.
+          ${this.hass.localize("ui.panel.page-demo.cards.demo.introduction")}
         </div>
         <div class="actions small-hidden">
           <a href="https://www.home-assistant.io" target="_blank">
-            <mwc-button>Learn more about Home Assistant</mwc-button>
+            <mwc-button>
+              ${this.hass.localize("ui.panel.page-demo.cards.demo.learn_more")}
+            </mwc-button>
           </a>
         </div>
       </ha-card>
     `;
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    if (this._hidden) {
+      this.style.display = "none";
+    }
   }
 
   private _nextConfig() {
@@ -94,7 +109,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   private async _updateConfig(index: number) {
     this._switching = true;
     try {
-      await setDemoConfig(this.hass!, this.lovelace!, index);
+      await setDemoConfig(this.hass, this.lovelace!, index);
     } catch (err) {
       alert("Failed to switch config :-(");
     } finally {

@@ -27,7 +27,13 @@ class HaDemo extends HomeAssistantAppEl {
     };
 
     const hass = (this.hass = provideHass(this, initial));
-    mockLovelace(hass);
+    const localizePromise =
+      // @ts-ignore
+      this._loadFragmentTranslations(hass.language, "page-demo").then(
+        () => this.hass!.localize
+      );
+
+    mockLovelace(hass, localizePromise);
     mockAuth(hass);
     mockTranslations(hass);
     mockHistory(hass);
@@ -37,12 +43,16 @@ class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
-    selectedDemoConfig.then((conf) => {
-      hass.addEntities(conf.entities());
-      if (conf.theme) {
-        hass.mockTheme(conf.theme());
+
+    // Once config is loaded AND localize, set entities and apply theme.
+    Promise.all([selectedDemoConfig, localizePromise]).then(
+      ([conf, localize]) => {
+        hass.addEntities(conf.entities(localize));
+        if (conf.theme) {
+          hass.mockTheme(conf.theme());
+        }
       }
-    });
+    );
 
     // Taken from polymer/pwa-helpers. BSD-3 licensed
     document.body.addEventListener(
