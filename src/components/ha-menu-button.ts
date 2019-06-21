@@ -17,6 +17,7 @@ class HaMenuButton extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <paper-icon-button
+        aria-label="Sidebar Toggle"
         .icon=${this.hassio ? "hassio:menu" : "hass:menu"}
         @click=${this._toggleMenu}
       ></paper-icon-button>
