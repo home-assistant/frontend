@@ -81,8 +81,8 @@
           _ls("<%= es5CoreJS %>");
           _ls("<%= es5AppJS %>");
           _ls("<%= es5HassIconsJS %>");
-          {% for extra_module in extra_modules_es5 -%}
-          _ls("{{ extra_module }}");
+          {% for extra_script in extra_js_es5 -%}
+          _ls("{{ extra_script }}");
           {% endfor -%}
         }
       })();
