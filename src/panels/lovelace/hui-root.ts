@@ -232,7 +232,7 @@ class HUIRoot extends LitElement {
                   >
                     ${this.lovelace!.config.views.map(
                       (view) => html`
-                        <paper-tab>
+                        <paper-tab aria-label="${view.title}">
                           ${this._editMode
                             ? html`
                                 <ha-paper-icon-button-arrow-prev

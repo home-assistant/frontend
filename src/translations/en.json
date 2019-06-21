@@ -1184,6 +1184,49 @@
           }
         }
       },
+      "page-demo": {
+        "cards": {
+          "demo": {
+            "demo_by": "by {name}",
+            "next_demo": "Next demo",
+            "introduction": "Welcome home! You've reached the Home Assistant demo where we showcase the best UIs created by our community.",
+            "learn_more": "Learn more about Home Assistant"
+          }
+        },
+        "config": {
+          "arsaboo": {
+            "names": {
+              "upstairs": "Upstairs",
+              "family_room": "Family Room",
+              "kitchen": "Kitchen",
+              "patio": "Patio",
+              "hallway": "Hallway",
+              "master_bedroom": "Master Bedroom",
+              "left": "Left",
+              "right": "Right",
+              "mirror": "Mirror"
+            },
+            "labels": {
+              "lights": "Lights",
+              "information": "Information",
+              "morning_commute": "Morning Commute",
+              "commute_home": "Commute to Home",
+              "entertainment": "Entertainment",
+              "activity": "Activity",
+              "hdmi_input": "HDMI Input",
+              "hdmi_switcher": "HDMI Switcher",
+              "volume": "Volume",
+              "total_tv_time": "Total TV Time",
+              "turn_tv_off": "Turn Television off",
+              "air": "Air"
+            },
+            "unit": {
+              "watching": "watching",
+              "minutes_abbr": "min"
+            }
+          }
+        }
+      },
       "page-onboarding": {
         "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
         "user": {

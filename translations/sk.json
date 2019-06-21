@@ -619,7 +619,8 @@
                         "firmware": "Firmvér: {version}",
                         "device_unavailable": "zariadenie nie je k dispozícii",
                         "entity_unavailable": "entita nie je k dispozícii",
-                        "no_area": "Žiadna oblasť"
+                        "no_area": "Žiadna oblasť",
+                        "hub": "Pripojené cez"
                     },
                     "config_flow": {
                         "external_step": {
@@ -637,6 +638,7 @@
                         "remove": "Odstráňte zariadenie zo siete ZigBee."
                     },
                     "device_card": {
+                        "device_name_placeholder": "Meno používateľa",
                         "area_picker_label": "Oblasť",
                         "update_name_button": "Aktualizovať názov"
                     },
@@ -1041,7 +1043,8 @@
                 "arm_home": "Zakódovať doma",
                 "arm_away": "Zakódovať odchod",
                 "arm_night": "Zakódovať na noc",
-                "armed_custom_bypass": "Prispôsobené vylúčenie"
+                "armed_custom_bypass": "Prispôsobené vylúčenie",
+                "arm_custom_bypass": "Prispôsobené vylúčenie"
             },
             "automation": {
                 "last_triggered": "Naposledy spustené",
