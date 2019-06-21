@@ -153,14 +153,14 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
             ...workBoxTranslationsTemplatedURLs,
             "/static/icons/favicon-192x192.png":
               "public/icons/favicon-192x192.png",
-            "/static/fonts/roboto/Roboto-Light.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf",
-            "/static/fonts/roboto/Roboto-Medium.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf",
-            "/static/fonts/roboto/Roboto-Regular.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf",
-            "/static/fonts/roboto/Roboto-Bold.ttf":
-              "node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf",
+            "/static/fonts/roboto/Roboto-Light.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Light.woff2",
+            "/static/fonts/roboto/Roboto-Medium.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Medium.woff2",
+            "/static/fonts/roboto/Roboto-Regular.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff2",
+            "/static/fonts/roboto/Roboto-Bold.woff2":
+              "node_modules/roboto-fontface/fonts/roboto/Roboto-Bold.woff2",
           },
         }),
     ].filter(Boolean),

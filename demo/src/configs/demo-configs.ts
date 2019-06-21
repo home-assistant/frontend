@@ -3,10 +3,22 @@ import { Lovelace } from "../../../src/panels/lovelace/types";
 import { DemoConfig } from "./types";
 
 export const demoConfigs: Array<() => Promise<DemoConfig>> = [
-  () => import("./arsaboo").then((mod) => mod.demoArsaboo),
-  () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
-  () => import("./kernehed").then((mod) => mod.demoKernehed),
-  () => import("./jimpower").then((mod) => mod.demoJimpower),
+  () =>
+    import(/* webpackChunkName: "arsaboo" */ "./arsaboo").then(
+      (mod) => mod.demoArsaboo
+    ),
+  () =>
+    import(/* webpackChunkName: "teachingbirds" */ "./teachingbirds").then(
+      (mod) => mod.demoTeachingbirds
+    ),
+  () =>
+    import(/* webpackChunkName: "kernehed" */ "./kernehed").then(
+      (mod) => mod.demoKernehed
+    ),
+  () =>
+    import(/* webpackChunkName: "jimpower" */ "./jimpower").then(
+      (mod) => mod.demoJimpower
+    ),
 ];
 
 export let selectedDemoConfigIndex: number = 0;
