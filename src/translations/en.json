@@ -1207,6 +1207,7 @@
               "mirror": "Mirror"
             },
             "labels": {
+              "lights": "Lights",
               "information": "Information",
               "morning_commute": "Morning Commute",
               "commute_home": "Commute to Home",

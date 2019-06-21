@@ -23,6 +23,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   public lovelace?: Lovelace;
   public hass!: MockHomeAssistant;
   private _switching?: boolean;
+  private _hidden = localStorage.hide_demo_card;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -43,6 +44,9 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   ) {}
 
   protected render() {
+    if (this._hidden) {
+      return;
+    }
     return html`
       <ha-card>
         <div class="picker">
@@ -85,6 +89,13 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         </div>
       </ha-card>
     `;
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    if (this._hidden) {
+      this.style.display = "none";
+    }
   }
 
   private _nextConfig() {

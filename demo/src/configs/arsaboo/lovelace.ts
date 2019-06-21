@@ -498,7 +498,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
         },
         {
           type: "entities",
-          title: "Lights",
+          title: localize("ui.panel.page-demo.config.arsaboo.labels.lights"),
           entities: [
             {
               entity: "light.gateway_light_34ce00813670",
