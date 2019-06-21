@@ -47,7 +47,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "21",
       attributes: {
         friendly_name: "Living room temperature",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T18:23:58.615703+00:00",
       last_updated: "2019-01-22T18:23:58.615703+00:00",
@@ -58,7 +57,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "23",
       attributes: {
         friendly_name: "Study temperature",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T19:17:17.881894+00:00",
       last_updated: "2019-01-22T19:17:17.881894+00:00",
@@ -69,7 +67,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "YouTube",
       attributes: {
         friendly_name: "Harmony",
-        homebridge_hidden: true,
         entity_picture: "/assets/arsaboo/icons/Harmony.png",
       },
       last_changed: "2019-01-22T17:00:14.722625+00:00",
@@ -86,7 +83,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ui.panel.page-demo.config.arsaboo.labels.total_tv_time"
         ),
         icon: "hademo:chart-line",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:14.938049+00:00",
       last_updated: "2019-01-22T17:00:14.938049+00:00",
@@ -119,7 +115,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ui.panel.page-demo.config.arsaboo.names.upstairs"
         ),
         supported_features: 3575,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T16:59:56.810867+00:00",
       last_updated: "2019-01-22T19:33:14.146114+00:00",
@@ -131,7 +126,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "Abode Updates",
         icon: "hademo:security",
-        homebridge_hidden: true,
         templates: {
           icon_color:
             "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
@@ -148,7 +142,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "TV",
         icon: "hademo:television",
-        homebridge_hidden: false,
         templates: {
           icon_color:
             "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
@@ -164,7 +157,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "Home Automation",
         icon: "hass:home-automation",
-        homebridge_hidden: true,
         templates: {
           icon_color:
             "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
@@ -180,7 +172,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "TV Time",
         icon: "hademo:television-guide",
-        homebridge_hidden: true,
         templates: {
           icon:
             "if (state === 'on') return 'hademo:television-classic'; return 'hademo:television-classic-off';\n",
@@ -281,7 +272,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         unit_of_measurement: "INR",
         friendly_name: "USDINR",
         icon: "hademo:currency-usd",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T18:25:11.582558+00:00",
       last_updated: "2019-01-22T18:25:11.582558+00:00",
@@ -294,7 +284,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         friendly_name: "Garage Door",
         icon: "hademo:garage",
         supported_features: 11,
-        homebridge_hidden: false,
         homebridge_cover_type: "garage_door",
       },
       last_changed: "2019-01-22T19:31:05.399638+00:00",
@@ -309,7 +298,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         max_mireds: 500,
         friendly_name: "Master Lights",
         supported_features: 63,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T16:59:57.423884+00:00",
       last_updated: "2019-01-22T16:59:57.423884+00:00",
@@ -323,7 +311,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         max_mireds: 400,
         friendly_name: "Living Room Lights",
         supported_features: 55,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:05.573457+00:00",
       last_updated: "2019-01-22T17:00:05.573457+00:00",
@@ -334,7 +321,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "off",
       attributes: {
         friendly_name: "Home Security Arm",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T19:29:19.871240+00:00",
       last_updated: "2019-01-22T19:29:19.871240+00:00",
@@ -346,7 +332,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "Kitchen lights",
         supported_features: 1,
-        homebridge_hidden: false,
         emulated_hue_hidden: false,
         emulated_hue_name: "Kitchen lights",
       },
@@ -362,7 +347,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         max_mireds: 500,
         friendly_name: localize("ui.panel.page-demo.config.arsaboo.names.left"),
         supported_features: 63,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T16:59:57.421788+00:00",
       last_updated: "2019-01-22T16:59:57.421788+00:00",
@@ -378,7 +362,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ui.panel.page-demo.config.arsaboo.names.right"
         ),
         supported_features: 63,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T16:59:57.422442+00:00",
       last_updated: "2019-01-22T16:59:57.422442+00:00",
@@ -394,7 +377,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ui.panel.page-demo.config.arsaboo.names.mirror"
         ),
         supported_features: 63,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T16:59:57.423068+00:00",
       last_updated: "2019-01-22T16:59:57.423068+00:00",
@@ -406,7 +388,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         unit_of_measurement: "Watching",
         friendly_name: "PlexSpy",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:00.185247+00:00",
       last_updated: "2019-01-22T17:00:00.185247+00:00",
@@ -422,7 +403,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         timezone: "America/New_York",
         friendly_name: "Front Door Ding",
         device_class: "occupancy",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:03.255653+00:00",
       last_updated: "2019-01-22T18:24:03.677589+00:00",
@@ -445,7 +425,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         category: "motion",
         friendly_name: "Front Door Last Motion",
         icon: "hademo:history",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T18:22:33.829681+00:00",
       last_updated: "2019-01-22T18:23:04.162733+00:00",
@@ -523,7 +502,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ui.panel.page-demo.config.arsaboo.names.hallway"
         ),
         supported_features: 17,
-        homebridge_hidden: true,
         emulated_hue_hidden: false,
       },
       last_changed: "2019-01-22T17:00:03.343398+00:00",
@@ -542,7 +520,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         cellular_backup: false,
         friendly_name: "Abode Alarm",
         icon: "hademo:security",
-        homebridge_hidden: false,
         entity_picture: "/assets/arsaboo/icons/Abode.jpg",
       },
       last_changed: "2019-01-22T19:29:19.864324+00:00",
@@ -559,7 +536,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         timezone: "America/New_York",
         friendly_name: "Front Door Motion",
         device_class: "motion",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T18:24:14.683620+00:00",
       last_updated: "2019-01-22T18:24:14.683620+00:00",
@@ -573,7 +549,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         battery_level: 43,
         friendly_name: "Living Room Occupancy",
         device_class: "motion",
-        homebridge_hidden: false,
       },
       last_changed: "2019-01-22T19:36:42.441431+00:00",
       last_updated: "2019-01-22T19:36:42.441431+00:00",
@@ -587,7 +562,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         battery_level: 45,
         friendly_name: "Garage Entry Door",
         device_class: "door",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T19:31:03.412180+00:00",
       last_updated: "2019-01-22T19:31:03.412180+00:00",
@@ -601,7 +575,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         battery_level: 49,
         friendly_name: "Guest Room Occupancy",
         device_class: "motion",
-        homebridge_hidden: false,
       },
       last_changed: "2019-01-22T17:00:03.630369+00:00",
       last_updated: "2019-01-22T17:00:03.630369+00:00",
@@ -614,7 +587,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         battery_level: 41,
         friendly_name: "Laundry Water Leak",
         device_class: "moisture",
-        homebridge_hidden: false,
       },
       last_changed: "2019-01-22T17:00:03.632708+00:00",
       last_updated: "2019-01-22T17:00:03.632708+00:00",
@@ -628,7 +600,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         battery_level: 43,
         friendly_name: "Master Occupancy",
         device_class: "motion",
-        homebridge_hidden: false,
       },
       last_changed: "2019-01-22T17:00:03.635223+00:00",
       last_updated: "2019-01-22T17:00:03.635223+00:00",
@@ -642,7 +613,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         battery_level: 41,
         friendly_name: "Upstairs Occupancy",
         device_class: "motion",
-        homebridge_hidden: false,
       },
       last_changed: "2019-01-22T17:00:03.636514+00:00",
       last_updated: "2019-01-22T17:00:03.636514+00:00",
@@ -659,7 +629,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         device_type: "Door Contact",
         friendly_name: "Front Door",
         device_class: "door",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T19:31:27.023892+00:00",
       last_updated: "2019-01-22T19:31:27.023892+00:00",
@@ -676,7 +645,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         device_type: "Door Contact",
         friendly_name: "Back Door",
         device_class: "door",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:03.642051+00:00",
       last_updated: "2019-01-22T17:00:03.642051+00:00",
@@ -721,7 +689,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         entity_picture:
           "/api/media_player_proxy/media_player.family_room_2?token=be41a86e2a360761d67c36a010b09654b730deec092016ee92aafef79b1978ff&cache=e03d22fb103202e7",
         supported_features: 64063,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:04.802095+00:00",
       last_updated: "2019-01-22T17:00:04.802095+00:00",
@@ -744,7 +711,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         category: "ding",
         friendly_name: "Front Door Last Ding",
         icon: "hademo:history",
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:04.444969+00:00",
       last_updated: "2019-01-22T17:00:04.444969+00:00",
@@ -758,7 +724,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         max_mireds: 400,
         friendly_name: "LifxnrKitchen",
         supported_features: 55,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:05.570989+00:00",
       last_updated: "2019-01-22T17:00:05.570989+00:00",
@@ -772,7 +737,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         max_mireds: 400,
         friendly_name: "Garage lights",
         supported_features: 55,
-        homebridge_hidden: false,
         emulated_hue_hidden: false,
         emulated_hue_name: "Garage Lights",
       },
@@ -790,7 +754,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ui.panel.page-demo.config.arsaboo.names.patio"
         ),
         supported_features: 55,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:05.587119+00:00",
       last_updated: "2019-01-22T17:00:05.587119+00:00",
@@ -806,7 +769,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ui.panel.page-demo.config.arsaboo.names.kitchen"
         ),
         supported_features: 55,
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:05.587973+00:00",
       last_updated: "2019-01-22T17:00:05.587973+00:00",
@@ -820,7 +782,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         unit_of_measurement: "lx",
         friendly_name: "Master Brightness",
         device_class: "illuminance",
-        homebridge_hidden: true,
         icon: "hademo:brightness-7",
       },
       last_changed: "2019-01-22T19:34:01.373772+00:00",
@@ -843,7 +804,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         friendly_name: localize(
           "ui.panel.page-demo.config.arsaboo.labels.commute_home"
         ),
-        homebridge_hidden: true,
         icon: "hademo:car",
       },
       last_changed: "2019-01-22T17:00:15.963892+00:00",
@@ -866,7 +826,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         friendly_name: localize(
           "ui.panel.page-demo.config.arsaboo.labels.morning_commute"
         ),
-        homebridge_hidden: true,
         icon: "hademo:car",
       },
       last_changed: "2019-01-22T17:00:16.142799+00:00",
@@ -878,7 +837,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "on",
       attributes: {
         friendly_name: localize("ui.panel.page-demo.config.arsaboo.labels.air"),
-        homebridge_hidden: true,
       },
       last_changed: "2019-01-22T17:00:22.455617+00:00",
       last_updated: "2019-01-22T17:00:22.455617+00:00",
@@ -889,7 +847,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "off",
       attributes: {
         friendly_name: "Driveway Light",
-        homebridge_hidden: false,
         templates: {
           icon_color:
             "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
@@ -908,7 +865,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "off",
       attributes: {
         friendly_name: "Porch Lights",
-        homebridge_hidden: false,
         templates: {
           icon_color:
             "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
