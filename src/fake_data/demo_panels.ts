@@ -79,13 +79,13 @@ export const demoPanels: Panels = {
   //   config: null,
   //   url_path: "history",
   // },
-  // map: {
-  //   component_name: "map",
-  //   icon: "hass:tooltip-account",
-  //   title: "map",
-  //   config: null,
-  //   url_path: "map",
-  // },
+  map: {
+    component_name: "map",
+    icon: "hass:tooltip-account",
+    title: "map",
+    config: null,
+    url_path: "map",
+  },
   // config: {
   //   component_name: "config",
   //   icon: "hass:settings",

@@ -15,9 +15,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         icon: "mdi:flower",
       },
-      last_changed: "2019-01-20T17:04:29.895679+00:00",
-      last_updated: "2019-01-20T17:04:29.895679+00:00",
-      context: { id: "344671aaad1f488cb3cacb446c9de5a5", user_id: null },
     },
     "sensor.pollen_bjork": {
       entity_id: "sensor.pollen_bjork",
@@ -31,9 +28,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         icon: "mdi:leaf",
       },
-      last_changed: "2019-01-20T17:04:29.902844+00:00",
-      last_updated: "2019-01-20T17:04:29.902844+00:00",
-      context: { id: "43e6def197634273af01ad0422579be0", user_id: null },
     },
     "sensor.pollen_gras": {
       entity_id: "sensor.pollen_gras",
@@ -47,9 +41,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         icon: "mdi:flower",
       },
-      last_changed: "2019-01-20T17:04:29.906616+00:00",
-      last_updated: "2019-01-20T17:04:29.906616+00:00",
-      context: { id: "32cd04a528c64f1bbdb3e33425bc9da9", user_id: null },
     },
     "sensor.front_door": {
       entity_id: "sensor.front_door",
@@ -64,9 +55,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [40, 70],
       },
-      last_updated: "2019-01-20T17:26:13.835281+00:00",
-      last_changed: "2019-01-20T17:26:13.835281+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.yard_door": {
       entity_id: "sensor.yard_door",
@@ -81,9 +69,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.922107+00:00",
-      last_changed: "2019-01-20T17:04:29.922107+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.balcony_door": {
       entity_id: "sensor.balcony_door",
@@ -98,9 +83,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.926300+00:00",
-      last_changed: "2019-01-20T17:04:29.926300+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.back_door": {
       entity_id: "sensor.back_door",
@@ -115,9 +97,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:10:22.700663+00:00",
-      last_changed: "2019-01-20T17:10:22.700663+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_stefan_laptop": {
       entity_id: "sensor.system_stefan_laptop",
@@ -132,9 +111,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:laptop-windows",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:29.936533+00:00",
-      last_changed: "2019-01-20T17:04:29.936533+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_isa_computer": {
       entity_id: "sensor.system_isa_computer",
@@ -149,9 +125,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:monitor",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:29.940605+00:00",
-      last_changed: "2019-01-20T17:04:29.940605+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_isa_laptop": {
       entity_id: "sensor.system_isa_laptop",
@@ -166,9 +139,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:laptop-windows",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:29.944040+00:00",
-      last_changed: "2019-01-20T17:04:29.944040+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_isa_dell_xps": {
       entity_id: "sensor.system_isa_dell_xps",
@@ -183,9 +153,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:laptop-windows",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.949847+00:00",
-      last_changed: "2019-01-20T17:04:29.949847+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_printer": {
       entity_id: "sensor.system_printer",
@@ -200,9 +167,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:printer",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.953408+00:00",
-      last_changed: "2019-01-20T17:04:29.953408+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ipad": {
       entity_id: "sensor.system_ipad",
@@ -217,9 +181,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:tablet-ipad",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.957178+00:00",
-      last_changed: "2019-01-20T17:04:29.957178+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_asus_router": {
       entity_id: "sensor.system_asus_router",
@@ -234,9 +195,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:wifi",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.964633+00:00",
-      last_changed: "2019-01-20T17:04:29.964633+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ip_camera": {
       entity_id: "sensor.system_ip_camera",
@@ -251,9 +209,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:webcam",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.968086+00:00",
-      last_changed: "2019-01-20T17:04:29.968086+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ir_blaster": {
       entity_id: "sensor.system_ir_blaster",
@@ -268,9 +223,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:remote",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.971810+00:00",
-      last_changed: "2019-01-20T17:04:29.971810+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_milight_hub": {
       entity_id: "sensor.system_milight_hub",
@@ -285,9 +237,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:google-keep",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.977035+00:00",
-      last_changed: "2019-01-20T17:04:29.977035+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ir_blaster_bedroom": {
       entity_id: "sensor.system_ir_blaster_bedroom",
@@ -302,9 +251,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:remote",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.984203+00:00",
-      last_changed: "2019-01-20T17:04:29.984203+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ir_blaster_living_room": {
       entity_id: "sensor.system_ir_blaster_living_room",
@@ -319,9 +265,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:remote",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.989039+00:00",
-      last_changed: "2019-01-20T17:04:29.989039+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_xiaomi_gateway": {
       entity_id: "sensor.system_xiaomi_gateway",
@@ -336,9 +279,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:circle-outline",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.992502+00:00",
-      last_changed: "2019-01-20T17:04:29.992502+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_sonos": {
       entity_id: "sensor.system_sonos",
@@ -352,9 +292,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.996343+00:00",
-      last_changed: "2019-01-20T17:04:29.996343+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_magic_mirror_rpi": {
       entity_id: "sensor.system_magic_mirror_rpi",
@@ -369,9 +306,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:raspberrypi",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:29.999578+00:00",
-      last_changed: "2019-01-20T17:04:29.999578+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_nas": {
       entity_id: "sensor.system_nas",
@@ -386,9 +320,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:server",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:30.002748+00:00",
-      last_changed: "2019-01-20T17:04:30.002748+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_hass_rpi": {
       entity_id: "sensor.system_hass_rpi",
@@ -403,9 +334,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:home-assistant",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:30.006062+00:00",
-      last_changed: "2019-01-20T17:04:30.006062+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_samsung65": {
       entity_id: "sensor.system_samsung65",
@@ -420,9 +348,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:television",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:30.010668+00:00",
-      last_changed: "2019-01-20T17:04:30.010668+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_dashboard_rpi": {
       entity_id: "sensor.system_dashboard_rpi",
@@ -437,9 +362,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:raspberrypi",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:30.015112+00:00",
-      last_changed: "2019-01-20T17:04:30.015112+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_samsung49": {
       entity_id: "sensor.system_samsung49",
@@ -454,9 +376,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:television",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:30.018680+00:00",
-      last_changed: "2019-01-20T17:04:30.018680+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_rpi_zero": {
       entity_id: "sensor.system_rpi_zero",
@@ -471,9 +390,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:raspberrypi",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:30.021978+00:00",
-      last_changed: "2019-01-20T17:04:30.021978+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_movie_system": {
       entity_id: "sensor.system_movie_system",
@@ -489,9 +405,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:speaker",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:30.025099+00:00",
-      last_changed: "2019-01-20T17:04:30.025099+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ring_doorbell": {
       entity_id: "sensor.system_ring_doorbell",
@@ -506,9 +419,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:doorbell-video",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:30.028681+00:00",
-      last_changed: "2019-01-20T17:04:30.028681+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_netgear_router": {
       entity_id: "sensor.system_netgear_router",
@@ -523,9 +433,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:wifi",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:30.031992+00:00",
-      last_changed: "2019-01-20T17:04:30.031992+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ring_chime_pro": {
       entity_id: "sensor.system_ring_chime_pro",
@@ -540,9 +447,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:wifi",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:30.037966+00:00",
-      last_changed: "2019-01-20T17:04:30.037966+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_shield": {
       entity_id: "sensor.system_shield",
@@ -557,9 +461,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:android",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:30.042088+00:00",
-      last_changed: "2019-01-20T17:04:30.042088+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_ring_chime": {
       entity_id: "sensor.system_ring_chime",
@@ -574,9 +475,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:bell-outline",
         hs_color: [0, 85],
       },
-      last_updated: "2019-01-20T17:04:30.045527+00:00",
-      last_changed: "2019-01-20T17:04:30.045527+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_chromecast_bedroom": {
       entity_id: "sensor.system_chromecast_bedroom",
@@ -591,9 +489,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:cast",
         hs_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:30.060580+00:00",
-      last_changed: "2019-01-20T17:04:30.060580+00:00",
-      context: { id: "", user_id: null },
     },
     "sensor.system_dafang": {
       entity_id: "sensor.system_dafang",
@@ -607,9 +502,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:04:30.070421+00:00",
-      last_changed: "2019-01-20T17:04:30.070421+00:00",
     },
     "sensor.system_stefan_computer": {
       entity_id: "sensor.system_stefan_computer",
@@ -624,9 +516,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:monitor",
         hs_color: [0, 0],
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:04:30.075893+00:00",
-      last_changed: "2019-01-20T17:04:30.075893+00:00",
     },
     "sensor.unlocked_by": {
       entity_id: "sensor.unlocked_by",
@@ -639,9 +528,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
             "if (state === 'Locked') return [0, 0]; else if (state === 'Unknown') return [40, 70]; else if (state === 'Unlocked') return [0, 85];",
         },
       },
-      last_changed: "2019-01-20T17:04:32.109037+00:00",
-      last_updated: "2019-01-20T17:04:32.109037+00:00",
-      context: { id: "349b4236ae44466fb6114cf406eccaaa", user_id: null },
     },
     "sensor.greenhouse_temperature": {
       entity_id: "sensor.greenhouse_temperature",
@@ -662,9 +548,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:03:34.088051+00:00",
-      last_changed: "2019-01-20T17:03:34.088051+00:00",
     },
     "sensor.dining_area_window": {
       entity_id: "sensor.dining_area_window",
@@ -679,9 +562,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:04:34.320266+00:00",
-      last_changed: "2019-01-20T17:04:34.320266+00:00",
     },
     "sensor.bedroom_window": {
       entity_id: "sensor.bedroom_window",
@@ -696,9 +576,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:04:30.219501+00:00",
-      last_changed: "2019-01-20T17:04:30.219501+00:00",
     },
     "sensor.passage_movement": {
       entity_id: "sensor.passage_movement",
@@ -708,9 +585,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:sleep",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:11:05.970514+00:00",
-      last_updated: "2019-01-20T17:11:05.970514+00:00",
-      context: { id: "2f151cab0fda4d67bb9d4fecffd33ebd", user_id: null },
     },
     "sensor.upstairs_hallway_movement": {
       entity_id: "sensor.upstairs_hallway_movement",
@@ -720,9 +594,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:sleep",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:11:02.930145+00:00",
-      last_updated: "2019-01-20T17:11:02.930145+00:00",
-      context: { id: "9f5006ac191c4234bd8655508b4b1050", user_id: null },
     },
     "sensor.trash_status": {
       entity_id: "sensor.trash_status",
@@ -732,9 +603,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:delete",
       },
-      last_changed: "2019-01-20T17:03:33.707035+00:00",
-      last_updated: "2019-01-20T17:03:33.707035+00:00",
-      context: { id: "545df93ad6b84805a20034126b7b300a", user_id: null },
     },
     "sensor.herbs_moisture": {
       entity_id: "sensor.herbs_moisture",
@@ -745,9 +613,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:water-percent",
       },
-      last_changed: "2019-01-20T17:03:33.803386+00:00",
-      last_updated: "2019-01-20T17:03:33.803386+00:00",
-      context: { id: "641ac8f765a84159bd8260f9d7bf8d5c", user_id: null },
     },
     "sensor.monitor": {
       entity_id: "sensor.monitor",
@@ -756,9 +621,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "Monitor",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:33.904338+00:00",
-      last_updated: "2019-01-20T17:03:33.904338+00:00",
-      context: { id: "a24a49b69bfe46a08705ead5e086b093", user_id: null },
     },
     "sensor.speedtest_ping": {
       entity_id: "sensor.speedtest_ping",
@@ -776,9 +638,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:speedometer",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:30:48.035266+00:00",
-      last_updated: "2019-01-20T17:30:48.035266+00:00",
-      context: { id: "6f9bf1b18e7148b7804a1cfafa3ec0f5", user_id: null },
     },
     "sensor.speedtest_upload": {
       entity_id: "sensor.speedtest_upload",
@@ -796,9 +655,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:speedometer",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:30:48.126389+00:00",
-      last_updated: "2019-01-20T17:30:48.126389+00:00",
-      context: { id: "c1c52ebc6f534d098b84107c10e7738a", user_id: null },
     },
     "sensor.speedtest_download": {
       entity_id: "sensor.speedtest_download",
@@ -816,9 +672,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:speedometer",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:30:48.160166+00:00",
-      last_updated: "2019-01-20T17:30:48.160166+00:00",
-      context: { id: "5cc91b577a884e1b85c5025706e364ea", user_id: null },
     },
     "sensor.big_chili_moisture": {
       entity_id: "sensor.big_chili_moisture",
@@ -829,9 +682,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:water-percent",
       },
-      last_changed: "2019-01-20T17:03:33.964491+00:00",
-      last_updated: "2019-01-20T17:03:33.964491+00:00",
-      context: { id: "85f35b876e514b119a406dccc959e340", user_id: null },
     },
     "sensor.memory_use_percent": {
       entity_id: "sensor.memory_use_percent",
@@ -842,9 +692,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:memory",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:42:40.158625+00:00",
-      last_updated: "2019-01-20T17:42:40.158625+00:00",
-      context: { id: "5cb96adcdfc84fa997c6d545c5ea3a7d", user_id: null },
     },
     "sensor.small_chili_moisture": {
       entity_id: "sensor.small_chili_moisture",
@@ -855,9 +702,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:water-percent",
       },
-      last_changed: "2019-01-20T17:03:33.956523+00:00",
-      last_updated: "2019-01-20T17:03:33.956523+00:00",
-      context: { id: "bf0ddaef1e0740109d5fd1449fb107d3", user_id: null },
     },
     "sensor.processor_use": {
       entity_id: "sensor.processor_use",
@@ -868,9 +712,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:memory",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:43:42.171582+00:00",
-      last_updated: "2019-01-20T17:43:42.171582+00:00",
-      context: { id: "572fa04950e6401e95a0e68f2dae833b", user_id: null },
     },
     "sensor.last_boot": {
       entity_id: "sensor.last_boot",
@@ -881,9 +722,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:clock",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:33.968260+00:00",
-      last_updated: "2019-01-20T17:03:33.968260+00:00",
-      context: { id: "dd29efad964841c38634edcbcf5ff974", user_id: null },
     },
     "sensor.disk_use_percent_": {
       entity_id: "sensor.disk_use_percent_",
@@ -894,9 +732,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:harddisk",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:33.976981+00:00",
-      last_updated: "2019-01-20T17:03:33.976981+00:00",
-      context: { id: "09a3fd99259e42c5ba11c2851f9ebae2", user_id: null },
     },
     "sensor.isabellas_iphone_x_bt": {
       entity_id: "sensor.isabellas_iphone_x_bt",
@@ -905,9 +740,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "isabellas_iphone_x_bt",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:33.987003+00:00",
-      last_updated: "2019-01-20T17:03:33.987003+00:00",
-      context: { id: "ab0ca868339b4a529442866416fb9461", user_id: null },
     },
     "sensor.stefan_iphone_7_bt": {
       entity_id: "sensor.stefan_iphone_7_bt",
@@ -916,9 +748,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "stefan_iphone_7_bt",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:34.096514+00:00",
-      last_updated: "2019-01-20T17:03:34.096514+00:00",
-      context: { id: "db0137b73b114f848775588de17b1c2f", user_id: null },
     },
     "sensor.ring_front_door_last_motion": {
       entity_id: "sensor.ring_front_door_last_motion",
@@ -943,9 +772,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
             "if (state === 'Closed') return [0, 0]; else if (state === 'Unknown') return [40, 70]; else if (state === 'Open') return [0, 85];",
         },
       },
-      last_changed: "2019-01-20T17:03:38.188710+00:00",
-      last_updated: "2019-01-20T17:03:38.188710+00:00",
-      context: { id: "12aae4686a4845e1a7191acac4a9811c", user_id: null },
     },
     "switch.livingroom_movie_system": {
       entity_id: "switch.livingroom_movie_system",
@@ -954,9 +780,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "livingroom_movie_system",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:30.254620+00:00",
-      last_updated: "2019-01-20T17:04:30.254620+00:00",
-      context: { id: "edbbb0d67a0f43e581a460e708e4c6aa", user_id: null },
     },
     "switch.livingroom_tv": {
       entity_id: "switch.livingroom_tv",
@@ -965,9 +788,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "livingroom_tv",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:33.016158+00:00",
-      last_updated: "2019-01-20T17:04:33.016158+00:00",
-      context: { id: "c1ff14aa746b43e0b8107d8781cf063b", user_id: null },
     },
     "switch.stefan_radiator_3": {
       entity_id: "switch.stefan_radiator_3",
@@ -976,9 +796,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "Stefan Radiator",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:45.968421+00:00",
-      last_updated: "2019-01-20T17:03:45.968421+00:00",
-      context: { id: "dc0c1d21312b4e5d869b44fb2d0f1be4", user_id: null },
     },
     "zone.store": {
       entity_id: "zone.store",
@@ -990,9 +807,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:cart",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.430167+00:00",
-      last_updated: "2019-01-20T17:03:59.430167+00:00",
-      context: { id: "9b66f1f3d20f4324a390a235b592a761", user_id: null },
     },
     "zone.work_s": {
       entity_id: "zone.work_s",
@@ -1004,9 +818,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:code-braces",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.431055+00:00",
-      last_updated: "2019-01-20T17:03:59.431055+00:00",
-      context: { id: "61b3d1bb58c04a36a274d7e1ae8a6099", user_id: null },
     },
     "zone.work_solna": {
       entity_id: "zone.work_solna",
@@ -1018,9 +829,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:code-braces",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.432277+00:00",
-      last_updated: "2019-01-20T17:03:59.432277+00:00",
-      context: { id: "3d2611cf4b9a443883dc982e3600c493", user_id: null },
     },
     "zone.work_i": {
       entity_id: "zone.work_i",
@@ -1032,9 +840,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:code-braces",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.433082+00:00",
-      last_updated: "2019-01-20T17:03:59.433082+00:00",
-      context: { id: "669ab575dd7e4fed9f3503b0cf99664b", user_id: null },
     },
     "zone.golf": {
       entity_id: "zone.golf",
@@ -1046,9 +851,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:golf",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.434034+00:00",
-      last_updated: "2019-01-20T17:03:59.434034+00:00",
-      context: { id: "561dffcde3ea40d5bac03b8c6d60a7ca", user_id: null },
     },
     "zone.johannes_och_tessie": {
       entity_id: "zone.johannes_och_tessie",
@@ -1060,9 +862,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:account-multiple",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.435014+00:00",
-      last_updated: "2019-01-20T17:03:59.435014+00:00",
-      context: { id: "1b5f133d00f04bc989f2c731dc400c9b", user_id: null },
     },
     "zone.brulle_och_saara": {
       entity_id: "zone.brulle_och_saara",
@@ -1074,9 +873,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:account-multiple",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.435946+00:00",
-      last_updated: "2019-01-20T17:03:59.435946+00:00",
-      context: { id: "b8f69dcbb8be4e81830cfcd6d406022d", user_id: null },
     },
     "zone.emelie": {
       entity_id: "zone.emelie",
@@ -1088,9 +884,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:account-multiple",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.436699+00:00",
-      last_updated: "2019-01-20T17:03:59.436699+00:00",
-      context: { id: "16a7fcb423044492bb79c889f8839068", user_id: null },
     },
     "zone.isa_mamma": {
       entity_id: "zone.isa_mamma",
@@ -1102,9 +895,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:account-multiple",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.437456+00:00",
-      last_updated: "2019-01-20T17:03:59.437456+00:00",
-      context: { id: "7754a305e6d4452199af33014be63e34", user_id: null },
     },
     "zone.fagelbro": {
       entity_id: "zone.fagelbro",
@@ -1116,9 +906,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:golf",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.438379+00:00",
-      last_updated: "2019-01-20T17:03:59.438379+00:00",
-      context: { id: "4e86a10a231a4983bfe5a3c83b34f50f", user_id: null },
     },
     "zone.home": {
       entity_id: "zone.home",
@@ -1130,9 +917,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:home",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.439917+00:00",
-      last_updated: "2019-01-20T17:03:59.439917+00:00",
-      context: { id: "db30841a9f3146888ee9bbb0b86f7feb", user_id: null },
     },
     "script.air_cleaner_quiet": {
       entity_id: "script.air_cleaner_quiet",
@@ -1142,9 +926,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "air_cleaner_quiet",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.713085+00:00",
-      last_updated: "2019-01-20T17:03:59.713085+00:00",
-      context: { id: "e0428f97e1b1421a86aebb03695d9690", user_id: null },
     },
     "script.air_cleaner_auto": {
       entity_id: "script.air_cleaner_auto",
@@ -1154,9 +935,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "air_cleaner_auto",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.724460+00:00",
-      last_updated: "2019-01-20T17:03:59.724460+00:00",
-      context: { id: "f8c73277dd11406ca5dd47499651c2bb", user_id: null },
     },
     "script.air_cleaner_turbo": {
       entity_id: "script.air_cleaner_turbo",
@@ -1166,9 +944,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "air_cleaner_turbo",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.727974+00:00",
-      last_updated: "2019-01-20T17:03:59.727974+00:00",
-      context: { id: "9f962faed8114c80b3f8f55bd7b6188e", user_id: null },
     },
     "script.ac_off": {
       entity_id: "script.ac_off",
@@ -1178,9 +953,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "ac_off",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.729759+00:00",
-      last_updated: "2019-01-20T17:03:59.729759+00:00",
-      context: { id: "f0be96390d7b41da9fb60652658534f5", user_id: null },
     },
     "script.ac_on": {
       entity_id: "script.ac_on",
@@ -1190,9 +962,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "ac_on",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.731491+00:00",
-      last_updated: "2019-01-20T17:03:59.731491+00:00",
-      context: { id: "655efd26691b4db6b91be4115b4a95fc", user_id: null },
     },
     "input_boolean.vacation_mode": {
       entity_id: "input_boolean.vacation_mode",
@@ -1202,9 +971,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:beach",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.861751+00:00",
-      last_updated: "2019-01-20T17:03:59.861751+00:00",
-      context: { id: "d167a4a605404cf2877a987e864e5251", user_id: null },
     },
     "input_boolean.isa_mode": {
       entity_id: "input_boolean.isa_mode",
@@ -1221,9 +987,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         icon_color: "rgb(249, 251, 255)",
       },
-      context: { id: "", user_id: null },
-      last_changed: "2019-01-20T17:03:59.862892+00:00",
-      last_updated: "2019-01-20T17:03:59.862892+00:00",
     },
     "input_boolean.cleaning_day": {
       entity_id: "input_boolean.cleaning_day",
@@ -1233,9 +996,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:broom",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:03:59.863991+00:00",
-      last_updated: "2019-01-20T17:03:59.863991+00:00",
-      context: { id: "a74d8fffdb76426099158c8d961aa9f2", user_id: null },
     },
     "input_boolean.guest_mode": {
       entity_id: "input_boolean.guest_mode",
@@ -1252,9 +1012,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         icon_color: "rgb(249, 251, 255)",
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:03:59.865051+00:00",
-      last_changed: "2019-01-20T17:03:59.865051+00:00",
     },
     "counter.litterbox_downstairs_visits": {
       entity_id: "counter.litterbox_downstairs_visits",
@@ -1266,9 +1023,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:emoticon-poop",
       },
-      last_changed: "2019-01-20T17:04:00.312032+00:00",
-      last_updated: "2019-01-20T17:04:00.312032+00:00",
-      context: { id: "a38ba826cf07427887994799d3a95dbc", user_id: null },
     },
     "counter.litterbox_upstairs_visits": {
       entity_id: "counter.litterbox_upstairs_visits",
@@ -1280,9 +1034,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:emoticon-poop",
       },
-      last_changed: "2019-01-20T17:04:00.312990+00:00",
-      last_updated: "2019-01-20T17:04:00.312990+00:00",
-      context: { id: "54c5d15f482a43de82f05bd04f969576", user_id: null },
     },
     "scene.movie_time": {
       entity_id: "scene.movie_time",
@@ -1303,9 +1054,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "Movie Time",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:00.335367+00:00",
-      last_updated: "2019-01-20T17:04:00.335367+00:00",
-      context: { id: "3540ce9c418e492faaf290e2bbfcfe2e", user_id: null },
     },
     "scene.morning_lights": {
       entity_id: "scene.morning_lights",
@@ -1322,9 +1070,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "Morning Lights",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:00.347460+00:00",
-      last_updated: "2019-01-20T17:04:00.347460+00:00",
-      context: { id: "14f491a653da48ee8f8b5ca3be9bf624", user_id: null },
     },
     "input_select.dryer_status": {
       entity_id: "input_select.dryer_status",
@@ -1334,9 +1079,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "Dryer Status",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:00.402577+00:00",
-      last_updated: "2019-01-20T17:04:00.402577+00:00",
-      context: { id: "652870b32e184474a882ec7252a50ce6", user_id: null },
     },
     "input_select.roomba_mode": {
       entity_id: "input_select.roomba_mode",
@@ -1354,9 +1096,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:robot-vacuum",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:00.403611+00:00",
-      last_updated: "2019-01-20T17:04:00.403611+00:00",
-      context: { id: "325b58012e484e96bb6823a211bbbcc3", user_id: null },
     },
     "input_select.washing_machine_status": {
       entity_id: "input_select.washing_machine_status",
@@ -1367,9 +1106,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:washing-machine",
       },
-      last_changed: "2019-01-20T17:04:00.409778+00:00",
-      last_updated: "2019-01-20T17:04:00.409778+00:00",
-      context: { id: "397ae503ec324a3e96bac784ae874553", user_id: null },
     },
     "light.upstairs_lights": {
       entity_id: "light.upstairs_lights",
@@ -1382,9 +1118,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         supported_features: 63,
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:01.925868+00:00",
-      last_updated: "2019-01-20T17:20:52.437973+00:00",
-      context: { id: "d6ec13f11fde48909bc9df556ccc7d4a", user_id: null },
     },
     "light.walk_in_closet_lights": {
       entity_id: "light.walk_in_closet_lights",
@@ -1395,9 +1128,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:wall-sconce",
       },
-      last_changed: "2019-01-20T17:04:00.848052+00:00",
-      last_updated: "2019-01-20T17:04:01.932554+00:00",
-      context: { id: "9828d86339434b5bb49a277c535f0a92", user_id: null },
     },
     "light.outdoor_lights": {
       entity_id: "light.outdoor_lights",
@@ -1409,9 +1139,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:wall-sconce",
       },
-      last_changed: "2019-01-20T17:04:01.924484+00:00",
-      last_updated: "2019-01-20T17:04:01.924484+00:00",
-      context: { id: "a123cc6c429343e4b50dd34f8761162c", user_id: null },
     },
     "light.downstairs_lights": {
       entity_id: "light.downstairs_lights",
@@ -1426,9 +1153,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         supported_features: 63,
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:01.930818+00:00",
-      last_updated: "2019-01-20T17:05:15.668565+00:00",
-      context: { id: "b9dbc6a6bd8040deb891b081d68dcb54", user_id: null },
     },
     "light.outdoor_yard_light_net": {
       entity_id: "light.outdoor_yard_light_net",
@@ -1440,9 +1164,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:lightbulb",
       },
-      last_changed: "2019-01-20T17:04:00.943133+00:00",
-      last_updated: "2019-01-20T17:04:00.943133+00:00",
-      context: { id: "2926f3fd48934a0e8647c7feabe3cb66", user_id: null },
     },
     "light.outdoor_hanging_lights": {
       entity_id: "light.outdoor_hanging_lights",
@@ -1454,9 +1175,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:lightbulb",
       },
-      last_changed: "2019-01-20T17:04:00.946972+00:00",
-      last_updated: "2019-01-20T17:04:00.946972+00:00",
-      context: { id: "dbba8d71e12e4e6197f55351362e406b", user_id: null },
     },
     "light.outdoor_front_hanging_lights": {
       entity_id: "light.outdoor_front_hanging_lights",
@@ -1468,9 +1186,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:lightbulb",
       },
-      last_changed: "2019-01-20T17:04:00.950691+00:00",
-      last_updated: "2019-01-20T17:04:00.950691+00:00",
-      context: { id: "8793f815aa664631b45e4ae25d19b279", user_id: null },
     },
     "binary_sensor.stefans_room_motion": {
       entity_id: "binary_sensor.stefans_room_motion",
@@ -1482,9 +1197,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         device_class: "motion",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:40:06.191317+00:00",
-      last_updated: "2019-01-20T17:40:06.191317+00:00",
-      context: { id: "557fd852ded64437b56ae62faf1b66a2", user_id: null },
     },
     "sensor.temperature_stefan": {
       entity_id: "sensor.temperature_stefan",
@@ -1503,9 +1215,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [40, 70],
       },
-      context: { id: "", user_id: null },
-      last_changed: "2019-01-20T17:42:48.359185+00:00",
-      last_updated: "2019-01-20T17:42:48.359185+00:00",
     },
     "sensor.temperature_downstairs_bathroom": {
       entity_id: "sensor.temperature_downstairs_bathroom",
@@ -1524,9 +1233,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [40, 70],
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:04:01.285828+00:00",
-      last_changed: "2019-01-20T17:04:01.285828+00:00",
     },
     "sensor.temperature_bedroom": {
       entity_id: "sensor.temperature_bedroom",
@@ -1545,9 +1251,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      context: { id: "", user_id: null },
-      last_updated: "2019-01-20T17:04:01.289820+00:00",
-      last_changed: "2019-01-20T17:04:01.289820+00:00",
     },
     "sensor.temperature_storage": {
       entity_id: "sensor.temperature_storage",
@@ -1566,9 +1269,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [0, 0],
       },
-      context: { id: "f4b9f43edb78497f91de16b4d2053ffe", user_id: null },
-      last_changed: "2019-01-20T17:04:01.304298+00:00",
-      last_updated: "2019-01-20T17:04:01.304298+00:00",
     },
     "sensor.refrigerator": {
       entity_id: "sensor.refrigerator",
@@ -1582,9 +1282,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         device_class: "temperature",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:43:23.571139+00:00",
-      last_updated: "2019-01-20T17:43:23.571139+00:00",
-      context: { id: "2adfc1202d1d41789ddce034adae9580", user_id: null },
     },
     "sensor.temperature_passage": {
       entity_id: "sensor.temperature_passage",
@@ -1603,9 +1300,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         },
         hs_color: [40, 70],
       },
-      context: { id: "", user_id: null },
-      last_changed: "2019-01-20T17:28:41.551114+00:00",
-      last_updated: "2019-01-20T17:28:41.551114+00:00",
     },
     "light.bedside_lamp": {
       entity_id: "light.bedside_lamp",
@@ -1619,9 +1313,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:lamp",
       },
-      last_changed: "2019-01-20T17:04:01.754980+00:00",
-      last_updated: "2019-01-20T17:04:01.754980+00:00",
-      context: { id: "2ccc2756fa4a4049bb87c3bd5fbe501d", user_id: null },
     },
     "light.floorlamp_reading_light": {
       entity_id: "light.floorlamp_reading_light",
@@ -1635,9 +1326,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:lamp",
       },
-      last_changed: "2019-01-20T17:04:01.758458+00:00",
-      last_updated: "2019-01-20T17:04:01.758458+00:00",
-      context: { id: "4aed7048c21b46d2a47ed1f2c31027e3", user_id: null },
     },
     "light.hallway_window_light": {
       entity_id: "light.hallway_window_light",
@@ -1654,9 +1342,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:lamp",
       },
-      last_changed: "2019-01-20T17:04:01.778076+00:00",
-      last_updated: "2019-01-20T17:04:01.778076+00:00",
-      context: { id: "3b9135c94fa24f37adf9e27dde2c64d0", user_id: null },
     },
     "light.isa_ceiling_light": {
       entity_id: "light.isa_ceiling_light",
@@ -1669,9 +1354,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:ceiling-light",
       },
-      last_changed: "2019-01-20T17:04:01.804798+00:00",
-      last_updated: "2019-01-20T17:04:01.804798+00:00",
-      context: { id: "a218e2ff77cf49ae8846c1a37d0c800c", user_id: null },
     },
     "light.floorlamp_uplight": {
       entity_id: "light.floorlamp_uplight",
@@ -1688,9 +1370,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:floor-lamp",
       },
-      last_changed: "2019-01-20T17:04:01.808304+00:00",
-      last_updated: "2019-01-20T17:04:01.808304+00:00",
-      context: { id: "dd0e758a9de848f78420a407a17f31d1", user_id: null },
     },
     "light.bedroom_ceiling_light": {
       entity_id: "light.bedroom_ceiling_light",
@@ -1701,9 +1380,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:ceiling-light",
       },
-      last_changed: "2019-01-20T17:20:52.417278+00:00",
-      last_updated: "2019-01-20T17:20:52.417278+00:00",
-      context: { id: "30851b6aad7f4fb799a4a4803697b060", user_id: null },
     },
     "light.gateway_light_34ce008bfc4b": {
       entity_id: "light.gateway_light_34ce008bfc4b",
@@ -1714,9 +1390,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:lamp",
       },
-      last_changed: "2019-01-20T17:04:05.623681+00:00",
-      last_updated: "2019-01-20T17:04:05.623681+00:00",
-      context: { id: "e766de5cf9e04810a9fe1ab9468a9513", user_id: null },
     },
     "alarm_control_panel.house": {
       entity_id: "alarm_control_panel.house",
@@ -1940,9 +1613,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         hs_color: [0, 0],
         icon_color: [0, 0],
       },
-      last_updated: "2019-01-20T17:04:16.345490+00:00",
-      last_changed: "2019-01-20T17:04:16.345490+00:00",
-      context: { id: "", user_id: null },
     },
     "device_tracker.stefan_iphone_7": {
       entity_id: "device_tracker.stefan_iphone_7",
@@ -1960,9 +1630,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "stefan iphone 7",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:18.250898+00:00",
-      last_updated: "2019-01-20T17:37:38.004653+00:00",
-      context: { id: "48fa684262bb47a689edb6bd3a8bde6f", user_id: null },
     },
     "device_tracker.stefan_iphone_7_wifi": {
       entity_id: "device_tracker.stefan_iphone_7_wifi",
@@ -1975,9 +1642,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "Stefan iPhone wifi",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:18.316993+00:00",
-      last_updated: "2019-01-20T17:04:29.746088+00:00",
-      context: { id: "58622951058d4f0780c7228cd90b468e", user_id: null },
     },
     "device_tracker.isabellas_iphone_x": {
       entity_id: "device_tracker.isabellas_iphone_x",
@@ -1995,9 +1659,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "isabellas iphone x",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:04:18.404637+00:00",
-      last_updated: "2019-01-20T17:29:10.319538+00:00",
-      context: { id: "e13e7df261c54a9bb221cbfaefb1ffde", user_id: null },
     },
     "device_tracker.isabellas_iphone_x_wifi": {
       entity_id: "device_tracker.isabellas_iphone_x_wifi",
@@ -2011,9 +1672,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:cellphone-iphone",
       },
-      last_changed: "2019-01-20T17:04:18.407257+00:00",
-      last_updated: "2019-01-20T17:04:55.857963+00:00",
-      context: { id: "a4f09543a3ae4d11a415cd2797ed783c", user_id: null },
     },
     "proximity.home_isa": {
       entity_id: "proximity.home_isa",
@@ -2025,9 +1683,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "home_isa",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:12:35.465636+00:00",
-      last_updated: "2019-01-20T17:12:35.465636+00:00",
-      context: { id: "5e50a8ba5ad944a298ba34b254149bd6", user_id: null },
     },
     "proximity.home_stefan": {
       entity_id: "proximity.home_stefan",
@@ -2039,9 +1694,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "home_stefan",
         custom_ui_state_card: "state-card-custom-ui",
       },
-      last_changed: "2019-01-20T17:37:38.093064+00:00",
-      last_updated: "2019-01-20T17:37:38.093064+00:00",
-      context: { id: "90e4cc4209e1437b9f6745a66cc49b43", user_id: null },
     },
     "sensor.presence_isa": {
       entity_id: "sensor.presence_isa",
@@ -2051,12 +1703,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         friendly_name: "Isa",
         source_type: "gps",
         speed: -1,
-      },
-      last_changed: "2019-01-20T17:04:35.881448+00:00",
-      last_updated: "2019-01-20T17:29:10.649414+00:00",
-      context: {
-        id: "9ea6b2b38258427ebd73788801f7736c",
-        user_id: "abc561cfafcf410a86ca25a0d9460533",
       },
     },
     "sensor.presence_stefan": {
@@ -2068,12 +1714,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         source_type: "gps",
         gps_accuracy: 20,
         speed: -1,
-      },
-      last_changed: "2019-01-20T17:04:36.257006+00:00",
-      last_updated: "2019-01-20T17:37:38.350116+00:00",
-      context: {
-        id: "d5431fcc3d394d29bb808ed362e29409",
-        user_id: "abc561cfafcf410a86ca25a0d9460533",
       },
     },
     "light.living_room_ceiling_light_level": {
@@ -2091,9 +1731,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:ceiling-light",
       },
-      last_changed: "2019-01-20T17:04:38.718485+00:00",
-      last_updated: "2019-01-20T17:35:53.717156+00:00",
-      context: { id: "11844fd50c0f498986b206a7c52db41d", user_id: null },
     },
     "sensor.mailbox": {
       entity_id: "sensor.mailbox",
@@ -2102,12 +1739,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:dots-horizontal",
         latest_emptied: "Unknown",
         latest_mail: "Unknown",
-      },
-      last_changed: "2019-01-20T17:04:38.969579+00:00",
-      last_updated: "2019-01-20T17:04:38.969579+00:00",
-      context: {
-        id: "6d61a9cc57c04604b4329086801a3f4c",
-        user_id: "abc561cfafcf410a86ca25a0d9460533",
       },
     },
     "light.upstairs_hallway_ceiling_light_level": {
@@ -2125,9 +1756,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:ceiling-light",
       },
-      last_changed: "2019-01-20T17:04:44.419258+00:00",
-      last_updated: "2019-01-20T17:35:26.720181+00:00",
-      context: { id: "6e7122eaee0649d4afc0848b20192aca", user_id: null },
     },
     "light.dining_area_ceiling_light_level": {
       entity_id: "light.dining_area_ceiling_light_level",
@@ -2143,9 +1771,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:ceiling-light",
       },
-      last_changed: "2019-01-20T17:04:53.792352+00:00",
-      last_updated: "2019-01-20T17:04:58.005613+00:00",
-      context: { id: "b18e07acc2b54b44818f187635f69382", user_id: null },
     },
     "light.living_room_spotlights_level": {
       entity_id: "light.living_room_spotlights_level",
@@ -2161,9 +1786,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:track-light",
       },
-      last_changed: "2019-01-20T17:05:03.846197+00:00",
-      last_updated: "2019-01-20T17:05:04.682036+00:00",
-      context: { id: "eb98db0256d24f91ba33b8a3572a6af9", user_id: null },
     },
     "light.passage_ceiling_spotlights_level": {
       entity_id: "light.passage_ceiling_spotlights_level",
@@ -2180,9 +1802,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:track-light",
       },
-      last_changed: "2019-01-20T17:05:08.211597+00:00",
-      last_updated: "2019-01-20T17:35:28.893242+00:00",
-      context: { id: "2d27643fe1064029a0da091d7920e723", user_id: null },
     },
     "sensor.passage_pir_luminance": {
       entity_id: "sensor.passage_pir_luminance",
@@ -2197,9 +1816,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:theme-light-dark",
       },
-      last_changed: "2019-01-20T17:05:11.177219+00:00",
-      last_updated: "2019-01-20T17:05:11.177219+00:00",
-      context: { id: "1e6626bab6ba4efb88dac601638f7a42", user_id: null },
     },
     "sensor.upstairs_hallway_pir_luminance": {
       entity_id: "sensor.upstairs_hallway_pir_luminance",
@@ -2214,9 +1830,6 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:theme-light-dark",
       },
-      last_changed: "2019-01-20T17:05:13.901437+00:00",
-      last_updated: "2019-01-20T17:05:13.901437+00:00",
-      context: { id: "5b47ac4581a7403c861de92a2a45c895", user_id: null },
     },
     "light.kitchen_ceiling_spotlights_level": {
       entity_id: "light.kitchen_ceiling_spotlights_level",
@@ -2233,8 +1846,5 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         custom_ui_state_card: "state-card-custom-ui",
         icon: "mdi:track-light",
       },
-      last_changed: "2019-01-20T17:05:15.624272+00:00",
-      last_updated: "2019-01-20T17:06:52.669975+00:00",
-      context: { id: "d4916a604c67414fb220eb782c70ba6b", user_id: null },
     },
   });
