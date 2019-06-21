@@ -4,13 +4,13 @@
     <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
     <link
       rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.ttf"
+      href="/static/fonts/roboto/Roboto-Regular.woff2"
       as="font"
       crossorigin
     />
     <link
       rel="preload"
-      href="/static/fonts/roboto/Roboto-Medium.ttf"
+      href="/static/fonts/roboto/Roboto-Medium.woff2"
       as="font"
       crossorigin
     />
