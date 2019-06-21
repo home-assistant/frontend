@@ -34,7 +34,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize() {
-    return 2;
+    return this._hidden ? 0 : 2;
   }
 
   public setConfig(
