@@ -59,17 +59,16 @@
 
     <%= renderTemplate('_js_base') %>
 
-    <script type="module">
-      window.customPanelJS = "<%= latestCustomPanelJS %>";
-    </script>
     <script type="module" crossorigin="use-credentials">
       import "<%= latestCoreJS %>";
       import "<%= latestAppJS %>";
       import "<%= latestHassIconsJS %>";
-      {% for extra_module in extra_modules -%}
-      import "{{ extra_module }}";
-      {% endfor -%}
+      window.customPanelJS = "<%= latestCustomPanelJS %>";
     </script>
+    {% for extra_module in extra_modules -%}
+    <script type="module" crossorigin="use-credentials" src="{{ extra_module }}"></script>
+    {% endfor -%}
+    
 
     <script nomodule>
       (function() {
