@@ -19,6 +19,7 @@ import { getHassTranslations } from "../data/translation";
 
 export default (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
+    // tslint:disable-next-line: variable-name
     private __coreProgress?: string;
 
     protected firstUpdated(changedProps) {
