@@ -99,7 +99,10 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
             </a>
           </ha-card>
 
-          <ha-config-navigation hass="[[hass]]"></ha-config-navigation>
+          <ha-config-navigation
+            hass="[[hass]]"
+            show-advanced="[[showAdvanced]]"
+          ></ha-config-navigation>
         </ha-config-section>
       </div>
     </app-header-layout>
@@ -111,6 +114,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
       hass: Object,
       isWide: Boolean,
       cloudStatus: Object,
+      showAdvanced: Boolean,
     };
   }
 

@@ -1,7 +1,7 @@
 import { property, PropertyValues, customElement } from "lit-element";
 import "../../layouts/hass-loading-screen";
 import isComponentLoaded from "../../common/config/is_component_loaded";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, PanelInfo } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
@@ -13,10 +13,15 @@ declare global {
   }
 }
 
+interface ConfigPanelConfig {
+  show_advanced: boolean;
+}
+
 @customElement("ha-panel-config")
 class HaPanelConfig extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public panel!: PanelInfo<ConfigPanelConfig>;
   @property() public _wideSidebar: boolean = false;
   @property() public _wide: boolean = false;
 
@@ -131,6 +136,7 @@ class HaPanelConfig extends HassRouterPage {
   protected updatePageEl(el) {
     el.route = this.routeTail;
     el.hass = this.hass;
+    el.showAdvanced = this.panel.config.show_advanced;
     el.isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;
     el.narrow = this.narrow;
     el.cloudStatus = this._cloudStatus;
