@@ -63,7 +63,7 @@
     "@polymer/paper-toast": "^3.0.1",
     "@polymer/paper-toggle-button": "^3.0.1",
     "@polymer/paper-tooltip": "^3.0.1",
-    "@polymer/polymer": "^3.2.0",
+    "@polymer/polymer": "3.1.0",
     "@vaadin/vaadin-combo-box": "^4.2.8",
     "@vaadin/vaadin-date-picker": "^3.3.3",
     "@webcomponents/shadycss": "^1.9.0",
@@ -170,9 +170,11 @@
     "webpack-manifest-plugin": "^2.0.4",
     "workbox-webpack-plugin": "^4.1.1"
   },
+  "_comment": "Polymer fixed to 3.1 because 3.2 throws on logbook page",
   "resolutions": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "@vaadin/vaadin-lumo-styles": "^1.4.2"
+    "@vaadin/vaadin-lumo-styles": "^1.4.2",
+    "@polymer/polymer": "3.1.0"
   },
   "main": "src/home-assistant.js",
   "husky": {
