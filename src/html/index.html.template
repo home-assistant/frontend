@@ -65,6 +65,10 @@
       import "<%= latestHassIconsJS %>";
       window.customPanelJS = "<%= latestCustomPanelJS %>";
     </script>
+    {% for extra_module in extra_modules -%}
+    <script type="module" crossorigin="use-credentials" src="{{ extra_module }}"></script>
+    {% endfor -%}
+    
 
     <script nomodule>
       (function() {
@@ -76,6 +80,9 @@
           _ls("<%= es5CoreJS %>");
           _ls("<%= es5AppJS %>");
           _ls("<%= es5HassIconsJS %>");
+          {% for extra_script in extra_js_es5 -%}
+          _ls("{{ extra_script }}");
+          {% endfor -%}
         }
       })();
     </script>
