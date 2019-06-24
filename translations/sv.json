@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "enhet otillgänglig",
                         "entity_unavailable": "entitet otillgänglig",
-                        "no_area": "Inget område (\"area\")"
+                        "no_area": "Inget område (\"area\")",
+                        "hub": "Ansluten via"
                     },
                     "config_flow": {
                         "external_step": {
@@ -969,7 +970,50 @@
                     "message": "Lovelace-konfigurationen uppdaterades, vill du ladda om?",
                     "refresh": "Uppdatera"
                 },
-                "reload_lovelace": "Uppdatera Lovelace"
+                "reload_lovelace": "Ladda om Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "av {name}",
+                        "next_demo": "Nästa demonstration",
+                        "introduction": "Välkommen hem! Du har nått Home Assistant demon, var vi visar upp de bästa användargränssnitt som skapats av vårt community.",
+                        "learn_more": "Lär dig mer om Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Övervåningen",
+                            "family_room": "Familjerum",
+                            "kitchen": "Kök",
+                            "patio": "Uteplats",
+                            "hallway": "Hall",
+                            "master_bedroom": "Huvudsovrum",
+                            "left": "Vänster",
+                            "right": "Höger",
+                            "mirror": "Spegla"
+                        },
+                        "labels": {
+                            "lights": "Ljus",
+                            "information": "Information",
+                            "morning_commute": "Morgonpendling",
+                            "commute_home": "Pendling hem",
+                            "entertainment": "Underhållning",
+                            "activity": "Aktivitet",
+                            "hdmi_input": "HDMI-ingång",
+                            "hdmi_switcher": "HDMI-omkopplare",
+                            "volume": "Volym",
+                            "total_tv_time": "TV-tid totalt",
+                            "turn_tv_off": "Stäng av TV",
+                            "air": "Air"
+                        },
+                        "unit": {
+                            "watching": "ser på",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

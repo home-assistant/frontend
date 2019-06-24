@@ -619,7 +619,8 @@
                         "firmware": "Υλικολογισμικό: {έκδοση}",
                         "device_unavailable": "συσκευή μη διαθέσιμη",
                         "entity_unavailable": "οντότητα μη διαθέσιμη",
-                        "no_area": "Καμία περιοχή"
+                        "no_area": "Καμία περιοχή",
+                        "hub": "Συνδεδεμένο μέσω"
                     },
                     "config_flow": {
                         "external_step": {
@@ -970,6 +971,49 @@
                     "refresh": "Ανανέωση"
                 },
                 "reload_lovelace": "Επαναφόρτωση Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "από {name}",
+                        "next_demo": "Επόμενο demo",
+                        "introduction": "Καλώς όρισες σπίτι! Έχετε φθάσει στο demo Home Assistant όπου παρουσιάζουμε τους καλύτερους UI που δημιουργήθηκαν από την κοινότητά μας.",
+                        "learn_more": "Μάθετε περισσότερα για το Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Επάνω",
+                            "family_room": "Οικογενειακό Δωμάτιο",
+                            "kitchen": "Κουζίνα",
+                            "patio": "Αίθριο",
+                            "hallway": "Διάδρομος",
+                            "master_bedroom": "Κύριο Υπνοδωμάτιο",
+                            "left": "Αριστερά",
+                            "right": "Δεξιά",
+                            "mirror": "Καθρέφτης"
+                        },
+                        "labels": {
+                            "lights": "Φώτα",
+                            "information": "Πληροφορίες",
+                            "morning_commute": "Πρωινή Μετακίνηση",
+                            "commute_home": "Μετακίνηση προς Σπίτι",
+                            "entertainment": "Ψυχαγωγία",
+                            "activity": "Δραστηριότητα",
+                            "hdmi_input": "Είσοδος HDMI",
+                            "hdmi_switcher": "Μεταγωγέας HDMI",
+                            "volume": "Ένταση ήχου",
+                            "total_tv_time": "Συνολικός χρόνος θέασης",
+                            "turn_tv_off": "Απενεργοποίηση Τηλεόρασης",
+                            "air": "Αέρας"
+                        },
+                        "unit": {
+                            "watching": "παρακολούθηση",
+                            "minutes_abbr": "λεπτά"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
