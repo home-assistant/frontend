@@ -971,6 +971,49 @@
                     "refresh": "새로고침"
                 },
                 "reload_lovelace": "Lovelace 새로고침"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "{name} 님이 만듦",
+                        "next_demo": "다음 데모",
+                        "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 최고의 UI 가 적용된 Home Assistant 를 소개합니다.",
+                        "learn_more": "Home Assistant 에 대해 더 알아보기"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "위층",
+                            "family_room": "가족실",
+                            "kitchen": "부엌",
+                            "patio": "마당",
+                            "hallway": "현관",
+                            "master_bedroom": "안방",
+                            "left": "왼쪽",
+                            "right": "오른쪽",
+                            "mirror": "거울"
+                        },
+                        "labels": {
+                            "lights": "조명",
+                            "information": "정보",
+                            "morning_commute": "아침 출근",
+                            "commute_home": "집으로 퇴근",
+                            "entertainment": "엔터테인먼트",
+                            "activity": "활동",
+                            "hdmi_input": "HDMI 입력",
+                            "hdmi_switcher": "HDMI 선택기",
+                            "volume": "음량",
+                            "total_tv_time": "총 TV 시청",
+                            "turn_tv_off": "TV 끄기",
+                            "air": "공조기"
+                        },
+                        "unit": {
+                            "watching": "시청중",
+                            "minutes_abbr": "분"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

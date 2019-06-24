@@ -562,7 +562,7 @@
                             "learn_more": "详细了解动作"
                         },
                         "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
-                        "load_error_unknown": "加载自动化错误 ( {err_no})。"
+                        "load_error_unknown": "加载自动化错误 ({err_no})。"
                     }
                 },
                 "script": {
@@ -971,6 +971,37 @@
                     "refresh": "刷新"
                 },
                 "reload_lovelace": "重新加载 Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "来自 {name}",
+                        "next_demo": "下一个演示",
+                        "introduction": "欢迎回家！您现在位于 Home Assistant 演示，这里展示了我们的社区创作的最佳 UI。",
+                        "learn_more": "详细了解 Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "family_room": "客厅",
+                            "kitchen": "厨房",
+                            "patio": "露台",
+                            "hallway": "门厅",
+                            "master_bedroom": "主卧",
+                            "left": "左",
+                            "right": "右",
+                            "mirror": "镜子"
+                        },
+                        "labels": {
+                            "lights": "灯",
+                            "information": "信息",
+                            "morning_commute": "上班",
+                            "commute_home": "下班",
+                            "entertainment": "娱乐"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

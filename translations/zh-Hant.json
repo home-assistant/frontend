@@ -971,6 +971,49 @@
                     "refresh": "更新"
                 },
                 "reload_lovelace": "重新載入 Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "由 {name}",
+                        "next_demo": "下一個展示",
+                        "introduction": "歡迎回家！您正在使用 Home Assistatnt 展示功能，由社群所創作的最佳介面展示。",
+                        "learn_more": "詳細了解 Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "樓上",
+                            "family_room": "家庭房",
+                            "kitchen": "廚房",
+                            "patio": "庭院",
+                            "hallway": "走廊",
+                            "master_bedroom": "主臥室",
+                            "left": "左",
+                            "right": "右",
+                            "mirror": "鏡子"
+                        },
+                        "labels": {
+                            "lights": "燈光",
+                            "information": "資訊",
+                            "morning_commute": "晨間通勤",
+                            "commute_home": "返家通勤",
+                            "entertainment": "視聽室",
+                            "activity": "活動",
+                            "hdmi_input": "HDMI 輸入",
+                            "hdmi_switcher": "HDMI 切換器",
+                            "volume": "音量",
+                            "total_tv_time": "總觀看時間",
+                            "turn_tv_off": "關閉電視",
+                            "air": "空氣"
+                        },
+                        "unit": {
+                            "watching": "正在觀看",
+                            "minutes_abbr": "分"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
