@@ -1,6 +1,6 @@
 import {
   HassEntityAttributeBase,
-  HassEntities,
+  HassEntity,
 } from "home-assistant-js-websocket";
 
 /* tslint:disable:max-classes-per-file */
@@ -257,7 +257,11 @@ export const getEntity = (
 ): Entity =>
   new (TYPES[domain] || Entity)(domain, objectId, state, baseAttributes);
 
-export const convertEntities = (states: HassEntities): Entity[] =>
+type LimitedEntity = Pick<HassEntity, "state" | "attributes" | "entity_id">;
+
+export const convertEntities = (states: {
+  [entityId: string]: LimitedEntity;
+}): Entity[] =>
   Object.keys(states).map((entId) => {
     const stateObj = states[entId];
     const [domain, objectId] = entId.split(".", 2);

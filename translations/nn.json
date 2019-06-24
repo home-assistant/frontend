@@ -528,7 +528,7 @@
                         },
                         "actions": {
                             "header": "Handlingar",
-                            "introduction": "Handlinga Home Assistant vil gjennomføre når automasjonen vert utløyst.\n\n[Lær meir om handlingar.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Handlinga Home Assistant vil gjennomføre når automasjonen vert utløyst.",
                             "add": "Legg til handling",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
@@ -962,6 +962,27 @@
                     "refresh": "Oppfrisk"
                 },
                 "reload_lovelace": "Omlast Lovelace"
+            },
+            "page-demo": {
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "family_room": "Stove",
+                            "kitchen": "Kjøkken",
+                            "right": "Høgre"
+                        },
+                        "labels": {
+                            "commute_home": "Pendle til heimen",
+                            "volume": "Volum",
+                            "total_tv_time": "Totalt TV-tid",
+                            "turn_tv_off": "Slå av TV"
+                        },
+                        "unit": {
+                            "watching": "ser ",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

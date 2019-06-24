@@ -61,7 +61,7 @@ export class CloudAlexaPref extends LitElement {
             ? html`
                 <h3>Enable State Reporting</h3>
                 <p>
-                  If you enable state reporting, Home Assistant will sent
+                  If you enable state reporting, Home Assistant will send
                   <b>all</b> state changes of exposed entities to Amazon. This
                   allows you to always see the latest states in the Alexa app
                   and use the state changes to create routines.
