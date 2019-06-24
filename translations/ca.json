@@ -971,6 +971,49 @@
                     "refresh": "Actualitza"
                 },
                 "reload_lovelace": "Recarrega Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "per {name}",
+                        "next_demo": "Següent mostra",
+                        "introduction": "Benvingut a casa! Has arribat a la demo de Home Assistant on es mostren algunes de les millors interfícies d’usuari creades per la comunitat.",
+                        "learn_more": "Més informació sobre Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Pis superior",
+                            "family_room": "Sala d'estar",
+                            "kitchen": "Cuina",
+                            "patio": "Pati",
+                            "hallway": "Passadís",
+                            "master_bedroom": "Dormitori principal",
+                            "left": "Esquerra",
+                            "right": "Dreta",
+                            "mirror": "Mirall"
+                        },
+                        "labels": {
+                            "lights": "Llums",
+                            "information": "Informació",
+                            "morning_commute": "Desplaçament al matí",
+                            "commute_home": "Tornada cap a casa",
+                            "entertainment": "Entreteniment",
+                            "activity": "Activitat",
+                            "hdmi_input": "Entrada HDMI",
+                            "hdmi_switcher": "Commutador HDMI",
+                            "volume": "Volum",
+                            "total_tv_time": "Temps de visualització",
+                            "turn_tv_off": "Apaga la televisió",
+                            "air": "Aire"
+                        },
+                        "unit": {
+                            "watching": "visualitzant",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

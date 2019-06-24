@@ -971,6 +971,23 @@
                     "refresh": "Odśwież"
                 },
                 "reload_lovelace": "Przeładuj Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "learn_more": "Dowiedz się więcej o Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "kitchen": "Kuchnia"
+                        },
+                        "labels": {
+                            "volume": "Głośność"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
