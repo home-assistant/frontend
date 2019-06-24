@@ -102,6 +102,8 @@
             "idle": "Aðgerðalaus"
         },
         "climate": {
+            "off": "Slökkt",
+            "on": "Kveikt",
             "heat": "Hitun",
             "cool": "Kæling",
             "idle": "Aðgerðalaus",
@@ -232,6 +234,11 @@
         }
     },
     "state_badge": {
+        "default": {
+            "unknown": "Óþ.",
+            "error": "Villa",
+            "entity_not_found": "Eining fannst ekki"
+        },
         "device_tracker": {
             "home": "Heima",
             "not_home": "Fjarverandi"
@@ -239,10 +246,6 @@
         "person": {
             "home": "Heima",
             "not_home": "Fjarverandi"
-        },
-        "default": {
-            "error": "Villa",
-            "entity_not_found": "Eining fannst ekki"
         }
     },
     "ui": {
@@ -304,6 +307,11 @@
                                 "elevation": "Hækkun",
                                 "elevation_meters": "metrar",
                                 "time_zone": "Tímabelti",
+                                "unit_system": "Einingarkerfi",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metra",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsíus, kílógrömm",
                                 "save_button": "Vista"
                             }
                         }
@@ -456,6 +464,7 @@
                                 },
                                 "wait_template": {
                                     "label": "Bið",
+                                    "wait_template": "Bið skapalón",
                                     "timeout": "Tímamörk (valfrjálst)"
                                 },
                                 "condition": {
@@ -777,6 +786,7 @@
                 },
                 "core-config": {
                     "location_name_default": "Heima",
+                    "button_detect": "Uppgötva",
                     "finish": "Næsta"
                 }
             },
@@ -850,9 +860,40 @@
                     "entity_not_found": "Eining ekki tiltæk: {entity}"
                 },
                 "changed_toast": {
+                    "message": "Lovelace stillingum hefur verið breytt, viltu endurnýja?",
                     "refresh": "Endurnýja"
                 },
                 "reload_lovelace": "Endurhlaða Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "eftir {name}",
+                        "learn_more": "Læra meira um Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "kitchen": "Eldhús",
+                            "left": "Vinstri",
+                            "right": "Hægri",
+                            "mirror": "Spegill"
+                        },
+                        "labels": {
+                            "lights": "Ljós",
+                            "information": "Upplýsingar",
+                            "entertainment": "Skemmtun",
+                            "activity": "Virkni",
+                            "volume": "Hljóðstyrkur",
+                            "turn_tv_off": "Slökkva á sjónvarpi"
+                        },
+                        "unit": {
+                            "watching": "Horfi á",
+                            "minutes_abbr": "mín"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
