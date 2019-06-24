@@ -971,6 +971,46 @@
                     "refresh": "רענן"
                 },
                 "reload_lovelace": "טען מחדש את Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "על ידי {name}",
+                        "next_demo": "ההדגמה הבאה",
+                        "introduction": "ברוך הבא הביתה! הגעת להדגמת Home Assistant שבה אנו מציגים את ה- UI הטובים ביותר שנוצרו על ידי הקהילה שלנו.",
+                        "learn_more": "למידע נוסף על Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "למעלה",
+                            "family_room": "חדר משפחה",
+                            "kitchen": "מטבח",
+                            "patio": "פטיו",
+                            "hallway": "מסדרון",
+                            "master_bedroom": "חדר שינה ראשי",
+                            "left": "שמאל",
+                            "right": "ימין",
+                            "mirror": "מראה"
+                        },
+                        "labels": {
+                            "lights": "אורות",
+                            "information": "מידע",
+                            "entertainment": "בידור",
+                            "activity": "פעילות",
+                            "hdmi_input": "כניסת HDMI",
+                            "hdmi_switcher": "מחליף HDMI",
+                            "volume": "ווליום",
+                            "total_tv_time": "סה\"כ זמן טלוויזיה",
+                            "turn_tv_off": "כבה את הטלוויזיה",
+                            "air": "אוויר"
+                        },
+                        "unit": {
+                            "minutes_abbr": "דקות"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

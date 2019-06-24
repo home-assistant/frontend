@@ -280,7 +280,8 @@
         "default": {
             "unknown": "Ukendt",
             "unavailable": "Utilgængelig",
-            "error": "Fejl"
+            "error": "Fejl",
+            "entity_not_found": "Enheden blev ikke fundet"
         },
         "alarm_control_panel": {
             "armed": "Tilkoblet",
@@ -357,6 +358,7 @@
                             },
                             "core_config": {
                                 "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i configuration.yaml.",
+                                "location_name": "Navn på din Home Assistant-installation",
                                 "latitude": "Breddegrad",
                                 "longitude": "Længdegrad",
                                 "elevation": "Højde",
@@ -559,7 +561,8 @@
                             },
                             "learn_more": "Lær om handlinger"
                         },
-                        "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres."
+                        "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres.",
+                        "load_error_unknown": "Fejl ved indlæsning af automatisering ( {err_no} )."
                     }
                 },
                 "script": {
@@ -615,7 +618,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "enhed utilgængelig",
                         "entity_unavailable": "entitet utilgængelig",
-                        "no_area": "Intet område"
+                        "no_area": "Intet område",
+                        "hub": "Tilsluttet via"
                     },
                     "config_flow": {
                         "external_step": {
@@ -632,7 +636,9 @@
                         "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen"
                     },
                     "device_card": {
-                        "area_picker_label": "Område"
+                        "device_name_placeholder": "Navn",
+                        "area_picker_label": "Område",
+                        "update_name_button": "Opdater navn"
                     },
                     "add_device_page": {
                         "spinner": "Søger efter ZHA Zigbee-enheder..."
@@ -879,6 +885,7 @@
                     "intro_location": "Vi vil gerne vide, hvor du bor. Disse oplysninger hjælper med at vise information og opsætte solbaserede automationer. Disse data deles aldrig uden for dit netværk.",
                     "intro_location_detect": "Vi kan hjælpe dig med at udfylde disse oplysninger ved at foretage en engangsforespørgsel til en ekstern service.",
                     "location_name_default": "Hjem",
+                    "button_detect": "Detekter",
                     "finish": "Næste"
                 }
             },
@@ -895,7 +902,10 @@
                         "go_to_integrations_page": "Gå til integrationssiden."
                     },
                     "picture-elements": {
+                        "hold": "Hold:",
+                        "tap": "Tryk på:",
                         "navigate_to": "Naviger til {location}",
+                        "toggle": "Skift {navn}",
                         "call_service": "Kald service {name}",
                         "more_info": "Vis mere-info: {Name}"
                     }
@@ -952,7 +962,52 @@
                     "entity_non_numeric": "Enhed er ikke-numerisk: {entity}"
                 },
                 "changed_toast": {
+                    "message": "Lovelace-konfigurationen blev opdateret, vil du genindlæse?",
                     "refresh": "Opdater"
+                },
+                "reload_lovelace": "Genindlæs Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "af {name}",
+                        "next_demo": "Næste demo",
+                        "introduction": "Velkommen hjem! Du er kommet til Home assistant's demo hvor vi viser de bedste bruger interfaces lavet i bruger gruppen.\n",
+                        "learn_more": "Læs mere om Home-Assistent"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Ovenpå",
+                            "family_room": "Alrum",
+                            "kitchen": "Køkken",
+                            "patio": "Terrasse",
+                            "hallway": "Gang",
+                            "master_bedroom": "Soveværelse",
+                            "left": "Venstre",
+                            "right": "Højre",
+                            "mirror": "Spejl"
+                        },
+                        "labels": {
+                            "lights": "Lys",
+                            "information": "Information",
+                            "morning_commute": "Morgen pendler",
+                            "commute_home": "Pendle til hjemmet",
+                            "entertainment": "Underholdning",
+                            "activity": "Aktivitet",
+                            "hdmi_input": "HDMI indgang",
+                            "hdmi_switcher": "HDMI skifter",
+                            "volume": "Lydstyrke",
+                            "total_tv_time": "Total TV tid",
+                            "turn_tv_off": "Sluk TV",
+                            "air": "Luft"
+                        },
+                        "unit": {
+                            "watching": "Ser",
+                            "minutes_abbr": "min"
+                        }
+                    }
                 }
             }
         },

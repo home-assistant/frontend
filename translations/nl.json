@@ -971,6 +971,49 @@
                     "refresh": "Vernieuwen"
                 },
                 "reload_lovelace": "Lovelace herladen"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "door {name}",
+                        "next_demo": "Volgende demo",
+                        "introduction": "Welkom thuis! Je hebt de Home Assistant demo bereikt waar we de beste UI's van onze community laten zien.",
+                        "learn_more": "Meer informatie over Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Boven",
+                            "family_room": "Familiekamer",
+                            "kitchen": "Keuken",
+                            "patio": "Achtertuin",
+                            "hallway": "Gang",
+                            "master_bedroom": "Hoofdslaapkamer",
+                            "left": "Links",
+                            "right": "Rechts",
+                            "mirror": "Spiegel"
+                        },
+                        "labels": {
+                            "lights": "Lichten",
+                            "information": "Informatie",
+                            "morning_commute": "Ochtend reis",
+                            "commute_home": "Reis naar huis",
+                            "entertainment": "Entertainment",
+                            "activity": "Activiteit",
+                            "hdmi_input": "HDMI-ingang",
+                            "hdmi_switcher": "HDMI-switcher",
+                            "volume": "Volume",
+                            "total_tv_time": "Totale tv-tijd",
+                            "turn_tv_off": "Schakel televisie uit",
+                            "air": "Lucht"
+                        },
+                        "unit": {
+                            "watching": "kijkend",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
