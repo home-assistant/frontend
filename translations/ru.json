@@ -971,6 +971,49 @@
                     "refresh": "Обновить"
                 },
                 "reload_lovelace": "Перезагрузить Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "автор: {name}",
+                        "next_demo": "Далее",
+                        "introduction": "Добро пожаловать! Здесь Вы можете увидеть лучшие пользовательские интерфейсы, созданные нашим сообществом.",
+                        "learn_more": "Узнайте больше о Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Второй этаж",
+                            "family_room": "Гостиная",
+                            "kitchen": "Кухня",
+                            "patio": "Внутренний дворик",
+                            "hallway": "Прихожая",
+                            "master_bedroom": "Спальня",
+                            "left": "Влево",
+                            "right": "Вправо",
+                            "mirror": "Зеркало"
+                        },
+                        "labels": {
+                            "lights": "Свет",
+                            "information": "Информация",
+                            "morning_commute": "Утренняя поездка",
+                            "commute_home": "Поездка домой",
+                            "entertainment": "Развлечения",
+                            "activity": "Активность",
+                            "hdmi_input": "Вход HDMI",
+                            "hdmi_switcher": "Переключатель HDMI",
+                            "volume": "Громкость",
+                            "total_tv_time": "Общее время ТВ",
+                            "turn_tv_off": "Выключить телевизор",
+                            "air": "Воздух"
+                        },
+                        "unit": {
+                            "watching": "наблюдение",
+                            "minutes_abbr": "мин."
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

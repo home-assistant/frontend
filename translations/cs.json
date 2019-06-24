@@ -355,6 +355,20 @@
                                 "introduction": "Ovládejte svůj Home Assistant server... z Home Assistant.",
                                 "restart": "Restartovat",
                                 "stop": "Zastavit"
+                            },
+                            "core_config": {
+                                "location_name": "Název instalace Home Assistant",
+                                "latitude": "Zeměpisná šířka",
+                                "longitude": "Zeměpisná délka",
+                                "elevation": "Nadmořská výška",
+                                "elevation_meters": "metrů",
+                                "time_zone": "Časové pásmo",
+                                "unit_system": "Systém jednotek",
+                                "unit_system_imperial": "Imperiální",
+                                "unit_system_metric": "Metrický",
+                                "imperial_example": "Stupně Fahrenheita, libry",
+                                "metric_example": "Stupně Celsia, kilogramy",
+                                "save_button": "Uložit"
                             }
                         }
                     }
@@ -545,7 +559,9 @@
                                 }
                             },
                             "learn_more": "Další informace o akcích"
-                        }
+                        },
+                        "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
+                        "load_error_unknown": "Chyba při načítání automatizace ({err_no})."
                     }
                 },
                 "script": {
@@ -582,7 +598,7 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Přihlášen jako {email}",
                     "description_not_login": "Nepřihlášen",
-                    "description_features": "Ovládejte vzdáleně, integrace a Alexou a Google Asistent"
+                    "description_features": "Ovládejte vzdáleně, integrace s Alexou a Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrace",
@@ -602,7 +618,14 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "zařízení není k dispozici",
                         "entity_unavailable": "entita není k dispozici",
-                        "no_area": "Žádná oblast"
+                        "no_area": "Žádná oblast",
+                        "hub": "Připojeno přes"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "K dokončení tohoto kroku je nutné navštívit externí webovou stránku.",
+                            "open_site": "Otevřít webové stránky"
+                        }
                     }
                 },
                 "zha": {
@@ -857,9 +880,17 @@
                     }
                 },
                 "integration": {
-                    "intro": "Zařízení a služby jsou v programu Home Assistant reprezentovány jako integrace. Můžete je nyní nastavit nebo provést později z konfigurační obrazovky.",
+                    "intro": "Zařízení a služby jsou v Home Assistant reprezentovány jako integrace. Tyto můžete nastavit nyní nebo později z konfigurační obrazovky.",
                     "more_integrations": "Více",
                     "finish": "Dokončit"
+                },
+                "core-config": {
+                    "intro": "Dobrý den, {name} , vítejte v Home Assistant. Jak byste chtěli pojmenovat svůj domov?",
+                    "intro_location": "Rádi bychom věděli, kde žijete. Tyto informace pomohou při zobrazování informací a určování přesné polohy slunce. Tato data nejsou nikdy sdílena mimo vaši síť.",
+                    "intro_location_detect": "Můžeme vám pomoci vyplnit tyto informace jednorázovým požadavkem na externí službu.",
+                    "location_name_default": "Domov",
+                    "button_detect": "Rozpoznat",
+                    "finish": "Další"
                 }
             },
             "lovelace": {
@@ -933,6 +964,51 @@
                 "warning": {
                     "entity_not_found": "Entita není k dispozici: {entity}",
                     "entity_non_numeric": "Entita není číselná: {entity}"
+                },
+                "changed_toast": {
+                    "message": "Konfigurace Lovelace byla aktualizována, chcete obnovit stránku?",
+                    "refresh": "Obnovit"
+                },
+                "reload_lovelace": "Znovu načíst Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "od {name}",
+                        "next_demo": "Další demo",
+                        "introduction": "Vítejte doma! Dostali jste se do demoverze Home Assistant, kde prezentujeme nejlepší uživatelská rozhraní vytvořená komunitou.",
+                        "learn_more": "Další informace o Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Poschodí",
+                            "family_room": "Obývací pokoj",
+                            "kitchen": "Kuchyně",
+                            "patio": "Terasa",
+                            "hallway": "Chodba",
+                            "master_bedroom": "Hlavní ložnice",
+                            "left": "Vlevo",
+                            "right": "Vpravo",
+                            "mirror": "Zrcadlo"
+                        },
+                        "labels": {
+                            "lights": "Světla",
+                            "information": "Informace",
+                            "entertainment": "Zábava",
+                            "activity": "Aktivita",
+                            "hdmi_input": "Vstup HDMI",
+                            "hdmi_switcher": "Přepínač HDMI",
+                            "volume": "Hlasitost",
+                            "total_tv_time": "Celkový čas strávený u televize",
+                            "turn_tv_off": "Vypnout televizi",
+                            "air": "Vzduch"
+                        },
+                        "unit": {
+                            "minutes_abbr": "min"
+                        }
+                    }
                 }
             }
         },

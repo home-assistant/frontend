@@ -971,6 +971,49 @@
                     "refresh": "Actualizar"
                 },
                 "reload_lovelace": "Recargar Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "por {name}",
+                        "next_demo": "Siguiente demostración",
+                        "introduction": "¡Bienvenido a casa! Has llegado a la demostración de Home Assistant donde mostramos las mejores interfaces de usuario creadas por nuestra comunidad.",
+                        "learn_more": "Aprende más sobre Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Piso de arriba",
+                            "family_room": "Salón",
+                            "kitchen": "Cocina",
+                            "patio": "Patio",
+                            "hallway": "Pasillo",
+                            "master_bedroom": "Dormitorio principal",
+                            "left": "Izquierda",
+                            "right": "Derecha",
+                            "mirror": "Espejo"
+                        },
+                        "labels": {
+                            "lights": "Luces",
+                            "information": "Información",
+                            "morning_commute": "Ida al trabajo",
+                            "commute_home": "Viaje a casa",
+                            "entertainment": "Entretenimiento",
+                            "activity": "Actividad",
+                            "hdmi_input": "Entrada HDMI",
+                            "hdmi_switcher": "Conmutador HDMI",
+                            "volume": "Volumen",
+                            "total_tv_time": "Tiempo total de TV",
+                            "turn_tv_off": "Apagar la televisión",
+                            "air": "Aire"
+                        },
+                        "unit": {
+                            "watching": "viendo",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
