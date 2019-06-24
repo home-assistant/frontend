@@ -779,6 +779,46 @@
                     "button_detect": "Canfod",
                     "finish": "Nesaf"
                 }
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "learn_more": "Dysgwch fwy am Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "I fyny'r grisiau",
+                            "family_room": "Ystafell Teulu",
+                            "kitchen": "Cegin",
+                            "patio": "Patio",
+                            "hallway": "Cyntedd",
+                            "master_bedroom": "Prif Ystafell Wely",
+                            "left": "Chwith",
+                            "right": "Dde",
+                            "mirror": "Drych"
+                        },
+                        "labels": {
+                            "lights": "Goleuadau",
+                            "information": "Gwybodaeth",
+                            "morning_commute": "Cymudo bore",
+                            "commute_home": "Cymudo i'r Cartref",
+                            "entertainment": "Adloniant",
+                            "activity": "Gweithgaredd",
+                            "hdmi_input": "Mewnbwn HDMI",
+                            "hdmi_switcher": "Newidydd HDMI",
+                            "volume": "Uchder",
+                            "total_tv_time": "Cyfanswm Amser Teledu",
+                            "turn_tv_off": "Diffodd y teledu",
+                            "air": "Aer"
+                        },
+                        "unit": {
+                            "watching": "gwylio",
+                            "minutes_abbr": "munud"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
