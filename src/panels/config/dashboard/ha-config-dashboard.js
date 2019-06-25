@@ -31,9 +31,16 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
       .content {
         padding-bottom: 32px;
       }
-      a {
+      ha-card a {
         text-decoration: none;
         color: var(--primary-text-color);
+      }
+      .promo-advanced {
+        text-align: center;
+        color: var(--secondary-text-color);
+      }
+      .promo-advanced a {
+        color: var(--secondary-text-color);
       }
     </style>
 
@@ -103,6 +110,12 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
             hass="[[hass]]"
             show-advanced="[[showAdvanced]]"
           ></ha-config-navigation>
+
+          <template is='dom-if' if='[[!showAdvanced]]'>
+            <div class='promo-advanced'>
+              Missing config options? Enable advanced mode on <a href="/profile">your profile page.</a>
+            </div>
+          </template>
         </ha-config-section>
       </div>
     </app-header-layout>
