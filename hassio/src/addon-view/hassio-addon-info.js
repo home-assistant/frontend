@@ -168,6 +168,9 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
         .protection-enable mwc-button {
           --mdc-theme-primary: white;
         }
+        .description a, ha-markdown a {
+          color: var(--primary-color);
+        }
       </style>
 
       <template is="dom-if" if="[[computeUpdateAvailable(addon)]]">
