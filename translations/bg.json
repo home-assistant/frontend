@@ -279,7 +279,9 @@
     "state_badge": {
         "default": {
             "unknown": "Неизвестно",
-            "unavailable": "Недост"
+            "unavailable": "Недост",
+            "error": "Грешка",
+            "entity_not_found": "Обектът не е намерен"
         },
         "alarm_control_panel": {
             "armed": "Под охрана",
@@ -353,6 +355,21 @@
                                 "introduction": "Управление на Home Assistant сървъра... от Home Assistant.",
                                 "restart": "Рестарт",
                                 "stop": "Спиране"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Редакторът е деактивиран, защото конфигурацията е съхранена в configuration.yaml.",
+                                "location_name": "Име на Вашия Home Assistant",
+                                "latitude": "Географска ширина",
+                                "longitude": "Географска дължина",
+                                "elevation": "Надморска височина",
+                                "elevation_meters": "метра",
+                                "time_zone": "Часова зона",
+                                "unit_system": "Система единици",
+                                "unit_system_imperial": "Имперски единици",
+                                "unit_system_metric": "Метрични единици",
+                                "imperial_example": "Фаренхайт, паунд",
+                                "metric_example": "Целзий, килограми",
+                                "save_button": "Запази"
                             }
                         }
                     }
@@ -543,7 +560,9 @@
                                 }
                             },
                             "learn_more": "Научете повече за действията"
-                        }
+                        },
+                        "load_error_not_editable": "Само автоматизации от automations.yaml могат да се редактират.",
+                        "load_error_unknown": "Грешка при зареждане на автоматизация ({ерр_но})."
                     }
                 },
                 "script": {
@@ -579,7 +598,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Влезли сте като {email}",
-                    "description_not_login": "Не сте влезли"
+                    "description_not_login": "Не сте влезли",
+                    "description_features": "Контролирайте дома си, и когато не сте вкъщи, активирайте интегрирациите с Alexa и Google Assistant."
                 },
                 "integrations": {
                     "caption": "Интеграции",
@@ -599,7 +619,14 @@
                         "firmware": "Фърмуер: {version}",
                         "device_unavailable": "недостъпно устройство",
                         "entity_unavailable": "недостъпен",
-                        "no_area": "Без област"
+                        "no_area": "Без област",
+                        "hub": "Свързан чрез"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Завършването на тази стъпка изисква да посетите външен уебсайт.",
+                            "open_site": "Отваряне на уеб сайт"
+                        }
                     }
                 },
                 "zha": {
@@ -607,7 +634,18 @@
                     "description": "Управление на Zigbee мрежата за домашна автоматизация",
                     "services": {
                         "reconfigure": "Преконфигурирайте ZHA устройство (оздравяване на устройство). Използвайте това, ако имате проблеми с устройството. Ако въпросното устройство е захранвано с батерии, моля, уверете се, че е будно и приема команди, когато използвате тази услуга.",
-                        "updateDeviceName": "Задайте персонализирано име за това устройство в регистъра на устройствата."
+                        "updateDeviceName": "Задайте персонализирано име за това устройство в регистъра на устройствата.",
+                        "remove": "Премахване на устройство от ZigBee мрежата."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Име, зададено от потребителя",
+                        "area_picker_label": "Област",
+                        "update_name_button": "Актуализиране на името"
+                    },
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Добавяне на устройства",
+                        "spinner": "Търсене на ZHA Zigbee устройства...",
+                        "discovery_text": "Откритите устройства ще се покажат тук. Следвайте инструкциите за вашето устройство(а) и поставете устройствата в режим на сдвояване."
                     }
                 },
                 "area_registry": {
@@ -841,6 +879,19 @@
                         "required_fields": "Попълнете всички задължителни полета",
                         "password_not_match": "Паролите не съвпадат"
                     }
+                },
+                "integration": {
+                    "intro": "Устройствата и услугите са представени в Home Assistant като Интеграции. Можете да ги настроите сега или да го направите по-късно от конфигурационния екран.",
+                    "more_integrations": "Повече",
+                    "finish": "Завърши"
+                },
+                "core-config": {
+                    "intro": "Здравейте {name} , добре дошли в Home Assistant. Как бихте искали да назовете дома си?",
+                    "intro_location": "Бихме искали да знаем къде живеете. Тази информация ще помогне за показването на информация и създаването на автоматизаци, които се активират от изгрев и залез. Тези данни никога не се споделят извън мрежата ви.",
+                    "intro_location_detect": "Можем да ви помогнем да попълните тази информация, като изпратим еднократна заявка до външна услуга.",
+                    "location_name_default": "Вкъщи",
+                    "button_detect": "Откриване",
+                    "finish": "Напред"
                 }
             },
             "lovelace": {
@@ -854,6 +905,14 @@
                         "title": "Добре дошли у дома",
                         "no_devices": "Тази страница ви позволява да контролирате устройствата си, но изглежда, че все още нямате настроени устройства. Отидете на страницата за интеграции, за да започнете.",
                         "go_to_integrations_page": "Отидете на страницата за интеграции."
+                    },
+                    "picture-elements": {
+                        "hold": "Задръжте:",
+                        "tap": "Натиснете:",
+                        "navigate_to": "Придвижете се до {location}",
+                        "toggle": "Превключване на {name}",
+                        "call_service": "Извикай услуга {name}",
+                        "more_info": "Показване на повече информация: {name}"
                     }
                 },
                 "editor": {
@@ -906,12 +965,61 @@
                 "warning": {
                     "entity_not_found": "Обектът е недостъпен: {entity}",
                     "entity_non_numeric": "Обектът не е числов: {entity}"
+                },
+                "changed_toast": {
+                    "message": "Конфигурацията на Lovelace бе актуализирана, искате ли да опресните?",
+                    "refresh": "Обновяване"
+                },
+                "reload_lovelace": "Презареждане на Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "от {name}",
+                        "next_demo": "Следваща демонстрация",
+                        "introduction": "Добре дошъл у дома! Достигнахте демонстрацията на Home Assistant, където ще покажем най-добрите потребителски интерфейси, създадени от нашата общност.",
+                        "learn_more": "Научете повече за Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Втори етаж",
+                            "family_room": "Семейна стая",
+                            "kitchen": "Кухня",
+                            "patio": "Веранда",
+                            "hallway": "Коридор",
+                            "master_bedroom": "Главна спалня",
+                            "left": "Ляво",
+                            "right": "Дясно",
+                            "mirror": "Огледало"
+                        },
+                        "labels": {
+                            "lights": "Светлини",
+                            "information": "Информация",
+                            "morning_commute": "Сутрешно пътуване",
+                            "commute_home": "Пътуване до дома",
+                            "entertainment": "Забавление",
+                            "activity": "Дейност",
+                            "hdmi_input": "HDMI вход",
+                            "hdmi_switcher": "HDMI превключвател",
+                            "volume": "Сила на звука",
+                            "total_tv_time": "Време пред телевизора",
+                            "turn_tv_off": "Изключи телевизора",
+                            "air": "Въздух"
+                        },
+                        "unit": {
+                            "watching": "Гледане",
+                            "minutes_abbr": "мин"
+                        }
+                    }
                 }
             }
         },
         "sidebar": {
             "log_out": "Изход",
-            "developer_tools": "Инструменти за разработчици"
+            "developer_tools": "Инструменти за разработчици",
+            "external_app_configuration": "Конфигурация на приложение"
         },
         "common": {
             "loading": "Зареждане",
