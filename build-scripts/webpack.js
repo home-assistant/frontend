@@ -19,7 +19,7 @@ version = version[0];
 
 const genMode = (isProdBuild) => (isProdBuild ? "production" : "development");
 const genDevTool = (isProdBuild) =>
-  isProdBuild ? "cheap-source-map" : "inline-cheap-module-source-map";
+  isProdBuild ? "source-map" : "inline-cheap-module-source-map";
 const genFilename = (isProdBuild, dontHash = new Set()) => ({ chunk }) => {
   if (!isProdBuild || dontHash.has(chunk.name)) {
     return `${chunk.name}.js`;
@@ -81,6 +81,7 @@ const optimization = (latestBuild) => ({
       cache: true,
       parallel: true,
       extractComments: true,
+      sourceMap: true,
       terserOptions: {
         safari10: true,
         ecma: latestBuild ? undefined : 5,
