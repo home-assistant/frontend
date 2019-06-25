@@ -115,6 +115,11 @@ export class CloudAlexaPref extends LitElement {
       });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
+      alert(
+        `Unable to ${toggle.checked ? "enable" : "disable"} report state. ${
+          err.message
+        }`
+      );
       toggle.checked = !toggle.checked;
     }
   }
