@@ -12,12 +12,12 @@ declare global {
 }
 
 export const fetchTranslationPreferences = (hass: HomeAssistant) =>
-  fetchFrontendUserData(hass, "language");
+  fetchFrontendUserData(hass.connection, "language");
 
 export const saveTranslationPreferences = (
   hass: HomeAssistant,
   data: FrontendTranslationData
-) => saveFrontendUserData(hass, "language", data);
+) => saveFrontendUserData(hass.connection, "language", data);
 
 export const getHassTranslations = async (
   hass: HomeAssistant,
