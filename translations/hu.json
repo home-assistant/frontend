@@ -971,6 +971,49 @@
                     "refresh": "Frissítés"
                 },
                 "reload_lovelace": "Lovelace Újratöltése"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "készítette: {name}",
+                        "next_demo": "Következő demó",
+                        "introduction": "Üdv itthon! Megnyitottad a Home Assistant demót, ahol bemutatjuk a közösségünk által létrehozott legjobb felhasználói felületeket.",
+                        "learn_more": "Tudj meg többet a Home Assistant-ról"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Emelet",
+                            "family_room": "Nappali",
+                            "kitchen": "Konyha",
+                            "patio": "Terasz",
+                            "hallway": "Előszoba",
+                            "master_bedroom": "Hálószoba",
+                            "left": "Bal",
+                            "right": "Jobb",
+                            "mirror": "Tükör"
+                        },
+                        "labels": {
+                            "lights": "Világítás",
+                            "information": "Információ",
+                            "morning_commute": "Reggeli útidő a munkahelyre",
+                            "commute_home": "Útidő haza",
+                            "entertainment": "Szórakozás",
+                            "activity": "Tevékenység",
+                            "hdmi_input": "HDMI bemenet",
+                            "hdmi_switcher": "HDMI váltó",
+                            "volume": "Hangerő",
+                            "total_tv_time": "Összes TV nézéssel töltött idő",
+                            "turn_tv_off": "Televízió kikapcsolása",
+                            "air": "Levegő"
+                        },
+                        "unit": {
+                            "watching": "megtekintő",
+                            "minutes_abbr": "perc"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
