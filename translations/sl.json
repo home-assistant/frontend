@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "naprava ni na voljo",
                         "entity_unavailable": "entiteta ni na voljo",
-                        "no_area": "Brez območja"
+                        "no_area": "Brez območja",
+                        "hub": "Povezan prek"
                     },
                     "config_flow": {
                         "external_step": {
@@ -970,6 +971,49 @@
                     "refresh": "Osveži"
                 },
                 "reload_lovelace": "Ponovno naloži Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "avtor: {name}",
+                        "next_demo": "Naslednja predstavitev",
+                        "introduction": "Dobrodošli doma! Dosegli ste predstavitev Home Assistant-a, kjer smo predstavili najboljše uporabniške vmesnike, ki jih je ustvarila naša skupnost.",
+                        "learn_more": "Več o Home Assistant-u"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Zgoraj",
+                            "family_room": "Dnevna soba",
+                            "kitchen": "Kuhinja",
+                            "patio": "Terasa",
+                            "hallway": "Hodnik",
+                            "master_bedroom": "Glavna spalnica",
+                            "left": "Levo",
+                            "right": "Desno",
+                            "mirror": "Ogledalo"
+                        },
+                        "labels": {
+                            "lights": "Luči",
+                            "information": "Informacije",
+                            "morning_commute": "Jutranja vožnja",
+                            "commute_home": "Vožnja do doma",
+                            "entertainment": "Zabava",
+                            "activity": "Dejavnost",
+                            "hdmi_input": "HDMI vhod",
+                            "hdmi_switcher": "HDMI stikalo",
+                            "volume": "Glasnost",
+                            "total_tv_time": "Skupni TV čas",
+                            "turn_tv_off": "Izklop televizije",
+                            "air": "Zrak"
+                        },
+                        "unit": {
+                            "watching": "gledam",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

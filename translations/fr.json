@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "appareil indisponible",
                         "entity_unavailable": "entité indisponible",
-                        "no_area": "Pas de pièce"
+                        "no_area": "Pas de pièce",
+                        "hub": "Connecté via"
                     },
                     "config_flow": {
                         "external_step": {
@@ -970,6 +971,49 @@
                     "refresh": "Rafraîchir"
                 },
                 "reload_lovelace": "Recharger Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "par {name}",
+                        "next_demo": "Prochaine démo",
+                        "introduction": "Bienvenue à la maison ! Vous êtes sur la démo de Home Assistant, où nous présentons les meilleures interfaces utilisateur créées par notre communauté.",
+                        "learn_more": "En savoir plus sur Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "A l'étage",
+                            "family_room": "Chambre Familiale",
+                            "kitchen": "Cuisine",
+                            "patio": "Patio",
+                            "hallway": "Couloir",
+                            "master_bedroom": "Chambre principale",
+                            "left": "Gauche",
+                            "right": "Droite",
+                            "mirror": "Miroir"
+                        },
+                        "labels": {
+                            "lights": "Lumières",
+                            "information": "Information",
+                            "morning_commute": "Trajet du matin",
+                            "commute_home": "Se rendre à la maison",
+                            "entertainment": "Divertissement",
+                            "activity": "Activité",
+                            "hdmi_input": "Entrée HDMI",
+                            "hdmi_switcher": "Sélecteur HDMI",
+                            "volume": "Volume",
+                            "total_tv_time": "Temps total de télévision",
+                            "turn_tv_off": "Éteindre la télévision",
+                            "air": "Air"
+                        },
+                        "unit": {
+                            "watching": "en train de regarder",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
