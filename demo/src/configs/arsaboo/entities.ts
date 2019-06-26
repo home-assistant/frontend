@@ -8,7 +8,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "zoning",
       attributes: {
         hidden: true,
-        latitude: 52.3731339,
+        latitude: 52.3631339,
         longitude: 4.8903147,
         radius: 200,
         friendly_name: "Home",
