@@ -52,7 +52,7 @@ font-family: "Roboto";
 src:
   local("Roboto Italic"),
   local("Roboto-Italic"),
-  url(/static/fonts/roboto/Roboto-Italic.woff2) format("woff2");
+  url(/static/fonts/roboto/Roboto-RegularItalic.woff2) format("woff2");
 font-weight: 400;
 font-style: italic;
 }
