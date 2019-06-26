@@ -975,16 +975,42 @@
             "page-demo": {
                 "cards": {
                     "demo": {
+                        "demo_by": "według {name}",
+                        "next_demo": "Następna demonstracja",
+                        "introduction": "Witaj w domu! Dotarłeś do demonstracji Home Assistant, gdzie prezentujemy najlepsze interfejsy użytkownika stworzone przez naszą społeczność.",
                         "learn_more": "Dowiedz się więcej o Home Assistant"
                     }
                 },
                 "config": {
                     "arsaboo": {
                         "names": {
-                            "kitchen": "Kuchnia"
+                            "upstairs": "Piętro",
+                            "family_room": "Pokój rodzinny",
+                            "kitchen": "Kuchnia",
+                            "patio": "Patio",
+                            "hallway": "Korytarz",
+                            "master_bedroom": "Główna sypialnia",
+                            "left": "Lewo",
+                            "right": "Prawo",
+                            "mirror": "Lustro"
                         },
                         "labels": {
-                            "volume": "Głośność"
+                            "lights": "Światła",
+                            "information": "Informacje",
+                            "morning_commute": "Poranne dojazdy",
+                            "commute_home": "Dojazd do domu",
+                            "entertainment": "Rozrywka",
+                            "activity": "Aktywność",
+                            "hdmi_input": "Wejście HDMI",
+                            "hdmi_switcher": "Przełącznik HDMI",
+                            "volume": "Głośność",
+                            "total_tv_time": "Całkowity czas przed telewizorem",
+                            "turn_tv_off": "Wyłącz telewizor",
+                            "air": "Powietrze"
+                        },
+                        "unit": {
+                            "watching": "oglądanie",
+                            "minutes_abbr": "min"
                         }
                     }
                 }
