@@ -66,6 +66,21 @@ const computePanels = (hass: HomeAssistant) => {
   return result;
 };
 
+const renderPanel = (hass, panel) => html`
+  <a
+    href="${computeUrl(panel.url_path)}"
+    data-panel="${panel.url_path}"
+    tabindex="-1"
+  >
+    <paper-icon-item>
+      <ha-icon slot="item-icon" .icon="${panel.icon}"></ha-icon>
+      <span class="item-text"
+        >${hass.localize(`panel.${panel.title}`) || panel.title}</span
+      >
+    </paper-icon-item>
+  </a>
+`;
+
 /*
  * @appliesMixin LocalizeMixin
  */
@@ -83,6 +98,13 @@ class HaSidebar extends LitElement {
     if (!hass) {
       return html``;
     }
+
+    const panels = computePanels(hass);
+    const configPanelIdx = panels.findIndex(
+      (panel) => panel.component_name === "config"
+    );
+    const configPanel =
+      configPanelIdx === -1 ? undefined : panels.splice(configPanelIdx, 1)[0];
 
     return html`
       ${this.expanded
@@ -116,66 +138,19 @@ class HaSidebar extends LitElement {
           </paper-icon-item>
         </a>
 
-        ${computePanels(hass).map(
-          (panel) => html`
-            <a
-              href="${computeUrl(panel.url_path)}"
-              data-panel="${panel.url_path}"
-              tabindex="-1"
-            >
-              <paper-icon-item>
-                <ha-icon slot="item-icon" .icon="${panel.icon}"></ha-icon>
-                <span class="item-text"
-                  >${hass.localize(`panel.${panel.title}`) || panel.title}</span
-                >
-              </paper-icon-item>
-            </a>
-          `
-        )}
-        ${this._externalConfig && this._externalConfig.hasSettingsScreen
-          ? html`
-              <a
-                aria-label="App Configuration"
-                href="#external-app-configuration"
-                tabindex="-1"
-                @click=${this._handleExternalAppConfiguration}
-              >
-                <paper-icon-item>
-                  <ha-icon
-                    slot="item-icon"
-                    icon="hass:cellphone-settings-variant"
-                  ></ha-icon>
-                  <span class="item-text"
-                    >${hass.localize(
-                      "ui.sidebar.external_app_configuration"
-                    )}</span
-                  >
-                </paper-icon-item>
-              </a>
-            `
-          : ""}
-        ${!hass.user
-          ? html`
-              <paper-icon-item @click=${this._handleLogOut} class="logout">
-                <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
-                <span class="item-text"
-                  >${hass.localize("ui.sidebar.log_out")}</span
-                >
-              </paper-icon-item>
-            `
-          : html``}
-      </paper-listbox>
+        ${panels.map((panel) => renderPanel(hass, panel))}
 
-      ${this.expanded && hass.user && hass.user.is_admin
-        ? html`
-            <div>
-              <div class="divider"></div>
+        <div class="spacer" disabled></div>
 
-              <div class="subheader">
+        ${this.expanded && hass.user && hass.user.is_admin
+          ? html`
+              <div class="divider" disabled></div>
+
+              <div class="subheader" disabled>
                 ${hass.localize("ui.sidebar.developer_tools")}
               </div>
 
-              <div class="dev-tools">
+              <div class="dev-tools" disabled>
                 <a href="/dev-service" tabindex="-1">
                   <paper-icon-button
                     icon="hass:remote"
@@ -223,9 +198,42 @@ class HaSidebar extends LitElement {
                   ></paper-icon-button>
                 </a>
               </div>
-            </div>
-          `
-        : ""}
+            `
+          : ""}
+        ${this._externalConfig && this._externalConfig.hasSettingsScreen
+          ? html`
+              <a
+                aria-label="App Configuration"
+                href="#external-app-configuration"
+                tabindex="-1"
+                @click=${this._handleExternalAppConfiguration}
+              >
+                <paper-icon-item>
+                  <ha-icon
+                    slot="item-icon"
+                    icon="hass:cellphone-settings-variant"
+                  ></ha-icon>
+                  <span class="item-text"
+                    >${hass.localize(
+                      "ui.sidebar.external_app_configuration"
+                    )}</span
+                  >
+                </paper-icon-item>
+              </a>
+            `
+          : ""}
+        ${configPanel ? renderPanel(hass, configPanel) : ""}
+        ${!hass.user
+          ? html`
+              <paper-icon-item @click=${this._handleLogOut} class="logout">
+                <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
+                <span class="item-text"
+                  >${hass.localize("ui.sidebar.log_out")}</span
+                >
+              </paper-icon-item>
+            `
+          : html``}
+      </paper-listbox>
     `;
   }
 
@@ -355,7 +363,11 @@ class HaSidebar extends LitElement {
       }
 
       paper-listbox {
-        padding: 0;
+        padding: 4px 0;
+        height: calc(100% - 65px);
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
       }
 
       paper-listbox > a {
@@ -367,7 +379,7 @@ class HaSidebar extends LitElement {
 
       paper-icon-item {
         box-sizing: border-box;
-        margin: 8px;
+        margin: 4px 8px;
         padding-left: 12px;
         border-radius: 4px;
         --paper-item-min-height: 40px;
@@ -423,6 +435,11 @@ class HaSidebar extends LitElement {
 
       paper-icon-item.logout {
         margin-top: 16px;
+      }
+
+      .spacer {
+        flex: 1;
+        pointer-events: none;
       }
 
       .divider {
