@@ -7,7 +7,6 @@ import {
   property,
   customElement,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import { User } from "../../data/user";
 import { CurrentUser } from "../../types";
 
