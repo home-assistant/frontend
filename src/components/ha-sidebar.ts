@@ -198,6 +198,7 @@ class HaSidebar extends LitElement {
                   ></paper-icon-button>
                 </a>
               </div>
+              <div class="divider" disabled></div>
             `
           : ""}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
@@ -330,6 +331,8 @@ class HaSidebar extends LitElement {
         );
         width: 64px;
         transition: width 0.2s ease-in;
+        will-change: width;
+        contain: strict;
       }
       :host([expanded]) {
         width: 256px;
@@ -461,6 +464,8 @@ class HaSidebar extends LitElement {
         flex-direction: row;
         justify-content: space-between;
         padding: 0 8px;
+        width: 256px;
+        box-sizing: border-box;
       }
 
       .dev-tools a {
