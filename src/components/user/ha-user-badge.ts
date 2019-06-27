@@ -33,24 +33,23 @@ class StateBadge extends LitElement {
 
   protected render(): TemplateResult | void {
     const user = this.user;
-
     const initials = user ? computeInitials(user.name) : "?";
-
     return html`
-      <div
-        class="${classMap({
-          "profile-badge": true,
-          long: initials.length > 2,
-        })}"
-      >
-        ${initials}
-      </div>
+      ${initials}
     `;
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    this.toggleAttribute(
+      "long",
+      (this.user ? computeInitials(this.user.name) : "?").length > 2
+    );
   }
 
   static get styles(): CSSResult {
     return css`
-      .profile-badge {
+      :host {
         display: inline-block;
         box-sizing: border-box;
         width: 40px;
@@ -63,7 +62,7 @@ class StateBadge extends LitElement {
         overflow: hidden;
       }
 
-      .profile-badge.long {
+      :host([long]) {
         font-size: 80%;
       }
     `;

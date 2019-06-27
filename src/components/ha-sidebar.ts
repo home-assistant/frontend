@@ -74,9 +74,9 @@ const renderPanel = (hass, panel) => html`
   >
     <paper-icon-item>
       <ha-icon slot="item-icon" .icon="${panel.icon}"></ha-icon>
-      <span class="item-text"
-        >${hass.localize(`panel.${panel.title}`) || panel.title}</span
-      >
+      <span class="item-text">
+        ${hass.localize(`panel.${panel.title}`) || panel.title}
+      </span>
     </paper-icon-item>
   </a>
 `;
@@ -111,13 +111,6 @@ class HaSidebar extends LitElement {
         ? html`
             <app-toolbar>
               <div main-title>Home Assistant</div>
-              ${hass.user
-                ? html`
-                    <a href="/profile">
-                      <ha-user-badge .user=${hass.user}></ha-user-badge>
-                    </a>
-                  `
-                : ""}
             </app-toolbar>
           `
         : html`
@@ -224,16 +217,29 @@ class HaSidebar extends LitElement {
             `
           : ""}
         ${configPanel ? renderPanel(hass, configPanel) : ""}
-        ${!hass.user
+        ${hass.user
           ? html`
+              <a href="/profile" data-panel="panel" tabindex="-1">
+                <paper-icon-item class="profile">
+                  <ha-user-badge
+                    slot="item-icon"
+                    .user=${hass.user}
+                  ></ha-user-badge>
+
+                  <span class="item-text">
+                    ${hass.localize(`panel.profile`)}
+                  </span>
+                </paper-icon-item>
+              </a>
+            `
+          : html`
               <paper-icon-item @click=${this._handleLogOut} class="logout">
                 <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
                 <span class="item-text"
                   >${hass.localize("ui.sidebar.log_out")}</span
                 >
               </paper-icon-item>
-            `
-          : html``}
+            `}
       </paper-listbox>
     `;
   }
@@ -356,11 +362,6 @@ class HaSidebar extends LitElement {
         color: var(--primary-text-color);
       }
 
-      ha-user-badge {
-        position: relative;
-        top: 3px;
-      }
-
       paper-listbox {
         padding: 4px 0;
         height: calc(100% - 65px);
@@ -434,6 +435,13 @@ class HaSidebar extends LitElement {
 
       paper-icon-item.logout {
         margin-top: 16px;
+      }
+
+      paper-icon-item.profile {
+        padding-left: 4px;
+      }
+      .profile .item-text {
+        margin-left: 8px;
       }
 
       .spacer {
