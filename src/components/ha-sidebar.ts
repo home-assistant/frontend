@@ -276,9 +276,12 @@ class HaSidebar extends LitElement {
         this._externalConfig = conf;
       });
     }
-    this.addEventListener("mouseenter", () => {
-      this.expanded = true;
-    });
+    this.shadowRoot!.querySelector("paper-listbox")!.addEventListener(
+      "mouseenter",
+      () => {
+        this.expanded = true;
+      }
+    );
     this.addEventListener("mouseleave", () => {
       this._contract();
     });
