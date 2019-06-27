@@ -227,7 +227,7 @@ class HaSidebar extends LitElement {
                   ></ha-user-badge>
 
                   <span class="item-text">
-                    ${hass.localize(`panel.profile`)}
+                    ${hass.user.name}
                   </span>
                 </paper-icon-item>
               </a>
@@ -281,17 +281,6 @@ class HaSidebar extends LitElement {
     });
     this.addEventListener("mouseleave", () => {
       this._contract();
-    });
-    this.addEventListener("click", (ev) => {
-      for (const el of ev.composedPath()) {
-        if (el instanceof HTMLAnchorElement) {
-          this._contract();
-          break;
-        }
-        if (el instanceof HaSidebar) {
-          break;
-        }
-      }
     });
   }
 
