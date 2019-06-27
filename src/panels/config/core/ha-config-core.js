@@ -37,6 +37,7 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
         <div class$="[[computeClasses(isWide)]]">
           <ha-config-section-core
             is-wide="[[isWide]]"
+            show-advanced="[[showAdvanced]]"
             hass="[[hass]]"
           ></ha-config-section-core>
         </div>
@@ -48,6 +49,7 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
     return {
       hass: Object,
       isWide: Boolean,
+      showAdvanced: Boolean,
     };
   }
 
