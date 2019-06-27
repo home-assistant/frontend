@@ -18,6 +18,8 @@ import "./partial-panel-resolver";
 import { HomeAssistant, Route } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
+// tslint:disable-next-line: no-duplicate-imports
+import { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
@@ -29,9 +31,9 @@ declare global {
 }
 
 class HomeAssistantMain extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public route?: Route;
-  @property({ type: Boolean, reflect: true }) private narrow?: boolean;
+  @property({ type: Boolean }) private narrow?: boolean;
 
   protected render(): TemplateResult | void {
     const hass = this.hass;
@@ -51,7 +53,7 @@ class HomeAssistantMain extends LitElement {
 
       <app-drawer-layout
         fullbleed
-        .forceNarrow=${this.narrow || !hass.dockedSidebar}
+        .forceNarrow=${this.narrow}
         responsive-width="0"
       >
         <app-drawer
@@ -60,9 +62,12 @@ class HomeAssistantMain extends LitElement {
           slot="drawer"
           .disableSwipe=${disableSwipe}
           .swipeOpen=${!disableSwipe}
-          .persistent=${hass.dockedSidebar}
+          .persistent=${!this.narrow}
         >
-          <ha-sidebar .hass=${hass} .alwaysExpand=${this.narrow}></ha-sidebar>
+          <ha-sidebar
+            .hass=${hass}
+            .alwaysExpand=${this.narrow || hass.dockedSidebar}
+          ></ha-sidebar>
         </app-drawer>
 
         <partial-panel-resolver
@@ -78,25 +83,25 @@ class HomeAssistantMain extends LitElement {
     import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 
     this.addEventListener("hass-toggle-menu", () => {
-      const shouldOpen = !this.drawer.opened;
-
-      if (shouldOpen) {
-        if (this.narrow) {
-          this.drawer.open();
+      if (this.narrow) {
+        if (this.drawer.opened) {
+          this.drawer.close();
         } else {
-          fireEvent(this, "hass-dock-sidebar", { dock: true });
+          this.drawer.open();
         }
       } else {
-        this.drawer.close();
-        if (this.hass!.dockedSidebar) {
-          fireEvent(this, "hass-dock-sidebar", { dock: false });
-        }
+        fireEvent(this, "hass-dock-sidebar", {
+          dock: !this.hass.dockedSidebar,
+        });
+        setTimeout(() => this.appLayout.resetLayout());
       }
     });
   }
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+
+    this.toggleAttribute("expanded", this.narrow || this.hass.dockedSidebar);
 
     if (changedProps.has("route") && this.narrow) {
       this.drawer.close();
@@ -118,6 +123,10 @@ class HomeAssistantMain extends LitElement {
     return this.shadowRoot!.querySelector("app-drawer")!;
   }
 
+  private get appLayout(): AppDrawerLayoutElement {
+    return this.shadowRoot!.querySelector("app-drawer-layout")!;
+  }
+
   static get styles(): CSSResult {
     return css`
       :host {
@@ -126,7 +135,7 @@ class HomeAssistantMain extends LitElement {
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         --app-drawer-width: 64px;
       }
-      :host([narrow]) {
+      :host([expanded]) {
         --app-drawer-width: 256px;
       }
       partial-panel-resolver,

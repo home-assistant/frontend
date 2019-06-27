@@ -277,10 +277,6 @@ class HaSidebar extends LitElement {
       this._contract();
     });
     this.addEventListener("click", (ev) => {
-      // Do not contract sidebar if clicked within the contracted sidebar width
-      if (ev.clientX < 64) {
-        return;
-      }
       for (const el of ev.composedPath()) {
         if (el instanceof HTMLAnchorElement) {
           this._contract();
@@ -339,7 +335,7 @@ class HaSidebar extends LitElement {
       }
 
       .logo {
-        height: 64px;
+        height: 65px;
         box-sizing: border-box;
         padding: 8px;
         border-bottom: 1px solid transparent;
