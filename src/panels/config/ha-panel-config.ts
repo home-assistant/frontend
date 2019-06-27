@@ -5,6 +5,10 @@ import { HomeAssistant } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
+import {
+  CoreFrontendUserData,
+  getOptimisticFrontendUserDataCollection,
+} from "../../data/frontend";
 
 declare global {
   // for fire event
@@ -17,8 +21,6 @@ declare global {
 class HaPanelConfig extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
-  @property() public _wideSidebar: boolean = false;
-  @property() public _wide: boolean = false;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -93,6 +95,9 @@ class HaPanelConfig extends HassRouterPage {
     },
   };
 
+  @property() private _wideSidebar: boolean = false;
+  @property() private _wide: boolean = false;
+  @property() private _coreUserData?: CoreFrontendUserData;
   @property() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
@@ -107,6 +112,14 @@ class HaPanelConfig extends HassRouterPage {
     this._listeners.push(
       listenMediaQuery("(min-width: 1296px)", (matches) => {
         this._wideSidebar = matches;
+      })
+    );
+    this._listeners.push(
+      getOptimisticFrontendUserDataCollection(
+        this.hass.connection,
+        "core"
+      ).subscribe((coreUserData) => {
+        this._coreUserData = coreUserData || {};
       })
     );
   }
@@ -131,6 +144,7 @@ class HaPanelConfig extends HassRouterPage {
   protected updatePageEl(el) {
     el.route = this.routeTail;
     el.hass = this.hass;
+    el.showAdvanced = !!(this._coreUserData && this._coreUserData.showAdvanced);
     el.isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;
     el.narrow = this.narrow;
     el.cloudStatus = this._cloudStatus;
