@@ -11,11 +11,14 @@ import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
 
+import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
+
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
 import "./ha-change-password-card";
 import "./ha-mfa-modules-card";
+import "./ha-advanced-mode-card";
 import "./ha-refresh-tokens-card";
 import "./ha-long-lived-access-tokens-card";
 
@@ -98,6 +101,11 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
             mfa-modules="[[hass.user.mfa_modules]]"
           ></ha-mfa-modules-card>
 
+          <ha-advanced-mode-card
+            hass="[[hass]]"
+            core-user-data="[[_coreUserData]]"
+          ></ha-mfa-modules-card>
+
           <ha-refresh-tokens-card
             hass="[[hass]]"
             refresh-tokens="[[_refreshTokens]]"
@@ -119,12 +127,27 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
       hass: Object,
       narrow: Boolean,
       _refreshTokens: Array,
+      _coreUserData: Object,
     };
   }
 
   connectedCallback() {
     super.connectedCallback();
     this._refreshRefreshTokens();
+    this._unsubCoreData = getOptimisticFrontendUserDataCollection(
+      this.hass.connection,
+      "core"
+    ).subscribe((coreUserData) => {
+      this._coreUserData = coreUserData;
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubCoreData) {
+      this._unsubCoreData();
+      this._unsubCoreData = undefined;
+    }
   }
 
   async _refreshRefreshTokens() {

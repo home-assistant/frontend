@@ -1,8 +1,14 @@
-import { HomeAssistant } from "../types";
+import { Connection } from "home-assistant-js-websocket";
+import { getOptimisticCollection } from "./collection";
+
+export interface CoreFrontendUserData {
+  showAdvanced?: boolean;
+}
 
 declare global {
-  // tslint:disable-next-line
-  interface FrontendUserData {}
+  interface FrontendUserData {
+    core: CoreFrontendUserData;
+  }
 }
 
 export type ValidUserDataKey = keyof FrontendUserData;
@@ -10,10 +16,10 @@ export type ValidUserDataKey = keyof FrontendUserData;
 export const fetchFrontendUserData = async <
   UserDataKey extends ValidUserDataKey
 >(
-  hass: HomeAssistant,
+  conn: Connection,
   key: UserDataKey
 ): Promise<FrontendUserData[UserDataKey] | null> => {
-  const result = await hass.callWS<{
+  const result = await conn.sendMessagePromise<{
     value: FrontendUserData[UserDataKey] | null;
   }>({
     type: "frontend/get_user_data",
@@ -25,12 +31,31 @@ export const fetchFrontendUserData = async <
 export const saveFrontendUserData = async <
   UserDataKey extends ValidUserDataKey
 >(
-  hass: HomeAssistant,
+  conn: Connection,
   key: UserDataKey,
   value: FrontendUserData[UserDataKey]
 ): Promise<void> =>
-  hass.callWS<void>({
+  conn.sendMessagePromise<void>({
     type: "frontend/set_user_data",
     key,
     value,
   });
+
+export const getOptimisticFrontendUserDataCollection = <
+  UserDataKey extends ValidUserDataKey
+>(
+  conn: Connection,
+  userDataKey: UserDataKey
+) =>
+  getOptimisticCollection(
+    (_conn, data) =>
+      saveFrontendUserData(
+        conn,
+        userDataKey,
+        // @ts-ignore
+        data
+      ),
+    conn,
+    `_frontendUserData-${userDataKey}`,
+    () => fetchFrontendUserData(conn, userDataKey)
+  );
