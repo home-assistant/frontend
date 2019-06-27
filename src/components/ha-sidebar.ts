@@ -71,6 +71,8 @@ const computePanels = (hass: HomeAssistant) => {
  */
 class HaSidebar extends LitElement {
   @property() public hass?: HomeAssistant;
+  @property({ type: Boolean }) public alwaysExpand = false;
+  @property({ type: Boolean, reflect: true }) public expanded = false;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
@@ -83,16 +85,24 @@ class HaSidebar extends LitElement {
     }
 
     return html`
-      <app-toolbar>
-        <div main-title>Home Assistant</div>
-        ${hass.user
-          ? html`
-              <a href="/profile">
-                <ha-user-badge .user=${hass.user}></ha-user-badge>
-              </a>
-            `
-          : ""}
-      </app-toolbar>
+      ${this.expanded
+        ? html`
+            <app-toolbar>
+              <div main-title>Home Assistant</div>
+              ${hass.user
+                ? html`
+                    <a href="/profile">
+                      <ha-user-badge .user=${hass.user}></ha-user-badge>
+                    </a>
+                  `
+                : ""}
+            </app-toolbar>
+          `
+        : html`
+            <div class="logo">
+              <img id="logo" src="/static/icons/favicon-192x192.png" />
+            </div>
+          `}
 
       <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
         <a
@@ -156,7 +166,7 @@ class HaSidebar extends LitElement {
           : html``}
       </paper-listbox>
 
-      ${hass.user && hass.user.is_admin
+      ${this.expanded && hass.user && hass.user.is_admin
         ? html`
             <div>
               <div class="divider"></div>
@@ -220,7 +230,11 @@ class HaSidebar extends LitElement {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_externalConfig")) {
+    if (
+      changedProps.has("_externalConfig") ||
+      changedProps.has("expanded") ||
+      changedProps.has("alwaysExpand")
+    ) {
       return true;
     }
     if (!this.hass || !changedProps.has("hass")) {
@@ -247,6 +261,38 @@ class HaSidebar extends LitElement {
         this._externalConfig = conf;
       });
     }
+    this.addEventListener("mouseenter", () => {
+      this.expanded = true;
+    });
+    this.addEventListener("mouseleave", () => {
+      this._contract();
+    });
+    this.addEventListener("click", (ev) => {
+      // Do not contract sidebar if clicked within the contracted sidebar width
+      if (ev.clientX < 64) {
+        return;
+      }
+      for (const el of ev.composedPath()) {
+        if (el instanceof HTMLAnchorElement) {
+          this._contract();
+          break;
+        }
+        if (el instanceof HaSidebar) {
+          break;
+        }
+      }
+    });
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (changedProps.has("alwaysExpand")) {
+      this.expanded = this.alwaysExpand;
+    }
+  }
+
+  private _contract() {
+    this.expanded = this.alwaysExpand || false;
   }
 
   private _handleLogOut() {
@@ -265,7 +311,7 @@ class HaSidebar extends LitElement {
       :host {
         height: 100%;
         display: block;
-        overflow: auto;
+        overflow: hidden auto;
         -ms-user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -274,9 +320,26 @@ class HaSidebar extends LitElement {
           --sidebar-background-color,
           var(--primary-background-color)
         );
+        width: 64px;
+        transition: width 0.2s ease-in;
+      }
+      :host([expanded]) {
+        transition-delay: 0.2s;
+        width: 256px;
+      }
+
+      .logo {
+        height: 64px;
+        box-sizing: border-box;
+        padding: 8px;
+        border-bottom: 1px solid transparent;
+      }
+      .logo img {
+        width: 48px;
       }
 
       app-toolbar {
+        white-space: nowrap;
         font-weight: 400;
         color: var(--primary-text-color);
         border-bottom: 1px solid var(--divider-color);
@@ -285,6 +348,11 @@ class HaSidebar extends LitElement {
 
       app-toolbar a {
         color: var(--primary-text-color);
+      }
+
+      ha-user-badge {
+        position: relative;
+        top: 3px;
       }
 
       paper-listbox {
@@ -299,10 +367,15 @@ class HaSidebar extends LitElement {
       }
 
       paper-icon-item {
+        box-sizing: border-box;
         margin: 8px;
-        padding-left: 9px;
+        padding-left: 12px;
         border-radius: 4px;
         --paper-item-min-height: 40px;
+        width: 48px;
+      }
+      :host([expanded]) paper-icon-item {
+        width: 240px;
       }
 
       ha-icon[slot="item-icon"] {
@@ -342,6 +415,13 @@ class HaSidebar extends LitElement {
         color: var(--sidebar-selected-text-color);
       }
 
+      a .item-text {
+        display: none;
+      }
+      :host([expanded]) a .item-text {
+        display: block;
+      }
+
       paper-icon-item.logout {
         margin-top: 16px;
       }
@@ -357,6 +437,7 @@ class HaSidebar extends LitElement {
         font-weight: 500;
         font-size: 14px;
         padding: 16px;
+        white-space: nowrap;
       }
 
       .dev-tools {

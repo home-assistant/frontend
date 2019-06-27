@@ -31,7 +31,7 @@ declare global {
 class HomeAssistantMain extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public route?: Route;
-  @property() private _narrow?: boolean;
+  @property({ type: Boolean, reflect: true }) private narrow?: boolean;
 
   protected render(): TemplateResult | void {
     const hass = this.hass;
@@ -40,7 +40,8 @@ class HomeAssistantMain extends LitElement {
       return;
     }
 
-    const disableSwipe = NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
+    const disableSwipe =
+      !this.narrow || NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
 
     return html`
       <iron-media-query
@@ -50,7 +51,7 @@ class HomeAssistantMain extends LitElement {
 
       <app-drawer-layout
         fullbleed
-        .forceNarrow=${this._narrow || !hass.dockedSidebar}
+        .forceNarrow=${this.narrow || !hass.dockedSidebar}
         responsive-width="0"
       >
         <app-drawer
@@ -61,11 +62,11 @@ class HomeAssistantMain extends LitElement {
           .swipeOpen=${!disableSwipe}
           .persistent=${hass.dockedSidebar}
         >
-          <ha-sidebar .hass=${hass}></ha-sidebar>
+          <ha-sidebar .hass=${hass} .alwaysExpand=${this.narrow}></ha-sidebar>
         </app-drawer>
 
         <partial-panel-resolver
-          .narrow=${this._narrow}
+          .narrow=${this.narrow}
           .hass=${hass}
           .route=${this.route}
         ></partial-panel-resolver>
@@ -80,7 +81,7 @@ class HomeAssistantMain extends LitElement {
       const shouldOpen = !this.drawer.opened;
 
       if (shouldOpen) {
-        if (this._narrow) {
+        if (this.narrow) {
           this.drawer.open();
         } else {
           fireEvent(this, "hass-dock-sidebar", { dock: true });
@@ -97,7 +98,7 @@ class HomeAssistantMain extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    if (changedProps.has("route") && this._narrow) {
+    if (changedProps.has("route") && this.narrow) {
       this.drawer.close();
     }
 
@@ -110,7 +111,7 @@ class HomeAssistantMain extends LitElement {
   }
 
   private _narrowChanged(ev: PolymerChangedEvent<boolean>) {
-    this._narrow = ev.detail.value;
+    this.narrow = ev.detail.value;
   }
 
   private get drawer(): AppDrawerElement {
@@ -123,6 +124,10 @@ class HomeAssistantMain extends LitElement {
         color: var(--primary-text-color);
         /* remove the grey tap highlights in iOS on the fullscreen touch targets */
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        --app-drawer-width: 64px;
+      }
+      :host([narrow]) {
+        --app-drawer-width: 256px;
       }
       partial-panel-resolver,
       ha-sidebar {
