@@ -21,6 +21,11 @@ import {
   getExternalConfig,
   ExternalConfig,
 } from "../external_app/external_config";
+import {
+  PersistentNotification,
+  subscribeNotifications,
+} from "../data/persistent_notification";
+import computeDomain from "../common/entity/compute_domain";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -102,12 +107,14 @@ const renderPanel = (hass, panel) => html`
  * @appliesMixin LocalizeMixin
  */
 class HaSidebar extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
+
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
+  @property() private _notifications?: PersistentNotification[];
 
   protected render() {
     const hass = this.hass;
@@ -117,6 +124,15 @@ class HaSidebar extends LitElement {
     }
 
     const [beforeSpacer, afterSpacer] = computePanels(hass);
+
+    let notificationCount = this._notifications
+      ? this._notifications.length
+      : 0;
+    for (const entityId in hass.states) {
+      if (computeDomain(entityId) === "configurator") {
+        notificationCount++;
+      }
+    }
 
     return html`
       ${this.expanded
@@ -167,57 +183,60 @@ class HaSidebar extends LitElement {
                     slot="item-icon"
                     icon="hass:cellphone-settings-variant"
                   ></ha-icon>
-                  <span class="item-text"
-                    >${hass.localize(
-                      "ui.sidebar.external_app_configuration"
-                    )}</span
-                  >
-                </paper-icon-item>
-              </a>
-            `
-          : ""}
-        ${hass.user
-          ? html`
-              <a
-                href="/profile"
-                data-panel="panel"
-                tabindex="-1"
-                aria-role="option"
-                aria-label=${hass.localize("panel.profile")}
-              >
-                <paper-icon-item class="profile">
-                  <ha-user-badge
-                    slot="item-icon"
-                    .user=${hass.user}
-                  ></ha-user-badge>
-
                   <span class="item-text">
-                    ${hass.user.name}
+                    ${hass.localize("ui.sidebar.external_app_configuration")}
                   </span>
                 </paper-icon-item>
               </a>
             `
-          : html`
-              <paper-icon-item
-                @click=${this._handleLogOut}
-                class="logout"
-                aria-role="option"
-              >
-                <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
-                <span class="item-text"
-                  >${hass.localize("ui.sidebar.log_out")}</span
-                >
-              </paper-icon-item>
-            `}
+          : ""}
+
+        <div disabled class="divider sticky-el"></div>
+
+        <paper-icon-item
+          class="notifications sticky-el"
+          aria-role="option"
+          @click=${this._handleShowNotificationDrawer}
+        >
+          <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
+          ${notificationCount > 0
+            ? html`
+                <span class="notification-badge" slot="item-icon">
+                  ${notificationCount}
+                </span>
+              `
+            : ""}
+          <span class="item-text">
+            ${hass.localize("ui.notification_drawer.title")}
+          </span>
+        </paper-icon-item>
+
+        <a
+          class="profile sticky-el"
+          href="/profile"
+          data-panel="panel"
+          tabindex="-1"
+          aria-role="option"
+          aria-label=${hass.localize("panel.profile")}
+        >
+          <paper-icon-item>
+            <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
+
+            <span class="item-text">
+              ${hass.user ? hass.user.name : ""}
+            </span>
+          </paper-icon-item>
+        </a>
       </paper-listbox>
     `;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (
-      changedProps.has("_externalConfig") ||
       changedProps.has("expanded") ||
-      changedProps.has("alwaysExpand")
+      changedProps.has("alwaysExpand") ||
+      changedProps.has("_externalConfig") ||
+      changedProps.has("_notifications")
     ) {
       return true;
     }
@@ -233,7 +252,8 @@ class HaSidebar extends LitElement {
       hass.panels !== oldHass.panels ||
       hass.panelUrl !== oldHass.panelUrl ||
       hass.user !== oldHass.user ||
-      hass.localize !== oldHass.localize
+      hass.localize !== oldHass.localize ||
+      hass.states !== oldHass.states
     );
   }
 
@@ -253,6 +273,17 @@ class HaSidebar extends LitElement {
     this.addEventListener("mouseleave", () => {
       this._contract();
     });
+    subscribeNotifications(this.hass.connection, (notifications) => {
+      this._notifications = notifications;
+    });
+    // Deal with configurator
+    // private _updateNotifications(
+    //   states: HassEntities,
+    //   persistent: unknown[]
+    // ): unknown[] {
+    //   const configurator = computeNotifications(states);
+    //   return persistent.concat(configurator);
+    // }
   }
 
   protected updated(changedProps) {
@@ -266,13 +297,13 @@ class HaSidebar extends LitElement {
     this.expanded = this.alwaysExpand || false;
   }
 
-  private _handleLogOut() {
-    fireEvent(this, "hass-logout");
+  private _handleShowNotificationDrawer() {
+    fireEvent(this, "hass-show-notifications");
   }
 
   private _handleExternalAppConfiguration(ev: Event) {
     ev.preventDefault();
-    this.hass!.auth.external!.fireMessage({
+    this.hass.auth.external!.fireMessage({
       type: "config_screen/show",
     });
   }
@@ -386,22 +417,62 @@ class HaSidebar extends LitElement {
         color: var(--sidebar-selected-text-color);
       }
 
-      a .item-text {
+      paper-icon-item .item-text {
         display: none;
       }
-      :host([expanded]) a .item-text {
+      :host([expanded]) paper-icon-item .item-text {
         display: block;
       }
 
-      paper-icon-item.logout {
-        margin-top: 16px;
+      .divider {
+        bottom: 88px;
+        padding: 10px 0;
       }
 
-      paper-icon-item.profile {
+      .divider::before {
+        content: " ";
+        display: block;
+        height: 1px;
+        background-color: var(--divider-color);
+      }
+
+      .notifications {
+        margin-top: 0;
+        margin-bottom: 0;
+        bottom: 48px;
+        cursor: pointer;
+      }
+      .profile {
+        bottom: 0;
+      }
+      .profile paper-icon-item {
         padding-left: 4px;
       }
       .profile .item-text {
         margin-left: 8px;
+      }
+
+      .sticky-el {
+        position: sticky;
+        background-color: var(
+          --sidebar-background-color,
+          var(--primary-background-color)
+        );
+      }
+
+      .notification-badge {
+        position: absolute;
+        font-weight: 400;
+        bottom: 14px;
+        left: 26px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        padding: 0px 6px;
+        font-size: 0.65em;
+        color: var(--text-primary-color);
       }
 
       .spacer {
