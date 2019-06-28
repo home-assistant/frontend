@@ -41,6 +41,7 @@ class HuiEntitiesToggle extends LitElement {
 
     return html`
       <paper-toggle-button
+        aria-label="Toggle entities."
         ?checked="${this._toggleEntities!.some((entityId) => {
           const stateObj = this.hass!.states[entityId];
           return stateObj && stateObj.state === "on";
