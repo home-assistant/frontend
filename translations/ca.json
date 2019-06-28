@@ -338,7 +338,7 @@
                             "validation": {
                                 "heading": "Validació de la configuració",
                                 "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que no té problemes.",
-                                "check_config": "Comprovar la configuració",
+                                "check_config": "Comprova la configuració",
                                 "valid": "La configuració és vàlida!",
                                 "invalid": "La configuració és invàlida"
                             },
@@ -353,8 +353,8 @@
                             "server_management": {
                                 "heading": "Gestió del servidor",
                                 "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
-                                "restart": "Reiniciar",
-                                "stop": "Aturar"
+                                "restart": "Reinicia",
+                                "stop": "Atura"
                             },
                             "core_config": {
                                 "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
