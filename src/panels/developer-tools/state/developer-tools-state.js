@@ -1,6 +1,3 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -8,10 +5,9 @@ import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/entity/ha-entity-picker";
-import "../../components/ha-menu-button";
-import "../../resources/ha-style";
-import { EventsMixin } from "../../mixins/events-mixin";
+import "../../../components/entity/ha-entity-picker";
+import "../../../resources/ha-style";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 /*
  * @appliesMixin EventsMixin
@@ -24,9 +20,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
-        }
-
-        .content {
+          display: block;
           padding: 16px;
           direction: ltr;
         }
@@ -70,107 +64,96 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
         }
       </style>
 
-      <app-header-layout has-scrolling-region>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-menu-button></ha-menu-button>
-            <div main-title>States</div>
-          </app-toolbar>
-        </app-header>
+      <div>
+        <p>
+          Set the representation of a device within Home Assistant.<br />
+          This will not communicate with the actual device.
+        </p>
 
-        <div class="content">
-          <div>
-            <p>
-              Set the representation of a device within Home Assistant.<br />
-              This will not communicate with the actual device.
-            </p>
+        <ha-entity-picker
+          autofocus
+          hass="[[hass]]"
+          value="{{_entityId}}"
+          allow-custom-entity
+        ></ha-entity-picker>
+        <paper-input
+          label="State"
+          required
+          autocapitalize="none"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          value="{{_state}}"
+          class="state-input"
+        ></paper-input>
+        <paper-textarea
+          label="State attributes (JSON, optional)"
+          autocapitalize="none"
+          autocomplete="off"
+          spellcheck="false"
+          value="{{_stateAttributes}}"
+        ></paper-textarea>
+        <mwc-button on-click="handleSetState" raised>Set State</mwc-button>
+      </div>
 
-            <ha-entity-picker
-              autofocus
-              hass="[[hass]]"
-              value="{{_entityId}}"
-              allow-custom-entity
-            ></ha-entity-picker>
+      <h1>Current entities</h1>
+      <table class="entities">
+        <tr>
+          <th>Entity</th>
+          <th>State</th>
+          <th hidden$="[[narrow]]">
+            Attributes
+            <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
+          </th>
+        </tr>
+        <tr>
+          <th>
             <paper-input
-              label="State"
-              required
-              autocapitalize="none"
-              autocomplete="off"
-              autocorrect="off"
-              spellcheck="false"
-              value="{{_state}}"
-              class="state-input"
+              label="Filter entities"
+              type="search"
+              value="{{_entityFilter}}"
             ></paper-input>
-            <paper-textarea
-              label="State attributes (JSON, optional)"
-              autocapitalize="none"
-              autocomplete="off"
-              spellcheck="false"
-              value="{{_stateAttributes}}"
-            ></paper-textarea>
-            <mwc-button on-click="handleSetState" raised>Set State</mwc-button>
-          </div>
-
-          <h1>Current entities</h1>
-          <table class="entities">
-            <tr>
-              <th>Entity</th>
-              <th>State</th>
-              <th hidden$="[[narrow]]">
-                Attributes
-                <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
-              </th>
-            </tr>
-            <tr>
-              <th>
-                <paper-input
-                  label="Filter entities"
-                  type="search"
-                  value="{{_entityFilter}}"
-                ></paper-input>
-              </th>
-              <th>
-                <paper-input
-                  label="Filter states"
-                  type="search"
-                  value="{{_stateFilter}}"
-                ></paper-input>
-              </th>
-              <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
-                <paper-input
-                  label="Filter attributes"
-                  type="search"
-                  value="{{_attributeFilter}}"
-                ></paper-input>
-              </th>
-            </tr>
-            <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
-              <td colspan="3">No entities</td>
-            </tr>
-            <template is="dom-repeat" items="[[_entities]]" as="entity">
-              <tr>
-                <td>
-                  <paper-icon-button
-                    on-click="entityMoreInfo"
-                    icon="hass:open-in-new"
-                    alt="More Info"
-                    title="More Info"
-                  >
-                  </paper-icon-button>
-                  <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
-                </td>
-                <td>[[entity.state]]</td>
-                <template
-                  is="dom-if"
-                  if="[[computeShowAttributes(narrow, _showAttributes)]]"
-                >
-                  <td>[[attributeString(entity)]]</td>
-                </template>
-              </tr>
+          </th>
+          <th>
+            <paper-input
+              label="Filter states"
+              type="search"
+              value="{{_stateFilter}}"
+            ></paper-input>
+          </th>
+          <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
+            <paper-input
+              label="Filter attributes"
+              type="search"
+              value="{{_attributeFilter}}"
+            ></paper-input>
+          </th>
+        </tr>
+        <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
+          <td colspan="3">No entities</td>
+        </tr>
+        <template is="dom-repeat" items="[[_entities]]" as="entity">
+          <tr>
+            <td>
+              <paper-icon-button
+                on-click="entityMoreInfo"
+                icon="hass:open-in-new"
+                alt="More Info"
+                title="More Info"
+              >
+              </paper-icon-button>
+              <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
+            </td>
+            <td>[[entity.state]]</td>
+            <template
+              is="dom-if"
+              if="[[computeShowAttributes(narrow, _showAttributes)]]"
+            >
+              <td>[[attributeString(entity)]]</td>
             </template>
-          </table>
-        </div>
-      </app-header-layout>
+          </tr>
+        </template>
+      </table>
     `;
   }
 
@@ -351,4 +334,4 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define("ha-panel-dev-state", HaPanelDevState);
+customElements.define("developer-tools-state", HaPanelDevState);
