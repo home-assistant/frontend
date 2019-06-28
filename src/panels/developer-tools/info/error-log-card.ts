@@ -9,8 +9,8 @@ import {
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@material/mwc-button";
 
-import { HomeAssistant } from "../../types";
-import { fetchErrorLog } from "../../data/error_log";
+import { HomeAssistant } from "../../../types";
+import { fetchErrorLog } from "../../../data/error_log";
 
 class ErrorLogCard extends LitElement {
   public hass?: HomeAssistant;

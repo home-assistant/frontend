@@ -1,6 +1,3 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-spinner/paper-spinner";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
@@ -8,8 +5,7 @@ import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/ha-menu-button";
-import "../../resources/ha-style";
+import "../../../resources/ha-style";
 
 class HaPanelDevTemplate extends PolymerElement {
   static get template() {
@@ -67,52 +63,43 @@ class HaPanelDevTemplate extends PolymerElement {
         }
       </style>
 
-      <app-header-layout has-scrolling-region>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-menu-button></ha-menu-button>
-            <div main-title>Templates</div>
-          </app-toolbar>
-        </app-header>
-
-        <div class$="[[computeFormClasses(narrow)]]">
-          <div class="edit-pane">
-            <p>
-              Templates are rendered using the Jinja2 template engine with some
-              Home Assistant specific extensions.
-            </p>
-            <ul>
-              <li>
-                <a
-                  href="http://jinja.pocoo.org/docs/dev/templates/"
-                  target="_blank"
-                  >Jinja2 template documentation</a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://home-assistant.io/docs/configuration/templating/"
-                  target="_blank"
-                  >Home Assistant template extensions</a
-                >
-              </li>
-            </ul>
-            <paper-textarea
-              label="Template editor"
-              value="{{template}}"
-              autofocus
-            ></paper-textarea>
-          </div>
-
-          <div class="render-pane">
-            <paper-spinner
-              class="render-spinner"
-              active="[[rendering]]"
-            ></paper-spinner>
-            <pre class$="[[computeRenderedClasses(error)]]">[[processed]]</pre>
-          </div>
+      <div class$="[[computeFormClasses(narrow)]]">
+        <div class="edit-pane">
+          <p>
+            Templates are rendered using the Jinja2 template engine with some
+            Home Assistant specific extensions.
+          </p>
+          <ul>
+            <li>
+              <a
+                href="http://jinja.pocoo.org/docs/dev/templates/"
+                target="_blank"
+                >Jinja2 template documentation</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://home-assistant.io/docs/configuration/templating/"
+                target="_blank"
+                >Home Assistant template extensions</a
+              >
+            </li>
+          </ul>
+          <paper-textarea
+            label="Template editor"
+            value="{{template}}"
+            autofocus
+          ></paper-textarea>
         </div>
-      </app-header-layout>
+
+        <div class="render-pane">
+          <paper-spinner
+            class="render-spinner"
+            active="[[rendering]]"
+          ></paper-spinner>
+          <pre class$="[[computeRenderedClasses(error)]]">[[processed]]</pre>
+        </div>
+      </div>
     `;
   }
 
@@ -207,4 +194,4 @@ For loop example:
   }
 }
 
-customElements.define("ha-panel-dev-template", HaPanelDevTemplate);
+customElements.define("developer-tools-template", HaPanelDevTemplate);
