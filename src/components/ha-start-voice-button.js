@@ -14,6 +14,7 @@ class HaStartVoiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
       <paper-icon-button
+        aria-label="Start conversation"
         icon="hass:microphone"
         hidden$="[[!canListen]]"
         on-click="handleListenClick"
