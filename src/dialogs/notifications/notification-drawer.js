@@ -176,6 +176,16 @@ export class HuiNotificationDrawer extends EventsMixin(
     };
   }
 
+  ready() {
+    super.ready();
+    window.addEventListener("location-changed", () => {
+      // close drawer when we navigate away.
+      if (this.open) {
+        this.open = false;
+      }
+    });
+  }
+
   _closeDrawer(ev) {
     ev.stopPropagation();
     this.open = false;
