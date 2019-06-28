@@ -7,6 +7,7 @@ import { DEFAULT_DOMAIN_ICON } from "../const";
 
 const fixedIcons = {
   alert: "hass:alert",
+  alexa: "hass:amazon-alexa",
   automation: "hass:playlist-play",
   calendar: "hass:calendar",
   camera: "hass:video",
@@ -15,6 +16,7 @@ const fixedIcons = {
   conversation: "hass:text-to-speech",
   device_tracker: "hass:account",
   fan: "hass:fan",
+  google_assistant: "hass:google-assistant",
   group: "hass:google-circles-communities",
   history_graph: "hass:chart-line",
   homeassistant: "hass:home-assistant",

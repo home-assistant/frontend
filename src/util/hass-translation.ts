@@ -1,6 +1,6 @@
 import { translationMetadata } from "../resources/translations-metadata";
-import { fetchFrontendUserData } from "../data/frontend";
 import { HomeAssistant } from "../types";
+import { fetchTranslationPreferences } from "../data/translation";
 
 const STORAGE = window.localStorage || {};
 
@@ -43,7 +43,7 @@ function findAvailableLanguage(language: string) {
  * Get user selected language from backend
  */
 export async function getUserLanguage(hass: HomeAssistant) {
-  const result = await fetchFrontendUserData(hass, "language");
+  const result = await fetchTranslationPreferences(hass);
   const language = result ? result.language : null;
   if (language) {
     const availableLanguage = findAvailableLanguage(language);
