@@ -68,6 +68,7 @@ const computePanels = (hass: HomeAssistant) => {
 
 const renderPanel = (hass, panel) => html`
   <a
+    aria-role="option"
     href="${computeUrl(panel.url_path)}"
     data-panel="${panel.url_path}"
     tabindex="-1"
@@ -115,12 +116,17 @@ class HaSidebar extends LitElement {
           `
         : html`
             <div class="logo">
-              <img id="logo" src="/static/icons/favicon-192x192.png" />
+              <img
+                id="logo"
+                src="/static/icons/favicon-192x192.png"
+                alt="Home Assistant logo"
+              />
             </div>
           `}
 
       <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
         <a
+          aria-role="option"
           href="${computeUrl(this._defaultPage)}"
           data-panel=${this._defaultPage}
           tabindex="-1"
@@ -197,6 +203,7 @@ class HaSidebar extends LitElement {
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
               <a
+                aria-role="option"
                 aria-label="App Configuration"
                 href="#external-app-configuration"
                 tabindex="-1"
@@ -219,7 +226,13 @@ class HaSidebar extends LitElement {
         ${configPanel ? renderPanel(hass, configPanel) : ""}
         ${hass.user
           ? html`
-              <a href="/profile" data-panel="panel" tabindex="-1">
+              <a
+                href="/profile"
+                data-panel="panel"
+                tabindex="-1"
+                aria-role="option"
+                aria-label=${hass.localize("panel.profile")}
+              >
                 <paper-icon-item class="profile">
                   <ha-user-badge
                     slot="item-icon"
@@ -233,7 +246,11 @@ class HaSidebar extends LitElement {
               </a>
             `
           : html`
-              <paper-icon-item @click=${this._handleLogOut} class="logout">
+              <paper-icon-item
+                @click=${this._handleLogOut}
+                class="logout"
+                aria-role="option"
+              >
                 <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
                 <span class="item-text"
                   >${hass.localize("ui.sidebar.log_out")}</span

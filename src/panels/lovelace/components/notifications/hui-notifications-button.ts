@@ -23,6 +23,7 @@ class HuiNotificationsButton extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <paper-icon-button
+        aria-label="Show Notifications"
         icon="hass:bell"
         @click="${this._clicked}"
       ></paper-icon-button>
