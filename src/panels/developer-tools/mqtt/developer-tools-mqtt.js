@@ -7,10 +7,10 @@ import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../components/ha-card";
-import "../../components/ha-menu-button";
-import "../../resources/ha-style";
-import "../../util/app-localstorage-document";
+import "../../../components/ha-card";
+import "../../../components/ha-menu-button";
+import "../../../resources/ha-style";
+import "../../../util/app-localstorage-document";
 
 class HaPanelDevMqtt extends PolymerElement {
   static get template() {
@@ -86,4 +86,4 @@ class HaPanelDevMqtt extends PolymerElement {
   }
 }
 
-customElements.define("ha-panel-dev-mqtt", HaPanelDevMqtt);
+customElements.define("developer-tools-mqtt", HaPanelDevMqtt);
