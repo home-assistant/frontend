@@ -6,18 +6,19 @@ import {
   TemplateResult,
   html,
 } from "lit-element";
+import { HassEntity } from "home-assistant-js-websocket";
 
-import "./hui-configurator-notification-item";
-import "./hui-persistent-notification-item";
+import "./configurator-notification-item";
+import "./persistent-notification-item";
 
-import { HomeAssistant } from "../../../../types";
-import { HassNotification } from "./types";
+import { HomeAssistant } from "../../types";
+import { PersistentNotification } from "../../data/persistent_notification";
 
-@customElement("hui-notification-item")
+@customElement("notification-item")
 export class HuiNotificationItem extends LitElement {
   @property() public hass?: HomeAssistant;
 
-  @property() public notification?: HassNotification;
+  @property() public notification?: HassEntity | PersistentNotification;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (!this.hass || !this.notification || changedProps.has("notification")) {
@@ -32,24 +33,24 @@ export class HuiNotificationItem extends LitElement {
       return html``;
     }
 
-    return this.notification.entity_id
+    return "entity_id" in this.notification
       ? html`
-          <hui-configurator-notification-item
+          <configurator-notification-item
             .hass="${this.hass}"
             .notification="${this.notification}"
-          ></hui-configurator-notification-item>
+          ></configurator-notification-item>
         `
       : html`
-          <hui-persistent-notification-item
+          <persistent-notification-item
             .hass="${this.hass}"
             .notification="${this.notification}"
-          ></hui-persistent-notification-item>
+          ></persistent-notification-item>
         `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-notification-item": HuiNotificationItem;
+    "notification-item": HuiNotificationItem;
   }
 }
