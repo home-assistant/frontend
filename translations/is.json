@@ -3,13 +3,14 @@
         "config": "Stillingar",
         "states": "Yfirlit",
         "map": "Kort",
-        "logbook": "Logbók",
+        "logbook": "Breytingarsaga",
         "history": "Saga",
         "mailbox": "Pósthólf",
         "shopping_list": "Innkaupalisti",
         "dev-services": "Þjónustur",
         "dev-states": "Stöður",
         "dev-events": "Viðburðir",
+        "dev-templates": "Skapalón",
         "dev-mqtt": "MQTT",
         "dev-info": "Upplýsingar",
         "calendar": "Dagatal",
@@ -75,6 +76,10 @@
                 "off": "Aftengdur",
                 "on": "Tengdur"
             },
+            "cold": {
+                "off": "Venjulegt",
+                "on": "Kalt"
+            },
             "door": {
                 "off": "Lokuð",
                 "on": "Opin"
@@ -82,6 +87,10 @@
             "garage_door": {
                 "off": "Lokuð",
                 "on": "Opin"
+            },
+            "heat": {
+                "off": "Venjulegt",
+                "on": "Heitt"
             },
             "window": {
                 "off": "Loka",
@@ -301,6 +310,7 @@
                                 "stop": "Stöðva"
                             },
                             "core_config": {
+                                "edit_requires_storage": "Ritill er óvirkur af því að stillingar eru vistaðar í configuration.yaml.",
                                 "location_name": "Nafnið á Home Assistant uppsetningunni",
                                 "latitude": "Breiddargráða",
                                 "longitude": "Lengdargráða",
@@ -475,7 +485,9 @@
                                 }
                             },
                             "learn_more": "Læra meira um aðgerðir"
-                        }
+                        },
+                        "load_error_not_editable": "Eingöngu er hægt að breyta sjálfvirkni í automations.yaml",
+                        "load_error_unknown": "Villa kom upp við að hlaða inn sjálfvirkni  ({err_no})."
                     }
                 },
                 "script": {
@@ -537,6 +549,7 @@
                     },
                     "config_flow": {
                         "external_step": {
+                            "description": "Þetta skref krefst þess að þú heimsækir ytri vefsíðu svo hægt sé að ljúka þessu skrefi.",
                             "open_site": "Opna vefsíðu"
                         }
                     }
@@ -785,6 +798,7 @@
                     "finish": "Ljúka"
                 },
                 "core-config": {
+                    "intro": "Hæ {name}, velkomin(n) í Home Assistant. Hvað á heimilið þitt að heita?",
                     "location_name_default": "Heima",
                     "button_detect": "Uppgötva",
                     "finish": "Næsta"
@@ -869,12 +883,14 @@
                 "cards": {
                     "demo": {
                         "demo_by": "eftir {name}",
+                        "next_demo": "Næsta sýnidæmi",
                         "learn_more": "Læra meira um Home Assistant"
                     }
                 },
                 "config": {
                     "arsaboo": {
                         "names": {
+                            "family_room": "Fjölskyldurými",
                             "kitchen": "Eldhús",
                             "left": "Vinstri",
                             "right": "Hægri",
@@ -885,7 +901,10 @@
                             "information": "Upplýsingar",
                             "entertainment": "Skemmtun",
                             "activity": "Virkni",
+                            "hdmi_input": "HDMI inntak",
+                            "hdmi_switcher": "HDMI rofi",
                             "volume": "Hljóðstyrkur",
+                            "total_tv_time": "Heildar sjónvarpstími",
                             "turn_tv_off": "Slökkva á sjónvarpi"
                         },
                         "unit": {
@@ -985,6 +1004,7 @@
                 "currently": "Er núna",
                 "on_off": "Kveikt \/ slökkt",
                 "operation": "Aðgerð",
+                "fan_mode": "Viftuhamur",
                 "swing_mode": "Sveifluhamur"
             },
             "lock": {
@@ -1104,6 +1124,7 @@
         "updater": "Uppfærsluálfur",
         "weblink": "Vefslóð",
         "zwave": "Z-Wave",
+        "vacuum": "Ryksuga",
         "zha": "ZHA",
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
