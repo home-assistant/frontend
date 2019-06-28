@@ -326,6 +326,7 @@ class HaSidebar extends LitElement {
         transition: width 0.2s ease-in;
         will-change: width;
         contain: strict;
+        transition-delay: 0.2s;
       }
       :host([expanded]) {
         width: 256px;
