@@ -20,6 +20,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 // tslint:disable-next-line: no-duplicate-imports
 import { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
+import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
@@ -27,6 +28,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-toggle-menu": undefined;
+    "hass-show-notifications": undefined;
   }
 }
 
@@ -66,6 +68,7 @@ class HomeAssistantMain extends LitElement {
         >
           <ha-sidebar
             .hass=${hass}
+            .narrow=${this.narrow}
             .alwaysExpand=${this.narrow || hass.dockedSidebar}
           ></ha-sidebar>
         </app-drawer>
@@ -95,6 +98,12 @@ class HomeAssistantMain extends LitElement {
         });
         setTimeout(() => this.appLayout.resetLayout());
       }
+    });
+
+    this.addEventListener("hass-show-notifications", () => {
+      showNotificationDrawer(this, {
+        narrow: this.narrow!,
+      });
     });
   }
 
