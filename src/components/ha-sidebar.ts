@@ -14,7 +14,6 @@ import "@polymer/paper-listbox/paper-listbox";
 import "./ha-icon";
 
 import "../components/user/ha-user-badge";
-import isComponentLoaded from "../common/config/is_component_loaded";
 import { HomeAssistant, PanelInfo } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { DEFAULT_PANEL } from "../common/const";
@@ -23,47 +22,64 @@ import {
   ExternalConfig,
 } from "../external_app/external_config";
 
+const SHOW_AFTER_SPACER = ["config", "developer-tools"];
+
 const computeUrl = (urlPath) => `/${urlPath}`;
 
-const computePanels = (hass: HomeAssistant) => {
+const SORT_VALUE = {
+  map: 1,
+  logbook: 2,
+  history: 3,
+  "developer-tools": 9,
+  configuration: 10,
+};
+
+const panelSorter = (a, b) => {
+  const aBuiltIn = a.component_name in SORT_VALUE;
+  const bBuiltIn = b.component_name in SORT_VALUE;
+
+  if (aBuiltIn && bBuiltIn) {
+    return SORT_VALUE[a.component_name] - SORT_VALUE[b.component_name];
+  }
+  if (aBuiltIn) {
+    return -1;
+  }
+  if (bBuiltIn) {
+    return 1;
+  }
+  // both not built in, sort by title
+  if (a.title! < b.title!) {
+    return -1;
+  }
+  if (a.title! > b.title!) {
+    return 1;
+  }
+  return 0;
+};
+
+const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const panels = hass.panels;
   if (!panels) {
-    return [];
+    return [[], []];
   }
 
-  const sortValue = {
-    map: 1,
-    logbook: 2,
-    history: 3,
-  };
-  const result: PanelInfo[] = Object.values(panels).filter(
-    (panel) => panel.title
-  );
+  const beforeSpacer: PanelInfo[] = [];
+  const afterSpacer: PanelInfo[] = [];
 
-  result.sort((a, b) => {
-    const aBuiltIn = a.component_name in sortValue;
-    const bBuiltIn = b.component_name in sortValue;
-
-    if (aBuiltIn && bBuiltIn) {
-      return sortValue[a.component_name] - sortValue[b.component_name];
+  Object.values(panels).forEach((panel) => {
+    if (!panel.title) {
+      return;
     }
-    if (aBuiltIn) {
-      return -1;
-    }
-    if (bBuiltIn) {
-      return 1;
-    }
-    // both not built in, sort by title
-    if (a.title! < b.title!) {
-      return -1;
-    }
-    if (a.title! > b.title!) {
-      return 1;
-    }
-    return 0;
+    (SHOW_AFTER_SPACER.includes(panel.component_name)
+      ? afterSpacer
+      : beforeSpacer
+    ).push(panel);
   });
 
-  return result;
+  beforeSpacer.sort(panelSorter);
+  afterSpacer.sort(panelSorter);
+
+  return [beforeSpacer, afterSpacer];
 };
 
 const renderPanel = (hass, panel) => html`
@@ -100,12 +116,7 @@ class HaSidebar extends LitElement {
       return html``;
     }
 
-    const panels = computePanels(hass);
-    const configPanelIdx = panels.findIndex(
-      (panel) => panel.component_name === "config"
-    );
-    const configPanel =
-      configPanelIdx === -1 ? undefined : panels.splice(configPanelIdx, 1)[0];
+    const [beforeSpacer, afterSpacer] = computePanels(hass);
 
     return html`
       ${this.expanded
@@ -137,69 +148,11 @@ class HaSidebar extends LitElement {
           </paper-icon-item>
         </a>
 
-        ${panels.map((panel) => renderPanel(hass, panel))}
+        ${beforeSpacer.map((panel) => renderPanel(hass, panel))}
 
         <div class="spacer" disabled></div>
 
-        ${this.expanded && hass.user && hass.user.is_admin
-          ? html`
-              <div class="divider" disabled></div>
-
-              <div class="subheader" disabled>
-                ${hass.localize("ui.sidebar.developer_tools")}
-              </div>
-
-              <div class="dev-tools" disabled>
-                <a href="/dev-service" tabindex="-1">
-                  <paper-icon-button
-                    icon="hass:remote"
-                    alt="${hass.localize("panel.dev-services")}"
-                    title="${hass.localize("panel.dev-services")}"
-                  ></paper-icon-button>
-                </a>
-                <a href="/dev-state" tabindex="-1">
-                  <paper-icon-button
-                    icon="hass:code-tags"
-                    alt="${hass.localize("panel.dev-states")}"
-                    title="${hass.localize("panel.dev-states")}"
-                  ></paper-icon-button>
-                </a>
-                <a href="/dev-event" tabindex="-1">
-                  <paper-icon-button
-                    icon="hass:radio-tower"
-                    alt="${hass.localize("panel.dev-events")}"
-                    title="${hass.localize("panel.dev-events")}"
-                  ></paper-icon-button>
-                </a>
-                <a href="/dev-template" tabindex="-1">
-                  <paper-icon-button
-                    icon="hass:file-xml"
-                    alt="${hass.localize("panel.dev-templates")}"
-                    title="${hass.localize("panel.dev-templates")}"
-                  ></paper-icon-button>
-                </a>
-                ${isComponentLoaded(hass, "mqtt")
-                  ? html`
-                      <a href="/dev-mqtt" tabindex="-1">
-                        <paper-icon-button
-                          icon="hass:altimeter"
-                          alt="${hass.localize("panel.dev-mqtt")}"
-                          title="${hass.localize("panel.dev-mqtt")}"
-                        ></paper-icon-button>
-                      </a>
-                    `
-                  : html``}
-                <a href="/dev-info" tabindex="-1">
-                  <paper-icon-button
-                    icon="hass:information-outline"
-                    alt="${hass.localize("panel.dev-info")}"
-                    title="${hass.localize("panel.dev-info")}"
-                  ></paper-icon-button>
-                </a>
-              </div>
-              <div class="divider" disabled></div>
-            `
-          : ""}
+        ${afterSpacer.map((panel) => renderPanel(hass, panel))}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
               <a
@@ -223,7 +176,6 @@ class HaSidebar extends LitElement {
               </a>
             `
           : ""}
-        ${configPanel ? renderPanel(hass, configPanel) : ""}
         ${hass.user
           ? html`
               <a
@@ -280,7 +232,6 @@ class HaSidebar extends LitElement {
     return (
       hass.panels !== oldHass.panels ||
       hass.panelUrl !== oldHass.panelUrl ||
-      hass.config.components !== oldHass.config.components ||
       hass.user !== oldHass.user ||
       hass.localize !== oldHass.localize
     );
@@ -456,12 +407,6 @@ class HaSidebar extends LitElement {
       .spacer {
         flex: 1;
         pointer-events: none;
-      }
-
-      .divider {
-        height: 1px;
-        background-color: var(--divider-color);
-        margin: 4px 0;
       }
 
       .subheader {

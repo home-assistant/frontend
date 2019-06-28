@@ -22,6 +22,7 @@ const BUILT_IN_PANEL_ICONS = [
   "mailbox", // Mailbox
   "tooltip-account", // Map
   "cart", // Shopping List
+  "hammer", // developer-tools
 ];
 
 // Given an icon name, load the SVG file

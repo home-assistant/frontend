@@ -8,11 +8,11 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-import "../../components/dialog/ha-paper-dialog";
+import "../../../components/dialog/ha-paper-dialog";
 
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { haStyleDialog } from "../../resources/styles";
+import { PolymerChangedEvent } from "../../../polymer-types";
+import { haStyleDialog } from "../../../resources/styles";
 
 class DialogSystemLogDetail extends LitElement {
   private _params?: SystemLogDetailDialogParams;
