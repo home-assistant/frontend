@@ -849,7 +849,7 @@
                                     "data": {
                                         "code": "Kod uwierzytelniania dwuskładnikowego"
                                     },
-                                    "description": "Otwórz **{mfa_module_name}** na swoim urządzeniu by zobaczyć kod dwuskładnikowego uwierzytelniania i zweryfikować swoją toższamość:"
+                                    "description": "Otwórz **{mfa_module_name}** na swoim urządzeniu by zobaczyć kod dwuskładnikowego uwierzytelniania i zweryfikować swoją tożsamość:"
                                 }
                             },
                             "error": {

@@ -9,9 +9,11 @@ import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import { HomeAssistant } from "../types";
-import { saveFrontendUserData } from "../data/frontend";
 import { storeState } from "../util/ha-pref-storage";
-import { getHassTranslations } from "../data/translation";
+import {
+  getHassTranslations,
+  saveTranslationPreferences,
+} from "../data/translation";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -65,7 +67,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
       this._updateHass({ language, selectedLanguage: language });
       storeState(this.hass);
       if (saveToBackend) {
-        saveFrontendUserData(this.hass, "language", { language });
+        saveTranslationPreferences(this.hass, { language });
       }
 
       this._applyTranslations(this.hass);
