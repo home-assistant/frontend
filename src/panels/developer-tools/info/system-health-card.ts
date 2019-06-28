@@ -7,13 +7,13 @@ import {
   TemplateResult,
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../components/ha-card";
+import "../../../components/ha-card";
 
-import { HomeAssistant } from "../../types";
+import { HomeAssistant } from "../../../types";
 import {
   SystemHealthInfo,
   fetchSystemHealthInfo,
-} from "../../data/system_health";
+} from "../../../data/system_health";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {
