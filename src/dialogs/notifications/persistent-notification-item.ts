@@ -15,13 +15,13 @@ import "../../components/ha-markdown";
 import "./notification-item-template";
 
 import { HomeAssistant } from "../../types";
-import { HassNotification } from "./types";
+import { PersistentNotification } from "../../data/persistent_notification";
 
 @customElement("persistent-notification-item")
 export class HuiPersistentNotificationItem extends LitElement {
   @property() public hass?: HomeAssistant;
 
-  @property() public notification?: HassNotification;
+  @property() public notification?: PersistentNotification;
 
   protected render(): TemplateResult | void {
     if (!this.hass || !this.notification) {
@@ -30,7 +30,9 @@ export class HuiPersistentNotificationItem extends LitElement {
 
     return html`
       <notification-item-template>
-        <span slot="header">${this._computeTitle(this.notification)}</span>
+        <span slot="header">
+          ${this.notification.title || this.notification.notification_id}
+        </span>
 
         <ha-markdown content="${this.notification.message}"></ha-markdown>
 
@@ -80,13 +82,9 @@ export class HuiPersistentNotificationItem extends LitElement {
     });
   }
 
-  private _computeTitle(notification: HassNotification): string | undefined {
-    return notification.title || notification.notification_id;
-  }
-
   private _computeTooltip(
     hass: HomeAssistant,
-    notification: HassNotification
+    notification: PersistentNotification
   ): string | undefined {
     if (!hass || !notification) {
       return undefined;
