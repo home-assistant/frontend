@@ -7,9 +7,9 @@ import {
   CSSResult,
 } from "lit-element";
 
-import "../../../../components/ha-card";
+import "../../components/ha-card";
 
-@customElement("hui-notification-item-template")
+@customElement("notification-item-template")
 export class HuiNotificationItemTemplate extends LitElement {
   protected render(): TemplateResult | void {
     return html`
@@ -60,6 +60,6 @@ export class HuiNotificationItemTemplate extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-notification-item-template": HuiNotificationItemTemplate;
+    "notification-item-template": HuiNotificationItemTemplate;
   }
 }
