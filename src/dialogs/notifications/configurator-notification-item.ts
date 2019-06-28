@@ -7,17 +7,17 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 
-import "./hui-notification-item-template";
+import "./notification-item-template";
 
-import { HomeAssistant } from "../../../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { HassNotification } from "./types";
+import { HomeAssistant } from "../../types";
+import { fireEvent } from "../../common/dom/fire_event";
+import { PersitentNotificationEntity } from "../../data/persistent_notification";
 
-@customElement("hui-configurator-notification-item")
+@customElement("configurator-notification-item")
 export class HuiConfiguratorNotificationItem extends LitElement {
   @property() public hass?: HomeAssistant;
 
-  @property() public notification?: HassNotification;
+  @property() public notification?: PersitentNotificationEntity;
 
   protected render(): TemplateResult | void {
     if (!this.hass || !this.notification) {
@@ -25,7 +25,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
     }
 
     return html`
-      <hui-notification-item-template>
+      <notification-item-template>
         <span slot="header">${this.hass.localize("domain.configurator")}</span>
 
         <div>
@@ -41,7 +41,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
             `state.configurator.${this.notification.state}`
           )}</mwc-button
         >
-      </hui-notification-item-template>
+      </notification-item-template>
     `;
   }
 
@@ -54,6 +54,6 @@ export class HuiConfiguratorNotificationItem extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-configurator-notification-item": HuiConfiguratorNotificationItem;
+    "configurator-notification-item": HuiConfiguratorNotificationItem;
   }
 }

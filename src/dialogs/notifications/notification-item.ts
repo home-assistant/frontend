@@ -7,13 +7,13 @@ import {
   html,
 } from "lit-element";
 
-import "./hui-configurator-notification-item";
-import "./hui-persistent-notification-item";
+import "./configurator-notification-item";
+import "./persistent-notification-item";
 
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../types";
 import { HassNotification } from "./types";
 
-@customElement("hui-notification-item")
+@customElement("notification-item")
 export class HuiNotificationItem extends LitElement {
   @property() public hass?: HomeAssistant;
 
@@ -34,22 +34,22 @@ export class HuiNotificationItem extends LitElement {
 
     return this.notification.entity_id
       ? html`
-          <hui-configurator-notification-item
+          <configurator-notification-item
             .hass="${this.hass}"
             .notification="${this.notification}"
-          ></hui-configurator-notification-item>
+          ></configurator-notification-item>
         `
       : html`
-          <hui-persistent-notification-item
+          <persistent-notification-item
             .hass="${this.hass}"
             .notification="${this.notification}"
-          ></hui-persistent-notification-item>
+          ></persistent-notification-item>
         `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-notification-item": HuiNotificationItem;
+    "notification-item": HuiNotificationItem;
   }
 }

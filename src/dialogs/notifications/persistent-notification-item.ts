@@ -10,14 +10,14 @@ import {
 import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 
-import "../../../../components/ha-relative-time";
-import "../../../../components/ha-markdown";
-import "./hui-notification-item-template";
+import "../../components/ha-relative-time";
+import "../../components/ha-markdown";
+import "./notification-item-template";
 
-import { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../types";
 import { HassNotification } from "./types";
 
-@customElement("hui-persistent-notification-item")
+@customElement("persistent-notification-item")
 export class HuiPersistentNotificationItem extends LitElement {
   @property() public hass?: HomeAssistant;
 
@@ -29,7 +29,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     }
 
     return html`
-      <hui-notification-item-template>
+      <notification-item-template>
         <span slot="header">${this._computeTitle(this.notification)}</span>
 
         <ha-markdown content="${this.notification.message}"></ha-markdown>
@@ -54,7 +54,7 @@ export class HuiPersistentNotificationItem extends LitElement {
             "ui.card.persistent_notification.dismiss"
           )}</mwc-button
         >
-      </hui-notification-item-template>
+      </notification-item-template>
     `;
   }
 
@@ -105,6 +105,6 @@ export class HuiPersistentNotificationItem extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-persistent-notification-item": HuiPersistentNotificationItem;
+    "persistent-notification-item": HuiPersistentNotificationItem;
   }
 }
