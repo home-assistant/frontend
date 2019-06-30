@@ -14,31 +14,22 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 
-import "../../src/components/ha-menu-button";
-import "../../src/resources/ha-style";
-import "./hassio-tabs-router";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
+import "./developer-tools-router";
 
-import scrollToTarget from "../../src/common/dom/scroll-to-target";
+import scrollToTarget from "../../common/dom/scroll-to-target";
 
-import { haStyle } from "../../src/resources/styles";
-import { HomeAssistant, Route } from "../../src/types";
-import { navigate } from "../../src/common/navigate";
-import {
-  HassioSupervisorInfo,
-  HassioHostInfo,
-  HassioHomeAssistantInfo,
-} from "../../src/data/hassio";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant, Route } from "../../types";
+import { navigate } from "../../common/navigate";
+import isComponentLoaded from "../../common/config/is_component_loaded";
 
-const HAS_REFRESH_BUTTON = ["store", "snapshots"];
-
-@customElement("hassio-pages-with-tabs")
-class HassioPagesWithTabs extends LitElement {
+@customElement("ha-panel-developer-tools")
+class PanelDeveloperTools extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public narrow!: boolean;
   @property() public route!: Route;
-  @property() public supervisorInfo!: HassioSupervisorInfo;
-  @property() public hostInfo!: HassioHostInfo;
-  @property() public hassInfo!: HassioHomeAssistantInfo;
+  @property() public narrow!: boolean;
 
   protected render(): TemplateResult | void {
     const page = this._page;
@@ -49,17 +40,8 @@ class HassioPagesWithTabs extends LitElement {
             <ha-menu-button
               .hass=${this.hass}
               .narrow=${this.narrow}
-              hassio
             ></ha-menu-button>
-            <div main-title>Hass.io</div>
-            ${HAS_REFRESH_BUTTON.includes(page)
-              ? html`
-                  <paper-icon-button
-                    icon="hassio:refresh"
-                    @click=${this.refreshClicked}
-                  ></paper-icon-button>
-                `
-              : undefined}
+            <div main-title>Developer Tools</div>
           </app-toolbar>
           <paper-tabs
             scrollable
@@ -67,19 +49,35 @@ class HassioPagesWithTabs extends LitElement {
             .selected=${page}
             @iron-activate=${this.handlePageSelected}
           >
-            <paper-tab page-name="dashboard">Dashboard</paper-tab>
-            <paper-tab page-name="snapshots">Snapshots</paper-tab>
-            <paper-tab page-name="store">Add-on store</paper-tab>
-            <paper-tab page-name="system">System</paper-tab>
+            <paper-tab page-name="info">
+              ${this.hass.localize("panel.dev-info")}
+            </paper-tab>
+            <paper-tab page-name="event">
+              ${this.hass.localize("panel.dev-events")}
+            </paper-tab>
+            ${isComponentLoaded(this.hass, "mqtt")
+              ? html`
+                  <paper-tab page-name="mqtt">
+                    ${this.hass.localize("panel.dev-mqtt")}
+                  </paper-tab>
+                `
+              : ""}
+            <paper-tab page-name="service">
+              ${this.hass.localize("panel.dev-services")}
+            </paper-tab>
+            <paper-tab page-name="state">
+              ${this.hass.localize("panel.dev-states")}
+            </paper-tab>
+            <paper-tab page-name="template">
+              ${this.hass.localize("panel.dev-templates")}
+            </paper-tab>
           </paper-tabs>
         </app-header>
-        <hassio-tabs-router
+        <developer-tools-router
           .route=${this.route}
+          .narrow=${this.narrow}
           .hass=${this.hass}
-          .supervisorInfo=${this.supervisorInfo}
-          .hostInfo=${this.hostInfo}
-          .hassInfo=${this.hassInfo}
-        ></hassio-tabs-router>
+        ></developer-tools-router>
       </app-header-layout>
     `;
   }
@@ -87,7 +85,7 @@ class HassioPagesWithTabs extends LitElement {
   private handlePageSelected(ev) {
     const newPage = ev.detail.item.getAttribute("page-name");
     if (newPage !== this._page) {
-      navigate(this, `/hassio/${newPage}`);
+      navigate(this, `/developer-tools/${newPage}`);
     }
 
     scrollToTarget(
@@ -95,16 +93,6 @@ class HassioPagesWithTabs extends LitElement {
       // @ts-ignore
       this.shadowRoot!.querySelector("app-header-layout").header.scrollTarget
     );
-  }
-
-  private refreshClicked() {
-    if (this._page === "snapshots") {
-      // @ts-ignore
-      this.shadowRoot.querySelector("hassio-snapshots").refreshData();
-    } else {
-      // @ts-ignore
-      this.shadowRoot.querySelector("hassio-addon-store").refreshData();
-    }
   }
 
   private get _page() {
@@ -131,6 +119,6 @@ class HassioPagesWithTabs extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-pages-with-tabs": HassioPagesWithTabs;
+    "ha-panel-developer-tools": PanelDeveloperTools;
   }
 }

@@ -10,13 +10,13 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../components/ha-card";
-import "../../components/buttons/ha-call-service-button";
-import "../../components/buttons/ha-progress-button";
-import { HomeAssistant } from "../../types";
-import { LoggedError, fetchSystemLog } from "../../data/system_log";
-import formatDateTime from "../../common/datetime/format_date_time";
-import formatTime from "../../common/datetime/format_time";
+import "../../../components/ha-card";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/buttons/ha-progress-button";
+import { HomeAssistant } from "../../../types";
+import { LoggedError, fetchSystemLog } from "../../../data/system_log";
+import formatDateTime from "../../../common/datetime/format_date_time";
+import formatTime from "../../../common/datetime/format_time";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 
 const formatLogTime = (date, language: string) => {
