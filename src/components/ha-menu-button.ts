@@ -43,10 +43,11 @@ class HaMenuButton extends LitElement {
 
   protected render(): TemplateResult | void {
     const hasNotifications =
-      this._hasNotifications ||
-      Object.keys(this.hass.states).some(
-        (entityId) => computeDomain(entityId) === "configurator"
-      );
+      this.narrow &&
+      (this._hasNotifications ||
+        Object.keys(this.hass.states).some(
+          (entityId) => computeDomain(entityId) === "configurator"
+        ));
     return html`
       <paper-icon-button
         aria-label="Sidebar Toggle"
@@ -67,6 +68,8 @@ class HaMenuButton extends LitElement {
     if (!changedProps.has("narrow")) {
       return;
     }
+
+    this.style.visibility = this.narrow ? "initial" : "hidden";
 
     if (!this.narrow) {
       this._hasNotifications = false;
