@@ -36,6 +36,7 @@ customElements.get("paper-icon-button").prototype._keyBindings = {};
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   @property() public hass!: HomeAssistant;
   @property() public panel!: HassioPanelInfo;
+  @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
@@ -108,6 +109,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       // As long as we have Polymer pages
       (el as PolymerElement).setProperties({
         hass: this.hass,
+        narrow: this.narrow,
         supervisorInfo: this._supervisorInfo,
         hostInfo: this._hostInfo,
         hassInfo: this._hassInfo,
@@ -115,6 +117,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       });
     } else {
       el.hass = this.hass;
+      el.narrow = this.narrow;
       el.supervisorInfo = this._supervisorInfo;
       el.hostInfo = this._hostInfo;
       el.hassInfo = this._hassInfo;

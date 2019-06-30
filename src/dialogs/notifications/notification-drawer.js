@@ -5,13 +5,14 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "./hui-notification-item";
-import "../../../../components/ha-paper-icon-button-next";
+import "./notification-item";
+import "../../components/ha-paper-icon-button-next";
 
-import { EventsMixin } from "../../../../mixins/events-mixin";
-import LocalizeMixin from "../../../../mixins/localize-mixin";
-import { computeRTL } from "../../../../common/util/compute_rtl";
-
+import { EventsMixin } from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import { computeRTL } from "../../common/util/compute_rtl";
+import { subscribeNotifications } from "../../data/persistent_notification";
+import computeDomain from "../../common/entity/compute_domain";
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -129,7 +130,7 @@ export class HuiNotificationDrawer extends EventsMixin(
           <dom-repeat items="[[notifications]]">
             <template>
               <div class="notification">
-                <hui-notification-item hass="[[hass]]" notification="[[item]]"></hui-notification-item>
+                <notification-item hass="[[hass]]" notification="[[item]]"></notification-item>
               </div>
             </template>
           </dom-repeat>
@@ -161,6 +162,10 @@ export class HuiNotificationDrawer extends EventsMixin(
       },
       notifications: {
         type: Array,
+        computed: "_computeNotifications(open, hass, _notificationsBackend)",
+      },
+      _notificationsBackend: {
+        type: Array,
         value: [],
       },
       rtl: {
@@ -169,6 +174,16 @@ export class HuiNotificationDrawer extends EventsMixin(
         computed: "_computeRTL(hass)",
       },
     };
+  }
+
+  ready() {
+    super.ready();
+    window.addEventListener("location-changed", () => {
+      // close drawer when we navigate away.
+      if (this.open) {
+        this.open = false;
+      }
+    });
   }
 
   _closeDrawer(ev) {
@@ -188,17 +203,44 @@ export class HuiNotificationDrawer extends EventsMixin(
       this._openTimer = setTimeout(() => {
         this.classList.add("open");
       }, 50);
+      this._unsubNotifications = subscribeNotifications(
+        this.hass.connection,
+        (notifications) => {
+          this._notificationsBackend = notifications;
+        }
+      );
     } else {
       // Animate closed then hide
       this.classList.remove("open");
       this._openTimer = setTimeout(() => {
         this.hidden = true;
       }, 250);
+      if (this._unsubNotifications) {
+        this._unsubNotifications();
+        this._unsubNotifications = undefined;
+      }
     }
   }
 
   _computeRTL(hass) {
     return computeRTL(hass);
   }
+
+  _computeNotifications(open, hass, notificationsBackend) {
+    if (!open) {
+      return [];
+    }
+
+    const configuratorEntities = Object.keys(hass.states)
+      .filter((entityId) => computeDomain(entityId) === "configurator")
+      .map((entityId) => hass.states[entityId]);
+
+    return notificationsBackend.concat(configuratorEntities);
+  }
+
+  showDialog({ narrow }) {
+    this.open = true;
+    this.narrow = narrow;
+  }
 }
-customElements.define("hui-notification-drawer", HuiNotificationDrawer);
+customElements.define("notification-drawer", HuiNotificationDrawer);

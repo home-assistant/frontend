@@ -16,7 +16,7 @@ class HaPanelIframe extends PolymerElement {
         }
       </style>
       <app-toolbar>
-        <ha-menu-button></ha-menu-button>
+        <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
         <div main-title>[[panel.title]]</div>
       </app-toolbar>
 
@@ -32,9 +32,9 @@ class HaPanelIframe extends PolymerElement {
 
   static get properties() {
     return {
-      panel: {
-        type: Object,
-      },
+      hass: Object,
+      narrow: Boolean,
+      panel: Object,
     };
   }
 }

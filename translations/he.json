@@ -997,6 +997,8 @@
                         "labels": {
                             "lights": "אורות",
                             "information": "מידע",
+                            "morning_commute": "נסיעת בוקר",
+                            "commute_home": "זמן נסיעה הביתה",
                             "entertainment": "בידור",
                             "activity": "פעילות",
                             "hdmi_input": "כניסת HDMI",
@@ -1007,6 +1009,7 @@
                             "air": "אוויר"
                         },
                         "unit": {
+                            "watching": "צופה",
                             "minutes_abbr": "דקות"
                         }
                     }

@@ -26,9 +26,20 @@ class MoreInfoCamera extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public stateObj?: CameraEntity;
   @property() private _cameraPrefs?: CameraPreferences;
+  @property() private _attached = false;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._attached = true;
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._attached = false;
+  }
 
   protected render(): TemplateResult | void {
-    if (!this.hass || !this.stateObj) {
+    if (!this._attached || !this.hass || !this.stateObj) {
       return html``;
     }
 
