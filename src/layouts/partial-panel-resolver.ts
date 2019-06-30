@@ -86,6 +86,8 @@ class PartialPanelResolver extends HassRouterPage {
   protected createLoadingScreen() {
     const el = super.createLoadingScreen();
     el.rootnav = true;
+    el.hass = this.hass;
+    el.narrow = this.narrow;
     return el;
   }
 
