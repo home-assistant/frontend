@@ -115,7 +115,6 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
 
       currentView: {
         type: String,
