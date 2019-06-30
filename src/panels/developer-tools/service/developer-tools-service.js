@@ -1,17 +1,13 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import { ENTITY_COMPONENT_DOMAINS } from "../../data/entity";
-import "../../components/entity/ha-entity-picker";
-import "../../components/ha-menu-button";
-import "../../components/ha-service-picker";
-import "../../resources/ha-style";
-import "../../util/app-localstorage-document";
+import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
+import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-service-picker";
+import "../../../resources/ha-style";
+import "../../../util/app-localstorage-document";
 
 const ERROR_SENTINEL = {};
 class HaPanelDevService extends PolymerElement {
@@ -22,9 +18,7 @@ class HaPanelDevService extends PolymerElement {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
-        }
-
-        .content {
+          display: block;
           padding: 16px;
           direction: ltr;
         }
@@ -81,100 +75,87 @@ class HaPanelDevService extends PolymerElement {
         }
       </style>
 
-      <app-header-layout has-scrolling-region>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-menu-button></ha-menu-button>
-            <div main-title>Services</div>
-          </app-toolbar>
-        </app-header>
+      <app-localstorage-document
+        key="panel-dev-service-state-domain-service"
+        data="{{domainService}}"
+      >
+      </app-localstorage-document>
+      <app-localstorage-document
+        key="[[_computeServicedataKey(domainService)]]"
+        data="{{serviceData}}"
+      >
+      </app-localstorage-document>
 
-        <app-localstorage-document
-          key="panel-dev-service-state-domain-service"
-          data="{{domainService}}"
-        >
-        </app-localstorage-document>
-        <app-localstorage-document
-          key="[[_computeServicedataKey(domainService)]]"
-          data="{{serviceData}}"
-        >
-        </app-localstorage-document>
+      <div class="content">
+        <p>
+          The service dev tool allows you to call any available service in Home
+          Assistant.
+        </p>
 
-        <div class="content">
-          <p>
-            The service dev tool allows you to call any available service in
-            Home Assistant.
-          </p>
-
-          <div class="ha-form">
-            <ha-service-picker
+        <div class="ha-form">
+          <ha-service-picker
+            hass="[[hass]]"
+            value="{{domainService}}"
+          ></ha-service-picker>
+          <template is="dom-if" if="[[_computeHasEntity(_attributes)]]">
+            <ha-entity-picker
               hass="[[hass]]"
-              value="{{domainService}}"
-            ></ha-service-picker>
-            <template is="dom-if" if="[[_computeHasEntity(_attributes)]]">
-              <ha-entity-picker
-                hass="[[hass]]"
-                value="[[_computeEntityValue(parsedJSON)]]"
-                on-change="_entityPicked"
-                disabled="[[!validJSON]]"
-                domain-filter="[[_computeEntityDomainFilter(_domain)]]"
-                allow-custom-entity
-              ></ha-entity-picker>
-            </template>
-            <paper-textarea
-              always-float-label
-              label="Service Data (JSON, optional)"
-              value="{{serviceData}}"
-              autocapitalize="none"
-              autocomplete="off"
-              spellcheck="false"
-            ></paper-textarea>
-            <mwc-button on-click="_callService" raised disabled="[[!validJSON]]"
-              >Call Service</mwc-button
-            >
-            <template is="dom-if" if="[[!validJSON]]">
-              <span class="error">Invalid JSON</span>
-            </template>
-          </div>
-
-          <template is="dom-if" if="[[!domainService]]">
-            <h1>Select a service to see the description</h1>
+              value="[[_computeEntityValue(parsedJSON)]]"
+              on-change="_entityPicked"
+              disabled="[[!validJSON]]"
+              domain-filter="[[_computeEntityDomainFilter(_domain)]]"
+              allow-custom-entity
+            ></ha-entity-picker>
           </template>
-
-          <template is="dom-if" if="[[domainService]]">
-            <template is="dom-if" if="[[!_description]]">
-              <h1>No description is available</h1>
-            </template>
-            <template is="dom-if" if="[[_description]]">
-              <h3>[[_description]]</h3>
-
-              <table class="attributes">
-                <tr>
-                  <th>Parameter</th>
-                  <th>Description</th>
-                  <th>Example</th>
-                </tr>
-                <template is="dom-if" if="[[!_attributes.length]]">
-                  <tr>
-                    <td colspan="3">This service takes no parameters.</td>
-                  </tr>
-                </template>
-                <template
-                  is="dom-repeat"
-                  items="[[_attributes]]"
-                  as="attribute"
-                >
-                  <tr>
-                    <td><pre>[[attribute.key]]</pre></td>
-                    <td>[[attribute.description]]</td>
-                    <td>[[attribute.example]]</td>
-                  </tr>
-                </template>
-              </table>
-            </template>
+          <paper-textarea
+            always-float-label
+            label="Service Data (JSON, optional)"
+            value="{{serviceData}}"
+            autocapitalize="none"
+            autocomplete="off"
+            spellcheck="false"
+          ></paper-textarea>
+          <mwc-button on-click="_callService" raised disabled="[[!validJSON]]"
+            >Call Service</mwc-button
+          >
+          <template is="dom-if" if="[[!validJSON]]">
+            <span class="error">Invalid JSON</span>
           </template>
         </div>
-      </app-header-layout>
+
+        <template is="dom-if" if="[[!domainService]]">
+          <h1>Select a service to see the description</h1>
+        </template>
+
+        <template is="dom-if" if="[[domainService]]">
+          <template is="dom-if" if="[[!_description]]">
+            <h1>No description is available</h1>
+          </template>
+          <template is="dom-if" if="[[_description]]">
+            <h3>[[_description]]</h3>
+
+            <table class="attributes">
+              <tr>
+                <th>Parameter</th>
+                <th>Description</th>
+                <th>Example</th>
+              </tr>
+              <template is="dom-if" if="[[!_attributes.length]]">
+                <tr>
+                  <td colspan="3">This service takes no parameters.</td>
+                </tr>
+              </template>
+              <template is="dom-repeat" items="[[_attributes]]" as="attribute">
+                <tr>
+                  <td><pre>[[attribute.key]]</pre></td>
+                  <td>[[attribute.description]]</td>
+                  <td>[[attribute.example]]</td>
+                </tr>
+              </template>
+            </table>
+          </template>
+        </template>
+      </div>
     `;
   }
 
@@ -304,4 +285,4 @@ class HaPanelDevService extends PolymerElement {
   }
 }
 
-customElements.define("ha-panel-dev-service", HaPanelDevService);
+customElements.define("developer-tools-service", HaPanelDevService);

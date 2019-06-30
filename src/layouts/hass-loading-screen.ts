@@ -12,17 +12,23 @@ import {
 import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";
 import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
   @property({ type: Boolean }) public rootnav? = false;
+  @property() public hass?: HomeAssistant;
+  @property() public narrow?: boolean;
 
   protected render(): TemplateResult | void {
     return html`
       <app-toolbar>
         ${this.rootnav
           ? html`
-              <ha-menu-button></ha-menu-button>
+              <ha-menu-button
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
             `
           : html`
               <ha-paper-icon-button-arrow-prev
