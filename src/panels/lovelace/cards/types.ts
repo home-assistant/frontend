@@ -163,6 +163,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+  show_state?: boolean;
 }
 
 export interface PlantAttributeTarget extends EventTarget {

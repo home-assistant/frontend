@@ -24,6 +24,7 @@ export interface CallServiceConfig extends EntityConfig {
   action_name?: string;
   service: string;
   service_data?: { [key: string]: any };
+  show_state?: boolean;
 }
 export type EntityRowConfig =
   | EntityConfig

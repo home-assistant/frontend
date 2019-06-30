@@ -141,12 +141,12 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                 <div class="title">${this._config.title}</div>
               `
             : ""}
-          <div>
+          <div class="row">
             ${this._entitiesDialog!.map((entityConf) =>
               this.renderEntity(entityConf, true)
             )}
           </div>
-          <div>
+          <div class="row">
             ${this._entitiesToggle!.map((entityConf) =>
               this.renderEntity(entityConf, false)
             )}
@@ -175,21 +175,35 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-icon
-        .entity="${stateObj.entity_id}"
-        @click="${dialog ? this._openDialog : this._callService}"
-        class="${classMap({
-          "state-on": !STATES_OFF.has(stateObj.state),
-        })}"
-        .icon="${entityConf.icon || stateIcon(stateObj)}"
-        title="${`
-            ${computeStateName(stateObj)} : ${computeStateDisplay(
-          this.hass!.localize,
-          stateObj,
-          this.hass!.language
-        )}
+      <div class="wrapper">
+        <ha-icon
+          .entity="${stateObj.entity_id}"
+          @click="${dialog ? this._openDialog : this._callService}"
+          class="${classMap({
+            "state-on": !STATES_OFF.has(stateObj.state),
+            "show-state": entityConf.show_state === true,
+          })}"
+          .icon="${entityConf.icon || stateIcon(stateObj)}"
+          title="${`
+            ${computeStateName(stateObj)}: ${computeStateDisplay(
+            this.hass!.localize,
+            stateObj,
+            this.hass!.language
+          )}
           `}"
-      ></ha-icon>
+        ></ha-icon>
+        ${entityConf.show_state === true
+          ? html`
+              <div class="state">
+                ${computeStateDisplay(
+                  this.hass!.localize,
+                  stateObj,
+                  this.hass!.language
+                )}
+              </div>
+            `
+          : ""}
+      </div>
     `;
   }
 
@@ -239,6 +253,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         color: white;
         display: flex;
         justify-content: space-between;
+        flex-direction: row;
       }
 
       .box .title {
@@ -254,6 +269,26 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
       ha-icon.state-on {
         color: white;
+      }
+      ha-icon.show-state {
+        width: 20px;
+        height: 20px;
+        padding-bottom: 4px;
+        padding-top: 4px;
+      }
+      .state {
+        display: block;
+        font-size: 12px;
+        text-align: center;
+        line-height: 12px;
+      }
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+      .wrapper {
+        display: flex;
+        flex-direction: column;
       }
     `;
   }
