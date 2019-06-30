@@ -65,7 +65,10 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button></ha-menu-button>
+            <ha-menu-button
+              hass="[[hass]]"
+              narrow="[[narrow]]"
+            ></ha-menu-button>
             <div main-title>[[localize('panel.history')]]</div>
           </app-toolbar>
         </app-header>
@@ -116,9 +119,8 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
+      narrow: Boolean,
 
       stateHistory: {
         type: Object,

@@ -14,6 +14,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "./ha-icon";
 
 import "../components/user/ha-user-badge";
+import "../components/ha-menu-button";
 import { HomeAssistant, PanelInfo } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { DEFAULT_PANEL } from "../common/const";
@@ -108,6 +109,7 @@ const renderPanel = (hass, panel) => html`
  */
 class HaSidebar extends LitElement {
   @property() public hass!: HomeAssistant;
+  @property() public narrow!: boolean;
 
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
@@ -135,21 +137,18 @@ class HaSidebar extends LitElement {
     }
 
     return html`
-      ${this.expanded
-        ? html`
-            <app-toolbar>
-              <div main-title>Home Assistant</div>
-            </app-toolbar>
-          `
-        : html`
-            <div class="logo">
-              <img
-                id="logo"
-                src="/static/icons/favicon-192x192.png"
-                alt="Home Assistant logo"
-              />
-            </div>
-          `}
+      <div class="menu">
+        ${!this.narrow
+          ? html`
+              <paper-icon-button
+                aria-label="Sidebar Toggle"
+                .icon=${hass.dockedSidebar ? "hass:menu-open" : "hass:menu"}
+                @click=${this._toggleSidebar}
+              ></paper-icon-button>
+            `
+          : ""}
+        <span class="title">Home Assistant</span>
+      </div>
 
       <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
         <a
@@ -234,6 +233,7 @@ class HaSidebar extends LitElement {
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (
       changedProps.has("expanded") ||
+      changedProps.has("narrow") ||
       changedProps.has("alwaysExpand") ||
       changedProps.has("_externalConfig") ||
       changedProps.has("_notifications")
@@ -264,26 +264,15 @@ class HaSidebar extends LitElement {
         this._externalConfig = conf;
       });
     }
-    this.shadowRoot!.querySelector("paper-listbox")!.addEventListener(
-      "mouseenter",
-      () => {
-        this.expanded = true;
-      }
-    );
+    this.addEventListener("mouseenter", () => {
+      this.expanded = true;
+    });
     this.addEventListener("mouseleave", () => {
       this._contract();
     });
     subscribeNotifications(this.hass.connection, (notifications) => {
       this._notifications = notifications;
     });
-    // Deal with configurator
-    // private _updateNotifications(
-    //   states: HassEntities,
-    //   persistent: unknown[]
-    // ): unknown[] {
-    //   const configurator = computeNotifications(states);
-    //   return persistent.concat(configurator);
-    // }
   }
 
   protected updated(changedProps) {
@@ -306,6 +295,10 @@ class HaSidebar extends LitElement {
     this.hass.auth.external!.fireMessage({
       type: "config_screen/show",
     });
+  }
+
+  private _toggleSidebar() {
+    fireEvent(this, "hass-toggle-menu");
   }
 
   static get styles(): CSSResult {
@@ -332,26 +325,35 @@ class HaSidebar extends LitElement {
         width: 256px;
       }
 
-      .logo {
-        height: 65px;
-        box-sizing: border-box;
-        padding: 8px;
+      .menu {
+        height: 64px;
+        display: flex;
+        padding: 0 12px;
         border-bottom: 1px solid transparent;
-      }
-      .logo img {
-        width: 48px;
-      }
-
-      app-toolbar {
         white-space: nowrap;
         font-weight: 400;
         color: var(--primary-text-color);
         border-bottom: 1px solid var(--divider-color);
         background-color: var(--primary-background-color);
+        font-size: 20px;
+        align-items: center;
+      }
+      :host([expanded]) .menu {
+        width: 256px;
       }
 
-      app-toolbar a {
-        color: var(--primary-text-color);
+      .menu paper-icon-button {
+        color: var(--sidebar-icon-color);
+      }
+      :host([expanded]) .menu paper-icon-button {
+        margin-right: 23px;
+      }
+
+      .title {
+        display: none;
+      }
+      :host([expanded]) .title {
+        display: initial;
       }
 
       paper-listbox {
