@@ -131,7 +131,10 @@ class HUIRoot extends LitElement {
               `
             : html`
                 <app-toolbar>
-                  <ha-menu-button></ha-menu-button>
+                  <ha-menu-button
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   <ha-start-voice-button
                     .hass="${this.hass}"

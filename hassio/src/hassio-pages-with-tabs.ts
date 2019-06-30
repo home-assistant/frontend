@@ -34,6 +34,7 @@ const HAS_REFRESH_BUTTON = ["store", "snapshots"];
 @customElement("hassio-pages-with-tabs")
 class HassioPagesWithTabs extends LitElement {
   @property() public hass!: HomeAssistant;
+  @property() public narrow!: boolean;
   @property() public route!: Route;
   @property() public supervisorInfo!: HassioSupervisorInfo;
   @property() public hostInfo!: HassioHostInfo;
@@ -45,7 +46,11 @@ class HassioPagesWithTabs extends LitElement {
       <app-header-layout has-scrolling-region>
         <app-header fixed slot="header">
           <app-toolbar>
-            <ha-menu-button hassio></ha-menu-button>
+            <ha-menu-button
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              hassio
+            ></ha-menu-button>
             <div main-title>Hass.io</div>
             ${HAS_REFRESH_BUTTON.includes(page)
               ? html`

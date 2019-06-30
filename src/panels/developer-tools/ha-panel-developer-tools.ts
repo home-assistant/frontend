@@ -37,7 +37,10 @@ class PanelDeveloperTools extends LitElement {
       <app-header-layout has-scrolling-region>
         <app-header fixed slot="header">
           <app-toolbar>
-            <ha-menu-button></ha-menu-button>
+            <ha-menu-button
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+            ></ha-menu-button>
             <div main-title>Developer Tools</div>
           </app-toolbar>
           <paper-tabs
