@@ -80,7 +80,10 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button></ha-menu-button>
+            <ha-menu-button
+              hass="[[hass]]"
+              narrow="[[narrow]]"
+            ></ha-menu-button>
             <div main-title>[[localize('panel.mailbox')]]</div>
           </app-toolbar>
           <div sticky hidden$="[[areTabsHidden(platforms)]]">
@@ -128,9 +131,8 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
+      narrow: Boolean,
 
       platforms: {
         type: Array,

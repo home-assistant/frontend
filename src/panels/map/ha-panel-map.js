@@ -27,7 +27,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       </style>
 
       <app-toolbar>
-        <ha-menu-button></ha-menu-button>
+        <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
         <div main-title>[[localize('panel.map')]]</div>
       </app-toolbar>
 
@@ -41,6 +41,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         type: Object,
         observer: "drawEntities",
       },
+      narrow: Boolean,
     };
   }
 

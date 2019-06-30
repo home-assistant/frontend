@@ -102,6 +102,7 @@ export class HaStateLabelBadge extends LitElement {
     switch (domain) {
       case "binary_sensor":
       case "device_tracker":
+      case "person":
       case "updater":
       case "sun":
       case "alarm_control_panel":
