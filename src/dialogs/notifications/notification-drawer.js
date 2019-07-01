@@ -133,11 +133,11 @@ export class HuiNotificationDrawer extends EventsMixin(
   }
 
   showDialog({ narrow }) {
-    this.$.drawer.open();
     this.style.setProperty(
       "--app-drawer-width",
       narrow ? window.innerWidth + "px" : "500px"
     );
+    this.$.drawer.open();
   }
 }
 customElements.define("notification-drawer", HuiNotificationDrawer);
