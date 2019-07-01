@@ -116,10 +116,12 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
+  @property({ type: Boolean, reflect: true }) public expandedWidth = false;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
+  private _contractTimeout?: number;
 
   protected render() {
     const hass = this.hass;
@@ -239,6 +241,7 @@ class HaSidebar extends LitElement {
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (
       changedProps.has("expanded") ||
+      changedProps.has("expandedWidth") ||
       changedProps.has("narrow") ||
       changedProps.has("alwaysExpand") ||
       changedProps.has("_externalConfig") ||
@@ -272,7 +275,7 @@ class HaSidebar extends LitElement {
       });
     }
     this.addEventListener("mouseenter", () => {
-      this.expanded = true;
+      this._expand();
     });
     this.addEventListener("mouseleave", () => {
       this._contract();
@@ -285,7 +288,8 @@ class HaSidebar extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand") && this.alwaysExpand) {
-      this.expanded = this.alwaysExpand;
+      this.expanded = true;
+      this.expandedWidth = true;
     }
     if (SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
       return;
@@ -299,8 +303,23 @@ class HaSidebar extends LitElement {
     }
   }
 
+  private _expand() {
+    this.expanded = true;
+    this.expandedWidth = true;
+    if (this._contractTimeout) {
+      clearTimeout(this._contractTimeout);
+      this._contractTimeout = undefined;
+    }
+  }
+
   private _contract() {
-    this.expanded = this.alwaysExpand || false;
+    if (this.alwaysExpand) {
+      return;
+    }
+    this.expandedWidth = false;
+    this._contractTimeout = window.setTimeout(() => {
+      this.expanded = this.alwaysExpand || false;
+    }, 400);
   }
 
   private _handleShowNotificationDrawer() {
@@ -338,7 +357,7 @@ class HaSidebar extends LitElement {
         contain: strict;
         transition-delay: 0.2s;
       }
-      :host([expanded]) {
+      :host([expandedwidth]) {
         width: 256px;
       }
 
