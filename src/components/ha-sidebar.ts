@@ -284,7 +284,7 @@ class HaSidebar extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
-    if (changedProps.has("alwaysExpand")) {
+    if (changedProps.has("alwaysExpand") && this.alwaysExpand) {
       this.expanded = this.alwaysExpand;
     }
     if (SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
