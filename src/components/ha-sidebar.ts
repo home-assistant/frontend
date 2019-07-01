@@ -301,7 +301,7 @@ class HaSidebar extends LitElement {
       this.expanded = true;
       this.expandedWidth = true;
     }
-    if (SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
+    if (!SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
