@@ -116,10 +116,13 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
+  @property({ type: Boolean, reflect: true }) public expandedWidth = false;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
+  private _expandTimeout?: number;
+  private _contractTimeout?: number;
 
   protected render() {
     const hass = this.hass;
@@ -239,6 +242,7 @@ class HaSidebar extends LitElement {
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (
       changedProps.has("expanded") ||
+      changedProps.has("expandedWidth") ||
       changedProps.has("narrow") ||
       changedProps.has("alwaysExpand") ||
       changedProps.has("_externalConfig") ||
@@ -271,8 +275,17 @@ class HaSidebar extends LitElement {
         this._externalConfig = conf;
       });
     }
+    // On tablets, there is no hover. So we receive click and mouseenter at the
+    // same time. In that case, we're going to cancel expanding, because it is
+    // going to require another tap outside the sidebar to trigger mouseleave
+    this.addEventListener("click", () => {
+      if (this._expandTimeout) {
+        clearTimeout(this._expandTimeout);
+        this._expandTimeout = undefined;
+      }
+    });
     this.addEventListener("mouseenter", () => {
-      this.expanded = true;
+      this._expand();
     });
     this.addEventListener("mouseleave", () => {
       this._contract();
@@ -284,10 +297,11 @@ class HaSidebar extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
-    if (changedProps.has("alwaysExpand")) {
-      this.expanded = this.alwaysExpand;
+    if (changedProps.has("alwaysExpand") && this.alwaysExpand) {
+      this.expanded = true;
+      this.expandedWidth = true;
     }
-    if (SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
+    if (!SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -299,8 +313,31 @@ class HaSidebar extends LitElement {
     }
   }
 
+  private _expand() {
+    // We debounce it one frame, because on tablets, the mouse-enter and
+    // click event fire at the same time.
+    this._expandTimeout = window.setTimeout(() => {
+      this.expanded = true;
+      this.expandedWidth = true;
+    }, 0);
+    if (this._contractTimeout) {
+      clearTimeout(this._contractTimeout);
+      this._contractTimeout = undefined;
+    }
+  }
+
   private _contract() {
-    this.expanded = this.alwaysExpand || false;
+    if (this._expandTimeout) {
+      clearTimeout(this._expandTimeout);
+      this._expandTimeout = undefined;
+    }
+    if (this.alwaysExpand) {
+      return;
+    }
+    this.expandedWidth = false;
+    this._contractTimeout = window.setTimeout(() => {
+      this.expanded = this.alwaysExpand || false;
+    }, 400);
   }
 
   private _handleShowNotificationDrawer() {
@@ -338,7 +375,7 @@ class HaSidebar extends LitElement {
         contain: strict;
         transition-delay: 0.2s;
       }
-      :host([expanded]) {
+      :host([expandedwidth]) {
         width: 256px;
       }
 
