@@ -121,6 +121,7 @@ class HaSidebar extends LitElement {
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
+  private _expandTimeout?: number;
   private _contractTimeout?: number;
 
   protected render() {
@@ -274,6 +275,15 @@ class HaSidebar extends LitElement {
         this._externalConfig = conf;
       });
     }
+    // On tablets, there is no hover. So we receive click and mouseenter at the
+    // same time. In that case, we're going to cancel expanding, because it is
+    // going to require another tap outside the sidebar to trigger mouseleave
+    this.addEventListener("click", () => {
+      if (this._expandTimeout) {
+        clearTimeout(this._expandTimeout);
+        this._expandTimeout = undefined;
+      }
+    });
     this.addEventListener("mouseenter", () => {
       this._expand();
     });
@@ -304,8 +314,12 @@ class HaSidebar extends LitElement {
   }
 
   private _expand() {
-    this.expanded = true;
-    this.expandedWidth = true;
+    // We debounce it one frame, because on tablets, the mouse-enter and
+    // click event fire at the same time.
+    this._expandTimeout = window.setTimeout(() => {
+      this.expanded = true;
+      this.expandedWidth = true;
+    }, 0);
     if (this._contractTimeout) {
       clearTimeout(this._contractTimeout);
       this._contractTimeout = undefined;
@@ -313,6 +327,10 @@ class HaSidebar extends LitElement {
   }
 
   private _contract() {
+    if (this._expandTimeout) {
+      clearTimeout(this._expandTimeout);
+      this._expandTimeout = undefined;
+    }
     if (this.alwaysExpand) {
       return;
     }
