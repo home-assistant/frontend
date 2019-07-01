@@ -381,6 +381,7 @@ class HaSidebar extends LitElement {
         box-sizing: border-box;
         height: calc(100% - 196px);
         overflow-y: auto;
+        overflow-x: hidden;
       }
 
       a {
