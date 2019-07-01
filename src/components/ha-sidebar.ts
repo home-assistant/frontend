@@ -27,10 +27,13 @@ import {
   subscribeNotifications,
 } from "../data/persistent_notification";
 import computeDomain from "../common/entity/compute_domain";
+import { classMap } from "lit-html/directives/class-map";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
 const computeUrl = (urlPath) => `/${urlPath}`;
+
+const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
 const SORT_VALUE = {
   map: 1,
@@ -149,92 +152,87 @@ class HaSidebar extends LitElement {
           : ""}
         <span class="title">Home Assistant</span>
       </div>
-      <div class="wrapper">
-        <paper-listbox
-          attr-for-selected="data-panel"
-          .selected=${hass.panelUrl}
+      <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
+        <a
+          aria-role="option"
+          href="${computeUrl(this._defaultPage)}"
+          data-panel=${this._defaultPage}
+          tabindex="-1"
         >
-          <a
-            aria-role="option"
-            href="${computeUrl(this._defaultPage)}"
-            data-panel=${this._defaultPage}
-            tabindex="-1"
-          >
-            <paper-icon-item>
-              <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
-              <span class="item-text">${hass.localize("panel.states")}</span>
-            </paper-icon-item>
-          </a>
-
-          ${beforeSpacer.map((panel) => renderPanel(hass, panel))}
-
-          <div class="spacer" disabled></div>
-
-          ${afterSpacer.map((panel) => renderPanel(hass, panel))}
-          ${this._externalConfig && this._externalConfig.hasSettingsScreen
-            ? html`
-                <a
-                  aria-role="option"
-                  aria-label="App Configuration"
-                  href="#external-app-configuration"
-                  tabindex="-1"
-                  @click=${this._handleExternalAppConfiguration}
-                >
-                  <paper-icon-item>
-                    <ha-icon
-                      slot="item-icon"
-                      icon="hass:cellphone-settings-variant"
-                    ></ha-icon>
-                    <span class="item-text">
-                      ${hass.localize("ui.sidebar.external_app_configuration")}
-                    </span>
-                  </paper-icon-item>
-                </a>
-              `
-            : ""}
-
-          <div disabled class="divider sticky-el"></div>
-
-          <paper-icon-item
-            class="notifications sticky-el"
-            aria-role="option"
-            @click=${this._handleShowNotificationDrawer}
-          >
-            <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
-            ${notificationCount > 0
-              ? html`
-                  <span class="notification-badge" slot="item-icon">
-                    ${notificationCount}
-                  </span>
-                `
-              : ""}
-            <span class="item-text">
-              ${hass.localize("ui.notification_drawer.title")}
-            </span>
+          <paper-icon-item>
+            <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
+            <span class="item-text">${hass.localize("panel.states")}</span>
           </paper-icon-item>
+        </a>
 
-          <a
-            class="profile sticky-el"
-            href="/profile"
-            data-panel="panel"
-            tabindex="-1"
-            aria-role="option"
-            aria-label=${hass.localize("panel.profile")}
-          >
-            <paper-icon-item>
-              <ha-user-badge
-                slot="item-icon"
-                .user=${hass.user}
-              ></ha-user-badge>
+        ${beforeSpacer.map((panel) => renderPanel(hass, panel))}
+        <div class="spacer" disabled></div>
 
-              <span class="item-text">
-                ${hass.user ? hass.user.name : ""}
+        ${afterSpacer.map((panel) => renderPanel(hass, panel))}
+        ${this._externalConfig && this._externalConfig.hasSettingsScreen
+          ? html`
+              <a
+                aria-role="option"
+                aria-label="App Configuration"
+                href="#external-app-configuration"
+                tabindex="-1"
+                @click=${this._handleExternalAppConfiguration}
+              >
+                <paper-icon-item>
+                  <ha-icon
+                    slot="item-icon"
+                    icon="hass:cellphone-settings-variant"
+                  ></ha-icon>
+                  <span class="item-text">
+                    ${hass.localize("ui.sidebar.external_app_configuration")}
+                  </span>
+                </paper-icon-item>
+              </a>
+            `
+          : ""}
+      </paper-listbox>
+
+      <div class="divider"></div>
+
+      <paper-icon-item
+        class="notifications"
+        aria-role="option"
+        @click=${this._handleShowNotificationDrawer}
+      >
+        <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
+        ${notificationCount > 0
+          ? html`
+              <span class="notification-badge" slot="item-icon">
+                ${notificationCount}
               </span>
-            </paper-icon-item>
-          </a>
-          <div disabled class="bottom-spacer sticky-el"></div>
-        </paper-listbox>
-      </div>
+            `
+          : ""}
+        <span class="item-text">
+          ${hass.localize("ui.notification_drawer.title")}
+        </span>
+      </paper-icon-item>
+
+      <a
+        class=${classMap({
+          profile: true,
+          // Mimick behavior that paper-listbox provides
+          "iron-selected": hass.panelUrl === "profile",
+        })}
+        href="/profile"
+        data-panel="panel"
+        tabindex="-1"
+        aria-role="option"
+        aria-label=${hass.localize("panel.profile")}
+      >
+        <paper-icon-item>
+          <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
+
+          <span class="item-text">
+            ${hass.user ? hass.user.name : ""}
+          </span>
+        </paper-icon-item>
+      </a>
+      <div disabled class="bottom-spacer"></div>
     `;
   }
 
@@ -267,6 +265,7 @@ class HaSidebar extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+
     if (this.hass && this.hass.auth.external) {
       getExternalConfig(this.hass.auth.external).then((conf) => {
         this._externalConfig = conf;
@@ -287,6 +286,16 @@ class HaSidebar extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
       this.expanded = this.alwaysExpand;
+    }
+    if (SUPPORT_SCROLL_IF_NEEDED && !changedProps.has("hass")) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.panelUrl !== this.hass.panelUrl) {
+      this.shadowRoot!.querySelector(
+        ".iron-selected"
+        // @ts-ignore
+      )!.scrollIntoViewIfNeeded();
     }
   }
 
@@ -333,11 +342,6 @@ class HaSidebar extends LitElement {
         width: 256px;
       }
 
-      .wrapper {
-        overflow-y: auto;
-        height: calc(100% - 65px);
-      }
-
       .menu {
         box-sizing: border-box;
         height: 65px;
@@ -371,13 +375,15 @@ class HaSidebar extends LitElement {
       }
 
       paper-listbox {
-        padding: 4px 0 0;
+        padding: 4px 0;
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
+        height: calc(100% - 196px);
+        overflow-y: auto;
       }
 
-      paper-listbox > a {
+      a {
         color: var(--sidebar-text-color);
         font-weight: 500;
         font-size: 14px;
@@ -452,32 +458,15 @@ class HaSidebar extends LitElement {
       }
 
       .notifications {
-        margin-top: 0;
-        margin-bottom: 0;
-        bottom: 72px;
         cursor: pointer;
       }
       .profile {
-        bottom: 24px;
       }
       .profile paper-icon-item {
         padding-left: 4px;
       }
       .profile .item-text {
         margin-left: 8px;
-      }
-      .bottom-spacer {
-        bottom: 0;
-        padding: 12px 0;
-      }
-
-      .sticky-el {
-        position: -webkit-sticky;
-        position: sticky;
-        background-color: var(
-          --sidebar-background-color,
-          var(--primary-background-color)
-        );
       }
 
       .notification-badge {
