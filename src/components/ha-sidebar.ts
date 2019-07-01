@@ -149,92 +149,83 @@ class HaSidebar extends LitElement {
           : ""}
         <span class="title">Home Assistant</span>
       </div>
-      <div class="wrapper">
-        <paper-listbox
-          attr-for-selected="data-panel"
-          .selected=${hass.panelUrl}
+      <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
+        <a
+          aria-role="option"
+          href="${computeUrl(this._defaultPage)}"
+          data-panel=${this._defaultPage}
+          tabindex="-1"
         >
-          <a
-            aria-role="option"
-            href="${computeUrl(this._defaultPage)}"
-            data-panel=${this._defaultPage}
-            tabindex="-1"
-          >
-            <paper-icon-item>
-              <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
-              <span class="item-text">${hass.localize("panel.states")}</span>
-            </paper-icon-item>
-          </a>
+          <paper-icon-item>
+            <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
+            <span class="item-text">${hass.localize("panel.states")}</span>
+          </paper-icon-item>
+        </a>
 
-          ${beforeSpacer.map((panel) => renderPanel(hass, panel))}
+        ${beforeSpacer.map((panel) => renderPanel(hass, panel))}
+        <div class="spacer" disabled></div>
 
-          <div class="spacer" disabled></div>
+        ${afterSpacer.map((panel) => renderPanel(hass, panel))}
+        ${this._externalConfig && this._externalConfig.hasSettingsScreen
+          ? html`
+              <a
+                aria-role="option"
+                aria-label="App Configuration"
+                href="#external-app-configuration"
+                tabindex="-1"
+                @click=${this._handleExternalAppConfiguration}
+              >
+                <paper-icon-item>
+                  <ha-icon
+                    slot="item-icon"
+                    icon="hass:cellphone-settings-variant"
+                  ></ha-icon>
+                  <span class="item-text">
+                    ${hass.localize("ui.sidebar.external_app_configuration")}
+                  </span>
+                </paper-icon-item>
+              </a>
+            `
+          : ""}
 
-          ${afterSpacer.map((panel) => renderPanel(hass, panel))}
-          ${this._externalConfig && this._externalConfig.hasSettingsScreen
+        <div disabled class="divider sticky-el"></div>
+
+        <paper-icon-item
+          class="notifications sticky-el"
+          aria-role="option"
+          @click=${this._handleShowNotificationDrawer}
+        >
+          <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
+          ${notificationCount > 0
             ? html`
-                <a
-                  aria-role="option"
-                  aria-label="App Configuration"
-                  href="#external-app-configuration"
-                  tabindex="-1"
-                  @click=${this._handleExternalAppConfiguration}
-                >
-                  <paper-icon-item>
-                    <ha-icon
-                      slot="item-icon"
-                      icon="hass:cellphone-settings-variant"
-                    ></ha-icon>
-                    <span class="item-text">
-                      ${hass.localize("ui.sidebar.external_app_configuration")}
-                    </span>
-                  </paper-icon-item>
-                </a>
+                <span class="notification-badge" slot="item-icon">
+                  ${notificationCount}
+                </span>
               `
             : ""}
+          <span class="item-text">
+            ${hass.localize("ui.notification_drawer.title")}
+          </span>
+        </paper-icon-item>
 
-          <div disabled class="divider sticky-el"></div>
+        <a
+          class="profile sticky-el"
+          href="/profile"
+          data-panel="panel"
+          tabindex="-1"
+          aria-role="option"
+          aria-label=${hass.localize("panel.profile")}
+        >
+          <paper-icon-item>
+            <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
 
-          <paper-icon-item
-            class="notifications sticky-el"
-            aria-role="option"
-            @click=${this._handleShowNotificationDrawer}
-          >
-            <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
-            ${notificationCount > 0
-              ? html`
-                  <span class="notification-badge" slot="item-icon">
-                    ${notificationCount}
-                  </span>
-                `
-              : ""}
             <span class="item-text">
-              ${hass.localize("ui.notification_drawer.title")}
+              ${hass.user ? hass.user.name : ""}
             </span>
           </paper-icon-item>
-
-          <a
-            class="profile sticky-el"
-            href="/profile"
-            data-panel="panel"
-            tabindex="-1"
-            aria-role="option"
-            aria-label=${hass.localize("panel.profile")}
-          >
-            <paper-icon-item>
-              <ha-user-badge
-                slot="item-icon"
-                .user=${hass.user}
-              ></ha-user-badge>
-
-              <span class="item-text">
-                ${hass.user ? hass.user.name : ""}
-              </span>
-            </paper-icon-item>
-          </a>
-          <div disabled class="bottom-spacer sticky-el"></div>
-        </paper-listbox>
-      </div>
+        </a>
+        <div disabled class="bottom-spacer sticky-el"></div>
+      </paper-listbox>
     `;
   }
 
@@ -333,11 +324,6 @@ class HaSidebar extends LitElement {
         width: 256px;
       }
 
-      .wrapper {
-        overflow-y: auto;
-        height: calc(100% - 65px);
-      }
-
       .menu {
         box-sizing: border-box;
         height: 65px;
@@ -375,6 +361,8 @@ class HaSidebar extends LitElement {
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
+        height: calc(100% - 65px);
+        overflow-y: auto;
       }
 
       paper-listbox > a {
