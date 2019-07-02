@@ -42,7 +42,7 @@ class HuiTimerEntityRow extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (this._config!.entity) {
+    if (this._config && this._config.entity) {
       const stateObj = this.hass!.states[this._config!.entity];
       this._startInterval(stateObj);
     }
