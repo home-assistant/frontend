@@ -9,6 +9,9 @@ export interface ZHADevice {
   name: string;
   ieee: string;
   nwk: string;
+  lqi: string;
+  rssi: string;
+  last_seen: string;
   manufacturer: string;
   model: string;
   quirk_applied: boolean;
