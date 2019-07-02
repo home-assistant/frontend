@@ -96,9 +96,6 @@ export default function domainIcon(domain: string, state?: string): string {
           return "hass:z-wave";
       }
 
-    case "zha":
-      return "hass:zigbee";
-
     default:
       // tslint:disable-next-line
       console.warn(
