@@ -25,7 +25,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { triggerScript } from "../../../data/script";
 import { showToast } from "../../../util/toast";
-import { repeat } from "lit-html/directives/repeat";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -57,9 +56,7 @@ class HaScriptPicker extends LitElement {
                     <p>We couldn't find any scripts.</p>
                   </div>
                 `
-              : repeat(
-                  this.scripts,
-                  (script) => script.entity_id,
+              : this.scripts.map(
                   (script) => html`
                     <div class="script">
                       <paper-icon-button
