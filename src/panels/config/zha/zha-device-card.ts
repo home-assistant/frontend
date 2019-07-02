@@ -135,6 +135,14 @@ class ZHADeviceCard extends LitElement {
             <dd class="zha-info">${this.device!.ieee}</dd>
             <dt>Nwk:</dt>
             <dd class="zha-info">${formatAsPaddedHex(this.device!.nwk)}</dd>
+            <dt>LQI:</dt>
+            <dd class="zha-info">${this.device!.lqi || "Unknown"}</dd>
+            <dt>RSSI:</dt>
+            <dd class="zha-info">${this.device!.rssi || "Unknown"}</dd>
+            <dt>Last Seen:</dt>
+            <dd class="zha-info">${this.device!.last_seen || "Unknown"}</dd>
+            <dt>Power Source:</dt>
+            <dd class="zha-info">${this.device!.power_source || "Unknown"}</dd>
             ${
               this.device!.quirk_applied
                 ? html`
@@ -360,7 +368,7 @@ class ZHADeviceCard extends LitElement {
         dl dt {
           padding-left: 12px;
           float: left;
-          width: 50px;
+          width: 100px;
           text-align: left;
         }
         dt dd {
