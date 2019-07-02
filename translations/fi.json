@@ -401,7 +401,7 @@
                         "alias": "Nimi",
                         "triggers": {
                             "header": "Laukaisuehdot",
-                            "introduction": "Laukaisuehdot määrittelevät, milloin automaatiota aletaan suorittaa. Samassa säännössä voi olla useita laukaisuehtoja. Kun laukaisuehto täyttyy, Home Assistant varmistaa ehdot. Jos ehdot täyttyvät, toiminto suoritetaan.\n\n[Lue lisää laukaisuehdoista (englanniksi).](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Laukaisuehdot määrittelevät, milloin automaatiota aletaan suorittaa. Samassa säännössä voi olla useita laukaisuehtoja. Kun laukaisuehto täyttyy, Home Assistant varmistaa ehdot. Jos ehdot täyttyvät, toiminto suoritetaan.",
                             "add": "Laukaisuehto",
                             "duplicate": "Kopioi",
                             "delete": "Poista",
@@ -483,7 +483,7 @@
                         },
                         "conditions": {
                             "header": "Ehdot",
-                            "introduction": "Ehdot ovat vapaaehtoinen osa automaatiosääntöä. Niillä voidaan estää toimintoa tapahtumasta, vaikka se olisi laukaistu. Ehdot näyttävät hyvin samanlaisilta kuin laukaisimet, mutta ne ovat eri asia. Laukaisimen tehtävä on tarkkailla järjestelmän tapahtumia. Ehto kuitenkin katsoo systeemin tilaa vain ja ainoastaan yhdellä hetkellä. Laukaisin voi esimerkiksi huomata, jos jokin vipu käännetään päälle. Ehto voi nähdä vain onko vipu päällä vai pois päältä.\n\n[Lue lisää ehdoista (englanniksi).](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Ehdot ovat vapaaehtoinen osa automaatiosääntöä. Niillä voidaan estää toimintoa tapahtumasta, vaikka se olisi laukaistu. Ehdot näyttävät hyvin samanlaisilta kuin laukaisimet, mutta ne ovat eri asia. Laukaisimen tehtävä on tarkkailla järjestelmän tapahtumia. Ehto kuitenkin katsoo systeemin tilaa vain ja ainoastaan yhdellä hetkellä. Laukaisin voi esimerkiksi huomata, jos jokin vipu käännetään päälle. Ehto voi nähdä vain onko vipu päällä vai pois päältä.",
                             "add": "Lisää ehto",
                             "duplicate": "Kopioi",
                             "delete": "Poista",
@@ -529,7 +529,7 @@
                         },
                         "actions": {
                             "header": "Toiminnot",
-                            "introduction": "Home Assistant suorittaa toiminnot, kun automaatio laukaistaan.\n\n[Opi lisää toiminnoista (englanniksi).](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Home Assistant suorittaa toiminnot, kun automaatio laukaistaan.",
                             "add": "Lisää toiminto",
                             "duplicate": "Kopioi",
                             "delete": "Poista",
