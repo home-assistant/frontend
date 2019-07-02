@@ -58,6 +58,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
         color: white;
         padding: 8px;
         font-weight: 500;
+        user-select: text;
       }
     `;
   }
