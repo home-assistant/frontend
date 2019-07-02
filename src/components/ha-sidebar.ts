@@ -306,10 +306,11 @@ class HaSidebar extends LitElement {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.panelUrl !== this.hass.panelUrl) {
-      this.shadowRoot!.querySelector(
-        ".iron-selected"
+      const selectedEl = this.shadowRoot!.querySelector(".iron-selected");
+      if (selectedEl) {
         // @ts-ignore
-      )!.scrollIntoViewIfNeeded();
+        selectedEl.scrollIntoViewIfNeeded();
+      }
     }
   }
 
