@@ -150,7 +150,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                   ? html`
                       -
                       ${this.hass!.localize(
-                        `state_attributes.climate.preset.${
+                        `state_attributes.climate.preset_mode.${
                           stateObj.attributes.preset_mode
                         }`
                       ) || stateObj.attributes.preset_mode}
