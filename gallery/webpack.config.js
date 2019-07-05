@@ -44,8 +44,8 @@ module.exports = {
         to: "static/images/leaflet/",
       },
       {
-        from: "../node_modules/@polymer/font-roboto-local/fonts",
-        to: "static/fonts",
+        from: "../node_modules/roboto-fontface/fonts/roboto/*.woff2",
+        to: "static/fonts/roboto/",
       },
       {
         from: "../node_modules/leaflet/dist/images",
