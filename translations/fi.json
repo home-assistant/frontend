@@ -387,7 +387,7 @@
                     "description": "Luo ja muokkaa automaatioita",
                     "picker": {
                         "header": "Automaatioeditori",
-                        "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Kannattaa lukea [ohjeet](https:\/\/home-assistant.io\/docs\/automation\/editor\/) (englanniksi), jotta osaat varmasti kirjoittaa automaatiot oikein.",
+                        "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Kannattaa lukea ohjeet, jotta osaat varmasti kirjoittaa automaatiot oikein.",
                         "pick_automation": "Valitse automaatio, jota haluat muokata",
                         "no_automations": "Ei muokattavia automaatioita",
                         "add_automation": "Lisää automaatio",
@@ -561,7 +561,7 @@
                             },
                             "learn_more": "Lisätietoja toiminnoista"
                         },
-                        "load_error_not_editable": "Vain automaatiot tiedostossa automations.yaml ovat muokattavissa",
+                        "load_error_not_editable": "Vain automaatiot tiedostossa automations.yaml ovat muokattavissa.",
                         "load_error_unknown": "Virhe ladatessa automaatiota ( {err_no} )"
                     }
                 },
@@ -653,7 +653,7 @@
                     "description": "Yleiskatsaus kaikki kotisi alueista.",
                     "picker": {
                         "header": "Aluekisteri",
-                        "introduction": "Alueita käytetään laitteiden järjestämiseen. Näitä tietoja käytetään Kotiavustajassa käyttöliittymän ja käyttöoikeuksien järjestämiseen sekä integroinnin muihin järjestelmiin.",
+                        "introduction": "Alueita käytetään laitteiden järjestämiseen. Näitä tietoja käytetään Home Assistantissa käyttöliittymän ja käyttöoikeuksien järjestämiseen sekä integroinnin muihin järjestelmiin.",
                         "introduction2": "Voit sijoittaa laitteita alueelle siirtymällä alla olevan linkin avulla integraatiot-sivulle ja sitten napauttamalla määritettyyn integraatioon, jotta pääset laitteet -kortteihin.",
                         "integrations_page": "Integraatiot",
                         "no_areas": "Et ole vielä luonut alueita!",
@@ -674,8 +674,8 @@
                     "picker": {
                         "header": "Olemusrekisteri",
                         "unavailable": "(ei saatavilla)",
-                        "introduction": "Kotiavustaja pitää rekisteriä jokaisesta havaitetusta olemuksesta, joka voidaan yksilöidä. Kullekin näille yksiköille määritetään olemus-ID, varattu juuri tälle yksikölle.",
-                        "introduction2": "Yksikkörekisterin avulla voit ohittaa nimeä, muuttaa yksikön tunnusta tai poistaa merkinnän Kotiavustajasta. Huomaa, että rekisterimerkinnän poistaminen ei poista yksikköä sinäänsä. Sitä voit seuraamalla alla olevaa linkkiä ja poistamalla sitä integrointisivulta.",
+                        "introduction": "Home Assistant pitää rekisteriä jokaisesta havaitetusta olemuksesta, joka voidaan yksilöidä. Kullekin näille yksiköille määritetään olemus-ID, varattu juuri tälle yksikölle.",
+                        "introduction2": "Yksikkörekisterin avulla voit ohittaa nimeä, muuttaa yksikön tunnusta tai poistaa merkinnän Home Assistantista. Huomaa, että rekisterimerkinnän poistaminen ei poista yksikköä sinäänsä. Sitä voit seuraamalla alla olevaa linkkiä ja poistamalla sitä integrointisivulta.",
                         "integrations_page": "Integraatiot"
                     },
                     "editor": {
@@ -729,7 +729,7 @@
                 },
                 "long_lived_access_tokens": {
                     "header": "Pitkäaikaiset käyttötunnussanomat",
-                    "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikutttaa Kotiavustajan kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
+                    "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikutttaa Home Assistantin kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
                     "learn_auth_requests": "Opi tekemään tunnistautuneita kutsuja.",
                     "created_at": "Luotu {date}",
                     "confirm_delete": "Haluatko varmasti poistaa {name} käyttöoikeustunnuksen?",
@@ -769,7 +769,7 @@
             },
             "page-authorize": {
                 "initializing": "Alustetaan",
-                "authorizing_client": "Olet antamassa pääsyn {clientId} Home Assistant ympäristöösi.",
+                "authorizing_client": "Olet antamassa pääsyn {clientId} Home Assistant -ympäristöösi.",
                 "logging_in_with": "Kirjaudutaan sisään **{authProviderName}**.",
                 "pick_auth_provider": "Tai kirjaudu sisään joillakin seuraavista",
                 "abort_intro": "Kirjautuminen on keskeytetty",
@@ -881,7 +881,7 @@
                     }
                 },
                 "integration": {
-                    "intro": "Laitteet ja palvelut ovat edustettuna Kotiavustajassa integraatioina. Voit määrittää ne nyt tai tehdä sitä myöhemmin kokoonpanonäytöstä.",
+                    "intro": "Laitteet ja palvelut ovat edustettuna Home Assistantissa integraatioina. Voit määrittää ne nyt tai tehdä sitä myöhemmin kokoonpanonäytöstä.",
                     "more_integrations": "Lisää",
                     "finish": "Valmis"
                 },
@@ -967,7 +967,7 @@
                     "entity_non_numeric": "Yksikkö ei ole numeerinen: {entity}"
                 },
                 "changed_toast": {
-                    "message": "Lovelace-asetukset päivitettiin, haluatko päivittää näkymää?",
+                    "message": "Lovelace-asetukset päivitettiin, haluatko päivittää näkymän?",
                     "refresh": "Päivitä"
                 },
                 "reload_lovelace": "Lataa Lovelace uudelleen"
@@ -977,8 +977,8 @@
                     "demo": {
                         "demo_by": "kirjoittanut {name}",
                         "next_demo": "Seuraava demo",
-                        "introduction": "Tervetuloa kotiin! Olet päätynyt Kotiavustaja-demoon, missä esittelemme yhteisömme parhaat käyttöliittymät.",
-                        "learn_more": "Opi enemmän Kotiavustajasta"
+                        "introduction": "Tervetuloa kotiin! Olet päätynyt Home Assistant -demoon, missä esittelemme yhteisömme parhaat käyttöliittymät.",
+                        "learn_more": "Opi enemmän Home Assistantista"
                     }
                 },
                 "config": {
@@ -1006,7 +1006,7 @@
                             "volume": "Äänenvoimakkuus",
                             "total_tv_time": "TV-aikaa yhteensä",
                             "turn_tv_off": "Sammuta televisio",
-                            "air": "Air"
+                            "air": "Ilmastointi"
                         },
                         "unit": {
                             "watching": "katsomassa",
