@@ -357,6 +357,7 @@
                                 "stop": "Zastavit"
                             },
                             "core_config": {
+                                "edit_requires_storage": "Editori pois käytöstä, koska asetukset on määritelty configuration.yaml:ssä",
                                 "location_name": "Název instalace Home Assistant",
                                 "latitude": "Zeměpisná šířka",
                                 "longitude": "Zeměpisná délka",
@@ -996,6 +997,8 @@
                         "labels": {
                             "lights": "Světla",
                             "information": "Informace",
+                            "morning_commute": "Työmatka aamulla",
+                            "commute_home": "Matka kotiin",
                             "entertainment": "Zábava",
                             "activity": "Aktivita",
                             "hdmi_input": "Vstup HDMI",
@@ -1006,6 +1009,7 @@
                             "air": "Vzduch"
                         },
                         "unit": {
+                            "watching": "tarkkaillaan",
                             "minutes_abbr": "min"
                         }
                     }
