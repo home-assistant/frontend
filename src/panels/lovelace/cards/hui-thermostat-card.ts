@@ -143,9 +143,21 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             </div>
             <div class="climate-info">
             <div id="set-temperature"></div>
-            <div class="current-mode">${this.hass!.localize(
-              `state.climate.${stateObj.state}`
-            )}</div>
+            <div class="current-mode">
+              ${this.hass!.localize(`state.climate.${stateObj.state}`)}
+              ${
+                stateObj.attributes.preset_mode
+                  ? html`
+                      -
+                      ${this.hass!.localize(
+                        `state_attributes.climate.preset.${
+                          stateObj.attributes.preset_mode
+                        }`
+                      ) || stateObj.attributes.preset_mode}
+                    `
+                  : ""
+              }
+            </div>
             <div class="modes">
               ${stateObj.attributes.hvac_modes.map((modeItem) =>
                 this._renderIcon(modeItem, mode)
@@ -202,7 +214,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private get _stepSize(): number {
-    const stateObj = this.hass!.states[this._config!.entity];
+    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
