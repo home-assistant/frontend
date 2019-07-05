@@ -320,6 +320,7 @@
         "auto": "[%key:state::climate::auto%]"
       },
       "preset_mode": {
+        "none": "None",
         "eco": "Eco",
         "away": "Away",
         "boost": "Boost",
