@@ -113,8 +113,8 @@
                 "on": "Quente"
             },
             "window": {
-                "off": "Fechada",
-                "on": "Aberta"
+                "off": "Fechado",
+                "on": "Aberto"
             },
             "lock": {
                 "off": "Bloqueado",
@@ -499,7 +499,7 @@
                                     "label": "Estado numérico",
                                     "above": "Acima",
                                     "below": "Abaixo",
-                                    "value_template": "Valor de exemplo (opcional)"
+                                    "value_template": "Valor do modelo (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -512,7 +512,7 @@
                                 },
                                 "template": {
                                     "label": "Modelo",
-                                    "value_template": "Valor de exemplo"
+                                    "value_template": "Valor do modelo"
                                 },
                                 "time": {
                                     "label": "Tempo",
@@ -619,7 +619,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo indisponível",
                         "entity_unavailable": "entidade indisponível",
-                        "no_area": "Sem área"
+                        "no_area": "Sem área",
+                        "hub": "Conectado via"
                     },
                     "config_flow": {
                         "external_step": {
@@ -970,6 +971,49 @@
                     "refresh": "Atualizar"
                 },
                 "reload_lovelace": "Recarregar Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "por {name}",
+                        "next_demo": "Próxima demonstração",
+                        "introduction": "Bem-vindo! Você chegou no demo do Home Assistant onde mostramos as melhores UIs criados por nossa comunidade.",
+                        "learn_more": "Saiba mais sobre o Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Andar de cima",
+                            "family_room": "Quarto Familiar",
+                            "kitchen": "Cozinha",
+                            "patio": "Pátio",
+                            "hallway": "Corredor",
+                            "master_bedroom": "Quarto principal",
+                            "left": "Esquerda",
+                            "right": "Direita",
+                            "mirror": "Espelho"
+                        },
+                        "labels": {
+                            "lights": "Luzes",
+                            "information": "Informação",
+                            "morning_commute": "Comutação da manhã",
+                            "commute_home": "Comutar para casa",
+                            "entertainment": "Entretenimento",
+                            "activity": "Atividade",
+                            "hdmi_input": "Entrada HDMI",
+                            "hdmi_switcher": "Comutador HDMI",
+                            "volume": "Volume",
+                            "total_tv_time": "Tempo total de TV",
+                            "turn_tv_off": "Desligue a televisão",
+                            "air": "Ar"
+                        },
+                        "unit": {
+                            "watching": "assistindo",
+                            "minutes_abbr": "min"
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
