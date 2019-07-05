@@ -40,6 +40,16 @@ class HuiTimerEntityRow extends LitElement {
     this._clearInterval();
   }
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._config && this._config.entity) {
+      const stateObj = this.hass!.states[this._config!.entity];
+      if (stateObj) {
+        this._startInterval(stateObj);
+      }
+    }
+  }
+
   protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
