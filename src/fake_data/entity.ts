@@ -209,11 +209,24 @@ class ClimateEntity extends Entity {
       return;
     }
 
-    if (service === "set_operation_mode") {
-      this.update(
-        data.operation_mode === "heat" ? "heat" : data.operation_mode,
-        { ...this.attributes, operation_mode: data.operation_mode }
-      );
+    if (service === "set_hvac_mode") {
+      this.update(data.hvac_mode, this.attributes);
+    } else if (
+      [
+        "set_temperature",
+        "set_humidity",
+        "set_hvac_mode",
+        "set_fan_mode",
+        "set_preset_mode",
+        "set_swing_mode",
+        "set_aux_heat",
+      ].includes(service)
+    ) {
+      const { entity_id, ...toSet } = data;
+      this.update(this.state, {
+        ...this.attributes,
+        ...toSet,
+      });
     } else {
       super.handleService(domain, service, data);
     }

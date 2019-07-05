@@ -56,7 +56,7 @@ class HaGallery extends PolymerElement {
         color: var(--primary-color);
       }
 
-      a paper-item {
+      a {
         color: var(--primary-text-color);
         text-decoration: none;
       }
@@ -138,12 +138,22 @@ class HaGallery extends PolymerElement {
           </template>
         </div>
       </app-header-layout>
-      <notification-manager id='notifications'></notification-manager>
+      <notification-manager hass=[[_fakeHass]] id='notifications'></notification-manager>
     `;
   }
 
   static get properties() {
     return {
+      _fakeHass: {
+        type: Object,
+        // Just enough for computeRTL
+        value: {
+          language: "en",
+          translationMetadata: {
+            translations: {},
+          },
+        },
+      },
       _demo: {
         type: String,
         value: document.location.hash.substr(1),

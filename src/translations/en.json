@@ -176,20 +176,12 @@
     },
     "climate": {
       "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]",
       "heat": "Heat",
       "cool": "Cool",
-      "idle": "Idle",
+      "heat_cool": "Auto",
       "auto": "Auto",
       "dry": "Dry",
-      "fan_only": "Fan only",
-      "eco": "Eco",
-      "electric": "Electric",
-      "performance": "Performance",
-      "high_demand": "High demand",
-      "heat_pump": "Heat pump",
-      "gas": "Gas",
-      "manual": "Manual"
+      "fan_only": "Fan only"
     },
     "configurator": {
       "configure": "Configure",
@@ -326,6 +318,16 @@
         "off": "[%key:state::default::off%]",
         "on": "[%key:state::default::on%]",
         "auto": "[%key:state::climate::auto%]"
+      },
+      "preset_mode": {
+        "none": "None",
+        "eco": "Eco",
+        "away": "Away",
+        "boost": "Boost",
+        "comfort": "Comfort",
+        "home": "Home",
+        "sleep": "Sleep",
+        "activity": "Activity"
       }
     }
   },
@@ -393,6 +395,7 @@
         "operation": "Operation",
         "fan_mode": "Fan mode",
         "swing_mode": "Swing mode",
+        "preset_mode": "Preset",
         "away_mode": "Away mode",
         "aux_heat": "Aux heat"
       },

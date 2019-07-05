@@ -619,26 +619,6 @@ export const demoServices: HassServices = {
     },
   },
   climate: {
-    set_away_mode: {
-      description: "Turn away mode on/off for climate device.",
-      fields: {
-        entity_id: {
-          description: "Name(s) of entities to change.",
-          example: "climate.kitchen",
-        },
-        away_mode: { description: "New value of away mode.", example: "true" },
-      },
-    },
-    set_hold_mode: {
-      description: "Turn hold mode for climate device.",
-      fields: {
-        entity_id: {
-          description: "Name(s) of entities to change.",
-          example: "climate.kitchen",
-        },
-        hold_mode: { description: "New value of hold mode", example: "away" },
-      },
-    },
     set_aux_heat: {
       description: "Turn auxiliary heater on/off for climate device.",
       fields: {
@@ -701,16 +681,16 @@ export const demoServices: HassServices = {
         fan_mode: { description: "New value of fan mode.", example: "On Low" },
       },
     },
-    set_operation_mode: {
+    set_hvac_mode: {
       description: "Set operation mode for climate device.",
       fields: {
         entity_id: {
           description: "Name(s) of entities to change.",
           example: "climate.nest",
         },
-        operation_mode: {
+        hvac_mode: {
           description: "New value of operation mode.",
-          example: "Heat",
+          example: "heat",
         },
       },
     },
@@ -722,24 +702,6 @@ export const demoServices: HassServices = {
           example: "climate.nest",
         },
         swing_mode: { description: "New value of swing mode.", example: "" },
-      },
-    },
-    turn_off: {
-      description: "Turn climate device off.",
-      fields: {
-        entity_id: {
-          description: "Name(s) of entities to change.",
-          example: "climate.kitchen",
-        },
-      },
-    },
-    turn_on: {
-      description: "Turn climate device on.",
-      fields: {
-        entity_id: {
-          description: "Name(s) of entities to change.",
-          example: "climate.kitchen",
-        },
       },
     },
   },
