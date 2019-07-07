@@ -5,13 +5,13 @@
     <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin="use-credentials" />
     <link
       rel="preload"
-      href="/static/fonts/roboto/Roboto-Light.ttf"
+      href="/static/fonts/roboto/Roboto-Light.woff2"
       as="font"
       crossorigin
     />
     <link
       rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.ttf"
+      href="/static/fonts/roboto/Roboto-Regular.woff2"
       as="font"
       crossorigin
     />
