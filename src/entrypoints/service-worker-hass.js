@@ -19,9 +19,11 @@ function initRouting() {
     new workbox.strategies.NetworkOnly()
   );
 
-  // Get manifest and service worker from network.
+  // Get manifest, service worker, onboarding from network.
   workbox.routing.registerRoute(
-    new RegExp(`${location.host}/(service_worker.js|manifest.json)`),
+    new RegExp(
+      `${location.host}/(service_worker.js|manifest.json|onboarding.html)`
+    ),
     new workbox.strategies.NetworkOnly()
   );
 
