@@ -124,18 +124,28 @@ gulp.task(taskName, function() {
 });
 tasks.push(taskName);
 
-taskName = "create-test-metadata";
-gulp.task(taskName, function(cb) {
-  fs.writeFile(
-    workDir + "/testMetadata.json",
-    JSON.stringify({
-      test: {
-        nativeName: "Test",
-      },
-    }),
-    cb
-  );
+gulp.task("ensure-translations-build-dir", (done) => {
+  if (!fs.existsSync(workDir)) {
+    fs.mkdirSync(workDir);
+  }
+  done();
 });
+
+taskName = "create-test-metadata";
+gulp.task(
+  taskName,
+  gulp.series("ensure-translations-build-dir", function writeTestMetaData(cb) {
+    fs.writeFile(
+      workDir + "/testMetadata.json",
+      JSON.stringify({
+        test: {
+          nativeName: "Test",
+        },
+      }),
+      cb
+    );
+  })
+);
 tasks.push(taskName);
 
 taskName = "create-test-translation";
