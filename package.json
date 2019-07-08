@@ -8,7 +8,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "script/build_frontend",
-    "lint": "eslint src hassio/src gallery/src && tslint 'src/**/*.ts' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'test-mocha/**/*.ts' && polymer lint && tsc",
+    "lint": "eslint src hassio/src gallery/src cast/src && tslint 'src/**/*.ts' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'cast/src/**/*.ts' 'test-mocha/**/*.ts' && polymer lint && tsc",
     "mocha": "node_modules/.bin/ts-mocha -p test-mocha/tsconfig.test.json --opts test-mocha/mocha.opts",
     "test": "npm run lint && npm run mocha",
     "docker_build": "sh ./script/docker_run.sh build $npm_package_version",
@@ -112,6 +112,8 @@
     "@babel/preset-typescript": "^7.3.3",
     "@gfx/zopfli": "^1.0.11",
     "@types/chai": "^4.1.7",
+    "@types/chromecast-caf-receiver": "^3.0.12",
+    "@types/chromecast-caf-sender": "^1.0.1",
     "@types/hls.js": "^0.12.3",
     "@types/leaflet": "^1.4.3",
     "@types/memoize-one": "4.1.0",

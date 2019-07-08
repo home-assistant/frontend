@@ -57,8 +57,8 @@ export class HUIView extends LitElement {
     return {
       hass: {},
       lovelace: {},
-      columns: {},
-      index: {},
+      columns: { type: Number },
+      index: { type: Number },
       _cards: {},
       _badges: {},
     };
@@ -116,10 +116,11 @@ export class HUIView extends LitElement {
       <style>
         :host {
           display: block;
+          box-sizing: border-box;
           padding: 4px 4px 0;
           transform: translateZ(0);
           position: relative;
-          min-height: calc(100vh - 155px);
+          min-height: calc(100vh - 159px);
         }
 
         #badges {
@@ -132,6 +133,8 @@ export class HUIView extends LitElement {
           display: flex;
           flex-direction: row;
           justify-content: center;
+          height: 100%; /* CAST TEMP */
+          align-items: center; /* CAST TEMP */
         }
 
         .column {
@@ -194,7 +197,9 @@ export class HUIView extends LitElement {
     let editModeChanged = false;
     let configChanged = false;
 
-    if (changedProperties.has("lovelace")) {
+    if (changedProperties.has("index")) {
+      configChanged = true;
+    } else if (changedProperties.has("lovelace")) {
       const oldLovelace = changedProperties.get("lovelace") as Lovelace;
       editModeChanged =
         !oldLovelace || lovelace.editMode !== oldLovelace.editMode;

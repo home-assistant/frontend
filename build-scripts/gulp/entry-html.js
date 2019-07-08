@@ -14,6 +14,9 @@ const templatePath = (tpl) =>
 const demoTemplatePath = (tpl) =>
   path.resolve(config.demo_dir, "src/html/", `${tpl}.html.template`);
 
+const castTemplatePath = (tpl) =>
+  path.resolve(config.cast_dir, "src/html/", `${tpl}.html.template`);
+
 const readFile = (pth) => fs.readFileSync(pth).toString();
 
 const renderTemplate = (pth, data = {}, pathFunc = templatePath) => {
@@ -23,6 +26,9 @@ const renderTemplate = (pth, data = {}, pathFunc = templatePath) => {
 
 const renderDemoTemplate = (pth, data = {}) =>
   renderTemplate(pth, data, demoTemplatePath);
+
+const renderCastTemplate = (pth, data = {}) =>
+  renderTemplate(pth, data, castTemplatePath);
 
 const minifyHtml = (content) =>
   minify(content, {
@@ -113,17 +119,23 @@ gulp.task("gen-index-app-prod", (done) => {
   done();
 });
 
-gulp.task("gen-index-demo-dev", (done) => {
-  // In dev mode we don't mangle names, so we hardcode urls. That way we can
-  // run webpack as last in watch mode, which blocks output.
-  const content = renderDemoTemplate("index", {
-    latestDemoJS: "/frontend_latest/main.js",
-
-    es5Compatibility: "/frontend_es5/compatibility.js",
-    es5DemoJS: "/frontend_es5/main.js",
+gulp.task("gen-index-cast-dev", (done) => {
+  const contentReceiver = renderCastTemplate("index", {
+    latestReceiverJS: "/frontend_latest/receiver.js",
   });
+  fs.outputFileSync(
+    path.resolve(config.cast_root, "index.html"),
+    contentReceiver
+  );
 
-  fs.outputFileSync(path.resolve(config.demo_root, "index.html"), content);
+  const contentLauncher = renderCastTemplate("launcher", {
+    latestLauncherJS: "/frontend_latest/launcher.js",
+    es5LauncherJS: "/frontend_es5/launcher.js",
+  });
+  fs.outputFileSync(
+    path.resolve(config.cast_root, "launcher.html"),
+    contentLauncher
+  );
   done();
 });
 

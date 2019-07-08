@@ -35,8 +35,13 @@ export const fetchThumbnailUrlWithCache = (
     entityId
   );
 
-export const fetchThumbnailUrl = (hass: HomeAssistant, entityId: string) =>
-  getSignedPath(hass, `/api/camera_proxy/${entityId}`).then(({ path }) => path);
+export const fetchThumbnailUrl = async (
+  hass: HomeAssistant,
+  entityId: string
+) => {
+  const path = await getSignedPath(hass, `/api/camera_proxy/${entityId}`);
+  return `${hass.auth.data.hassUrl}${path.path}`;
+};
 
 export const fetchThumbnail = (hass: HomeAssistant, entityId: string) => {
   // tslint:disable-next-line: no-console
@@ -47,7 +52,7 @@ export const fetchThumbnail = (hass: HomeAssistant, entityId: string) => {
   });
 };
 
-export const fetchStreamUrl = (
+export const fetchStreamUrl = async (
   hass: HomeAssistant,
   entityId: string,
   format?: "hls"
@@ -60,7 +65,9 @@ export const fetchStreamUrl = (
     // @ts-ignore
     data.format = format;
   }
-  return hass.callWS<Stream>(data);
+  const stream = await hass.callWS<Stream>(data);
+  stream.url = `${hass.auth.data.hassUrl}${stream.url}`;
+  return stream;
 };
 
 export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>

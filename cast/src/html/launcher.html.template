@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant Cast Launcher</title>
+    <%= renderTemplate('_style_base') %>
+  </head>
+  <body>
+    <%= renderTemplate('_js_base') %>
+
+    <script type="module" crossorigin="use-credentials">
+      import "<%= latestLauncherJS %>";
+    </script>
+
+    <script nomodule>
+      (function() {
+        // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
+        if (!isS101) {
+          _ls("/static/polyfills/custom-elements-es5-adapter.js");
+          _ls("<%= es5LauncherJS %>");
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -26,6 +26,7 @@ import "../special-rows/hui-call-service-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
+import "../special-rows/hui-cast-row";
 import { EntityConfig, EntityRow } from "../entity-rows/types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
@@ -34,6 +35,7 @@ const SPECIAL_TYPES = new Set([
   "divider",
   "section",
   "weblink",
+  "cast",
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   alert: "toggle",
@@ -127,6 +129,10 @@ export const createRowElement = (
     });
 
     return element;
+  }
+
+  if (!config.entity) {
+    return _createErrorElement("Invalid config given.", config);
   }
 
   const domain = config.entity.split(".", 1)[0];

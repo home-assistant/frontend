@@ -138,10 +138,7 @@ class HaCameraStream extends LitElement {
     }
 
     try {
-      const { url } = await fetchStreamUrl(
-        this.hass!,
-        this.stateObj!.entity_id
-      );
+      let { url } = await fetchStreamUrl(this.hass!, this.stateObj!.entity_id);
 
       if (Hls.isSupported()) {
         this._renderHLSPolyfill(videoEl, Hls, url);

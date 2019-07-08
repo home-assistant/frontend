@@ -92,7 +92,6 @@ export class HassRouterPage extends UpdatingElement {
     if (route && route.path === "" && defaultPage !== undefined) {
       navigate(this, `${route.prefix}/${defaultPage}`, true);
     }
-
     let newPage = route
       ? extractPage(route.path, defaultPage || "")
       : "not_found";

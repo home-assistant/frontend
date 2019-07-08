@@ -1,4 +1,4 @@
-// Run HA develop mode
+// Run demo develop mode
 const gulp = require("gulp");
 
 require("./clean.js");
