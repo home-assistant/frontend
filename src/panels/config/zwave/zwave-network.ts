@@ -25,10 +25,6 @@ export class ZwaveNetwork extends LitElement {
   @property() public isWide!: boolean;
   @property() private _showHelp = false;
 
-  constructor() {
-    super();
-  }
-
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
