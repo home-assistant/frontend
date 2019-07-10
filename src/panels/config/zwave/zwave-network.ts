@@ -21,7 +21,7 @@ import "../ha-config-section";
 
 @customElement("zwave-network")
 export class ZwaveNetwork extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property() private _showHelp = false;
 
