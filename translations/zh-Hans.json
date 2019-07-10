@@ -132,7 +132,7 @@
         },
         "climate": {
             "off": "关",
-            "on": "开启",
+            "on": "开",
             "heat": "制热",
             "cool": "制冷",
             "idle": "待机",
@@ -145,7 +145,8 @@
             "high_demand": "高需求",
             "heat_pump": "热泵",
             "gas": "燃气",
-            "manual": "手动"
+            "manual": "手动",
+            "heat_cool": "自动"
         },
         "configurator": {
             "configure": "设置",
@@ -163,8 +164,8 @@
             "not_home": "离开"
         },
         "fan": {
-            "off": "关闭",
-            "on": "开启"
+            "off": "关",
+            "on": "开"
         },
         "group": {
             "off": "关闭",
@@ -182,8 +183,8 @@
             "problem": "异常"
         },
         "input_boolean": {
-            "off": "关闭",
-            "on": "开启"
+            "off": "关",
+            "on": "开"
         },
         "light": {
             "off": "关",
@@ -194,8 +195,8 @@
             "unlocked": "解锁"
         },
         "media_player": {
-            "off": "关闭",
-            "on": "开启",
+            "off": "关",
+            "on": "开",
             "playing": "正在播放",
             "paused": "已暂停",
             "idle": "空闲",
@@ -206,19 +207,19 @@
             "problem": "异常"
         },
         "remote": {
-            "off": "关闭",
-            "on": "开启"
+            "off": "关",
+            "on": "开"
         },
         "scene": {
             "scening": "场景启用中"
         },
         "script": {
-            "off": "关闭",
-            "on": "开启"
+            "off": "关",
+            "on": "开"
         },
         "sensor": {
-            "off": "关闭",
-            "on": "开启"
+            "off": "关",
+            "on": "开"
         },
         "sun": {
             "above_horizon": "日出",
@@ -984,6 +985,7 @@
                 "config": {
                     "arsaboo": {
                         "names": {
+                            "upstairs": "二楼",
                             "family_room": "客厅",
                             "kitchen": "厨房",
                             "patio": "露台",
@@ -998,7 +1000,18 @@
                             "information": "信息",
                             "morning_commute": "上班",
                             "commute_home": "下班",
-                            "entertainment": "娱乐"
+                            "entertainment": "娱乐",
+                            "activity": "活动",
+                            "hdmi_input": "HDMI输入",
+                            "hdmi_switcher": "HDMI切换",
+                            "volume": "音量",
+                            "total_tv_time": "观看总时长",
+                            "turn_tv_off": "关闭电视",
+                            "air": "换气"
+                        },
+                        "unit": {
+                            "watching": "观看",
+                            "minutes_abbr": "分"
                         }
                     }
                 }
@@ -1110,7 +1123,8 @@
                 "fan_mode": "风速",
                 "swing_mode": "扫风模式",
                 "away_mode": "离开模式",
-                "aux_heat": "辅热"
+                "aux_heat": "辅热",
+                "preset_mode": "预设"
             },
             "lock": {
                 "code": "密码",
@@ -1255,6 +1269,16 @@
                 "off": "关",
                 "on": "开",
                 "auto": "自动"
+            },
+            "preset_mode": {
+                "none": "无",
+                "eco": "节能",
+                "away": "离家",
+                "boost": "强力",
+                "comfort": "舒适",
+                "home": "在家",
+                "sleep": "睡眠",
+                "activity": "活动"
             }
         }
     },

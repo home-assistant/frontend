@@ -145,7 +145,8 @@
             "high_demand": "Høy etterspørsel",
             "heat_pump": "Varmepumpe",
             "gas": "Gass",
-            "manual": "Manuell"
+            "manual": "Manuell",
+            "heat_cool": "Auto"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -483,7 +484,7 @@
                         },
                         "conditions": {
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del av en automatiseringsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av. \n\n[Lær mer om betingelser.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Betingelser er en valgfri del av en automatiseringsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av.",
                             "add": "Legg til betingelse",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Viftemodus",
                 "swing_mode": "Svingmodus",
                 "away_mode": "Bortemodus",
-                "aux_heat": "Aux varme"
+                "aux_heat": "Aux varme",
+                "preset_mode": "Preset"
             },
             "lock": {
                 "code": "Kode",
@@ -1267,6 +1269,16 @@
                 "off": "Av",
                 "on": "På",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "Ingen",
+                "eco": "Øko",
+                "away": "Borte",
+                "boost": "Turbo",
+                "comfort": "Komfort",
+                "home": "Hjem",
+                "sleep": "Sove",
+                "activity": "Aktivitet"
             }
         }
     },

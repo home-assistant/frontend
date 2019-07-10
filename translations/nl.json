@@ -145,7 +145,8 @@
             "high_demand": "Hoge vraag",
             "heat_pump": "Warmtepomp",
             "gas": "Gas",
-            "manual": "Handmatig"
+            "manual": "Handmatig",
+            "heat_cool": "Auto"
         },
         "configurator": {
             "configure": "Configureer",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Ventilatormodus",
                 "swing_mode": "Swingmodus",
                 "away_mode": "Afwezigheidsmodus",
-                "aux_heat": "Extra warmte"
+                "aux_heat": "Extra warmte",
+                "preset_mode": "Vooraf ingesteld"
             },
             "lock": {
                 "code": "Code",
@@ -1267,6 +1269,16 @@
                 "off": "Uit",
                 "on": "Aan",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "Geen",
+                "eco": "Eco",
+                "away": "Afwezig",
+                "boost": "Boost",
+                "comfort": "Comfort",
+                "home": "Thuis",
+                "sleep": "Slapen",
+                "activity": "Activiteit"
             }
         }
     },
