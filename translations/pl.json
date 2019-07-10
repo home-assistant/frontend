@@ -145,7 +145,8 @@
             "high_demand": "duży rozbiór",
             "heat_pump": "pompa ciepła",
             "gas": "gaz",
-            "manual": "manualnie"
+            "manual": "manualnie",
+            "heat_cool": "automatycznie"
         },
         "configurator": {
             "configure": "Skonfiguruj",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Tryb pracy wentylatora",
                 "swing_mode": "Tryb ruchu łopatek",
                 "away_mode": "Tryb poza domem",
-                "aux_heat": "Dodatkowe źródło ciepła"
+                "aux_heat": "Dodatkowe źródło ciepła",
+                "preset_mode": "Ustawienia"
             },
             "lock": {
                 "code": "Kod",
@@ -1267,6 +1269,16 @@
                 "off": "wyłączony",
                 "on": "włączony",
                 "auto": "automatyczny"
+            },
+            "preset_mode": {
+                "none": "brak",
+                "eco": "ekonomicznie",
+                "away": "poza domem",
+                "boost": "wzmocnienie",
+                "comfort": "komfort",
+                "home": "w domu",
+                "sleep": "sen",
+                "activity": "aktywność"
             }
         }
     },

@@ -145,7 +145,8 @@
             "high_demand": "Visoka poraba",
             "heat_pump": "Toplotna črpalka",
             "gas": "Plin",
-            "manual": "Ročno"
+            "manual": "Ročno",
+            "heat_cool": "Samodejno"
         },
         "configurator": {
             "configure": "Konfiguriraj",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Način ventilatorja",
                 "swing_mode": "Način Swing",
                 "away_mode": "Način odsotnosti",
-                "aux_heat": "Dodatna toplota"
+                "aux_heat": "Dodatna toplota",
+                "preset_mode": "Prednastavitev"
             },
             "lock": {
                 "code": "Koda",
@@ -1267,6 +1269,16 @@
                 "off": "Izključen",
                 "on": "Vklopljen",
                 "auto": "Samodejno"
+            },
+            "preset_mode": {
+                "none": "Noben",
+                "eco": "Eko",
+                "away": "Odsoten",
+                "boost": "Povečanje",
+                "comfort": "Udobje",
+                "home": "Doma",
+                "sleep": "Spanje",
+                "activity": "Dejavnost"
             }
         }
     },
