@@ -21,6 +21,7 @@ class HaMenuButton extends LitElement {
   @property() public narrow!: boolean;
   @property() public hass!: HomeAssistant;
   @property() private _hasNotifications = false;
+  private _alwaysVisible = false;
   private _attachNotifOnConnect = false;
   private _unsubNotifications?: UnsubscribeFunc;
 
@@ -62,6 +63,18 @@ class HaMenuButton extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    if (!this.hassio) {
+      return;
+    }
+    // This component is used on Hass.io too, but Hass.io might run the UI
+    // on older frontends too, that don't have an always visible menu button
+    // in the sidebar.
+    this._alwaysVisible =
+      (Number((window.parent as any).frontendVersion) || 0) >= 20190710;
+  }
+
   protected updated(changedProps) {
     super.updated(changedProps);
 
@@ -69,7 +82,8 @@ class HaMenuButton extends LitElement {
       return;
     }
 
-    this.style.visibility = this.narrow ? "initial" : "hidden";
+    this.style.visibility =
+      this.narrow || this._alwaysVisible ? "initial" : "hidden";
 
     if (!this.narrow) {
       this._hasNotifications = false;

@@ -145,7 +145,8 @@
             "high_demand": "Magas igénybevétel",
             "heat_pump": "Hőszivattyú",
             "gas": "Gáz",
-            "manual": "Manuális"
+            "manual": "Manuális",
+            "heat_cool": "Automatikus"
         },
         "configurator": {
             "configure": "Beállítás",
@@ -1267,6 +1268,15 @@
                 "off": "Ki",
                 "on": "Be",
                 "auto": "Automatikus"
+            },
+            "preset_mode": {
+                "none": "Nincs",
+                "eco": "Takarékos",
+                "away": "Távol",
+                "comfort": "Komfort",
+                "home": "Otthon",
+                "sleep": "Alvás",
+                "activity": "Tevékenység"
             }
         }
     },

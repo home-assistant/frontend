@@ -145,7 +145,8 @@
             "high_demand": "Alta potència",
             "heat_pump": "Bomba de calor",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Automàtic"
         },
         "configurator": {
             "configure": "Configurar",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Mode ventilació",
                 "swing_mode": "Mode oscil·lació",
                 "away_mode": "Mode absent",
-                "aux_heat": "Calefactor auxiliar"
+                "aux_heat": "Calefactor auxiliar",
+                "preset_mode": "Programat"
             },
             "lock": {
                 "code": "Codi",
@@ -1267,6 +1269,16 @@
                 "off": "Desactivat",
                 "on": "Activat",
                 "auto": "Automàtic"
+            },
+            "preset_mode": {
+                "none": "Cap",
+                "eco": "Econòmic",
+                "away": "Absent",
+                "boost": "Incrementat",
+                "comfort": "Confort",
+                "home": "A casa",
+                "sleep": "Dormint",
+                "activity": "Activitat"
             }
         }
     },
