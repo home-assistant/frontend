@@ -136,7 +136,7 @@
             "heat": "暖氣",
             "cool": "冷氣",
             "idle": "待命",
-            "auto": "自動模式",
+            "auto": "自動",
             "dry": "除濕模式",
             "fan_only": "僅送風",
             "eco": "節能模式",
@@ -145,7 +145,8 @@
             "high_demand": "高用量",
             "heat_pump": "暖氣",
             "gas": "瓦斯模式",
-            "manual": "手動"
+            "manual": "手動",
+            "heat_cool": "自動"
         },
         "configurator": {
             "configure": "設定",
@@ -1000,7 +1001,7 @@
                             "morning_commute": "晨間通勤",
                             "commute_home": "返家通勤",
                             "entertainment": "視聽室",
-                            "activity": "活動",
+                            "activity": "模式",
                             "hdmi_input": "HDMI 輸入",
                             "hdmi_switcher": "HDMI 切換器",
                             "volume": "音量",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "風速模式",
                 "swing_mode": "擺動模式",
                 "away_mode": "外出模式",
-                "aux_heat": "輔助暖氣"
+                "aux_heat": "輔助暖氣",
+                "preset_mode": "預置"
             },
             "lock": {
                 "code": "密碼",
@@ -1266,7 +1268,17 @@
             "fan_mode": {
                 "off": "關閉",
                 "on": "開啟",
-                "auto": "自動模式"
+                "auto": "自動"
+            },
+            "preset_mode": {
+                "none": "無",
+                "eco": "節能",
+                "away": "離家",
+                "boost": "全速",
+                "comfort": "舒適",
+                "home": "在家",
+                "sleep": "睡眠",
+                "activity": "活動"
             }
         }
     },
