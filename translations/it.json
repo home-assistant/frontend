@@ -145,7 +145,8 @@
             "high_demand": "Forte richiesta",
             "heat_pump": "Pompa di calore",
             "gas": "Gas",
-            "manual": "Manuale"
+            "manual": "Manuale",
+            "heat_cool": "Auto"
         },
         "configurator": {
             "configure": "Configura",
@@ -1267,6 +1268,14 @@
                 "off": "Off",
                 "on": "On",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "Nessuna",
+                "eco": "Eco",
+                "comfort": "Comfort",
+                "home": "Casa",
+                "sleep": "Sleep",
+                "activity": "Attività"
             }
         }
     },
