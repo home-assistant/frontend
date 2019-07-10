@@ -145,7 +145,8 @@
             "high_demand": "High demand",
             "heat_pump": "Heat pump",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Auto"
         },
         "configurator": {
             "configure": "Configure",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Fan mode",
                 "swing_mode": "Swing mode",
                 "away_mode": "Away mode",
-                "aux_heat": "Aux heat"
+                "aux_heat": "Aux heat",
+                "preset_mode": "Preset"
             },
             "lock": {
                 "code": "Code",
@@ -1267,6 +1269,16 @@
                 "off": "Off",
                 "on": "On",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "None",
+                "eco": "Eco",
+                "away": "Away",
+                "boost": "Boost",
+                "comfort": "Comfort",
+                "home": "Home",
+                "sleep": "Sleep",
+                "activity": "Activity"
             }
         }
     },

@@ -145,7 +145,8 @@
             "high_demand": "Hoher Verbrauch",
             "heat_pump": "Wärmepumpe",
             "gas": "Gas",
-            "manual": "Manuell"
+            "manual": "Manuell",
+            "heat_cool": "Automatisch"
         },
         "configurator": {
             "configure": "Konfigurieren",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Ventilator-Modus",
                 "swing_mode": "Schwenk-Modus",
                 "away_mode": "Abwesenheitsmodus",
-                "aux_heat": "Hilfswärme"
+                "aux_heat": "Hilfswärme",
+                "preset_mode": "Voreinstellung"
             },
             "lock": {
                 "code": "Code",
@@ -1267,6 +1269,16 @@
                 "off": "Aus",
                 "on": "An",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "Keine",
+                "eco": "Sparmodus",
+                "away": "Abwesend",
+                "boost": "Maximal",
+                "comfort": "Komfort",
+                "home": "Zuhause",
+                "sleep": "Schlafen",
+                "activity": "Aktivität"
             }
         }
     },

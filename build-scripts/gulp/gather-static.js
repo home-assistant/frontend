@@ -69,10 +69,6 @@ function copyMapPanel(staticDir) {
 
 function compressStatic(staticDir) {
   const staticPath = genStaticPath(staticDir);
-  const fonts = gulp
-    .src(staticPath("fonts/**/*.ttf"))
-    .pipe(zopfli())
-    .pipe(gulp.dest(staticPath("fonts")));
   const polyfills = gulp
     .src(staticPath("polyfills/*.js"))
     .pipe(zopfli())
@@ -82,7 +78,7 @@ function compressStatic(staticDir) {
     .pipe(zopfli())
     .pipe(gulp.dest(staticPath("translations")));
 
-  return merge(fonts, polyfills, translations);
+  return merge(polyfills, translations);
 }
 
 gulp.task("copy-static", (done) => {

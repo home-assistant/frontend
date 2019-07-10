@@ -5,7 +5,7 @@
           document.createElement("script"),
           doc.lastChild
         );
-        script.type = "text/javascript";
+        script.defer = true;
         script.src = src;
       }
       window.Polymer = {
@@ -15,11 +15,9 @@
         suppressTemplateNotifications: true,
         suppressBindingNotifications: true,
       };
-      var webComponentsSupported =
-        "customElements" in window &&
-        "content" in document.createElement("template");
-      if (!webComponentsSupported) {
-        _ls("/static/polyfills/webcomponents-bundle.js");
+      if (!("customElements" in window &&
+            "content" in document.createElement("template"))) {
+        document.write("<script src='/static/polyfills/webcomponents-bundle.js'>");
       }
       var isS101 = /\s+Version\/10\.1(?:\.\d+)?\s+Safari\//.test(navigator.userAgent);
     </script>
