@@ -39,56 +39,6 @@ export class ZwaveNetwork extends LitElement {
   public disconnectedCallback(): void {
     this._unsubscribe();
   }
-  private async _getNetworkStatus(): Promise<void> {
-    this._networkStatus = await fetchNetworkStatus(this.hass!);
-  }
-  private _subscribe(): void {
-    this._unsubs.push(
-      this.hass!.connection.subscribeEvents(
-        (event) => this._handleEvent(event),
-        "zwave.network_start"
-      )
-    );
-    this._unsubs.push(
-      this.hass!.connection.subscribeEvents(
-        (event) => this._handleEvent(event),
-        "zwave.network_stop"
-      )
-    );
-    this._unsubs.push(
-      this.hass!.connection.subscribeEvents(
-        (event) => this._handleEvent(event),
-        "zwave.network_ready"
-      )
-    );
-    this._unsubs.push(
-      this.hass!.connection.subscribeEvents(
-        (event) => this._handleEvent(event),
-        "zwave.network_complete"
-      )
-    );
-    this._unsubs.push(
-      this.hass!.connection.subscribeEvents(
-        (event) => this._handleEvent(event),
-        "zwave.network_complete_some_dead"
-      )
-    );
-  }
-
-  private _unsubscribe(): void {
-    while (this._unsubs.length) {
-      this._unsubs.pop()();
-    }
-  }
-
-  private _handleEvent(event) {
-    this._getNetworkStatus();
-    if (event["event_type"] == "zwave.network_start") {
-      this._networkStarting = true;
-    } else {
-      this._networkStarting = false;
-    }
-  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -120,17 +70,17 @@ export class ZwaveNetwork extends LitElement {
                         Starting Z-Wave Network...<br />
                         <small
                           >This may take a while depending on the size of your
-                          network</small
+                          network.</small
                         >
                       `
                     : html`
-                        ${this._networkStatus.state == 0
+                        ${this._networkStatus.state === 0
                           ? html`
                               <ha-icon icon="hass:close"> </ha-icon>
                               Z-Wave Network Stopped
                             `
                           : ""}
-                        ${this._networkStatus.state == 5
+                        ${this._networkStatus.state === 5
                           ? html`
                               <paper-spinner
                                 alt="Starting Network..."
@@ -138,7 +88,7 @@ export class ZwaveNetwork extends LitElement {
                               Z-Wave Network Starting
                             `
                           : ""}
-                        ${this._networkStatus.state == 7
+                        ${this._networkStatus.state === 7
                           ? html`
                               <ha-icon icon="hass:checkbox-marked-circle">
                               </ha-icon>
@@ -149,7 +99,7 @@ export class ZwaveNetwork extends LitElement {
                               >
                             `
                           : ""}
-                        ${this._networkStatus.state == 10
+                        ${this._networkStatus.state === 10
                           ? html`
                               Z-Wave Network Started<br />
                               <small>All nodes have been queried.</small>
@@ -224,6 +174,55 @@ export class ZwaveNetwork extends LitElement {
           : ""}
       </ha-config-section>
     `;
+  }
+
+  private async _getNetworkStatus(): Promise<void> {
+    this._networkStatus = await fetchNetworkStatus(this.hass!);
+  }
+  private _subscribe(): void {
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_start"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_stop"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_ready"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_complete"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_complete_some_dead"
+      )
+    );
+  }
+
+  private _unsubscribe(): void {
+    while (this._unsubs.length) {
+      this._unsubs.pop()();
+    }
+  }
+
+  private _handleEvent(event) {
+    this._getNetworkStatus();
+    event["event_type"] === "zwave.network_start"
+      ? (this._networkStarting = true)
+      : (this._networkStarting = false);
   }
 
   private _onHelpTap(): void {
