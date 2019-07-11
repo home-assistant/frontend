@@ -51,7 +51,11 @@ export class ZwaveNetwork extends LitElement {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
-          <span>Z-Wave Network Management</span>
+          <span>
+            ${this.hass!.localize(
+              "ui.panel.config.zwave.network_management.header"
+            )}
+          </span>
           <paper-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
@@ -59,9 +63,9 @@ export class ZwaveNetwork extends LitElement {
           ></paper-icon-button>
         </div>
         <span slot="introduction">
-          Run commands that affect the Z-Wave network. You won't get feedback on
-          whether the command succeeded, but you can look in the OZW Log to try
-          to figure out.
+          ${this.hass!.localize(
+            "ui.panel.config.zwave.network_management.introduction"
+          )}
         </span>
 
         ${this._networkStatus
@@ -70,14 +74,14 @@ export class ZwaveNetwork extends LitElement {
                 <div class="details">
                   ${this._networkStarting
                     ? html`
-                        <paper-spinner
-                          active
-                          alt="Starting Network..."
-                        ></paper-spinner>
-                        Starting Z-Wave Network...<br />
+                        <paper-spinner active></paper-spinner>
+                        ${this.hass!.localize(
+                          "ui.panel.config.zwave.network_status.network_starting"
+                        )}<br />
                         <small>
-                          This may take a while depending on the size of your
-                          network.
+                          ${this.hass!.localize(
+                            "ui.panel.config.zwave.network_status.network_starting_note"
+                          )}
                         </small>
                       `
                     : html`
@@ -85,32 +89,48 @@ export class ZwaveNetwork extends LitElement {
                         ZWAVE_NETWORK_STATE_STOPPED
                           ? html`
                               <ha-icon icon="hass:close"></ha-icon>
-                              Z-Wave Network Stopped
+                              ${this.hass!.localize(
+                                "ui.panel.config.zwave.network_status.network_stopped"
+                              )}
                             `
                           : this._networkStatus.state ===
                             ZWAVE_NETWORK_STATE_STARTED
                           ? html`
-                              <paper-spinner
-                                alt="Starting Network..."
-                              ></paper-spinner>
-                              Z-Wave Network Starting
+                              <paper-spinner></paper-spinner>
+                              ${this.hass!.localize(
+                                "ui.panel.config.zwave.network_status.network_starting"
+                              )}<br />
+                              <small>
+                                ${this.hass!.localize(
+                                  "ui.panel.config.zwave.network_status.network_starting_note"
+                                )}
+                              </small>
                             `
                           : this._networkStatus.state ===
                             ZWAVE_NETWORK_STATE_AWAKED
                           ? html`
                               <ha-icon icon="hass:checkbox-marked-circle">
                               </ha-icon>
-                              Z-Wave Network Started<br />
+                              ${this.hass!.localize(
+                                "ui.panel.config.zwave.network_status.network_started"
+                              )}<br />
                               <small>
-                                Awake nodes have been queried. Sleeping nodes
-                                will be queried when they wake.
+                                ${this.hass!.localize(
+                                  "ui.panel.config.zwave.network_status.network_started_note_some_queried"
+                                )}
                               </small>
                             `
                           : this._networkStatus.state ===
                             ZWAVE_NETWORK_STATE_READY
                           ? html`
-                              Z-Wave Network Started<br />
-                              <small>All nodes have been queried.</small>
+                              ${this.hass!.localize(
+                                "ui.panel.config.zwave.network_status.network_started"
+                              )}<br />
+                              <small>
+                                ${this.hass!.localize(
+                                  "ui.panel.config.zwave.network_status.network_started_note_all_queried"
+                                )}
+                              </small>
                             `
                           : ""}
                       `}
@@ -118,33 +138,18 @@ export class ZwaveNetwork extends LitElement {
                 <div class="card-actions">
                   ${this._networkStatus.state >= ZWAVE_NETWORK_STATE_AWAKED
                     ? html`
-                        ${this._generateServiceButton(
-                          "stop_network",
-                          "Stop Network"
-                        )}
-                        ${this._generateServiceButton(
-                          "heal_network",
-                          "Heal Network"
-                        )}
-                        ${this._generateServiceButton(
-                          "test_network",
-                          "Test Network"
-                        )}
+                        ${this._generateServiceButton("stop_network")}
+                        ${this._generateServiceButton("heal_network")}
+                        ${this._generateServiceButton("test_network")}
                       `
                     : html`
-                        ${this._generateServiceButton(
-                          "start_network",
-                          "Start Network"
-                        )}
+                        ${this._generateServiceButton("start_network")}
                       `}
                 </div>
                 ${this._networkStatus.state >= ZWAVE_NETWORK_STATE_AWAKED
                   ? html`
                       <div class="card-actions">
-                        ${this._generateServiceButton(
-                          "soft_reset",
-                          "Soft Reset"
-                        )}
+                        ${this._generateServiceButton("soft_reset")}
                         <ha-call-api-button
                           .hass=${this.hass}
                           path="zwave/saveconfig"
@@ -159,21 +164,12 @@ export class ZwaveNetwork extends LitElement {
                 ? html`
                     <ha-card class="content">
                       <div class="card-actions">
-                        ${this._generateServiceButton(
-                          "add_node_secure",
-                          "Add Node Secure"
-                        )}
-                        ${this._generateServiceButton("add_node", "Add Node")}
-                        ${this._generateServiceButton(
-                          "remove_node",
-                          "Remove Node"
-                        )}
+                        ${this._generateServiceButton("add_node_secure")}
+                        ${this._generateServiceButton("add_node")}
+                        ${this._generateServiceButton("remove_node")}
                       </div>
                       <div class="card-actions">
-                        ${this._generateServiceButton(
-                          "cancel_command",
-                          "Cancel Command"
-                        )}
+                        ${this._generateServiceButton("cancel_command")}
                       </div>
                     </ha-card>
                   `
@@ -217,14 +213,14 @@ export class ZwaveNetwork extends LitElement {
     this._showHelp = !this._showHelp;
   }
 
-  private _generateServiceButton(service: string, title: string) {
+  private _generateServiceButton(service: string) {
     return html`
       <ha-call-service-button
         .hass=${this.hass}
         domain="zwave"
         service="${service}"
       >
-        ${title}
+        ${this.hass!.localize("ui.panel.config.zwave.services." + service)}
       </ha-call-service-button>
       <ha-service-description
         .hass=${this.hass}
