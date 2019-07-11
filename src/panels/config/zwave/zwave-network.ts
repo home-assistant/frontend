@@ -38,6 +38,10 @@ export class ZwaveNetwork extends LitElement {
   @property() private _networkStarting = false;
   @property() private _unsubs: UnsubscribeFunc[] = [];
 
+  public disconnectedCallback(): void {
+    this._unsubscribe();
+  }
+
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     this._getNetworkStatus();
@@ -205,7 +209,7 @@ export class ZwaveNetwork extends LitElement {
 
   private _handleEvent(event) {
     this._getNetworkStatus();
-    this._networkStarting = event["event_type"] === "zwave.network_start";
+    this._networkStarting = event.event_type === "zwave.network_start";
   }
 
   private _onHelpTap(): void {
@@ -229,10 +233,6 @@ export class ZwaveNetwork extends LitElement {
       >
       </ha-service-description>
     `;
-  }
-
-  public disconnectedCallback(): void {
-    this._unsubscribe();
   }
 
   static get styles(): CSSResult[] {
