@@ -1,4 +1,5 @@
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-spinner/paper-spinner";
 
 import {
   css,
@@ -12,11 +13,13 @@ import {
 
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import { fetchNetworkStatus, ZWaveNetworkStatus } from "../../../data/zwave";
 
 import "../../../components/buttons/ha-call-api-button";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import "../../../components/ha-card";
+import "../../../components/ha-icon";
 import "../ha-config-section";
 
 @customElement("zwave-network")
@@ -24,6 +27,68 @@ export class ZwaveNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property() private _showHelp = false;
+  @property() private _networkStatus?: ZWaveNetworkStatus;
+  @property() private _networkStarting = false;
+  @property() private _unsubs: UnsubscribeFunc[] = [];
+
+  public firstUpdated(changedProps): void {
+    super.firstUpdated(changedProps);
+    this._getNetworkStatus();
+    this._subscribe();
+  }
+  public disconnectedCallback(): void {
+    this._unsubscribe();
+  }
+  private async _getNetworkStatus(): Promise<void> {
+    this._networkStatus = await fetchNetworkStatus(this.hass!);
+  }
+  private _subscribe(): void {
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_start"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_stop"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_ready"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_complete"
+      )
+    );
+    this._unsubs.push(
+      this.hass!.connection.subscribeEvents(
+        (event) => this._handleEvent(event),
+        "zwave.network_complete_some_dead"
+      )
+    );
+  }
+
+  private _unsubscribe(): void {
+    while (this._unsubs.length) {
+      this._unsubs.pop()();
+    }
+  }
+
+  private _handleEvent(event) {
+    this._getNetworkStatus();
+    if (event["event_type"] == "zwave.network_start") {
+      this._networkStarting = true;
+    } else {
+      this._networkStarting = false;
+    }
+  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -42,149 +107,121 @@ export class ZwaveNetwork extends LitElement {
           to figure out.
         </span>
 
-        <ha-card class="content">
-          <div class="card-actions">
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="add_node_secure"
-            >
-              Add Node Secure
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="add_node_secure"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="add_node"
-            >
-              Add Node
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="add_node"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="remove_node"
-            >
-              Remove Node
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="remove_node"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-          </div>
-          <div class="card-actions warning">
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="cancel_command"
-            >
-              Cancel Command
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="cancel_command"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-          </div>
-          <div class="card-actions">
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="heal_network"
-            >
-              Heal Network
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="heal_network"
-              ?hidden=${!this._showHelp}
-            ></ha-service-description>
-
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="start_network"
-            >
-              Start Network
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="start_network"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="stop_network"
-            >
-              Stop Network
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="stop_network"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="soft_reset"
-            >
-              Soft Reset
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="soft_reset"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="zwave"
-              service="test_network"
-            >
-              Test Network
-            </ha-call-service-button>
-            <ha-service-description
-              .hass=${this.hass}
-              domain="zwave"
-              service="test_network"
-              ?hidden=${!this._showHelp}
-            >
-            </ha-service-description>
-
-            <ha-call-api-button .hass=${this.hass} path="zwave/saveconfig">
-              Save Config
-            </ha-call-api-button>
-          </div>
-        </ha-card>
+        ${this._networkStatus
+          ? html`
+              <ha-card class="content network-status">
+                <div class="details">
+                  ${this._networkStarting
+                    ? html`
+                        <paper-spinner
+                          active
+                          alt="Starting Network..."
+                        ></paper-spinner>
+                        Starting Z-Wave Network...<br />
+                        <small
+                          >This may take a while depending on the size of your
+                          network</small
+                        >
+                      `
+                    : html`
+                        ${this._networkStatus.state == 0
+                          ? html`
+                              <ha-icon icon="hass:close"> </ha-icon>
+                              Z-Wave Network Stopped
+                            `
+                          : ""}
+                        ${this._networkStatus.state == 5
+                          ? html`
+                              <paper-spinner
+                                alt="Starting Network..."
+                              ></paper-spinner>
+                              Z-Wave Network Starting
+                            `
+                          : ""}
+                        ${this._networkStatus.state == 7
+                          ? html`
+                              <ha-icon icon="hass:checkbox-marked-circle">
+                              </ha-icon>
+                              Z-Wave Network Started<br />
+                              <small
+                                >Awake nodes have been queried. Sleeping nodes
+                                will be queried when they wake.</small
+                              >
+                            `
+                          : ""}
+                        ${this._networkStatus.state == 10
+                          ? html`
+                              Z-Wave Network Started<br />
+                              <small>All nodes have been queried.</small>
+                            `
+                          : ""}
+                      `}
+                </div>
+                <div class="card-actions">
+                  ${this._networkStatus.state >= 7
+                    ? html`
+                        ${this._generateServiceButton(
+                          "stop_network",
+                          "Stop Network"
+                        )}
+                        ${this._generateServiceButton(
+                          "heal_network",
+                          "Heal Network"
+                        )}
+                        ${this._generateServiceButton(
+                          "test_network",
+                          "Test Network"
+                        )}
+                      `
+                    : html`
+                        ${this._generateServiceButton(
+                          "start_network",
+                          "Start Network"
+                        )}
+                      `}
+                </div>
+                ${this._networkStatus.state >= 7
+                  ? html`
+                      <div class="card-actions">
+                        ${this._generateServiceButton(
+                          "soft_reset",
+                          "Soft Reset"
+                        )}
+                        <ha-call-api-button
+                          .hass=${this.hass}
+                          path="zwave/saveconfig"
+                        >
+                          Save Config
+                        </ha-call-api-button>
+                      </div>
+                    `
+                  : ""}
+              </ha-card>
+              ${this._networkStatus.state >= 7
+                ? html`
+                    <ha-card class="content">
+                      <div class="card-actions">
+                        ${this._generateServiceButton(
+                          "add_node_secure",
+                          "Add Node Secure"
+                        )}
+                        ${this._generateServiceButton("add_node", "Add Node")}
+                        ${this._generateServiceButton(
+                          "remove_node",
+                          "Remove Node"
+                        )}
+                      </div>
+                      <div class="card-actions">
+                        ${this._generateServiceButton(
+                          "cancel_command",
+                          "Cancel Command"
+                        )}
+                      </div>
+                    </ha-card>
+                  `
+                : ""}
+            `
+          : ""}
       </ha-config-section>
     `;
   }
@@ -193,12 +230,51 @@ export class ZwaveNetwork extends LitElement {
     this._showHelp = !this._showHelp;
   }
 
+  private _generateServiceButton(service: string, title: string) {
+    return html`
+      <ha-call-service-button
+        .hass=${this.hass}
+        domain="zwave"
+        service="${service}"
+      >
+        ${title}
+      </ha-call-service-button>
+      <ha-service-description
+        .hass=${this.hass}
+        domain="zwave"
+        service="${service}"
+        ?hidden=${!this._showHelp}
+      >
+      </ha-service-description>
+    `;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
       css`
         .content {
           margin-top: 24px;
+        }
+
+        .network-status {
+          text-align: center;
+        }
+
+        .network-status div.details {
+          font-size: 1.5rem;
+          padding: 24px;
+        }
+
+        .network-status ha-icon {
+          display: block;
+          margin: 0px auto 16px;
+          width: 48px;
+          height: 48px;
+        }
+
+        .network-status small {
+          font-size: 1rem;
         }
 
         ha-card {
