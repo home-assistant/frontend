@@ -151,7 +151,9 @@ export class ZwaveNetwork extends LitElement {
                           .hass=${this.hass}
                           path="zwave/saveconfig"
                         >
-                          Save Config
+                          ${this.hass!.localize(
+                            "ui.panel.config.zwave.services.save_config"
+                          )}
                         </ha-call-api-button>
                       </div>
                     `
