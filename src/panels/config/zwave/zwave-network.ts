@@ -43,9 +43,6 @@ export class ZwaveNetwork extends LitElement {
     this._getNetworkStatus();
     this._subscribe();
   }
-  public disconnectedCallback(): void {
-    this._unsubscribe();
-  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -230,6 +227,10 @@ export class ZwaveNetwork extends LitElement {
       >
       </ha-service-description>
     `;
+  }
+
+  public disconnectedCallback(): void {
+    this._unsubscribe();
   }
 
   static get styles(): CSSResult[] {
