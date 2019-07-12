@@ -36,7 +36,6 @@ export class ZwaveNetwork extends LitElement {
   @property() public isWide!: boolean;
   @property() private _showHelp = false;
   @property() private _networkStatus?: ZWaveNetworkStatus;
-  @property() private _networkStarting = false;
   @property() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
@@ -74,7 +73,14 @@ export class ZwaveNetwork extends LitElement {
           ? html`
               <ha-card class="content network-status">
                 <div class="details">
-                  ${this._networkStarting
+                  ${this._networkStatus.state === ZWAVE_NETWORK_STATE_STOPPED
+                    ? html`
+                        <ha-icon icon="hass:close"></ha-icon>
+                        ${this.hass!.localize(
+                          "ui.panel.config.zwave.network_status.network_stopped"
+                        )}
+                      `
+                    : this._networkStatus.state === ZWAVE_NETWORK_STATE_STARTED
                     ? html`
                         <paper-spinner active></paper-spinner>
                         ${this.hass!.localize(
@@ -86,56 +92,30 @@ export class ZwaveNetwork extends LitElement {
                           )}
                         </small>
                       `
-                    : html`
-                        ${this._networkStatus.state ===
-                        ZWAVE_NETWORK_STATE_STOPPED
-                          ? html`
-                              <ha-icon icon="hass:close"></ha-icon>
-                              ${this.hass!.localize(
-                                "ui.panel.config.zwave.network_status.network_stopped"
-                              )}
-                            `
-                          : this._networkStatus.state ===
-                            ZWAVE_NETWORK_STATE_STARTED
-                          ? html`
-                              <paper-spinner></paper-spinner>
-                              ${this.hass!.localize(
-                                "ui.panel.config.zwave.network_status.network_starting"
-                              )}<br />
-                              <small>
-                                ${this.hass!.localize(
-                                  "ui.panel.config.zwave.network_status.network_starting_note"
-                                )}
-                              </small>
-                            `
-                          : this._networkStatus.state ===
-                            ZWAVE_NETWORK_STATE_AWAKED
-                          ? html`
-                              <ha-icon icon="hass:checkbox-marked-circle">
-                              </ha-icon>
-                              ${this.hass!.localize(
-                                "ui.panel.config.zwave.network_status.network_started"
-                              )}<br />
-                              <small>
-                                ${this.hass!.localize(
-                                  "ui.panel.config.zwave.network_status.network_started_note_some_queried"
-                                )}
-                              </small>
-                            `
-                          : this._networkStatus.state ===
-                            ZWAVE_NETWORK_STATE_READY
-                          ? html`
-                              ${this.hass!.localize(
-                                "ui.panel.config.zwave.network_status.network_started"
-                              )}<br />
-                              <small>
-                                ${this.hass!.localize(
-                                  "ui.panel.config.zwave.network_status.network_started_note_all_queried"
-                                )}
-                              </small>
-                            `
-                          : ""}
-                      `}
+                    : this._networkStatus.state === ZWAVE_NETWORK_STATE_AWAKED
+                    ? html`
+                        <ha-icon icon="hass:checkbox-marked-circle"> </ha-icon>
+                        ${this.hass!.localize(
+                          "ui.panel.config.zwave.network_status.network_started"
+                        )}<br />
+                        <small>
+                          ${this.hass!.localize(
+                            "ui.panel.config.zwave.network_status.network_started_note_some_queried"
+                          )}
+                        </small>
+                      `
+                    : this._networkStatus.state === ZWAVE_NETWORK_STATE_READY
+                    ? html`
+                        ${this.hass!.localize(
+                          "ui.panel.config.zwave.network_status.network_started"
+                        )}<br />
+                        <small>
+                          ${this.hass!.localize(
+                            "ui.panel.config.zwave.network_status.network_started_note_all_queried"
+                          )}
+                        </small>
+                      `
+                    : ""}
                 </div>
                 <div class="card-actions">
                   ${this._networkStatus.state >= ZWAVE_NETWORK_STATE_AWAKED
@@ -210,8 +190,15 @@ export class ZwaveNetwork extends LitElement {
   }
 
   private _handleEvent(event) {
-    this._getNetworkStatus();
-    this._networkStarting = event.event_type === "zwave.network_start";
+    if (event.event_type === "zwave.network_start") {
+      // Optimistically set the state, wait 1s and poll the backend
+      // The backend will still report a state of 0 when the 'network_start'
+      // event is first fired.
+      this._networkStatus!["state"] = 5;
+      setTimeout(() => this._getNetworkStatus, 1000);
+    } else {
+      this._getNetworkStatus();
+    }
   }
 
   private _onHelpTap(): void {
