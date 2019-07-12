@@ -1,10 +1,10 @@
 import "../../../components/ha-service-description";
-import "../../../components/ha-textarea";
 import "../../../layouts/hass-subpage";
 import "./zha-device-card";
 import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-input/paper-textarea";
 
 import {
   css,
@@ -124,8 +124,8 @@ class ZHAAddDevicesPage extends LitElement {
                 )}
               `}
         </div>
-        <ha-textarea class="events" value="${this._formattedEvents}">
-        </ha-textarea>
+        <paper-textarea class="events" value="${this._formattedEvents}">
+        </paper-textarea>
       </hass-subpage>
     `;
   }
@@ -134,7 +134,7 @@ class ZHAAddDevicesPage extends LitElement {
     if (message.type === "log_output") {
       this._formattedEvents += message.log_entry.message + "\n";
       if (this.shadowRoot) {
-        const textArea = this.shadowRoot.querySelector("ha-textarea");
+        const textArea = this.shadowRoot.querySelector("paper-textarea");
         if (textArea) {
           textArea.scrollTop = textArea.scrollHeight;
         }

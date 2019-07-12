@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import "../../../components/ha-textarea";
+import "@polymer/paper-input/paper-textarea";
 
 export default class JSONTextArea extends Component {
   constructor(props) {
@@ -48,7 +48,7 @@ export default class JSONTextArea extends Component {
       style.border = "1px solid red";
     }
     return (
-      <ha-textarea
+      <paper-textarea
         label={label}
         value={value}
         style={style}

@@ -1,6 +1,5 @@
 import { h, Component } from "preact";
-
-import "../../../../components/ha-textarea";
+import "@polymer/paper-input/paper-textarea";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
@@ -16,7 +15,7 @@ export default class TemplateTrigger extends Component {
     const { value_template } = trigger;
     return (
       <div>
-        <ha-textarea
+        <paper-textarea
           label={localize(
             "ui.panel.config.automation.editor.triggers.type.template.value_template"
           )}

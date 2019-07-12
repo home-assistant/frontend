@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import "@polymer/paper-input/paper-input";
-import "../../../../components/ha-textarea";
+import "@polymer/paper-input/paper-textarea";
 
 import "../../../../components/entity/ha-entity-picker";
 
@@ -60,7 +60,7 @@ export default class NumericStateTrigger extends Component {
           value={below}
           onvalue-changed={this.onChange}
         />
-        <ha-textarea
+        <paper-textarea
           label={localize(
             "ui.panel.config.automation.editor.triggers.type.numeric_state.value_template"
           )}

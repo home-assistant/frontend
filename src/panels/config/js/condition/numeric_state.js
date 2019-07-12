@@ -1,6 +1,6 @@
 import { h, Component } from "preact";
 import "@polymer/paper-input/paper-input";
-import "../../../../components/ha-textarea";
+import "@polymer/paper-input/paper-textarea";
 import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
@@ -47,7 +47,7 @@ export default class NumericStateCondition extends Component {
           value={below}
           onvalue-changed={this.onChange}
         />
-        <ha-textarea
+        <paper-textarea
           label={localize(
             "ui.panel.config.automation.editor.conditions.type.numeric_state.value_template"
           )}
