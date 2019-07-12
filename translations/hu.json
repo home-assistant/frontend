@@ -1123,7 +1123,8 @@
                 "fan_mode": "Sebesség",
                 "swing_mode": "Forgási mód",
                 "away_mode": "Távoli mód",
-                "aux_heat": "Külső melegítő"
+                "aux_heat": "Külső melegítő",
+                "preset_mode": "Beállítási mód"
             },
             "lock": {
                 "code": "Kód",
@@ -1273,6 +1274,7 @@
                 "none": "Nincs",
                 "eco": "Takarékos",
                 "away": "Távol",
+                "boost": "Turbo",
                 "comfort": "Komfort",
                 "home": "Otthon",
                 "sleep": "Alvás",
