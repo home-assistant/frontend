@@ -122,7 +122,8 @@
             "eco": "Sparnaður",
             "heat_pump": "Hitadæla",
             "gas": "Gas",
-            "manual": "Handvirkt"
+            "manual": "Handvirkt",
+            "heat_cool": "Sjálfvirkt"
         },
         "cover": {
             "open": "Opin",
@@ -393,6 +394,7 @@
                                 "zone": {
                                     "label": "Öryggissvæði",
                                     "entity": "Eining með staðsetningu",
+                                    "zone": "Svæði",
                                     "event": "Viðburður:",
                                     "enter": "Koma",
                                     "leave": "Brottför"
@@ -1094,6 +1096,7 @@
     },
     "domain": {
         "automation": "Sjálfvirkni",
+        "binary_sensor": "Tvíundar skynjari",
         "calendar": "Dagatal",
         "camera": "Myndavél",
         "climate": "Loftslag",
