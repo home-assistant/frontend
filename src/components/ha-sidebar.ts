@@ -412,15 +412,15 @@ class HaSidebar extends LitElement {
         display: initial;
       }
 
-      ::-webkit-scrollbar {
+      paper-listbox::-webkit-scrollbar {
         width: 0.4rem;
         height: 0.4rem;
       }
 
-      ::-webkit-scrollbar-thumb {
+      paper-listbox::-webkit-scrollbar-thumb {
         -webkit-border-radius: 4px;
         border-radius: 4px;
-        background: var(--secondary-text-color);
+        background: var(--scrollbar-thumb-color);
       }
 
       paper-listbox {
@@ -431,6 +431,8 @@ class HaSidebar extends LitElement {
         height: calc(100% - 196px);
         overflow-y: auto;
         overflow-x: hidden;
+        scrollbar-color: var(--scrollbar-thumb-color) transparent;
+        scrollbar-width: thin;
       }
 
       a {
