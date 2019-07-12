@@ -145,7 +145,8 @@
             "high_demand": "Alta Demanda",
             "heat_pump": "Bomba de Calor",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Automático"
         },
         "configurator": {
             "configure": "Configurar",
@@ -619,7 +620,8 @@
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible",
-                        "no_area": "Ninguna área"
+                        "no_area": "Ninguna área",
+                        "hub": "Conectado a través de"
                     },
                     "config_flow": {
                         "external_step": {
@@ -970,6 +972,49 @@
                     "refresh": "Actualizar"
                 },
                 "reload_lovelace": "Recargar Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "por {name}",
+                        "next_demo": "Siguiente demostración",
+                        "introduction": "¡Bienvenido a casa! Ha llegado a la demostración de Home Assistant donde mostramos las mejores interfaces de usuario creadas por nuestra comunidad.",
+                        "learn_more": "Aprenda más sobre Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Piso de arriba",
+                            "family_room": "Habitación familiar",
+                            "kitchen": "Cocina",
+                            "patio": "Patio",
+                            "hallway": "Pasillo",
+                            "master_bedroom": "Recamara principal",
+                            "left": "Izquierda",
+                            "right": "Derecha",
+                            "mirror": "Espejo"
+                        },
+                        "labels": {
+                            "lights": "Luces",
+                            "information": "Información",
+                            "morning_commute": "Viaje de mañana",
+                            "commute_home": "Viaje a casa",
+                            "entertainment": "Entretenimiento",
+                            "activity": "Actividad",
+                            "hdmi_input": "Entrada HDMI",
+                            "hdmi_switcher": "Conmutador HDMI",
+                            "volume": "Volumen",
+                            "total_tv_time": "Tiempo total de TV",
+                            "turn_tv_off": "Apagar la televisión",
+                            "air": "Aire"
+                        },
+                        "unit": {
+                            "watching": "viendo",
+                            "minutes_abbr": "mín."
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
@@ -1078,7 +1123,8 @@
                 "fan_mode": "Modo del ventilador",
                 "swing_mode": "Modo de oscilación",
                 "away_mode": "Fuera de Casa",
-                "aux_heat": "Calor auxiliar"
+                "aux_heat": "Calor auxiliar",
+                "preset_mode": "Preestablecido"
             },
             "lock": {
                 "code": "Código",
@@ -1223,6 +1269,16 @@
                 "off": "Apagado",
                 "on": "Encendido",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "Ninguno",
+                "eco": "Eco",
+                "away": "Fuera de casa",
+                "boost": "Aumentar",
+                "comfort": "Comodidad",
+                "home": "En Casa",
+                "sleep": "Dormir",
+                "activity": "Actividad"
             }
         }
     },

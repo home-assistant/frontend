@@ -145,7 +145,8 @@
             "high_demand": "Forte demande",
             "heat_pump": "Pompe à chaleur",
             "gas": "Gaz",
-            "manual": "Manuel"
+            "manual": "Manuel",
+            "heat_cool": "Automatique"
         },
         "configurator": {
             "configure": "Configurer",
@@ -297,7 +298,7 @@
         },
         "device_tracker": {
             "home": "Maison",
-            "not_home": "Absent.e"
+            "not_home": "Absent(e)"
         },
         "person": {
             "home": "Présent",
@@ -1122,7 +1123,8 @@
                 "fan_mode": "Mode de ventilation",
                 "swing_mode": "Mode de balancement",
                 "away_mode": "Mode \"Absent\"",
-                "aux_heat": "Chauffage d'appoint"
+                "aux_heat": "Chauffage d'appoint",
+                "preset_mode": "Préréglage"
             },
             "lock": {
                 "code": "Code",
@@ -1267,6 +1269,16 @@
                 "off": "Off",
                 "on": "On",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "Aucun",
+                "eco": "Eco",
+                "away": "Absent",
+                "boost": "Renforcer",
+                "comfort": "Confort",
+                "home": "Accueil",
+                "sleep": "Veille",
+                "activity": "Activité"
             }
         }
     },
