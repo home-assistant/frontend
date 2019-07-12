@@ -2,7 +2,6 @@ import { HomeAssistant } from "../types";
 
 export interface ZWaveNetworkStatus {
   state: number;
-  state_str: string;
 }
 
 export const ZWAVE_NETWORK_STATE_STOPPED = 0;
