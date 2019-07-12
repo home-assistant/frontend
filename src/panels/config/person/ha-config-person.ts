@@ -112,7 +112,7 @@ class HaConfigPerson extends LitElement {
       <paper-fab
         ?is-wide=${this.isWide}
         icon="hass:plus"
-        title="Create Area"
+        title="Add Person"
         @click=${this._createPerson}
       ></paper-fab>
     `;
