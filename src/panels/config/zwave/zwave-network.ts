@@ -194,7 +194,9 @@ export class ZwaveNetwork extends LitElement {
       // Optimistically set the state, wait 1s and poll the backend
       // The backend will still report a state of 0 when the 'network_start'
       // event is first fired.
-      this._networkStatus!["state"] = 5;
+      if (this._networkStatus) {
+        this._networkStatus = { ...this._networkStatus, state: 5 };
+      }
       setTimeout(() => this._getNetworkStatus, 1000);
     } else {
       this._getNetworkStatus();
