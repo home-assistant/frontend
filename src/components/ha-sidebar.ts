@@ -412,6 +412,17 @@ class HaSidebar extends LitElement {
         display: initial;
       }
 
+      ::-webkit-scrollbar {
+        width: 0.4rem;
+        height: 0.4rem;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        background: var(--secondary-text-color);
+      }
+
       paper-listbox {
         padding: 4px 0;
         display: flex;
