@@ -124,17 +124,6 @@ documentContainer.innerHTML = `<custom-style>
       /* mwc */
       --mdc-theme-primary: var(--primary-color);
     }
-
-    ::-webkit-scrollbar {
-      width: 0.4rem;
-      height: 0.4rem;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      -webkit-border-radius: 4px;
-      border-radius: 4px;
-      background: var(--secondary-text-color);
-    }
   </style>
 
   <style shady-unscoped="">
