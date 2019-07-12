@@ -10,6 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -36,7 +37,7 @@ export class ZwaveNetwork extends LitElement {
   @property() private _showHelp = false;
   @property() private _networkStatus?: ZWaveNetworkStatus;
   @property() private _networkStarting = false;
-  @property() private _unsubs: UnsubscribeFunc[] = [];
+  @property() private _unsubs: Promise<UnsubscribeFunc>[] = [];
 
   public disconnectedCallback(): void {
     this._unsubscribe();
@@ -186,6 +187,7 @@ export class ZwaveNetwork extends LitElement {
   private async _getNetworkStatus(): Promise<void> {
     this._networkStatus = await fetchNetworkStatus(this.hass!);
   }
+
   private _subscribe(): void {
     this._unsubs = [
       "zwave.network_start",
@@ -203,7 +205,7 @@ export class ZwaveNetwork extends LitElement {
 
   private _unsubscribe(): void {
     while (this._unsubs.length) {
-      this._unsubs.pop()();
+      this._unsubs.pop()!.then((unsub) => unsub());
     }
   }
 
