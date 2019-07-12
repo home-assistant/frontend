@@ -14,7 +14,8 @@ import "./system-log-card";
 import "./error-log-card";
 import "./system-health-card";
 
-const JS_VERSION = __BUILD__;
+const JS_TYPE = __BUILD__;
+const JS_VERSION = __VERSION__;
 const OPT_IN_PANEL = "states";
 
 class HaPanelDevInfo extends LitElement {
@@ -92,7 +93,7 @@ class HaPanelDevInfo extends LitElement {
           >.
         </p>
         <p>
-          Frontend JavaScript version: ${JS_VERSION}
+          Frontend version: ${JS_VERSION} - ${JS_TYPE}
           ${customUiList.length > 0
             ? html`
                 <div>
