@@ -143,7 +143,8 @@
             "high_demand": "Galw uchel",
             "heat_pump": "Pwmp gwres",
             "gas": "Nwy",
-            "manual": "Llawlyfr"
+            "manual": "Llawlyfr",
+            "heat_cool": "Awto"
         },
         "configurator": {
             "configure": "Ffurfweddu",
@@ -560,8 +561,25 @@
                     "caption": "Z-Wave",
                     "description": "Rheoli eich rhwydwaith Z-Wave"
                 },
+                "cloud": {
+                    "description_login": "Wedi mewngofnodi fel {email}",
+                    "description_not_login": "Heb fewngofnodi",
+                    "description_features": "Rheolaeth oddi cartref, integreiddio gyda Alexa a Google Assistant."
+                },
                 "integrations": {
+                    "caption": "Integreiddiadau",
+                    "description": "Rheoli dyfeisiau a gwasanaethau cysylltiedig",
+                    "discovered": "Darganfuwyd",
+                    "configured": "Wedi'i ffurfweddu",
+                    "new": "Sefydlu integreiddiad newydd",
+                    "configure": "Ffurfweddu",
+                    "none": "Dim byd wedi'i ffurfweddu eto.",
                     "config_entry": {
+                        "no_devices": "Tydi'r integreiddad yma ddim efo dyfeisiadau.",
+                        "no_device": "Endidau heb ddyfeisiau",
+                        "delete_confirm": "A ydych yn siŵr bod chi eisiau dileu'r integreiddiad yma?",
+                        "restart_confirm": "Ailgychwyn Home Assistant i ddarfod dileu'r integreiddiad hwn",
+                        "manuf": "gan {manufacturer}",
                         "via": "Cysylltiad drwy",
                         "firmware": "Cadarnwedd: {version}",
                         "device_unavailable": "Dyfais ddim ar gael",
@@ -653,9 +671,6 @@
                         "password": "Cyfrinair",
                         "create": "Creu"
                     }
-                },
-                "cloud": {
-                    "description_features": "Rheolaeth oddi cartref, integreiddio gyda Alexa a Google Assistant."
                 }
             },
             "lovelace": {
@@ -669,6 +684,14 @@
                         "title": "Croeso Gartref",
                         "no_devices": "Mae'r dudalen hon yn eich galluogi i reoli'ch dyfeisiau, ond mae'n edrych fel nad oes gennych ddyfeisiau wedi eu sefydlu eto. Ewch i'r dudalen integreiddio i ddechrau.",
                         "go_to_integrations_page": "Ewch i'r dudalen integreiddio."
+                    },
+                    "picture-elements": {
+                        "hold": "Disgwyl",
+                        "tap": "Tarwch:",
+                        "navigate_to": "Ewch i {location}",
+                        "toggle": "Toglo {enw}",
+                        "call_service": "Galw gwasanaeth {name}",
+                        "more_info": "Dangos mwy o wybodaeth: {name}"
                     }
                 },
                 "editor": {
@@ -783,6 +806,9 @@
             "page-demo": {
                 "cards": {
                     "demo": {
+                        "demo_by": "gan {name}",
+                        "next_demo": "Demo nesaf",
+                        "introduction": "Croeso adre! Rydych wedi cyrraedd demo Home Assistant lle rydym yn arddangos y UIs gorau a grewyd gan ein cymuned.",
                         "learn_more": "Dysgwch fwy am Home Assistant"
                     }
                 },
@@ -891,6 +917,9 @@
                 "arm_night": "Larwm nos",
                 "armed_custom_bypass": "Ffordd osgoi personol",
                 "arm_custom_bypass": "Ffordd osgoi personol"
+            },
+            "climate": {
+                "preset_mode": "Rhagosodiad"
             }
         },
         "components": {
@@ -978,6 +1007,16 @@
                 "off": "Off",
                 "on": "Ar",
                 "auto": "Awto"
+            },
+            "preset_mode": {
+                "none": "Dim",
+                "eco": "Eco",
+                "away": "I ffwrdd",
+                "boost": "Cynydd",
+                "comfort": "Cyfforddus",
+                "home": "Cartref",
+                "sleep": "Cysgu",
+                "activity": "Gweithgaredd"
             }
         }
     },
