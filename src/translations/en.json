@@ -921,7 +921,31 @@
         },
         "zwave": {
           "caption": "Z-Wave",
-          "description": "Manage your Z-Wave network"
+          "description": "Manage your Z-Wave network",
+          "network_management": {
+            "header": "Z-Wave Network Management",
+            "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
+          },
+          "network_status": {
+            "network_stopped": "Z-Wave Network Stopped",
+            "network_starting": "Starting Z-Wave Network...",
+            "network_starting_note": "This may take a while depending on the size of your network.",
+            "network_started": "Z-Wave Network Started",
+            "network_started_note_some_queried": "Awake nodes have been queried. Sleeping nodes will be queried when they wake.",
+            "network_started_note_all_queried": "All nodes have been queried."
+          },
+          "services": {
+            "start_network": "Start Network",
+            "stop_network": "Stop Network",
+            "heal_network": "Heal Network",
+            "test_network": "Test Network",
+            "soft_reset": "Soft Reset",
+            "save_config": "Save Config",
+            "add_node_secure": "Add Node Secure",
+            "add_node": "Add Node",
+            "remove_node": "Remove Node",
+            "cancel_command": "Cancel Command"
+          }
         }
       },
       "history": {
