@@ -37,7 +37,7 @@ export class ZwaveNetwork extends LitElement {
   @property() private _showHelp = false;
   @property() private _networkStatus?: ZWaveNetworkStatus;
   @property() private _networkStarting = false;
-  @property() private _unsubs: Promise<UnsubscribeFunc>[] = [];
+  @property() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
     this._unsubscribe();
