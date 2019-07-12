@@ -38,20 +38,22 @@ class HaPanelDevMqtt extends PolymerElement {
       >
       </app-localstorage-document>
 
-      <ha-card header="Publish a packet">
-        <div class="card-content">
-          <paper-input label="topic" value="{{topic}}"></paper-input>
+      <div class="content">
+        <ha-card header="Publish a packet">
+          <div class="card-content">
+            <paper-input label="topic" value="{{topic}}"></paper-input>
 
-          <paper-textarea
-            always-float-label
-            label="Payload (template allowed)"
-            value="{{payload}}"
-          ></paper-textarea>
-        </div>
-        <div class="card-actions">
-          <mwc-button on-click="_publish">Publish</mwc-button>
-        </div>
-      </ha-card>
+            <paper-textarea
+              always-float-label
+              label="Payload (template allowed)"
+              value="{{payload}}"
+            ></paper-textarea>
+          </div>
+          <div class="card-actions">
+            <mwc-button on-click="_publish">Publish</mwc-button>
+          </div>
+        </ha-card>
+      </div>
     `;
   }
 
