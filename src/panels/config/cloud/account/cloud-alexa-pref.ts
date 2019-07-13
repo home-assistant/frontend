@@ -41,8 +41,12 @@ export class CloudAlexaPref extends LitElement {
           control all your Home Assistant devices via any Alexa-enabled device.
           <ul>
             <li>
-              To activate, search in the Alexa app for the Home Assistant Smart
-              Home skill.
+              <a
+                href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
+                target="_blank"
+              >
+                Enable the Home Assistant skill for Alexa
+              </a>
             </li>
             <li>
               <a
