@@ -8,7 +8,7 @@ export type HvacMode =
   | "heat"
   | "cool"
   | "heat_cool"
-  | "auto"
+  | "program"
   | "dry"
   | "fan_only";
 

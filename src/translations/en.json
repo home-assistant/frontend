@@ -178,8 +178,8 @@
       "off": "[%key:state::default::off%]",
       "heat": "Heat",
       "cool": "Cool",
-      "heat_cool": "Auto",
-      "auto": "Auto",
+      "heat_cool": "Heat/Cool",
+      "program": "Program",
       "dry": "Dry",
       "fan_only": "Fan only"
     },
