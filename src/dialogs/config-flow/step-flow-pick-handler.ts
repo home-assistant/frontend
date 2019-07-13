@@ -91,6 +91,7 @@ class StepFlowPickHandler extends LitElement {
   static get styles(): CSSResult {
     return css`
       h2 {
+        margin-bottom: 2px;
         padding-left: 16px;
       }
       div {
