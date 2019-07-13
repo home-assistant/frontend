@@ -317,7 +317,7 @@
       "fan_mode": {
         "off": "[%key:state::default::off%]",
         "on": "[%key:state::default::on%]",
-        "auto": "[%key:state::climate::auto%]"
+        "auto": "Auto"
       },
       "preset_mode": {
         "none": "None",
