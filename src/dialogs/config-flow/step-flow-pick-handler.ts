@@ -30,7 +30,7 @@ class StepFlowPickHandler extends LitElement {
   @property() public handlers!: string[];
   @property() private filter?: string;
 
-  private _getHandlers = memoizeOne((h: any[], filter?: string) => {
+  private _getHandlers = memoizeOne((h: string[], filter?: string) => {
     const handlers: HandlerObj[] = h.map((handler) => {
       return {
         name: this.hass.localize(`component.${handler}.config.title`),
