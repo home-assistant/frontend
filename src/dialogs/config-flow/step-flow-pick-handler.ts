@@ -39,7 +39,7 @@ class StepFlowPickHandler extends LitElement {
     });
 
     if (filter) {
-      const options: Fuse.FuseOptions<any> = {
+      const options: Fuse.FuseOptions<HandlerObj> = {
         keys: ["name", "slug"],
         caseSensitive: false,
         minMatchCharLength: 2,
