@@ -20,6 +20,7 @@ class SearchInput extends LitElement {
     return html`
       <div class="search-container">
         <paper-input
+          autofocus
           label="Search"
           .value=${this.filter}
           @value-changed=${this._filterInputChanged}
