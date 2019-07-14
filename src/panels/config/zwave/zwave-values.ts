@@ -23,10 +23,10 @@ import { ZWaveValue } from "../../../data/zwave";
 @customElement("zwave-values")
 export class ZwaveValues extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public selectedNode: Number = -1;
-  @property() public nodes: Array<object> = [];
-  @property() private values: Array<ZWaveValue> = [];
-  @property() private _selectedValue: Number = -1;
+  @property() public selectedNode: number = -1;
+  @property() public nodes: object[] = [];
+  @property() private values: ZWaveValue[] = [];
+  @property() private _selectedValue: number = -1;
 
   protected render(): TemplateResult | void {
     return html`

@@ -26,5 +26,5 @@ export const fetchNetworkStatus = (
 
 export const fetchValues = (
   hass: HomeAssistant,
-  node_id: number
-): Promise<ZWaveValue[]> => hass.callApi("GET", `zwave/values/${node_id}`);
+  nodeId: number
+): Promise<ZWaveValue[]> => hass.callApi("GET", `zwave/values/${nodeId}`);
