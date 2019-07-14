@@ -934,6 +934,12 @@
             "network_started_note_some_queried": "Awake nodes have been queried. Sleeping nodes will be queried when they wake.",
             "network_started_note_all_queried": "All nodes have been queried."
           },
+          "values": {
+            "header": "Node Values",
+            "value": "Value",
+            "instance": "Instance",
+            "index": "Index"
+          },
           "services": {
             "start_network": "Start Network",
             "stop_network": "Stop Network",
