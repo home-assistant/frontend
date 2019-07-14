@@ -37,7 +37,7 @@ export class ZwaveValues extends LitElement {
           <div class="device-picker">
             <paper-dropdown-menu
               label="${this.hass!.localize(
-                "ui.panel.config.zwave.values.value"
+                "ui.panel.config.zwave.common.value"
               )}"
               dynamic-align=""
               class="flex"
@@ -61,9 +61,9 @@ export class ZwaveValues extends LitElement {
 
   private _computeSelectCaption(item): string {
     return `${item.value.label} (${this.hass!.localize(
-      "ui.panel.config.zwave.values.instance"
+      "ui.panel.config.zwave.common.instance"
     )}: ${item.value.instance}, ${this.hass!.localize(
-      "ui.panel.config.zwave.values.index"
+      "ui.panel.config.zwave.common.index"
     )}: ${item.value.index})`;
   }
 
