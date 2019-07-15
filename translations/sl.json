@@ -572,7 +572,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Upravljajte Z-Wave omrežje"
+                    "description": "Upravljajte Z-Wave omrežje",
+                    "network_management": {
+                        "header": "Upravljanje z omrežjem Z-Wave",
+                        "introduction": "Zaženite ukaze, ki vplivajo na omrežje Z-Wave. Ne boste dobili povratne informacije o tem, ali je večina ukazov uspela, vendar lahko preverite dnevnik OZW, da boste izvedeli več."
+                    },
+                    "network_status": {
+                        "network_stopped": "Omrežje Z-Wave ustavljeno",
+                        "network_starting": "Zaganjam Z-Wave Omrežje...",
+                        "network_starting_note": "Odvisno od velikosti vašega omrežja, lahko to traja nekaj časa.",
+                        "network_started": "Z-Wave omrežje zagnano",
+                        "network_started_note_some_queried": "Budna vozlišča so bila poizvedana. Speča bodo, ko se zbudijo.",
+                        "network_started_note_all_queried": "Vsa vozlišča so bila poizvedena."
+                    },
+                    "services": {
+                        "start_network": "Zaženite omrežje",
+                        "stop_network": "Ustavite omrežje",
+                        "heal_network": "Pozdravite omrežje",
+                        "test_network": "Preizkusite omrežje",
+                        "soft_reset": "Resetiraj",
+                        "save_config": "Shrani konfiguracijo",
+                        "add_node_secure": "Dodaj vozlišče varno",
+                        "add_node": "Dodaj vozlišče",
+                        "remove_node": "Odstrani vozlišče",
+                        "cancel_command": "Prekliči ukaz"
+                    }
                 },
                 "users": {
                     "caption": "Uporabniki",

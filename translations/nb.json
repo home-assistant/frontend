@@ -572,7 +572,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Administrer ditt Z-Wave-nettverk"
+                    "description": "Administrer ditt Z-Wave-nettverk",
+                    "network_management": {
+                        "header": "Z-Wave nettverksadministrasjon",
+                        "introduction": "Kjør kommandoer som påvirker Z-Wave nettverket. Du får ikke tilbakemelding på om de fleste kommandoer lykkes, men du kan sjekke OZW-loggen for å prøve å finne det ut."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave nettverket stoppet",
+                        "network_starting": "Starter Z-Wave nettverk...",
+                        "network_starting_note": "Dette kan ta en stund, avhengig av størrelsen på nettverket ditt.",
+                        "network_started": "Z-Wave nettverk startet",
+                        "network_started_note_some_queried": "Våkne noder har blitt forespurt. Sovende noder vil bli spurt når de våkner.",
+                        "network_started_note_all_queried": "Alle noder er forespurt."
+                    },
+                    "services": {
+                        "start_network": "Start nettverk",
+                        "stop_network": "Stopp nettverk",
+                        "heal_network": "Helbrede nettverk",
+                        "test_network": "Test nettverk",
+                        "soft_reset": "Myk tilbakestilling",
+                        "save_config": "Lagre konfigurasjon",
+                        "add_node_secure": "Legg til sikker node",
+                        "add_node": "Legg til node",
+                        "remove_node": "Fjern node",
+                        "cancel_command": "Avbryt kommando"
+                    }
                 },
                 "users": {
                     "caption": "Brukere",
