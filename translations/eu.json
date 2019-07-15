@@ -7,11 +7,6 @@
         "history": "Historia",
         "mailbox": "Postontzia",
         "shopping_list": "Erosketa zerrenda",
-        "dev-services": "Zerbitzuak",
-        "dev-states": "Egoerak",
-        "dev-events": "Gertaerak",
-        "dev-templates": "Txantiloiak",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informazioa",
         "developer_tools": "Garatzaileentzako tresnak",
         "calendar": "Egutegia",
@@ -239,6 +234,25 @@
             "shopping-list": {
                 "clear_completed": "Osatutakoak ezabatu",
                 "add_item": "Artikulua gehitu"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Zerbitzuak"
+                    },
+                    "states": {
+                        "title": "Egoerak"
+                    },
+                    "events": {
+                        "title": "Gertaerak"
+                    },
+                    "templates": {
+                        "title": "Txantiloiak"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "mailbox": {
                 "empty": "Ez duzu mezurik",

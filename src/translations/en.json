@@ -1247,6 +1247,28 @@
           }
         }
       },
+      "developer-tools": {
+        "tabs": {
+          "info": {
+            "title": "Info"
+          },
+          "events": {
+            "title": "Events"
+          },
+          "mqtt": {
+            "title": "MQTT"
+          },
+          "services": {
+            "title": "Services"
+          },
+          "states": {
+            "title": "States"
+          },
+          "templates": {
+            "title": "Template"
+          }
+        }
+      },
       "page-onboarding": {
         "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
         "user": {

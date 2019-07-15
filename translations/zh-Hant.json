@@ -7,11 +7,6 @@
         "history": "歷史",
         "mailbox": "郵箱",
         "shopping_list": "購物清單",
-        "dev-services": "服務",
-        "dev-states": "狀態",
-        "dev-events": "事件",
-        "dev-templates": "模板",
-        "dev-mqtt": "MQTT",
         "dev-info": "資訊",
         "developer_tools": "開發工具",
         "calendar": "行事曆",
@@ -312,6 +307,25 @@
                 "clear_completed": "清理完成",
                 "add_item": "新加入清單",
                 "microphone_tip": "點擊右上角的麥克風圖示，並說\"加入糖果到我的購物清單內\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "服務"
+                    },
+                    "states": {
+                        "title": "狀態"
+                    },
+                    "events": {
+                        "title": "事件"
+                    },
+                    "templates": {
+                        "title": "模板"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "選擇要查看的時間",

@@ -7,11 +7,6 @@
         "history": "היסטוריה",
         "mailbox": "תיבת דואר",
         "shopping_list": "רשימת קניות",
-        "dev-services": "שירותים",
-        "dev-states": "מצבים",
-        "dev-events": "אירועים",
-        "dev-templates": "תבניות",
-        "dev-mqtt": "MQTT",
         "dev-info": "מידע",
         "developer_tools": "כלים למפתחים",
         "calendar": "לוח שנה",
@@ -311,6 +306,25 @@
                 "clear_completed": "ניקוי הושלם",
                 "add_item": "הוסף פריט",
                 "microphone_tip": "לחץ על המיקרופון למעלה מצד ימין ותאמר \"הוסף סוכריה לרשימת הקניות שלי\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "שירותים"
+                    },
+                    "states": {
+                        "title": "מצבים"
+                    },
+                    "events": {
+                        "title": "אירועים"
+                    },
+                    "templates": {
+                        "title": "תבניות"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "מציג רשומות עבור",

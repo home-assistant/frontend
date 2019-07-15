@@ -7,11 +7,6 @@
         "history": "Lịch sử",
         "mailbox": "Hộp thư",
         "shopping_list": "Danh sách mua sắm",
-        "dev-services": "Dịch vụ",
-        "dev-states": "Trạng thái",
-        "dev-events": "Sự kiện",
-        "dev-templates": "Mẫu sẵn",
-        "dev-mqtt": "MQTT",
         "dev-info": "Thông tin",
         "developer_tools": "Công cụ Nhà phát triển",
         "calendar": "Lịch",
@@ -309,6 +304,25 @@
                 "clear_completed": "Xóa hoàn tất",
                 "add_item": "Thêm mục",
                 "microphone_tip": "Chạm vào micrô ở trên cùng bên phải và nói \"Thêm kẹo vào danh sách mua sắm của tôi\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Dịch vụ"
+                    },
+                    "states": {
+                        "title": "Trạng thái"
+                    },
+                    "events": {
+                        "title": "Sự kiện"
+                    },
+                    "templates": {
+                        "title": "Mẫu sẵn"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Hiển thị mục cho",

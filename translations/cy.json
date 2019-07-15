@@ -7,11 +7,6 @@
         "history": "Hanes",
         "mailbox": "Blwch post",
         "shopping_list": "Rhestr siopa",
-        "dev-services": "Gwasanaethau",
-        "dev-states": "Cyflerau",
-        "dev-events": "Digwyddiadau",
-        "dev-templates": "Templedi",
-        "dev-mqtt": "MQTT",
         "dev-info": "Gwybodaeth",
         "developer_tools": "Offer datblygwr"
     },
@@ -300,6 +295,25 @@
                 "clear_completed": "Clir wedi'i gwblhau",
                 "add_item": "Ychwanegu eitem",
                 "microphone_tip": "Tarwch y meicroffon ar dde uchaf a dweud \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Gwasanaethau"
+                    },
+                    "states": {
+                        "title": "Cyflerau"
+                    },
+                    "events": {
+                        "title": "Digwyddiadau"
+                    },
+                    "templates": {
+                        "title": "Templedi"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Dangos cofnodion ar gyfer",

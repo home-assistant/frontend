@@ -7,11 +7,6 @@
         "history": "Historique",
         "mailbox": "Boîtes aux lettres",
         "shopping_list": "Liste de courses",
-        "dev-services": "Services",
-        "dev-states": "États",
-        "dev-events": "Événements",
-        "dev-templates": "Templates",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Outils de développement",
         "calendar": "Calendrier",
@@ -312,6 +307,25 @@
                 "clear_completed": "Effacement accompli",
                 "add_item": "Ajouter un élément",
                 "microphone_tip": "Cliquez sur le microphone en haut à droite et dites “Ajouter des bonbons à ma liste d'achat”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Services"
+                    },
+                    "states": {
+                        "title": "États"
+                    },
+                    "events": {
+                        "title": "Événements"
+                    },
+                    "templates": {
+                        "title": "Templates"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Afficher les entrées pour",

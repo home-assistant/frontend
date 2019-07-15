@@ -7,7 +7,6 @@
         "history": "Istorija",
         "mailbox": "Pašto dėžutė",
         "shopping_list": "Pirkinių sąrašas",
-        "dev-mqtt": "MQTT",
         "profile": "Vartotojo profilis"
     },
     "state": {
@@ -159,12 +158,14 @@
         "sidebar": {
             "log_out": "Atsijungti"
         },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
-            "week": "count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}",
-            "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}"
-        },
         "panel": {
+            "developer-tools": {
+                "tabs": {
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
@@ -444,6 +445,11 @@
                     }
                 }
             }
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
+            "week": "count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}",
+            "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}"
         },
         "common": {
             "save": "Išsaugoti"

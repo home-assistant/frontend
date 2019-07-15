@@ -7,11 +7,6 @@
         "history": "História",
         "mailbox": "Poštová schránka",
         "shopping_list": "Nákupný zoznam",
-        "dev-services": "Služby",
-        "dev-states": "Stavy",
-        "dev-events": "Udalosti",
-        "dev-templates": "Šablóny",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Vývojárske nástroje",
         "calendar": "Kalendár",
@@ -312,6 +307,25 @@
                 "clear_completed": "Úspešne vymazané",
                 "add_item": "Pridať položku",
                 "microphone_tip": "Kliknite na ikonu mikrofónu vpravo hore a povedzte “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Služby"
+                    },
+                    "states": {
+                        "title": "Stavy"
+                    },
+                    "events": {
+                        "title": "Udalosti"
+                    },
+                    "templates": {
+                        "title": "Šablóny"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Zobrazujú sa záznamy pre",

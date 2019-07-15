@@ -7,11 +7,6 @@
         "history": "Ιστορικό",
         "mailbox": "Γραμματοκιβώτιο",
         "shopping_list": "Λίστα αγορών",
-        "dev-services": "Υπηρεσίες",
-        "dev-states": "Καταστάσεις",
-        "dev-events": "Γεγονότα",
-        "dev-templates": "Πρότυπα",
-        "dev-mqtt": "MQTT",
         "dev-info": "Πληροφορίες",
         "developer_tools": "Εργαλεία προγραμματιστή",
         "calendar": "Ημερολόγιο",
@@ -311,6 +306,25 @@
                 "clear_completed": "Καθαρισμός Ολοκληρώθηκε",
                 "add_item": "Προσθήκη στοιχείου",
                 "microphone_tip": "Πατήστε το μικρόφωνο στην επάνω δεξιά γωνία και πείτε \"Προσθήκη καραμελών στη λίστα αγορών μου\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Υπηρεσίες"
+                    },
+                    "states": {
+                        "title": "Καταστάσεις"
+                    },
+                    "events": {
+                        "title": "Γεγονότα"
+                    },
+                    "templates": {
+                        "title": "Πρότυπα"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Εμφανίζονται καταχωρήσεις για",

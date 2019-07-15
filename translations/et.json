@@ -7,11 +7,6 @@
         "history": "Ajalugu",
         "mailbox": "Postkast",
         "shopping_list": "Ostunimekiri",
-        "dev-services": "Teenused",
-        "dev-states": "Olekud",
-        "dev-events": "Sündmused",
-        "dev-templates": "Mallid",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Arendaja tööriistad",
         "calendar": "Kalender",
@@ -310,6 +305,25 @@
                 "clear_completed": "Tühjenda täidetud",
                 "add_item": "Lisa toode",
                 "microphone_tip": "Puudutage paremas ülanurgas asuvat mikrofoni ikooni ja öelge: \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Teenused"
+                    },
+                    "states": {
+                        "title": "Olekud"
+                    },
+                    "events": {
+                        "title": "Sündmused"
+                    },
+                    "templates": {
+                        "title": "Mallid"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Näitan kuupäeva",

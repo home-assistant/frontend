@@ -7,11 +7,6 @@
         "history": "Histórico",
         "mailbox": "Caixa de correio",
         "shopping_list": "Lista de compras",
-        "dev-services": "Serviços",
-        "dev-states": "Estado",
-        "dev-events": "Eventos",
-        "dev-templates": "Modelos",
-        "dev-mqtt": "",
         "dev-info": "Informações",
         "developer_tools": "Ferramentas do desenvolvedor",
         "calendar": "Calendário",
@@ -311,6 +306,25 @@
                 "clear_completed": "Limpar completos",
                 "add_item": "Adicionar item",
                 "microphone_tip": "Clique no microfone no canto superior direito e diga \"Adicionar doces à minha lista de compras\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Serviços"
+                    },
+                    "states": {
+                        "title": "Estado"
+                    },
+                    "events": {
+                        "title": "Eventos"
+                    },
+                    "templates": {
+                        "title": "Modelos"
+                    },
+                    "mqtt": {
+                        "title": ""
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Exibindo entradas para",
