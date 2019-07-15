@@ -7,12 +7,8 @@
         "history": "చరిత్ర",
         "mailbox": "మెయిల్ బాక్స్",
         "shopping_list": "షాపింగ్ జాబితా",
-        "dev-services": "సేవలు",
-        "dev-states": "స్టేట్స్",
-        "dev-events": "సంఘటనలు",
-        "dev-templates": "టెంప్లేట్లు",
-        "dev-mqtt": "MQTT",
         "dev-info": "సమాచారం",
+        "developer_tools": "డెవలపర్ టూల్స్",
         "calendar": "క్యాలెండర్"
     },
     "state": {
@@ -286,6 +282,25 @@
                 "add_item": "క్రొత్తది జోడించు",
                 "microphone_tip": "కుడి వైపున మైక్రోఫోన్ను నొక్కి, “Add candy to my shopping list”"
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "సేవలు"
+                    },
+                    "states": {
+                        "title": "స్టేట్స్"
+                    },
+                    "events": {
+                        "title": "సంఘటనలు"
+                    },
+                    "templates": {
+                        "title": "టెంప్లేట్లు"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "period": "కాలం"
             },
@@ -526,8 +541,7 @@
             }
         },
         "sidebar": {
-            "log_out": "లాగ్ అవుట్",
-            "developer_tools": "డెవలపర్ టూల్స్"
+            "log_out": "లాగ్ అవుట్"
         },
         "common": {
             "loading": "లోడింగ్",

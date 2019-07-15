@@ -7,12 +7,8 @@
         "history": "Geschiedenis",
         "mailbox": "Postvak",
         "shopping_list": "Boodschappenlijst",
-        "dev-services": "Services",
-        "dev-states": "Toestanden",
-        "dev-events": "Gebeurtenissen",
-        "dev-templates": "Sjablonen",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Ontwikkelaarstools",
         "calendar": "Kalender",
         "profile": "Profiel"
     },
@@ -312,6 +308,25 @@
                 "add_item": "Item toevoegen",
                 "microphone_tip": "Tik op de microfoon rechtsboven en zeg \"Add candy to my shopping list\""
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Services"
+                    },
+                    "states": {
+                        "title": "Toestanden"
+                    },
+                    "events": {
+                        "title": "Gebeurtenissen"
+                    },
+                    "templates": {
+                        "title": "Sjablonen"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "showing_entries": "Toon items voor",
                 "period": "Periode"
@@ -572,7 +587,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Beheer je Z-Wave-netwerk"
+                    "description": "Beheer je Z-Wave-netwerk",
+                    "network_management": {
+                        "header": "Z-Wave netwerkbeheer",
+                        "introduction": "Voer opdrachten uit die van invloed zijn op het Z-Wave-netwerk. Je krijgt geen feedback of de meeste commando's gelukt zijn, maar je kunt wel het OZW Logboek raadplegen om te proberen uit te vinden of het gelukt is."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave netwerk gestopt",
+                        "network_starting": "Z-Wave netwerk starten...",
+                        "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van uw netwerk.",
+                        "network_started": "Z-Wave Netwerk gestart",
+                        "network_started_note_some_queried": "Alle wakkere nodes zijn opgevraagd. Slapende nodes worden opgevraagd wanneer ze wakker worden.",
+                        "network_started_note_all_queried": "Alle nodes zijn opgevraagd."
+                    },
+                    "services": {
+                        "start_network": "Start netwerk",
+                        "stop_network": "Stop Netwerk",
+                        "heal_network": "Herstel Netwerk",
+                        "test_network": "Test Netwerk",
+                        "soft_reset": "Soft Reset",
+                        "save_config": "Configuratie Opslaan",
+                        "add_node_secure": "Toevoegen Node Secure",
+                        "add_node": "Node toevoegen",
+                        "remove_node": "Node verwijderen",
+                        "cancel_command": "Opdracht annuleren"
+                    }
                 },
                 "users": {
                     "caption": "Gebruikers",
@@ -745,7 +784,6 @@
                 },
                 "current_user": "U bent momenteel ingelogd als {fullName}.",
                 "is_owner": "U bent eigenaar.",
-                "logout": "Uitloggen",
                 "change_password": {
                     "header": "Wachtwoord wijzigen",
                     "current_password": "Huidige wachtwoord",
@@ -1019,7 +1057,6 @@
         },
         "sidebar": {
             "log_out": "Uitloggen",
-            "developer_tools": "Ontwikkelaarstools",
             "external_app_configuration": "App configuratie"
         },
         "common": {

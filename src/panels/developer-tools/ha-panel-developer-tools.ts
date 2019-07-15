@@ -41,7 +41,7 @@ class PanelDeveloperTools extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
-            <div main-title>Developer Tools</div>
+            <div main-title>${this.hass.localize("panel.developer_tools")}</div>
           </app-toolbar>
           <paper-tabs
             scrollable
@@ -50,26 +50,36 @@ class PanelDeveloperTools extends LitElement {
             @iron-activate=${this.handlePageSelected}
           >
             <paper-tab page-name="info">
-              ${this.hass.localize("panel.dev-info")}
+              ${this.hass.localize("ui.panel.developer-tools.tabs.info.title")}
             </paper-tab>
             <paper-tab page-name="event">
-              ${this.hass.localize("panel.dev-events")}
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.events.title"
+              )}
             </paper-tab>
             ${isComponentLoaded(this.hass, "mqtt")
               ? html`
                   <paper-tab page-name="mqtt">
-                    ${this.hass.localize("panel.dev-mqtt")}
+                    ${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.mqtt.title"
+                    )}
                   </paper-tab>
                 `
               : ""}
             <paper-tab page-name="service">
-              ${this.hass.localize("panel.dev-services")}
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.services.title"
+              )}
             </paper-tab>
             <paper-tab page-name="state">
-              ${this.hass.localize("panel.dev-states")}
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.states.title"
+              )}
             </paper-tab>
             <paper-tab page-name="template">
-              ${this.hass.localize("panel.dev-templates")}
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.title"
+              )}
             </paper-tab>
           </paper-tabs>
         </app-header>

@@ -7,12 +7,8 @@
         "history": "История",
         "mailbox": "Пощенска кутия",
         "shopping_list": "Списък за пазаруване",
-        "dev-services": "Услуги",
-        "dev-states": "Състояния",
-        "dev-events": "Събития",
-        "dev-templates": "Шаблони",
-        "dev-mqtt": "MQTT",
         "dev-info": "Информация",
+        "developer_tools": "Инструменти за разработчици",
         "calendar": "Календар",
         "profile": "Профил"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Изчистването завършено",
                 "add_item": "Добави артикул",
                 "microphone_tip": "Докоснете микрофона горе вдясно и кажете \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Услуги"
+                    },
+                    "states": {
+                        "title": "Състояния"
+                    },
+                    "events": {
+                        "title": "Събития"
+                    },
+                    "templates": {
+                        "title": "Шаблони"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Показване на записите за",
@@ -744,7 +759,6 @@
                 },
                 "current_user": "В момента сте влезли като {fullName}.",
                 "is_owner": "Вие сте собственик.",
-                "logout": "Изход",
                 "change_password": {
                     "header": "Смяна на парола",
                     "current_password": "Настояща парола",
@@ -1018,7 +1032,6 @@
         },
         "sidebar": {
             "log_out": "Изход",
-            "developer_tools": "Инструменти за разработчици",
             "external_app_configuration": "Конфигурация на приложение"
         },
         "common": {

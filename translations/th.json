@@ -7,12 +7,8 @@
         "history": "ประวัติการทำงาน",
         "mailbox": "กล่องจดหมาย",
         "shopping_list": "รายการซื้อของ",
-        "dev-services": "บริการ",
-        "dev-states": "สถานะ",
-        "dev-events": "เหตุการณ์",
-        "dev-templates": "แม่แบบ",
-        "dev-mqtt": "MQTT",
         "dev-info": "ข้อมูล",
+        "developer_tools": "เครื่องมือสำหรับนักพัฒนา",
         "calendar": "ปฏิทิน",
         "profile": "ข้อมูลส่วนตัว"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "จัดการเรียบร้อย",
                 "add_item": "เพิ่มรายการใหม่",
                 "microphone_tip": "ลองแตะไมโครโฟนที่ด้านบนขวาและพูดว่า \"เพิ่มลูกอมลงในรายการช้อปปิ้งของฉัน\" ดูสิ!"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "บริการ"
+                    },
+                    "states": {
+                        "title": "สถานะ"
+                    },
+                    "events": {
+                        "title": "เหตุการณ์"
+                    },
+                    "templates": {
+                        "title": "แม่แบบ"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "วันที่ต้องการแสดง",
@@ -743,7 +758,6 @@
                 },
                 "current_user": "ขณะนี้คุณเข้าสู่ระบบในชื่อ {fullName}",
                 "is_owner": "ในฐานะ \"เจ้าของ\"",
-                "logout": "ชื่อผู้ใช้",
                 "change_password": {
                     "header": "เปลี่ยนรหัสผ่าน",
                     "current_password": "รหัสผ่านปัจจุบัน",
@@ -974,7 +988,6 @@
         },
         "sidebar": {
             "log_out": "ออกจากระบบ",
-            "developer_tools": "เครื่องมือสำหรับนักพัฒนา",
             "external_app_configuration": "การกำหนดค่าแอพ"
         },
         "common": {

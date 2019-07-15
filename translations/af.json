@@ -7,12 +7,8 @@
         "history": "Geskiedenis",
         "mailbox": "Posbus",
         "shopping_list": "Inkopielys",
-        "dev-services": "Dienste",
-        "dev-states": "State",
-        "dev-events": "Gebeure",
-        "dev-templates": "Template",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Ontwikkelaar gereedskap",
         "calendar": "Kalender",
         "profile": "Profiel"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Maak voltooide items skoon",
                 "add_item": "Voeg item",
                 "microphone_tip": "Druk die mikrofoon regs bo en sê \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Dienste"
+                    },
+                    "states": {
+                        "title": "State"
+                    },
+                    "events": {
+                        "title": "Gebeure"
+                    },
+                    "templates": {
+                        "title": "Template"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Wys inskrywings vir",
@@ -720,7 +735,6 @@
                 },
                 "current_user": "U is tans aangemeld as {fullName} .",
                 "is_owner": "U is 'n eienaar.",
-                "logout": "Meld af",
                 "change_password": {
                     "header": "Verander Wagwoord",
                     "current_password": "Huidige Wagwoord",
@@ -933,7 +947,6 @@
         },
         "sidebar": {
             "log_out": "Meld af",
-            "developer_tools": "Ontwikkelaar gereedskap",
             "external_app_configuration": "App Konfigurasie"
         },
         "common": {

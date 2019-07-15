@@ -7,12 +7,8 @@
         "history": "Historik",
         "mailbox": "Brevlåda",
         "shopping_list": "Inköpslista",
-        "dev-services": "Tjänster",
-        "dev-states": "Tillstånd",
-        "dev-events": "Händelser",
-        "dev-templates": "Mallar",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Utvecklarverktyg",
         "calendar": "Kalender",
         "profile": "Profil"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Rensning slutförd",
                 "add_item": "Lägg till objekt",
                 "microphone_tip": "Tryck på mikrofonen längst upp till höger och säg \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Tjänster"
+                    },
+                    "states": {
+                        "title": "Tillstånd"
+                    },
+                    "events": {
+                        "title": "Händelser"
+                    },
+                    "templates": {
+                        "title": "Mallar"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Visar poster för",
@@ -744,7 +759,6 @@
                 },
                 "current_user": "Du är inloggad som {fullName}.",
                 "is_owner": "Du är en ägare.",
-                "logout": "Logga ut",
                 "change_password": {
                     "header": "Ändra lösenord",
                     "current_password": "Nuvarande lösenord",
@@ -1018,7 +1032,6 @@
         },
         "sidebar": {
             "log_out": "Logga ut",
-            "developer_tools": "Utvecklarverktyg",
             "external_app_configuration": "Appkonfiguration"
         },
         "common": {
