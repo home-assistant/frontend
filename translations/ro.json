@@ -7,12 +7,8 @@
         "history": "Istoric",
         "mailbox": "Cutie poștală",
         "shopping_list": "Listă de cumpărături",
-        "dev-services": "Servicii",
-        "dev-states": "Status",
-        "dev-events": "Evenimente",
-        "dev-templates": "Sabloane",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Instrumente de dezvoltare",
         "calendar": "Calendar",
         "profile": "Profil"
     },
@@ -145,7 +141,8 @@
             "high_demand": "Consum mare",
             "heat_pump": "Pompă de căldură",
             "gas": "Gaz",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Auto"
         },
         "configurator": {
             "configure": "Configurează",
@@ -265,12 +262,21 @@
             "on": "Pornit",
             "paused": "Întrerupt",
             "returning": "În curs de întoarcere la doc"
+        },
+        "timer": {
+            "active": "activ"
+        },
+        "person": {
+            "home": "Acasă",
+            "not_home": "Plecat"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Nec",
-            "unavailable": "Indisp"
+            "unavailable": "Indisp",
+            "error": "Eroare",
+            "entity_not_found": "Entitatea nu a fost găsită"
         },
         "alarm_control_panel": {
             "armed": "Armat",
@@ -287,6 +293,10 @@
         "device_tracker": {
             "home": "Acasă",
             "not_home": "Plecat"
+        },
+        "person": {
+            "home": "Acasa",
+            "not_home": "Plecat"
         }
     },
     "ui": {
@@ -295,6 +305,25 @@
                 "clear_completed": "Stergere finalizată",
                 "add_item": "Adaugare element",
                 "microphone_tip": "Atingeți microfonul din partea dreaptă sus și spuneți \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Servicii"
+                    },
+                    "states": {
+                        "title": "Status"
+                    },
+                    "events": {
+                        "title": "Evenimente"
+                    },
+                    "templates": {
+                        "title": "Sabloane"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Se afișează intrările pentru",
@@ -339,13 +368,30 @@
                                 "introduction": "Controlează-ți serverul Home Assistant ... chiar din Home Assistant.",
                                 "restart": "Repornire",
                                 "stop": "Oprire"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Editorul a fost dezactivat deoarece configurația a fost stocata în configuration.yaml.",
+                                "location_name": "Numele instalarii Home Assistant",
+                                "latitude": "Latitudine",
+                                "longitude": "Longitudine",
+                                "elevation": "Altitudine",
+                                "elevation_meters": "metri",
+                                "time_zone": "Fus orar",
+                                "unit_system": "Unitatea De Sistem",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metric",
+                                "metric_example": "Celsius, kilograme",
+                                "save_button": "Salvați"
                             }
                         }
                     }
                 },
                 "customize": {
                     "caption": "Personalizare",
-                    "description": "Personalizați-vă entitățile"
+                    "description": "Personalizați-vă entitățile",
+                    "picker": {
+                        "header": "Personalizare"
+                    }
                 },
                 "automation": {
                     "caption": "Automatizări",
@@ -423,6 +469,11 @@
                                     "event": "Eveniment",
                                     "enter": "Intră",
                                     "leave": "Ieși"
+                                },
+                                "time_pattern": {
+                                    "hours": "Ore",
+                                    "minutes": "Minute",
+                                    "seconds": "Secunde"
                                 }
                             }
                         },
@@ -503,7 +554,8 @@
                                     "service_data": "Date serviciu"
                                 }
                             }
-                        }
+                        },
+                        "load_error_not_editable": "Numai automatizările din automations.yaml pot fi editate."
                     }
                 },
                 "script": {
@@ -512,7 +564,27 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Gestionați-vă rețeaua Z-Wave"
+                    "description": "Gestionați-vă rețeaua Z-Wave",
+                    "network_management": {
+                        "header": "Administrarea retelei Z-Wave"
+                    },
+                    "network_status": {
+                        "network_stopped": "Rețeaua Z-Wave Oprita",
+                        "network_starting": "Pornesc rețeaua Z-Wave ...",
+                        "network_starting_note": "Acest lucru poate dura ceva timp, în funcție de dimensiunea rețelei dvs.",
+                        "network_started": "Rețeaua Z-Wave a fost pornita"
+                    },
+                    "services": {
+                        "start_network": "Porniți rețeaua",
+                        "stop_network": "Opriți rețeaua",
+                        "test_network": "Testati Reteaua",
+                        "soft_reset": "Resetare soft",
+                        "save_config": "Salvați Configurația",
+                        "add_node_secure": "Adăugare nod securizat",
+                        "add_node": "Adăugare nod",
+                        "remove_node": "Eliminare nod",
+                        "cancel_command": "Anulați comanda"
+                    }
                 },
                 "users": {
                     "caption": "Utilizatori",
@@ -525,7 +597,15 @@
                         "change_password": "Schimbaţi parola",
                         "activate_user": "Activați utilizatorul",
                         "deactivate_user": "Dezactivați utilizatorul",
-                        "delete_user": "Ștergeți utilizatorul"
+                        "delete_user": "Ștergeți utilizatorul",
+                        "caption": "Vizualizați utilizatorul"
+                    },
+                    "add_user": {
+                        "caption": "Adăugați utilizator",
+                        "name": "Nume",
+                        "username": "Nume de utilizator",
+                        "password": "Parola",
+                        "create": "Creează"
                     }
                 },
                 "cloud": {
@@ -550,7 +630,61 @@
                         "via": "Conectat prin",
                         "firmware": "Firmware: {version}",
                         "device_unavailable": "dispozitiv indisponibil",
-                        "entity_unavailable": "Entitatea nu este disponibilă"
+                        "entity_unavailable": "Entitatea nu este disponibilă",
+                        "no_area": "Nici o zonă",
+                        "hub": "Conectat prin"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Acest pas necesită să vizitați un site web extern pentru a fi finalizat.",
+                            "open_site": "Deschideți site-ul web"
+                        }
+                    }
+                },
+                "area_registry": {
+                    "create_area": "CREARE ZONĂ",
+                    "editor": {
+                        "default_name": "Zonă nouă",
+                        "delete": "ȘTERGEȚI",
+                        "update": "ACTUALIZAȚI",
+                        "create": "CREAȚI"
+                    },
+                    "picker": {
+                        "no_areas": "Se pare că nu ai nici o zonă încă!",
+                        "create_area": "CREARE ZONĂ"
+                    }
+                },
+                "entity_registry": {
+                    "picker": {
+                        "header": "Registrul de entități",
+                        "unavailable": "(indisponibil)"
+                    },
+                    "editor": {
+                        "unavailable": "Această entitate nu este disponibilă momentan.",
+                        "default_name": "Zonă nouă",
+                        "delete": "ȘTERGE",
+                        "update": "ACTUALIZAȚI"
+                    }
+                },
+                "person": {
+                    "caption": "Persoane",
+                    "description": "Gestionează persoanele pe care Home Assistant le urmărește.",
+                    "detail": {
+                        "name": "Nume",
+                        "device_tracker_intro": "Selectați dispozitivele care aparțin acestei persoane.",
+                        "device_tracker_picked": "Urmăriți dispozitivul",
+                        "device_tracker_pick": "Alegeți dispozitivul pentru a urmări"
+                    }
+                },
+                "zha": {
+                    "services": {
+                        "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive.",
+                        "remove": "Eliminați un dispozitiv din rețeaua ZigBee."
+                    },
+                    "device_card": {
+                        "device_name_placeholder": "Nume dat de utilizator",
+                        "area_picker_label": "Zonă",
+                        "update_name_button": "Actualizați numele"
                     }
                 }
             },
@@ -602,7 +736,6 @@
                 },
                 "current_user": "În prezent sunteți conectat ca {fullName} .",
                 "is_owner": "Sunteți proprietar.",
-                "logout": "Deconectați-vă",
                 "change_password": {
                     "header": "Schimbaţi parola",
                     "current_password": "Parola Curentă",
@@ -696,6 +829,24 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Utilizator",
+                                        "password": "Parola"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Cod Autentificare in doi pasi"
+                                    },
+                                    "description": "Deschide **{mfa_module_name}** pe dispozitivul tau pentru a vedea codul autentificare in doi pasi si a confirma identitatea:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Utilizator sau parola invalida",
+                                "invalid_code": "Cod invalid pentru autentificare"
+                            },
                             "abort": {
                                 "login_expired": "Sesiunea a expirat, va rugam logati-va din nou."
                             }
@@ -711,18 +862,86 @@
                     "data": {
                         "name": "Nume",
                         "username": "Nume de utilizator",
-                        "password": "Parola"
+                        "password": "Parola",
+                        "password_confirm": "Confirmare parolă"
                     },
                     "create_account": "Creează cont",
                     "error": {
-                        "required_fields": "Completați toate câmpurile obligatorii"
+                        "required_fields": "Completați toate câmpurile obligatorii",
+                        "password_not_match": "Parolele nu se potrivesc"
+                    }
+                },
+                "core-config": {
+                    "intro_location": "Am vrea să știm unde locuiți. Aceste informații vă vor ajuta să afișați informații și să configurați automatizări bazate pe soare. Aceste date nu sunt niciodată distribuite în afara rețelei dvs.",
+                    "intro_location_detect": "Vă putem ajuta să completați aceste informații făcând o cerere unică unui serviciu extern.",
+                    "location_name_default": "Acasă",
+                    "button_detect": "Detecteaza",
+                    "finish": "Următorul"
+                }
+            },
+            "lovelace": {
+                "editor": {
+                    "edit_card": {
+                        "move": "Muta"
+                    },
+                    "raw_editor": {
+                        "header": "Editați configurația",
+                        "save": "Salvați",
+                        "unsaved_changes": "Modificări nesalvate",
+                        "saved": "Salvat"
+                    }
+                },
+                "cards": {
+                    "picture-elements": {
+                        "hold": "Țineți apăsat:",
+                        "navigate_to": "Navigați la {location}"
+                    }
+                },
+                "changed_toast": {
+                    "message": "Configurația Lovelace a fost actualizată, doriți să reîmprospătați?",
+                    "refresh": "Reîmprospătare"
+                },
+                "reload_lovelace": "Reîncarcă Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "dupa {name}",
+                        "next_demo": "Următorul demo",
+                        "introduction": "Bine ai venit acasa! Ați ajuns la demo-ul Home Assistant, unde prezentăm cele mai bune interfețe utilizator, create de comunitatea noastră."
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "hallway": "Hol",
+                            "master_bedroom": "Dormitor Principal",
+                            "left": "Stânga",
+                            "right": "Dreapta",
+                            "mirror": "Oglindă"
+                        },
+                        "labels": {
+                            "lights": "Lumini",
+                            "information": "informație",
+                            "morning_commute": "Naveta De Dimineață",
+                            "commute_home": "Naveta la domiciliu",
+                            "entertainment": "Divertisment",
+                            "activity": "Activitate",
+                            "hdmi_input": "Intrare HDMI",
+                            "hdmi_switcher": "Comutator HDMI",
+                            "volume": "Volum",
+                            "total_tv_time": "Timp total de televiziune",
+                            "turn_tv_off": "Opriți televizorul"
+                        },
+                        "unit": {
+                            "minutes_abbr": "min"
+                        }
                     }
                 }
             }
         },
         "sidebar": {
-            "log_out": "Deconectare",
-            "developer_tools": "Instrumente de dezvoltare"
+            "log_out": "Deconectare"
         },
         "common": {
             "loading": "Se încarcă",
@@ -732,7 +951,7 @@
             "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
             "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}",
             "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
-            "minute": "{count} {count, plural,\n  one { minute }\n  other { minutes }\n}",
+            "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
             "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}"
         },
         "login-form": {
@@ -786,7 +1005,8 @@
                 "clear_code": "Şterge",
                 "disarm": "Dezarmat",
                 "arm_home": "Armat acasă",
-                "arm_away": "Armat plecat"
+                "arm_away": "Armat plecat",
+                "arm_custom_bypass": "Bypass personalizat"
             },
             "automation": {
                 "last_triggered": "Ultima declanșare",
@@ -933,13 +1153,32 @@
         "weblink": "Legătură web",
         "zwave": "Z-Wave",
         "vacuum": "Aspirator",
-        "system_health": "Stare Sistem"
+        "hassio": "Hass.io",
+        "system_health": "Stare Sistem",
+        "person": "Persoană"
     },
     "attribute": {
         "weather": {
             "humidity": "Umiditate",
             "visibility": "Vizibilitate",
             "wind_speed": "Viteza vântului"
+        }
+    },
+    "groups": {
+        "system-admin": "Administratori",
+        "system-users": "Utilizatori",
+        "system-read-only": "Utilizatori cu drepturi de citire"
+    },
+    "state_attributes": {
+        "climate": {
+            "preset_mode": {
+                "none": "Nici unul",
+                "away": "Plecat",
+                "boost": "Boost",
+                "comfort": "Confort",
+                "home": "Acasă",
+                "activity": "Activitate"
+            }
         }
     }
 }

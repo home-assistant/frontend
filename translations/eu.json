@@ -7,12 +7,8 @@
         "history": "Historia",
         "mailbox": "Postontzia",
         "shopping_list": "Erosketa zerrenda",
-        "dev-services": "Zerbitzuak",
-        "dev-states": "Egoerak",
-        "dev-events": "Gertaerak",
-        "dev-templates": "Txantiloiak",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informazioa",
+        "developer_tools": "Garatzaileentzako tresnak",
         "calendar": "Egutegia",
         "profile": "Profila"
     },
@@ -238,6 +234,25 @@
             "shopping-list": {
                 "clear_completed": "Osatutakoak ezabatu",
                 "add_item": "Artikulua gehitu"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Zerbitzuak"
+                    },
+                    "states": {
+                        "title": "Egoerak"
+                    },
+                    "events": {
+                        "title": "Gertaerak"
+                    },
+                    "templates": {
+                        "title": "Txantiloiak"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "mailbox": {
                 "empty": "Ez duzu mezurik",
@@ -553,7 +568,6 @@
                 },
                 "current_user": "{fullName} moduan hasi duzu saioa.",
                 "is_owner": "Jabea zara",
-                "logout": "Saioa itxi",
                 "change_password": {
                     "header": "Pasahitza aldatu",
                     "current_password": "Egungo pasahitza",
@@ -726,7 +740,6 @@
         },
         "sidebar": {
             "log_out": "Saioa itxi",
-            "developer_tools": "Garatzaileentzako tresnak",
             "external_app_configuration": "Aplikazioaren Konfigurazioa"
         },
         "common": {

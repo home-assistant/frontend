@@ -7,11 +7,8 @@
         "history": "इतिहास",
         "mailbox": "मेलबॉक्स",
         "shopping_list": "खरीदारी की सूची",
-        "dev-services": "सेवाएं",
-        "dev-events": "घटनाओं",
-        "dev-templates": "टेम्पलेट्स",
-        "dev-mqtt": "MQTT",
-        "dev-info": "जानकारी"
+        "dev-info": "जानकारी",
+        "developer_tools": "डेवलपर उपकरण"
     },
     "state": {
         "default": {
@@ -117,6 +114,22 @@
                 "add_item": "आइटम जोड़ें",
                 "microphone_tip": "ऊपर दाईं ओर माइक्रोफ़ोन टैप करें और \"मेरी खरीदारी सूची में कैंडी जोड़ें\" कहें"
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "सेवाएं"
+                    },
+                    "events": {
+                        "title": "घटनाओं"
+                    },
+                    "templates": {
+                        "title": "टेम्पलेट्स"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
@@ -206,8 +219,7 @@
             }
         },
         "sidebar": {
-            "log_out": "लॉग आउट",
-            "developer_tools": "डेवलपर उपकरण"
+            "log_out": "लॉग आउट"
         }
     },
     "domain": {

@@ -7,12 +7,8 @@
         "history": "Verlaf",
         "mailbox": "Bréifkëscht",
         "shopping_list": "Akafslëscht",
-        "dev-services": "Servicen",
-        "dev-states": "Zoustänn",
-        "dev-events": "Evenementer",
-        "dev-templates": "Modeller",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Entwécklungsgeschir",
         "calendar": "Kalenner",
         "profile": "Profil"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Fäerdeg Elementer ewechhuelen",
                 "add_item": "Objet dobäisetze",
                 "microphone_tip": "Tipp uewe riets op de Mikro a so “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Servicen"
+                    },
+                    "states": {
+                        "title": "Zoustänn"
+                    },
+                    "events": {
+                        "title": "Evenementer"
+                    },
+                    "templates": {
+                        "title": "Modeller"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Weist Beiträg fir",
@@ -744,7 +759,6 @@
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
                 "is_owner": "Dir sidd Proprietär.",
-                "logout": "Ausloggen",
                 "change_password": {
                     "header": "Passwuert änneren",
                     "current_password": "Aktuellt Passwuert",
@@ -1018,7 +1032,6 @@
         },
         "sidebar": {
             "log_out": "Ausloggen",
-            "developer_tools": "Entwécklungsgeschir",
             "external_app_configuration": "App Konfiguratioun"
         },
         "common": {

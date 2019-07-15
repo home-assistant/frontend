@@ -7,12 +7,8 @@
         "history": "Riwayat",
         "mailbox": "Kotak pesan",
         "shopping_list": "Daftar belanja",
-        "dev-services": "Layanan",
-        "dev-states": "Status",
-        "dev-events": "Event",
-        "dev-templates": "Template",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Alat pengembang",
         "calendar": "Kalender"
     },
     "state": {
@@ -302,6 +298,25 @@
                 "clear_completed": "Hapus selesai",
                 "add_item": "Tambah item",
                 "microphone_tip": "Sentuh mikrofon di kanan atas dan ucapkan \"Tambahkan permen ke daftar belanjaku\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Layanan"
+                    },
+                    "states": {
+                        "title": "Status"
+                    },
+                    "events": {
+                        "title": "Event"
+                    },
+                    "templates": {
+                        "title": "Template"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Menampilkan daftar dari",
@@ -805,7 +820,6 @@
         },
         "sidebar": {
             "log_out": "Keluar",
-            "developer_tools": "Alat pengembang",
             "external_app_configuration": "Konfigurasi Aplikasi"
         },
         "common": {

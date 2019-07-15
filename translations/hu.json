@@ -7,12 +7,8 @@
         "history": "Előzmények",
         "mailbox": "Postafiók",
         "shopping_list": "Bevásárló lista",
-        "dev-services": "Szolgáltatások",
-        "dev-states": "Állapotok",
-        "dev-events": "Események",
-        "dev-templates": "Sablonok",
-        "dev-mqtt": "MQTT",
         "dev-info": "Infó",
+        "developer_tools": "Fejlesztői eszközök",
         "calendar": "Naptár",
         "profile": "Profil"
     },
@@ -311,6 +307,25 @@
                 "clear_completed": "Bejelöltek törlése",
                 "add_item": "Tétel hozzáadása",
                 "microphone_tip": "Koppints a jobb felső sarokban található mikrofonra, és mondd ki: \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Szolgáltatások"
+                    },
+                    "states": {
+                        "title": "Állapotok"
+                    },
+                    "events": {
+                        "title": "Események"
+                    },
+                    "templates": {
+                        "title": "Sablonok"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Bejegyzések megjelenítése",
@@ -745,7 +760,6 @@
                 },
                 "current_user": "Jelenleg {fullName} felhasználóként vagy bejelentkezve.",
                 "is_owner": "Tulajdonos vagy.",
-                "logout": "Kijelentkezés",
                 "change_password": {
                     "header": "Jelszó Módosítása",
                     "current_password": "Jelenlegi Jelszó",
@@ -1019,7 +1033,6 @@
         },
         "sidebar": {
             "log_out": "Kijelentkezés",
-            "developer_tools": "Fejlesztői eszközök",
             "external_app_configuration": "App Konfiguráció"
         },
         "common": {

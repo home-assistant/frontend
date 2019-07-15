@@ -7,12 +7,8 @@
         "history": "Historie",
         "mailbox": "Postkasse",
         "shopping_list": "Handleliste",
-        "dev-services": "Tenester",
-        "dev-states": "Statusar",
-        "dev-events": "Hendingar",
-        "dev-templates": "Malar",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Utviklarverkty",
         "calendar": "Kalendrar",
         "profile": "Profil"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Fjern fullført",
                 "add_item": "Legg til",
                 "microphone_tip": "Trykk på mikorfonen øvst til høgre og sei \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Tenester"
+                    },
+                    "states": {
+                        "title": "Statusar"
+                    },
+                    "events": {
+                        "title": "Hendingar"
+                    },
+                    "templates": {
+                        "title": "Malar"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Viser oppføringer for",
@@ -740,7 +755,6 @@
                 },
                 "current_user": "Du er for augeblinken logga inn som {fullName}.",
                 "is_owner": "Du er ein eigar",
-                "logout": "Logg ut",
                 "change_password": {
                     "header": "Bytt passord",
                     "current_password": "Noverande passord",
@@ -986,8 +1000,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Logg ut",
-            "developer_tools": "Utviklarverkty"
+            "log_out": "Logg ut"
         },
         "common": {
             "loading": "Lastar",

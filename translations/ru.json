@@ -7,12 +7,8 @@
         "history": "История",
         "mailbox": "Почта",
         "shopping_list": "Список покупок",
-        "dev-services": "Службы",
-        "dev-states": "Состояния",
-        "dev-events": "События",
-        "dev-templates": "Шаблоны",
-        "dev-mqtt": "MQTT",
         "dev-info": "Информация",
+        "developer_tools": "Инструменты разработчика",
         "calendar": "Календарь",
         "profile": "Профиль"
     },
@@ -312,6 +308,25 @@
                 "add_item": "Добавить элемент",
                 "microphone_tip": "Нажмите на микрофон в правом верхнем углу и скажите “Add candy to my shopping list”"
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Службы"
+                    },
+                    "states": {
+                        "title": "Состояния"
+                    },
+                    "events": {
+                        "title": "События"
+                    },
+                    "templates": {
+                        "title": "Шаблоны"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "showing_entries": "Отображение записей за",
                 "period": "Период"
@@ -572,7 +587,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Управляйте Вашей сетью Z-Wave"
+                    "description": "Управляйте Вашей сетью Z-Wave",
+                    "network_management": {
+                        "header": "Управление сетью Z-Wave",
+                        "introduction": "Управляйте сетью Z-Wave с помощью представленных команд. Информацию о результате выполненных команд Вы можете получить в журнале OZW."
+                    },
+                    "network_status": {
+                        "network_stopped": "Сеть Z-Wave отключена",
+                        "network_starting": "Запуск сети Z-Wave...",
+                        "network_starting_note": "Это может занять некоторое время в зависимости от размера Вашей сети.",
+                        "network_started": "Сеть Z-Wave работает",
+                        "network_started_note_some_queried": "Активные узлы были опрошены. Спящие узлы будут опрошены, когда выйдут из режима сна.",
+                        "network_started_note_all_queried": "Все узлы были опрошены."
+                    },
+                    "services": {
+                        "start_network": "Включить",
+                        "stop_network": "Отключить",
+                        "heal_network": "Исправить сеть",
+                        "test_network": "Тестировать",
+                        "soft_reset": "Сброс",
+                        "save_config": "Сохранить конфигурацию",
+                        "add_node_secure": "Добавить защищенный узел",
+                        "add_node": "Добавить узел",
+                        "remove_node": "Удалить узел",
+                        "cancel_command": "Отменить команду"
+                    }
                 },
                 "users": {
                     "caption": "Пользователи",
@@ -745,7 +784,6 @@
                 },
                 "current_user": "Добро пожаловать, {fullName}! Вы вошли в систему.",
                 "is_owner": "Вы являетесь владельцем.",
-                "logout": "Выйти",
                 "change_password": {
                     "header": "Изменить пароль",
                     "current_password": "Текущий пароль",
@@ -1019,7 +1057,6 @@
         },
         "sidebar": {
             "log_out": "Выход",
-            "developer_tools": "Инструменты разработчика",
             "external_app_configuration": "Настройки приложения"
         },
         "common": {

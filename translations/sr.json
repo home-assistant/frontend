@@ -7,7 +7,6 @@
         "history": "Историја",
         "mailbox": "Поштанско сандуче",
         "shopping_list": "Листа за куповину",
-        "dev-mqtt": "MQTT",
         "calendar": "Kalendar"
     },
     "state": {
@@ -55,6 +54,13 @@
             "log_out": "Одјавити се"
         },
         "panel": {
+            "developer-tools": {
+                "tabs": {
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"

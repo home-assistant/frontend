@@ -7,12 +7,8 @@
         "history": "Historial",
         "mailbox": "Buzón",
         "shopping_list": "Lista de la compra",
-        "dev-services": "Servicios",
-        "dev-states": "Estados",
-        "dev-events": "Eventos",
-        "dev-templates": "Plantillas",
-        "dev-mqtt": "MQTT",
         "dev-info": "Información",
+        "developer_tools": "Herramientas para desarrolladores",
         "calendar": "Calendario",
         "profile": "Perfil"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Borrado completado",
                 "add_item": "Añadir artículo",
                 "microphone_tip": "Pulsa el micrófono en la parte superior derecha y di \"Añadir caramelos a mi lista de la compra\"."
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Servicios"
+                    },
+                    "states": {
+                        "title": "Estados"
+                    },
+                    "events": {
+                        "title": "Eventos"
+                    },
+                    "templates": {
+                        "title": "Plantillas"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Mostrando entradas del",
@@ -744,7 +759,6 @@
                 },
                 "current_user": "Has iniciado sesión como {fullName} .",
                 "is_owner": "Eres propietario.",
-                "logout": "Cerrar sesión",
                 "change_password": {
                     "header": "Cambiar contraseña",
                     "current_password": "Contraseña actual",
@@ -1018,7 +1032,6 @@
         },
         "sidebar": {
             "log_out": "Cerrar sesión",
-            "developer_tools": "Herramientas para desarrolladores",
             "external_app_configuration": "Configuración de la aplicación"
         },
         "common": {

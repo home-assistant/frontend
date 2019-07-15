@@ -7,12 +7,8 @@
         "history": "Istorija",
         "mailbox": "Poštansko sanduče",
         "shopping_list": "Spisak za kupovinu",
-        "dev-services": "Usluge",
-        "dev-states": "Statusi",
-        "dev-events": "Događanja",
-        "dev-templates": "Predlošci",
-        "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "developer_tools": "Alatke za razvoj"
     },
     "state": {
         "default": {
@@ -243,6 +239,25 @@
                 "add_item": "Dodajte objekat",
                 "microphone_tip": "Dodirnite mikrofon u gornjem desnom uglu i recite “Add candy to my shopping list”"
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Usluge"
+                    },
+                    "states": {
+                        "title": "Statusi"
+                    },
+                    "events": {
+                        "title": "Događanja"
+                    },
+                    "templates": {
+                        "title": "Predlošci"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "showing_entries": "Prikaži rezutate za",
                 "period": "Period"
@@ -263,8 +278,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Izlaz",
-            "developer_tools": "Alatke za razvoj"
+            "log_out": "Izlaz"
         },
         "common": {
             "loading": "Učitava",
