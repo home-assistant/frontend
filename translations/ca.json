@@ -572,7 +572,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Gestiona la teva xarxa Z-Wave"
+                    "description": "Gestiona la teva xarxa Z-Wave",
+                    "network_management": {
+                        "header": "Gestió de la xarxa Z-Wave",
+                        "introduction": "Executa ordres a la xarxa Z-Wave. No es rebrà cap resposta si la majoria de les ordres han tingut èxit, però pots consultar el registre OZW."
+                    },
+                    "network_status": {
+                        "network_stopped": "Xarxa Z-Wave aturada",
+                        "network_starting": "Iniciant xarxa Z-Wave...",
+                        "network_starting_note": "Això pot trigar una estona en funció de la mida de la teva xarxa.",
+                        "network_started": "Xarxa Z-Wave iniciada",
+                        "network_started_note_some_queried": "S'han consultat els nodes desperts. Els nodes adormits es consultaran quan es despertin.",
+                        "network_started_note_all_queried": "S'han consultat tots els nodes."
+                    },
+                    "services": {
+                        "start_network": "Inicia la xarxa",
+                        "stop_network": "Atura la xarxa",
+                        "heal_network": "Guareix la xarxa",
+                        "test_network": "Prova la xarxa",
+                        "soft_reset": "Reinici suau",
+                        "save_config": "Desa la configuració",
+                        "add_node_secure": "Afegeix node amb seguretat",
+                        "add_node": "Afegeix node",
+                        "remove_node": "Elimina node",
+                        "cancel_command": "Cancel·lar ordre"
+                    }
                 },
                 "users": {
                     "caption": "Usuaris",
