@@ -546,9 +546,7 @@
       "connection_lost": "Connection lost. Reconnecting…"
     },
     "sidebar": {
-      "developer_tools": "Developer tools",
-      "external_app_configuration": "App Configuration",
-      "log_out": "Log out"
+      "external_app_configuration": "App Configuration"
     },
     "panel": {
       "config": {
