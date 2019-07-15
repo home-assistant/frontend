@@ -656,7 +656,6 @@
                     "not_used": "هرگز استفاده نشده است"
                 },
                 "current_user": "شما در حال حاضر به عنوان {fullName} وارد شده اید.",
-                "logout": "خروج",
                 "change_password": {
                     "header": "تغییر رمز عبور"
                 },

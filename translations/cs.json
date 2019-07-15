@@ -13,6 +13,7 @@
         "dev-templates": "Šablony",
         "dev-mqtt": "MQTT",
         "dev-info": "Informace",
+        "developer_tools": "Vývojářské nástroje",
         "calendar": "Kalendář",
         "profile": "Profil"
     },
@@ -744,7 +745,6 @@
                 },
                 "current_user": "Nyní jste přihlášeni jako {fullName}.",
                 "is_owner": "Jste vlastník.",
-                "logout": "Odhlásit se",
                 "change_password": {
                     "header": "Změnit heslo",
                     "current_password": "Současné heslo",
@@ -1018,7 +1018,6 @@
         },
         "sidebar": {
             "log_out": "Odhlásit se",
-            "developer_tools": "Vývojářské nástroje",
             "external_app_configuration": "Konfigurace aplikace"
         },
         "common": {

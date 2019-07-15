@@ -13,6 +13,7 @@
         "dev-templates": "نماذج",
         "dev-mqtt": "MQTT",
         "dev-info": "معلومات",
+        "developer_tools": "ادوات المطورين",
         "calendar": "التقويم",
         "profile": "الملف الشخصي"
     },
@@ -615,7 +616,6 @@
                 },
                 "current_user": "أنت مسجّل الدخول حاليًا كـ {fullName} .",
                 "is_owner": "أنت مالك",
-                "logout": "تسجيل الخروج",
                 "change_password": {
                     "header": "تغيير كلمة السر",
                     "current_password": "كلمة السر الحالية",
@@ -688,8 +688,7 @@
             }
         },
         "sidebar": {
-            "log_out": "تسجيل الخروج",
-            "developer_tools": "ادوات المطورين"
+            "log_out": "تسجيل الخروج"
         },
         "common": {
             "loading": "جار التحميل",

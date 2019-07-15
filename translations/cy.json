@@ -12,7 +12,8 @@
         "dev-events": "Digwyddiadau",
         "dev-templates": "Templedi",
         "dev-mqtt": "MQTT",
-        "dev-info": "Gwybodaeth"
+        "dev-info": "Gwybodaeth",
+        "developer_tools": "Offer datblygwr"
     },
     "state": {
         "default": {
@@ -849,7 +850,6 @@
         },
         "sidebar": {
             "log_out": "Allgofnodi",
-            "developer_tools": "Offer datblygwr",
             "external_app_configuration": "Ffurfweddu App"
         },
         "common": {
