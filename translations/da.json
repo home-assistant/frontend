@@ -7,12 +7,8 @@
         "history": "Historik",
         "mailbox": "Postkasse",
         "shopping_list": "Indkøbsliste",
-        "dev-services": "Services",
-        "dev-states": "Tilstand",
-        "dev-events": "Begivenheder",
-        "dev-templates": "Skabeloner",
-        "dev-mqtt": "MQTT",
         "dev-info": "Udvikler Information",
+        "developer_tools": "Udviklerværktøjer",
         "calendar": "Kalender",
         "profile": "Profil"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Klar afsluttet",
                 "add_item": "Tilføj element",
                 "microphone_tip": "Tryk på mikrofonen øverst til højre og sig “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Services"
+                    },
+                    "states": {
+                        "title": "Tilstand"
+                    },
+                    "events": {
+                        "title": "Begivenheder"
+                    },
+                    "templates": {
+                        "title": "Skabeloner"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Viser emner for",
@@ -740,7 +755,6 @@
                 },
                 "current_user": "Du er logget ind som {fullName} .",
                 "is_owner": "Du er ejer.",
-                "logout": "Log af",
                 "change_password": {
                     "header": "Skift adgangskode",
                     "current_password": "Nuværende adgangskode",
@@ -1013,7 +1027,6 @@
         },
         "sidebar": {
             "log_out": "Log af",
-            "developer_tools": "Udviklerværktøjer",
             "external_app_configuration": "App Konfiguration"
         },
         "common": {

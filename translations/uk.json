@@ -7,12 +7,8 @@
         "history": "Історія",
         "mailbox": "Поштова скринька",
         "shopping_list": "Список покупок",
-        "dev-services": "Послуги",
-        "dev-states": "Стан",
-        "dev-events": "Події",
-        "dev-templates": "Шаблони",
-        "dev-mqtt": "MQTT",
         "dev-info": "Інформація",
+        "developer_tools": "Інструменти для розробників",
         "calendar": "Календар",
         "profile": "Профіль"
     },
@@ -309,6 +305,25 @@
                 "clear_completed": "Очистити позначені елементи",
                 "add_item": "Додати елемент",
                 "microphone_tip": "Торкніться мікрофона у верхньому правому куті та скажіть \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Послуги"
+                    },
+                    "states": {
+                        "title": "Стан"
+                    },
+                    "events": {
+                        "title": "Події"
+                    },
+                    "templates": {
+                        "title": "Шаблони"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Показані записи для",
@@ -698,7 +713,6 @@
                 },
                 "current_user": "Ви ввійшли як {fullName}.",
                 "is_owner": "Ви є власником.",
-                "logout": "Вийти",
                 "change_password": {
                     "header": "Змінити пароль",
                     "current_password": "Поточний пароль",
@@ -883,8 +897,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Вийти",
-            "developer_tools": "Інструменти для розробників"
+            "log_out": "Вийти"
         },
         "common": {
             "loading": "Завантаження",

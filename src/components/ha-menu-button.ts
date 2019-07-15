@@ -72,7 +72,7 @@ class HaMenuButton extends LitElement {
     // on older frontends too, that don't have an always visible menu button
     // in the sidebar.
     this._alwaysVisible =
-      (Number((window.parent as any).frontendVersion) || 0) >= 20190710;
+      (Number((window.parent as any).frontendVersion) || 0) < 20190710;
   }
 
   protected updated(changedProps) {

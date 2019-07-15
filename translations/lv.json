@@ -7,12 +7,8 @@
         "history": "Vēsture",
         "mailbox": "Pastkaste",
         "shopping_list": "Iepirkumu saraksts",
-        "dev-services": "Pakalpojumi",
-        "dev-states": "Stāvokļi",
-        "dev-events": "Notikumi",
-        "dev-templates": "Veidnes",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Izstrādātāju rīki",
         "calendar": "Kalendārs",
         "profile": "Profils"
     },
@@ -295,6 +291,25 @@
                 "clear_completed": "Noņemt izpildītos",
                 "add_item": "Pievienot vienumu",
                 "microphone_tip": "Pieskarieties mikrofonam augšējā labajā stūrī un sakiet \"Pievienojiet konfektes manam iepirkumu sarakstam\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Pakalpojumi"
+                    },
+                    "states": {
+                        "title": "Stāvokļi"
+                    },
+                    "events": {
+                        "title": "Notikumi"
+                    },
+                    "templates": {
+                        "title": "Veidnes"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Rāda ierakstus par",
@@ -630,7 +645,6 @@
                 },
                 "current_user": "Jūs šobrīd esat pieteicies kā {fullName}.",
                 "is_owner": "Jūs esat īpašnieks.",
-                "logout": "Atteikties",
                 "change_password": {
                     "header": "Mainīt paroli",
                     "current_password": "Pašreizējā parole",
@@ -825,8 +839,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Iziet",
-            "developer_tools": "Izstrādātāju rīki"
+            "log_out": "Iziet"
         },
         "common": {
             "loading": "Ielāde",

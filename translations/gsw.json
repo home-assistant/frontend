@@ -7,7 +7,6 @@
         "history": "Vrlouf",
         "mailbox": "Postigang",
         "shopping_list": "Ichoufsliste",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "calendar": "Kaländer",
         "profile": "Profiu"
@@ -258,10 +257,14 @@
         "sidebar": {
             "log_out": "Uslogge"
         },
-        "common": {
-            "loading": "Lade"
-        },
         "panel": {
+            "developer-tools": {
+                "tabs": {
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "period": "Periode"
             },
@@ -399,7 +402,6 @@
                     "prompt_name": "Name?"
                 },
                 "is_owner": "Du bisch dr Bsitzer",
-                "logout": "Uslogge",
                 "change_password": {
                     "header": "Passwort wächsle",
                     "current_password": "Aktuells Passwort",
@@ -419,6 +421,9 @@
                     }
                 }
             }
+        },
+        "common": {
+            "loading": "Lade"
         },
         "login-form": {
             "password": "Passwort"

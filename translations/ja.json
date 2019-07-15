@@ -7,10 +7,7 @@
         "history": "履歴",
         "mailbox": "メールボックス",
         "shopping_list": "買い物リスト",
-        "dev-services": "サービス",
-        "dev-events": "イベント",
-        "dev-templates": "テンプレート",
-        "dev-mqtt": "MQTT",
+        "developer_tools": "開発者ツール",
         "calendar": "カレンダー"
     },
     "state": {
@@ -175,6 +172,22 @@
                 "clear_completed": "削除完了",
                 "add_item": "アイテムを追加"
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "サービス"
+                    },
+                    "events": {
+                        "title": "イベント"
+                    },
+                    "templates": {
+                        "title": "テンプレート"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "period": "期間"
             },
@@ -331,8 +344,7 @@
             }
         },
         "sidebar": {
-            "log_out": "ログアウト",
-            "developer_tools": "開発者ツール"
+            "log_out": "ログアウト"
         },
         "common": {
             "loading": "読込中",

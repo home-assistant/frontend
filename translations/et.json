@@ -7,12 +7,8 @@
         "history": "Ajalugu",
         "mailbox": "Postkast",
         "shopping_list": "Ostunimekiri",
-        "dev-services": "Teenused",
-        "dev-states": "Olekud",
-        "dev-events": "Sündmused",
-        "dev-templates": "Mallid",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Arendaja tööriistad",
         "calendar": "Kalender",
         "profile": "Profiil"
     },
@@ -309,6 +305,25 @@
                 "clear_completed": "Tühjenda täidetud",
                 "add_item": "Lisa toode",
                 "microphone_tip": "Puudutage paremas ülanurgas asuvat mikrofoni ikooni ja öelge: \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Teenused"
+                    },
+                    "states": {
+                        "title": "Olekud"
+                    },
+                    "events": {
+                        "title": "Sündmused"
+                    },
+                    "templates": {
+                        "title": "Mallid"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Näitan kuupäeva",
@@ -711,7 +726,6 @@
                 },
                 "current_user": "Oled praegu sisse logitud kui {fullName}.",
                 "is_owner": "Oled omanik.",
-                "logout": "Logi välja",
                 "change_password": {
                     "header": "Muuda salasõna",
                     "current_password": "Praegune salasõna",
@@ -905,8 +919,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Logi välja",
-            "developer_tools": "Arendaja tööriistad"
+            "log_out": "Logi välja"
         },
         "common": {
             "loading": "Laadimine",

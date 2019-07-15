@@ -55,7 +55,10 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>
           <app-toolbar>
-            <ha-menu-button hass='[[hass]]' narrow='[[narrow]]'></ha-menu-button>
+            <ha-menu-button
+              hass="[[hass]]"
+              narrow="[[narrow]]"
+            ></ha-menu-button>
             <div main-title>[[localize('panel.profile')]]</div>
           </app-toolbar>
         </app-header>
@@ -104,7 +107,7 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <ha-advanced-mode-card
             hass="[[hass]]"
             core-user-data="[[_coreUserData]]"
-          ></ha-mfa-modules-card>
+          ></ha-advanced-mode-card>
 
           <ha-refresh-tokens-card
             hass="[[hass]]"

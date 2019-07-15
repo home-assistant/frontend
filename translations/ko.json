@@ -7,12 +7,8 @@
         "history": "히스토리",
         "mailbox": "메일함",
         "shopping_list": "장보기목록",
-        "dev-services": "서비스",
-        "dev-states": "상태",
-        "dev-events": "이벤트",
-        "dev-templates": "템플릿",
-        "dev-mqtt": "MQTT",
         "dev-info": "정보",
+        "developer_tools": "개발자도구",
         "calendar": "캘린더",
         "profile": "프로필"
     },
@@ -311,6 +307,25 @@
                 "clear_completed": "완료항목삭제",
                 "add_item": "항목추가",
                 "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말해보세요"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "서비스"
+                    },
+                    "states": {
+                        "title": "상태"
+                    },
+                    "events": {
+                        "title": "이벤트"
+                    },
+                    "templates": {
+                        "title": "템플릿"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "다음 날짜의 항목을 표시",
@@ -745,7 +760,6 @@
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
                 "is_owner": "관리자 계정 입니다.",
-                "logout": "로그아웃",
                 "change_password": {
                     "header": "비밀번호 변경",
                     "current_password": "현재 비밀번호",
@@ -1019,7 +1033,6 @@
         },
         "sidebar": {
             "log_out": "로그아웃",
-            "developer_tools": "개발자도구",
             "external_app_configuration": "앱 구성"
         },
         "common": {

@@ -7,12 +7,8 @@
         "history": "Zgodovina",
         "mailbox": "Nabiralnik",
         "shopping_list": "Nakupovalni seznam",
-        "dev-services": "Storitve",
-        "dev-states": "Stanja",
-        "dev-events": "Dogodki",
-        "dev-templates": "Predloge",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Orodja za razvijalce",
         "calendar": "Koledar",
         "profile": "Profil"
     },
@@ -312,6 +308,25 @@
                 "add_item": "Dodaj potrebščino",
                 "microphone_tip": "Tapnite mikrofon zgoraj desno in recite (Le ANG) \"Add candy to my shopping list\""
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Storitve"
+                    },
+                    "states": {
+                        "title": "Stanja"
+                    },
+                    "events": {
+                        "title": "Dogodki"
+                    },
+                    "templates": {
+                        "title": "Predloge"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "showing_entries": "Prikaz vnosov za",
                 "period": "Obdobje"
@@ -572,7 +587,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Upravljajte Z-Wave omrežje"
+                    "description": "Upravljajte Z-Wave omrežje",
+                    "network_management": {
+                        "header": "Upravljanje z omrežjem Z-Wave",
+                        "introduction": "Zaženite ukaze, ki vplivajo na omrežje Z-Wave. Ne boste dobili povratne informacije o tem, ali je večina ukazov uspela, vendar lahko preverite dnevnik OZW, da boste izvedeli več."
+                    },
+                    "network_status": {
+                        "network_stopped": "Omrežje Z-Wave ustavljeno",
+                        "network_starting": "Zaganjam Z-Wave Omrežje...",
+                        "network_starting_note": "Odvisno od velikosti vašega omrežja, lahko to traja nekaj časa.",
+                        "network_started": "Z-Wave omrežje zagnano",
+                        "network_started_note_some_queried": "Budna vozlišča so bila poizvedana. Speča bodo, ko se zbudijo.",
+                        "network_started_note_all_queried": "Vsa vozlišča so bila poizvedena."
+                    },
+                    "services": {
+                        "start_network": "Zaženite omrežje",
+                        "stop_network": "Ustavite omrežje",
+                        "heal_network": "Pozdravite omrežje",
+                        "test_network": "Preizkusite omrežje",
+                        "soft_reset": "Resetiraj",
+                        "save_config": "Shrani konfiguracijo",
+                        "add_node_secure": "Dodaj vozlišče varno",
+                        "add_node": "Dodaj vozlišče",
+                        "remove_node": "Odstrani vozlišče",
+                        "cancel_command": "Prekliči ukaz"
+                    }
                 },
                 "users": {
                     "caption": "Uporabniki",
@@ -745,7 +784,6 @@
                 },
                 "current_user": "Trenutno ste prijavljeni kot {fullName} .",
                 "is_owner": "Ste lastnik.",
-                "logout": "Odjava",
                 "change_password": {
                     "header": "Spremeni geslo",
                     "current_password": "Trenutno geslo",
@@ -1019,7 +1057,6 @@
         },
         "sidebar": {
             "log_out": "Odjava",
-            "developer_tools": "Orodja za razvijalce",
             "external_app_configuration": "Konfiguracija aplikacije"
         },
         "common": {
