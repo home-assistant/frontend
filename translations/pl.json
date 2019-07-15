@@ -7,11 +7,6 @@
         "history": "Historia",
         "mailbox": "Poczta",
         "shopping_list": "Lista zakupów",
-        "dev-services": "Usługi",
-        "dev-states": "Stany",
-        "dev-events": "Zdarzenia",
-        "dev-templates": "Szablony",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informacje",
         "developer_tools": "Narzędzia deweloperskie",
         "calendar": "Kalendarz",
@@ -312,6 +307,25 @@
                 "clear_completed": "Wyczyść ukończone",
                 "add_item": "Dodaj element",
                 "microphone_tip": "Kliknij ikonę mikrofonu w prawym górnym rogu i powiedz “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Usługi"
+                    },
+                    "states": {
+                        "title": "Stany"
+                    },
+                    "events": {
+                        "title": "Zdarzenia"
+                    },
+                    "templates": {
+                        "title": "Szablony"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Wyświetlanie rekordów dla",

@@ -7,11 +7,6 @@
         "history": "Storico",
         "mailbox": "Posta",
         "shopping_list": "Lista della spesa",
-        "dev-services": "Servizi",
-        "dev-states": "Stati",
-        "dev-events": "Eventi",
-        "dev-templates": "Modelli",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informazioni",
         "developer_tools": "Strumenti per gli sviluppatori",
         "calendar": "Calendario",
@@ -312,6 +307,25 @@
                 "clear_completed": "Pulizia completata",
                 "add_item": "Aggiungi articolo",
                 "microphone_tip": "Tocca il microfono in alto a destra e dì \"Aggiungi caramelle alla mia lista della spesa\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Servizi"
+                    },
+                    "states": {
+                        "title": "Stati"
+                    },
+                    "events": {
+                        "title": "Eventi"
+                    },
+                    "templates": {
+                        "title": "Modelli"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Mostra registrazioni per",

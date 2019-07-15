@@ -7,11 +7,6 @@
         "history": "التاريخ",
         "mailbox": "البريد",
         "shopping_list": "قائمة التسوق",
-        "dev-services": "الخدمات",
-        "dev-states": "الحالات",
-        "dev-events": "أحداث",
-        "dev-templates": "نماذج",
-        "dev-mqtt": "MQTT",
         "dev-info": "معلومات",
         "developer_tools": "ادوات المطورين",
         "calendar": "التقويم",
@@ -294,6 +289,25 @@
                 "clear_completed": "تم المسح",
                 "add_item": "أضف عنصر",
                 "microphone_tip": "اضغط على الميكروفون في أعلى اليمين وقل \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "الخدمات"
+                    },
+                    "states": {
+                        "title": "الحالات"
+                    },
+                    "events": {
+                        "title": "أحداث"
+                    },
+                    "templates": {
+                        "title": "نماذج"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "عرض الأحداث لـ",

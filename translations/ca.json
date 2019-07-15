@@ -7,11 +7,6 @@
         "history": "Historial",
         "mailbox": "Bústia",
         "shopping_list": "Llista de la compra",
-        "dev-services": "Serveis",
-        "dev-states": "Estats",
-        "dev-events": "Esdeveniments",
-        "dev-templates": "Plantilles",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informació",
         "developer_tools": "Eines per a desenvolupadors",
         "calendar": "Calendari",
@@ -312,6 +307,25 @@
                 "clear_completed": "Elimina els completats",
                 "add_item": "Afegir article",
                 "microphone_tip": "Clica el micròfon a la part superior dreta i digues \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Serveis"
+                    },
+                    "states": {
+                        "title": "Estats"
+                    },
+                    "events": {
+                        "title": "Esdeveniments"
+                    },
+                    "templates": {
+                        "title": "Plantilles"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Mostrant entrades de",

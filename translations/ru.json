@@ -7,11 +7,6 @@
         "history": "История",
         "mailbox": "Почта",
         "shopping_list": "Список покупок",
-        "dev-services": "Службы",
-        "dev-states": "Состояния",
-        "dev-events": "События",
-        "dev-templates": "Шаблоны",
-        "dev-mqtt": "MQTT",
         "dev-info": "Информация",
         "developer_tools": "Инструменты разработчика",
         "calendar": "Календарь",
@@ -312,6 +307,25 @@
                 "clear_completed": "Очистить завершенные",
                 "add_item": "Добавить элемент",
                 "microphone_tip": "Нажмите на микрофон в правом верхнем углу и скажите “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Службы"
+                    },
+                    "states": {
+                        "title": "Состояния"
+                    },
+                    "events": {
+                        "title": "События"
+                    },
+                    "templates": {
+                        "title": "Шаблоны"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Отображение записей за",

@@ -7,11 +7,6 @@
         "history": "Historie",
         "mailbox": "Postkasse",
         "shopping_list": "Handleliste",
-        "dev-services": "Tjenester",
-        "dev-states": "Statuser",
-        "dev-events": "Hendelser",
-        "dev-templates": "Maler",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informasjon",
         "developer_tools": "Utviklerverktøy",
         "calendar": "Kalender",
@@ -312,6 +307,25 @@
                 "clear_completed": "Fjerning fullført",
                 "add_item": "Legg til",
                 "microphone_tip": "Aktiver mikrofonen øverst til høyre og si “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Tjenester"
+                    },
+                    "states": {
+                        "title": "Statuser"
+                    },
+                    "events": {
+                        "title": "Hendelser"
+                    },
+                    "templates": {
+                        "title": "Maler"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Viser oppføringer for",

@@ -7,11 +7,6 @@
         "history": "Geschiedenis",
         "mailbox": "Postvak",
         "shopping_list": "Boodschappenlijst",
-        "dev-services": "Services",
-        "dev-states": "Toestanden",
-        "dev-events": "Gebeurtenissen",
-        "dev-templates": "Sjablonen",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Ontwikkelaarstools",
         "calendar": "Kalender",
@@ -312,6 +307,25 @@
                 "clear_completed": "Wissen voltooid",
                 "add_item": "Item toevoegen",
                 "microphone_tip": "Tik op de microfoon rechtsboven en zeg \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Services"
+                    },
+                    "states": {
+                        "title": "Toestanden"
+                    },
+                    "events": {
+                        "title": "Gebeurtenissen"
+                    },
+                    "templates": {
+                        "title": "Sjablonen"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Toon items voor",
