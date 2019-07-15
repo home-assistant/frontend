@@ -13,6 +13,7 @@
         "dev-templates": "Szablony",
         "dev-mqtt": "MQTT",
         "dev-info": "Informacje",
+        "developer_tools": "Narzędzia deweloperskie",
         "calendar": "Kalendarz",
         "profile": "Profil"
     },
@@ -769,7 +770,6 @@
                 },
                 "current_user": "Jesteś obecnie zalogowany jako {fullName}.",
                 "is_owner": "Jesteś właścicielem.",
-                "logout": "Wyloguj",
                 "change_password": {
                     "header": "Zmień hasło",
                     "current_password": "Bieżące hasło",
@@ -1043,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "Wyloguj",
-            "developer_tools": "Narzędzia deweloperskie",
             "external_app_configuration": "Konfiguracja aplikacji"
         },
         "common": {

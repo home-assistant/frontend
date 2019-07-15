@@ -13,6 +13,7 @@
         "dev-templates": "Predlošci",
         "dev-mqtt": "MQTT",
         "dev-info": "Informacije",
+        "developer_tools": "Razvojni alati",
         "calendar": "Kalendar",
         "profile": "Profil"
     },
@@ -588,7 +589,6 @@
                 },
                 "current_user": "Trenutačno ste prijavljeni kao {fullName} .",
                 "is_owner": "Vi ste vlasnik.",
-                "logout": "Odjava",
                 "change_password": {
                     "header": "Promijeni lozinku",
                     "current_password": "Trenutna lozinka",
@@ -750,8 +750,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Odjava",
-            "developer_tools": "Razvojni alati"
+            "log_out": "Odjava"
         },
         "common": {
             "loading": "Učitavam",

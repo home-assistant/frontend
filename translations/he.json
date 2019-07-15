@@ -13,6 +13,7 @@
         "dev-templates": "תבניות",
         "dev-mqtt": "MQTT",
         "dev-info": "מידע",
+        "developer_tools": "כלים למפתחים",
         "calendar": "לוח שנה",
         "profile": "פרופיל"
     },
@@ -744,7 +745,6 @@
                 },
                 "current_user": "אתה מחובר כעת כ- {fullName} .",
                 "is_owner": "אתה הבעלים.",
-                "logout": "התנתק",
                 "change_password": {
                     "header": "שינוי סיסמה",
                     "current_password": "סיסמה נוכחית",
@@ -1018,7 +1018,6 @@
         },
         "sidebar": {
             "log_out": "התנתק",
-            "developer_tools": "כלים למפתחים",
             "external_app_configuration": "הגדרות היישום"
         },
         "common": {

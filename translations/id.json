@@ -13,6 +13,7 @@
         "dev-templates": "Template",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Alat pengembang",
         "calendar": "Kalender"
     },
     "state": {
@@ -805,7 +806,6 @@
         },
         "sidebar": {
             "log_out": "Keluar",
-            "developer_tools": "Alat pengembang",
             "external_app_configuration": "Konfigurasi Aplikasi"
         },
         "common": {

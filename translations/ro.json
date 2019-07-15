@@ -13,6 +13,7 @@
         "dev-templates": "Sabloane",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Instrumente de dezvoltare",
         "calendar": "Calendar",
         "profile": "Profil"
     },
@@ -721,7 +722,6 @@
                 },
                 "current_user": "În prezent sunteți conectat ca {fullName} .",
                 "is_owner": "Sunteți proprietar.",
-                "logout": "Deconectați-vă",
                 "change_password": {
                     "header": "Schimbaţi parola",
                     "current_password": "Parola Curentă",
@@ -927,8 +927,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Deconectare",
-            "developer_tools": "Instrumente de dezvoltare"
+            "log_out": "Deconectare"
         },
         "common": {
             "loading": "Se încarcă",

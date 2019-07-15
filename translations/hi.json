@@ -11,7 +11,8 @@
         "dev-events": "घटनाओं",
         "dev-templates": "टेम्पलेट्स",
         "dev-mqtt": "MQTT",
-        "dev-info": "जानकारी"
+        "dev-info": "जानकारी",
+        "developer_tools": "डेवलपर उपकरण"
     },
     "state": {
         "default": {
@@ -206,8 +207,7 @@
             }
         },
         "sidebar": {
-            "log_out": "लॉग आउट",
-            "developer_tools": "डेवलपर उपकरण"
+            "log_out": "लॉग आउट"
         }
     },
     "domain": {

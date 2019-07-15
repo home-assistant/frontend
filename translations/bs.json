@@ -12,7 +12,8 @@
         "dev-events": "Događanja",
         "dev-templates": "Predlošci",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "developer_tools": "Alatke za razvoj"
     },
     "state": {
         "default": {
@@ -263,8 +264,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Izlaz",
-            "developer_tools": "Alatke za razvoj"
+            "log_out": "Izlaz"
         },
         "common": {
             "loading": "Učitava",

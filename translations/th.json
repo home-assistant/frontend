@@ -13,6 +13,7 @@
         "dev-templates": "แม่แบบ",
         "dev-mqtt": "MQTT",
         "dev-info": "ข้อมูล",
+        "developer_tools": "เครื่องมือสำหรับนักพัฒนา",
         "calendar": "ปฏิทิน",
         "profile": "ข้อมูลส่วนตัว"
     },
@@ -743,7 +744,6 @@
                 },
                 "current_user": "ขณะนี้คุณเข้าสู่ระบบในชื่อ {fullName}",
                 "is_owner": "ในฐานะ \"เจ้าของ\"",
-                "logout": "ชื่อผู้ใช้",
                 "change_password": {
                     "header": "เปลี่ยนรหัสผ่าน",
                     "current_password": "รหัสผ่านปัจจุบัน",
@@ -974,7 +974,6 @@
         },
         "sidebar": {
             "log_out": "ออกจากระบบ",
-            "developer_tools": "เครื่องมือสำหรับนักพัฒนา",
             "external_app_configuration": "การกำหนดค่าแอพ"
         },
         "common": {

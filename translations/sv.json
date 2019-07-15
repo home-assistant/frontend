@@ -13,6 +13,7 @@
         "dev-templates": "Mallar",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Utvecklarverktyg",
         "calendar": "Kalender",
         "profile": "Profil"
     },
@@ -744,7 +745,6 @@
                 },
                 "current_user": "Du är inloggad som {fullName}.",
                 "is_owner": "Du är en ägare.",
-                "logout": "Logga ut",
                 "change_password": {
                     "header": "Ändra lösenord",
                     "current_password": "Nuvarande lösenord",
@@ -1018,7 +1018,6 @@
         },
         "sidebar": {
             "log_out": "Logga ut",
-            "developer_tools": "Utvecklarverktyg",
             "external_app_configuration": "Appkonfiguration"
         },
         "common": {
