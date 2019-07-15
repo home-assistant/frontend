@@ -7,11 +7,6 @@
         "history": "Historie",
         "mailbox": "Schránka",
         "shopping_list": "Nákupní seznam",
-        "dev-services": "Služby",
-        "dev-states": "Stavy",
-        "dev-events": "Události",
-        "dev-templates": "Šablony",
-        "dev-mqtt": "MQTT",
         "dev-info": "Informace",
         "developer_tools": "Vývojářské nástroje",
         "calendar": "Kalendář",
@@ -311,6 +306,25 @@
                 "clear_completed": "Vymazat nakoupené",
                 "add_item": "Přidat položku",
                 "microphone_tip": "Klepněte na mikrofon vpravo nahoře a řekněte \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Služby"
+                    },
+                    "states": {
+                        "title": "Stavy"
+                    },
+                    "events": {
+                        "title": "Události"
+                    },
+                    "templates": {
+                        "title": "Šablony"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Zobrazeny údaje pro",

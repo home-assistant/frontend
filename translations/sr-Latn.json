@@ -6,14 +6,20 @@
         "logbook": "Dnevnik",
         "history": "Istorija",
         "mailbox": "Poštansko sanduče",
-        "shopping_list": "Lista za kupovinu",
-        "dev-mqtt": "MQTT"
+        "shopping_list": "Lista za kupovinu"
     },
     "ui": {
         "sidebar": {
             "log_out": "Odjaviti se"
         },
         "panel": {
+            "developer-tools": {
+                "tabs": {
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"

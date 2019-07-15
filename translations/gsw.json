@@ -7,7 +7,6 @@
         "history": "Vrlouf",
         "mailbox": "Postigang",
         "shopping_list": "Ichoufsliste",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "calendar": "Kaländer",
         "profile": "Profiu"
@@ -258,10 +257,14 @@
         "sidebar": {
             "log_out": "Uslogge"
         },
-        "common": {
-            "loading": "Lade"
-        },
         "panel": {
+            "developer-tools": {
+                "tabs": {
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "period": "Periode"
             },
@@ -418,6 +421,9 @@
                     }
                 }
             }
+        },
+        "common": {
+            "loading": "Lade"
         },
         "login-form": {
             "password": "Passwort"

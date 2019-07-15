@@ -7,11 +7,6 @@
         "history": "Verlauf",
         "mailbox": "Posteingang",
         "shopping_list": "Einkaufsliste",
-        "dev-services": "Dienste",
-        "dev-states": "Zustände",
-        "dev-events": "Ereignisse",
-        "dev-templates": "Templates",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Entwicklerwerkzeuge",
         "calendar": "Kalender",
@@ -312,6 +307,25 @@
                 "clear_completed": "Erledigte entfernen",
                 "add_item": "Artikel hinzufügen",
                 "microphone_tip": "Tippe oben rechts auf das Mikrofon und sage “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Dienste"
+                    },
+                    "states": {
+                        "title": "Zustände"
+                    },
+                    "events": {
+                        "title": "Ereignisse"
+                    },
+                    "templates": {
+                        "title": "Templates"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Zeige Einträge für",

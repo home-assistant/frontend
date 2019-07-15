@@ -7,11 +7,6 @@
         "history": "历史",
         "mailbox": "邮箱",
         "shopping_list": "购物清单",
-        "dev-services": "服务",
-        "dev-states": "状态",
-        "dev-events": "事件",
-        "dev-templates": "模板",
-        "dev-mqtt": "MQTT",
         "dev-info": "信息",
         "developer_tools": "开发者工具",
         "calendar": "日历",
@@ -312,6 +307,25 @@
                 "clear_completed": "清除已完成项目",
                 "add_item": "添加项目",
                 "microphone_tip": "点击右上角麦克风图标并说 “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "服务"
+                    },
+                    "states": {
+                        "title": "状态"
+                    },
+                    "events": {
+                        "title": "事件"
+                    },
+                    "templates": {
+                        "title": "模板"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "显示自以下日期的图表",
