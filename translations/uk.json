@@ -13,6 +13,7 @@
         "dev-templates": "Шаблони",
         "dev-mqtt": "MQTT",
         "dev-info": "Інформація",
+        "developer_tools": "Інструменти для розробників",
         "calendar": "Календар",
         "profile": "Профіль"
     },
@@ -698,7 +699,6 @@
                 },
                 "current_user": "Ви ввійшли як {fullName}.",
                 "is_owner": "Ви є власником.",
-                "logout": "Вийти",
                 "change_password": {
                     "header": "Змінити пароль",
                     "current_password": "Поточний пароль",
@@ -883,8 +883,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Вийти",
-            "developer_tools": "Інструменти для розробників"
+            "log_out": "Вийти"
         },
         "common": {
             "loading": "Завантаження",

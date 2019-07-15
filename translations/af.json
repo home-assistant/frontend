@@ -13,6 +13,7 @@
         "dev-templates": "Template",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Ontwikkelaar gereedskap",
         "calendar": "Kalender",
         "profile": "Profiel"
     },
@@ -720,7 +721,6 @@
                 },
                 "current_user": "U is tans aangemeld as {fullName} .",
                 "is_owner": "U is 'n eienaar.",
-                "logout": "Meld af",
                 "change_password": {
                     "header": "Verander Wagwoord",
                     "current_password": "Huidige Wagwoord",
@@ -933,7 +933,6 @@
         },
         "sidebar": {
             "log_out": "Meld af",
-            "developer_tools": "Ontwikkelaar gereedskap",
             "external_app_configuration": "App Konfigurasie"
         },
         "common": {

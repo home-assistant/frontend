@@ -13,6 +13,7 @@
         "dev-templates": "Шаблоны",
         "dev-mqtt": "MQTT",
         "dev-info": "Информация",
+        "developer_tools": "Инструменты разработчика",
         "calendar": "Календарь",
         "profile": "Профиль"
     },
@@ -769,7 +770,6 @@
                 },
                 "current_user": "Добро пожаловать, {fullName}! Вы вошли в систему.",
                 "is_owner": "Вы являетесь владельцем.",
-                "logout": "Выйти",
                 "change_password": {
                     "header": "Изменить пароль",
                     "current_password": "Текущий пароль",
@@ -1043,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "Выход",
-            "developer_tools": "Инструменты разработчика",
             "external_app_configuration": "Настройки приложения"
         },
         "common": {

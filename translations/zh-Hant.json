@@ -13,6 +13,7 @@
         "dev-templates": "模板",
         "dev-mqtt": "MQTT",
         "dev-info": "資訊",
+        "developer_tools": "開發工具",
         "calendar": "行事曆",
         "profile": "個人設定"
     },
@@ -769,7 +770,6 @@
                 },
                 "current_user": "目前登入身份：{fullName}。",
                 "is_owner": "你為擁有者。",
-                "logout": "登出",
                 "change_password": {
                     "header": "變更密碼",
                     "current_password": "目前密碼",
@@ -1043,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "登出",
-            "developer_tools": "開發工具",
             "external_app_configuration": "App 設定"
         },
         "common": {

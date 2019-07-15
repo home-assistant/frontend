@@ -13,6 +13,7 @@
         "dev-templates": "Sablonok",
         "dev-mqtt": "MQTT",
         "dev-info": "Infó",
+        "developer_tools": "Fejlesztői eszközök",
         "calendar": "Naptár",
         "profile": "Profil"
     },
@@ -745,7 +746,6 @@
                 },
                 "current_user": "Jelenleg {fullName} felhasználóként vagy bejelentkezve.",
                 "is_owner": "Tulajdonos vagy.",
-                "logout": "Kijelentkezés",
                 "change_password": {
                     "header": "Jelszó Módosítása",
                     "current_password": "Jelenlegi Jelszó",
@@ -1019,7 +1019,6 @@
         },
         "sidebar": {
             "log_out": "Kijelentkezés",
-            "developer_tools": "Fejlesztői eszközök",
             "external_app_configuration": "App Konfiguráció"
         },
         "common": {

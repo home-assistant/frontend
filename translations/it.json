@@ -13,6 +13,7 @@
         "dev-templates": "Modelli",
         "dev-mqtt": "MQTT",
         "dev-info": "Informazioni",
+        "developer_tools": "Strumenti per gli sviluppatori",
         "calendar": "Calendario",
         "profile": "Profilo"
     },
@@ -745,7 +746,6 @@
                 },
                 "current_user": "Sei attualmente connesso come {fullName} .",
                 "is_owner": "Sei un proprietario.",
-                "logout": "Esci",
                 "change_password": {
                     "header": "Cambia password",
                     "current_password": "Password corrente",
@@ -1019,7 +1019,6 @@
         },
         "sidebar": {
             "log_out": "Esci",
-            "developer_tools": "Strumenti per gli sviluppatori",
             "external_app_configuration": "Configurazione App"
         },
         "common": {

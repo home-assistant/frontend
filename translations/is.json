@@ -13,6 +13,7 @@
         "dev-templates": "Skapalón",
         "dev-mqtt": "MQTT",
         "dev-info": "Upplýsingar",
+        "developer_tools": "Þróunarverkfæri",
         "calendar": "Dagatal",
         "profile": "Prófíll"
     },
@@ -664,7 +665,6 @@
                 },
                 "current_user": "Þú ert skráð(ur) inn sem {fullName}.",
                 "is_owner": "Þú ert eigandi.",
-                "logout": "Skrá út",
                 "change_password": {
                     "header": "Breyta lykilorði",
                     "current_password": "Núverandi lykilorð",
@@ -919,7 +919,6 @@
         },
         "sidebar": {
             "log_out": "Skrá út",
-            "developer_tools": "Þróunarverkfæri",
             "external_app_configuration": "Stillingar forrits"
         },
         "common": {

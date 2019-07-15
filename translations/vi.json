@@ -13,6 +13,7 @@
         "dev-templates": "Mẫu sẵn",
         "dev-mqtt": "MQTT",
         "dev-info": "Thông tin",
+        "developer_tools": "Công cụ Nhà phát triển",
         "calendar": "Lịch",
         "profile": "Hồ sơ"
     },
@@ -702,7 +703,6 @@
                 },
                 "current_user": "Bạn hiện đang đăng nhập với tên {fullName} .",
                 "is_owner": "Bạn là chủ sở hữu.",
-                "logout": "Đăng xuất",
                 "change_password": {
                     "header": "Đổi mật khẩu",
                     "current_password": "Mật khẩu hiện tại",
@@ -904,8 +904,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Đăng xuất",
-            "developer_tools": "Công cụ Nhà phát triển"
+            "log_out": "Đăng xuất"
         },
         "common": {
             "loading": "Đang tải",

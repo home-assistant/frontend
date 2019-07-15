@@ -13,6 +13,7 @@
         "dev-templates": "Sjablonen",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Ontwikkelaarstools",
         "calendar": "Kalender",
         "profile": "Profiel"
     },
@@ -769,7 +770,6 @@
                 },
                 "current_user": "U bent momenteel ingelogd als {fullName}.",
                 "is_owner": "U bent eigenaar.",
-                "logout": "Uitloggen",
                 "change_password": {
                     "header": "Wachtwoord wijzigen",
                     "current_password": "Huidige wachtwoord",
@@ -1043,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "Uitloggen",
-            "developer_tools": "Ontwikkelaarstools",
             "external_app_configuration": "App configuratie"
         },
         "common": {

@@ -13,6 +13,7 @@
         "dev-templates": "Modelos",
         "dev-mqtt": "",
         "dev-info": "Informações",
+        "developer_tools": "Ferramentas do desenvolvedor",
         "calendar": "Calendário",
         "profile": "Perfil"
     },
@@ -744,7 +745,6 @@
                 },
                 "current_user": "Você está logado como {fullName} .",
                 "is_owner": "Você é um proprietário.",
-                "logout": "Sair",
                 "change_password": {
                     "header": "Alterar senha",
                     "current_password": "Senha atual",
@@ -1018,7 +1018,6 @@
         },
         "sidebar": {
             "log_out": "Sair",
-            "developer_tools": "Ferramentas do desenvolvedor",
             "external_app_configuration": "Configuração do aplicativo"
         },
         "common": {

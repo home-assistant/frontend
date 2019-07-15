@@ -13,6 +13,7 @@
         "dev-templates": "템플릿",
         "dev-mqtt": "MQTT",
         "dev-info": "정보",
+        "developer_tools": "개발자도구",
         "calendar": "캘린더",
         "profile": "프로필"
     },
@@ -745,7 +746,6 @@
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
                 "is_owner": "관리자 계정 입니다.",
-                "logout": "로그아웃",
                 "change_password": {
                     "header": "비밀번호 변경",
                     "current_password": "현재 비밀번호",
@@ -1019,7 +1019,6 @@
         },
         "sidebar": {
             "log_out": "로그아웃",
-            "developer_tools": "개발자도구",
             "external_app_configuration": "앱 구성"
         },
         "common": {

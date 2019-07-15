@@ -399,7 +399,6 @@
                     "prompt_name": "Name?"
                 },
                 "is_owner": "Du bisch dr Bsitzer",
-                "logout": "Uslogge",
                 "change_password": {
                     "header": "Passwort wächsle",
                     "current_password": "Aktuells Passwort",

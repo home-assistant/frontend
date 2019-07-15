@@ -13,6 +13,7 @@
         "dev-templates": "Πρότυπα",
         "dev-mqtt": "MQTT",
         "dev-info": "Πληροφορίες",
+        "developer_tools": "Εργαλεία προγραμματιστή",
         "calendar": "Ημερολόγιο",
         "profile": "Προφίλ"
     },
@@ -744,7 +745,6 @@
                 },
                 "current_user": "Αυτήν τη στιγμή είστε συνδεδεμένος ως {fullName} .",
                 "is_owner": "Είστε ιδιοκτήτης.",
-                "logout": "Αποσύνδεση",
                 "change_password": {
                     "header": "Αλλαγή Κωδικού",
                     "current_password": "Τρέχων κωδικός",
@@ -1018,7 +1018,6 @@
         },
         "sidebar": {
             "log_out": "Αποσύνδεση",
-            "developer_tools": "Εργαλεία προγραμματιστή",
             "external_app_configuration": "Διαμόρφωση Εφαρμογής"
         },
         "common": {

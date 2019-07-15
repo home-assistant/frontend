@@ -13,6 +13,7 @@
         "dev-templates": "Plantillas",
         "dev-mqtt": "",
         "dev-info": "Información",
+        "developer_tools": "Herramientas para desarrolladores",
         "calendar": "Calendario",
         "profile": "Perfil"
     },
@@ -745,7 +746,6 @@
                 },
                 "current_user": "Actualmente estás conectado como {fullName} .",
                 "is_owner": "Eres propietario.",
-                "logout": "Cerrar sesión",
                 "change_password": {
                     "header": "Cambiar contraseña",
                     "current_password": "Contraseña actual",
@@ -1019,7 +1019,6 @@
         },
         "sidebar": {
             "log_out": "Cerrar sesión",
-            "developer_tools": "Herramientas para desarrolladores",
             "external_app_configuration": "Configuración de la aplicación"
         },
         "common": {

@@ -13,6 +13,7 @@
         "dev-templates": "Plantilles",
         "dev-mqtt": "MQTT",
         "dev-info": "Informació",
+        "developer_tools": "Eines per a desenvolupadors",
         "calendar": "Calendari",
         "profile": "Perfil"
     },
@@ -769,7 +770,6 @@
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
                 "is_owner": "Ets propietari.",
-                "logout": "Tancar sessió",
                 "change_password": {
                     "header": "Canvi de contrasenya",
                     "current_password": "Contrasenya actual",
@@ -1043,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "Desconnectar",
-            "developer_tools": "Eines per a desenvolupadors",
             "external_app_configuration": "Configuració de l’aplicació"
         },
         "common": {
