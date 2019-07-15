@@ -7,11 +7,6 @@
         "history": "Istoric",
         "mailbox": "Cutie poștală",
         "shopping_list": "Listă de cumpărături",
-        "dev-services": "Servicii",
-        "dev-states": "Status",
-        "dev-events": "Evenimente",
-        "dev-templates": "Sabloane",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Instrumente de dezvoltare",
         "calendar": "Calendar",
@@ -310,6 +305,25 @@
                 "clear_completed": "Stergere finalizată",
                 "add_item": "Adaugare element",
                 "microphone_tip": "Atingeți microfonul din partea dreaptă sus și spuneți \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Servicii"
+                    },
+                    "states": {
+                        "title": "Status"
+                    },
+                    "events": {
+                        "title": "Evenimente"
+                    },
+                    "templates": {
+                        "title": "Sabloane"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Se afișează intrările pentru",

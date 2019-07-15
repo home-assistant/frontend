@@ -7,11 +7,6 @@
         "history": "Előzmények",
         "mailbox": "Postafiók",
         "shopping_list": "Bevásárló lista",
-        "dev-services": "Szolgáltatások",
-        "dev-states": "Állapotok",
-        "dev-events": "Események",
-        "dev-templates": "Sablonok",
-        "dev-mqtt": "MQTT",
         "dev-info": "Infó",
         "developer_tools": "Fejlesztői eszközök",
         "calendar": "Naptár",
@@ -312,6 +307,25 @@
                 "clear_completed": "Bejelöltek törlése",
                 "add_item": "Tétel hozzáadása",
                 "microphone_tip": "Koppints a jobb felső sarokban található mikrofonra, és mondd ki: \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Szolgáltatások"
+                    },
+                    "states": {
+                        "title": "Állapotok"
+                    },
+                    "events": {
+                        "title": "Események"
+                    },
+                    "templates": {
+                        "title": "Sablonok"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Bejegyzések megjelenítése",

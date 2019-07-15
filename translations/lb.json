@@ -7,11 +7,6 @@
         "history": "Verlaf",
         "mailbox": "Bréifkëscht",
         "shopping_list": "Akafslëscht",
-        "dev-services": "Servicen",
-        "dev-states": "Zoustänn",
-        "dev-events": "Evenementer",
-        "dev-templates": "Modeller",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Entwécklungsgeschir",
         "calendar": "Kalenner",
@@ -311,6 +306,25 @@
                 "clear_completed": "Fäerdeg Elementer ewechhuelen",
                 "add_item": "Objet dobäisetze",
                 "microphone_tip": "Tipp uewe riets op de Mikro a so “Add candy to my shopping list”"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Servicen"
+                    },
+                    "states": {
+                        "title": "Zoustänn"
+                    },
+                    "events": {
+                        "title": "Evenementer"
+                    },
+                    "templates": {
+                        "title": "Modeller"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Weist Beiträg fir",

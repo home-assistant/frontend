@@ -7,11 +7,6 @@
         "history": "Zgodovina",
         "mailbox": "Nabiralnik",
         "shopping_list": "Nakupovalni seznam",
-        "dev-services": "Storitve",
-        "dev-states": "Stanja",
-        "dev-events": "Dogodki",
-        "dev-templates": "Predloge",
-        "dev-mqtt": "MQTT",
         "dev-info": "Info",
         "developer_tools": "Orodja za razvijalce",
         "calendar": "Koledar",
@@ -312,6 +307,25 @@
                 "clear_completed": "Počisti dokončane",
                 "add_item": "Dodaj potrebščino",
                 "microphone_tip": "Tapnite mikrofon zgoraj desno in recite (Le ANG) \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Storitve"
+                    },
+                    "states": {
+                        "title": "Stanja"
+                    },
+                    "events": {
+                        "title": "Dogodki"
+                    },
+                    "templates": {
+                        "title": "Predloge"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Prikaz vnosov za",
