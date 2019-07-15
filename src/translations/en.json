@@ -52,12 +52,7 @@
     "history": "History",
     "mailbox": "Mailbox",
     "shopping_list": "Shopping list",
-    "dev-services": "Services",
-    "dev-states": "States",
-    "dev-events": "Events",
-    "dev-templates": "Templates",
-    "dev-mqtt": "MQTT",
-    "dev-info": "Info",
+    "developer_tools": "Developer Tools",
     "profile": "Profile"
   },
   "state": {

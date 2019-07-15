@@ -572,7 +572,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Управляйте Вашей сетью Z-Wave"
+                    "description": "Управляйте Вашей сетью Z-Wave",
+                    "network_management": {
+                        "header": "Управление сетью Z-Wave",
+                        "introduction": "Управляйте сетью Z-Wave с помощью представленных команд. Информацию о результате выполненных команд Вы можете получить в журнале OZW."
+                    },
+                    "network_status": {
+                        "network_stopped": "Сеть Z-Wave отключена",
+                        "network_starting": "Запуск сети Z-Wave...",
+                        "network_starting_note": "Это может занять некоторое время в зависимости от размера Вашей сети.",
+                        "network_started": "Сеть Z-Wave работает",
+                        "network_started_note_some_queried": "Активные узлы были опрошены. Спящие узлы будут опрошены, когда выйдут из режима сна.",
+                        "network_started_note_all_queried": "Все узлы были опрошены."
+                    },
+                    "services": {
+                        "start_network": "Включить",
+                        "stop_network": "Отключить",
+                        "heal_network": "Исправить сеть",
+                        "test_network": "Тестировать",
+                        "soft_reset": "Сброс",
+                        "save_config": "Сохранить конфигурацию",
+                        "add_node_secure": "Добавить защищенный узел",
+                        "add_node": "Добавить узел",
+                        "remove_node": "Удалить узел",
+                        "cancel_command": "Отменить команду"
+                    }
                 },
                 "users": {
                     "caption": "Пользователи",
