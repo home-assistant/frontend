@@ -13,6 +13,7 @@
         "dev-templates": "Malar",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Utviklarverkty",
         "calendar": "Kalendrar",
         "profile": "Profil"
     },
@@ -740,7 +741,6 @@
                 },
                 "current_user": "Du er for augeblinken logga inn som {fullName}.",
                 "is_owner": "Du er ein eigar",
-                "logout": "Logg ut",
                 "change_password": {
                     "header": "Bytt passord",
                     "current_password": "Noverande passord",
@@ -986,8 +986,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Logg ut",
-            "developer_tools": "Utviklarverkty"
+            "log_out": "Logg ut"
         },
         "common": {
             "loading": "Lastar",

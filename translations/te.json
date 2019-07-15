@@ -13,6 +13,7 @@
         "dev-templates": "టెంప్లేట్లు",
         "dev-mqtt": "MQTT",
         "dev-info": "సమాచారం",
+        "developer_tools": "డెవలపర్ టూల్స్",
         "calendar": "క్యాలెండర్"
     },
     "state": {
@@ -526,8 +527,7 @@
             }
         },
         "sidebar": {
-            "log_out": "లాగ్ అవుట్",
-            "developer_tools": "డెవలపర్ టూల్స్"
+            "log_out": "లాగ్ అవుట్"
         },
         "common": {
             "loading": "లోడింగ్",

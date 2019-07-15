@@ -13,6 +13,7 @@
         "dev-templates": "Mallit",
         "dev-mqtt": "MQTT",
         "dev-info": "Tiedot",
+        "developer_tools": "Kehittäjän työkalut",
         "calendar": "Kalenteri",
         "profile": "Profiili"
     },
@@ -744,7 +745,6 @@
                 },
                 "current_user": "Olet tällä hetkellä kirjautuneena tunnuksella {fullName}.",
                 "is_owner": "Olet omistaja.",
-                "logout": "Kirjaudu ulos",
                 "change_password": {
                     "header": "Vaihda salasana",
                     "current_password": "Nykyinen salasana",
@@ -1018,7 +1018,6 @@
         },
         "sidebar": {
             "log_out": "Kirjaudu ulos",
-            "developer_tools": "Kehittäjän työkalut",
             "external_app_configuration": "Sovelluksen määritykset"
         },
         "common": {

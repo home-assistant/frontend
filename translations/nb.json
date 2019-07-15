@@ -13,6 +13,7 @@
         "dev-templates": "Maler",
         "dev-mqtt": "MQTT",
         "dev-info": "Informasjon",
+        "developer_tools": "Utviklerverktøy",
         "calendar": "Kalender",
         "profile": "Profil"
     },
@@ -769,7 +770,6 @@
                 },
                 "current_user": "Du er logget inn som {fullName}.",
                 "is_owner": "Du er en eier.",
-                "logout": "Logg ut",
                 "change_password": {
                     "header": "Endre passord",
                     "current_password": "Nåværende passord",
@@ -1043,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "Logg ut",
-            "developer_tools": "Utviklerverktøy",
             "external_app_configuration": "Appkonfigurasjon"
         },
         "common": {

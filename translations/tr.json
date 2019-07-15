@@ -13,6 +13,7 @@
         "dev-templates": "Taslaklar",
         "dev-mqtt": "MQTT",
         "dev-info": "Bilgi",
+        "developer_tools": "Geliştirici araçları",
         "calendar": "Takvim",
         "profile": "Profil"
     },
@@ -529,7 +530,6 @@
                 },
                 "current_user": "{fullName} olarak giriş yaptınız.",
                 "is_owner": "Sahipsiniz.",
-                "logout": "Çıkış yap",
                 "change_password": {
                     "header": "Parolayı Değiştir",
                     "current_password": "Güncel Parola",
@@ -680,8 +680,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Çıkış yap",
-            "developer_tools": "Geliştirici araçları"
+            "log_out": "Çıkış yap"
         },
         "common": {
             "loading": "Yükleniyor",

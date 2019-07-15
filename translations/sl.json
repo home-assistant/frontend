@@ -13,6 +13,7 @@
         "dev-templates": "Predloge",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Orodja za razvijalce",
         "calendar": "Koledar",
         "profile": "Profil"
     },
@@ -769,7 +770,6 @@
                 },
                 "current_user": "Trenutno ste prijavljeni kot {fullName} .",
                 "is_owner": "Ste lastnik.",
-                "logout": "Odjava",
                 "change_password": {
                     "header": "Spremeni geslo",
                     "current_password": "Trenutno geslo",
@@ -1043,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "Odjava",
-            "developer_tools": "Orodja za razvijalce",
             "external_app_configuration": "Konfiguracija aplikacije"
         },
         "common": {

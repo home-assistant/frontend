@@ -11,6 +11,7 @@
         "dev-events": "イベント",
         "dev-templates": "テンプレート",
         "dev-mqtt": "MQTT",
+        "developer_tools": "開発者ツール",
         "calendar": "カレンダー"
     },
     "state": {
@@ -331,8 +332,7 @@
             }
         },
         "sidebar": {
-            "log_out": "ログアウト",
-            "developer_tools": "開発者ツール"
+            "log_out": "ログアウト"
         },
         "common": {
             "loading": "読込中",

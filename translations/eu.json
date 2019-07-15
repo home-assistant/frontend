@@ -13,6 +13,7 @@
         "dev-templates": "Txantiloiak",
         "dev-mqtt": "MQTT",
         "dev-info": "Informazioa",
+        "developer_tools": "Garatzaileentzako tresnak",
         "calendar": "Egutegia",
         "profile": "Profila"
     },
@@ -553,7 +554,6 @@
                 },
                 "current_user": "{fullName} moduan hasi duzu saioa.",
                 "is_owner": "Jabea zara",
-                "logout": "Saioa itxi",
                 "change_password": {
                     "header": "Pasahitza aldatu",
                     "current_password": "Egungo pasahitza",
@@ -726,7 +726,6 @@
         },
         "sidebar": {
             "log_out": "Saioa itxi",
-            "developer_tools": "Garatzaileentzako tresnak",
             "external_app_configuration": "Aplikazioaren Konfigurazioa"
         },
         "common": {

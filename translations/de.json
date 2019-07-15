@@ -13,6 +13,7 @@
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Entwicklerwerkzeuge",
         "calendar": "Kalender",
         "profile": "Profil"
     },
@@ -572,7 +573,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Z-Wave-Netzwerk verwalten"
+                    "description": "Z-Wave-Netzwerk verwalten",
+                    "network_management": {
+                        "header": "Z-Wave Netzwerkverwaltung",
+                        "introduction": "Führt Befehle aus, die das Z-Wave Netzwerk betreffen. Es wird keine Rückmeldung darüber geben, ob die meisten Befehle erfolgreich waren, aber das OZW-Protokoll kann Hinweise darauf enthalten."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave Netzwerk gestoppt",
+                        "network_starting": "Z-Wave Netzwerk wird gestartet ...",
+                        "network_starting_note": "Dies kann je nach Größe des Netzwerks eine Weile dauern.",
+                        "network_started": "Z-Wave Netzwerk gestartet",
+                        "network_started_note_some_queried": "Wache Knoten wurden abgefragt. Schlafende knoten werden abgefragt wenn sie aufwachen.",
+                        "network_started_note_all_queried": "Alle Knoten wurden abgefragt."
+                    },
+                    "services": {
+                        "start_network": "Netzwerk starten",
+                        "stop_network": "Netzwerk stoppen",
+                        "heal_network": "Netzwerk heilen",
+                        "test_network": "Netzwerk testen",
+                        "soft_reset": "Soft Reset",
+                        "save_config": "Konfiguration speichern",
+                        "add_node_secure": "Knoten verschlüsselt hinzufügen",
+                        "add_node": "Knoten hinzufügen",
+                        "remove_node": "Knoten entfernen",
+                        "cancel_command": "Befehl abbrechen"
+                    }
                 },
                 "users": {
                     "caption": "Benutzer",
@@ -745,7 +770,6 @@
                 },
                 "current_user": "Du bist derzeit als {fullName} angemeldet.",
                 "is_owner": "Du bist der Besitzer",
-                "logout": "Abmelden",
                 "change_password": {
                     "header": "Passwort ändern",
                     "current_password": "Aktuelles Passwort",
@@ -1019,7 +1043,6 @@
         },
         "sidebar": {
             "log_out": "Abmelden",
-            "developer_tools": "Entwicklerwerkzeuge",
             "external_app_configuration": "App-Konfiguration"
         },
         "common": {

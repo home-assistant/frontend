@@ -13,6 +13,7 @@
         "dev-templates": "Veidnes",
         "dev-mqtt": "MQTT",
         "dev-info": "Info",
+        "developer_tools": "Izstrādātāju rīki",
         "calendar": "Kalendārs",
         "profile": "Profils"
     },
@@ -630,7 +631,6 @@
                 },
                 "current_user": "Jūs šobrīd esat pieteicies kā {fullName}.",
                 "is_owner": "Jūs esat īpašnieks.",
-                "logout": "Atteikties",
                 "change_password": {
                     "header": "Mainīt paroli",
                     "current_password": "Pašreizējā parole",
@@ -825,8 +825,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Iziet",
-            "developer_tools": "Izstrādātāju rīki"
+            "log_out": "Iziet"
         },
         "common": {
             "loading": "Ielāde",
