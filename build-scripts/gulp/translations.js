@@ -36,6 +36,7 @@ const TRANSLATION_FRAGMENTS = [
   "page-authorize",
   "page-demo",
   "page-onboarding",
+  "developer-tools",
 ];
 
 const tasks = [];

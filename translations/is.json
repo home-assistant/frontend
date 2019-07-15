@@ -7,12 +7,8 @@
         "history": "Saga",
         "mailbox": "Pósthólf",
         "shopping_list": "Innkaupalisti",
-        "dev-services": "Þjónustur",
-        "dev-states": "Stöður",
-        "dev-events": "Viðburðir",
-        "dev-templates": "Skapalón",
-        "dev-mqtt": "MQTT",
         "dev-info": "Upplýsingar",
+        "developer_tools": "Þróunarverkfæri",
         "calendar": "Dagatal",
         "profile": "Prófíll"
     },
@@ -264,6 +260,25 @@
                 "clear_completed": "Hreinsa lokið",
                 "add_item": "Bæta við hlut",
                 "microphone_tip": "Ýttu á hljóðnemann efst til hægri og segðu \"Add candy to my shopping list\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Þjónustur"
+                    },
+                    "states": {
+                        "title": "Stöður"
+                    },
+                    "events": {
+                        "title": "Viðburðir"
+                    },
+                    "templates": {
+                        "title": "Skapalón"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Sýni færslur fyrir",
@@ -664,7 +679,6 @@
                 },
                 "current_user": "Þú ert skráð(ur) inn sem {fullName}.",
                 "is_owner": "Þú ert eigandi.",
-                "logout": "Skrá út",
                 "change_password": {
                     "header": "Breyta lykilorði",
                     "current_password": "Núverandi lykilorð",
@@ -919,7 +933,6 @@
         },
         "sidebar": {
             "log_out": "Skrá út",
-            "developer_tools": "Þróunarverkfæri",
             "external_app_configuration": "Stillingar forrits"
         },
         "common": {

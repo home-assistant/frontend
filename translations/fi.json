@@ -7,12 +7,8 @@
         "history": "Historia",
         "mailbox": "Postilaatikko",
         "shopping_list": "Ostoslista",
-        "dev-services": "Palvelut",
-        "dev-states": "Tilat",
-        "dev-events": "Tapahtumat",
-        "dev-templates": "Mallit",
-        "dev-mqtt": "MQTT",
         "dev-info": "Tiedot",
+        "developer_tools": "Kehittäjän työkalut",
         "calendar": "Kalenteri",
         "profile": "Profiili"
     },
@@ -310,6 +306,25 @@
                 "clear_completed": "Poista valmiit",
                 "add_item": "Lisää tavara",
                 "microphone_tip": "Paina mikrofonia oikeassa yläkulmassa ja sano \"Lisää karkkipussi ostoslistalleni\""
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Palvelut"
+                    },
+                    "states": {
+                        "title": "Tilat"
+                    },
+                    "events": {
+                        "title": "Tapahtumat"
+                    },
+                    "templates": {
+                        "title": "Mallit"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "Näytetään tapahtumat alkaen",
@@ -744,7 +759,6 @@
                 },
                 "current_user": "Olet tällä hetkellä kirjautuneena tunnuksella {fullName}.",
                 "is_owner": "Olet omistaja.",
-                "logout": "Kirjaudu ulos",
                 "change_password": {
                     "header": "Vaihda salasana",
                     "current_password": "Nykyinen salasana",
@@ -1018,7 +1032,6 @@
         },
         "sidebar": {
             "log_out": "Kirjaudu ulos",
-            "developer_tools": "Kehittäjän työkalut",
             "external_app_configuration": "Sovelluksen määritykset"
         },
         "common": {

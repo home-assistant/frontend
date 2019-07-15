@@ -7,12 +7,8 @@
         "history": "Geçmiş",
         "mailbox": "Posta kutusu",
         "shopping_list": "Alışveriş listesi",
-        "dev-services": "Servisler",
-        "dev-states": "Durumlar",
-        "dev-events": "Olaylar",
-        "dev-templates": "Taslaklar",
-        "dev-mqtt": "MQTT",
         "dev-info": "Bilgi",
+        "developer_tools": "Geliştirici araçları",
         "calendar": "Takvim",
         "profile": "Profil"
     },
@@ -290,6 +286,25 @@
                 "add_item": "Öge Ekle",
                 "microphone_tip": "Sağ üstteki mikrofona dokunun ve \"alışveriş listeme şeker ekle\" deyin"
             },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "Servisler"
+                    },
+                    "states": {
+                        "title": "Durumlar"
+                    },
+                    "events": {
+                        "title": "Olaylar"
+                    },
+                    "templates": {
+                        "title": "Taslaklar"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
             "history": {
                 "showing_entries": "Gösterilen girişler",
                 "period": "Dönem"
@@ -529,7 +544,6 @@
                 },
                 "current_user": "{fullName} olarak giriş yaptınız.",
                 "is_owner": "Sahipsiniz.",
-                "logout": "Çıkış yap",
                 "change_password": {
                     "header": "Parolayı Değiştir",
                     "current_password": "Güncel Parola",
@@ -680,8 +694,7 @@
             }
         },
         "sidebar": {
-            "log_out": "Çıkış yap",
-            "developer_tools": "Geliştirici araçları"
+            "log_out": "Çıkış yap"
         },
         "common": {
             "loading": "Yükleniyor",

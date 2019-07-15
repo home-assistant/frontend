@@ -7,11 +7,6 @@
         "history": "تاریخچه",
         "mailbox": "صندوق پستی",
         "shopping_list": "لیست خرید",
-        "dev-services": "خدمات",
-        "dev-states": "ایالت ها",
-        "dev-events": "رویدادها",
-        "dev-templates": "قالب ها",
-        "dev-mqtt": "MQTT",
         "dev-info": "اطلاعات",
         "calendar": "تقویم"
     },
@@ -297,6 +292,25 @@
         "panel": {
             "shopping-list": {
                 "add_item": "اضافه کردن آیتم"
+            },
+            "developer-tools": {
+                "tabs": {
+                    "services": {
+                        "title": "خدمات"
+                    },
+                    "states": {
+                        "title": "ایالت ها"
+                    },
+                    "events": {
+                        "title": "رویدادها"
+                    },
+                    "templates": {
+                        "title": "قالب ها"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
             },
             "history": {
                 "showing_entries": "نمایش نوشته ها برای"
@@ -656,7 +670,6 @@
                     "not_used": "هرگز استفاده نشده است"
                 },
                 "current_user": "شما در حال حاضر به عنوان {fullName} وارد شده اید.",
-                "logout": "خروج",
                 "change_password": {
                     "header": "تغییر رمز عبور"
                 },
