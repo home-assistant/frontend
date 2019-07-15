@@ -208,6 +208,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
       this._jQuery("#thermostat", this.shadowRoot).roundSlider({
         value: sliderValue,
+        disabled: stateObj.state === "program",
       });
       this._updateSetTemp(uiValue);
     }

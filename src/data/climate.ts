@@ -15,8 +15,8 @@ export type HvacMode =
 export type HvacAction = "off" | "Heating" | "cooling" | "drying" | "idle";
 
 export type ClimateEntity = HassEntityBase & {
+  state: HvacMode;
   attributes: HassEntityAttributeBase & {
-    hvac_mode: HvacMode;
     hvac_modes: HvacMode[];
     hvac_action?: HvacAction;
     current_temperature: number;
