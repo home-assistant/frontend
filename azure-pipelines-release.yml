@@ -63,5 +63,9 @@ stages:
               versionSpec: "12.1"
           - script: pip install twine wheel
             displayName: "Install tools"
-          - script: script/release
+          - script: |
+              export TWINE_USERNAME="$(twineUser)"
+              export TWINE_PASSWORD="$(twinePassword)"
+
+              script/release
             displayName: "Build and release package"
