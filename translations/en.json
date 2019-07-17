@@ -142,7 +142,7 @@
             "heat_pump": "Heat pump",
             "gas": "Gas",
             "manual": "Manual",
-            "heat_cool": "Auto"
+            "heat_cool": "Heat\/Cool"
         },
         "configurator": {
             "configure": "Configure",
@@ -320,10 +320,13 @@
                         "title": "Events"
                     },
                     "templates": {
-                        "title": "Templates"
+                        "title": "Template"
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
                     }
                 }
             },
@@ -804,7 +807,8 @@
                     "step_done": "Setup done for {step}",
                     "close": "Close",
                     "submit": "Submit"
-                }
+                },
+                "logout": "Log out"
             },
             "page-authorize": {
                 "initializing": "Initializing",

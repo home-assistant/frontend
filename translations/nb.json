@@ -141,8 +141,7 @@
             "high_demand": "Høy etterspørsel",
             "heat_pump": "Varmepumpe",
             "gas": "Gass",
-            "manual": "Manuell",
-            "heat_cool": "Auto"
+            "manual": "Manuell"
         },
         "configurator": {
             "configure": "Konfigurer",
