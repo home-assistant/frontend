@@ -34,6 +34,8 @@ export class HuiNotificationDrawer extends EventsMixin(
       .notifications {
         overflow-y: auto;
         padding-top: 16px;
+        height: calc(100% - 65px);
+        box-sizing: border-box;
       }
 
       .notification {
