@@ -18,6 +18,7 @@ import * as Fuse from "fuse.js";
 
 import "../../components/ha-icon-next";
 import "../../common/search/search-input";
+import { styleMap } from "lit-html/directives/style-map";
 
 interface HandlerObj {
   name: string;
@@ -29,6 +30,7 @@ class StepFlowPickHandler extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public handlers!: string[];
   @property() private filter?: string;
+  private _width?: Number;
 
   private _getHandlers = memoizeOne((h: string[], filter?: string) => {
     const handlers: HandlerObj[] = h.map((handler) => {
@@ -58,11 +60,11 @@ class StepFlowPickHandler extends LitElement {
 
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
-      <div>
-        <search-input
-          .filter=${this.filter}
-          @value-changed=${this._filterChanged}
-        ></search-input>
+      <search-input
+        .filter=${this.filter}
+        @value-changed=${this._filterChanged}
+      ></search-input>
+      <div style=${styleMap({ width: `${this._width}px` })}>
         ${handlers.map(
           (handler: HandlerObj) =>
             html`
@@ -80,6 +82,11 @@ class StepFlowPickHandler extends LitElement {
 
   private async _filterChanged(e) {
     this.filter = e.detail.value;
+
+    // Store the width so that when we search, box doesn't jump
+    if (this._width === undefined) {
+      this._width = this.shadowRoot!.querySelector("div")!.clientWidth;
+    }
   }
 
   private async _handlerPicked(ev) {
