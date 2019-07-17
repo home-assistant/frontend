@@ -141,8 +141,7 @@
             "high_demand": "Magas igénybevétel",
             "heat_pump": "Hőszivattyú",
             "gas": "Gáz",
-            "manual": "Manuális",
-            "heat_cool": "Automatikus"
+            "manual": "Manuális"
         },
         "configurator": {
             "configure": "Beállítás",
