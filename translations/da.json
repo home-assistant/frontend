@@ -323,6 +323,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Udvikler Information"
                     }
                 }
             },
@@ -586,7 +589,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Administrer dit Z-Wave netværk"
+                    "description": "Administrer dit Z-Wave netværk",
+                    "network_management": {
+                        "header": "Administration af Z-Wave netværk",
+                        "introduction": "Kør kommandoer, der påvirker Z-Wave-netværket. Du får ikke feedback på, om de fleste kommandoer lykkedes, men du kan kontrollere OZW-loggen for at forsøge at finde ud af det."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave netværk stoppet",
+                        "network_starting": "Starter Z-Wave netværk...",
+                        "network_starting_note": "Dette kan tage et stykke tid, afhængigt af netværkets størrelse.",
+                        "network_started": "Z-Wave netværk startet",
+                        "network_started_note_some_queried": "Vågne noder er blevet forespurgt. Sovende noder vil blive forespurgt, når de vågner.",
+                        "network_started_note_all_queried": "Alle noder er blevet forespurgt."
+                    },
+                    "services": {
+                        "start_network": "Start netværk",
+                        "stop_network": "Stop netværk",
+                        "heal_network": "Hel netværk",
+                        "test_network": "Test netværk",
+                        "soft_reset": "Soft reset",
+                        "save_config": "Gem konfiguration",
+                        "add_node_secure": "Tilføj sikker node",
+                        "add_node": "Tilføj node",
+                        "remove_node": "Fjern node",
+                        "cancel_command": "Annuller kommando"
+                    }
                 },
                 "users": {
                     "caption": "Brugere",
@@ -613,7 +640,8 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud",
                     "description_login": "Logget ind som {email}",
-                    "description_not_login": "Ikke logget ind"
+                    "description_not_login": "Ikke logget ind",
+                    "description_features": "Betjen væk fra hjemmet, integrer med Alexa og Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrationer",
@@ -648,7 +676,8 @@
                     "description": "Zigbee Home Automation opsætning",
                     "services": {
                         "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service.",
-                        "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen"
+                        "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen",
+                        "remove": "Fjern en enhed fra ZigBee netværket."
                     },
                     "device_card": {
                         "device_name_placeholder": "Navn",
@@ -656,7 +685,9 @@
                         "update_name_button": "Opdater navn"
                     },
                     "add_device_page": {
-                        "spinner": "Søger efter ZHA Zigbee-enheder..."
+                        "header": "Zigbee Home Automation - Tilføj enheder",
+                        "spinner": "Søger efter ZHA Zigbee-enheder...",
+                        "discovery_text": "Fundne enheder vil dukke op her. Følg instruktionerne for din enhed(er) og sæt enhed(erne) i parringstilstand."
                     }
                 },
                 "area_registry": {
@@ -775,7 +806,8 @@
                     "step_done": "Opsætning af {step} færdig",
                     "close": "Luk",
                     "submit": "Gem og afslut"
-                }
+                },
+                "logout": "Log af"
             },
             "page-authorize": {
                 "initializing": "Initialiserer",
@@ -891,6 +923,7 @@
                     }
                 },
                 "integration": {
+                    "intro": "Enheder og tjenester er repræsenteret i Home Assistant som integrationer. Du kan konfigurere dem nu eller gøre det senere fra konfigurationsskærmen.",
                     "more_integrations": "Mere",
                     "finish": "Afslut"
                 },
@@ -1130,7 +1163,8 @@
                 "fan_mode": "Ventilator tilstand",
                 "swing_mode": "Swing tilstand",
                 "away_mode": "Ude af huset-modus",
-                "aux_heat": "Støtte-varme"
+                "aux_heat": "Støtte-varme",
+                "preset_mode": "Forudindstilling"
             },
             "lock": {
                 "code": "Kode",
@@ -1275,6 +1309,16 @@
                 "off": "Slukket",
                 "on": "Tændt",
                 "auto": "Automatisk"
+            },
+            "preset_mode": {
+                "none": "Ingen",
+                "eco": "Eco",
+                "away": "Ude",
+                "boost": "Boost",
+                "comfort": "Komfort",
+                "home": "Hjemme",
+                "sleep": "Sover",
+                "activity": "Aktivitet"
             }
         }
     },

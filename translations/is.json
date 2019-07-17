@@ -118,8 +118,7 @@
             "eco": "Sparnaður",
             "heat_pump": "Hitadæla",
             "gas": "Gas",
-            "manual": "Handvirkt",
-            "heat_cool": "Sjálfvirkt"
+            "manual": "Handvirkt"
         },
         "cover": {
             "open": "Opin",
@@ -277,6 +276,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Upplýsingar"
                     }
                 }
             },
@@ -513,7 +515,21 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Stjórnaðu Z-Wave netinu þínu"
+                    "description": "Stjórnaðu Z-Wave netinu þínu",
+                    "network_management": {
+                        "header": "Z-Wave netumsýsla"
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave net stöðvað",
+                        "network_starting": "Ræsi Z-Wave net...",
+                        "network_started": "Z-Wave net ræst"
+                    },
+                    "services": {
+                        "start_network": "Ræsa net",
+                        "stop_network": "Söðva net",
+                        "save_config": "Vista stillingar",
+                        "cancel_command": "Hætta við skipun"
+                    }
                 },
                 "users": {
                     "caption": "Notendur",
@@ -699,7 +715,8 @@
                     "step_done": "Uppsetningu lokið fyrir {step}",
                     "close": "Loka",
                     "submit": "Senda"
-                }
+                },
+                "logout": "Skrá út"
             },
             "page-authorize": {
                 "initializing": "Frumstilli",

@@ -141,8 +141,7 @@
             "high_demand": "Hoge vraag",
             "heat_pump": "Warmtepomp",
             "gas": "Gas",
-            "manual": "Handmatig",
-            "heat_cool": "Auto"
+            "manual": "Handmatig"
         },
         "configurator": {
             "configure": "Configureer",

@@ -141,8 +141,7 @@
             "high_demand": "Visoka poraba",
             "heat_pump": "Toplotna črpalka",
             "gas": "Plin",
-            "manual": "Ročno",
-            "heat_cool": "Samodejno"
+            "manual": "Ročno"
         },
         "configurator": {
             "configure": "Konfiguriraj",
