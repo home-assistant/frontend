@@ -141,8 +141,7 @@
             "high_demand": "高用量",
             "heat_pump": "暖氣",
             "gas": "瓦斯模式",
-            "manual": "手動",
-            "heat_cool": "自動"
+            "manual": "手動"
         },
         "configurator": {
             "configure": "設定",
