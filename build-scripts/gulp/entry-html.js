@@ -86,7 +86,7 @@ gulp.task("gen-index-app-dev", (done) => {
     es5CoreJS: "/frontend_es5/core.js",
     es5CustomPanelJS: "/frontend_es5/custom-panel.js",
     es5HassIconsJS: "/frontend_es5/hass-icons.js",
-  });
+  }).replace(/#THEMEC/g, "{{ theme_color }}");
 
   fs.outputFileSync(path.resolve(config.root, "index.html"), content);
   done();
