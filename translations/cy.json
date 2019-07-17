@@ -139,8 +139,7 @@
             "high_demand": "Galw uchel",
             "heat_pump": "Pwmp gwres",
             "gas": "Nwy",
-            "manual": "Llawlyfr",
-            "heat_cool": "Awto"
+            "manual": "Llawlyfr"
         },
         "configurator": {
             "configure": "Ffurfweddu",
