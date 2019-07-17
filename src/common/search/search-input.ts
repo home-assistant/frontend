@@ -26,7 +26,7 @@ class SearchInput extends LitElement {
           @value-changed=${this._filterInputChanged}
         >
           <iron-icon
-            icon="mdi:magnify"
+            icon="hass:magnify"
             slot="prefix"
             class="prefix"
           ></iron-icon>
@@ -36,7 +36,7 @@ class SearchInput extends LitElement {
                 slot="suffix"
                 class="suffix"
                 @click=${this._clearSearch}
-                icon="mdi:close"
+                icon="hass:close"
                 alt="Clear"
                 title="Clear"
               ></paper-icon-button>
