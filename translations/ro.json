@@ -141,8 +141,7 @@
             "high_demand": "Consum mare",
             "heat_pump": "Pompă de căldură",
             "gas": "Gaz",
-            "manual": "Manual",
-            "heat_cool": "Auto"
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurează",

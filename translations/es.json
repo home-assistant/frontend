@@ -323,6 +323,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Información"
                     }
                 }
             },
@@ -586,7 +589,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Gestiona tu red Z-Wave"
+                    "description": "Gestiona tu red Z-Wave",
+                    "network_management": {
+                        "header": "Gestión de red Z-Wave",
+                        "introduction": "Ejecutar comandos que afectan a la red Z-Wave. No recibirás comentarios sobre si la mayoría de los comandos tuvieron éxito, pero puedes consultar el Registro OZW para intentar averiguarlo."
+                    },
+                    "network_status": {
+                        "network_stopped": "Red Z-Wave detenida",
+                        "network_starting": "Iniciando red Z-Wave...",
+                        "network_starting_note": "Esto puede llevar un tiempo dependiendo del tamaño de tu red.",
+                        "network_started": "Red Z-Wave iniciada",
+                        "network_started_note_some_queried": "Se han consultado nodos despiertos. Los nodos dormidos serán consultados cuando se despierten.",
+                        "network_started_note_all_queried": "Se han consultado todos los nodos."
+                    },
+                    "services": {
+                        "start_network": "Iniciar red",
+                        "stop_network": "Detener red",
+                        "heal_network": "Sanar red",
+                        "test_network": "Probar red",
+                        "soft_reset": "Reinicio suave",
+                        "save_config": "Guardar configuración",
+                        "add_node_secure": "Añadir nodo seguro",
+                        "add_node": "Añadir nodo",
+                        "remove_node": "Eliminar nodo",
+                        "cancel_command": "Cancelar comando"
+                    }
                 },
                 "users": {
                     "caption": "Usuarios",
@@ -779,7 +806,8 @@
                     "step_done": "Configuración realizada para {step}",
                     "close": "Cerrar",
                     "submit": "Enviar"
-                }
+                },
+                "logout": "Cerrar sesión"
             },
             "page-authorize": {
                 "initializing": "Inicializando",
@@ -1135,7 +1163,8 @@
                 "fan_mode": "Modo del ventilador",
                 "swing_mode": "Modo de oscilación",
                 "away_mode": "Fuera de casa",
-                "aux_heat": "Calor auxiliar"
+                "aux_heat": "Calor auxiliar",
+                "preset_mode": "Preajuste"
             },
             "lock": {
                 "code": "Código",
@@ -1280,6 +1309,15 @@
                 "off": "Apagado",
                 "on": "Encendido",
                 "auto": "Automático"
+            },
+            "preset_mode": {
+                "none": "Ninguno",
+                "eco": "Eco",
+                "away": "Fuera de casa",
+                "comfort": "Confort",
+                "home": "En casa",
+                "sleep": "Dormir",
+                "activity": "Actividad"
             }
         }
     },

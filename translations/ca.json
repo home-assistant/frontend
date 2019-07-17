@@ -141,8 +141,7 @@
             "high_demand": "Alta potència",
             "heat_pump": "Bomba de calor",
             "gas": "Gas",
-            "manual": "Manual",
-            "heat_cool": "Automàtic"
+            "manual": "Manual"
         },
         "configurator": {
             "configure": "Configurar",
@@ -324,6 +323,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Informació"
                     }
                 }
             },
@@ -804,7 +806,8 @@
                     "step_done": "Configuració feta per a {step}",
                     "close": "Tanca",
                     "submit": "Envia"
-                }
+                },
+                "logout": "Tanca la sessió"
             },
             "page-authorize": {
                 "initializing": "S'està inicialitzant",
