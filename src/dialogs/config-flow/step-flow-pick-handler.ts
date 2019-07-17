@@ -30,7 +30,7 @@ class StepFlowPickHandler extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public handlers!: string[];
   @property() private filter?: string;
-  private _width?: Number;
+  private _width?: number;
 
   private _getHandlers = memoizeOne((h: string[], filter?: string) => {
     const handlers: HandlerObj[] = h.map((handler) => {
