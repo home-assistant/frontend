@@ -141,8 +141,7 @@
             "high_demand": "고성능",
             "heat_pump": "순환펌프",
             "gas": "가스",
-            "manual": "수동",
-            "heat_cool": "자동"
+            "manual": "수동"
         },
         "configurator": {
             "configure": "설정",
@@ -324,6 +323,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "정보"
                     }
                 }
             },
@@ -587,7 +589,31 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Z-Wave 네트워크를 관리합니다"
+                    "description": "Z-Wave 네트워크를 관리합니다",
+                    "network_management": {
+                        "header": "Z-Wave 네트워크 관리",
+                        "introduction": "Z-Wave 네트워크에 명령을 실행해주세요. 대부분의 명령이 성공했는지에 대한 피드백은 받을 수 없지만, OZW 로그를 통해 확인해 볼 수 있습니다."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave 네트워크 중지됨",
+                        "network_starting": "Z-Wave 네트워크 시작 중...",
+                        "network_starting_note": "네트워크 규모에 따라 다소 시간이 걸릴 수 있습니다.",
+                        "network_started": "Z-Wave 네트워크 시작됨",
+                        "network_started_note_some_queried": "절전 모드 해제 노드가 쿼리되었습니다. 절전 노드는 절전 모드 해제 시 쿼리됩니다.",
+                        "network_started_note_all_queried": "모든 노드가 쿼리되었습니다."
+                    },
+                    "services": {
+                        "start_network": "네트워크 시작",
+                        "stop_network": "네트워크 중지",
+                        "heal_network": "네트워크 새로고침",
+                        "test_network": "네트워크 테스트",
+                        "soft_reset": "소프트 리셋",
+                        "save_config": "설정 저장",
+                        "add_node_secure": "노드 보안 추가",
+                        "add_node": "노드 추가",
+                        "remove_node": "노드 제거",
+                        "cancel_command": "명령 취소"
+                    }
                 },
                 "users": {
                     "caption": "사용자",
@@ -780,7 +806,8 @@
                     "step_done": "{step} 설정 완료",
                     "close": "닫기",
                     "submit": "구성하기"
-                }
+                },
+                "logout": "로그아웃"
             },
             "page-authorize": {
                 "initializing": "초기화 중",

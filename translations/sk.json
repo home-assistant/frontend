@@ -141,8 +141,7 @@
             "high_demand": "Vysoký výkon",
             "heat_pump": "Tepelné čerpadlo",
             "gas": "Plyn",
-            "manual": "Ručne",
-            "heat_cool": "Auto"
+            "manual": "Ručne"
         },
         "configurator": {
             "configure": "Konfigurovať",

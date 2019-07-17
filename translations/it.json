@@ -141,8 +141,7 @@
             "high_demand": "Forte richiesta",
             "heat_pump": "Pompa di calore",
             "gas": "Gas",
-            "manual": "Manuale",
-            "heat_cool": "Auto"
+            "manual": "Manuale"
         },
         "configurator": {
             "configure": "Configura",
