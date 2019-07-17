@@ -9,7 +9,6 @@ pr: none
 variables:
   - name: versionBuilder
     value: "5.2"
-  - group: docker
   - group: github
   - group: twine
 
