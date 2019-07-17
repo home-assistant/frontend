@@ -1,0 +1,68 @@
+# https://dev.azure.com/home-assistant
+
+trigger:
+  batch: true
+  tags:
+    include:
+      - "*"
+pr: none
+variables:
+  - name: versionBuilder
+    value: "5.2"
+  - group: docker
+  - group: github
+  - group: twine
+
+stages:
+  - stage: "Validate"
+    jobs:
+      - job: "VersionValidate"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: UsePythonVersion@0
+            displayName: "Use Python 3.7"
+            inputs:
+              versionSpec: "3.7"
+          - script: |
+              setup_version="$(python setup.py -V)"
+              branch_version="$(Build.SourceBranchName)"
+
+              if [ "${setup_version}" != "${branch_version}" ]; then
+                echo "Version of tag ${branch_version} don't match with ${setup_version}!"
+                exit 1
+              fi
+            displayName: "Check version of branch/tag"
+          - script: |
+              sudo apt-get install -y --no-install-recommends \
+                jq curl
+
+              release="$(Build.SourceBranchName)"
+              created_by="$(curl -s https://api.github.com/repos/home-assistant/home-assistant/releases/tags/${release} | jq --raw-output '.author.login')"
+
+              if [[ "${created_by}" =~ ^(balloob)$ ]]; then
+                exit 0
+              fi
+
+              echo "${created_by} is not allowed to create an release!"
+              exit 1
+            displayName: "Check rights"
+
+  - stage: "Build"
+    jobs:
+      - job: "ReleasePython"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: UsePythonVersion@0
+            displayName: "Use Python 3.7"
+            inputs:
+              versionSpec: "3.7"
+          - task: NodeTool@0
+            displayName: "Use Node 12.1"
+            inputs:
+              versionSpec: "12.1"
+          - script: pip install twine wheel
+            displayName: "Install tools"
+          - script: script/release
+            displayName: "Build and release package"
