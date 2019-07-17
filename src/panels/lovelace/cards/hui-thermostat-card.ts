@@ -142,26 +142,27 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               </span>
             </div>
             <div class="climate-info">
-            <div id="set-temperature"></div>
-            <div class="current-mode">
-              ${this.hass!.localize(`state.climate.${stateObj.state}`)}
-              ${
-                stateObj.attributes.preset_mode
-                  ? html`
-                      -
-                      ${this.hass!.localize(
-                        `state_attributes.climate.preset_mode.${
-                          stateObj.attributes.preset_mode
-                        }`
-                      ) || stateObj.attributes.preset_mode}
-                    `
-                  : ""
-              }
-            </div>
-            <div class="modes">
-              ${stateObj.attributes.hvac_modes.map((modeItem) =>
-                this._renderIcon(modeItem, mode)
-              )}
+              <div id="set-temperature"></div>
+              <div class="current-mode">
+                ${this.hass!.localize(`state.climate.${stateObj.state}`)}
+                ${
+                  stateObj.attributes.preset_mode
+                    ? html`
+                        -
+                        ${this.hass!.localize(
+                          `state_attributes.climate.preset_mode.${
+                            stateObj.attributes.preset_mode
+                          }`
+                        ) || stateObj.attributes.preset_mode}
+                      `
+                    : ""
+                }
+              </div>
+              <div class="modes">
+                ${stateObj.attributes.hvac_modes.map((modeItem) =>
+                  this._renderIcon(modeItem, mode)
+                )}
+              </div>
             </div>
           </div>
         </div>
