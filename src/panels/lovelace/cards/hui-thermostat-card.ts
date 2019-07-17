@@ -204,12 +204,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       !changedProps.has("_jQuery") &&
       (!oldHass || oldHass.states[this._config.entity] !== stateObj)
     ) {
-      const [sliderValue, uiValue, _sliderType] = this._genSliderValue(
-        stateObj
-      );
+      const [sliderValue, uiValue, sliderType] = this._genSliderValue(stateObj);
 
       this._jQuery("#thermostat", this.shadowRoot).roundSlider({
-        sliderType: _sliderType,
+        sliderType,
         value: sliderValue,
       });
       this._updateSetTemp(uiValue);
@@ -253,14 +251,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     this._roundSliderStyle = loaded.roundSliderStyle;
     this._jQuery = loaded.jQuery;
 
-    const [sliderValue, uiValue, _sliderType] = this._genSliderValue(stateObj);
+    const [sliderValue, uiValue, sliderType] = this._genSliderValue(stateObj);
 
     this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
       radius,
       min: stateObj.attributes.min_temp,
       max: stateObj.attributes.max_temp,
-      sliderType: _sliderType,
+      sliderType,
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
       value: sliderValue,
