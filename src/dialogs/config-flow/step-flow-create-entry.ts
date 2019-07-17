@@ -69,9 +69,10 @@ class StepFlowCreateEntry extends LitElement {
                   (device) =>
                     html`
                       <div class="device">
-                        <b>${device.name}</b><br />
-                        ${device.model} (${device.manufacturer})
-
+                        <div>
+                          <b>${device.name}</b><br />
+                          ${device.model} (${device.manufacturer})
+                        </div>
                         <paper-dropdown-menu-light
                           label="Area"
                           .device=${device.id}
@@ -157,6 +158,8 @@ class StepFlowCreateEntry extends LitElement {
           display: flex;
           flex-wrap: wrap;
           margin: -4px;
+          max-height: 600px;
+          overflow-y: auto;
         }
         .device {
           border: 1px solid var(--divider-color);
@@ -178,7 +181,7 @@ class StepFlowCreateEntry extends LitElement {
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .device {
-            width: auto;
+            width: 100%;
           }
         }
       `,
