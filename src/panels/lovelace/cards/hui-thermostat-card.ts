@@ -37,7 +37,7 @@ const thermostatConfig = {
 };
 
 const modeIcons: { [mode in HvacMode]: string } = {
-  auto: "hass:autorenew",
+  auto: "hass:calendar-repeat",
   heat_cool: "hass:autorenew",
   heat: "hass:fire",
   cool: "hass:snowflake",
