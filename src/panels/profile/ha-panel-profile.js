@@ -104,10 +104,12 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
             mfa-modules="[[hass.user.mfa_modules]]"
           ></ha-mfa-modules-card>
 
-          <ha-advanced-mode-card
-            hass="[[hass]]"
-            core-user-data="[[_coreUserData]]"
-          ></ha-advanced-mode-card>
+          <template is="dom-if" if="[[_isAdmin(hass.user)]]">
+            <ha-advanced-mode-card
+              hass="[[hass]]"
+              core-user-data="[[_coreUserData]]"
+            ></ha-advanced-mode-card>
+          </template>
 
           <ha-refresh-tokens-card
             hass="[[hass]]"
@@ -167,6 +169,10 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return user.credentials.some(
       (cred) => cred.auth_provider_type === "homeassistant"
     );
+  }
+
+  _isAdmin(user) {
+    return user.is_admin;
   }
 }
 
