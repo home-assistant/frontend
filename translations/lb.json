@@ -141,7 +141,8 @@
             "high_demand": "Héich Ufro",
             "heat_pump": "Heizung",
             "gas": "Gas",
-            "manual": "Manuell"
+            "manual": "Manuell",
+            "heat_cool": "Hëtzen\/Ofkillen"
         },
         "configurator": {
             "configure": "Astellen",
@@ -591,13 +592,15 @@
                     "caption": "Z-Wave",
                     "description": "Verwalt är Z-Wave Netzwierk",
                     "network_management": {
-                        "header": "Z-Wave Netzwierk Verwaltung"
+                        "header": "Z-Wave Netzwierk Verwaltung",
+                        "introduction": "Féiert Commande aus am Z-Wave Netzwierk. Di kritt kee Feedback op déi meeschte Commande erfollegräich ausgeféiert goufen, mee dir kënnt de OZW Log ënnersiche fir weider Detailer"
                     },
                     "network_status": {
                         "network_stopped": "Z-Wave Netzwierk gestoppt",
                         "network_starting": "Z-Wave Netzwierk start",
                         "network_starting_note": "Dës kann eng Weil dauere jee no gréisst vum Netzwierk.",
                         "network_started": "Z-Wave Netzwierk gestart",
+                        "network_started_note_some_queried": "Aktiv Apparater sinn ofgefrot. Inaktiv Apparater ginn ofgefrot soubal sie aktiv sinn.",
                         "network_started_note_all_queried": "All Apparater sinn ofgefrot"
                     },
                     "services": {

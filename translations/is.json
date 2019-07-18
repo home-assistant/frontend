@@ -118,13 +118,15 @@
             "eco": "Sparnaður",
             "heat_pump": "Hitadæla",
             "gas": "Gas",
-            "manual": "Handvirkt"
+            "manual": "Handvirkt",
+            "heat_cool": "Hita\/Kæla"
         },
         "cover": {
             "open": "Opin",
             "opening": "Opna",
             "closed": "Lokað",
-            "closing": "Loka"
+            "closing": "Loka",
+            "stopped": "Stöðvuð"
         },
         "device_tracker": {
             "home": "Heima",
@@ -222,11 +224,14 @@
             "windy-variant": "Vindasamt"
         },
         "vacuum": {
+            "cleaning": "Að ryksuga",
+            "docked": "í tengikví",
             "error": "Villa",
             "idle": "Aðgerðalaus",
             "off": "Slökkt",
             "on": "Í gangi",
-            "paused": "Í bið"
+            "paused": "Í bið",
+            "returning": "Á leið tilbaka í tengikví"
         },
         "timer": {
             "active": "virkur",
@@ -243,6 +248,9 @@
             "unknown": "Óþ.",
             "error": "Villa",
             "entity_not_found": "Eining fannst ekki"
+        },
+        "alarm_control_panel": {
+            "triggered": "Kveik"
         },
         "device_tracker": {
             "home": "Heima",
@@ -369,10 +377,14 @@
                         "unsaved_confirm": "Þú ert með óvistaðar breytingar. Ertu viss um að þú viljir fara?",
                         "alias": "Nafn",
                         "triggers": {
+                            "header": "Kveikjur",
+                            "introduction": "Kveikjur sjá um að ræsa sjálfvirkni reglur. Það er mögulegt að tilgreina margar kveikjur fyrir sömu regluna. Þegar kveikja er ræst þá mun Home Assistant sannreyna skilyrðin ef einhver og kalla á aðgerðina.",
+                            "add": "Bæta við kveikju",
                             "duplicate": "Fjölfalda",
                             "delete": "Eyða",
                             "delete_confirm": "Ert þú viss um að þú viljir eyða?",
                             "unsupported_platform": "Vettvangur ekki studdur: {platform}",
+                            "type_select": "Gerð kveikju",
                             "type": {
                                 "event": {
                                     "label": "Viðburður",
@@ -396,13 +408,18 @@
                                 },
                                 "numeric_state": {
                                     "above": "Yfir",
-                                    "below": "Undir"
+                                    "below": "Undir",
+                                    "value_template": "Gildissniðmát (valfrjálst)"
                                 },
                                 "sun": {
                                     "label": "Sól",
                                     "event": "Viðburður:",
                                     "sunrise": "Sólarupprás",
                                     "sunset": "Sólsetur"
+                                },
+                                "template": {
+                                    "label": "Sniðmát",
+                                    "value_template": "Gildissniðmát"
                                 },
                                 "time": {
                                     "label": "Tími",
@@ -434,7 +451,8 @@
                                     "enter": "Koma",
                                     "leave": "Brottför"
                                 }
-                            }
+                            },
+                            "learn_more": "Læra meira um gikki"
                         },
                         "conditions": {
                             "header": "Skilyrði",
@@ -451,7 +469,8 @@
                                 },
                                 "numeric_state": {
                                     "above": "Yfir",
-                                    "below": "Undir"
+                                    "below": "Undir",
+                                    "value_template": "Gildissniðmát (valfrjálst)"
                                 },
                                 "sun": {
                                     "label": "Sól",
@@ -459,6 +478,10 @@
                                     "after": "Eftir:",
                                     "sunrise": "Sólarupprás",
                                     "sunset": "Sólsetur"
+                                },
+                                "template": {
+                                    "label": "Sniðmát",
+                                    "value_template": "Gildissniðmát"
                                 },
                                 "time": {
                                     "label": "Tími",
@@ -493,13 +516,15 @@
                                 },
                                 "wait_template": {
                                     "label": "Bið",
-                                    "wait_template": "Bið skapalón",
+                                    "wait_template": "Bið sniðmát",
                                     "timeout": "Tímamörk (valfrjálst)"
                                 },
                                 "condition": {
                                     "label": "Skilyrði"
                                 },
                                 "event": {
+                                    "label": "Skjóta viðburði",
+                                    "event": "Viðburður:",
                                     "service_data": "Þjónustu gögn"
                                 }
                             },
@@ -522,11 +547,15 @@
                     "network_status": {
                         "network_stopped": "Z-Wave net stöðvað",
                         "network_starting": "Ræsi Z-Wave net...",
+                        "network_starting_note": "Þetta gæti tekið smá stund, veltur á stærð netsins.",
                         "network_started": "Z-Wave net ræst"
                     },
                     "services": {
                         "start_network": "Ræsa net",
-                        "stop_network": "Söðva net",
+                        "stop_network": "Stöðva net",
+                        "heal_network": "Lækna net",
+                        "test_network": "Prófa net",
+                        "soft_reset": "Mjúk endurstilling",
                         "save_config": "Vista stillingar",
                         "cancel_command": "Hætta við skipun"
                     }
@@ -832,6 +861,7 @@
                 },
                 "core-config": {
                     "intro": "Hæ {name}, velkomin(n) í Home Assistant. Hvað á heimilið þitt að heita?",
+                    "intro_location": "Okkur langar að vita hvar þú býrð. Þessar upplýsingar munu hjálpa varðandi upplýsingar og uppsetningu á sólar-tengdri sjálfvirkni. Þessum upplýsingum er aldrei deilt út fyrir þitt net.",
                     "location_name_default": "Heima",
                     "button_detect": "Uppgötva",
                     "finish": "Næsta"
@@ -923,8 +953,12 @@
                 "config": {
                     "arsaboo": {
                         "names": {
+                            "upstairs": "Uppi",
                             "family_room": "Fjölskyldurými",
                             "kitchen": "Eldhús",
+                            "patio": "Verönd",
+                            "hallway": "Gangur",
+                            "master_bedroom": "Hjónaherbergi",
                             "left": "Vinstri",
                             "right": "Hægri",
                             "mirror": "Spegill"
@@ -932,6 +966,8 @@
                         "labels": {
                             "lights": "Ljós",
                             "information": "Upplýsingar",
+                            "morning_commute": "Morgunferðalag",
+                            "commute_home": "Á leiðinni heim",
                             "entertainment": "Skemmtun",
                             "activity": "Virkni",
                             "hdmi_input": "HDMI inntak",
@@ -1014,6 +1050,10 @@
                 "code": "Kóði",
                 "clear_code": "Hreinsa"
             },
+            "automation": {
+                "last_triggered": "Síðast kveikt",
+                "trigger": "Kveikja"
+            },
             "cover": {
                 "position": "Staðsetning"
             },
@@ -1035,9 +1075,13 @@
             "climate": {
                 "currently": "Er núna",
                 "on_off": "Kveikt \/ slökkt",
+                "target_temperature": "Viðmiðunar hitastig",
+                "target_humidity": "Viðmiðunar rakastig",
                 "operation": "Aðgerð",
                 "fan_mode": "Viftuhamur",
-                "swing_mode": "Sveifluhamur"
+                "swing_mode": "Sveifluhamur",
+                "away_mode": "Fjarverandi hamur",
+                "preset_mode": "Forstilling"
             },
             "lock": {
                 "code": "Kóði",
@@ -1057,7 +1101,8 @@
                 "currently": "Er núna",
                 "on_off": "Kveikt \/ slökkt",
                 "target_temperature": "Viðmiðunarhitastig",
-                "operation": "Aðgerð"
+                "operation": "Aðgerð",
+                "away_mode": "Fjarverandi hamur"
             }
         },
         "components": {
@@ -1178,6 +1223,14 @@
                 "off": "Slökkt",
                 "on": "Kveikt",
                 "auto": "Sjálfvirkt"
+            },
+            "preset_mode": {
+                "none": "Ekkert",
+                "eco": "Sparnaður",
+                "away": "Fjarverandi",
+                "comfort": "Þægindi",
+                "home": "Heima",
+                "sleep": "Svefn"
             }
         }
     },
