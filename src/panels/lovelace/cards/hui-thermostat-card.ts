@@ -116,7 +116,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           [mode]: true,
           large: this._broadCard!,
           small: !this._broadCard,
-        })}">
+        })}"
+      >
         <div id="root">
           <paper-icon-button
             icon="hass:dots-vertical"
@@ -125,38 +126,35 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           ></paper-icon-button>
           <div id="thermostat"></div>
           <div id="tooltip">
-            <div class="title">${this._config.name ||
-              computeStateName(stateObj)}</div>
+            <div class="title">
+              ${this._config.name || computeStateName(stateObj)}
+            </div>
             <div class="current-temperature">
               <span class="current-temperature-text">
                 ${stateObj.attributes.current_temperature}
-                ${
-                  stateObj.attributes.current_temperature
-                    ? html`
-                        <span class="uom"
-                          >${this.hass.config.unit_system.temperature}</span
-                        >
-                      `
-                    : ""
-                }
+                ${stateObj.attributes.current_temperature
+                  ? html`
+                      <span class="uom"
+                        >${this.hass.config.unit_system.temperature}</span
+                      >
+                    `
+                  : ""}
               </span>
             </div>
             <div class="climate-info">
               <div id="set-temperature"></div>
               <div class="current-mode">
                 ${this.hass!.localize(`state.climate.${stateObj.state}`)}
-                ${
-                  stateObj.attributes.preset_mode
-                    ? html`
-                        -
-                        ${this.hass!.localize(
-                          `state_attributes.climate.preset_mode.${
-                            stateObj.attributes.preset_mode
-                          }`
-                        ) || stateObj.attributes.preset_mode}
-                      `
-                    : ""
-                }
+                ${stateObj.attributes.preset_mode
+                  ? html`
+                      -
+                      ${this.hass!.localize(
+                        `state_attributes.climate.preset_mode.${
+                          stateObj.attributes.preset_mode
+                        }`
+                      ) || stateObj.attributes.preset_mode}
+                    `
+                  : ""}
               </div>
               <div class="modes">
                 ${stateObj.attributes.hvac_modes.map((modeItem) =>
