@@ -141,7 +141,8 @@
             "high_demand": "Forte demande",
             "heat_pump": "Pompe à chaleur",
             "gas": "Gaz",
-            "manual": "Manuel"
+            "manual": "Manuel",
+            "heat_cool": "Chaud\/Froid"
         },
         "configurator": {
             "configure": "Configurer",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
                     }
                 }
             },
@@ -586,7 +590,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Gérez votre réseau Z-Wave"
+                    "description": "Gérez votre réseau Z-Wave",
+                    "services": {
+                        "save_config": "Enregistrer la configuration"
+                    }
                 },
                 "users": {
                     "caption": "Utilisateurs",
@@ -779,7 +786,8 @@
                     "step_done": "Configuration terminée pour {step}",
                     "close": "Fermer",
                     "submit": "Envoyer"
-                }
+                },
+                "logout": "Déconnexion"
             },
             "page-authorize": {
                 "initializing": "Initialisation",
