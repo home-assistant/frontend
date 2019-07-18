@@ -23,32 +23,38 @@ import { ZWaveValue } from "../../../data/zwave";
 @customElement("zwave-values")
 export class ZwaveValues extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public selectedNode: number = -1;
-  @property() public nodes: object[] = [];
-  @property() private values: ZWaveValue[] = [];
+  @property() private _values: ZWaveValue[] = [];
   @property() private _selectedValue: number = -1;
 
   protected render(): TemplateResult | void {
     return html`
       <div class="content">
         <ha-card
-          header="${this.hass!.localize("ui.panel.config.zwave.values.header")}"
+          .header=${this.hass.localize("ui.panel.config.zwave.values.header")}
         >
           <div class="device-picker">
             <paper-dropdown-menu
-              label="${this.hass!.localize(
-                "ui.panel.config.zwave.common.value"
-              )}"
-              dynamic-align=""
+              label=${this.hass.localize("ui.panel.config.zwave.common.value")}
+              dynamic-align
               class="flex"
             >
               <paper-listbox
                 slot="dropdown-content"
-                selected="${this._selectedValue}"
+                .selected=${this._selectedValue}
               >
-                ${this.values.map(
+                ${this._values.map(
                   (item) => html`
-                    <paper-item>${this._computeSelectCaption(item)}</paper-item>
+                    <paper-item
+                      >${item.label}
+                      (${this.hass.localize(
+                        "ui.panel.config.zwave.common.instance"
+                      )}:
+                      ${item.instance},
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave.common.index"
+                      )}:
+                      ${item.index})</paper-item
+                    >
                   `
                 )}
               </paper-listbox>
@@ -57,14 +63,6 @@ export class ZwaveValues extends LitElement {
         </ha-card>
       </div>
     `;
-  }
-
-  private _computeSelectCaption(item): string {
-    return `${item.value.label} (${this.hass!.localize(
-      "ui.panel.config.zwave.common.instance"
-    )}: ${item.value.instance}, ${this.hass!.localize(
-      "ui.panel.config.zwave.common.index"
-    )}: ${item.value.index})`;
   }
 
   static get styles(): CSSResult[] {
