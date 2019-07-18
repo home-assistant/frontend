@@ -141,7 +141,8 @@
             "high_demand": "duży rozbiór",
             "heat_pump": "pompa ciepła",
             "gas": "gaz",
-            "manual": "manualnie"
+            "manual": "manualnie",
+            "heat_cool": "grzanie\/chłodzenie"
         },
         "configurator": {
             "configure": "Skonfiguruj",
