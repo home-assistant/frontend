@@ -319,7 +319,7 @@
                         "title": "Begivenheder"
                     },
                     "templates": {
-                        "title": "Skabeloner"
+                        "title": "Skabelon"
                     },
                     "mqtt": {
                         "title": "MQTT"

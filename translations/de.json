@@ -141,7 +141,8 @@
             "high_demand": "Hoher Verbrauch",
             "heat_pump": "Wärmepumpe",
             "gas": "Gas",
-            "manual": "Manuell"
+            "manual": "Manuell",
+            "heat_cool": "Heizen\/Kühlen"
         },
         "configurator": {
             "configure": "Konfigurieren",
