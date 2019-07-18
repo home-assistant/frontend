@@ -141,7 +141,8 @@
             "high_demand": "Hoge vraag",
             "heat_pump": "Warmtepomp",
             "gas": "Gas",
-            "manual": "Handmatig"
+            "manual": "Handmatig",
+            "heat_cool": "Verwarmen\/Koelen"
         },
         "configurator": {
             "configure": "Configureer",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
                     }
                 }
             },
@@ -803,7 +807,8 @@
                     "step_done": "Instellen voltooid voor {step}",
                     "close": "Sluiten",
                     "submit": "Verzenden"
-                }
+                },
+                "logout": "Uitloggen"
             },
             "page-authorize": {
                 "initializing": "Initialiseren",
