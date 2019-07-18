@@ -12,7 +12,7 @@ export type HvacMode =
   | "dry"
   | "fan_only";
 
-export type HvacAction = "off" | "Heating" | "cooling" | "drying" | "idle";
+export type HvacAction = "off" | "heating" | "cooling" | "drying" | "idle";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
