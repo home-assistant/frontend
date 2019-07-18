@@ -141,7 +141,8 @@
             "high_demand": "고성능",
             "heat_pump": "순환펌프",
             "gas": "가스",
-            "manual": "수동"
+            "manual": "수동",
+            "heat_cool": "냉난방"
         },
         "configurator": {
             "configure": "설정",

@@ -141,7 +141,8 @@
             "high_demand": "Alta potència",
             "heat_pump": "Bomba de calor",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Escalfar\/Refredar"
         },
         "configurator": {
             "configure": "Configurar",
@@ -397,7 +398,7 @@
                     "description": "Personalitza les entitats",
                     "picker": {
                         "header": "Personalització",
-                        "introduction": "Modificació dels atributs d'entitat. Les personalitzacions afegides\/modificades apareixeran immediatament. Les personalitzacions eliminades tindran efecte quan l'entitat s'actualitzi."
+                        "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides\/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
                     }
                 },
                 "automation": {

@@ -915,6 +915,11 @@
         "zwave": {
           "caption": "Z-Wave",
           "description": "Manage your Z-Wave network",
+          "common": {
+            "value": "Value",
+            "instance": "Instance",
+            "index": "Index"
+          },
           "network_management": {
             "header": "Z-Wave Network Management",
             "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
@@ -926,6 +931,9 @@
             "network_started": "Z-Wave Network Started",
             "network_started_note_some_queried": "Awake nodes have been queried. Sleeping nodes will be queried when they wake.",
             "network_started_note_all_queried": "All nodes have been queried."
+          },
+          "values": {
+            "header": "Node Values"
           },
           "services": {
             "start_network": "Start Network",
