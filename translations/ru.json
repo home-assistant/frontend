@@ -8,7 +8,7 @@
         "mailbox": "Почта",
         "shopping_list": "Список покупок",
         "dev-info": "Информация",
-        "developer_tools": "Инструменты разработчика",
+        "developer_tools": "Панель разработчика",
         "calendar": "Календарь",
         "profile": "Профиль"
     },
@@ -141,7 +141,8 @@
             "high_demand": "Большая нагрузка",
             "heat_pump": "Тепловой насос",
             "gas": "Газовый",
-            "manual": "Ручной режим"
+            "manual": "Ручной режим",
+            "heat_cool": "Нагрев \/ Охлаждение"
         },
         "configurator": {
             "configure": "Настроить",
