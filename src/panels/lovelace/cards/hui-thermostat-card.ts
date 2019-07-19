@@ -498,6 +498,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         }
         #thermostat .rs-readonly {
           z-index: 10;
+          top: auto;
         }
         #thermostat .rs-inner.rs-bg-color.rs-border,
         #thermostat .rs-overlay.rs-transition.rs-bg-color {
@@ -516,6 +517,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         #set-temperature {
           font-size: var(--set-temperature-font-size);
           margin-bottom: var(--set-temperature-margin-bottom);
+          min-height: 1.2em;
         }
         .title {
           font-size: var(--title-font-size);
