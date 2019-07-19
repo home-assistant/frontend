@@ -8,7 +8,7 @@
         "mailbox": "Postvak",
         "shopping_list": "Boodschappenlijst",
         "dev-info": "Info",
-        "developer_tools": "Ontwikkelaarstools",
+        "developer_tools": "Ontwikkelhulpmiddelen",
         "calendar": "Kalender",
         "profile": "Profiel"
     },
@@ -599,7 +599,7 @@
                         "network_stopped": "Z-Wave netwerk gestopt",
                         "network_starting": "Z-Wave netwerk starten...",
                         "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van uw netwerk.",
-                        "network_started": "Z-Wave Netwerk gestart",
+                        "network_started": "Z-Wave netwerk gestart",
                         "network_started_note_some_queried": "Alle wakkere nodes zijn opgevraagd. Slapende nodes worden opgevraagd wanneer ze wakker worden.",
                         "network_started_note_all_queried": "Alle nodes zijn opgevraagd."
                     },
@@ -610,10 +610,18 @@
                         "test_network": "Test Netwerk",
                         "soft_reset": "Soft Reset",
                         "save_config": "Configuratie Opslaan",
-                        "add_node_secure": "Toevoegen Node Secure",
+                        "add_node_secure": "Knooppunt veilig toevoegen",
                         "add_node": "Node toevoegen",
                         "remove_node": "Node verwijderen",
                         "cancel_command": "Opdracht annuleren"
+                    },
+                    "common": {
+                        "value": "Waarde",
+                        "instance": "Exemplaar",
+                        "index": "Index"
+                    },
+                    "values": {
+                        "header": "Knooppunt waarden"
                     }
                 },
                 "users": {
@@ -697,7 +705,7 @@
                     "picker": {
                         "header": "Gebiedenregister",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om u te helpen bij het organiseren van uw interface, machtigingen en integraties met andere systemen.",
-                        "introduction2": "Als u apparaten in een Gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
+                        "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
                         "integrations_page": "Integratiespagina",
                         "no_areas": "Het lijkt erop dat je nog geen ruimtes hebt!",
                         "create_area": "MAAK RUIMTE"
@@ -929,9 +937,9 @@
                     "finish": "Voltooien"
                 },
                 "core-config": {
-                    "intro": "Hallo {name} , welkom bij Home Assistant. Welke naam wil je je huis geven?",
-                    "intro_location": "We willen graag weten waar je woont. Deze informatie zal helpen bij het weergeven van informatie en het instellen van zongebaseerde automatiseringen. Deze gegevens worden nooit gedeeld buiten uw netwerk.",
-                    "intro_location_detect": "Wij kunnen u helpen deze informatie in te vullen door een eenmalig verbinding te maken met een externe service.",
+                    "intro": "Hallo {name}, welkom bij Home Assistant. Welke naam wil je je huis geven?",
+                    "intro_location": "We willen graag weten waar je woont. Deze informatie zal helpen bij het weergeven van informatie en het instellen van op de zon gebaseerde automatiseringen. Deze gegevens worden nooit gedeeld buiten uw netwerk.",
+                    "intro_location_detect": "Wij kunnen u helpen deze informatie in te vullen door eenmalig een verbinding te maken met een externe service.",
                     "location_name_default": "Huis",
                     "button_detect": "Detecteren",
                     "finish": "Volgende"
@@ -1047,7 +1055,7 @@
                             "hdmi_input": "HDMI-ingang",
                             "hdmi_switcher": "HDMI-switcher",
                             "volume": "Volume",
-                            "total_tv_time": "Totale tv-tijd",
+                            "total_tv_time": "Totale TV-tijd",
                             "turn_tv_off": "Schakel televisie uit",
                             "air": "Lucht"
                         },
@@ -1165,7 +1173,7 @@
                 "swing_mode": "Swingmodus",
                 "away_mode": "Afwezigheidsmodus",
                 "aux_heat": "Extra warmte",
-                "preset_mode": "Vooraf ingesteld"
+                "preset_mode": "Voorinstelling"
             },
             "lock": {
                 "code": "Code",
