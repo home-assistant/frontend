@@ -141,7 +141,8 @@
             "high_demand": "高用量",
             "heat_pump": "暖氣",
             "gas": "瓦斯模式",
-            "manual": "手動"
+            "manual": "手動",
+            "heat_cool": "暖氣\/冷氣"
         },
         "configurator": {
             "configure": "設定",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "資訊"
                     }
                 }
             },
@@ -610,6 +614,14 @@
                         "add_node": "新增節點",
                         "remove_node": "移除節點",
                         "cancel_command": "取消命令"
+                    },
+                    "common": {
+                        "value": "數值",
+                        "instance": "實例",
+                        "index": "指數"
+                    },
+                    "values": {
+                        "header": "節點數值"
                     }
                 },
                 "users": {
@@ -803,7 +815,8 @@
                     "step_done": "{step}已設定完成",
                     "close": "關閉",
                     "submit": "傳送"
-                }
+                },
+                "logout": "登出"
             },
             "page-authorize": {
                 "initializing": "初始化中",
