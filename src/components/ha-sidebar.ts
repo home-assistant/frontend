@@ -187,7 +187,7 @@ class HaSidebar extends LitElement {
         @click=${this._handleShowNotificationDrawer}
       >
         <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
-        ${notificationCount > 0
+        ${!this.expanded && notificationCount > 0
           ? html`
               <span class="notification-badge" slot="item-icon">
                 ${notificationCount}
@@ -197,6 +197,11 @@ class HaSidebar extends LitElement {
         <span class="item-text">
           ${hass.localize("ui.notification_drawer.title")}
         </span>
+        ${this.expanded
+          ? html`
+              <span class="notification-badge">${notificationCount}</span>
+            `
+          : ""}
       </paper-icon-item>
 
       <a
@@ -464,6 +469,9 @@ class HaSidebar extends LitElement {
       .notifications {
         cursor: pointer;
       }
+      .notifications .item-text {
+        flex: 1;
+      }
       .profile {
       }
       .profile paper-icon-item {
@@ -474,18 +482,21 @@ class HaSidebar extends LitElement {
       }
 
       .notification-badge {
-        position: absolute;
-        font-weight: 400;
-        bottom: 14px;
-        left: 26px;
+        min-width: 20px;
+        box-sizing: border-box;
         border-radius: 50%;
+        font-weight: 400;
         background-color: var(--primary-color);
-        height: 20px;
         line-height: 20px;
         text-align: center;
         padding: 0px 6px;
-        font-size: 0.65em;
         color: var(--text-primary-color);
+      }
+      ha-icon + .notification-badge {
+        position: absolute;
+        bottom: 14px;
+        left: 26px;
+        font-size: 0.65em;
       }
 
       .spacer {
