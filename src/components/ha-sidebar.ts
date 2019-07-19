@@ -31,8 +31,6 @@ import { classMap } from "lit-html/directives/class-map";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
-const computeUrl = (urlPath) => `/${urlPath}`;
-
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
 const SORT_VALUE = {
@@ -91,22 +89,6 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   return [beforeSpacer, afterSpacer];
 };
 
-const renderPanel = (hass, panel) => html`
-  <a
-    aria-role="option"
-    href="${computeUrl(panel.url_path)}"
-    data-panel="${panel.url_path}"
-    tabindex="-1"
-  >
-    <paper-icon-item>
-      <ha-icon slot="item-icon" .icon="${panel.icon}"></ha-icon>
-      <span class="item-text">
-        ${hass.localize(`panel.${panel.title}`) || panel.title}
-      </span>
-    </paper-icon-item>
-  </a>
-`;
-
 /*
  * @appliesMixin LocalizeMixin
  */
@@ -153,22 +135,27 @@ class HaSidebar extends LitElement {
         <span class="title">Home Assistant</span>
       </div>
       <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
-        <a
-          aria-role="option"
-          href="${computeUrl(this._defaultPage)}"
-          data-panel=${this._defaultPage}
-          tabindex="-1"
-        >
-          <paper-icon-item>
-            <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
-            <span class="item-text">${hass.localize("panel.states")}</span>
-          </paper-icon-item>
-        </a>
-
-        ${beforeSpacer.map((panel) => renderPanel(hass, panel))}
+        ${this._renderPanel(
+          this._defaultPage,
+          "hass:apps",
+          hass.localize("panel.states")
+        )}
+        ${beforeSpacer.map((panel) =>
+          this._renderPanel(
+            panel.url_path,
+            panel.icon,
+            hass.localize(`panel.${panel.title}`) || panel.title
+          )
+        )}
         <div class="spacer" disabled></div>
 
-        ${afterSpacer.map((panel) => renderPanel(hass, panel))}
+        ${afterSpacer.map((panel) =>
+          this._renderPanel(
+            panel.url_path,
+            panel.icon,
+            hass.localize(`panel.${panel.title}`) || panel.title
+          )
+        )}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
           ? html`
               <a
@@ -307,6 +294,22 @@ class HaSidebar extends LitElement {
 
   private _toggleSidebar() {
     fireEvent(this, "hass-toggle-menu");
+  }
+
+  private _renderPanel(urlPath, icon, title) {
+    return html`
+      <a
+        aria-role="option"
+        href="${`/${urlPath}`}"
+        data-panel="${urlPath}"
+        tabindex="-1"
+      >
+        <paper-icon-item>
+          <ha-icon slot="item-icon" .icon="${icon}"></ha-icon>
+          <span class="item-text">${title}</span>
+        </paper-icon-item>
+      </a>
+    `;
   }
 
   static get styles(): CSSResult {
