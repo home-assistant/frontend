@@ -71,9 +71,7 @@ class MoreInfoClimate extends LitElement {
 
     const temperatureStepSize =
       stateObj.attributes.target_temp_step ||
-      hass.config.unit_system.temperature.indexOf("F") === -1
-        ? 0.5
-        : 1;
+      (hass.config.unit_system.temperature.indexOf("F") === -1 ? 0.5 : 1);
 
     const rtlDirection = computeRTLDirection(hass);
 
