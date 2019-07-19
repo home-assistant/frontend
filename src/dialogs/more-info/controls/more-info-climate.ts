@@ -29,6 +29,7 @@ import {
   CLIMATE_SUPPORT_SWING_MODE,
   CLIMATE_SUPPORT_AUX_HEAT,
   CLIMATE_SUPPORT_PRESET_MODE,
+  compareClimateHvacModes,
 } from "../../../data/climate";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { classMap } from "lit-html/directives/class-map";
@@ -176,13 +177,16 @@ class MoreInfoClimate extends LitElement {
                 .selected=${stateObj.state}
                 @selected-changed=${this._handleOperationmodeChanged}
               >
-                ${stateObj.attributes.hvac_modes.map(
-                  (mode) => html`
-                    <paper-item item-name=${mode}>
-                      ${hass.localize(`state.climate.${mode}`)}
-                    </paper-item>
-                  `
-                )}
+                ${stateObj.attributes.hvac_modes
+                  .concat()
+                  .sort(compareClimateHvacModes)
+                  .map(
+                    (mode) => html`
+                      <paper-item item-name=${mode}>
+                        ${hass.localize(`state.climate.${mode}`)}
+                      </paper-item>
+                    `
+                  )}
               </paper-listbox>
             </ha-paper-dropdown-menu>
           </div>
