@@ -323,6 +323,14 @@
         "home": "Home",
         "sleep": "Sleep",
         "activity": "Activity"
+      },
+      "hvac_action": {
+        "off": "Off",
+        "heating": "Heating",
+        "cooling": "Cooling",
+        "drying": "Drying",
+        "idle": "Idle",
+        "fan": "Fan"
       }
     }
   },
