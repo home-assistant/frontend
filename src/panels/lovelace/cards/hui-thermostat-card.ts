@@ -208,7 +208,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       this._jQuery("#thermostat", this.shadowRoot).roundSlider({
         sliderType,
         value: sliderValue,
-        disabled: sliderValue === null
+        disabled: sliderValue === null,
       });
       this._updateSetTemp(uiValue);
     }
@@ -293,9 +293,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     } else {
       sliderType = "min-range";
       sliderValue = Number.isFinite(Number(stateObj.attributes.temperature))
-        ? stateObj.attributes.temperature : null;
-      uiValue =
-        sliderValue !== null ? String(sliderValue) : "";
+        ? stateObj.attributes.temperature
+        : null;
+      uiValue = sliderValue !== null ? String(sliderValue) : "";
     }
 
     return [sliderValue, uiValue, sliderType];
