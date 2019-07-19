@@ -841,7 +841,7 @@
             "page-onboarding": {
                 "intro": "Ertu tilbúinn að vekja heimilið þitt, endurheimta friðhelgi þína og gerast þáttakandi í  samfélagi grúskara á heimsvísu?",
                 "user": {
-                    "intro": "Hefjumst handa með því að byrja á að stona notanda aðgang.",
+                    "intro": "Hefjumst handa með því að byrja á að stofna notanda aðgang.",
                     "required_field": "Skilyrt",
                     "data": {
                         "name": "Nafn",

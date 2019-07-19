@@ -614,6 +614,14 @@
                         "add_node": "Add Node",
                         "remove_node": "Remove Node",
                         "cancel_command": "Cancel Command"
+                    },
+                    "common": {
+                        "value": "Value",
+                        "instance": "Instance",
+                        "index": "Index"
+                    },
+                    "values": {
+                        "header": "Node Values"
                     }
                 },
                 "users": {

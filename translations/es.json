@@ -141,7 +141,8 @@
             "high_demand": "Alta demanda",
             "heat_pump": "Bomba de calor",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Calor\/Frío"
         },
         "configurator": {
             "configure": "Configurar",
@@ -613,6 +614,14 @@
                         "add_node": "Añadir nodo",
                         "remove_node": "Eliminar nodo",
                         "cancel_command": "Cancelar comando"
+                    },
+                    "common": {
+                        "value": "Valor",
+                        "instance": "Instancia",
+                        "index": "Índice"
+                    },
+                    "values": {
+                        "header": "Valores del nodo"
                     }
                 },
                 "users": {
