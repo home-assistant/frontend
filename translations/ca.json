@@ -614,6 +614,14 @@
                         "add_node": "Afegeix node",
                         "remove_node": "Elimina node",
                         "cancel_command": "Cancel·lar ordre"
+                    },
+                    "common": {
+                        "value": "Valor",
+                        "instance": "Instància",
+                        "index": "Índex"
+                    },
+                    "values": {
+                        "header": "Valors dels node"
                     }
                 },
                 "users": {
