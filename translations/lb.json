@@ -614,6 +614,14 @@
                         "add_node": "Apparat dobäisetzen",
                         "remove_node": "Apparat läschen",
                         "cancel_command": "Commande ofbriechen"
+                    },
+                    "common": {
+                        "value": "Wäert",
+                        "instance": "Instanz",
+                        "index": "Index"
+                    },
+                    "values": {
+                        "header": "Wäerter vum Apparat"
                     }
                 },
                 "users": {
