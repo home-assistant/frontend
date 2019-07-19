@@ -23,7 +23,11 @@ import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand"
 import { UNIT_F } from "../../../common/const";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { ThermostatCardConfig } from "./types";
-import { ClimateEntity, HvacMode } from "../../../data/climate";
+import {
+  ClimateEntity,
+  HvacMode,
+  compareClimateHvacModes,
+} from "../../../data/climate";
 
 const thermostatConfig = {
   radius: 150,
@@ -157,9 +161,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                   : ""}
               </div>
               <div class="modes">
-                ${stateObj.attributes.hvac_modes.map((modeItem) =>
-                  this._renderIcon(modeItem, mode)
-                )}
+                ${stateObj.attributes.hvac_modes
+                  .concat()
+                  .sort(compareClimateHvacModes)
+                  .map((modeItem) => this._renderIcon(modeItem, mode))}
               </div>
             </div>
           </div>

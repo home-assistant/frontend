@@ -49,3 +49,16 @@ export const CLIMATE_SUPPORT_FAN_MODE = 8;
 export const CLIMATE_SUPPORT_PRESET_MODE = 16;
 export const CLIMATE_SUPPORT_SWING_MODE = 32;
 export const CLIMATE_SUPPORT_AUX_HEAT = 64;
+
+const hvacModeOrdering: { [key in HvacMode]: number } = {
+  auto: 1,
+  heat_cool: 2,
+  heat: 3,
+  cool: 4,
+  dry: 5,
+  fan_only: 6,
+  off: 7,
+};
+
+export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
+  hvacModeOrdering[mode1] - hvacModeOrdering[mode2];
