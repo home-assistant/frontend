@@ -134,8 +134,10 @@ class HaSidebar extends LitElement {
           ? html`
               <paper-icon-button
                 aria-label="Sidebar Toggle"
-                .icon=${hass.dockedSidebar ? "hass:menu-open" : "hass:menu"}
-                @click=${this._toggleSidebar}
+                .icon=${hass.dockedSidebar
+                  ? "hass:backburger"
+                  : "hass:menu-open"}
+                @click=${this._clickSidebar}
               ></paper-icon-button>
             `
           : ""}
@@ -270,6 +272,7 @@ class HaSidebar extends LitElement {
     }
     const hass = this.hass;
     return (
+      hass.dockedSidebar !== oldHass.dockedSidebar ||
       hass.panels !== oldHass.panels ||
       hass.panelUrl !== oldHass.panelUrl ||
       hass.user !== oldHass.user ||
@@ -405,8 +408,10 @@ class HaSidebar extends LitElement {
     });
   }
 
-  private _toggleSidebar() {
-    fireEvent(this, "hass-toggle-menu");
+  private _clickSidebar() {
+    fireEvent(this, "hass-dock-sidebar", {
+      dock: !this.hass.dockedSidebar,
+    });
   }
 
   private _renderPanel(urlPath, icon, title) {

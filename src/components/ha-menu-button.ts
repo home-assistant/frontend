@@ -83,7 +83,9 @@ class HaMenuButton extends LitElement {
     }
 
     this.style.visibility =
-      this.narrow || this._alwaysVisible ? "initial" : "hidden";
+      this.narrow || !this.hass.dockedSidebar || this._alwaysVisible
+        ? "initial"
+        : "hidden";
 
     if (!this.narrow) {
       this._hasNotifications = false;
