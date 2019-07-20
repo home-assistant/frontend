@@ -1053,8 +1053,8 @@
         "is_owner": "You are an owner.",
         "logout": "Log out",
         "force_narrow": {
-          "header": "Force Mobile Mode",
-          "description": "This will always hide the sidebar."
+          "header": "Always hide the sidebar",
+          "description": "This will hide the sidebar by default, similar to the mobile experience."
         },
         "push_notifications": {
           "header": "Push Notifications",
