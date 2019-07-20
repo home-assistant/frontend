@@ -218,7 +218,7 @@ class HaSidebar extends LitElement {
         <span class="item-text">
           ${hass.localize("ui.notification_drawer.title")}
         </span>
-        ${this.expanded
+        ${this.expanded && notificationCount > 0
           ? html`
               <span class="notification-badge">${notificationCount}</span>
             `
