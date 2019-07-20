@@ -178,7 +178,8 @@ class LovelacePanel extends LitElement {
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(
       1,
-      matchColumns - Number(!this.narrow && this.hass!.dockedSidebar)
+      matchColumns -
+        Number(!this.narrow && this.hass!.dockedSidebar === "docked")
     );
   }
 
