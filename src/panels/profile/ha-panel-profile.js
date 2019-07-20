@@ -84,10 +84,6 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
               narrow="[[narrow]]"
               hass="[[hass]]"
             ></ha-pick-theme-row>
-            <ha-push-notifications-row
-              narrow="[[narrow]]"
-              hass="[[hass]]"
-            ></ha-push-notifications-row>
             <template
               is="dom-if"
               if="[[_showNarrowRow(hass.dockedSidebar, narrow)]]"
@@ -97,6 +93,10 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 hass="[[hass]]"
               ></ha-force-narrow-row>
             </template>
+            <ha-push-notifications-row
+              narrow="[[narrow]]"
+              hass="[[hass]]"
+            ></ha-push-notifications-row>
 
             <div class="card-actions">
               <mwc-button class="warning" on-click="_handleLogOut"
