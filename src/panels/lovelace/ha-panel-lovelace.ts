@@ -114,12 +114,6 @@ class LovelacePanel extends LitElement {
     if (!changedProps.has("hass")) {
       return;
     }
-
-    const oldHass = changedProps.get("hass") as this["hass"];
-
-    if (oldHass && this.hass!.dockedSidebar !== oldHass.dockedSidebar) {
-      this._updateColumns();
-    }
   }
 
   public firstUpdated() {
@@ -171,14 +165,9 @@ class LovelacePanel extends LitElement {
   }
 
   private _updateColumns() {
-    const matchColumns = this.mqls!.reduce(
+    this._columns = this.mqls!.reduce(
       (cols, mql) => cols + Number(mql.matches),
       0
-    );
-    // Do -1 column if the menu is docked and open
-    this._columns = Math.max(
-      1,
-      matchColumns - Number(!this.narrow && this.hass!.dockedSidebar)
     );
   }
 

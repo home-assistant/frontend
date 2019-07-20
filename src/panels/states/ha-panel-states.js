@@ -210,10 +210,6 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     };
   }
 
-  static get observers() {
-    return ["_updateColumns(narrow, hass.dockedSidebar)"];
-  }
-
   ready() {
     this._updateColumns = this._updateColumns.bind(this);
     this.mqls = [300, 600, 900, 1200].map((width) =>
@@ -233,12 +229,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 
   _updateColumns() {
-    const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
-    // Do -1 column if the menu is docked and open
-    this._columns = Math.max(
-      1,
-      matchColumns - (!this.narrow && this.hass.dockedSidebar)
-    );
+    this._columns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
   }
 
   areTabsHidden(views, showTabs) {

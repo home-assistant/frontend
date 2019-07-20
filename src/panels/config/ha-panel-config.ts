@@ -96,7 +96,6 @@ class HaPanelConfig extends HassRouterPage {
     },
   };
 
-  @property() private _wideSidebar: boolean = false;
   @property() private _wide: boolean = false;
   @property() private _coreUserData?: CoreFrontendUserData;
   @property() private _cloudStatus?: CloudStatus;
@@ -108,11 +107,6 @@ class HaPanelConfig extends HassRouterPage {
     this._listeners.push(
       listenMediaQuery("(min-width: 1040px)", (matches) => {
         this._wide = matches;
-      })
-    );
-    this._listeners.push(
-      listenMediaQuery("(min-width: 1296px)", (matches) => {
-        this._wideSidebar = matches;
       })
     );
     this._listeners.push(
@@ -146,7 +140,6 @@ class HaPanelConfig extends HassRouterPage {
     const showAdvanced = !!(
       this._coreUserData && this._coreUserData.showAdvanced
     );
-    const isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;
 
     if ("setProperties" in el) {
       // As long as we have Polymer panels
@@ -154,7 +147,7 @@ class HaPanelConfig extends HassRouterPage {
         route: this.routeTail,
         hass: this.hass,
         showAdvanced,
-        isWide,
+        isWide: this._wide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
       });
@@ -162,7 +155,7 @@ class HaPanelConfig extends HassRouterPage {
       el.route = this.routeTail;
       el.hass = this.hass;
       el.showAdvanced = showAdvanced;
-      el.isWide = isWide;
+      el.isWide = this._wide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;
     }
