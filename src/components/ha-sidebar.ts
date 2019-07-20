@@ -5,12 +5,14 @@ import {
   css,
   PropertyValues,
   property,
+  eventOptions,
 } from "lit-element";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-tooltip/paper-tooltip";
 import "./ha-icon";
 
 import "../components/user/ha-user-badge";
@@ -28,6 +30,8 @@ import {
 } from "../data/persistent_notification";
 import computeDomain from "../common/entity/compute_domain";
 import { classMap } from "lit-html/directives/class-map";
+// tslint:disable-next-line: no-duplicate-imports
+import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -103,6 +107,10 @@ class HaSidebar extends LitElement {
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
 
+  private _mouseLeaveTimeout?: number;
+  private _tooltipHideTimeout?: number;
+  private _recentKeydownActiveUntil = 0;
+
   protected render() {
     const hass = this.hass;
 
@@ -134,7 +142,14 @@ class HaSidebar extends LitElement {
           : ""}
         <span class="title">Home Assistant</span>
       </div>
-      <paper-listbox attr-for-selected="data-panel" .selected=${hass.panelUrl}>
+      <paper-listbox
+        attr-for-selected="data-panel"
+        .selected=${hass.panelUrl}
+        @focusin=${this._listboxFocusIn}
+        @focusout=${this._listboxFocusOut}
+        @scroll=${this._listboxScroll}
+        @keydown=${this._listboxKeydown}
+      >
         ${this._renderPanel(
           this._defaultPage,
           "hass:apps",
@@ -165,7 +180,10 @@ class HaSidebar extends LitElement {
                 tabindex="-1"
                 @click=${this._handleExternalAppConfiguration}
               >
-                <paper-icon-item>
+                <paper-icon-item
+                  @mouseenter=${this._itemMouseEnter}
+                  @mouseleave=${this._itemMouseLeave}
+                >
                   <ha-icon
                     slot="item-icon"
                     icon="hass:cellphone-settings-variant"
@@ -185,6 +203,8 @@ class HaSidebar extends LitElement {
         class="notifications"
         aria-role="option"
         @click=${this._handleShowNotificationDrawer}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
         <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
         ${!this.expanded && notificationCount > 0
@@ -216,7 +236,10 @@ class HaSidebar extends LitElement {
         aria-role="option"
         aria-label=${hass.localize("panel.profile")}
       >
-        <paper-icon-item>
+        <paper-icon-item
+          @mouseenter=${this._itemMouseEnter}
+          @mouseleave=${this._itemMouseLeave}
+        >
           <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
 
           <span class="item-text">
@@ -225,6 +248,7 @@ class HaSidebar extends LitElement {
         </paper-icon-item>
       </a>
       <div disabled class="bottom-spacer"></div>
+      <paper-tooltip manual-mode animation-delay="0"></paper-tooltip>
     `;
   }
 
@@ -286,6 +310,91 @@ class HaSidebar extends LitElement {
     }
   }
 
+  private get _tooltip() {
+    return this.shadowRoot!.querySelector("paper-tooltip")!;
+  }
+
+  private _itemMouseEnter(ev: MouseEvent) {
+    // On keypresses on the listbox, we're going to ignore mouse enter events
+    // for 100ms so that we ignore it when pressing down arrow scrolls the
+    // sidebar causing the mouse to hover a new icon
+    if (
+      this.expanded ||
+      new Date().getTime() < this._recentKeydownActiveUntil
+    ) {
+      return;
+    }
+    if (this._mouseLeaveTimeout) {
+      clearTimeout(this._mouseLeaveTimeout);
+      this._mouseLeaveTimeout = undefined;
+    }
+    this._showTooltip(ev.currentTarget as PaperIconItemElement);
+  }
+
+  private _itemMouseLeave() {
+    if (this._mouseLeaveTimeout) {
+      clearTimeout(this._mouseLeaveTimeout);
+    }
+    this._mouseLeaveTimeout = window.setTimeout(() => {
+      this._hideTooltip();
+    }, 500);
+  }
+
+  private _listboxFocusIn(ev) {
+    if (this.expanded || ev.target.nodeName !== "A") {
+      return;
+    }
+    this._showTooltip(ev.target.querySelector("paper-icon-item"));
+  }
+
+  private _listboxFocusOut() {
+    this._hideTooltip();
+  }
+
+  @eventOptions({
+    passive: true,
+  })
+  private _listboxScroll() {
+    // On keypresses on the listbox, we're going to ignore scroll events
+    // for 100ms so that if pressing down arrow scrolls the sidebar, the tooltip
+    // will not be hidden.
+    if (new Date().getTime() < this._recentKeydownActiveUntil) {
+      return;
+    }
+    this._hideTooltip();
+  }
+
+  private _listboxKeydown() {
+    this._recentKeydownActiveUntil = new Date().getTime() + 100;
+  }
+
+  private _showTooltip(item: PaperIconItemElement) {
+    if (this._tooltipHideTimeout) {
+      clearTimeout(this._tooltipHideTimeout);
+      this._tooltipHideTimeout = undefined;
+    }
+    const tooltip = this._tooltip;
+    const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
+    let top = item.offsetTop + 7;
+    if (listbox.contains(item)) {
+      top -= listbox.scrollTop;
+    }
+    tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
+    tooltip.show();
+    tooltip.style.top = `${top}px`;
+    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 12}px`;
+  }
+
+  private _hideTooltip() {
+    // Delay it a little in case other events are pending processing.
+    if (!this._tooltipHideTimeout) {
+      this._tooltipHideTimeout = window.setTimeout(() => {
+        this._tooltipHideTimeout = undefined;
+        this._tooltip.hide();
+      }, 10);
+    }
+  }
+
   private _handleShowNotificationDrawer() {
     fireEvent(this, "hass-show-notifications");
   }
@@ -309,7 +418,10 @@ class HaSidebar extends LitElement {
         data-panel="${urlPath}"
         tabindex="-1"
       >
-        <paper-icon-item>
+        <paper-icon-item
+          @mouseenter=${this._itemMouseEnter}
+          @mouseleave=${this._itemMouseLeave}
+        >
           <ha-icon slot="item-icon" .icon="${icon}"></ha-icon>
           <span class="item-text">${title}</span>
         </paper-icon-item>
@@ -523,6 +635,11 @@ class HaSidebar extends LitElement {
 
       .dev-tools a {
         color: var(--sidebar-icon-color);
+      }
+
+      paper-tooltip {
+        position: absolute;
+        white-space: nowrap;
       }
     `;
   }
