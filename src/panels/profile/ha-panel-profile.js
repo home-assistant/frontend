@@ -25,6 +25,7 @@ import "./ha-long-lived-access-tokens-card";
 import "./ha-pick-language-row";
 import "./ha-pick-theme-row";
 import "./ha-push-notifications-row";
+import "./ha-force-narrow-row";
 
 /*
  * @appliesMixin EventsMixin
@@ -87,6 +88,15 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
               narrow="[[narrow]]"
               hass="[[hass]]"
             ></ha-push-notifications-row>
+            <template
+              is="dom-if"
+              if="[[_showNarrowRow(hass.dockedSidebar, narrow)]]"
+            >
+              <ha-force-narrow-row
+                narrow="[[narrow]]"
+                hass="[[hass]]"
+              ></ha-force-narrow-row>
+            </template>
 
             <div class="card-actions">
               <mwc-button class="warning" on-click="_handleLogOut"
@@ -173,6 +183,10 @@ class HaPanelProfile extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _isAdmin(user) {
     return user.is_admin;
+  }
+
+  _showNarrowRow(dockedSidebar, narrow) {
+    return dockedSidebar === "auto" ? !narrow : true;
   }
 }
 
