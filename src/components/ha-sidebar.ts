@@ -12,7 +12,6 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-tooltip/paper-tooltip";
 import "./ha-icon";
 
 import "../components/user/ha-user-badge";
@@ -248,7 +247,7 @@ class HaSidebar extends LitElement {
         </paper-icon-item>
       </a>
       <div disabled class="bottom-spacer"></div>
-      <paper-tooltip manual-mode animation-delay="0"></paper-tooltip>
+      <div class="tooltip"></div>
     `;
   }
 
@@ -311,7 +310,7 @@ class HaSidebar extends LitElement {
   }
 
   private get _tooltip() {
-    return this.shadowRoot!.querySelector("paper-tooltip")!;
+    return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
   }
 
   private _itemMouseEnter(ev: MouseEvent) {
@@ -380,7 +379,7 @@ class HaSidebar extends LitElement {
       top -= listbox.scrollTop;
     }
     tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
-    tooltip.show();
+    tooltip.style.display = "block";
     tooltip.style.top = `${top}px`;
     tooltip.style.left = `${item.offsetLeft + item.clientWidth + 12}px`;
   }
@@ -390,7 +389,7 @@ class HaSidebar extends LitElement {
     if (!this._tooltipHideTimeout) {
       this._tooltipHideTimeout = window.setTimeout(() => {
         this._tooltipHideTimeout = undefined;
-        this._tooltip.hide();
+        this._tooltip.style.display = "none";
       }, 10);
     }
   }
@@ -439,10 +438,7 @@ class HaSidebar extends LitElement {
         -webkit-user-select: none;
         -moz-user-select: none;
         border-right: 1px solid var(--divider-color);
-        background-color: var(
-          --sidebar-background-color,
-          var(--primary-background-color)
-        );
+        background-color: var(--sidebar-background-color);
         width: 64px;
       }
       :host([expanded]) {
@@ -637,9 +633,16 @@ class HaSidebar extends LitElement {
         color: var(--sidebar-icon-color);
       }
 
-      paper-tooltip {
+      .tooltip {
+        display: none;
         position: absolute;
+        opacity: 0.9;
+        border-radius: 2px;
         white-space: nowrap;
+        color: var(--sidebar-background-color);
+        background-color: var(--sidebar-text-color);
+        padding: 4px;
+        font-weight: 500;
       }
     `;
   }
