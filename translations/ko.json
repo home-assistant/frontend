@@ -816,7 +816,11 @@
                     "close": "닫기",
                     "submit": "구성하기"
                 },
-                "logout": "로그아웃"
+                "logout": "로그아웃",
+                "force_narrow": {
+                    "header": "항상 사이드바 숨기기",
+                    "description": "모바일 환경과 마찬가지로 기본적으로 사이드 바를 숨깁니다."
+                }
             },
             "page-authorize": {
                 "initializing": "초기화 중",
@@ -1328,6 +1332,14 @@
                 "home": "재실",
                 "sleep": "수면",
                 "activity": "활동"
+            },
+            "hvac_action": {
+                "off": "전원 끄기",
+                "heating": "난방",
+                "cooling": "냉방",
+                "drying": "제습",
+                "idle": "대기",
+                "fan": "송풍"
             }
         }
     },

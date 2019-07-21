@@ -816,7 +816,11 @@
                     "close": "Tanca",
                     "submit": "Envia"
                 },
-                "logout": "Tanca la sessió"
+                "logout": "Tanca la sessió",
+                "force_narrow": {
+                    "header": "Amaga sempre la barra lateral",
+                    "description": "Això ocultarà la barra lateral per defecte, de manera similar als mòbils i tablets."
+                }
             },
             "page-authorize": {
                 "initializing": "S'està inicialitzant",
@@ -1328,6 +1332,14 @@
                 "home": "A casa",
                 "sleep": "Dormint",
                 "activity": "Activitat"
+            },
+            "hvac_action": {
+                "off": "Apagat",
+                "heating": "Escalfant",
+                "cooling": "Refredant",
+                "drying": "Assecant",
+                "idle": "Inactiu",
+                "fan": "Ventilació"
             }
         }
     },
