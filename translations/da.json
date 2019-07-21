@@ -816,7 +816,11 @@
                     "close": "Luk",
                     "submit": "Gem og afslut"
                 },
-                "logout": "Log af"
+                "logout": "Log af",
+                "force_narrow": {
+                    "header": "Skjul altid sidepanelet",
+                    "description": "Dette vil skjule sidepanelet som standard, svarende til den mobile oplevelse."
+                }
             },
             "page-authorize": {
                 "initializing": "Initialiserer",
@@ -1328,6 +1332,14 @@
                 "home": "Hjemme",
                 "sleep": "Sover",
                 "activity": "Aktivitet"
+            },
+            "hvac_action": {
+                "off": "Fra",
+                "heating": "Varmer",
+                "cooling": "Køler",
+                "drying": "Tørrer",
+                "idle": "Inaktiv",
+                "fan": "Ventilator"
             }
         }
     },
