@@ -237,7 +237,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(
       1,
-      matchColumns - (!this.narrow && this.hass.dockedSidebar)
+      matchColumns - (!this.narrow && this.hass.dockedSidebar === "docked")
     );
   }
 

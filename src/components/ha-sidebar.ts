@@ -134,7 +134,9 @@ class HaSidebar extends LitElement {
           ? html`
               <paper-icon-button
                 aria-label="Sidebar Toggle"
-                .icon=${hass.dockedSidebar ? "hass:menu-open" : "hass:menu"}
+                .icon=${hass.dockedSidebar === "docked"
+                  ? "hass:menu-open"
+                  : "hass:menu"}
                 @click=${this._toggleSidebar}
               ></paper-icon-button>
             `
@@ -216,7 +218,7 @@ class HaSidebar extends LitElement {
         <span class="item-text">
           ${hass.localize("ui.notification_drawer.title")}
         </span>
-        ${this.expanded
+        ${this.expanded && notificationCount > 0
           ? html`
               <span class="notification-badge">${notificationCount}</span>
             `

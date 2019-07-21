@@ -19,7 +19,12 @@ export function getState() {
 
   for (const key of STORED_STATE) {
     if (key in STORAGE) {
-      state[key] = JSON.parse(STORAGE[key]);
+      let value = JSON.parse(STORAGE[key]);
+      // dockedSidebar went from boolean to enum on 20190720
+      if (key === "dockedSidebar" && typeof value === "boolean") {
+        value = value ? "docked" : "auto";
+      }
+      state[key] = value;
     }
   }
 
