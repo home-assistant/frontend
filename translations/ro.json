@@ -386,6 +386,7 @@
                                 "unit_system": "Unitatea De Sistem",
                                 "unit_system_imperial": "Imperial",
                                 "unit_system_metric": "Metric",
+                                "imperial_example": "Fahrenheit, livre",
                                 "metric_example": "Celsius, kilograme",
                                 "save_button": "Salvați"
                             }
@@ -396,7 +397,8 @@
                     "caption": "Personalizare",
                     "description": "Personalizați-vă entitățile",
                     "picker": {
-                        "header": "Personalizare"
+                        "header": "Personalizare",
+                        "introduction": "Atributele per entitate. Particularizările adăugate\/editate vor avea efect imediat. Particularizările eliminate vor avea efect atunci când entitatea este actualizată."
                     }
                 },
                 "automation": {
@@ -682,6 +684,7 @@
                     "caption": "ZHA",
                     "description": "Managementul rețelei ZigBee Home Automation",
                     "services": {
+                        "reconfigure": "Reconfigurați dispozitivul ZHA (dispozitiv de vindecare). Utilizați acest lucru dacă aveți probleme cu dispozitivul. Dacă dispozitivul în cauză este un dispozitiv alimentat cu baterii, asigurați-vă că este treaz și accepta comenzi atunci când utilizați acest serviciu.",
                         "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive.",
                         "remove": "Eliminați un dispozitiv din rețeaua ZigBee."
                     },
@@ -813,7 +816,11 @@
                     "close": "Închide",
                     "submit": "Trimite"
                 },
-                "logout": "Deconectare"
+                "logout": "Deconectare",
+                "force_narrow": {
+                    "header": "Ascunde întotdeauna bara laterală",
+                    "description": "Aceasta va ascunde bara laterală în mod prestabilit, similar cu experiența mobilă."
+                }
             },
             "page-authorize": {
                 "initializing": "Inițializează",
@@ -1325,6 +1332,14 @@
                 "home": "Acasă",
                 "sleep": "Sleep",
                 "activity": "Activitate"
+            },
+            "hvac_action": {
+                "off": "Oprit",
+                "heating": "Încălzire",
+                "cooling": "Răcire",
+                "drying": "Uscare",
+                "idle": "Inactiv",
+                "fan": "Ventilator"
             }
         }
     },
