@@ -323,6 +323,14 @@
         "home": "Home",
         "sleep": "Sleep",
         "activity": "Activity"
+      },
+      "hvac_action": {
+        "off": "Off",
+        "heating": "Heating",
+        "cooling": "Cooling",
+        "drying": "Drying",
+        "idle": "Idle",
+        "fan": "Fan"
       }
     }
   },
@@ -1044,6 +1052,10 @@
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
         "logout": "Log out",
+        "force_narrow": {
+          "header": "Always hide the sidebar",
+          "description": "This will hide the sidebar by default, similar to the mobile experience."
+        },
         "push_notifications": {
           "header": "Push Notifications",
           "description": "Send notifications to this device.",
