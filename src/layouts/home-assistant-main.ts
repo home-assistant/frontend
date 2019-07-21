@@ -44,8 +44,7 @@ class HomeAssistantMain extends LitElement {
       return;
     }
 
-    const sidebarNarrow =
-      this.narrow || this.hass.dockedSidebar === "always_hidden";
+    const sidebarNarrow = this._sidebarNarrow;
 
     const disableSwipe =
       !sidebarNarrow || NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
@@ -91,7 +90,7 @@ class HomeAssistantMain extends LitElement {
     import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 
     this.addEventListener("hass-toggle-menu", () => {
-      if (this.narrow || this.hass.dockedSidebar === "always_hidden") {
+      if (this._sidebarNarrow) {
         if (this.drawer.opened) {
           this.drawer.close();
         } else {
@@ -120,7 +119,7 @@ class HomeAssistantMain extends LitElement {
       this.narrow || this.hass.dockedSidebar !== "auto"
     );
 
-    if (changedProps.has("route") && this.narrow) {
+    if (changedProps.has("route") && this._sidebarNarrow) {
       this.drawer.close();
     }
 
@@ -134,6 +133,10 @@ class HomeAssistantMain extends LitElement {
 
   private _narrowChanged(ev: PolymerChangedEvent<boolean>) {
     this.narrow = ev.detail.value;
+  }
+
+  private get _sidebarNarrow() {
+    return this.narrow || this.hass.dockedSidebar === "always_hidden";
   }
 
   private get drawer(): AppDrawerElement {
