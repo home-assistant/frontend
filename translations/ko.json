@@ -8,7 +8,7 @@
         "mailbox": "메일함",
         "shopping_list": "장보기목록",
         "dev-info": "정보",
-        "developer_tools": "개발자도구",
+        "developer_tools": "개발자 도구",
         "calendar": "캘린더",
         "profile": "프로필"
     },
@@ -614,6 +614,14 @@
                         "add_node": "노드 추가",
                         "remove_node": "노드 제거",
                         "cancel_command": "명령 취소"
+                    },
+                    "common": {
+                        "value": "값",
+                        "instance": "인스턴스",
+                        "index": "색인"
+                    },
+                    "values": {
+                        "header": "노드 값"
                     }
                 },
                 "users": {
@@ -642,7 +650,7 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "{email} 로 로그인 되어있습니다",
                     "description_not_login": "로그인이 되어있지 않습니다",
-                    "description_features": "Alexa 및 Google Assistant 를 통해 집 밖에서도 집을 관리합니다."
+                    "description_features": "Alexa 및 Google Assistant 를 통해 집 밖에서도 집을 관리하세요."
                 },
                 "integrations": {
                     "caption": "통합 구성요소",
@@ -1316,7 +1324,7 @@
                 "eco": "절전",
                 "away": "외출",
                 "boost": "부스트",
-                "comfort": "안락",
+                "comfort": "쾌적",
                 "home": "재실",
                 "sleep": "수면",
                 "activity": "활동"
