@@ -354,6 +354,19 @@
                                 "introduction": "Pārvaldiet Home Assistant serveri no Home Assistant saskarnes.",
                                 "restart": "Restartēt",
                                 "stop": "Apturēt"
+                            },
+                            "core_config": {
+                                "edit_requires_storage": "Redaktors ir atspējots, jo konfigurācija ir definēta configuration.yaml.",
+                                "location_name": "Jūsu Home Assistant instalācijas nosaukums",
+                                "elevation": "Augstums",
+                                "elevation_meters": "metri",
+                                "time_zone": "Laika josla",
+                                "unit_system": "Mērvienību sistēma",
+                                "unit_system_imperial": "Imperiālā",
+                                "unit_system_metric": "Metriskā",
+                                "imperial_example": "Fārenheita, mārciņas",
+                                "metric_example": "Celsija, kilogrami",
+                                "save_button": "Saglabāt"
                             }
                         }
                     }
@@ -367,20 +380,21 @@
                     "description": "Veidojiet un rediģējiet automatizācijas",
                     "picker": {
                         "header": "Automatizāciju redaktors",
-                        "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, sekojiet [norādījumiem] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
+                        "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, sekojiet saitei zemāk, lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
                         "pick_automation": "Izvēlieties automatizāciju rediģēšanai",
                         "no_automations": "Mēs nevarējām atrast rediģējamas automatizācijas",
-                        "add_automation": "Pievienot automatizāciju"
+                        "add_automation": "Pievienot automatizāciju",
+                        "learn_more": "Uzziniet vairāk par automatizācijām"
                     },
                     "editor": {
-                        "introduction": "Lietojiet automatizācijas, lai ienestu dzīvību Jūsu mājās",
-                        "default_name": "Jauna Automatizācija",
+                        "introduction": "Lietojiet automatizācijas, lai iedzīvinātu Jūsu mājās",
+                        "default_name": "Jauna automatizācija",
                         "save": "Saglabāt",
                         "unsaved_confirm": "Jums ir nesaglabātas izmaiņas. Vai tiešām vēlaties pamest?",
                         "alias": "Nosaukums",
                         "triggers": {
                             "header": "Trigeri",
-                            "introduction": "Trigeri ir tas, kas sāk automatizācijas noteikuma apstrādi. Vienam noteikumam ir iespējams norādīt vairākus trigerus. Kad trigeris sāk, Home Assistant apstiprina nosacījumus, ja tādi ir, un izsauc darbību. \n\n [Uzziniet vairāk par trigeriem.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Trigeri ir tas, kas sāk automatizācijas noteikuma apstrādi. Vienam noteikumam ir iespējams norādīt vairākus trigerus. Kad trigeris sāk, Home Assistant apstiprina nosacījumus, ja tādi ir, un izsauc darbību.",
                             "add": "Pievienot trigeri",
                             "duplicate": "Dublicēt",
                             "delete": "Dzēst",
@@ -452,11 +466,12 @@
                                 "geo_location": {
                                     "label": "Ģeogrāfiskā atrašanās vieta"
                                 }
-                            }
+                            },
+                            "learn_more": "Uzziniet vairāk par trigeriem"
                         },
                         "conditions": {
                             "header": "Nosacījumi",
-                            "introduction": "Nosacījumi ir automatizācijas noteikuma izvēles daļa, un to var izmantot, lai novērstu darbību rašanos. Nosacījumi izskatās ļoti līdzīgi trigeriem, taču tie ir ļoti atšķirīgi. Trigeri izskatīs notikumus, kas notiek sistēmā, bet nosacījums tikai aplūko, kā sistēma šobrīd izskatās. Trigeri var novērot, ka slēdzis tiek ieslēgts. Nosacījums var redzēt tikai to, vai slēdzis pašlaik ir ieslēgts vai izslēgts. \n\n [Uzziniet vairāk par nosacījumiem.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Nosacījumi ir automatizācijas noteikuma izvēles daļa, un to var izmantot, lai novērstu darbību rašanos. Nosacījumi izskatās ļoti līdzīgi trigeriem, taču tie ir ļoti atšķirīgi. Trigeri izskatīs notikumus, kas notiek sistēmā, bet nosacījums tikai aplūko, kā sistēma šobrīd izskatās. Trigeri var novērot, ka slēdzis tiek ieslēgts. Nosacījums var redzēt tikai to, vai slēdzis pašlaik ir ieslēgts vai izslēgts.",
                             "add": "Pievienot nosacījumu",
                             "duplicate": "Duplicēt",
                             "delete": "Dzēst",
@@ -497,11 +512,12 @@
                                     "entity": "Vienība ar atrašanos vietu",
                                     "zone": "Zona"
                                 }
-                            }
+                            },
+                            "learn_more": "Uzziniet vairāk par nosacījumiem"
                         },
                         "actions": {
                             "header": "Darbības",
-                            "introduction": "Darbības ir tādas, kādas Home Assistant veiks, kad tiks aktivizēta automatizācija. \n\n [Uzziniet vairāk par darbībām.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Darbības nosaka, ko Home Assistant darīs, kad tiks aktivizēta automatizācija.",
                             "add": "Pievienot darbību",
                             "duplicate": "Dublicēt",
                             "delete": "Dzēst",
@@ -530,7 +546,8 @@
                                     "event": "Notikums:",
                                     "service_data": "Pakalpojuma dati"
                                 }
-                            }
+                            },
+                            "learn_more": "Uzziniet vairāk par darbībām"
                         }
                     }
                 },
@@ -540,7 +557,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Pārvaldiet Z-Wave tīklu"
+                    "description": "Pārvaldiet Z-Wave tīklu",
+                    "services": {
+                        "save_config": "Saglabāt konfigurāciju"
+                    }
                 },
                 "users": {
                     "caption": "Lietotāji",
@@ -630,7 +650,7 @@
                 },
                 "long_lived_access_tokens": {
                     "header": "Ilgtermiņas piekļuves pilnvaras",
-                    "description": "Izveidojiet ilgtermiņa piekļuves pilnvaras, lai ļautu jūsu skriptiem mijiedarboties ar jūsu Home Assistant instanci. Katra pilnvara būs derīga 10 gadus pēc tās radīšanas. Pašlaik ir aktīvi šādas ilgstošas piekļuves pilvaras.",
+                    "description": "Izveidojiet ilgtermiņa piekļuves pilnvaras, lai ļautu jūsu skriptiem mijiedarboties ar jūsu Home Assistant instanci. Katra pilnvara būs derīga 10 gadus pēc tās radīšanas. Pašlaik ir aktīvas sekojošas ilgstošas piekļuves pilvaras.",
                     "learn_auth_requests": "Uzziniet, kā veikt autentificētus pieprasījumus.",
                     "created_at": "Izveidots {date}",
                     "confirm_delete": "Vai tiešām vēlaties dzēst piekļuves pilnvaru {name}?",
@@ -665,7 +685,8 @@
                     "step_done": "Iestatīšana ir pabeigta {step}",
                     "close": "Aizvērt",
                     "submit": "Iesniegt"
-                }
+                },
+                "logout": "Iziet"
             },
             "page-authorize": {
                 "initializing": "Inicializēšana",
@@ -835,6 +856,13 @@
                     "unused_entities": "Neizmantotās vienības",
                     "help": "Palīdzība",
                     "refresh": "Atsvaidzināt"
+                }
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "learn_more": "Uzziniet vairāk par Home Assistant"
+                    }
                 }
             }
         },
