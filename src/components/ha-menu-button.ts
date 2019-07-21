@@ -78,14 +78,25 @@ class HaMenuButton extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
 
-    if (!changedProps.has("narrow")) {
+    if (!changedProps.has("narrow") && !changedProps.has("hass")) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldNarrow =
+      changedProps.get("narrow") ||
+      (oldHass && oldHass.dockedSidebar === "always_hidden");
+    const newNarrow =
+      this.narrow || this.hass.dockedSidebar === "always_hidden";
+
+    if (oldNarrow === newNarrow) {
       return;
     }
 
     this.style.visibility =
-      this.narrow || this._alwaysVisible ? "initial" : "hidden";
+      newNarrow || this._alwaysVisible ? "initial" : "hidden";
 
-    if (!this.narrow) {
+    if (!newNarrow) {
       this._hasNotifications = false;
       if (this._unsubNotifications) {
         this._unsubNotifications();

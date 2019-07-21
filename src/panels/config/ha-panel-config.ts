@@ -146,7 +146,8 @@ class HaPanelConfig extends HassRouterPage {
     const showAdvanced = !!(
       this._coreUserData && this._coreUserData.showAdvanced
     );
-    const isWide = this.hass.dockedSidebar ? this._wideSidebar : this._wide;
+    const isWide =
+      this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
 
     if ("setProperties" in el) {
       // As long as we have Polymer panels

@@ -20,7 +20,7 @@
             "unavailable": "Indisponible"
         },
         "alarm_control_panel": {
-            "armed": "Enclenchée",
+            "armed": "Activé",
             "disarmed": "Désactivée",
             "armed_home": "Enclenchée (présent)",
             "armed_away": "Enclenchée (absent)",
@@ -591,8 +591,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gérez votre réseau Z-Wave",
+                    "network_status": {
+                        "network_stopped": "Réseau Z-Wave arrêté",
+                        "network_starting": "Démarrage du réseau Z-Wave...",
+                        "network_starting_note": "Ceci peut prendre un certain temps en fonction du débit de votre réseau.",
+                        "network_started": "Le réseau Z-Wave a été démarré"
+                    },
                     "services": {
-                        "save_config": "Enregistrer la configuration"
+                        "start_network": "Démarrer le réseau",
+                        "stop_network": "Arrêter le réseau",
+                        "test_network": "Tester le réseau",
+                        "save_config": "Enregistrer la configuration",
+                        "add_node_secure": "Ajouter un nœud sécurisé",
+                        "add_node": "Ajouter un nœud",
+                        "remove_node": "Supprimer un nœud"
                     }
                 },
                 "users": {
