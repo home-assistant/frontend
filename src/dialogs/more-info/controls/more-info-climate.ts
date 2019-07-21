@@ -206,11 +206,6 @@ class MoreInfoClimate extends LitElement {
                     .selected=${stateObj.attributes.preset_mode}
                     @selected-changed=${this._handlePresetmodeChanged}
                   >
-                    <paper-item item-name="">
-                      ${hass.localize(
-                        `state_attributes.climate.preset_mode.none`
-                      )}
-                    </paper-item>
                     ${stateObj.attributes.preset_modes!.map(
                       (mode) => html`
                         <paper-item item-name=${mode}>
