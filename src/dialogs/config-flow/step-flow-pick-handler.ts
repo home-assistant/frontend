@@ -80,13 +80,19 @@ class StepFlowPickHandler extends LitElement {
     `;
   }
 
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    // Store the width so that when we search, box doesn't jump
+    if (!this._width) {
+      const width = this.shadowRoot!.querySelector("div")!.clientWidth;
+      if (width) {
+        this._width = width;
+      }
+    }
+  }
+
   private async _filterChanged(e) {
     this.filter = e.detail.value;
-
-    // Store the width so that when we search, box doesn't jump
-    if (this._width === undefined) {
-      this._width = this.shadowRoot!.querySelector("div")!.clientWidth;
-    }
   }
 
   private async _handlerPicked(ev) {
