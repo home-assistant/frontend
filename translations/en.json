@@ -816,7 +816,11 @@
                     "close": "Close",
                     "submit": "Submit"
                 },
-                "logout": "Log out"
+                "logout": "Log out",
+                "force_narrow": {
+                    "header": "Always hide the sidebar",
+                    "description": "This will hide the sidebar by default, similar to the mobile experience."
+                }
             },
             "page-authorize": {
                 "initializing": "Initializing",
@@ -1328,6 +1332,14 @@
                 "home": "Home",
                 "sleep": "Sleep",
                 "activity": "Activity"
+            },
+            "hvac_action": {
+                "off": "Off",
+                "heating": "Heating",
+                "cooling": "Cooling",
+                "drying": "Drying",
+                "idle": "Idle",
+                "fan": "Fan"
             }
         }
     },

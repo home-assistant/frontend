@@ -2,9 +2,10 @@ import { storeState } from "../util/ha-pref-storage";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { HASSDomEvent } from "../common/dom/fire_event";
+import { HomeAssistant } from "../types";
 
 interface DockSidebarParams {
-  dock: boolean;
+  dock: HomeAssistant["dockedSidebar"];
 }
 
 declare global {

@@ -141,7 +141,8 @@
             "high_demand": "Høj efterspørgsel",
             "heat_pump": "Varmepumpe",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Varme\/køl"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -613,6 +614,14 @@
                         "add_node": "Tilføj node",
                         "remove_node": "Fjern node",
                         "cancel_command": "Annuller kommando"
+                    },
+                    "common": {
+                        "value": "Værdi",
+                        "instance": "Instans",
+                        "index": "Indeks"
+                    },
+                    "values": {
+                        "header": "Node værdier"
                     }
                 },
                 "users": {
