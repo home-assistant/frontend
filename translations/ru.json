@@ -614,6 +614,14 @@
                         "add_node": "Добавить узел",
                         "remove_node": "Удалить узел",
                         "cancel_command": "Отменить команду"
+                    },
+                    "common": {
+                        "value": "Значение",
+                        "instance": "Экземпляр",
+                        "index": "Индекс"
+                    },
+                    "values": {
+                        "header": "Значения узлов"
                     }
                 },
                 "users": {
