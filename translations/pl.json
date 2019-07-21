@@ -614,6 +614,14 @@
                         "add_node": "Dodaj węzeł",
                         "remove_node": "Usuń węzeł",
                         "cancel_command": "Anuluj polecenie"
+                    },
+                    "common": {
+                        "value": "Wartość",
+                        "instance": "Instancja",
+                        "index": "Indeks"
+                    },
+                    "values": {
+                        "header": "Wartości węzła"
                     }
                 },
                 "users": {
