@@ -44,8 +44,11 @@ class HomeAssistantMain extends LitElement {
       return;
     }
 
+    const sidebarNarrow =
+      this.narrow || this.hass.dockedSidebar === "always_hidden";
+
     const disableSwipe =
-      !this.narrow || NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
+      !sidebarNarrow || NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
 
     return html`
       <iron-media-query
@@ -55,7 +58,7 @@ class HomeAssistantMain extends LitElement {
 
       <app-drawer-layout
         fullbleed
-        .forceNarrow=${this.narrow}
+        .forceNarrow=${sidebarNarrow}
         responsive-width="0"
       >
         <app-drawer
@@ -64,12 +67,14 @@ class HomeAssistantMain extends LitElement {
           slot="drawer"
           .disableSwipe=${disableSwipe}
           .swipeOpen=${!disableSwipe}
-          .persistent=${!this.narrow}
+          .persistent=${!this.narrow &&
+            this.hass.dockedSidebar !== "always_hidden"}
         >
           <ha-sidebar
             .hass=${hass}
-            .narrow=${this.narrow}
-            .alwaysExpand=${this.narrow || hass.dockedSidebar}
+            .narrow=${sidebarNarrow}
+            .alwaysExpand=${sidebarNarrow ||
+              this.hass.dockedSidebar === "docked"}
           ></ha-sidebar>
         </app-drawer>
 
@@ -86,7 +91,7 @@ class HomeAssistantMain extends LitElement {
     import(/* webpackChunkName: "ha-sidebar" */ "../components/ha-sidebar");
 
     this.addEventListener("hass-toggle-menu", () => {
-      if (this.narrow) {
+      if (this.narrow || this.hass.dockedSidebar === "always_hidden") {
         if (this.drawer.opened) {
           this.drawer.close();
         } else {
@@ -94,7 +99,7 @@ class HomeAssistantMain extends LitElement {
         }
       } else {
         fireEvent(this, "hass-dock-sidebar", {
-          dock: !this.hass.dockedSidebar,
+          dock: this.hass.dockedSidebar === "auto" ? "docked" : "auto",
         });
         setTimeout(() => this.appLayout.resetLayout());
       }
@@ -110,7 +115,10 @@ class HomeAssistantMain extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    this.toggleAttribute("expanded", this.narrow || this.hass.dockedSidebar);
+    this.toggleAttribute(
+      "expanded",
+      this.narrow || this.hass.dockedSidebar !== "auto"
+    );
 
     if (changedProps.has("route") && this.narrow) {
       this.drawer.close();
