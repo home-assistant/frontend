@@ -29,14 +29,21 @@ import {
 import {
   DeviceRegistryEntryMutableParams,
   updateDeviceRegistryEntry,
+  subscribeDeviceRegistry,
 } from "../../../data/device_registry";
-import { reconfigureNode, ZHADevice } from "../../../data/zha";
+import { subscribeEntityRegistryEntryUpdated } from "../../../data/entity_registry";
+import {
+  reconfigureNode,
+  ZHADevice,
+  ZHAEntityReference,
+} from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
 import { navigate } from "../../../common/navigate";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { formatAsPaddedHex } from "./functions";
+import computeStateName from "../../../common/entity/compute_state_name";
 
 declare global {
   // for fire event
@@ -60,12 +67,53 @@ class ZHADeviceCard extends LitElement {
   @property() private _selectedAreaIndex: number = -1;
   @property() private _userGivenName?: string;
   private _unsubAreas?: UnsubscribeFunc;
+  private _unsubDevices?: UnsubscribeFunc;
+  private _unsubEntities?: UnsubscribeFunc;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubAreas) {
       this._unsubAreas();
     }
+    if (this._unsubDevices) {
+      this._unsubDevices();
+    }
+    if (this._unsubEntities) {
+      this._unsubEntities();
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubAreas = subscribeAreaRegistry(this.hass.connection, (areas) => {
+      this._areas = areas;
+    });
+    this._unsubDevices = subscribeDeviceRegistry(
+      this.hass.connection,
+      (devices) => {
+        if (this.device) {
+          const haDevice = devices.find(
+            (device) => device.id === this.device!.device_reg_id
+          );
+          if (haDevice) {
+            this.device.user_given_name = haDevice.name_by_user;
+            this.device.area_id = haDevice.area_id;
+          }
+        }
+      }
+    );
+    this._unsubEntities = subscribeEntityRegistryEntryUpdated(
+      this.hass.connection,
+      (event) => {
+        if (this.device) {
+          this.device!.entities.forEach((deviceEntity) => {
+            if (event.data.old_entity_id === deviceEntity.entity_id) {
+              deviceEntity.entity_id = event.data.entity_id;
+            }
+          });
+        }
+      }
+    );
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -89,14 +137,6 @@ class ZHADeviceCard extends LitElement {
           ) + 1;
       }
       this._userGivenName = this.device!.user_given_name;
-    }
-    if (!this._unsubAreas) {
-      this._unsubAreas = subscribeAreaRegistry(
-        this.hass.connection,
-        (areas) => {
-          this._areas = areas;
-        }
-      );
     }
     super.update(changedProperties);
   }
@@ -168,7 +208,9 @@ class ZHADeviceCard extends LitElement {
                 ${!this.isJoinPage
                   ? html`
                       <paper-item-body>
-                        <div class="name">${entity.name}</div>
+                        <div class="name">
+                          ${this._computeEntityName(entity)}
+                        </div>
                         <div class="secondary entity-id">
                           ${entity.entity_id}
                         </div>
@@ -278,6 +320,13 @@ class ZHADeviceCard extends LitElement {
     if (this.hass) {
       await reconfigureNode(this.hass, this.device!.ieee);
     }
+  }
+
+  private _computeEntityName(entity: ZHAEntityReference): string {
+    if (this.hass.states[entity.entity_id]) {
+      return computeStateName(this.hass.states[entity.entity_id]);
+    }
+    return entity.name;
   }
 
   private async _saveCustomName(event): Promise<void> {
