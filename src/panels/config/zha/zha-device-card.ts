@@ -102,9 +102,8 @@ class ZHADeviceCard extends LitElement {
         }
       }
     );
-    this._unsubEntities = subscribeEntityRegistryEntryUpdated(
-      this.hass.connection,
-      (event) => {
+    this.hass.connection
+      .subscribeEvents((event) => {
         if (this.device) {
           this.device!.entities.forEach((deviceEntity) => {
             if (event.data.old_entity_id === deviceEntity.entity_id) {
@@ -112,8 +111,8 @@ class ZHADeviceCard extends LitElement {
             }
           });
         }
-      }
-    );
+      }, "entity_registry_updated")
+      .then((unsub) => (this._unsubEntities = unsub));
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
