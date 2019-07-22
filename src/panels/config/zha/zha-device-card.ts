@@ -40,7 +40,7 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
 import { navigate } from "../../../common/navigate";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { UnsubscribeFunc, HassEvent } from "home-assistant-js-websocket";
 import { formatAsPaddedHex } from "./functions";
 import computeStateName from "../../../common/entity/compute_state_name";
 
@@ -102,7 +102,7 @@ class ZHADeviceCard extends LitElement {
       }
     );
     this.hass.connection
-      .subscribeEvents((event) => {
+      .subscribeEvents((event: HassEvent) => {
         if (this.device) {
           this.device!.entities.forEach((deviceEntity) => {
             if (event.data.old_entity_id === deviceEntity.entity_id) {
