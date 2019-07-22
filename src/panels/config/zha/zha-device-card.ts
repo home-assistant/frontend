@@ -31,7 +31,6 @@ import {
   updateDeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
-import { subscribeEntityRegistryEntryUpdated } from "../../../data/entity_registry";
 import {
   reconfigureNode,
   ZHADevice,
