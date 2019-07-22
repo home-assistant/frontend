@@ -66,6 +66,12 @@ const subscribeEntityRegistryUpdates = (conn, store) =>
     "entity_registry_updated"
   );
 
+export const subscribeEntityRegistryEntryUpdated = (conn, callback) =>
+  conn.subscribeEvents(
+    debounce((event) => callback(event), 500, true),
+    "entity_registry_updated"
+  );
+
 export const subscribeEntityRegistry = (
   conn: Connection,
   onChange: (entities: EntityRegistryEntry[]) => void
