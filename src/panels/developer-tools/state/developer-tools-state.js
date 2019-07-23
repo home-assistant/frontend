@@ -60,7 +60,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
         }
 
         .entities a {
-          color: var(--primary-color);
+          color: var(--text-primary-color);
         }
       </style>
 
