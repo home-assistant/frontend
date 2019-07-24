@@ -29,7 +29,6 @@ import {
 import {
   DeviceRegistryEntryMutableParams,
   updateDeviceRegistryEntry,
-  subscribeDeviceRegistry,
 } from "../../../data/device_registry";
 import {
   reconfigureNode,
@@ -66,16 +65,12 @@ class ZHADeviceCard extends LitElement {
   @property() private _selectedAreaIndex: number = -1;
   @property() private _userGivenName?: string;
   private _unsubAreas?: UnsubscribeFunc;
-  private _unsubDevices?: UnsubscribeFunc;
   private _unsubEntities?: UnsubscribeFunc;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubAreas) {
       this._unsubAreas();
-    }
-    if (this._unsubDevices) {
-      this._unsubDevices();
     }
     if (this._unsubEntities) {
       this._unsubEntities();
@@ -87,20 +82,6 @@ class ZHADeviceCard extends LitElement {
     this._unsubAreas = subscribeAreaRegistry(this.hass.connection, (areas) => {
       this._areas = areas;
     });
-    this._unsubDevices = subscribeDeviceRegistry(
-      this.hass.connection,
-      (devices) => {
-        if (this.device) {
-          const haDevice = devices.find(
-            (device) => device.id === this.device!.device_reg_id
-          );
-          if (haDevice) {
-            this.device.user_given_name = haDevice.name_by_user;
-            this.device.area_id = haDevice.area_id;
-          }
-        }
-      }
-    );
     this.hass.connection
       .subscribeEvents((event: HassEvent) => {
         if (this.device) {
