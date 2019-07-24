@@ -44,7 +44,7 @@ class HaMenuButton extends LitElement {
 
   protected render(): TemplateResult | void {
     const hasNotifications =
-      this.narrow &&
+      (this.narrow || this.hass.dockedSidebar === "always_hidden") &&
       (this._hasNotifications ||
         Object.keys(this.hass.states).some(
           (entityId) => computeDomain(entityId) === "configurator"
@@ -131,9 +131,10 @@ class HaMenuButton extends LitElement {
         background-color: var(--accent-color);
         width: 12px;
         height: 12px;
-        top: 8px;
-        right: 5px;
+        top: 5px;
+        right: 2px;
         border-radius: 50%;
+        border: 2px solid var(--primary-color);
       }
     `;
   }
