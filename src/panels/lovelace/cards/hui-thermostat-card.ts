@@ -27,6 +27,7 @@ import {
   ClimateEntity,
   HvacMode,
   compareClimateHvacModes,
+  CLIMATE_PRESET_NONE,
 } from "../../../data/climate";
 
 const thermostatConfig = {
@@ -155,7 +156,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                       }`
                     )
                   : this.hass!.localize(`state.climate.${stateObj.state}`)}
-                ${stateObj.attributes.preset_mode
+                ${stateObj.attributes.preset_mode &&
+                stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
                   ? html`
                       -
                       ${this.hass!.localize(
