@@ -18,17 +18,20 @@ class HaCoverControls extends PolymerElement {
 
       <div class="state">
         <paper-icon-button
+          aria-label="Open cover"
           icon="hass:arrow-up"
           on-click="onOpenTap"
           invisible$="[[!entityObj.supportsOpen]]"
           disabled="[[computeOpenDisabled(stateObj, entityObj)]]"
         ></paper-icon-button>
         <paper-icon-button
+          aria-label="Stop the cover from moving"
           icon="hass:stop"
           on-click="onStopTap"
           invisible$="[[!entityObj.supportsStop]]"
         ></paper-icon-button>
         <paper-icon-button
+          aria-label="Close cover"
           icon="hass:arrow-down"
           on-click="onCloseTap"
           invisible$="[[!entityObj.supportsClose]]"
