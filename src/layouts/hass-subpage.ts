@@ -22,6 +22,7 @@ class HassSubpage extends LitElement {
     return html`
       <div class="toolbar">
         <ha-paper-icon-button-arrow-prev
+          aria-label="Back"
           .hassio=${this.hassio}
           @click=${this._backTapped}
         ></ha-paper-icon-button-arrow-prev>

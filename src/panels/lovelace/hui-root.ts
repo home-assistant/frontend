@@ -154,28 +154,46 @@ class HUIRoot extends LitElement {
                     >
                       ${this._yamlMode
                         ? html`
-                            <paper-item @click="${this._handleRefresh}"
-                              >${this.hass!.localize(
+                            <paper-item
+                              aria-label=${this.hass!.localize(
                                 "ui.panel.lovelace.menu.refresh"
-                              )}</paper-item
+                              )}
+                              @click="${this._handleRefresh}"
                             >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.refresh"
+                              )}
+                            </paper-item>
                           `
                         : ""}
                       ${__DEMO__ /* No unused entities available in the demo */
                         ? ""
                         : html`
-                            <paper-item @click="${this._handleUnusedEntities}">
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                              @click="${this._handleUnusedEntities}"
+                            >
                               ${this.hass!.localize(
                                 "ui.panel.lovelace.menu.unused_entities"
                               )}
                             </paper-item>
                           `}
-                      <paper-item @click="${this._editModeEnable}"
+                      <paper-item
+                        aria-label=${this.hass!.localize(
+                          "ui.panel.lovelace.menu.configure_ui"
+                        )}
+                        @click="${this._editModeEnable}"
                         >${this.hass!.localize(
                           "ui.panel.lovelace.menu.configure_ui"
                         )}</paper-item
                       >
-                      <paper-item @click="${this._handleHelp}"
+                      <paper-item
+                        aria-label=${this.hass!.localize(
+                          "ui.panel.lovelace.menu.help"
+                        )}
+                        @click="${this._handleHelp}"
                         >${this.hass!.localize(
                           "ui.panel.lovelace.menu.help"
                         )}</paper-item
