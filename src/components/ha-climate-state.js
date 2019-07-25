@@ -2,6 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import LocalizeMixin from "../mixins/localize-mixin";
+import { CLIMATE_PRESET_NONE } from "../data/climate";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -40,7 +41,7 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
         <template is="dom-if" if="[[_hasKnownState(stateObj.state)]]">
           <span class="state-label">
             [[_localizeState(localize, stateObj)]]
-            <template is="dom-if" if="[[stateObj.attributes.preset_mode]]">
+            <template is="dom-if" if="[[_renderPreset(stateObj.attributes)]]">
               - [[_localizePreset(localize, stateObj.attributes.preset_mode)]]
             </template>
           </span>
@@ -129,6 +130,12 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
 
   _localizePreset(localize, preset) {
     return localize(`state_attributes.climate.preset_mode.${preset}`) || preset;
+  }
+
+  _renderPreset(attributes) {
+    return (
+      attributes.preset_mode && attributes.preset_mode !== CLIMATE_PRESET_NONE
+    );
   }
 }
 customElements.define("ha-climate-state", HaClimateState);
