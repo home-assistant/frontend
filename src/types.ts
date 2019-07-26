@@ -142,22 +142,20 @@ export interface HomeAssistant {
   dockedSidebar: "docked" | "always_hidden" | "auto";
   moreInfoEntityId: string | null;
   user?: CurrentUser;
-  callService: (
+  hassUrl(path?): string;
+  callService(
     domain: string,
     service: string,
     serviceData?: { [key: string]: any }
-  ) => Promise<void>;
-  callApi: <T>(
+  ): Promise<void>;
+  callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
     parameters?: { [key: string]: any }
-  ) => Promise<T>;
-  fetchWithAuth: (
-    path: string,
-    init?: { [key: string]: any }
-  ) => Promise<Response>;
-  sendWS: (msg: MessageBase) => void;
-  callWS: <T>(msg: MessageBase) => Promise<T>;
+  ): Promise<T>;
+  fetchWithAuth(path: string, init?: { [key: string]: any }): Promise<Response>;
+  sendWS(msg: MessageBase): void;
+  callWS<T>(msg: MessageBase): Promise<T>;
 }
 
 export type LightEntity = HassEntityBase & {
