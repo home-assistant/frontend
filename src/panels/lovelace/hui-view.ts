@@ -120,7 +120,6 @@ export class HUIView extends LitElement {
           padding: 4px 4px 0;
           transform: translateZ(0);
           position: relative;
-          background-color: var(--primary-background-color);
         }
 
         #badges {
@@ -313,9 +312,7 @@ export class HUIView extends LitElement {
 
     this._cards = elements;
 
-    if ("theme" in config) {
-      applyThemesOnElement(this, this.hass!.themes, config.theme);
-    }
+    applyThemesOnElement(root, this.hass!.themes, config.theme);
   }
 
   private _rebuildCard(
