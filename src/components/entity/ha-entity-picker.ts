@@ -139,6 +139,7 @@ class HaEntityPicker extends LitElement {
           ${this.value
             ? html`
                 <paper-icon-button
+                  aria-label="Clear"
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
@@ -151,6 +152,7 @@ class HaEntityPicker extends LitElement {
           ${states.length > 0
             ? html`
                 <paper-icon-button
+                  aria-label="Show entities"
                   slot="suffix"
                   class="toggle-button"
                   .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
