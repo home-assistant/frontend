@@ -112,6 +112,8 @@
     "@babel/preset-typescript": "^7.3.3",
     "@gfx/zopfli": "^1.0.11",
     "@types/chai": "^4.1.7",
+    "@types/chromecast-caf-receiver": "^3.0.12",
+    "@types/chromecast-caf-sender": "^1.0.1",
     "@types/hls.js": "^0.12.3",
     "@types/leaflet": "^1.4.3",
     "@types/memoize-one": "4.1.0",
