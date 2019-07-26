@@ -492,7 +492,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         }
         #thermostat .rs-handle {
           background-color: var(--paper-card-background-color, white);
-          padding: 7px;
+          padding: 10px;
+          margin: -10px 0 0 -8px !important;
           border: 2px solid var(--disabled-text-color);
         }
         #thermostat .rs-handle.rs-focus {

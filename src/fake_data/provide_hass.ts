@@ -182,6 +182,7 @@ export const provideHass = (
         ? response[1](hass(), method, path, parameters)
         : Promise.reject(`API Mock for ${path} is not implemented`);
     },
+    hassUrl: (path?) => path,
     fetchWithAuth: () => Promise.reject("Not implemented"),
     sendWS: (msg) => hassObj.connection.sendMessage(msg),
     callWS: (msg) => hassObj.connection.sendMessagePromise(msg),

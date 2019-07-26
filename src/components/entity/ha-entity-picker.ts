@@ -199,3 +199,9 @@ class HaEntityPicker extends LitElement {
 }
 
 customElements.define("ha-entity-picker", HaEntityPicker);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-entity-picker": HaEntityPicker;
+  }
+}

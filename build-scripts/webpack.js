@@ -96,7 +96,7 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
   // Create an object mapping browser urls to their paths during build
   const translationMetadata = require("../build-translations/translationMetadata.json");
   const workBoxTranslationsTemplatedURLs = {};
-  const englishFP = translationMetadata["translations"]["en"]["fingerprints"];
+  const englishFP = translationMetadata.translations.en.fingerprints;
   Object.keys(englishFP).forEach((key) => {
     workBoxTranslationsTemplatedURLs[
       `/static/translations/${englishFP[key]}`
@@ -192,7 +192,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       new webpack.DefinePlugin({
         __DEV__: !isProdBuild,
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
-        __VERSION__: JSON.stringify("DEMO"),
+        __VERSION__: JSON.stringify(`DEMO-${version}`),
         __DEMO__: true,
         __STATIC_PATH__: "/static/",
         "process.env.NODE_ENV": JSON.stringify(
