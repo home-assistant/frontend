@@ -16,6 +16,7 @@ import { mockEvents } from "./stubs/events";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { HomeAssistant } from "../../src/types";
 import { mockFrontend } from "./stubs/frontend";
+import { mockPersistentNotification } from "./stubs/persistent_notification";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _initialize() {
@@ -43,6 +44,7 @@ class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockPersistentNotification(hass);
 
     // Once config is loaded AND localize, set entities and apply theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(

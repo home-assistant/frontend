@@ -15,8 +15,10 @@ import { HassEntity } from "home-assistant-js-websocket";
 // Not duplicate, this is for typing.
 // tslint:disable-next-line
 import { HaIcon } from "../ha-icon";
+import { HomeAssistant } from "../../types";
 
 class StateBadge extends LitElement {
+  public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
   @query("ha-icon") private _icon!: HaIcon;
@@ -54,8 +56,11 @@ class StateBadge extends LitElement {
     if (stateObj) {
       // hide icon if we have entity picture
       if (stateObj.attributes.entity_picture && !this.overrideIcon) {
-        hostStyle.backgroundImage =
-          "url(" + stateObj.attributes.entity_picture + ")";
+        let imageUrl = stateObj.attributes.entity_picture;
+        if (this.hass) {
+          imageUrl = this.hass.hassUrl(imageUrl);
+        }
+        hostStyle.backgroundImage = `url(${imageUrl})`;
         iconStyle.display = "none";
       } else {
         if (stateObj.attributes.hs_color) {

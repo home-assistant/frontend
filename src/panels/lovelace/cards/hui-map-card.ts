@@ -148,6 +148,27 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  protected shouldUpdate(changedProps) {
+    if (!changedProps.has("hass") || changedProps.size > 1) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || !this._configEntities) {
+      return true;
+    }
+
+    // Check if any state has changed
+    for (const entity of this._configEntities) {
+      if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this.loadMap();

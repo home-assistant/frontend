@@ -129,6 +129,10 @@ export const createRowElement = (
     return element;
   }
 
+  if (!config.entity) {
+    return _createErrorElement("Invalid config given.", config);
+  }
+
   const domain = config.entity.split(".", 1)[0];
   tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || "text"}-entity-row`;
 
