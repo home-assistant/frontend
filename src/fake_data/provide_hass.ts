@@ -90,7 +90,11 @@ export const provideHass = (
 
   const hassObj: MockHomeAssistant = {
     // Home Assistant properties
-    auth: {} as any,
+    auth: {
+      data: {
+        hassUrl: "",
+      },
+    } as any,
     connection: {
       addEventListener: () => undefined,
       removeEventListener: () => undefined,
