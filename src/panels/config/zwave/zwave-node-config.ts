@@ -170,16 +170,16 @@ export class ZwaveNodeConfig extends LitElement {
                             .selected=${this._configItem.value.data}
                             @iron-select=${this._configValueSelectChanged}
                           >
-                            <paper-item
-                              >${this.hass!.localize(
+                            <paper-item>
+                              ${this.hass!.localize(
                                 "ui.panel.config.zwave.node_config.true"
-                              )}</paper-item
-                            >
-                            <paper-item
-                              >${this.hass!.localize(
+                              )}
+                            </paper-item>
+                            <paper-item>
+                              ${this.hass!.localize(
                                 "ui.panel.config.zwave.node_config.false"
-                              )}</paper-item
-                            >
+                              )}
+                            </paper-item>
                           </paper-listbox>
                         </paper-dropdown-menu>
                       </div>
