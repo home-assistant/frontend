@@ -40,26 +40,40 @@ export class ZwaveNodeConfig extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <div class="content">
-        <ha-card header="Node config options">
+        <ha-card
+          header=${this.hass!.localize(
+            "ui.panel.config.zwave.node_config.header"
+          )}
+        >
           ${this.nodes[this.selectedNode].attributes.hasOwnProperty(
             "wake_up_interval"
           )
             ? html`
                 <div class="card-actions">
                   <paper-input
-                    float-label="Wakeup Interval"
+                    float-label="${this.hass!.localize(
+                      "ui.panel.config.zwave.common.wakeup_interval"
+                    )}"
                     type="number"
                     .value=${this._wakeupInput !== -1
                       ? this._wakeupInput
-                      : "unknown"}
+                      : this.hass!.localize(
+                          "ui.panel.config.zwave.common.unknown"
+                        )}
                     @value-changed=${this._onWakeupIntervalChanged}
                     placeholder=${this.nodes[this.selectedNode].attributes
                       .wake_up_interval
                       ? this.nodes[this.selectedNode].attributes
                           .wake_up_interval
-                      : "unknown"}
+                      : this.hass!.localize(
+                          "ui.panel.config.zwave.common.unknown"
+                        )}
                   >
-                    <div suffix="">seconds</div>
+                    <div suffix="">
+                      ${this.hass!.localize(
+                        "ui.panel.config.zwave.node_config.seconds"
+                      )}
+                    </div>
                   </paper-input>
                   <ha-call-service-button
                     .hass=${this.hass}
@@ -69,14 +83,18 @@ export class ZwaveNodeConfig extends LitElement {
                       this._wakeupInput
                     )}
                   >
-                    Set Wakeup
+                    ${this.hass!.localize(
+                      "ui.panel.config.zwave.node_config.set_wakeup"
+                    )}
                   </ha-call-service-button>
                 </div>
               `
             : ""}
           <div class="device-picker">
             <paper-dropdown-menu
-              label="Config parameter"
+              label=${this.hass!.localize(
+                "ui.panel.config.zwave.node_config.config_parameter"
+              )}
               dynamic-align
               class="flex"
             >
@@ -101,7 +119,9 @@ export class ZwaveNodeConfig extends LitElement {
                   ? html`
                       <div class="device-picker">
                         <paper-dropdown-menu
-                          label="Config value"
+                          label=${this.hass!.localize(
+                            "ui.panel.config.zwave.node_config.config_value"
+                          )}
                           dynamic-align
                           class="flex"
                           placeholder=${this._configItem.value.data}
@@ -140,7 +160,9 @@ export class ZwaveNodeConfig extends LitElement {
                   ? html`
                       <div class="device-picker">
                         <paper-dropdown-menu
-                          label="Config value"
+                          label=${this.hass!.localize(
+                            "ui.panel.config.zwave.node_config.config_value"
+                          )}
                           class="flex"
                           dynamic-align
                           placeholder=${this._configItem.value.data}
@@ -150,8 +172,16 @@ export class ZwaveNodeConfig extends LitElement {
                             .selected=${this._configItem.value.data}
                             @iron-select=${this._configValueSelectChanged}
                           >
-                            <paper-item>True</paper-item>
-                            <paper-item>False</paper-item>
+                            <paper-item
+                              >${this.hass!.localize(
+                                "ui.panel.config.zwave.node_config.true"
+                              )}</paper-item
+                            >
+                            <paper-item
+                              >${this.hass!.localize(
+                                "ui.panel.config.zwave.node_config.false"
+                              )}</paper-item
+                            >
                           </paper-listbox>
                         </paper-dropdown-menu>
                       </div>
@@ -171,7 +201,9 @@ export class ZwaveNodeConfig extends LitElement {
                           service="set_config_parameter"
                           .serviceData=${this._computeSetConfigParameterServiceData()}
                         >
-                          Set Config Parameter
+                          ${this.hass!.localize(
+                            "ui.panel.config.zwave.node_config.set_config_parameter"
+                          )}
                         </ha-call-service-button>
                       </div>
                     `
